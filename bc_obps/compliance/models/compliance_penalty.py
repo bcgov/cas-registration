@@ -9,6 +9,10 @@ class CompliancePenalty(TimeStampedModel):
         AUTOMATIC_OVERDUE = 'Automatic Overdue'
         LATE_SUBMISSION = 'Late Submission'
 
+    class AccrualFrequency(models.TextChoices):
+        DAILY = 'Daily'
+        MONTHLY = 'Monthly'
+
     compliance_obligation = models.ForeignKey(
         ComplianceObligation,
         on_delete=models.CASCADE,
@@ -29,6 +33,23 @@ class CompliancePenalty(TimeStampedModel):
 
     accrual_start_date = models.DateField(
         db_comment="The date on which the penalty began accruing. It will always be the day after the obligation's due date",
+    )
+
+    accrual_final_date = models.DateField(
+        null=True,
+        blank=True,
+        db_comment="The date on which the penalty stopped accruing (typically the payment date or when obligation is paid to $0)",
+    )
+
+    accrual_frequency = models.CharField(
+        max_length=20,
+        choices=AccrualFrequency.choices,
+        db_comment="Defines how often the penalty accrues (e.g., daily for Automatic Overdue, monthly for Late Submission)",
+    )
+
+    is_compounding = models.BooleanField(
+        default=True,
+        db_comment="Indicates whether the penalty uses compounding for the selected accrual frequency",
     )
 
     penalty_amount = models.DecimalField(

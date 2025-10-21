@@ -64,11 +64,16 @@ class ElicensingDataRefreshService:
             'elicensing_invoice'
         ).get(compliance_report_version_id=compliance_report_version_id)
 
+        # Map invoice type to penalty type for filtering
+        invoice_type_to_penalty_type = {
+            ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY: CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+        }
+
         invoice = (
             compliance_obligation.elicensing_invoice
             if invoice_type == ComplianceInvoiceTypes.OBLIGATION
             else CompliancePenalty.objects.select_related('elicensing_invoice')
-            .get(compliance_obligation=compliance_obligation)
+            .get(compliance_obligation=compliance_obligation, penalty_type=invoice_type_to_penalty_type[invoice_type])
             .elicensing_invoice
         )
 

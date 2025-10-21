@@ -43,9 +43,17 @@ class PenaltyPaidHandler(ComplianceUpdateHandler):
         )
 
     def handle(self, invoice: ElicensingInvoice) -> None:
-        """Update obligation penalty_status to PAID if the penalty invoice is fully paid."""
+        """Update obligation penalty_status to PAID if ALL penalty invoices are fully paid."""
         obligation = invoice.compliance_penalty.compliance_obligation
-        if obligation.penalty_status != ComplianceObligation.PenaltyStatus.PAID:
+
+        # Check if all penalties for this obligation are paid
+        all_penalties = obligation.compliance_penalties.all()
+        all_penalties_paid = all(
+            penalty.elicensing_invoice and penalty.elicensing_invoice.outstanding_balance == Decimal('0.00')
+            for penalty in all_penalties
+        )
+
+        if all_penalties_paid and obligation.penalty_status != ComplianceObligation.PenaltyStatus.PAID:
             ComplianceObligationService.update_penalty_status(obligation.pk, ComplianceObligation.PenaltyStatus.PAID)
             logger.info(f"Updated penalty status to PAID for obligation {obligation.obligation_id}")
 
@@ -92,8 +100,26 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
             and invoice.outstanding_balance == Decimal('0.00')
         )
 
+    @classmethod
+    def _get_latest_supplementary_version(cls, obligation: ComplianceObligation) -> ComplianceReportVersion | None:
+        """
+        Get the most recent supplementary report version for the same compliance report.
+        If no supplementary versions exist, returns None.
+        """
+        compliance_report = obligation.compliance_report_version.compliance_report
+        latest_supplementary = (
+            ComplianceReportVersion.objects.filter(compliance_report=compliance_report, is_supplementary=True)
+            .order_by('-created_at')
+            .first()
+        )
+
+        return latest_supplementary
+
     def handle(self, invoice: ElicensingInvoice) -> None:
-        """Update compliance status to OBLIGATION_FULLY_MET."""
+        """
+        Update compliance status to OBLIGATION_FULLY_MET
+        and create penalties if the report was created after the compliance deadline.
+        """
         from compliance.tasks import retryable_notice_of_obligation_met_email
 
         obligation = invoice.compliance_obligation
@@ -106,7 +132,7 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         # If we are past the deadline & the last transaction that brought the obligation to zero was also received past the deadline, create a penalty
         if invoice.due_date < timezone.now().date() and final_transaction_date > invoice.due_date:  # type: ignore [operator]
             PenaltyCalculationService.create_penalty(obligation)
-            logger.info(f"Created penalty for obligation {obligation.obligation_id}")
+            logger.info(f"Created automatic overdue penalty for obligation {obligation.obligation_id}")
 
 
 class ComplianceHandlerManager:
