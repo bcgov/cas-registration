@@ -609,26 +609,15 @@ class PenaltyCalculationService:
         # Late submission penalty: Dec 1 (day after Nov 30)
         late_submission_start_date = compliance_deadline + timedelta(days=1)
 
-        # Get the payment date (when obligation was paid to 0)
-        final_payment_received_date = (
-            ElicensingPayment.objects.filter(
-                elicensing_line_item=(
-                    ElicensingLineItem.objects.get(
-                        elicensing_invoice=obligation.elicensing_invoice,
-                        line_item_type=ElicensingLineItem.LineItemType.FEE,
-                    )
-                )
-            )
-            .order_by('-received_date')
-            .first()
-            .received_date  # type: ignore[union-attr]
-        )
+        # Get supplementary submission date and calculate payment deadline (30 days after submission)
+        supplementary_submission_date = cls._get_last_supplementary_submission_date(obligation)
+        payment_deadline = supplementary_submission_date + timedelta(days=30)  # type: ignore[operator]
 
         # Calculate late submission penalty
         cls._calculate_late_submission_penalty(
             obligation=obligation,
             accrual_start_date=late_submission_start_date,
-            final_accrual_date=final_payment_received_date,  # type: ignore[arg-type]
+            final_accrual_date=payment_deadline,  # type: ignore[arg-type]
             persist_penalty_data=True,
         )
 
