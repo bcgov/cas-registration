@@ -246,7 +246,8 @@ class ElicensingInvoiceService:
             )
 
             compliance_penalty = CompliancePenalty.objects.get(
-                compliance_obligation=compliance_obligation,
+                elicensing_invoice=penalty_invoice,
+                penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             )
 
             invoice_date = compliance_penalty.fee_date.strftime("%b %-d, %Y") if compliance_penalty.fee_date else "—"

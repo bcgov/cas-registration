@@ -1,22 +1,23 @@
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
-import PenaltySummaryReviewComponent from "./PenaltySummaryReviewComponent";
-import getAutomaticOverduePenalty from "@/compliance/src/app/utils/getAutomaticOverduePenalty";
+import InterestSummaryReviewComponent from "./InterestSummaryReviewComponent";
+import getLateSubmissionPenalty from "@/compliance/src/app/utils/getLateSubmissionPenalty";
 import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
 import {
-  ActivePage,
   generateManageObligationTaskList,
+  ActivePage,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 
 interface Props {
   compliance_report_version_id: number;
 }
 
-export default async function PenaltySummaryReviewPage({
+export default async function InterestSummaryReviewPage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<Props>) {
-  const penaltyData = await getAutomaticOverduePenalty(
+  const interestData = await getLateSubmissionPenalty(
     complianceReportVersionId,
   );
+
   const {
     penalty_status: penaltyStatus,
     reporting_year: reportingYear,
@@ -32,7 +33,7 @@ export default async function PenaltySummaryReviewPage({
       outstandingBalance,
       hasLateSubmissionPenalty,
     },
-    ActivePage.ReviewPenaltySummary,
+    ActivePage.ReviewInterestSummary,
   );
 
   return (
@@ -40,11 +41,10 @@ export default async function PenaltySummaryReviewPage({
       complianceReportVersionId={complianceReportVersionId}
       taskListElements={taskListElements}
     >
-      <PenaltySummaryReviewComponent
-        data={penaltyData}
+      <InterestSummaryReviewComponent
+        data={interestData}
         reportingYear={reportingYear}
         complianceReportVersionId={complianceReportVersionId}
-        hasLateSubmissionPenalty={hasLateSubmissionPenalty}
       />
     </CompliancePageLayout>
   );
