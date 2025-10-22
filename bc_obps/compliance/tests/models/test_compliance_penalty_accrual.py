@@ -14,6 +14,7 @@ class CompliancePenaltyAccrualTest(BaseTestCase):
             ("id", "ID", None, None),
             ("compliance_penalty", "compliance penalty", None, None),
             ("date", "date", None, None),
+            ("interest_rate", "interest rate", None, None),
             ("daily_penalty", "daily penalty", None, None),
             ("daily_compounded", "daily compounded", None, None),
             ("accumulated_penalty", "accumulated penalty", None, None),

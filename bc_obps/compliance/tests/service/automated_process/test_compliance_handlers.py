@@ -1,6 +1,6 @@
 import pytest
 from decimal import Decimal
-from datetime import timedelta
+from datetime import timedelta, datetime
 from unittest.mock import patch
 from django.utils import timezone
 from model_bakery import baker
@@ -80,6 +80,38 @@ class TestPenaltyPaidHandler:
         self.handler.handle(self.invoice)
 
         mock_update_status.assert_not_called()
+
+    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
+    def test_handle_does_not_update_status_if_any_penalty_unpaid(self, mock_update_status):
+        other_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            outstanding_balance=Decimal("100.00"),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            elicensing_invoice=other_invoice,
+            compliance_obligation=self.obligation,
+        )
+
+        self.handler.handle(self.invoice)
+
+        mock_update_status.assert_not_called()
+
+    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
+    def test_handle_updates_status_when_all_penalties_paid_multiple(self, mock_update_status):
+        other_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            outstanding_balance=Decimal("0.00"),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            elicensing_invoice=other_invoice,
+            compliance_obligation=self.obligation,
+        )
+
+        self.handler.handle(self.invoice)
+
+        mock_update_status.assert_called_once_with(self.obligation.pk, ComplianceObligation.PenaltyStatus.PAID)
 
 
 class TestPenaltyAccruingHandler:
@@ -218,6 +250,68 @@ class TestObligationPaidHandler:
         self.compliance_report_version.refresh_from_db()
         assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         mock_create_penalty.assert_called_once_with(self.obligation)
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_late_submission_penalty')
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')
+    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    def test_handle_creates_late_submission_penalty_when_supplementary_after_deadline(
+        self,
+        mock_retryable_notice_of_obligation_met_email,
+        mock_create_penalty,
+        mock_create_late_submission_penalty,
+    ):
+        compliance_period = self.obligation.compliance_report_version.compliance_report.compliance_period
+        compliance_deadline = compliance_period.compliance_deadline
+
+        supplementary = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=self.obligation.compliance_report_version.compliance_report,
+            is_supplementary=True,
+        )
+        after_deadline = timezone.make_aware(
+            datetime.combine(compliance_deadline + timedelta(days=5), datetime.min.time())
+        )
+        supplementary.created_at = after_deadline
+        supplementary.save(update_fields=['created_at'])
+
+        self.handler.handle(self.invoice)
+
+        self.compliance_report_version.refresh_from_db()
+        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        mock_create_penalty.assert_called_once_with(self.obligation)
+        mock_create_late_submission_penalty.assert_called_once_with(self.obligation)
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_late_submission_penalty')
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')
+    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    def test_handle_does_not_create_late_submission_penalty_when_before_deadline(
+        self,
+        mock_retryable_notice_of_obligation_met_email,
+        mock_create_penalty,
+        mock_create_late_submission_penalty,
+    ):
+        compliance_period = self.obligation.compliance_report_version.compliance_report.compliance_period
+        compliance_deadline = compliance_period.compliance_deadline
+
+        supplementary = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=self.obligation.compliance_report_version.compliance_report,
+            is_supplementary=True,
+        )
+        before_deadline = timezone.make_aware(
+            datetime.combine(compliance_deadline - timedelta(days=5), datetime.min.time())
+        )
+        supplementary.created_at = before_deadline
+        supplementary.save(update_fields=['created_at'])
+
+        self.handler.handle(self.invoice)
+
+        self.compliance_report_version.refresh_from_db()
+        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        mock_create_penalty.assert_called_once_with(self.obligation)
+        mock_create_late_submission_penalty.assert_not_called()
         mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
 
     @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')

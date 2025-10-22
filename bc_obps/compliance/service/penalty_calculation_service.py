@@ -526,9 +526,9 @@ class PenaltyCalculationService:
 
         # Fetch all interest rates for the period
         interest_rates = ElicensingInterestRate.objects.filter(
-            start_date__lte=accrual_start_date,
-            end_date__gte=final_accrual_date,
-        ).order_by('start_date')
+            start_date__lte=final_accrual_date,
+            end_date__gte=accrual_start_date,
+        ).order_by('-start_date')
 
         # If no rates found for the period, use the current rate
         if not interest_rates.exists():

@@ -1,5 +1,6 @@
 from unittest.mock import patch, MagicMock
 from compliance.models import ElicensingLineItem, ElicensingInvoice, ElicensingPayment, ElicensingAdjustment
+from compliance.models.compliance_penalty import CompliancePenalty
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
 )
@@ -196,6 +197,7 @@ class TestElicensingOperatorService:
             'compliance.tests.utils.compliance_penalty',
             compliance_obligation=obligation,
             elicensing_invoice=penalty_invoice,
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
         )
         # Call with PENALTY type
         result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
