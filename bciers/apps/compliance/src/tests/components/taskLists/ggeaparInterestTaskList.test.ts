@@ -11,7 +11,7 @@ describe("generateGgeaparInterestTaskList", () => {
     // Section
     expect(taskList[0].type).toBe("Section");
     expect(taskList[0].title).toBe("GGEAPAR Interest");
-    expect(taskList[0].isExpanded).toBe(false);
+    expect(taskList[0].isExpanded).toBe(true);
 
     // Single task item
     const taskItems = taskList[0].elements;

@@ -17,7 +17,7 @@ export const generateGgeaparInterestTaskList: (
     {
       type: "Section",
       title: `GGEAPAR Interest`,
-      isExpanded: isActive,
+      isExpanded: true,
       elements: taskItems,
     },
   ];
