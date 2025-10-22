@@ -10,6 +10,8 @@ from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
 
+from django.db import transaction
+
 logger = logging.getLogger(__name__)
 
 
@@ -57,11 +59,15 @@ class ComplianceAdjustmentService:
             adjustment_total: Total amount of the adjustment to be applied
             supplementary_compliance_report_version_id: ID of the supplementary compliance report version that triggered this adjustment
         """
-        cls._create_adjustment(
-            compliance_report_version_id=target_compliance_report_version_id,
-            adjustment_total=adjustment_total,
-            supplementary_compliance_report_version_id=supplementary_compliance_report_version_id,
-            reason=reason,
+        from compliance.tasks import retryable_create_adjustment
+
+        transaction.on_commit(
+            lambda: retryable_create_adjustment.execute(
+                compliance_report_version_id=target_compliance_report_version_id,
+                adjustment_total=adjustment_total,
+                supplementary_compliance_report_version_id=supplementary_compliance_report_version_id,
+                reason=reason,
+            )
         )
 
     @classmethod
