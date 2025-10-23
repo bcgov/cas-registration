@@ -1,3 +1,4 @@
+from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 from compliance.service.elicensing.elicensing_interest_rate_service import ElicensingInterestRateService
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from compliance.service.automated_process.automated_process_service import AutomatedProcessService
@@ -22,6 +23,13 @@ email_service = EmailService()
 ###################
 # Retryable tasks #
 ###################
+
+retryable_create_adjustment = create_retryable(
+    func=ComplianceAdjustmentService._create_adjustment,
+    tag="elicensing_adjustment_create",
+    max_retries=2,
+    retry_delay_minutes=1,
+)
 
 retryable_process_obligation_integration = create_retryable(
     func=ElicensingObligationService.process_obligation_integration,
