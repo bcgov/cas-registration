@@ -23,77 +23,143 @@ class ComplianceReportTest(BaseTestCase):
 class TestComplianceReportRls(BaseTestCase):
     def test_compliance_report_rls_industry_user(self):
         compliance_period = make_recipe('compliance.tests.utils.compliance_period')
-        # approved object
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
-        # operation belonging to the approved user operator
-        approved_operation = make_recipe(
-            'registration.tests.utils.operation', operator=approved_user_operator.operator, status="Registered"
-        )
-        approved_report = make_recipe(
-            'reporting.tests.utils.report', operation=approved_operation, operator=approved_user_operator.operator
-        )
-        approved_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=approved_report)
 
-        # second object
-        random_operator = make_recipe('registration.tests.utils.operator')
-        # operation belonging to a random operator
-        random_operation = make_recipe('registration.tests.utils.operation', operator=random_operator)
-        random_report = make_recipe('reporting.tests.utils.report', operation=random_operation)
-        random_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=random_report)
+        # create two user_operators to set up for transfers
+        new_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        old_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+
+        # operation
+        operation = make_recipe(
+            'registration.tests.utils.operation', operator=new_user_operator.operator, status="Registered"
+        )
+        # timeline of current and historical ownership
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=old_user_operator.operator,
+        )
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=new_user_operator.operator,
+        )
+        # old operator's data
+        old_operator_report = make_recipe(
+            'reporting.tests.utils.report', operation=operation, operator=old_user_operator.operator
+        )
+        old_operator_compliance_report = make_recipe(
+            'compliance.tests.utils.compliance_report', report=old_operator_report
+        )
+
+        # new operator's data
+        new_operator_report = make_recipe(
+            'reporting.tests.utils.report', operation=operation, operator=new_user_operator.operator
+        )
+        new_operator_compliance_report = make_recipe(
+            'compliance.tests.utils.compliance_report', report=new_operator_report
+        )
 
         # extra objects for insert function
-        approved_report_2 = make_recipe(
-            'reporting.tests.utils.report', operation=approved_operation, operator=approved_user_operator.operator
+        new_operator_report_2 = make_recipe(
+            'reporting.tests.utils.report', operation=operation, operator=new_user_operator.operator
         )
-        random_report_2 = make_recipe('reporting.tests.utils.report', operation=random_operation)
+        old_report_2 = make_recipe(
+            'reporting.tests.utils.report', operation=operation, operator=old_user_operator.operator
+        )
 
         assert ComplianceReport.objects.count() == 2
 
+        # test to access currently owned operation data
         def select_function(cursor):
-            ComplianceReport.objects.get(id=approved_compliance_report.id)
+            ComplianceReport.objects.get(id=new_operator_compliance_report.id)
 
         def forbidden_select_function(cursor):
-            ComplianceReport.objects.get(id=random_compliance_report.id)
+            ComplianceReport.objects.get(id=old_operator_compliance_report.id)
 
         def insert_function(cursor):
             ComplianceReport.objects.create(
-                report=approved_report_2,
+                report=new_operator_report_2,
                 bccr_subaccount_id="123456789099999",
                 compliance_period=compliance_period,
             )
 
         def forbidden_insert_function(cursor):
-            cursor.execute(
-                """
-                    INSERT INTO "erc"."compliance_report" (
-                        report_id
-                    ) VALUES (
-                        %s
-                    )
-                """,
-                (random_report_2.id,),
+            ComplianceReport.objects.create(
+                report=old_report_2,
+                bccr_subaccount_id="123456789099999",
+                compliance_period=compliance_period,
             )
 
         def update_function(cursor):
-            return ComplianceReport.objects.filter(id=approved_compliance_report.id).update(
+            return ComplianceReport.objects.filter(id=new_operator_compliance_report.id).update(
                 bccr_subaccount_id="111111111199999"
             )
 
         def forbidden_update_function(cursor):
-            return ComplianceReport.objects.filter(id=random_compliance_report.id).update(
+            return ComplianceReport.objects.filter(id=old_operator_compliance_report.id).update(
                 bccr_subaccount_id="111111111199999"
             )
 
         def delete_function(cursor):
-            return ComplianceReport.objects.filter(bccr_subaccount_id="111111111199999").delete()
-            assert ComplianceReport.objects.filter(bccr_subaccount_id="111111111199999").count() == 0
+            return ComplianceReport.objects.filter(id=new_operator_compliance_report.id).delete()
 
         def forbidden_delete_function(cursor):
-            ComplianceReport.objects.filter(id=random_compliance_report.id).delete()
+            ComplianceReport.objects.filter(id=old_operator_compliance_report.id).delete()
 
         assert_policies_for_industry_user(
             ComplianceReport,
-            approved_user_operator.user,
+            new_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            delete_function=delete_function,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
+        )
+
+        # test to access previously owned operation data
+        def select_function(cursor):
+            ComplianceReport.objects.get(id=old_operator_compliance_report.id)
+
+        def forbidden_select_function(cursor):
+            ComplianceReport.objects.get(id=new_operator_compliance_report.id)
+
+        def insert_function(cursor):
+
+            ComplianceReport.objects.create(
+                report=old_report_2,
+                bccr_subaccount_id="123456789099999",
+                compliance_period=compliance_period,
+            )
+
+        def forbidden_insert_function(cursor):
+            ComplianceReport.objects.create(
+                report=new_operator_report_2,
+                bccr_subaccount_id="123456789099999",
+                compliance_period=compliance_period,
+            )
+
+        def update_function(cursor):
+            return ComplianceReport.objects.filter(id=old_operator_compliance_report.id).update(
+                bccr_subaccount_id="111111111199999"
+            )
+
+        def forbidden_update_function(cursor):
+            return ComplianceReport.objects.filter(id=new_operator_compliance_report.id).update(
+                bccr_subaccount_id="111111111199999"
+            )
+
+        def delete_function(cursor):
+            return ComplianceReport.objects.filter(id=old_operator_compliance_report.id).delete()
+
+        def forbidden_delete_function(cursor):
+            ComplianceReport.objects.filter(id=new_operator_compliance_report.id).delete()
+
+        assert_policies_for_industry_user(
+            ComplianceReport,
+            old_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
