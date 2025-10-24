@@ -411,6 +411,12 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
                 report_version=self.report_version_1,
             )
 
+        self.new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('800'),
+            credited_emissions=0,
+            report_version=self.report_version_2,
+        )
         # Act
         result = IncreasedObligationHandler.can_handle(self.new_summary, self.previous_summary)
         # Assert
@@ -425,6 +431,13 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
                 credited_emissions=0,
                 report_version=self.report_version_1,
             )
+
+        self.new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('300'),
+            credited_emissions=0,
+            report_version=self.report_version_2,
+        )
 
         # Act
         result = IncreasedObligationHandler.can_handle(self.new_summary, self.previous_summary)
