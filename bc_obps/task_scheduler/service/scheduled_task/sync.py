@@ -50,6 +50,7 @@ class ScheduledTaskSynchronizer:
             'schedule_minute',
             'schedule_day_of_week',
             'schedule_day_of_month',
+            'schedule_month',
             'tag',
         ]
 
@@ -93,6 +94,7 @@ class ScheduledTaskSynchronizer:
                 schedule_minute=task_config.get('schedule_minute'),
                 schedule_day_of_week=task_config.get('schedule_day_of_week'),
                 schedule_day_of_month=task_config.get('schedule_day_of_month'),
+                schedule_month=task_config.get('schedule_month'),
                 status=ScheduledTask.Status.PENDING,
             )
 
