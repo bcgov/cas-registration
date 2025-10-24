@@ -132,10 +132,12 @@ class SupercedeVersionHandler:
 class IncreasedObligationHandler:
     @staticmethod
     def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
-        # Return True if excess emissions increased from previous version
+        # Return True if excess emissions increased from previous version and this increase isn't a result of a credit decrease (that is handled in the decrease credit handler)   
+        previous_compliance_report_version = ComplianceReportVersion.objects.get(report_compliance_summary=previous_summary)
         return (
             new_summary.excess_emissions > ZERO_DECIMAL
             and previous_summary.excess_emissions < new_summary.excess_emissions
+            and previous_compliance_report_version.status != ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
         )
 
     @staticmethod
@@ -783,22 +785,19 @@ class DecreasedCreditHandler:
     @staticmethod
     def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
         # Return True if credited emissions decreased from previous version
-        original_compliance_report_version = ComplianceReportVersion.objects.get(
-            compliance_report=ComplianceReportVersion.objects.get(
-                report_compliance_summary=previous_summary
-            ).compliance_report,
-            is_supplementary=False,
+        previous_compliance_report_version = ComplianceReportVersion.objects.get(
+            report_compliance_summary=previous_summary,
         )
         # Get the original earned credit record
-        original_earned_credit_record = ComplianceEarnedCredit.objects.filter(
-            compliance_report_version=original_compliance_report_version
-        ).first()
-        if not original_earned_credit_record:
+        previous_earned_credit_record = ComplianceEarnedCredit.objects.get(
+            compliance_report_version=previous_compliance_report_version
+        )
+        if not previous_earned_credit_record:
             return False
         return (
-            previous_summary.credited_emissions > ZERO_DECIMAL
+            (previous_summary.credited_emissions > ZERO_DECIMAL
             and new_summary.credited_emissions < previous_summary.credited_emissions
-            and original_earned_credit_record.issuance_status != ComplianceEarnedCredit.IssuanceStatus.APPROVED
+            and previous_earned_credit_record.issuance_status != ComplianceEarnedCredit.IssuanceStatus.APPROVED)
         )
 
     @staticmethod
@@ -815,6 +814,7 @@ class DecreasedCreditHandler:
                 compliance_report, previous_summary
             )
         )
+        # Create a compliance_report_version record with the 'earned credits' status (status will change if credits not requested)
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
@@ -828,15 +828,28 @@ class DecreasedCreditHandler:
             compliance_report_version=previous_compliance_version
         )
 
-        ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
+        # if credits weren't requested, update the previous earned credit record
+        if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED:
+            if new_summary.credited_emissions == ZERO_DECIMAL:
+                previous_earned_credit.delete()
+                # create obligation, note that credited_emission_delta is negative
+                if new_summary.excess_emissions + credited_emission_delta < ZERO_DECIMAL:
+                    ComplianceObligationService.create_compliance_obligation(compliance_report_version.id, new_summary.excess_emissions + credited_emission_delta)        
+            else:
+                previous_earned_credit.earned_credits_amount = previous_earned_credit.earned_credits_amount + credited_emission_delta
+                previous_earned_credit.save()
+                
 
-        # If previously requested, mark it as declined
-        if previous_earned_credit.issuance_status in (
-            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
-            ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
-        ):
-            previous_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.DECLINED
-            previous_earned_credit.save()
+            compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+            compliance_report_version.save()
+
+
+            return compliance_report_version
+
+        # if credits were requested, create a new earned credit record and decline the old one
+        ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
+        previous_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.DECLINED
+        previous_earned_credit.save()
 
         return compliance_report_version
 
@@ -897,16 +910,16 @@ class SupplementaryVersionService:
         previous_version_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=previous_version.id)
 
         # If the previous version can be superceded, run the supercede handler & exit
-        if SupercedeVersionHandler.can_handle(
-            new_summary=new_version_compliance_summary, previous_summary=previous_version_compliance_summary
-        ):
-            SupercedeVersionHandler.handle(
-                compliance_report=compliance_report,
-                new_summary=new_version_compliance_summary,
-                previous_summary=previous_version_compliance_summary,
-                version_count=version_count,
-            )
-            return None
+        # if SupercedeVersionHandler.can_handle(
+        #     new_summary=new_version_compliance_summary, previous_summary=previous_version_compliance_summary
+        # ):
+        #     SupercedeVersionHandler.handle(
+        #         compliance_report=compliance_report,
+        #         new_summary=new_version_compliance_summary,
+        #         previous_summary=previous_version_compliance_summary,
+        #         version_count=version_count,
+        #     )
+        #     return None
         # Find the right handler and delegate
         for handler in self.handlers:
             if handler.can_handle(
