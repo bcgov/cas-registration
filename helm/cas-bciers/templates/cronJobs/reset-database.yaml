@@ -3,7 +3,6 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-metadata:
   name: reset-database
   labels: {{- include "cas-bciers.labels" . | nindent 4 }}
   namespace: {{ .Release.Namespace }}
@@ -16,14 +15,14 @@ spec:
       completions: 1
       template:
         metadata:
-          name: {{ template "cas-bciers.fullname" . }}-reset-database
           labels:
 {{- include "cas-bciers.labels" . | nindent 12 }}
             component: job-with-database-access
         spec:
           activeDeadlineSeconds: 180
+          serviceAccountName: deployer
           containers:
-            - name: {{ template "cas-bciers.fullname" . }}-reset-database
+            - name: reset-database
               image: postgres:16.6-alpine
               env:
                 - name: PGUSER
