@@ -514,15 +514,13 @@ class PenaltyCalculationService:
 
         # Generate subsequent months until we reach or pass final_accrual_date
         while current_date <= final_accrual_date:
-            # Move to the 1st of the next month
-            if current_date.month == 12:
-                next_month = date(current_date.year + 1, 1, 1)
-            else:
-                next_month = date(current_date.year, current_date.month + 1, 1)
+            monthly_accrual_dates.append(current_date)
 
-            if next_month <= final_accrual_date:
-                monthly_accrual_dates.append(next_month)
-            current_date = next_month
+            # Move to 1st of next month
+            if current_date.month == 12:
+                current_date = date(current_date.year + 1, 1, 1)
+            else:
+                current_date = date(current_date.year, current_date.month + 1, 1)
 
         # Fetch all interest rates for the period
         interest_rates = ElicensingInterestRate.objects.filter(
@@ -621,7 +619,7 @@ class PenaltyCalculationService:
             persist_penalty_data=True,
         )
 
-        return CompliancePenalty.objects.get(
+        return CompliancePenalty.objects.filter(
             compliance_obligation=obligation,
             penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-        )
+        ).latest('id')
