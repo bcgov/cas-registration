@@ -1,4 +1,5 @@
 from django.db import models
+from decimal import Decimal
 from registration.models.time_stamped_model import TimeStampedModel
 from compliance.models import ComplianceObligation, ElicensingInvoice
 from .rls_configs.compliance_penalty import Rls as CompliancePenaltyRls
@@ -55,7 +56,7 @@ class CompliancePenalty(TimeStampedModel):
     penalty_amount = models.DecimalField(
         decimal_places=2,
         max_digits=20,
-        default=0.00,
+        default=Decimal("0.00"),
         db_comment="The total amount of the penalty to be paid",
     )
 
