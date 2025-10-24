@@ -1,6 +1,6 @@
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from common.tests.utils.helpers import BaseTestCase
-from compliance.models import ComplianceEarnedCredit, ComplianceReportVersion
+from compliance.models import ComplianceEarnedCredit
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from model_bakery.baker import make_recipe
 from django.db import transaction
@@ -398,86 +398,90 @@ class ComplianceEarnedCreditIssuanceRequestedDateTriggerTest(BaseTestCase):
 
 #  RLS tests
 class TestComplianceEarnedCreditRls(BaseTestCase):
-    def test_compliance_earned_credit_rls_industry_user(self):
-        # approved object
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
-        approved_operation = make_recipe(
-            'registration.tests.utils.operation', operator=approved_user_operator.operator, status="Registered"
+    def test_compliance_earned_credit_rls_industry_user_currently_owned_operation(self):
+        # create two user_operators to set up for transfers
+        new_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        old_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+
+        # operation
+        operation = make_recipe(
+            'registration.tests.utils.operation', operator=new_user_operator.operator, status="Registered"
         )
-        approved_report = make_recipe(
-            'reporting.tests.utils.report', operation=approved_operation, operator=approved_user_operator.operator
+        # timeline of current and historical ownership
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=old_user_operator.operator,
         )
-        approved_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=approved_report)
-        approved_compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=approved_compliance_report,
-            is_supplementary=False,
-            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=new_user_operator.operator,
         )
-        compliance_earned_credit = make_recipe(
+        # old operator's data
+        old_operator_report = make_recipe(
+            'reporting.tests.utils.report', operation=operation, operator=old_user_operator.operator
+        )
+        old_operator_compliance_report = make_recipe(
+            'compliance.tests.utils.compliance_report', report=old_operator_report
+        )
+
+        old_operator_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=old_operator_compliance_report
+        )
+
+        old_operator_compliance_earned_credit = make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
-            id=10,
-            compliance_report_version=approved_compliance_report_version,
+            # id=10,
+            compliance_report_version=old_operator_compliance_report_version,
+            earned_credits_amount=100,
+            bccr_trading_name="cheese",
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+            bccr_holding_account_id="123456789099999",
+        )
+        # new operator's data
+        new_operator_report = make_recipe(
+            'reporting.tests.utils.report', operation=operation, operator=new_user_operator.operator
+        )
+        new_operator_compliance_report = make_recipe(
+            'compliance.tests.utils.compliance_report', report=new_operator_report
+        )
+
+        new_operator_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=new_operator_compliance_report
+        )
+
+        new_operator_compliance_earned_credit = make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            # id=10,
+            compliance_report_version=new_operator_compliance_report_version,
             earned_credits_amount=100,
             bccr_trading_name="cheese",
             issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
             bccr_holding_account_id="123456789099999",
         )
 
-        # second object
-        random_operator = make_recipe('registration.tests.utils.operator')
-        random_operation = make_recipe('registration.tests.utils.operation', operator=random_operator)
-        random_report = make_recipe('reporting.tests.utils.report', operation=random_operation)
-        random_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=random_report)
-        random_compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=random_compliance_report
-        )
-        random_compliance_earned_credit = make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
-            id=20,
-            compliance_report_version=random_compliance_report_version,
-            earned_credits_amount=200,
-            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
-            bccr_trading_name="bacon",
-            bccr_holding_account_id="123456789012345",
-        )
-
         # extra object for insert
-        approved_compliance_report_version_for_insert = make_recipe(
+        new_operator_compliance_report_version_for_insert = make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report__report__operation=approved_operation,
+            compliance_report=new_operator_compliance_report,
             is_supplementary=False,
         )
-
-        # extra object for delete
-        operation3 = make_recipe(
-            'registration.tests.utils.operation', operator=approved_user_operator.operator, status="Registered"
-        )
-        # extra object for delete
-        compliance_report_version_for_delete = make_recipe(
+        old_operator_compliance_report_version_for_insert = make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report__report__operation=operation3,
+            compliance_report=old_operator_compliance_report,
             is_supplementary=False,
-            status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED,
         )
-        compliance_earned_credit_for_delete = make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
-            id=555,
-            compliance_report_version=compliance_report_version_for_delete,
-        )
-
-        assert ComplianceEarnedCredit.objects.count() == 3
 
         def select_function(cursor):
-            ComplianceEarnedCredit.objects.get(id=compliance_earned_credit.id)
+            ComplianceEarnedCredit.objects.get(id=new_operator_compliance_earned_credit.id)
 
         def forbidden_select_function(cursor):
-            ComplianceEarnedCredit.objects.get(id=random_compliance_earned_credit.id)
+            ComplianceEarnedCredit.objects.get(id=old_operator_compliance_earned_credit.id)
 
         def insert_function(cursor):
             ComplianceEarnedCredit.objects.create(
-                id=30,
-                compliance_report_version=approved_compliance_report_version_for_insert,
+                compliance_report_version=new_operator_compliance_report_version_for_insert,
                 earned_credits_amount=150,
                 issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
             )
@@ -493,28 +497,102 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
                         %s
                     )
                 """,
-                (random_compliance_report_version.id, "macaroni"),
+                (old_operator_compliance_report_version.id, "macaroni"),
             )
 
         def update_function(cursor):
-            return ComplianceEarnedCredit.objects.filter(id=compliance_earned_credit.id).update(
+            return ComplianceEarnedCredit.objects.filter(id=new_operator_compliance_earned_credit.id).update(
                 issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
             )
 
         def forbidden_update_function(cursor):
-            return ComplianceEarnedCredit.objects.filter(id=random_compliance_earned_credit.id).update(
+            return ComplianceEarnedCredit.objects.filter(id=old_operator_compliance_earned_credit.id).update(
                 issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
             )
 
         def delete_function(cursor):
-            return ComplianceEarnedCredit.objects.get(id=compliance_earned_credit_for_delete.id).delete()
+            return ComplianceEarnedCredit.objects.get(id=new_operator_compliance_earned_credit.id).delete()
 
         def forbidden_delete_function(cursor):
-            return ComplianceEarnedCredit.objects.get(id=compliance_earned_credit.id).delete()
+            return cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_earned_credit"
+        WHERE id = %s
+
+                """,
+                (old_operator_compliance_earned_credit.id,),
+            )
 
         assert_policies_for_industry_user(
             ComplianceEarnedCredit,
-            approved_user_operator.user,
+            new_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            delete_function=delete_function,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
+        )
+
+        # previously
+        def select_function(cursor):
+            ComplianceEarnedCredit.objects.get(id=old_operator_compliance_earned_credit.id)
+
+        def forbidden_select_function(cursor):
+            ComplianceEarnedCredit.objects.get(id=new_operator_compliance_earned_credit.id)
+
+        def insert_function(cursor):
+
+            ComplianceEarnedCredit.objects.create(
+                # id=35,
+                compliance_report_version=old_operator_compliance_report_version_for_insert,
+                earned_credits_amount=150,
+                issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+            )
+
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
+                    INSERT INTO "erc"."compliance_earned_credit" (
+                        compliance_report_version_id,
+                        bccr_trading_name
+                    ) VALUES (
+                        %s,
+                        %s
+                    )
+                """,
+                (new_operator_compliance_report_version.id, "macaroni"),
+            )
+
+        def update_function(cursor):
+            return ComplianceEarnedCredit.objects.filter(id=old_operator_compliance_earned_credit.id).update(
+                issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
+            )
+
+        def forbidden_update_function(cursor):
+            # brianna the update tests are useless because the filter will never get anything, figure it out with cursor
+            return ComplianceEarnedCredit.objects.filter(id=new_operator_compliance_earned_credit.id).update(
+                issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
+            )
+
+        def delete_function(cursor):
+            return ComplianceEarnedCredit.objects.get(id=old_operator_compliance_earned_credit.id).delete()
+
+        def forbidden_delete_function(cursor):
+            return cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_earned_credit"
+        WHERE id = %s
+
+                """,
+                (new_operator_compliance_earned_credit.id,),
+            )
+
+        assert_policies_for_industry_user(
+            ComplianceEarnedCredit,
+            old_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
@@ -536,7 +614,7 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
 
         make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
-            id=15,
+            # id=15,
             issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
             compliance_report_version=compliance_report_version,
             earned_credits_amount=300,

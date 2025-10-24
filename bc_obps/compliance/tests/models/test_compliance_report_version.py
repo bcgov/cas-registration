@@ -29,63 +29,81 @@ class ComplianceReportVersionTest(BaseTestCase):
 #  RLS tests
 class TestComplianceReportVersionRls(BaseTestCase):
     def test_compliance_report_version_rls_industry_user(self):
-        # approved object
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
-        # operation belonging to the approved user operator
-        approved_operation = make_recipe(
-            'registration.tests.utils.operation', operator=approved_user_operator.operator, status="Registered"
+        # create two user_operators to set up for transfers
+        new_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        old_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+
+        # operation
+        operation = make_recipe(
+            'registration.tests.utils.operation', operator=new_user_operator.operator, status="Registered"
         )
-        approved_report = make_recipe(
-            'reporting.tests.utils.report', operation=approved_operation, operator=approved_user_operator.operator
+        # timeline of current and historical ownership
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=old_user_operator.operator,
         )
-        approved_report_version = make_recipe(
-            'reporting.tests.utils.report_version',
-            report=approved_report,
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=new_user_operator.operator,
         )
-        approved_report_compliance_summary = make_recipe(
-            'reporting.tests.utils.report_compliance_summary', report_version=approved_report_version
+        # old operator's data
+        old_operator_report = make_recipe(
+            'reporting.tests.utils.report', operation=operation, operator=old_user_operator.operator
         )
-        # Create approved compliance report
-        approved_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=approved_report)
-        # create a compliance report version for the approved compliance report version
-        approved_compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            id=88,
-            compliance_report=approved_compliance_report,
-            is_supplementary=False,
+        old_operator_compliance_report = make_recipe(
+            'compliance.tests.utils.compliance_report', report=old_operator_report
         )
 
-        # random object
-        random_operator = make_recipe('registration.tests.utils.operator')
-        # operation belonging to a random operator
-        random_operation = make_recipe('registration.tests.utils.operation', operator=random_operator)
-        random_report = make_recipe('reporting.tests.utils.report', operation=random_operation)
-        random_report_version = make_recipe(
+        old_operator_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=old_operator_compliance_report
+        )
+
+        # new operator's data
+        new_operator_report = make_recipe(
+            'reporting.tests.utils.report', operation=operation, operator=new_user_operator.operator
+        )
+        new_operator_compliance_report = make_recipe(
+            'compliance.tests.utils.compliance_report', report=new_operator_report
+        )
+
+        new_operator_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=new_operator_compliance_report
+        )
+
+        # extra objects for insert function
+        new_operator_report_version = make_recipe(
             'reporting.tests.utils.report_version',
-            report=random_report,
+            report=new_operator_report,
         )
-        random_report_compliance_summary = make_recipe(
-            'reporting.tests.utils.report_compliance_summary', report_version=random_report_version
+
+        new_operator_report_compliance_summary = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=new_operator_report_version
         )
-        # random compliance report
-        random_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=random_report)
-        # create a compliance report version for the random compliance report version
-        random_compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=random_compliance_report
+
+        old_operator_report_version = make_recipe(
+            'reporting.tests.utils.report_version',
+            report=old_operator_report,
+        )
+
+        old_operator_report_compliance_summary = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=old_operator_report_version
         )
 
         assert ComplianceReportVersion.objects.count() == 2
 
+        # test to access currently owned operation data
         def select_function(cursor):
-            ComplianceReportVersion.objects.get(id=approved_compliance_report_version.id)
+            ComplianceReportVersion.objects.get(id=new_operator_compliance_report_version.id)
 
         def forbidden_select_function(cursor):
-            ComplianceReportVersion.objects.get(id=random_compliance_report_version.id)
+            ComplianceReportVersion.objects.get(id=old_operator_compliance_report_version.id)
 
         def insert_function(cursor):
             ComplianceReportVersion.objects.create(
-                compliance_report=approved_compliance_report,
-                report_compliance_summary=approved_report_compliance_summary,
+                compliance_report=new_operator_compliance_report,
+                report_compliance_summary=new_operator_report_compliance_summary,
                 status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET,
                 excess_emissions_delta_from_previous=10,
                 credited_emissions_delta_from_previous=10,
@@ -112,8 +130,8 @@ class TestComplianceReportVersionRls(BaseTestCase):
                     )
                 """,
                 (
-                    random_compliance_report.id,
-                    random_report_compliance_summary.id,
+                    old_operator_compliance_report.id,
+                    old_operator_report_compliance_summary.id,
                     "Obligation fully met",
                     10,
                     10,
@@ -122,24 +140,108 @@ class TestComplianceReportVersionRls(BaseTestCase):
             )
 
         def update_function(cursor):
-            return ComplianceReportVersion.objects.filter(id=approved_compliance_report_version.id).update(
+            return ComplianceReportVersion.objects.filter(id=new_operator_compliance_report_version.id).update(
                 status='No obligation or earned credits'
             )
 
         def forbidden_update_function(cursor):
-            return ComplianceReportVersion.objects.filter(id=random_compliance_report_version.id).update(
+            return ComplianceReportVersion.objects.filter(id=old_operator_compliance_report_version.id).update(
                 status='No obligation or earned credits'
             )
 
+        def delete_function(cursor):
+            return ComplianceReportVersion.objects.filter(id=new_operator_compliance_report_version.id).delete()
+
+        def forbidden_delete_function(cursor):
+            ComplianceReportVersion.objects.filter(id=old_operator_compliance_report_version.id).delete()
+
         assert_policies_for_industry_user(
             ComplianceReportVersion,
-            approved_user_operator.user,
+            new_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
+            delete_function=delete_function,
             forbidden_select_function=forbidden_select_function,
             forbidden_insert_function=forbidden_insert_function,
             forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
+        )
+
+        # test to access previously owned operation data
+        def select_function(cursor):
+            ComplianceReportVersion.objects.get(id=old_operator_compliance_report_version.id)
+
+        def forbidden_select_function(cursor):
+            ComplianceReportVersion.objects.get(id=new_operator_compliance_report_version.id)
+
+        def insert_function(cursor):
+
+            ComplianceReportVersion.objects.create(
+                compliance_report=old_operator_compliance_report,
+                report_compliance_summary=old_operator_report_compliance_summary,
+                status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET,
+                excess_emissions_delta_from_previous=10,
+                credited_emissions_delta_from_previous=10,
+                is_supplementary=False,
+            )
+
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
+                    INSERT INTO "erc"."compliance_report_version" (
+                        compliance_report_id,
+                        report_compliance_summary_id,
+                        status,
+                        excess_emissions_delta_from_previous,
+                        credited_emissions_delta_from_previous,
+                        is_supplementary
+                    ) VALUES (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+                    )
+                """,
+                (
+                    new_operator_compliance_report.id,
+                    new_operator_report_compliance_summary.id,
+                    "Obligation fully met",
+                    10,
+                    10,
+                    False,
+                ),
+            )
+
+        def update_function(cursor):
+            return ComplianceReportVersion.objects.filter(id=old_operator_compliance_report_version.id).update(
+                status='No obligation or earned credits'
+            )
+
+        def forbidden_update_function(cursor):
+            return ComplianceReportVersion.objects.filter(id=new_operator_compliance_report_version.id).update(
+                status='No obligation or earned credits'
+            )
+
+        def delete_function(cursor):
+            return ComplianceReportVersion.objects.filter(id=old_operator_compliance_report_version.id).delete()
+
+        def forbidden_delete_function(cursor):
+            ComplianceReportVersion.objects.filter(id=new_operator_compliance_report_version.id).delete()
+
+        assert_policies_for_industry_user(
+            ComplianceReportVersion,
+            old_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            delete_function=delete_function,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
         )
 
     def test_compliance_report_version_rls_cas_users(self):

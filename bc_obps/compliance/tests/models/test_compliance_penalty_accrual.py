@@ -24,59 +24,96 @@ class CompliancePenaltyAccrualTest(BaseTestCase):
 #  RLS tests
 class TestCompliancePenaltyAccrualRls(BaseTestCase):
     def test_compliance_penalty_accrual_rls_industry_user(self):
-        # approved object
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
-        approved_operation = make_recipe(
-            'registration.tests.utils.operation', operator=approved_user_operator.operator, status="Registered"
+        # create two user_operators to set up for transfers
+        new_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        old_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+
+        # operation
+        operation = make_recipe(
+            'registration.tests.utils.operation', operator=new_user_operator.operator, status="Registered"
         )
-        approved_report = make_recipe(
-            'reporting.tests.utils.report', operation=approved_operation, operator=approved_user_operator.operator
+        # timeline of current and historical ownership
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=old_user_operator.operator,
         )
-        approved_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=approved_report)
-        approved_compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=approved_compliance_report,
-            is_supplementary=False,
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=new_user_operator.operator,
         )
-        approved_compliance_obligation = make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=approved_compliance_report_version
+        # old operator's data
+        old_operator_report = make_recipe(
+            'reporting.tests.utils.report', operation=operation, operator=old_user_operator.operator
         )
-        approved_compliance_penalty = make_recipe(
-            'compliance.tests.utils.compliance_penalty', compliance_obligation=approved_compliance_obligation
-        )
-        approved_compliance_penalty_accrual = make_recipe(
-            'compliance.tests.utils.compliance_penalty_accrual', compliance_penalty=approved_compliance_penalty
+        old_operator_compliance_report = make_recipe(
+            'compliance.tests.utils.compliance_report', report=old_operator_report
         )
 
-        # second object
-        random_operator = make_recipe('registration.tests.utils.operator')
-        random_operation = make_recipe('registration.tests.utils.operation', operator=random_operator)
-        random_report = make_recipe('reporting.tests.utils.report', operation=random_operation)
-        random_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=random_report)
-        random_compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=random_compliance_report
-        )
-        random_compliance_obligation = make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=random_compliance_report_version
-        )
-        random_compliance_penalty = make_recipe(
-            'compliance.tests.utils.compliance_penalty', compliance_obligation=random_compliance_obligation
-        )
-        random_compliance_penalty_accrual = make_recipe(
-            'compliance.tests.utils.compliance_penalty_accrual', compliance_penalty=random_compliance_penalty
+        old_operator_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=old_operator_compliance_report
         )
 
-        assert CompliancePenaltyAccrual.objects.count() == 2
+        old_operator_compliance_obligation = make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=old_operator_compliance_report_version,
+        )
+        old_operator_compliance_penalty = make_recipe(
+            'compliance.tests.utils.compliance_penalty', compliance_obligation=old_operator_compliance_obligation
+        )
+        old_operator_compliance_penalty_accrual = make_recipe(
+            'compliance.tests.utils.compliance_penalty_accrual', compliance_penalty=old_operator_compliance_penalty
+        )
 
+        # new operator's data
+        new_operator_report = make_recipe(
+            'reporting.tests.utils.report', operation=operation, operator=new_user_operator.operator
+        )
+        new_operator_compliance_report = make_recipe(
+            'compliance.tests.utils.compliance_report', report=new_operator_report
+        )
+
+        new_operator_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=new_operator_compliance_report
+        )
+
+        new_operator_compliance_obligation = make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=new_operator_compliance_report_version,
+        )
+
+        new_operator_compliance_penalty = make_recipe(
+            'compliance.tests.utils.compliance_penalty', compliance_obligation=new_operator_compliance_obligation
+        )
+        new_operator_compliance_penalty_accrual = make_recipe(
+            'compliance.tests.utils.compliance_penalty_accrual', compliance_penalty=new_operator_compliance_penalty
+        )
+
+        # current
         def select_function(cursor):
-            CompliancePenaltyAccrual.objects.get(id=approved_compliance_penalty_accrual.id)
+            CompliancePenaltyAccrual.objects.get(id=new_operator_compliance_penalty_accrual.id)
 
         def forbidden_select_function(cursor):
-            CompliancePenaltyAccrual.objects.get(id=random_compliance_penalty_accrual.id)
+            CompliancePenaltyAccrual.objects.get(id=old_operator_compliance_penalty_accrual.id)
 
         assert_policies_for_industry_user(
             CompliancePenaltyAccrual,
-            approved_user_operator.user,
+            new_user_operator.user,
+            select_function=select_function,
+            forbidden_select_function=forbidden_select_function,
+        )
+
+        # transferred
+        def select_function(cursor):
+            CompliancePenaltyAccrual.objects.get(id=old_operator_compliance_penalty_accrual.id)
+
+        def forbidden_select_function(cursor):
+            CompliancePenaltyAccrual.objects.get(id=new_operator_compliance_penalty_accrual.id)
+
+        assert_policies_for_industry_user(
+            CompliancePenaltyAccrual,
+            old_user_operator.user,
             select_function=select_function,
             forbidden_select_function=forbidden_select_function,
         )
