@@ -42,11 +42,23 @@ def reset_data():
         service_account_name=SERVICE_ACCOUNT_NAME,
         image=K8S_IMAGE,
         cmds=["bash", "-c"],
-        arguments=["kubectl rollout restart deployment/{BACKEND_DEPLOYMENT_NAME} -n {bciers_namespace}"],
+        arguments=[f"kubectl rollout restart deployment/{BACKEND_DEPLOYMENT_NAME} -n {bciers_namespace}"],
         get_logs=True,
     )
 
-    reset_data_task >> cycle_backend_pod_task
+    wait_for_backend_rollout = KubernetesJobOperator(
+        task_id="wait_for_backend_rollout",
+        name="wait-for-backend-rollout",
+        namespace=bciers_namespace,
+        service_account_name=SERVICE_ACCOUNT_NAME,
+        image=K8S_IMAGE,
+        cmds=["bash", "-c"],
+        arguments=[f"kubectl rollout status deployment/{BACKEND_DEPLOYMENT_NAME} -n {bciers_namespace}"],
+        get_logs=True,
+        wait_until_job_complete=True,
+    )
+
+    reset_data_task >> cycle_backend_pod_task >> wait_for_backend_rollout
 
 
 reset_data()  # NOSONAR
