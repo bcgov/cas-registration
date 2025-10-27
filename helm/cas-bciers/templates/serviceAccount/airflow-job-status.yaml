@@ -1,0 +1,26 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cas-job-status
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "cas-bciers.labels" . | nindent 4 }}
+rules:
+  - apiGroups: ["batch"]
+    resources: ["jobs", "jobs/status"]
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cas-airflow-job-status-binding
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "cas-bciers.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: cas-airflow-worker
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: cas-job-status
+  apiGroup: rbac.authorization.k8s.io
