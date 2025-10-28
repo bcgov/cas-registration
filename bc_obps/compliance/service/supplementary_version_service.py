@@ -308,8 +308,8 @@ class DecreasedObligationHandler:
             if entry.should_void_invoice:
                 DecreasedObligationHandler._void_unpaid_invoices(entry.version_id)
 
-        if strategy.create_earned_credits and strategy.credits_tonnes > ZERO_DECIMAL:
-            DecreasedObligationHandler._create_earned_credits(compliance_report_version_id, strategy.credits_tonnes)
+        if strategy.should_record_earned_tonnes:
+            DecreasedObligationHandler._record_earned_tonnes(compliance_report_version_id, strategy.earned_tonnes_creditable, strategy.earned_tonnes_refundable )
 
     # -------------------------------
     # Version strategy
@@ -335,12 +335,11 @@ class DecreasedObligationHandler:
             * Apply refund up to its outstanding balance.
             * Mark FULLY_MET if outstanding becomes zero.
             * VOID invoice only if FULLY_MET and no prior cash payments.
-        - If all invoices are cleared, converts any remaining refund_pool to earned credits.
-        - Always includes over-compliance tonnes and credited_emissions in total credits.
+        - If all invoices are cleared, computes refundable tonnes for manual refund capture. No minting occurs here.
+        - Computes over-compliance tonnes and credited_emissions in creditable tonnes for manual credit capture.
 
         Returns:
-            AdjustmentStrategy: containing invoice adjustments, total credits, and a flag
-            indicating whether to create earned credits.
+            AdjustmentStrategy dataclass
         """
 
         rate = (charge_rate or ZERO_DECIMAL).quantize(Decimal("0.00"))
@@ -366,6 +365,7 @@ class DecreasedObligationHandler:
         refund_pool = max(total_refund_vs_anchor - already_applied, ZERO_DECIMAL).quantize(MONEY)
 
         per_invoice: list[InvoiceAdjustment] = []
+        has_invoices = bool(invoices)
         all_cleared = True  # tracks whether every invoice ended at $0 outstanding
 
         for inv in invoices:
@@ -410,17 +410,29 @@ class DecreasedObligationHandler:
             if not mark_fully_met:
                 all_cleared = False
 
-        # Credits: if all invoices cleared, convert remaining refund_pool to tonnes at rate.
-        over_compliance_tonnes = max(-excess_new, ZERO_DECIMAL).quantize(EMISS)
-        converted_tonnes = (
-            (refund_pool / rate).quantize(EMISS) if (all_cleared and rate > ZERO_DECIMAL) else ZERO_DECIMAL
+                over_compliance_tonnes = max(-excess_new, ZERO_DECIMAL).quantize(EMISS)
+
+        # Tonnes that are *creditable* based on the report contents
+        earned_tonnes_creditable = (credited_in + over_compliance_tonnes).quantize(EMISS)
+
+        # Tonnes that are *refundable* only if a monetary refund actually exists and
+        # we’ve cleared all eligible invoices (to avoid double benefits). We convert any
+        # remaining refund dollars to tonnes at the charge rate.
+        # Guardrails:
+        #   - must have seen invoices (has_invoices) to talk about “refund”
+        #   - all invoices must be fully cleared (all_cleared) before conversion
+        #   - rate must be > 0 to avoid division by zero / nonsense conversions
+        earned_tonnes_refundable = (
+            (refund_pool / rate).quantize(EMISS)
+            if (has_invoices and all_cleared and rate > ZERO_DECIMAL)
+            else ZERO_DECIMAL
         )
-        credits_tonnes = (credited_in + over_compliance_tonnes + converted_tonnes).quantize(EMISS)
 
         return AdjustmentStrategy(
             invoices=per_invoice,
-            credits_tonnes=credits_tonnes,
-            create_earned_credits=(credits_tonnes > ZERO_DECIMAL),
+            earned_tonnes_creditable=earned_tonnes_creditable,
+            earned_tonnes_refundable=earned_tonnes_refundable,
+            should_record_earned_tonnes= (earned_tonnes_creditable > ZERO_DECIMAL) or (earned_tonnes_refundable > ZERO_DECIMAL)
         )
 
     # ------------------------------------------------------------
@@ -644,26 +656,27 @@ class DecreasedObligationHandler:
     @staticmethod
     def _mark_previous_version_fully_met(previous_version_id: int) -> None:
         """
-        Set the previous CRV's status to OBILGATION_FULLY_MET when its invoice reaches $0 outstanding.
+        Set the previous CRV's status to OBLIGATION_FULLY_MET when its invoice reaches $0 outstanding.
         """
         ComplianceReportVersion.objects.filter(id=previous_version_id).update(
             status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         )
 
     @staticmethod
-    def _create_earned_credits(compliance_report_version_id: int, tonnes: Decimal) -> None:
+    def _record_earned_tonnes(
+        compliance_report_version_id: int, 
+        creditable_tonnes: Decimal,
+        refundable_tonnes: Decimal
+    ) -> None:
         """
-        Create an earned-credits record on the NEW CRV and set status accordingly.
+        Records the creditable and refundable tonnes amounts setting requires manual handling flag on the CRV.
         """
-        crv = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
-        ComplianceEarnedCreditsService.create_earned_credits_record(
-            compliance_report_version=crv,
-            amount=int(tonnes),
-        )
+        requires_manual = (creditable_tonnes > ZERO_DECIMAL) or (refundable_tonnes > ZERO_DECIMAL)
         ComplianceReportVersion.objects.filter(id=compliance_report_version_id).update(
-            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+            earned_tonnes_creditable=creditable_tonnes,
+            earned_tonnes_refundable=refundable_tonnes,
+            requires_manual_handling = requires_manual
         )
-
 
 # Concrete strategy for no significant change
 class NoChangeHandler:
