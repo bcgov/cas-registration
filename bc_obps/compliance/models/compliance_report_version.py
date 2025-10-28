@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from registration.models.time_stamped_model import TimeStampedModel
@@ -35,14 +36,14 @@ class ComplianceReportVersion(TimeStampedModel):
         db_comment="The delta of the excess emissions reported in the compliance_summary for this version and the previous one",
         decimal_places=4,
         max_digits=20,
-        default=0.0000,
+        default=Decimal("0.0000"),
     )
 
     credited_emissions_delta_from_previous = models.DecimalField(
         db_comment="The delta of the credited emissions reported in the compliance_summary for this version and the previous one",
         decimal_places=4,
         max_digits=20,
-        default=0.0000,
+        default=Decimal("0.0000"),
     )
 
     status = models.CharField(
@@ -68,6 +69,24 @@ class ComplianceReportVersion(TimeStampedModel):
     requires_manual_handling = models.BooleanField(
         default=False,
         db_comment="Boolean value identifies whether this record requires manual handling outside of the app",
+    )
+
+    earned_tonnes_creditable = models.DecimalField(
+            max_digits=20,
+            decimal_places=4,
+            default=Decimal("0.0000"),
+            db_comment=(
+                "Tonnes representing a compliance surplus (over-compliance or credited). Recorded for manual processing."
+            ),
+        )
+
+    earned_tonnes_refundable = models.DecimalField(
+        max_digits=20,
+        decimal_places=4,
+        default=Decimal("0.0000"),
+        db_comment=(
+            "Tonnes attributable to a decreased-obligation refund when all related invoices have been fully cleared. Recorded for manual processing."
+        ),
     )
 
     class Meta(TimeStampedModel.Meta):

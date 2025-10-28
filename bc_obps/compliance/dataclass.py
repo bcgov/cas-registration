@@ -186,14 +186,18 @@ class AdjustmentStrategy:
     """
     Immutable, normalized contract consumed by `DecreasedObligationHandle._process_adjustment_after_commit(...)`
     - invoices : List[InvoiceAdjustment]: the invoice-level adjustments to apply.
-    - credits_tonnes : the quantity of credits (in tonnes) to create/apply.
-    - create_earned_credits : if True, downstream logic should create EarnedCredit records for `credits_tonnes`.
-
+    - earned_tonnes_creditable: The quantity of credits (in tonnes) that are a direct result of over-compliance 
+      or credited emissions.
+    - earned_tonnes_refundable: The quantity of credits (in tonnes, calculated from the remaining refund pool 
+      at the charge rate) that signifies a **cash refund owed** to the entity *after* all outstanding invoices 
+      have been cleared.
+    - should_record_earned_tonnes: A flag indicating whether the entity has an outcome that should be captured for manual handling
     """
 
     invoices: List["InvoiceAdjustment"] = field(default_factory=list)
-    credits_tonnes: Decimal = Decimal("0")
-    create_earned_credits: bool = False
+    earned_tonnes_creditable: Decimal = Decimal("0.0000")
+    earned_tonnes_refundable: Decimal = Decimal("0.0000")
+    should_record_earned_tonnes: bool = False
 
     @staticmethod
     def empty() -> "AdjustmentStrategy":
