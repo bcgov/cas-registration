@@ -241,12 +241,14 @@ class DecreasedObligationHandler:
         # credits_tonnes: number of tonnes to create as earned credits.
         # create_earned_credits: boolean flag.
 
-        if invoices:
-            # anchor_prev_excess comes from the newest unpaid CRV (first in the list)
-            anchor_prev_excess = invoices[0]["prev_excess_emissions"]
-        else:
-            # no invoices: compare against the previous_summary’s excess as the baseline
-            anchor_prev_excess = previous_summary.excess_emissions
+                
+        if not invoices:
+            # Should never happen; handled by SupercedeVersionHandler
+            logger.error(
+                f"DecreasedObligationHandler skipped: no invoice compliance report {compliance_report_version.id}"
+            )            
+            return None 
+        anchor_prev_excess = invoices[0]["prev_excess_emissions"]        
 
         strategy: AdjustmentStrategy = DecreasedObligationHandler._build_adjustment_strategy(
             new_excess_emissions=new_summary.excess_emissions,
@@ -324,35 +326,39 @@ class DecreasedObligationHandler:
         invoices: list[dict],
     ) -> AdjustmentStrategy:
         """
-        Determine how to allocate a decreased-obligation refund across zero, one, or multiple invoices.
+        Allocate a decreased-obligation refund across zero/one/many invoices 
+        and compute *creditable* and *refundable* tonnes 
 
-        Behavior:
-        - Works for any number of unpaid invoices (0/1/many), newest → oldest.
-        - Calculates total refund since the anchor CRV:
-            refund_pool = max(-(new_excess_emissions - anchor_prev_excess) * charge_rate, 0)
-        - Deducts any supplementary adjustments already applied since the anchor.
-        - For each invoice:
-            * Apply refund up to its outstanding balance.
-            * Mark FULLY_MET if outstanding becomes zero.
-            * VOID invoice only if FULLY_MET and no prior cash payments.
-        - If all invoices are cleared, computes refundable tonnes for manual refund capture. No minting occurs here.
-        - Computes over-compliance tonnes and credited_emissions in creditable tonnes for manual credit capture.
+        Key ideas
+        ----------
+        1) Refund pool (in dollars) comes from the *decrease* in obligation versus the
+        chosen anchor CRV:
+            delta_emiss = new_excess_emissions - anchor_prev_excess
+            money_delta = delta_emiss * charge_rate
+            refund_pool = max(-money_delta, 0)
 
-        Returns:
-            AdjustmentStrategy dataclass
+        2) Refundable tonnes come from *leftover refund dollars* after allocating to invoices, capped by the sum of prior CASH payments
+           Captured in CRV for manual handling
+        
+        3) Creditable tonnes are sourced from credited_emissions (+) any over-compliance tonnes (i.e., negative excess emmissions)
+            Captured in CRV for manual handling     
+
+        
         """
 
+        # ---- Normalize inputs ----------------------------------------------------
         rate = (charge_rate or ZERO_DECIMAL).quantize(Decimal("0.00"))
         excess_new = (new_excess_emissions or ZERO_DECIMAL).quantize(EMISS)
         anchor_prev = (anchor_prev_excess or ZERO_DECIMAL).quantize(EMISS)
         credited_in = (credited_emissions or ZERO_DECIMAL).quantize(EMISS)
 
-        # Negative delta means "refund owed"; convert to positive dollars for allocation
+        # ---- Build initial refund pool (dollars) from the delta vs anchor --------
+        # Negative delta means a *decrease* in obligation; convert to +$ by negating.
         delta_emiss = (excess_new - anchor_prev).quantize(EMISS)
         money_delta = (delta_emiss * rate).quantize(MONEY)
         total_refund_vs_anchor = max(-money_delta, ZERO_DECIMAL).quantize(MONEY)
 
-        # Subtract supplementary credits already applied across these invoices since the anchor
+        # Deduct supplementary adjustments already applied since the anchor
         anchor_crv_id = invoices[0]["version_id"] if invoices else None
         invoice_ids = [i["invoice_id"] for i in invoices if "invoice_id" in i]
         already_applied = (
@@ -364,16 +370,18 @@ class DecreasedObligationHandler:
         )
         refund_pool = max(total_refund_vs_anchor - already_applied, ZERO_DECIMAL).quantize(MONEY)
 
+        # ---- Allocate newest → oldest across invoices ----------------------------
         per_invoice: list[InvoiceAdjustment] = []
-        has_invoices = bool(invoices)
-        all_cleared = True  # tracks whether every invoice ended at $0 outstanding
+        all_cleared = True            # remains True only if EVERY invoice ends at $0
+        cash_paid_total = ZERO_DECIMAL  # sum of prior CASH payments across considered invoices
 
         for inv in invoices:
-            outstanding = (inv["outstanding"] or ZERO_DECIMAL).quantize(MONEY)
-            prev_payments = (inv["paid"] or ZERO_DECIMAL).quantize(MONEY)
+            outstanding = (inv.get("outstanding") or ZERO_DECIMAL).quantize(MONEY)
+            prev_payments = (inv.get("paid") or ZERO_DECIMAL).quantize(MONEY)
+            cash_paid_total = (cash_paid_total + prev_payments).quantize(MONEY)
 
-            # If nothing left to allocate, carry current state forward
             if refund_pool <= ZERO_DECIMAL:
+                # Nothing left to apply: carry forward current state
                 all_cleared = False
                 per_invoice.append(
                     InvoiceAdjustment(
@@ -386,13 +394,13 @@ class DecreasedObligationHandler:
                 )
                 continue
 
-            # Apply as much as possible to this invoice's outstanding
+            # Apply as much as possible to this invoice
             apply_abs = min(refund_pool, outstanding).quantize(MONEY)
             net_outstanding_after = (outstanding - apply_abs).quantize(MONEY)
-            mark_fully_met = net_outstanding_after == ZERO_DECIMAL
+            mark_fully_met = (net_outstanding_after == ZERO_DECIMAL)
 
-            # Void only if fully met and no prior cash payments
-            should_void = mark_fully_met and prev_payments == ZERO_DECIMAL
+            # Void only if fully met and there were no prior CASH payments
+            should_void = mark_fully_met and (prev_payments == ZERO_DECIMAL)
 
             per_invoice.append(
                 InvoiceAdjustment(
@@ -404,36 +412,33 @@ class DecreasedObligationHandler:
                 )
             )
 
-            # Reduce the shared pool for next (older) invoice
             refund_pool = (refund_pool - apply_abs).quantize(MONEY)
-
             if not mark_fully_met:
                 all_cleared = False
 
-                over_compliance_tonnes = max(-excess_new, ZERO_DECIMAL).quantize(EMISS)
-
-        # Tonnes that are *creditable* based on the report contents
+        # ---- Compute creditable & refundable tonnes ------------------------------
+        # Creditable: credits explicitly declared on the report + over-compliance only.
+        over_compliance_tonnes = max(-excess_new, ZERO_DECIMAL).quantize(EMISS)
         earned_tonnes_creditable = (credited_in + over_compliance_tonnes).quantize(EMISS)
 
-        # Tonnes that are *refundable* only if a monetary refund actually exists and
-        # we’ve cleared all eligible invoices (to avoid double benefits). We convert any
-        # remaining refund dollars to tonnes at the charge rate.
-        # Guardrails:
-        #   - must have seen invoices (has_invoices) to talk about “refund”
-        #   - all invoices must be fully cleared (all_cleared) before conversion
-        #   - rate must be > 0 to avoid division by zero / nonsense conversions
-        earned_tonnes_refundable = (
-            (refund_pool / rate).quantize(EMISS)
-            if (has_invoices and all_cleared and rate > ZERO_DECIMAL)
-            else ZERO_DECIMAL
-        )
+        # Refundable: leftover refund dollars → tonnes:
+        #   - ALL cleared,
+        #   - and LIMITED to total prior CASH payments
+        if all_cleared and rate > ZERO_DECIMAL:
+            refundable_dollars = min(refund_pool, cash_paid_total).quantize(MONEY)
+            earned_tonnes_refundable = (refundable_dollars / rate).quantize(EMISS)
+        else:
+            earned_tonnes_refundable = ZERO_DECIMAL
 
         return AdjustmentStrategy(
             invoices=per_invoice,
             earned_tonnes_creditable=earned_tonnes_creditable,
             earned_tonnes_refundable=earned_tonnes_refundable,
-            should_record_earned_tonnes= (earned_tonnes_creditable > ZERO_DECIMAL) or (earned_tonnes_refundable > ZERO_DECIMAL)
+            should_record_earned_tonnes=(
+                (earned_tonnes_creditable > ZERO_DECIMAL) or (earned_tonnes_refundable > ZERO_DECIMAL)
+            ),
         )
+
 
     # ------------------------------------------------------------
     #  Collecting helpers
@@ -661,21 +666,24 @@ class DecreasedObligationHandler:
         ComplianceReportVersion.objects.filter(id=previous_version_id).update(
             status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         )
-
+    
     @staticmethod
     def _record_earned_tonnes(
-        compliance_report_version_id: int, 
+        compliance_report_version_id: int,
         creditable_tonnes: Decimal,
-        refundable_tonnes: Decimal
+        refundable_tonnes: Decimal,
     ) -> None:
         """
-        Records the creditable and refundable tonnes amounts setting requires manual handling flag on the CRV.
+        Record the per-CRV tonnes:
+          - earned_tonnes_creditable: creditable tonnes from summary report
+          - earned_tonnes_refundable: refund-derived tonnes
+        We set requires_manual_handling if a creditable or refundable earned tonne exists
         """
         requires_manual = (creditable_tonnes > ZERO_DECIMAL) or (refundable_tonnes > ZERO_DECIMAL)
         ComplianceReportVersion.objects.filter(id=compliance_report_version_id).update(
             earned_tonnes_creditable=creditable_tonnes,
             earned_tonnes_refundable=refundable_tonnes,
-            requires_manual_handling = requires_manual
+            requires_manual_handling=requires_manual,
         )
 
 # Concrete strategy for no significant change
