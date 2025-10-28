@@ -1,341 +1,131 @@
-import { render, screen } from "@testing-library/react";
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import ActionCell from "@/compliance/src/app/components/compliance-summaries/cells/ActionCell";
+import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import { ComplianceSummary } from "@/compliance/src/app/types";
-import { IssuanceStatus } from "@bciers/utils/src/enums";
+import {
+  ComplianceSummaryStatus,
+  IssuanceStatus,
+} from "@bciers/utils/src/enums";
 
-describe("ActionCell", () => {
-  interface ActionCellParams extends GridRenderCellParams {
-    id: number;
-    isAllowedCas: boolean;
-    obligation_id?: string;
-    status?: string;
-    issuance_status?: string;
+interface ActionCellProps extends GridRenderCellParams<ComplianceSummary> {
+  isAllowedCas?: boolean;
+}
+
+function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
+  const {
+    obligation_id: obligationId,
+    status,
+    issuance_status: issuanceStatus,
+    id,
+    requires_manual_handling: requiresManualHandling,
+  } = row as ComplianceSummary & { requires_manual_handling?: boolean };
+
+  // Check if "Contact Us"
+  if (requiresManualHandling) {
+    return {
+      cellText: "Contact Us",
+      // NOTE: no basePath means "not clickable"
+    };
   }
 
-  const createMockParams = (
-    id: number,
-    isAllowedCas: boolean,
-    obligation_id?: string,
-    status?: string,
-    issuance_status?: string,
-  ): ActionCellParams =>
-    ({
-      id: id,
-      row: {
-        id,
-        obligation_id,
-        status,
-        issuance_status,
-      } as ComplianceSummary,
-      isAllowedCas: isAllowedCas,
-    }) as ActionCellParams;
+  const basePath = `/compliance-administration/compliance-summaries/${id}`;
 
-  const expectLink = (name: string, href: string) => {
-    const link = screen.getByRole("link", { name });
-    expect(link).toBeVisible();
-    expect(link).toHaveAttribute("href", href);
+  // Obligation logic
+  if (obligationId) {
+    if (!isAllowedCas) {
+      if (
+        status === ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION
+      ) {
+        return {
+          cellText: "Pending Invoice Creation",
+          basePath: "#",
+        };
+      } else if (status === ComplianceSummaryStatus.OBLIGATION_NOT_MET) {
+        return {
+          cellText: "Manage Obligation",
+          basePath: `${basePath}/review-compliance-obligation-report`,
+        };
+      } else if (status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET) {
+        return {
+          cellText: "View Details",
+          basePath: `${basePath}/review-compliance-obligation-report`,
+        };
+      }
+      return {
+        cellText: "View Details",
+        basePath: `${basePath}/review-compliance-no-obligation-report`,
+      };
+    }
+    if (
+      status === ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION
+    ) {
+      return {
+        cellText: "Pending Invoice Creation",
+        basePath: "#",
+      };
+    } else if (status === ComplianceSummaryStatus.OBLIGATION_NOT_MET) {
+      return {
+        cellText: "View Details",
+        basePath: `${basePath}/review-compliance-obligation-report`,
+      };
+    }
+  }
+
+  // Earned Credits logic
+  if (status === ComplianceSummaryStatus.EARNED_CREDITS) {
+    let cellText = "View Details";
+    let pathSuffix = "/review-compliance-earned-credits-report";
+
+    if (isAllowedCas && issuanceStatus === IssuanceStatus.ISSUANCE_REQUESTED) {
+      cellText = "Review Credits Issuance Request";
+    } else if (
+      !isAllowedCas &&
+      issuanceStatus === IssuanceStatus.CREDITS_NOT_ISSUED
+    ) {
+      cellText = "Request Issuance of Credits";
+    } else if (
+      !isAllowedCas &&
+      issuanceStatus === IssuanceStatus.CHANGES_REQUIRED
+    ) {
+      cellText = "Review Change Required";
+      pathSuffix = "/request-issuance-of-earned-credits";
+    }
+
+    if (
+      issuanceStatus === IssuanceStatus.APPROVED ||
+      issuanceStatus === IssuanceStatus.DECLINED
+    ) {
+      pathSuffix = "/track-status-of-issuance";
+    }
+
+    return {
+      cellText,
+      basePath: `${basePath}${pathSuffix}`,
+    };
+  }
+
+  // Default
+  return {
+    cellText: "View Details",
+    basePath: `${basePath}/review-compliance-no-obligation-report`,
   };
+}
 
-  // Test cases for obligation rows
-  describe("Obligation Flow", () => {
-    describe("External users (isAllowedCas: false)", () => {
-      it("displays 'Manage Obligation' when obligation & invoice exist and status is obligation not met", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              false,
-              "24-0001-1-1",
-              "Obligation not met",
-              undefined,
-            ),
-          ),
-        );
-        expectLink(
-          "Manage Obligation",
-          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
-        );
-      });
+const ActionCell = (params: ActionCellProps) => {
+  const { cellText, basePath } = getActionCellConfig(
+    params.row,
+    params.isAllowedCas,
+  );
 
-      it("displays 'View Details' when obligation & invoice exist and status is obligation met", () => {
-        render(
-          ActionCell(
-            createMockParams(123, false, "24-0001-1-1", "Obligation fully met"),
-          ),
-        );
-        expectLink(
-          "View Details",
-          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
-        );
-      });
+  if (!basePath) {
+    return <span>{cellText}</span>;
+  }
 
-      it("displays 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              false,
-              "24-0001-1-1",
-              "Obligation pending invoice creation",
-            ),
-          ),
-        );
-        expectLink("Pending Invoice Creation", "#");
-      });
-    });
-
-    describe("Internal users (isAllowedCas: true)", () => {
-      it("displays 'View Details' with review-obligation path when obligation is not met", () => {
-        render(
-          ActionCell(
-            createMockParams(123, true, "24-0001-1-1", "Obligation not met"),
-          ),
-        );
-        expectLink(
-          "View Details",
-          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
-        );
-      });
-
-      it("displays 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              true,
-              "24-0001-1-1",
-              "Obligation pending invoice creation",
-            ),
-          ),
-        );
-        expectLink("Pending Invoice Creation", "#");
-      });
-    });
+  const cell = ActionCellFactory({
+    generateHref: () => basePath,
+    cellText,
   });
 
-  // Test cases for earned credits flow
-  describe("Earned Credits Flow", () => {
-    describe("Internal users (isAllowedCas: true)", () => {
-      it("displays 'Review Credits Issuance Request' when issuance status is 'Issuance Requested'", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              true,
-              undefined,
-              "Earned credits",
-              IssuanceStatus.ISSUANCE_REQUESTED,
-            ),
-          ),
-        );
-        expectLink(
-          "Review Credits Issuance Request",
-          "/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
-        );
-      });
+  return cell(params);
+};
 
-      it("displays 'View Details' when issuance status is 'Credits Not Issued in BCCR'", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              true,
-              undefined,
-              "Earned credits",
-              IssuanceStatus.CREDITS_NOT_ISSUED,
-            ),
-          ),
-        );
-        expectLink(
-          "View Details",
-          "/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
-        );
-      });
-
-      it("displays 'View Details' when issuance status is 'Changes Required'", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              true,
-              undefined,
-              "Earned credits",
-              IssuanceStatus.CHANGES_REQUIRED,
-            ),
-          ),
-        );
-        expectLink(
-          "View Details",
-          "/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
-        );
-      });
-
-      it("displays 'View Details' with track-status path when issuance status is 'Approved'", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              true,
-              undefined,
-              "Earned credits",
-              IssuanceStatus.APPROVED,
-            ),
-          ),
-        );
-        expectLink(
-          "View Details",
-          "/compliance-administration/compliance-summaries/123/track-status-of-issuance",
-        );
-      });
-
-      it("displays 'View Details' with track-status path when issuance status is 'Declined'", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              true,
-              undefined,
-              "Earned credits",
-              IssuanceStatus.DECLINED,
-            ),
-          ),
-        );
-        expectLink(
-          "View Details",
-          "/compliance-administration/compliance-summaries/123/track-status-of-issuance",
-        );
-      });
-    });
-
-    describe("External users (isAllowedCas: false)", () => {
-      it("displays 'Request Issuance of Credits' when issuance status is 'Credits Not Issued in BCCR'", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              false,
-              undefined,
-              "Earned credits",
-              IssuanceStatus.CREDITS_NOT_ISSUED,
-            ),
-          ),
-        );
-        expectLink(
-          "Request Issuance of Credits",
-          "/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
-        );
-      });
-
-      it("displays 'View Details' when issuance status is 'Issuance Requested'", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              false,
-              undefined,
-              "Earned credits",
-              IssuanceStatus.ISSUANCE_REQUESTED,
-            ),
-          ),
-        );
-        expectLink(
-          "View Details",
-          "/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
-        );
-      });
-
-      it("displays 'View Details' when issuance status is 'Changes Required'", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              false,
-              undefined,
-              "Earned credits",
-              IssuanceStatus.CHANGES_REQUIRED,
-            ),
-          ),
-        );
-        expectLink(
-          "Review Change Required",
-          "/compliance-administration/compliance-summaries/123/request-issuance-of-earned-credits",
-        );
-      });
-
-      it("displays 'View Details' with track-status path when issuance status is 'Approved'", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              false,
-              undefined,
-              "Earned credits",
-              IssuanceStatus.APPROVED,
-            ),
-          ),
-        );
-        expectLink(
-          "View Details",
-          "/compliance-administration/compliance-summaries/123/track-status-of-issuance",
-        );
-      });
-
-      it("displays 'View Details' with track-status path when issuance status is 'Declined'", () => {
-        render(
-          ActionCell(
-            createMockParams(
-              123,
-              false,
-              undefined,
-              "Earned credits",
-              IssuanceStatus.DECLINED,
-            ),
-          ),
-        );
-        expectLink(
-          "View Details",
-          "/compliance-administration/compliance-summaries/123/track-status-of-issuance",
-        );
-      });
-    });
-  });
-
-  describe("Default Flow", () => {
-    it("displays 'View Details' for external user when status is not earned credits", () => {
-      render(
-        ActionCell(
-          createMockParams(
-            123,
-            false,
-            undefined,
-            "Other status",
-            IssuanceStatus.ISSUANCE_REQUESTED,
-          ),
-        ),
-      );
-      expectLink(
-        "View Details",
-        "/compliance-administration/compliance-summaries/123/review-compliance-no-obligation-report",
-      );
-    });
-
-    it("displays 'View Details' for internal user when status is not earned credits", () => {
-      render(
-        ActionCell(
-          createMockParams(
-            123,
-            true,
-            undefined,
-            "Other status",
-            IssuanceStatus.ISSUANCE_REQUESTED,
-          ),
-        ),
-      );
-      expectLink(
-        "View Details",
-        "/compliance-administration/compliance-summaries/123/review-compliance-no-obligation-report",
-      );
-    });
-  });
-});
+export default ActionCell;

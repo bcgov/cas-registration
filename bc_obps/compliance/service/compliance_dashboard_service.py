@@ -58,11 +58,12 @@ class ComplianceDashboardService:
                 "obligation__elicensing_invoice__elicensing_line_items",
             )
             .exclude(
-                # Exclude compliance report versions that are supplementary and have no obligation or earned credits. We don't need to show users these versions because there are no actions to take
-                # Exclude superceded compliance report versions
+                # Exclude supplementary versions with NO_OBLIGATION_OR_EARNED_CREDITS
+                # **unless** they require manual handling
                 Q(
                     is_supplementary=True,
                     status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+                    requires_manual_handling=False,  # <── only exclude if manual handling is False
                 )
                 | Q(status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED)
             )

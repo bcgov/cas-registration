@@ -173,6 +173,28 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
     });
   });
 
+  describe("redirectManualHandling", () => {
+    it("redirects to summaries when requires_manual_handling is true", async () => {
+      (getComplianceSummary as unknown as vi.Mock).mockResolvedValue({
+        requires_manual_handling: true,
+      });
+
+      const { res } = await runMiddleware(summariesIdBase);
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(reviewSummariesPath);
+    });
+
+    it("does not redirect when requires_manual_handling is false/undefined", async () => {
+      (getComplianceSummary as unknown as vi.Mock).mockResolvedValue({
+        requires_manual_handling: false,
+      });
+
+      const { next, res } = await runMiddleware(summariesIdBase);
+      expect(next).toHaveBeenCalledOnce();
+      expect(res!.status).toBe(200);
+    });
+  });
+
   describe("accessNoObligation", () => {
     it("redirects when status !== NO_OBLIGATION_OR_EARNED_CREDITS", async () => {
       mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);
