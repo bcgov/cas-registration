@@ -1,6 +1,6 @@
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
-from typing import Dict, Any
+from typing import Dict, Any, Callable
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
     ElicensingInvoice,
@@ -119,7 +119,7 @@ class PenaltyCalculationService:
             }
 
         # Get the final payment received date
-        final_payment_received_date = (
+        final_payment = (
             ElicensingPayment.objects.filter(
                 elicensing_line_item=(
                     ElicensingLineItem.objects.get(
@@ -133,14 +133,15 @@ class PenaltyCalculationService:
         )
 
         # Get interest rate for the penalty period, fallback to current rate
-        interest_rate = (
-            ElicensingInterestRate.objects.filter(
-                start_date__lte=late_submission_penalty.accrual_start_date,
-                end_date__gte=final_payment_received_date.received_date,
-            ).first()
-            if final_payment_received_date
-            else None
-        ) or ElicensingInterestRate.objects.filter(is_current_rate=True).first()
+        interest_rate = ElicensingInterestRate.objects.filter(is_current_rate=True).first()
+        if final_payment:
+            interest_rate = (
+                ElicensingInterestRate.objects.filter(
+                    start_date__lte=late_submission_penalty.accrual_start_date,
+                    end_date__gte=final_payment.received_date,
+                ).first()
+                or interest_rate
+            )
 
         if not interest_rate:
             raise ValueError("No interest rate found in database")
@@ -433,7 +434,12 @@ class PenaltyCalculationService:
             compliance_report_version_id=obligation.compliance_report_version_id
         )
 
+        # Determine if late submission penalty applies
         submission_date = cls._get_last_supplementary_submission_date(obligation)
+        has_late_submission = submission_date is not None
+        if has_late_submission:
+            cls.create_late_submission_penalty(obligation)
+
         penalty_accrual_start_date = (
             submission_date + timedelta(days=31)
             if submission_date
@@ -456,6 +462,32 @@ class PenaltyCalculationService:
         )
 
     @classmethod
+    def _get_interest_rate_resolver(
+        cls, accrual_start_date: date, final_accrual_date: date
+    ) -> Callable[[date], Decimal]:
+        """
+        Return an interest rate resolver for the accrual period.
+        """
+        interest_rates = ElicensingInterestRate.objects.filter(
+            start_date__lte=final_accrual_date,
+            end_date__gte=accrual_start_date,
+        ).order_by('-start_date')
+
+        if not interest_rates.exists():
+            interest_rates = ElicensingInterestRate.objects.filter(is_current_rate=True)
+
+        if not interest_rates.exists():
+            raise ValueError("No interest rates configured in the system")
+
+        def get_rate_for_date(date_to_check: date) -> Decimal:
+            for rate in interest_rates:
+                if rate.start_date <= date_to_check <= rate.end_date:
+                    return rate.interest_rate
+            return ElicensingInterestRate.objects.filter(is_current_rate=True).first().interest_rate  # type: ignore[union-attr]
+
+        return get_rate_for_date
+
+    @classmethod
     @transaction.atomic
     def _calculate_late_submission_penalty(
         cls,
@@ -463,7 +495,7 @@ class PenaltyCalculationService:
         accrual_start_date: date,
         final_accrual_date: date,
         persist_penalty_data: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> CompliancePenalty | None:
         """
         Calculate late submission penalty using prime + 3% rate from ElicensingInterestRate.
         Penalty accrues monthly on the 1st day of each month from Dec 1 (day after compliance deadline) until obligation is paid.
@@ -475,12 +507,7 @@ class PenaltyCalculationService:
             persist_penalty_data: Should the calculation persist the penalty data to the database, default False
 
         Returns:
-            Dictionary containing penalty details:
-                - penalty_type: Type of penalty ("Late Submission")
-                - days_late: Number of days from Dec 1 to payment date
-                - accumulated_penalty: Total accumulated penalty
-                - accumulated_compounding: The accumulated compound interest on previous penalties
-                - total_penalty: Total penalty amount
+            CompliancePenalty when persist_penalty_data is True; otherwise None.
         """
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
@@ -502,15 +529,11 @@ class PenaltyCalculationService:
         accumulated_penalty = Decimal('0.00')
         accumulated_compounding = Decimal('0.00')
         total_penalty = Decimal('0.00')
-        days_late = (final_accrual_date - accrual_start_date).days + 1
         invoice = refresh_result.invoice
 
         # Generate list of monthly accrual dates (1st of each month)
         monthly_accrual_dates = []
         current_date = accrual_start_date
-
-        # Add the first accrual date
-        monthly_accrual_dates.append(current_date)
 
         # Generate subsequent months until we reach or pass final_accrual_date
         while current_date <= final_accrual_date:
@@ -522,26 +545,7 @@ class PenaltyCalculationService:
             else:
                 current_date = date(current_date.year, current_date.month + 1, 1)
 
-        # Fetch all interest rates for the period
-        interest_rates = ElicensingInterestRate.objects.filter(
-            start_date__lte=final_accrual_date,
-            end_date__gte=accrual_start_date,
-        ).order_by('-start_date')
-
-        # If no rates found for the period, use the current rate
-        if not interest_rates.exists():
-            interest_rates = ElicensingInterestRate.objects.filter(is_current_rate=True)
-
-        if not interest_rates.exists():
-            raise ValueError("No interest rates configured in the system")
-
-        def get_rate_for_date(date_to_check: date) -> Decimal:
-            """Helper function to get the interest rate for a specific date"""
-            for rate in interest_rates:
-                if rate.start_date <= date_to_check <= rate.end_date:
-                    return rate.interest_rate
-
-            return interest_rates[0].interest_rate
+        get_rate_for_date = cls._get_interest_rate_resolver(accrual_start_date, final_accrual_date)
 
         # Calculate penalty for each monthly accrual date
         for accrual_date in monthly_accrual_dates:
@@ -569,21 +573,12 @@ class PenaltyCalculationService:
         if persist_penalty_data:
             compliance_penalty_record.penalty_amount = total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
             compliance_penalty_record.save()
+            return compliance_penalty_record
 
-        result = {
-            "penalty_status": obligation.penalty_status,
-            "penalty_type": CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-            "penalty_charge_rate": (get_rate_for_date(final_accrual_date) * 100) / 12,
-            "days_late": days_late,
-            "accumulated_penalty": accumulated_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-            "accumulated_compounding": accumulated_compounding.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-            "total_penalty": total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-        }
-
-        return result
+        return None
 
     @classmethod
-    def create_late_submission_penalty(cls, obligation: ComplianceObligation) -> CompliancePenalty:
+    def create_late_submission_penalty(cls, obligation: ComplianceObligation) -> CompliancePenalty | None:
         """
         Calculate late submission penalty,
         persist the penalty data to the database & generate an invoice in elicensing.
@@ -612,14 +607,11 @@ class PenaltyCalculationService:
         payment_deadline = supplementary_submission_date + timedelta(days=30)  # type: ignore[operator]
 
         # Calculate late submission penalty
-        cls._calculate_late_submission_penalty(
+        penalty_record = cls._calculate_late_submission_penalty(
             obligation=obligation,
             accrual_start_date=late_submission_start_date,
             final_accrual_date=payment_deadline,  # type: ignore[arg-type]
             persist_penalty_data=True,
         )
 
-        return CompliancePenalty.objects.filter(
-            compliance_obligation=obligation,
-            penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-        ).latest('id')
+        return penalty_record

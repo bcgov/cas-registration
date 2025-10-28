@@ -100,25 +100,10 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
             and invoice.outstanding_balance == Decimal('0.00')
         )
 
-    @classmethod
-    def _get_latest_supplementary_version(cls, obligation: ComplianceObligation) -> ComplianceReportVersion | None:
-        """
-        Get the most recent supplementary report version for the same compliance report.
-        If no supplementary versions exist, returns None.
-        """
-        compliance_report = obligation.compliance_report_version.compliance_report
-        latest_supplementary = (
-            ComplianceReportVersion.objects.filter(compliance_report=compliance_report, is_supplementary=True)
-            .order_by('-created_at')
-            .first()
-        )
-
-        return latest_supplementary
-
     def handle(self, invoice: ElicensingInvoice) -> None:
         """
         Update compliance status to OBLIGATION_FULLY_MET
-        and create penalties if the report was created after the compliance deadline.
+        and create penalties if the invoice is overdue.
         """
         from compliance.tasks import retryable_notice_of_obligation_met_email
 
@@ -132,7 +117,7 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         # If we are past the deadline & the last transaction that brought the obligation to zero was also received past the deadline, create a penalty
         if invoice.due_date < timezone.now().date() and final_transaction_date > invoice.due_date:  # type: ignore [operator]
             PenaltyCalculationService.create_penalty(obligation)
-            logger.info(f"Created automatic overdue penalty for obligation {obligation.obligation_id}")
+            logger.info(f"Created penalties for obligation {obligation.obligation_id}")
 
 
 class ComplianceHandlerManager:

@@ -424,12 +424,12 @@ class TestPenaltyCalculationService:
             + timedelta(days=1)
         )
 
-        assert mock_calculate.call_count == 1
-        _, kwargs = mock_calculate.call_args
-        assert kwargs["obligation"] == self.obligation
-        assert kwargs["accrual_start_date"] == expected_start_date
-        assert kwargs["final_accrual_date"] == expected_payment_deadline
-        assert kwargs["persist_penalty_data"] is True
+        mock_calculate.assert_called_once_with(
+            obligation=self.obligation,
+            accrual_start_date=expected_start_date,
+            final_accrual_date=expected_payment_deadline,
+            persist_penalty_data=True,
+        )
 
     @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.TODAY", date(2025, 4, 15))
     @patch(
@@ -657,16 +657,18 @@ class TestPenaltyCalculationService:
             is_current_rate=True,
         )
 
-        result = PenaltyCalculationService._calculate_late_submission_penalty(
+        PenaltyCalculationService._calculate_late_submission_penalty(
             obligation=self.obligation,
             accrual_start_date=date(2024, 12, 1),
             final_accrual_date=date(2025, 2, 15),
-            persist_penalty_data=False,
+            persist_penalty_data=True,
         )
 
-        assert result["accumulated_penalty"] == Decimal("26000.00")
-        assert result["accumulated_compounding"] == Decimal("281.00")
-        assert result["total_penalty"] == Decimal("26281.00")
+        penalty_record = CompliancePenalty.objects.get(
+            compliance_obligation=self.obligation,
+            penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
+        )
+        assert penalty_record.penalty_amount == Decimal("26281.00")
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
@@ -704,13 +706,15 @@ class TestPenaltyCalculationService:
             is_current_rate=True,
         )
 
-        result = PenaltyCalculationService._calculate_late_submission_penalty(
+        PenaltyCalculationService._calculate_late_submission_penalty(
             obligation=self.obligation,
             accrual_start_date=date(2024, 12, 1),
             final_accrual_date=date(2025, 2, 15),
-            persist_penalty_data=False,
+            persist_penalty_data=True,
         )
 
-        assert result["accumulated_penalty"] == Decimal("28500.00")
-        assert result["accumulated_compounding"] == Decimal("291.00")
-        assert result["total_penalty"] == Decimal("28791.00")
+        penalty_record = CompliancePenalty.objects.get(
+            compliance_obligation=self.obligation,
+            penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
+        )
+        assert penalty_record.penalty_amount == Decimal("28791.00")
