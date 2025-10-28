@@ -42,6 +42,7 @@ class RegistrationTableNames(Enum):
     OPERATION_DESIGNATED_OPERATOR_TIMELINE = "operation_designated_operator_timeline"
     OPERATOR = "operator"
     OPTED_IN_OPERATION_DETAIL = "opted_in_operation_detail"
+    OPTED_OUT_OPERATION_DETAIL = "opted_out_operation_detail"
     PARENT_OPERATOR = "parent_operator"
     PARTNER_OPERATOR = "partner_operator"
     REGULATED_PRODUCT = "regulated_product"
