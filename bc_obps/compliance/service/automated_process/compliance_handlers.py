@@ -100,25 +100,10 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
             and invoice.outstanding_balance == Decimal('0.00')
         )
 
-    @classmethod
-    def _get_latest_supplementary_version(cls, obligation: ComplianceObligation) -> ComplianceReportVersion | None:
-        """
-        Get the most recent supplementary report version for the same compliance report.
-        If no supplementary versions exist, returns None.
-        """
-        compliance_report = obligation.compliance_report_version.compliance_report
-        latest_supplementary = (
-            ComplianceReportVersion.objects.filter(compliance_report=compliance_report, is_supplementary=True)
-            .order_by('-created_at')
-            .first()
-        )
-
-        return latest_supplementary
-
     def handle(self, invoice: ElicensingInvoice) -> None:
         """
         Update compliance status to OBLIGATION_FULLY_MET
-        and create penalties if the report was created after the compliance deadline.
+        and create penalties if the invoice is overdue.
         """
         from compliance.tasks import retryable_notice_of_obligation_met_email
 
@@ -128,22 +113,11 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         compliance_report_version.save(update_fields=['status'])
         retryable_notice_of_obligation_met_email.execute(obligation.id)
         logger.info(f"Updated compliance status for obligation {obligation.obligation_id}")
+
         if invoice.due_date < timezone.now().date():
-
-            # Check if the report was submitted after the compliance deadline
-            compliance_period = compliance_report_version.compliance_report.compliance_period
-            compliance_deadline = compliance_period.compliance_deadline
-
-            # Get the latest supplementary report version to determine if submitted after deadline
-            latest_supplementary = self._get_latest_supplementary_version(obligation)
-            if latest_supplementary:
-                report_submission_date = latest_supplementary.created_at.date()  # type: ignore[union-attr]
-                if report_submission_date > compliance_deadline:
-                    PenaltyCalculationService.create_late_submission_penalty(obligation)
-                    logger.info(f"Created late submission penalty for obligation {obligation.obligation_id}")
-
+            # Create penalties (late submission and automatic overdue if applicable)
             PenaltyCalculationService.create_penalty(obligation)
-            logger.info(f"Created automatic overdue penalty for obligation {obligation.obligation_id}")
+            logger.info(f"Created penalties for obligation {obligation.obligation_id}")
 
 
 class ComplianceHandlerManager:

@@ -1,58 +1,17 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import InterestSummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/ggeapar-interest/review-interest-summary/InterestSummaryReviewComponent";
 
-// Mock the FormBase component
-vi.mock("@bciers/components/form/FormBase", () => ({
-  default: ({
-    children,
-    formData,
-  }: {
-    children: React.ReactNode;
-    formData: any;
-  }) => (
-    <div data-testid="form-base">
-      <div data-testid="form-data">{JSON.stringify(formData)}</div>
-      {children}
-    </div>
-  ),
+// Mock Next.js router used by ComplianceStepButtons
+const pushMock = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: pushMock }),
 }));
-
-// Mock the ComplianceStepButtons component
-vi.mock("@/compliance/src/app/components/ComplianceStepButtons", () => ({
-  default: ({
-    backUrl,
-    middleButtonText,
-  }: {
-    backUrl: string;
-    middleButtonText?: string;
-  }) => (
-    <div data-testid="step-buttons">
-      <button data-testid="back-button" data-url={backUrl}>
-        Back
-      </button>
-      {middleButtonText && (
-        <button data-testid="middle-button">{middleButtonText}</button>
-      )}
-    </div>
-  ),
-}));
-
-// Mock the schema creation functions
-vi.mock(
-  "@/compliance/src/app/data/jsonSchema/manageObligation/ggeapar-interest/review-interest-summary/interestSummaryReviewSchema",
-  () => ({
-    createInterestSummaryReviewSchema: vi
-      .fn()
-      .mockReturnValue({ type: "object" }),
-    interestSummaryReviewUiSchema: {},
-  }),
-);
 
 const mockData = {
   has_penalty: true,
   penalty_status: "Not Paid",
   penalty_type: "Late Submission",
-  penalty_charge_rate: "5%",
+  penalty_charge_rate: "5",
   penalty_amount: "100.00",
   faa_interest: "10.00",
   total_amount: "110.00",
@@ -64,36 +23,49 @@ describe("InterestSummaryReviewComponent", () => {
     render(
       <InterestSummaryReviewComponent
         data={mockData}
-        reportingYear={2024}
         complianceReportVersionId={123}
       />,
     );
 
-    const formBase = screen.getByTestId("form-base");
-    expect(formBase).toBeVisible();
+    // Core headings
+    expect(screen.getByText("Review Interest Summary")).toBeVisible();
+    expect(screen.getByText("GGEAPAR Interest")).toBeVisible();
+    expect(
+      screen.getByText(
+        /Financial Administration Act \(FAA\) interest is incurred and accrues at/i,
+      ),
+    ).toBeVisible();
 
-    const formData = screen.getByTestId("form-data");
-    expect(formData).toHaveTextContent(JSON.stringify(mockData));
+    // Minimal key-value checks following repo style: label and value asserted separately
+    expect(screen.getByText("Status:")).toBeVisible();
+    expect(screen.getByText("Not Paid")).toBeVisible();
+
+    expect(screen.getByText("GGEAPAR Interest Rate (Annual):")).toBeVisible();
+    expect(screen.getByText("100.00")).toBeVisible();
+
+    expect(screen.getByText("GGEAPAR Interest Amount:")).toBeVisible();
+    expect(screen.getByText("5")).toBeVisible();
+
+    expect(screen.getByText("FAA Interest (Annual):")).toBeVisible();
+    expect(screen.getByText("10.00")).toBeVisible();
+
+    expect(screen.getByText("Total Amount:")).toBeVisible();
+    expect(screen.getByText("110.00")).toBeVisible();
   });
 
-  it("renders step buttons with correct back URL and middle button", () => {
+  it("renders back button and navigates to the correct URL", () => {
     render(
       <InterestSummaryReviewComponent
         data={mockData}
-        reportingYear={2024}
         complianceReportVersionId={123}
       />,
     );
 
-    const backButton = screen.getByTestId("back-button");
+    const backButton = screen.getByRole("button", { name: /back/i });
     expect(backButton).toBeVisible();
-    expect(backButton).toHaveAttribute(
-      "data-url",
+    fireEvent.click(backButton);
+    expect(pushMock).toHaveBeenCalledWith(
       "/compliance-administration/compliance-summaries/123/pay-obligation-track-payments",
     );
-
-    const middleButton = screen.getByTestId("middle-button");
-    expect(middleButton).toBeVisible();
-    expect(middleButton).toHaveTextContent("Generate Interest Invoice");
   });
 });

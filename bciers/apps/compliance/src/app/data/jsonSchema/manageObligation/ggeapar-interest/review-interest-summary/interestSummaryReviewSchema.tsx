@@ -9,11 +9,9 @@ import {
 import { GGEAPARInterestAlertNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/ggeapar-interest/review-interest-summary/GGEAPARInterestAlertNote";
 import { FieldTemplate } from "@bciers/components/form/fields";
 
-export const createInterestSummaryReviewSchema = (
-  reportingYear: number,
-): RJSFSchema => ({
+export const interestSummaryReviewSchema: RJSFSchema = {
   type: "object",
-  title: `Review ${reportingYear} GGEAPAR Interest`,
+  title: `Review Interest Summary`,
   properties: {
     interest_header: readOnlyObjectField("GGEAPAR Interest"),
     interest_alert: readOnlyStringField(),
@@ -23,7 +21,7 @@ export const createInterestSummaryReviewSchema = (
     faa_interest: readOnlyStringField("FAA Interest (Annual):"),
     total_amount: readOnlyStringField("Total Amount:"),
   },
-});
+};
 
 export const interestSummaryReviewUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
