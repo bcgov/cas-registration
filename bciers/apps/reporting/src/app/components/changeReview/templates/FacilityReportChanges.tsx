@@ -75,6 +75,18 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
   const detectAddedSourceTypes = (): SourceTypeChange[] => {
     const addedSourceTypes: SourceTypeChange[] = [];
 
+    // Filter out structural keys that are not source type names
+    const structuralKeys = [
+      "units",
+      "fuels",
+      "emissions",
+      "gscUnitName",
+      "gscUnitType",
+      "gscUnitDescription",
+      "description",
+    ];
+    const isSourceTypeName = (key: string) => !structuralKeys.includes(key);
+
     Object.entries(facilityData.activities).forEach(
       ([activityName, activity]) => {
         if (
@@ -83,8 +95,9 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
           "sourceTypes" in activity
         ) {
           const sourceTypes = activity.sourceTypes as Record<string, any>;
-          Object.entries(sourceTypes).forEach(
-            ([sourceTypeName, sourceTypeData]) => {
+          Object.entries(sourceTypes)
+            .filter(([sourceTypeName]) => isSourceTypeName(sourceTypeName))
+            .forEach(([sourceTypeName, sourceTypeData]) => {
               if (
                 sourceTypeData &&
                 (sourceTypeData.oldValue === null ||
@@ -102,8 +115,7 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                   oldValue: null,
                 });
               }
-            },
-          );
+            });
         }
       },
     );
