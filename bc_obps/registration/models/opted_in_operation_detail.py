@@ -2,6 +2,7 @@ from django.db import models
 from common.enums import Schemas
 from registration.enums.enums import RegistrationTableNames
 from registration.models import TimeStampedModel
+from registration.models.opted_out_operation_detail import OptedOutOperationDetail
 from simple_history.models import HistoricalRecords
 from registration.models.rls_configs.opted_in_operation_detail import Rls as OptedInOperationDetailRls
 
@@ -44,6 +45,14 @@ class OptedInOperationDetail(TimeStampedModel):
         blank=True,
         null=True,
         db_comment="Will the operator notify the Director as soon as possible if this operation ceases to meet any of the criteria for the designation of the operation as a reporting operation and a regulated operation?",
+    )
+    opted_out_operation = models.OneToOneField(
+        OptedOutOperationDetail,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        db_comment="Details if the operation has subsequently opted out",
+        related_name="opted_out",
     )
     history = HistoricalRecords(
         table_name='erc_history"."opted_in_operation_detail_history',
