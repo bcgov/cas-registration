@@ -254,40 +254,58 @@ export function detectSourceTypeChanges(
   // Extract facility name from the field path
   const facilityMatch = change.field.match(/\['facility_reports'\]\[(.*?)\]/);
   if (!facilityMatch) return [];
-  const facilityName = facilityMatch[1];
+  // Remove surrounding quotes if present
+  const facilityName = facilityMatch[1].replace(/^['"]|['"]$/g, "");
 
   // Extract activity name from the field path
   const activityMatch = change.field.match(/\['activity_data'\]\[(.*?)\]/);
   if (!activityMatch) return [];
-  const activityName = activityMatch[1];
+  // Remove surrounding quotes if present
+  const activityName = activityMatch[1].replace(/^['"]|['"]$/g, "");
 
   // Check if this is a source type change
   const oldValue = change.oldValue;
   const newValue = change.newValue;
 
-  // Type guard to check if values are objects with source_types
-  const isValidSourceTypeObject = (
-    value: any,
-  ): value is { source_types: Record<string, any> } => {
-    return (
-      value &&
-      typeof value === "object" &&
-      true &&
-      !Array.isArray(value) &&
-      "source_types" in value
-    );
-  };
+  let oldSourceTypes: Record<string, any> = {};
+  let newSourceTypes: Record<string, any> = {};
 
-  // Only process if both old and new values are valid source type objects
-  if (
-    !isValidSourceTypeObject(oldValue) ||
-    !isValidSourceTypeObject(newValue)
-  ) {
-    return [];
+  // Check if the field path ends with ['source_types']
+  // If so, the values ARE the source types directly
+  const isDirectSourceTypes = change.field.endsWith("['source_types']");
+
+  if (isDirectSourceTypes) {
+    // Values are directly the source types object
+    if (oldValue && typeof oldValue === "object" && !Array.isArray(oldValue)) {
+      oldSourceTypes = oldValue;
+    }
+    if (newValue && typeof newValue === "object" && !Array.isArray(newValue)) {
+      newSourceTypes = newValue;
+    }
+  } else {
+    // Values are objects containing a source_types property
+    const isValidSourceTypeObject = (
+      value: any,
+    ): value is { source_types: Record<string, any> } => {
+      return (
+        value &&
+        typeof value === "object" &&
+        !Array.isArray(value) &&
+        "source_types" in value
+      );
+    };
+
+    // Only process if both old and new values are valid source type objects
+    if (
+      !isValidSourceTypeObject(oldValue) ||
+      !isValidSourceTypeObject(newValue)
+    ) {
+      return [];
+    }
+
+    oldSourceTypes = oldValue.source_types || {};
+    newSourceTypes = newValue.source_types || {};
   }
-
-  const oldSourceTypes = oldValue.source_types || {};
-  const newSourceTypes = newValue.source_types || {};
 
   // Compare source types
   const allSourceTypes = new Set([

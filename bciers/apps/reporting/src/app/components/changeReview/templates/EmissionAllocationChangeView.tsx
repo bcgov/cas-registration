@@ -115,20 +115,50 @@ export const EmissionAllocationChangeView: React.FC<
     const categorizedChanges: Record<string, ProcessedChange> = {};
     data.forEach((change) => {
       if (change.field.includes("report_product_emission_allocations")) {
-        const changes = processCategoryChange(change);
-        const categoryName =
-          changes[0]?.displayLabel === "Total Emissions"
-            ? (change.newValue as EmissionCategoryData)
-                ?.emission_category_name ||
-              (change.oldValue as EmissionCategoryData)
-                ?.emission_category_name ||
-              "Unknown Category"
-            : changes[0]?.displayLabel || "Unknown Category";
-        if (!categoryName) return;
-        if (!categorizedChanges[categoryName]) {
-          categorizedChanges[categoryName] = { categoryName, changes: [] };
+        // Extract category name from flat field path format
+        const categoryMatch = change.field.match(
+          /\['report_product_emission_allocations']\['([^']+)']/,
+        );
+
+        if (categoryMatch) {
+          const categoryName = categoryMatch[1];
+
+          if (!categorizedChanges[categoryName]) {
+            categorizedChanges[categoryName] = { categoryName, changes: [] };
+          }
+
+          // Determine display label and add change if valid
+          let displayLabel = "";
+          if (change.field.includes("['emission_total']")) {
+            displayLabel = "Total Emissions";
+          } else if (change.field.includes("['products']['")) {
+            const productMatch = change.field.match(
+              /\['products']\['([^']+)']/,
+            );
+            displayLabel = productMatch?.[1] || "";
+          }
+
+          if (displayLabel) {
+            categorizedChanges[categoryName].changes.push({
+              ...change,
+              displayLabel,
+            } as DisplayChangeItem);
+          }
+        } else {
+          // Fallback to original nested object processing
+          const changes = processCategoryChange(change);
+          const categoryName =
+            (change.newValue as EmissionCategoryData)?.emission_category_name ||
+            (change.oldValue as EmissionCategoryData)?.emission_category_name ||
+            "Unknown Category";
+
+          if (categoryName) {
+            if (!categorizedChanges[categoryName]) {
+              categorizedChanges[categoryName] = { categoryName, changes: [] };
+            }
+            categorizedChanges[categoryName].changes.push(...changes);
+          }
         }
-        categorizedChanges[categoryName].changes.push(...changes);
       }
       // Handle legacy format for backward compatibility
       else if (change.field.includes("emission_category:")) {

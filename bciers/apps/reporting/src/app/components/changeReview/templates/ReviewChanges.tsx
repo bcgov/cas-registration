@@ -146,8 +146,10 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
       }
     }
 
-    const sourceTypeResult = detectSourceTypeChanges(change);
-    if (sourceTypeResult.length) sourceTypeChanges.push(...sourceTypeResult);
+    if (change.field.includes("activity_data")) {
+      const sourceTypeResult = detectSourceTypeChanges(change);
+      sourceTypeChanges.push(...sourceTypeResult);
+    }
   });
 
   const organizedFacilityReports = organizeFacilityReportChanges(
@@ -204,6 +206,11 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
           const deletedActivities =
             modifiedFacilityReportsWithDeletedActivities[facilityName] || [];
 
+          // Filter sourceTypeChanges for this facility
+          const facilitySourceTypeChanges = sourceTypeChanges.filter(
+            (c) => c.facilityName === facilityName,
+          );
+
           // Ensure facilityData does not include added or deleted activities
           const cleanFacilityData = {
             ...facilityData, // Keep the rest of the core data
@@ -218,9 +225,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
                 facilityData={cleanFacilityData} // Pass clean data (without added/deleted activities)
                 addedActivities={addedActivities} // Pass added activities separately
                 deletedActivities={deletedActivities} // Pass deleted activities separately
-                sourceTypeChanges={sourceTypeChanges.filter(
-                  (c) => c.facilityName === facilityName,
-                )}
+                sourceTypeChanges={facilitySourceTypeChanges}
                 isReportingOnly={isReportingOnly}
               />
             </Box>
@@ -275,9 +280,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
               deletedActivities={
                 modifiedFacilityReportsWithDeletedActivities[facilityName]
               }
-              sourceTypeChanges={sourceTypeChanges.filter(
-                (c) => c.facilityName === facilityName,
-              )}
+              sourceTypeChanges={sourceTypeChanges}
               isReportingOnly={isReportingOnly}
             />
           </Box>
