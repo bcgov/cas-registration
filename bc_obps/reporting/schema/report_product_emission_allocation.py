@@ -35,7 +35,7 @@ class ReportProductEmissionAllocationsSchemaIn(Schema):
 class ReportProductEmissionAllocationSchemaOut(Schema):
     report_product_id: int
     product_name: str
-    allocated_quantity: str
+    allocated_quantity: float
 
     @staticmethod
     def resolve_allocated_quantity(obj: Any) -> str:

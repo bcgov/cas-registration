@@ -235,8 +235,13 @@ export const complianceSummaryFields = (products: any[] = []) => [
   {
     label: "Initial compliance period",
     key: "regulatory_values.initial_compliance_period",
+    isYear: true,
   },
-  { label: "Compliance period", key: "regulatory_values.compliance_period" },
+  {
+    label: "Compliance period",
+    key: "regulatory_values.compliance_period",
+    isYear: true,
+  },
 
   ...(products.flatMap((product, index) => [
     { heading: product.name || `Product ${index + 1}` },

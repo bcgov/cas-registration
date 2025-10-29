@@ -28,8 +28,7 @@ export const transformEmissionAllocationData = (
     .filter((category) => category.category_type === "fuel_excluded")
     .map(calculateEmissionData),
   total_emission_allocations: {
-    facility_total_emissions:
-      data?.facility_total_emissions?.toString() || null,
+    facility_total_emissions: data?.facility_total_emissions || null,
     products: data?.report_product_emission_allocation_totals || [],
   },
 });
@@ -67,6 +66,7 @@ export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
   data,
   isDeleted = false,
 }) => {
+  console.log("rawdata", data);
   // Early return if data is undefined or null
   if (!data) {
     return null;
@@ -130,6 +130,7 @@ export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
       },
     );
   }
+  console.log("transformedData", transformedData);
 
   return (
     <SectionReview

@@ -1,4 +1,3 @@
-from decimal import Decimal
 from typing import List, Optional
 from reporting.schema.report_product_emission_allocation import (
     EmissionCategoryAllocationsSchemaIn,
@@ -32,7 +31,7 @@ class ReportFacilityEmissionsSchemaOut(Schema):
     emission_category_name: str
     emission_category_id: int
     category_type: str
-    emission_total: Decimal | int
+    emission_total: float
     products: List[ReportProductEmissionAllocationSchemaOut]
 
 
@@ -42,7 +41,7 @@ class ReportEmissionAllocationSchemaOut(Schema):
     """
 
     report_product_emission_allocations: List[ReportFacilityEmissionsSchemaOut]
-    facility_total_emissions: Decimal | int
+    facility_total_emissions: float
     report_product_emission_allocation_totals: List[ReportProductEmissionAllocationSchemaOut]
     allocation_methodology: str
     allocation_other_methodology_description: str

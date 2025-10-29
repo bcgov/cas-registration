@@ -9,6 +9,7 @@ interface Field {
   unit?: string;
   showSeparator?: boolean;
   isDate?: boolean;
+  isYear?: boolean;
 }
 
 interface SectionProps {
@@ -92,7 +93,10 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
               );
             })
             .map(
-              ({ label, key, heading, unit, showSeparator, isDate }, idx) => {
+              (
+                { label, key, heading, unit, showSeparator, isDate, isYear },
+                idx,
+              ) => {
                 if (heading) {
                   return (
                     <div
@@ -114,6 +118,7 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
                     unit={unit}
                     showSeparator={showSeparator}
                     isDate={isDate}
+                    isYear={isYear}
                     isDeleted={isDeleted}
                     oldValue={nestedValue?.oldValue}
                     changeType={nestedValue?.changeType}
