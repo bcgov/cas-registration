@@ -22,9 +22,9 @@ class BCCarbonRegistryProjectService:
         Raises:
             UserError: If operation type is not SFO or LFO, project creation fails,
         """
-
-        compliance_period = compliance_report_version.compliance_report.compliance_period
-        operation = compliance_report_version.compliance_report.report.operation
+        compliance_report = compliance_report_version.compliance_report
+        compliance_period = compliance_report.compliance_period
+        operation = compliance_report.report.operation
         operation_type = operation.type
 
         address_related_fields: Dict[str, Any] = {}
@@ -41,7 +41,8 @@ class BCCarbonRegistryProjectService:
                 "longitude": str(facility.longitude_of_largest_emissions),
             }
         elif operation_type == Operation.Types.LFO:
-            mailing_address = operation.operator.mailing_address
+            # Use the operator linked to the compliance report to ensure we’re using the correct operator (e.g., during a transfer event).
+            mailing_address = compliance_report.report.operator.mailing_address
 
             # Two below assertions are to make mypy happy, but we are sure that mailing_address is not None
             if not mailing_address:

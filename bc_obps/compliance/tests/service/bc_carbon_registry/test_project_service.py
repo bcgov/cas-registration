@@ -124,7 +124,7 @@ def create_compliance_report_version(operation):
     report_compliance_summary = baker.make_recipe(
         "reporting.tests.utils.report_compliance_summary", report_version=report_version
     )
-    report = baker.make_recipe("reporting.tests.utils.report", operation=operation)
+    report = baker.make_recipe("reporting.tests.utils.report", operation=operation, operator=operation.operator)
     compliance_report = baker.make_recipe("compliance.tests.utils.compliance_report", report=report)
     compliance_report_version = baker.make_recipe(
         "compliance.tests.utils.compliance_report_version",

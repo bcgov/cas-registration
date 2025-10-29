@@ -405,7 +405,7 @@ class TestComplianceReportVersionService:
         # Arrange
         operator = baker.make_recipe('registration.tests.utils.operator')
         operation = baker.make_recipe('registration.tests.utils.operation', operator=operator)
-        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
+        report = baker.make_recipe('reporting.tests.utils.report', operation=operation, operator=operator)
         compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
         compliance_report_version = baker.make_recipe(
             'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
