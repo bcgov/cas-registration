@@ -79,6 +79,7 @@ class TestComplianceReportVersionEarnedCreditsEndpoint(SimpleTestCase):
         assert response_data["bccr_trading_name"] == "Test Trading Name"
         assert response_data["analyst_comment"] == "Test analyst comment"
         assert response_data["director_comment"] == "Test director comment"
+        assert response_data["supplementary_declined"] is False
 
     @patch(GET_CURRENT_USER_PATH)
     @patch(UPDATE_SERVICE_PATH)
