@@ -71,6 +71,20 @@ class ReportReviewChangesService:
             ),
             'suffix_group': 4,
         },
+        {
+            'regex': re.compile(
+                r"root\['facility_reports'\]\['([^']+)'\]\['report_emission_allocation'\]\['report_product_emission_allocations'\]\[(\d+)\](.*)"
+            ),
+            'index_groups': [2],  # allocation index only
+            'root': 'facility_reports',
+            'subkeys': ['report_emission_allocation', 'report_product_emission_allocations'],
+            'name_key': 'emission_category_name',
+            'format': (
+                "root['facility_reports']['{facility}']"
+                "['report_emission_allocation']['report_product_emission_allocations']['{category_name}']{suffix}"
+            ),
+            'suffix_group': 3,
+        },
     ]
 
     COMPLIANCE_CONFIG: ComplianceConfig = {
@@ -176,22 +190,25 @@ class ReportReviewChangesService:
         suffix = match.group(config['suffix_group'])
 
         if "facility_reports" in config['root']:
-            facility_name = match.group(1)  # captured in regex
+            facility_name = match.group(1)
             allocations = serialized_data['facility_reports'][facility_name]['report_emission_allocation'][
                 'report_product_emission_allocations'
             ]
-
-            alloc_idx, product_idx = idxs
-            allocation = allocations[alloc_idx]
+            allocation = allocations[idxs[0]]
             category_name = allocation['emission_category_name'] or allocation['emission_category_id']
-            product_name = allocation['products'][product_idx]['product_name']
 
-            return config['format'].format(
-                facility=facility_name,
-                category_name=category_name,
-                product_name=product_name,
-                suffix=suffix,
-            )
+            # Build format parameters
+            format_params = {
+                'facility': facility_name,
+                'category_name': category_name,
+                'suffix': suffix,
+            }
+
+            # Add product name if this is allocation + product (2 indexes)
+            if len(idxs) == 2:
+                format_params['product_name'] = allocation['products'][idxs[1]]['product_name']
+
+            return config['format'].format(**format_params)
 
         item = ReportReviewChangesService._get_item_by_indexes(serialized_data, config['root'], config['subkeys'], idxs)
         if item is None:

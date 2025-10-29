@@ -123,12 +123,18 @@ export const hasNestedChanges = (
 export const groupSourceTypeChangesByActivity = (
   sourceTypeChanges: SourceTypeChange[],
 ) => {
-  return sourceTypeChanges.reduce(
+  const result = sourceTypeChanges.reduce(
     (acc, change) => {
-      if (!acc[change.activityName]) acc[change.activityName] = [];
-      acc[change.activityName].push(change);
+      // Normalize activity name by removing surrounding quotes
+      const normalizedActivityName = change.activityName.replace(
+        /^['"]|['"]$/g,
+        "",
+      );
+      if (!acc[normalizedActivityName]) acc[normalizedActivityName] = [];
+      acc[normalizedActivityName].push(change);
       return acc;
     },
     {} as Record<string, SourceTypeChange[]>,
   );
+  return result;
 };
