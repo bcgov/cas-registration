@@ -24,6 +24,7 @@ class ComplianceEarnedCreditsOut(ModelSchema):
             "director_comment",
             "analyst_submitted_date",
             "analyst_suggestion",
+            "supplementary_declined",
         ]
 
 
