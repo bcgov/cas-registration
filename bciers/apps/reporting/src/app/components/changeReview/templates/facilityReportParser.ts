@@ -255,13 +255,13 @@ export function detectSourceTypeChanges(
   const facilityMatch = change.field.match(/\['facility_reports'\]\[(.*?)\]/);
   if (!facilityMatch) return [];
   // Remove surrounding quotes if present
-  const facilityName = facilityMatch[1].replace(/^['"]|['"]$/g, "");
+  const facilityName = facilityMatch[1].replace(/(^['"])|(['"]$)/g, "");
 
   // Extract activity name from the field path
   const activityMatch = change.field.match(/\['activity_data'\]\[(.*?)\]/);
   if (!activityMatch) return [];
   // Remove surrounding quotes if present
-  const activityName = activityMatch[1].replace(/^['"]|['"]$/g, "");
+  const activityName = activityMatch[1].replace(/(^['"])|(['"]$)/g, "");
 
   // Check if this is a source type change
   const oldValue = change.oldValue;
