@@ -25,17 +25,17 @@ email_service = EmailService()
 ###################
 
 retryable_create_adjustment = create_retryable(
-    func=ComplianceAdjustmentService._create_adjustment,
+    func=ComplianceAdjustmentService.create_adjustment,
     tag="elicensing_adjustment_create",
     max_retries=2,
-    retry_delay_minutes=1,
+    retry_delay_minutes=5,
 )
 
 retryable_process_obligation_integration = create_retryable(
     func=ElicensingObligationService.process_obligation_integration,
     tag="elicensing_obligation_integration",
     max_retries=2,
-    retry_delay_minutes=1,
+    retry_delay_minutes=5,
 )
 
 retryable_send_notice_of_earned_credits_email = create_retryable(

@@ -38,7 +38,7 @@ class ComplianceAdjustmentService:
             compliance_report_version_id: ID of the compliance report version to which the adjustment applies
             adjustment_total: Total amount of the adjustment to be applied
         """
-        cls._create_adjustment(
+        cls.create_adjustment(
             compliance_report_version_id=compliance_report_version_id,
             adjustment_total=adjustment_total,
         )
@@ -71,7 +71,7 @@ class ComplianceAdjustmentService:
         )
 
     @classmethod
-    def _create_adjustment(
+    def create_adjustment(
         cls,
         compliance_report_version_id: int,
         adjustment_total: Decimal,
