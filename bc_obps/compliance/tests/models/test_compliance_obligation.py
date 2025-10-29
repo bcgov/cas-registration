@@ -212,7 +212,7 @@ class TestComplianceObligationRls(BaseTestCase):
             return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            return cursor.execute(
+            cursor.execute(
                 """
                     UPDATE "erc"."compliance_obligation"
                     SET fee_amount_dollars = %s
@@ -220,6 +220,7 @@ class TestComplianceObligationRls(BaseTestCase):
                 """,
                 (Decimal('8888'), new_operator_compliance_obligation.id),
             )
+            return cursor.rowcount
 
         def delete_function(cursor):
             cursor.execute(
