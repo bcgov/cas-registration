@@ -67,14 +67,26 @@ class TestElicensingClientOperatorRls(BaseTestCase):
             )
 
         def update_function(cursor):
-            return ElicensingClientOperator.objects.filter(id=approved_elicensing_client_operator.id).update(
-                client_object_id="2147483647"
+            cursor.execute(
+                """
+                    UPDATE "erc"."elicensing_client_operator"
+                    SET client_object_id = %s
+                    WHERE id = %s
+                """,
+                ("2147483647", approved_elicensing_client_operator.id),
             )
+            return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            return ElicensingClientOperator.objects.filter(id=random_elicensing_client_operator.id).update(
-                client_object_id="2147483647"
+            cursor.execute(
+                """
+                    UPDATE "erc"."elicensing_client_operator"
+                    SET client_object_id = %s
+                    WHERE id = %s
+                """,
+                ("2147483647", random_elicensing_client_operator.id),
             )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ElicensingClientOperator,
