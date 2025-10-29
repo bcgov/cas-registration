@@ -254,71 +254,51 @@ export function detectSourceTypeChanges(
   // Extract facility name from the field path
   const facilityMatch = change.field.match(/\['facility_reports'\]\[(.*?)\]/);
   if (!facilityMatch) return [];
-  const facilityNameRaw = facilityMatch[1];
-  const facilityName = facilityNameRaw.replace(/(^['"]|['"]$)/g, "");
+  const facilityName = facilityMatch[1];
 
   // Extract activity name from the field path
   const activityMatch = change.field.match(/\['activity_data'\]\[(.*?)\]/);
   if (!activityMatch) return [];
-  const activityNameRaw = activityMatch[1];
-  const activityName = activityNameRaw.replace(/(^['"]|['"]$)/g, "");
+  const activityName = activityMatch[1];
 
-  // old/new may be either:
-  //  - { source_types: { ... } }  OR
-  //  - { "<source type name>": { ... }, ... } (the mapping itself)
+  // Check if this is a source type change
   const oldValue = change.oldValue;
   const newValue = change.newValue;
 
-  const extractSourceTypes = (value: any): Record<string, any> | null => {
-    if (!value || typeof value !== "object" || Array.isArray(value))
-      return null;
-    if (
-      "source_types" in value &&
-      typeof value.source_types === "object" &&
-      !Array.isArray(value.source_types)
-    ) {
-      return value.source_types;
-    }
-    // assume the value itself is the mapping of source type names -> details
-    return value;
+  // Type guard to check if values are objects with source_types
+  const isValidSourceTypeObject = (
+    value: any,
+  ): value is { source_types: Record<string, any> } => {
+    return (
+      value &&
+      typeof value === "object" &&
+      true &&
+      !Array.isArray(value) &&
+      "source_types" in value
+    );
   };
 
-  const oldSourceTypes = extractSourceTypes(oldValue) || {};
-  const newSourceTypes = extractSourceTypes(newValue) || {};
-
-  // If both are empty objects (not parseable), bail out
+  // Only process if both old and new values are valid source type objects
   if (
-    Object.keys(oldSourceTypes).length === 0 &&
-    Object.keys(newSourceTypes).length === 0
+    !isValidSourceTypeObject(oldValue) ||
+    !isValidSourceTypeObject(newValue)
   ) {
     return [];
   }
 
-  // Filter out structural keys that are not source type names
-  const structuralKeys = [
-    "units",
-    "fuels",
-    "emissions",
-    "gscUnitName",
-    "gscUnitType",
-    "gscUnitDescription",
-    "description",
-  ];
-  const isSourceTypeName = (key: string) => !structuralKeys.includes(key);
+  const oldSourceTypes = oldValue.source_types || {};
+  const newSourceTypes = newValue.source_types || {};
 
-  // Compare keys, filtering out structural keys
+  // Compare source types
   const allSourceTypes = new Set([
-    ...Object.keys(oldSourceTypes).filter(isSourceTypeName),
-    ...Object.keys(newSourceTypes).filter(isSourceTypeName),
+    ...Object.keys(oldSourceTypes),
+    ...Object.keys(newSourceTypes),
   ]);
 
   const changes: SourceTypeChange[] = [];
 
   for (const sourceType of allSourceTypes) {
-    const inOld = sourceType in oldSourceTypes;
-    const inNew = sourceType in newSourceTypes;
-
-    if (!inOld && inNew) {
+    if (!(sourceType in oldSourceTypes)) {
       changes.push({
         fields: change.field,
         facilityName,
@@ -326,9 +306,8 @@ export function detectSourceTypeChanges(
         sourceTypeName: sourceType,
         changeType: "added",
         newValue: newSourceTypes[sourceType],
-        oldValue: null,
       });
-    } else if (inOld && !inNew) {
+    } else if (!(sourceType in newSourceTypes)) {
       changes.push({
         fields: change.field,
         facilityName,
@@ -337,21 +316,19 @@ export function detectSourceTypeChanges(
         changeType: "deleted",
         oldValue: oldSourceTypes[sourceType],
       });
-    } else {
-      // present in both: compare serialized content to detect modification
-      const oldJson = JSON.stringify(oldSourceTypes[sourceType]);
-      const newJson = JSON.stringify(newSourceTypes[sourceType]);
-      if (oldJson !== newJson) {
-        changes.push({
-          fields: change.field,
-          facilityName,
-          activityName,
-          sourceTypeName: sourceType,
-          changeType: "modified",
-          oldValue: oldSourceTypes[sourceType],
-          newValue: newSourceTypes[sourceType],
-        });
-      }
+    } else if (
+      JSON.stringify(oldSourceTypes[sourceType]) !==
+      JSON.stringify(newSourceTypes[sourceType])
+    ) {
+      changes.push({
+        fields: change.field,
+        facilityName,
+        activityName,
+        sourceTypeName: sourceType,
+        changeType: "modified",
+        oldValue: oldSourceTypes[sourceType],
+        newValue: newSourceTypes[sourceType],
+      });
     }
   }
 
