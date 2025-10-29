@@ -34,6 +34,7 @@ class ComplianceEarnedCreditTest(BaseTestCase):
             ("issuance_requested_date", "issuance requested date", None, None),
             ("bccr_project_id", "bccr project id", None, None),
             ("bccr_issuance_id", "bccr issuance id", None, None),
+            ("supplementary_declined", "supplementary declined", None, None),
         ]
 
 
