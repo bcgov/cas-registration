@@ -238,9 +238,7 @@ class ComplianceReportVersionService:
 
     @staticmethod
     def get_operator_by_compliance_report_version(compliance_report_version_id: int) -> Operator:
-        return ComplianceReportVersion.objects.get(
-            id=compliance_report_version_id
-        ).compliance_report.report.operation.operator
+        return ComplianceReportVersion.objects.get(id=compliance_report_version_id).compliance_report.report.operator
 
     @staticmethod
     def get_report_operation_by_compliance_report_version(compliance_report_version_id: int) -> ReportOperation:
