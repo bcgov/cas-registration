@@ -119,27 +119,46 @@ class TestComplianceObligationRls(BaseTestCase):
             )
 
         def update_function(cursor):
-            return ComplianceObligation.objects.filter(id=new_operator_compliance_obligation.id).update(
-                fee_amount_dollars=Decimal('8888')
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_obligation"
+                    SET fee_amount_dollars = %s
+                    WHERE id = %s
+                """,
+                (Decimal('8888'), new_operator_compliance_obligation.id),
             )
+            return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            return ComplianceObligation.objects.filter(id=old_operator_compliance_obligation.id).update(
-                fee_amount_dollars=Decimal('8888')
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_obligation"
+                    SET fee_amount_dollars = %s
+                    WHERE id = %s
+                """,
+                (Decimal('8888'), old_operator_compliance_obligation.id),
             )
+            return cursor.rowcount
 
         def delete_function(cursor):
-            return ComplianceObligation.objects.get(id=new_operator_compliance_obligation.id).delete()
-
-        def forbidden_delete_function(cursor):
-            return cursor.execute(
+            cursor.execute(
                 """
                    DELETE FROM "erc"."compliance_obligation"
-        WHERE id = %s
+                   WHERE id = %s
+                """,
+                (new_operator_compliance_obligation.id,),
+            )
+            return cursor.rowcount
 
+        def forbidden_delete_function(cursor):
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_obligation"
+                   WHERE id = %s
                 """,
                 (old_operator_compliance_obligation.id,),
             )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ComplianceObligation,
@@ -182,27 +201,45 @@ class TestComplianceObligationRls(BaseTestCase):
             )
 
         def update_function(cursor):
-            return ComplianceObligation.objects.filter(id=old_operator_compliance_obligation.id).update(
-                fee_amount_dollars=Decimal('8888')
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_obligation"
+                    SET fee_amount_dollars = %s
+                    WHERE id = %s
+                """,
+                (Decimal('8888'), old_operator_compliance_obligation.id),
             )
+            return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            return ComplianceObligation.objects.filter(id=new_operator_compliance_obligation.id).update(
-                fee_amount_dollars=Decimal('8888')
+            return cursor.execute(
+                """
+                    UPDATE "erc"."compliance_obligation"
+                    SET fee_amount_dollars = %s
+                    WHERE id = %s
+                """,
+                (Decimal('8888'), new_operator_compliance_obligation.id),
             )
 
         def delete_function(cursor):
-            return ComplianceObligation.objects.get(id=old_operator_compliance_obligation.id).delete()
-
-        def forbidden_delete_function(cursor):
-            return cursor.execute(
+            cursor.execute(
                 """
                    DELETE FROM "erc"."compliance_obligation"
-        WHERE id = %s
-
+                   WHERE id = %s
                 """,
                 (old_operator_compliance_obligation.id,),
             )
+            return cursor.rowcount
+
+        def forbidden_delete_function(cursor):
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_obligation"
+                   WHERE id = %s
+                """,
+                (old_operator_compliance_obligation.id,),
+            )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ComplianceObligation,

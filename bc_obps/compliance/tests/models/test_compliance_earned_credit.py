@@ -432,7 +432,6 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
 
         old_operator_compliance_earned_credit = make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
-            # id=10,
             compliance_report_version=old_operator_compliance_report_version,
             earned_credits_amount=100,
             bccr_trading_name="cheese",
@@ -453,7 +452,6 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
 
         new_operator_compliance_earned_credit = make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
-            # id=10,
             compliance_report_version=new_operator_compliance_report_version,
             earned_credits_amount=100,
             bccr_trading_name="cheese",
@@ -501,27 +499,46 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
             )
 
         def update_function(cursor):
-            return ComplianceEarnedCredit.objects.filter(id=new_operator_compliance_earned_credit.id).update(
-                issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_earned_credit"
+                    SET issuance_status = %s
+                    WHERE id = %s
+                """,
+                (ComplianceEarnedCredit.IssuanceStatus.APPROVED, new_operator_compliance_earned_credit.id),
             )
+            return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            return ComplianceEarnedCredit.objects.filter(id=old_operator_compliance_earned_credit.id).update(
-                issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_earned_credit"
+                    SET issuance_status = %s
+                    WHERE id = %s
+                """,
+                (ComplianceEarnedCredit.IssuanceStatus.APPROVED, old_operator_compliance_earned_credit.id),
             )
+            return cursor.rowcount
 
         def delete_function(cursor):
-            return ComplianceEarnedCredit.objects.get(id=new_operator_compliance_earned_credit.id).delete()
-
-        def forbidden_delete_function(cursor):
-            return cursor.execute(
+            cursor.execute(
                 """
                    DELETE FROM "erc"."compliance_earned_credit"
-        WHERE id = %s
+                   WHERE id = %s
+                """,
+                (new_operator_compliance_earned_credit.id,),
+            )
+            return cursor.rowcount
 
+        def forbidden_delete_function(cursor):
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_earned_credit"
+                   WHERE id = %s
                 """,
                 (old_operator_compliance_earned_credit.id,),
             )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ComplianceEarnedCredit,
@@ -544,9 +561,7 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
             ComplianceEarnedCredit.objects.get(id=new_operator_compliance_earned_credit.id)
 
         def insert_function(cursor):
-
             ComplianceEarnedCredit.objects.create(
-                # id=35,
                 compliance_report_version=old_operator_compliance_report_version_for_insert,
                 earned_credits_amount=150,
                 issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
@@ -567,28 +582,46 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
             )
 
         def update_function(cursor):
-            return ComplianceEarnedCredit.objects.filter(id=old_operator_compliance_earned_credit.id).update(
-                issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_earned_credit"
+                    SET issuance_status = %s
+                    WHERE id = %s
+                """,
+                (ComplianceEarnedCredit.IssuanceStatus.APPROVED, old_operator_compliance_earned_credit.id),
             )
+            return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            # brianna the update tests are useless because the filter will never get anything, figure it out with cursor
-            return ComplianceEarnedCredit.objects.filter(id=new_operator_compliance_earned_credit.id).update(
-                issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_earned_credit"
+                    SET issuance_status = %s
+                    WHERE id = %s
+                """,
+                (ComplianceEarnedCredit.IssuanceStatus.APPROVED, new_operator_compliance_earned_credit.id),
             )
+            return cursor.rowcount
 
         def delete_function(cursor):
-            return ComplianceEarnedCredit.objects.get(id=old_operator_compliance_earned_credit.id).delete()
-
-        def forbidden_delete_function(cursor):
-            return cursor.execute(
+            cursor.execute(
                 """
                    DELETE FROM "erc"."compliance_earned_credit"
-        WHERE id = %s
+                   WHERE id = %s
+                """,
+                (old_operator_compliance_earned_credit.id,),
+            )
+            return cursor.rowcount
 
+        def forbidden_delete_function(cursor):
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_earned_credit"
+                   WHERE id = %s
                 """,
                 (new_operator_compliance_earned_credit.id,),
             )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ComplianceEarnedCredit,
@@ -614,7 +647,6 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
 
         make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
-            # id=15,
             issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
             compliance_report_version=compliance_report_version,
             earned_credits_amount=300,
@@ -626,9 +658,9 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
             assert ComplianceEarnedCredit.objects.count() == 1
 
         def update_function(cursor):
-            updated_ComplianceEarnedCredit = ComplianceEarnedCredit.objects.first()
-            updated_ComplianceEarnedCredit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.APPROVED
-            updated_ComplianceEarnedCredit.save()
+            updated_compliance_earned_credit = ComplianceEarnedCredit.objects.first()
+            updated_compliance_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.APPROVED
+            updated_compliance_earned_credit.save()
 
             assert (
                 ComplianceEarnedCredit.objects.filter(
