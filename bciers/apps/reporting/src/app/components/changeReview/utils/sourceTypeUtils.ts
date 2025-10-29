@@ -127,7 +127,7 @@ export const groupSourceTypeChangesByActivity = (
     (acc, change) => {
       // Normalize activity name by removing surrounding quotes
       const normalizedActivityName = change.activityName.replace(
-        /^['"]|['"]$/g,
+        /(^['"])|(['"]$)/g,
         "",
       );
       if (!acc[normalizedActivityName]) acc[normalizedActivityName] = [];
