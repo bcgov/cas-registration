@@ -345,7 +345,7 @@ class ReportReviewChangesService:
                 )
 
         # Detect added facilities
-        for fac_name, curr_fac in list(curr_facilities.items()):
+        for fac_name, curr_fac in curr_facilities.items():
             if fac_name not in prev_facilities:
                 changes.append(
                     {
