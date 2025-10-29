@@ -13,7 +13,7 @@ TWO_DAYS_AGO = datetime.now(timezone.utc) - timedelta(days=2)
 SERVICE_ACCOUNT_NAME = "airflow-deployer"
 BACKEND_DEPLOYMENT_NAME = "cas-bciers-backend"
 K8S_IMAGE = "alpine/k8s:1.29.15"
-bciers_namespace = os.getenv("BCIERS_NAMESPACE")
+BCIERS_NAMESPACE = os.getenv("BCIERS_NAMESPACE")
 
 default_args = {**default_dag_args}
 
@@ -32,21 +32,33 @@ def reset_data():
     reset_data_task = PythonOperator(
         task_id="reset_data_task",
         python_callable=trigger_k8s_cronjob,
-        op_args=['reset-database', bciers_namespace],
+        op_args=['reset-database', BCIERS_NAMESPACE],
     )
 
     cycle_backend_pod_task = KubernetesJobOperator(
         task_id="cycle_backend_pod",
         name="cycle-backend-pod",
-        namespace=bciers_namespace,
+        namespace=BCIERS_NAMESPACE,
         service_account_name=SERVICE_ACCOUNT_NAME,
         image=K8S_IMAGE,
         cmds=["bash", "-c"],
-        arguments=["kubectl rollout restart deployment/{BACKEND_DEPLOYMENT_NAME} -n {bciers_namespace}"],
+        arguments=[f"kubectl rollout restart deployment/{BACKEND_DEPLOYMENT_NAME} -n {BCIERS_NAMESPACE}"],
         get_logs=True,
     )
 
-    reset_data_task >> cycle_backend_pod_task
+    wait_for_backend_rollout = KubernetesJobOperator(
+        task_id="wait_for_backend_rollout",
+        name="wait-for-backend-rollout",
+        namespace=BCIERS_NAMESPACE,
+        service_account_name=SERVICE_ACCOUNT_NAME,
+        image=K8S_IMAGE,
+        cmds=["bash", "-c"],
+        arguments=[f"kubectl rollout status deployment/{BACKEND_DEPLOYMENT_NAME} -n {BCIERS_NAMESPACE}"],
+        get_logs=True,
+        wait_until_job_complete=True,
+    )
+
+    reset_data_task >> cycle_backend_pod_task >> wait_for_backend_rollout
 
 
 reset_data()  # NOSONAR
