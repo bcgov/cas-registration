@@ -24,13 +24,17 @@ export default async function TransfersDataGridPage({
 
   // To get the user's role from the session
   const role = await getSessionRole();
-  const isCasAnalyst = role === FrontEndRoles.CAS_ANALYST;
+  const rolesAllowedToTransfer = [
+    FrontEndRoles.CAS_ANALYST,
+    FrontEndRoles.CAS_DIRECTOR,
+  ];
+  const isAllowedToTransfer = rolesAllowedToTransfer.includes(role);
 
   // Render the DataGrid component
   return (
     <div className="mt-5">
       <h2 className="text-bc-primary-blue">Transfers</h2>
-      {isCasAnalyst && (
+      {isAllowedToTransfer && (
         <div className="text-right mb-4">
           <Link href={"/transfers/transfer-entity"}>
             {/* textTransform to remove uppercase text */}
