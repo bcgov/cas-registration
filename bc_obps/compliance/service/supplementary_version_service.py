@@ -816,7 +816,6 @@ class DecreasedCreditHandler:
         return (
             previous_summary.credited_emissions > ZERO_DECIMAL
             and new_summary.credited_emissions < previous_summary.credited_emissions
-            and previous_earned_credit_record.issuance_status != ComplianceEarnedCredit.IssuanceStatus.APPROVED
         )
 
     @staticmethod
@@ -846,6 +845,12 @@ class DecreasedCreditHandler:
         previous_earned_credit = ComplianceEarnedCredit.objects.get(
             compliance_report_version=previous_compliance_version
         )
+
+        # if previously approved → flag for manual intervention
+        if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
+            compliance_report_version.requires_manual_handling = True
+            compliance_report_version.save()
+            return compliance_report_version
 
         # if credits weren't requested, update the previous earned credit record
         if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED:
