@@ -25,7 +25,7 @@ vi.mock(
   }),
 );
 
-useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
+useSessionRole.mockReturnValue(FrontEndRoles.CAS_ADMIN);
 
 const mockResponse = {
   rows: [
@@ -76,7 +76,7 @@ const mockResponse = {
 describe("TransfersDataGrid page", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    getSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
+    getSessionRole.mockReturnValue(FrontEndRoles.CAS_ADMIN);
   });
 
   it("throws an error when there's a problem fetching data", async () => {
@@ -97,11 +97,15 @@ describe("TransfersDataGrid page", () => {
     // make sure the `Make a Transfer` button is not visible
     expect(screen.queryByText(/Make a Transfer/i)).not.toBeInTheDocument();
   });
-  it("only shows the 'Make a Transfer' button to CAS_ANALYST users", async () => {
-    getSessionRole.mockClear();
-    getSessionRole.mockReturnValue(FrontEndRoles.CAS_ANALYST);
-    fetchTransferEventsPageData.mockReturnValueOnce(mockResponse);
-    render(await TransfersDataGridPage({ searchParams: {} }));
-    expect(screen.getByText(/make a transfer/i)).toBeVisible();
-  });
+
+  it.each([FrontEndRoles.CAS_ANALYST, FrontEndRoles.CAS_DIRECTOR])(
+    "shows the 'Make a Transfer' button to %s users",
+    async (role) => {
+      getSessionRole.mockClear();
+      getSessionRole.mockReturnValue(role);
+      fetchTransferEventsPageData.mockReturnValueOnce(mockResponse);
+      render(await TransfersDataGridPage({ searchParams: {} }));
+      expect(screen.getByText(/make a transfer/i)).toBeVisible();
+    },
+  );
 });
