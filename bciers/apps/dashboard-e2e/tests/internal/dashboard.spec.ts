@@ -41,14 +41,17 @@ userRoles.forEach((role) => {
       await analyzeAccessibility(page);
 
       for (const linkToCheck of Object.values(InternalDashboardLinks)) {
-        if (role === UserRole.CAS_DIRECTOR || role === UserRole.CAS_ADMIN) {
+        if (role === UserRole.CAS_ADMIN) {
           if (
             linkToCheck ===
             InternalDashboardLinks.TRANSFER_OPERATION_OR_FACILITY
           )
             await linkIsVisible(page, linkToCheck, false, true);
           else await linkIsVisible(page, linkToCheck, true, true);
-        } else if (role === UserRole.CAS_ANALYST) {
+        } else if (
+          role === UserRole.CAS_ANALYST ||
+          role === UserRole.CAS_DIRECTOR
+        ) {
           await linkIsVisible(page, linkToCheck, true, true);
         }
       }
