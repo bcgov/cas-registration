@@ -54,7 +54,7 @@ class TimeStampedModel(BaseModel):
                 name="set_updated_audit_columns",
                 when=pgtrigger.Before,
                 operation=pgtrigger.Update,
-                func="new.updated_by_id = (select current_setting('my.guid', true)); new.updated_at = now(); return new;",
+                func="new.updated_by_id = (select nullif(current_setting('my.guid', true), '')); new.updated_at = now(); return new;",
             ),
         ]
 
