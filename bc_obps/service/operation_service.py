@@ -682,10 +682,10 @@ class OperationService:
         """
         Update the operator for the operation
         At the time of implementation, this is only used for transferring operations between operators and,
-        is only available to cas_analyst users
+        is only available to cas_analyst and cas_director users
         """
         user = UserDataAccessService.get_by_guid(user_guid)
-        if not user.is_cas_analyst():
+        if not user.is_cas_analyst() and not user.is_cas_director():
             raise Exception(UNAUTHORIZED_MESSAGE)
         operation.operator_id = operator_id
         operation.save(update_fields=["operator_id"])

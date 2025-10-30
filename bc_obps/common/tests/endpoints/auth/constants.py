@@ -639,7 +639,7 @@ ENDPOINTS = {
             "kwargs": {"user_operator_id": MOCK_UUID},
         },
     ],
-    "cas_analyst": [
+    "cas_director_analyst": [
         {"method": "post", "endpoint_name": "create_transfer_event"},
         {"method": "patch", "endpoint_name": "update_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
         {"method": "delete", "endpoint_name": "delete_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},

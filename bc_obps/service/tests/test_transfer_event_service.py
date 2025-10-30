@@ -102,6 +102,7 @@ class TestTransferEventService:
         # Mock user to not be a CAS analyst
         mock_user = MagicMock()
         mock_user.is_cas_analyst.return_value = False
+        mock_user.is_cas_director.return_value = False
         mock_get_by_guid.return_value = mock_user
 
         with pytest.raises(Exception, match="User is not authorized to create transfer events."):
@@ -189,6 +190,41 @@ class TestTransferEventService:
             },
         )
         mock_process_event_if_effective.assert_called_once_with(payload, mock_transfer_event, cas_analyst.user_guid)
+        assert result == mock_transfer_event
+
+    @classmethod
+    @patch("service.transfer_event_service.TransferEventService._process_event_if_effective")
+    @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    @patch("service.data_access_service.transfer_event_service.TransferEventDataAccessService.create_transfer_event")
+    def test_director_create_transfer_event_operation(
+        cls, mock_create_transfer_event, mock_get_by_guid, mock_validate_no_overlap, mock_process_event_if_effective
+    ):
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        payload = cls._get_transfer_event_payload_for_operation()
+
+        mock_user = MagicMock()
+        mock_user.is_cas_director.return_value = True
+        mock_get_by_guid.return_value = cas_director
+
+        # Mock transfer event creation
+        mock_transfer_event = MagicMock()
+        mock_create_transfer_event.return_value = mock_transfer_event
+
+        result = TransferEventService.create_transfer_event(cas_director.user_guid, payload)
+
+        mock_get_by_guid.assert_called_once_with(cas_director.user_guid)
+        mock_validate_no_overlap.assert_called_once_with(operation_id=payload.operation)
+        mock_create_transfer_event.assert_called_once_with(
+            cas_director.user_guid,
+            {
+                "from_operator_id": payload.from_operator,
+                "to_operator_id": payload.to_operator,
+                "effective_date": payload.effective_date,
+                "operation_id": payload.operation,
+            },
+        )
+        mock_process_event_if_effective.assert_called_once_with(payload, mock_transfer_event, cas_director.user_guid)
         assert result == mock_transfer_event
 
     @classmethod
@@ -290,6 +326,42 @@ class TestTransferEventService:
         )
         mock_transfer_event.facilities.set.assert_called_once_with(payload.facilities)
         mock_process_event_if_effective.assert_called_once_with(payload, mock_transfer_event, cas_analyst.user_guid)
+        assert result == mock_transfer_event
+
+    @classmethod
+    @patch("service.transfer_event_service.TransferEventService._process_event_if_effective")
+    @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    @patch("service.data_access_service.transfer_event_service.TransferEventDataAccessService.create_transfer_event")
+    def test_director_create_transfer_event_facility(
+        cls, mock_create_transfer_event, mock_get_by_guid, mock_validate_no_overlap, mock_process_event_if_effective
+    ):
+        cas_director = baker.make_recipe("registration.tests.utils.cas_director")
+        payload = cls._get_transfer_event_payload_for_facility()
+
+        mock_user = MagicMock()
+        mock_user.is_cas_director.return_value = True
+        mock_get_by_guid.return_value = cas_director
+
+        mock_transfer_event = MagicMock()
+        mock_create_transfer_event.return_value = mock_transfer_event
+
+        result = TransferEventService.create_transfer_event(cas_director.user_guid, payload)
+
+        mock_get_by_guid.assert_called_once_with(cas_director.user_guid)
+        mock_validate_no_overlap.assert_called_once_with(facility_ids=payload.facilities)
+        mock_create_transfer_event.assert_called_once_with(
+            cas_director.user_guid,
+            {
+                "from_operator_id": payload.from_operator,
+                "to_operator_id": payload.to_operator,
+                "effective_date": payload.effective_date,
+                "from_operation_id": payload.from_operation,
+                "to_operation_id": payload.to_operation,
+            },
+        )
+        mock_transfer_event.facilities.set.assert_called_once_with(payload.facilities)
+        mock_process_event_if_effective.assert_called_once_with(payload, mock_transfer_event, cas_director.user_guid)
         assert result == mock_transfer_event
 
     @classmethod

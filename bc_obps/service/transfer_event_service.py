@@ -119,7 +119,7 @@ class TransferEventService:
     def create_transfer_event(cls, user_guid: UUID, payload: TransferEventCreateIn) -> TransferEvent:
         user = UserDataAccessService.get_by_guid(user_guid)
 
-        if not user.is_cas_analyst():
+        if not user.is_cas_analyst() and not user.is_cas_director():
             raise UserError("User is not authorized to create transfer events.")
 
         # Validate against overlapping transfer events
