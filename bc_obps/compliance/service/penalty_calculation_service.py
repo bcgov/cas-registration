@@ -114,7 +114,10 @@ class PenaltyCalculationService:
 
     @staticmethod
     def create_penalty_invoice(
-        obligation: ComplianceObligation, total_penalty: Decimal, final_accrual_date: date
+        obligation: ComplianceObligation,
+        total_penalty: Decimal,
+        final_accrual_date: date,
+        faa_interest_value: Decimal,
     ) -> ElicensingInvoice:
         """
         Create a fee and invoice for the penalty in elicensing
@@ -143,9 +146,22 @@ class PenaltyCalculationService:
             "feeDate": (final_accrual_date + timedelta(days=1)).strftime("%Y-%m-%d"),
         }
 
-        # Create fee in eLicensing
+        # Build fees payload with conditional FAA Interest (must be > 0)
+        fees_payload: list[FeeCreationItem] = [FeeCreationItem(**fee_data)]
+        if faa_interest_value > Decimal("0.00"):
+            faa_interest_fee_data: Dict[str, Any] = {
+                "businessAreaCode": "OBPS",
+                "feeGUID": str(uuid.uuid4()),
+                "feeProfileGroupName": "OBPS Administrative Penalty",
+                "feeDescription": "FAA Interest",
+                "feeAmount": float(faa_interest_value),
+                "feeDate": (final_accrual_date + timedelta(days=1)).strftime("%Y-%m-%d"),
+            }
+            fees_payload.append(FeeCreationItem(**faa_interest_fee_data))
+
         fee_response = elicensing_api_client.create_fees(
-            client_operator.client_object_id, FeeCreationRequest(fees=[FeeCreationItem(**fee_data)])
+            client_operator.client_object_id,
+            FeeCreationRequest(fees=fees_payload),
         )
 
         # Compose the invoice data for the penalty invoice
@@ -154,7 +170,7 @@ class PenaltyCalculationService:
                 "%Y-%m-%d"
             ),  # 30 days after the triggering obligation was met
             "businessAreaCode": "OBPS",
-            "fees": [fee_response.fees[0].feeObjectId],
+            "fees": [f.feeObjectId for f in fee_response.fees],
         }
 
         # Create invoice in eLicensing
@@ -252,7 +268,12 @@ class PenaltyCalculationService:
             total_penalty = base * Decimal('3.00')
 
         if persist_penalty_data:
-            penalty_invoice = PenaltyCalculationService.create_penalty_invoice(obligation=obligation, total_penalty=total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP), final_accrual_date=final_accrual_date)  # type: ignore [arg-type]
+            penalty_invoice = PenaltyCalculationService.create_penalty_invoice(
+                obligation=obligation,
+                total_penalty=total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+                final_accrual_date=final_accrual_date,  # type: ignore [arg-type]
+                faa_interest_value=faa_interest,
+            )
             compliance_penalty_record.elicensing_invoice = penalty_invoice
             compliance_penalty_record.penalty_amount = total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
             compliance_penalty_record.save()
