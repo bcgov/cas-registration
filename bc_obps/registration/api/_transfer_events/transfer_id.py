@@ -28,7 +28,7 @@ def get_transfer_event(request: HttpRequest, transfer_id: UUID) -> Tuple[Literal
     response={200: DictStrAny, custom_codes_4xx: Message},
     tags=TRANSFER_EVENT_TAGS,
     description="""Deletes a transfer event by its ID.""",
-    auth=authorize("cas_analyst"),
+    auth=authorize("cas_director_analyst"),
 )
 def delete_transfer_event(request: HttpRequest, transfer_id: UUID) -> Tuple[Literal[200], DictStrAny]:
     TransferEventService.delete_transfer_event(get_current_user_guid(request), transfer_id)
@@ -40,7 +40,7 @@ def delete_transfer_event(request: HttpRequest, transfer_id: UUID) -> Tuple[Lite
     response={200: TransferEventOut, custom_codes_4xx: Message},
     tags=TRANSFER_EVENT_TAGS,
     description="""Updates the details of an existing transfer event by its ID.""",
-    auth=authorize("cas_analyst"),
+    auth=authorize("cas_director_analyst"),
 )
 def update_transfer_event(
     request: HttpRequest, transfer_id: UUID, payload: TransferEventUpdateIn
