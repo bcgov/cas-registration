@@ -36,6 +36,16 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
   >(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+  // Consider the suggestion final only if a prior submission exists
+  const hasPriorAnalystSubmission = Boolean(
+    initialFormData?.analyst_submitted_date ||
+      initialFormData?.analyst_submitted_by,
+  );
+  const isFinalAnalystSuggestion =
+    hasPriorAnalystSubmission &&
+    (formData?.analyst_suggestion === "Ready to approve" ||
+      formData?.analyst_suggestion === "Requiring supplementary report");
+
   const handleFormChange = (
     e: IChangeEvent<RequestIssuanceComplianceSummaryData>,
   ) => {
@@ -43,9 +53,8 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
   };
 
   const handleSubmit = async () => {
-    // if the user is not a CAS Analyst, redirect to the continue url
-    // this is to prevent the user from submitting the form if they are not a CAS Analyst
-    if (!isCasAnalyst) {
+    // If the user is not a CAS Analyst OR a final suggestion exists, navigate forward
+    if (!isCasAnalyst || isFinalAnalystSuggestion) {
       router.push(continueUrl);
       return;
     }
@@ -78,8 +87,8 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
         formData?.analyst_submitted_date,
         formData?.analyst_submitted_by,
       )}
-      readonly={!isCasAnalyst}
-      disabled={isSubmitting}
+      readonly={!isCasAnalyst || isFinalAnalystSuggestion}
+      disabled={isSubmitting || isFinalAnalystSuggestion}
       formData={formData}
       onChange={handleFormChange}
       onSubmit={handleSubmit}
