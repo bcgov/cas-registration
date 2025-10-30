@@ -157,6 +157,7 @@ export interface ComplianceSummary {
   outstanding_balance_equivalent_value?: number;
   emissions_attributable_for_compliance?: string;
   emissions_limit?: string;
+  has_late_submission_penalty?: boolean;
 }
 
 export interface ComplianceAppliedUnitsData {
@@ -196,6 +197,17 @@ export interface AutomaticOverduePenalty {
   data_is_fresh: boolean;
 }
 
+export interface LateSubmissionPenalty {
+  has_penalty: boolean;
+  penalty_status: string;
+  penalty_type: string;
+  penalty_charge_rate: string;
+  penalty_amount: string;
+  faa_interest: string;
+  total_amount: string;
+  data_is_fresh: boolean;
+}
+
 export interface PenaltyData {
   outstanding_amount: string;
   penalty_status: string;
@@ -211,6 +223,7 @@ export interface ObligationTasklistData {
   reportingYear: number;
   penaltyStatus?: string;
   outstandingBalance?: number;
+  hasLateSubmissionPenalty?: boolean;
 }
 export type ElicensingLastRefreshData = {
   last_refreshed_display: string;

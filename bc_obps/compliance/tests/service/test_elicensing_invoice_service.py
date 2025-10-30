@@ -8,6 +8,7 @@ from unittest.mock import patch
 from model_bakery.baker import make_recipe
 
 from compliance.service.elicensing_invoice_service import ElicensingInvoiceService
+from compliance.models.compliance_penalty import CompliancePenalty
 from compliance.models import ComplianceChargeRate
 from compliance.models import ElicensingInvoice, ElicensingLineItem
 from reporting.models.reporting_year import ReportingYear
@@ -44,6 +45,7 @@ class TestElicensingInvoiceService:
         self.operator = make_recipe("registration.tests.utils.operator", physical_address=self.address)
 
         # Set up invoice and line items
+        self.penalty_invoice = make_recipe("compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1))
         self.invoice = make_recipe("compliance.tests.utils.elicensing_invoice", due_date=date(2025, 7, 1))
         self.line_item = make_recipe(
             "compliance.tests.utils.elicensing_line_item",
@@ -66,7 +68,12 @@ class TestElicensingInvoiceService:
         make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=self.line_item)
 
         # Add penalty
-        make_recipe("compliance.tests.utils.compliance_penalty", compliance_obligation=self.obligation)
+        make_recipe(
+            'compliance.tests.utils.compliance_penalty',
+            compliance_obligation=self.obligation,
+            elicensing_invoice=self.penalty_invoice,
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+        )
 
     @patch("compliance.service.elicensing_invoice_service.PDFGeneratorService.generate_pdf")
     @patch(
@@ -87,7 +94,7 @@ class TestElicensingInvoiceService:
         mock_get_report_operation,
         mock_generate_pdf,
     ):
-        # Patch fresh data response
+        # Patch fresh data response for obligation invoice
         mock_refresh_data.return_value.invoice = self.invoice
         mock_refresh_data.return_value.data_is_fresh = True
 
@@ -256,8 +263,8 @@ class TestElicensingInvoiceService:
         mock_get_obligation,
         mock_generate_pdf,
     ):
-        # Patch fresh data response
-        mock_refresh_data.return_value.invoice = self.invoice
+        # Patch fresh data response for penalty invoice
+        mock_refresh_data.return_value.invoice = self.penalty_invoice
         mock_refresh_data.return_value.data_is_fresh = True
 
         # Patch other services
@@ -395,7 +402,9 @@ class TestElicensingInvoiceService:
 
         cas_analyst = make_recipe("registration.tests.utils.cas_analyst")
 
-        result = ElicensingInvoiceService.get_elicensing_invoice_for_dashboard(cas_analyst.user_guid)
+        result = ElicensingInvoiceService.get_elicensing_invoice_for_dashboard(cas_analyst.user_guid).order_by(
+            "invoice_type", "id"
+        )
         mock_get_year.assert_called_once()
         assert mock_calculate_invoice.call_count == 3  # once for each invoice
         assert result.count() == 3
@@ -461,7 +470,7 @@ class TestElicensingInvoiceService:
             elicensing_invoice=invoice_2,
         )
 
-        assert ElicensingInvoice.objects.count() == 3  # 2 from @setup belonging to a random operator + 1 from this test
+        assert ElicensingInvoice.objects.count() == 3  # 2 from setup (obligation + penalty invoices) + 1 from this test
 
         result = ElicensingInvoiceService.get_elicensing_invoice_for_dashboard(approved_user_operator.user.user_guid)
         mock_get_year.assert_called_once()

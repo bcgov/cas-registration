@@ -18,6 +18,12 @@ class CompliancePenaltyAccrual(TimeStampedModel):
         db_comment="The date of accrual for this record",
     )
 
+    interest_rate = models.DecimalField(
+        decimal_places=4,
+        max_digits=10,
+        db_comment="The interest rate used for this accrual period",
+    )
+
     daily_penalty = models.DecimalField(
         decimal_places=2,
         max_digits=20,
