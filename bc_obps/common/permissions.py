@@ -113,6 +113,9 @@ def get_permission_configs(
                 AppRole.objects.filter(role_name="cas_director").values_list("role_name", flat=True)
             )
         },
+        "cas_director_analyst": {
+            "authorized_app_roles": ["cas_director", "cas_analyst"],
+        },
         "cas_director_analyst_and_industry_admin_user": {
             "authorized_app_roles": ["cas_director", "cas_analyst", "industry_user"],
             "authorized_user_operator_roles": ["admin"],
@@ -158,6 +161,7 @@ def authorize(
         "authorized_irc_user",
         "approved_authorized_roles",
         "cas_director",
+        "cas_director_analyst",
         "cas_director_analyst_and_industry_admin_user",
         "authorized_irc_user_and_industry_admin_user",
         "cas_director_analyst_and_approved_industry_user",
