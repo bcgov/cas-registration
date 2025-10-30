@@ -45,7 +45,7 @@ def list_transfer_events(
     response={201: TransferEventOut, custom_codes_4xx: Message},
     tags=TRANSFER_EVENT_TAGS,
     description="""Creates a new transfer event.""",
-    auth=authorize("cas_analyst"),
+    auth=authorize("cas_director_analyst"),
 )
 def create_transfer_event(
     request: HttpRequest,
