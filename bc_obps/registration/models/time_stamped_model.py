@@ -54,7 +54,9 @@ class TimeStampedModel(BaseModel):
                 name="set_updated_audit_columns",
                 when=pgtrigger.Before,
                 operation=pgtrigger.Update,
-                func="new.updated_by_id = (select current_setting('my.guid', true)); new.updated_at = now(); return new;",
+                # Using nullif to set the updated_by_id to null if the current_setting is empty string
+                # This fixes an issue with the update trigger being empty string when processing system driven updates
+                func="new.updated_by_id = (select nullif(current_setting('my.guid', true), '')); new.updated_at = now(); return new;",
             ),
         ]
 
