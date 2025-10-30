@@ -263,6 +263,45 @@ class TestComplianceEarnedCreditsService:
                 earned_credit.compliance_report_version_id, payload, self.cas_analyst
             )
 
+    @pytest.mark.parametrize(
+        "existing_suggestion, existing_status, new_suggestion",
+        [
+            (
+                ComplianceEarnedCredit.AnalystSuggestion.READY_TO_APPROVE,
+                ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+                ComplianceEarnedCredit.AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID,
+            ),
+            (
+                ComplianceEarnedCredit.AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+                ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+                ComplianceEarnedCredit.AnalystSuggestion.READY_TO_APPROVE,
+            ),
+        ],
+    )
+    def test_update_earned_credit_cas_analyst_blocked_after_final_suggestion(
+        self,
+        existing_suggestion: ComplianceEarnedCredit.AnalystSuggestion,
+        existing_status: ComplianceEarnedCredit.IssuanceStatus,
+        new_suggestion: ComplianceEarnedCredit.AnalystSuggestion,
+    ):
+        earned_credit = self.earned_credit_base
+        earned_credit.issuance_status = existing_status
+        earned_credit.analyst_suggestion = existing_suggestion
+        earned_credit.analyst_comment = "Previous comment"
+        earned_credit.save()
+
+        payload = {
+            "analyst_suggestion": new_suggestion.value,
+            "analyst_comment": "Attempted update",
+        }
+
+        with pytest.raises(
+            UserError, match="Updates are not allowed after the analyst has provided a final suggestion"
+        ):
+            ComplianceEarnedCreditsService.update_earned_credit(
+                earned_credit.compliance_report_version_id, payload, self.cas_analyst
+            )
+
     @patch.object(ComplianceEarnedCreditsService, 'create_bccr_project_for_earned_credit')
     @patch.object(ComplianceEarnedCreditsService, 'issue_bccr_credits_for_earned_credit')
     def test_update_earned_credit_cas_director_approve_success(self, mock_issue_credits, mock_create_project):

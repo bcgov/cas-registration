@@ -105,9 +105,14 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
   });
 
   it("handles form submission for CAS Analyst", async () => {
+    const formDataWithoutPriorSubmission = {
+      ...mockFormData,
+      analyst_submitted_date: undefined as any,
+      analyst_submitted_by: undefined as any,
+    };
     render(
       <InternalReviewCreditsIssuanceRequestComponent
-        initialFormData={mockFormData}
+        initialFormData={formDataWithoutPriorSubmission}
         complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
@@ -139,9 +144,14 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
   it("redirects non-CAS Analyst without submitting", async () => {
     (useSessionRole as any).mockReturnValue("cas_director");
 
+    const formDataWithoutPriorSubmission = {
+      ...mockFormData,
+      analyst_submitted_date: undefined as any,
+      analyst_submitted_by: undefined as any,
+    };
     render(
       <InternalReviewCreditsIssuanceRequestComponent
-        initialFormData={mockFormData}
+        initialFormData={formDataWithoutPriorSubmission}
         complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
@@ -175,9 +185,14 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
   it("handles submission errors", async () => {
     (actionHandler as any).mockResolvedValue({ error: "Submission failed" });
 
+    const formDataWithoutPriorSubmission = {
+      ...mockFormData,
+      analyst_submitted_date: undefined as any,
+      analyst_submitted_by: undefined as any,
+    };
     render(
       <InternalReviewCreditsIssuanceRequestComponent
-        initialFormData={mockFormData}
+        initialFormData={formDataWithoutPriorSubmission}
         complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
@@ -242,9 +257,14 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
   });
 
   it("shows loading state and disables Continue while submitting; prevents repeated submit", async () => {
+    const formDataWithoutPriorSubmission = {
+      ...mockFormData,
+      analyst_submitted_date: undefined as any,
+      analyst_submitted_by: undefined as any,
+    };
     render(
       <InternalReviewCreditsIssuanceRequestComponent
-        initialFormData={mockFormData}
+        initialFormData={formDataWithoutPriorSubmission}
         complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
@@ -263,5 +283,106 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     // Further click on either button should be ignored
     fireEvent.click(continueButton);
     expect(actionHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps button enabled and navigates when prior submission has READY_TO_APPROVE", async () => {
+    const formDataWithPriorSubmission = {
+      ...mockFormData,
+      analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
+      analyst_submitted_date: "2023-01-01",
+      analyst_submitted_by: "Test User",
+    };
+
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={formDataWithPriorSubmission}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+    expect(continueButton).not.toBeDisabled();
+
+    fireEvent.click(continueButton);
+    await waitFor(() => {
+      expect(actionHandler).not.toHaveBeenCalled();
+      expect(mockPush).toHaveBeenCalledWith(
+        `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
+      );
+    });
+  });
+
+  it("keeps button enabled and navigates when prior submission has REQUIRING_SUPPLEMENTARY_REPORT", async () => {
+    const formDataWithPriorSubmission = {
+      ...mockFormData,
+      analyst_suggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+      analyst_submitted_date: "2023-01-01",
+      analyst_submitted_by: "Test User",
+    };
+
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={formDataWithPriorSubmission}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+    expect(continueButton).not.toBeDisabled();
+
+    fireEvent.click(continueButton);
+    await waitFor(() => {
+      expect(actionHandler).not.toHaveBeenCalled();
+      expect(mockPush).toHaveBeenCalledWith(
+        `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
+      );
+    });
+  });
+
+  it("allows form interaction when analyst_suggestion is default value without prior submission", () => {
+    const formDataWithoutPriorSubmission = {
+      ...mockFormData,
+      analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
+      analyst_submitted_date: undefined as any,
+      analyst_submitted_by: undefined as any,
+    };
+
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={formDataWithoutPriorSubmission}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+    expect(continueButton).not.toBeDisabled();
+  });
+
+  it("navigates without submitting when CAS analyst has prior final suggestion", async () => {
+    const formDataWithPriorSubmission = {
+      ...mockFormData,
+      analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
+      analyst_submitted_date: "2023-01-01",
+      analyst_submitted_by: "Test User",
+    };
+
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={formDataWithPriorSubmission}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+    expect(continueButton).not.toBeDisabled();
+
+    fireEvent.click(continueButton);
+
+    await waitFor(() => {
+      expect(actionHandler).not.toHaveBeenCalled();
+      expect(mockPush).toHaveBeenCalledWith(
+        `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
+      );
+    });
   });
 });
