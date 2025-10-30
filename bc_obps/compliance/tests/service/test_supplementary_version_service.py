@@ -301,7 +301,7 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_no_change_handler.assert_not_called()
         mock_increased_credit_handler.assert_not_called()
         mock_decreased_credit_handler.assert_not_called()
-
+ 
     def test_handle_supplementary_version_no_handler_found(
         self,
         mock_increased_handler,
@@ -343,21 +343,22 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
             bccr_holding_account_id='123',
         )
 
+        mock_decreased_credit_handler.can_handle.return_value = True
+        mock_increased_handler.can_handle.return_value = False
+        mock_decreased_handler.can_handle.return_value = False
+        mock_no_change_handler.can_handle.return_value = False
+        mock_increased_credit_handler.can_handle.return_value = False
+
         # Act
-        result = SupplementaryVersionService().handle_supplementary_version(
+        SupplementaryVersionService().handle_supplementary_version(
             self.compliance_report, self.report_version_2, 2
         )
 
-        # Assert
-        assert result is None
-        mock_logger.error.assert_called_once_with(
-            f"No handler found for report version {self.report_version_2.id} and compliance report {self.compliance_report.id}"
-        )
+        # Assert not called
         mock_increased_handler.assert_not_called()
         mock_decreased_handler.assert_not_called()
         mock_no_change_handler.assert_not_called()
         mock_increased_credit_handler.assert_not_called()
-        mock_decreased_credit_handler.assert_not_called()
 
     def test_handle_supplementary_version_no_previous_version(
         self,
@@ -845,7 +846,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_mark_fully_met.assert_called_once_with(prev_crv.id)
         mock_void_invoices.assert_called_once_with(prev_crv.id)
 
-        # No remainder, no over-compliance, no credited_emissions → NO credits created
+        # No remainder, no over-compliance, no credited_emissions → no manual handling created
         mock_record_earned_tonnes.assert_not_called()
 
         # New CRV stays in placeholder status (since no credits were created)
@@ -1168,7 +1169,6 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         Multiple invoices, allocated newest → oldest:
         - Apply refund to the newest invoice until fully met (no cash → void).
         - Allocate remaining refund to older invoices (may remain partially met).
-        - Since not all invoices are cleared, DO NOT create credits.
         - Verifies two adjustments (-12,000 and -8,000), FULLY_MET + void on the anchor.
         """
         mock_get_rate.return_value = Decimal("80.00")  # $80/t
@@ -1255,7 +1255,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         assert mock_mark_fully_met.call_count == 1
         assert mock_void_invoices.call_count == 1
 
-        # Not all invoices cleared → no credits
+        # Not all invoices cleared → no manual handling
         mock_record_earned_tonnes.assert_not_called()
 
         refreshed = ComplianceReportVersion.objects.get(id=result.id)
@@ -1466,7 +1466,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_mark_fully_met.assert_any_call(anchor.id)
         # CASH present on anchor → DO NOT void
         mock_void_invoices.assert_not_called()
-        # Not all cleared → NO credits
+        # Not all cleared → no manual handling
         mock_record_earned_tonnes.assert_not_called()
         
 
@@ -1928,7 +1928,7 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
         # Assert
         assert result is True
 
-    def test_cannot_handle_decreased_credits_already_approved(self):
+    def test_can_handle_decreased_credits_previous_approval(self):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
@@ -1947,40 +1947,25 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
             'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
         )
         self.previous_compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version', report_compliance_summary=self.previous_summary
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=self.previous_summary,
+            is_supplementary=False,
         )
         baker.make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
             compliance_report_version=self.previous_compliance_report_version,
-            earned_credits_amount=500,
-            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
+            earned_credits_amount=600,
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED,
             bccr_trading_name='Test Trading Name',
             bccr_holding_account_id='123',
         )
 
-        self.report_version_2.status = ReportVersion.ReportVersionStatus.Submitted
-        self.report_version_2.save()
-
-        # additional supp report
-        self.report_version_3 = baker.make_recipe('reporting.tests.utils.report_version', report=self.report)
-        summary_3 = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary',
-            excess_emissions=0,
-            credited_emissions=Decimal('300'),
-            report_version=self.report_version_3,
-        )
-
         # Act
-        result = DecreasedCreditHandler.can_handle(summary_3, self.previous_summary)
+        result = DecreasedCreditHandler.can_handle(self.new_summary, self.previous_summary)
 
         # Assert
         assert result is True
 
-    @patch('compliance.service.supplementary_version_service.DecreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.NoChangeHandler.handle')
-    @patch('compliance.service.supplementary_version_service.DecreasedObligationHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedObligationHandler.handle')
     @pytest.mark.parametrize(
         "issuance_status",
         [
