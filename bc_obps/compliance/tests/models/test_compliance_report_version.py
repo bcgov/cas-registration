@@ -140,20 +140,52 @@ class TestComplianceReportVersionRls(BaseTestCase):
             )
 
         def update_function(cursor):
-            return ComplianceReportVersion.objects.filter(id=new_operator_compliance_report_version.id).update(
-                status='No obligation or earned credits'
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_report_version"
+                    SET status = %s
+                    WHERE id = %s
+                """,
+                (
+                    ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+                    new_operator_compliance_report_version.id,
+                ),
             )
+            return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            return ComplianceReportVersion.objects.filter(id=old_operator_compliance_report_version.id).update(
-                status='No obligation or earned credits'
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_report_version"
+                    SET status = %s
+                    WHERE id = %s
+                """,
+                (
+                    ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+                    old_operator_compliance_report_version.id,
+                ),
             )
+            return cursor.rowcount
 
         def delete_function(cursor):
-            return ComplianceReportVersion.objects.filter(id=new_operator_compliance_report_version.id).delete()
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_report_version"
+                   WHERE id = %s
+                """,
+                (new_operator_compliance_report_version.id,),
+            )
+            return cursor.rowcount
 
         def forbidden_delete_function(cursor):
-            ComplianceReportVersion.objects.filter(id=old_operator_compliance_report_version.id).delete()
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_report_version"
+                   WHERE id = %s
+                """,
+                (old_operator_compliance_report_version.id,),
+            )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ComplianceReportVersion,
@@ -216,20 +248,52 @@ class TestComplianceReportVersionRls(BaseTestCase):
             )
 
         def update_function(cursor):
-            return ComplianceReportVersion.objects.filter(id=old_operator_compliance_report_version.id).update(
-                status='No obligation or earned credits'
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_report_version"
+                    SET status = %s
+                    WHERE id = %s
+                """,
+                (
+                    ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+                    old_operator_compliance_report_version.id,
+                ),
             )
+            return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            return ComplianceReportVersion.objects.filter(id=new_operator_compliance_report_version.id).update(
-                status='No obligation or earned credits'
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_report_version"
+                    SET status = %s
+                    WHERE id = %s
+                """,
+                (
+                    ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+                    new_operator_compliance_report_version.id,
+                ),
             )
+            return cursor.rowcount
 
         def delete_function(cursor):
-            return ComplianceReportVersion.objects.filter(id=old_operator_compliance_report_version.id).delete()
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_report_version"
+                   WHERE id = %s
+                """,
+                (old_operator_compliance_report_version.id,),
+            )
+            return cursor.rowcount
 
         def forbidden_delete_function(cursor):
-            ComplianceReportVersion.objects.filter(id=new_operator_compliance_report_version.id).delete()
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_report_version"
+                   WHERE id = %s
+                """,
+                (new_operator_compliance_report_version.id,),
+            )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ComplianceReportVersion,

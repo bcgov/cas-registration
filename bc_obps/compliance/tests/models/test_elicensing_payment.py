@@ -84,10 +84,26 @@ class TestElicensingPaymentRls(BaseTestCase):
             )
 
         def update_function(cursor):
-            return ElicensingPayment.objects.filter(id=approved_elicensing_payment.id).update(amount=Decimal('999'))
+            cursor.execute(
+                """
+                    UPDATE "erc"."elicensing_payment"
+                    SET amount = %s
+                    WHERE id = %s
+                """,
+                (Decimal('999'), approved_elicensing_payment.id),
+            )
+            return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            return ElicensingPayment.objects.filter(id=random_elicensing_payment.id).update(amount=Decimal('999'))
+            cursor.execute(
+                """
+                    UPDATE "erc"."elicensing_payment"
+                    SET amount = %s
+                    WHERE id = %s
+                """,
+                (Decimal('999'), random_elicensing_payment.id),
+            )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ElicensingPayment,

@@ -91,20 +91,46 @@ class TestComplianceReportRls(BaseTestCase):
             )
 
         def update_function(cursor):
-            return ComplianceReport.objects.filter(id=new_operator_compliance_report.id).update(
-                bccr_subaccount_id="111111111199999"
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_report"
+                    SET bccr_subaccount_id = %s
+                    WHERE id = %s
+                """,
+                ("111111111199999", new_operator_compliance_report.id),
             )
+            return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            return ComplianceReport.objects.filter(id=old_operator_compliance_report.id).update(
-                bccr_subaccount_id="111111111199999"
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_report"
+                    SET bccr_subaccount_id = %s
+                    WHERE id = %s
+                """,
+                ("111111111199999", old_operator_compliance_report.id),
             )
+            return cursor.rowcount
 
         def delete_function(cursor):
-            return ComplianceReport.objects.filter(id=new_operator_compliance_report.id).delete()
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_report"
+                   WHERE id = %s
+                """,
+                (new_operator_compliance_report.id,),
+            )
+            return cursor.rowcount
 
         def forbidden_delete_function(cursor):
-            ComplianceReport.objects.filter(id=old_operator_compliance_report.id).delete()
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_report"
+                   WHERE id = %s
+                """,
+                (old_operator_compliance_report.id,),
+            )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ComplianceReport,
@@ -142,20 +168,46 @@ class TestComplianceReportRls(BaseTestCase):
             )
 
         def update_function(cursor):
-            return ComplianceReport.objects.filter(id=old_operator_compliance_report.id).update(
-                bccr_subaccount_id="111111111199999"
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_report"
+                    SET bccr_subaccount_id = %s
+                    WHERE id = %s
+                """,
+                ("111111111199999", old_operator_compliance_report.id),
             )
+            return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            return ComplianceReport.objects.filter(id=new_operator_compliance_report.id).update(
-                bccr_subaccount_id="111111111199999"
+            cursor.execute(
+                """
+                    UPDATE "erc"."compliance_report"
+                    SET bccr_subaccount_id = %s
+                    WHERE id = %s
+                """,
+                ("111111111199999", new_operator_compliance_report.id),
             )
+            return cursor.rowcount
 
         def delete_function(cursor):
-            return ComplianceReport.objects.filter(id=old_operator_compliance_report.id).delete()
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_report"
+                   WHERE id = %s
+                """,
+                (old_operator_compliance_report.id,),
+            )
+            return cursor.rowcount
 
         def forbidden_delete_function(cursor):
-            ComplianceReport.objects.filter(id=new_operator_compliance_report.id).delete()
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_report"
+                   WHERE id = %s
+                """,
+                (new_operator_compliance_report.id,),
+            )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ComplianceReport,
