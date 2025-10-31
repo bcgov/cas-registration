@@ -6,7 +6,6 @@ import { styles } from "@reporting/src/app/components/changeReview/constants/sty
 import { ActivityRendererProps } from "@reporting/src/app/components/changeReview/constants/types";
 import { isNonEmptyValue } from "@reporting/src/app/components/changeReview/utils/utils";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
-
 // Renders an activity and its source types, handling added, deleted, and modified cases
 export const ActivityRenderer: React.FC<ActivityRendererProps> = ({
   activityName,
@@ -50,7 +49,6 @@ export const ActivityRenderer: React.FC<ActivityRendererProps> = ({
       </>
     );
   }
-
   // Handle modified activities
   // If the activity is neither added nor deleted, treat it as modified
   const sourceTypes =
@@ -58,6 +56,21 @@ export const ActivityRenderer: React.FC<ActivityRendererProps> = ({
     activity.newValue?.source_types ||
     activity.oldValue?.source_types ||
     {};
+  // Merge source types from activity with those from sourceTypeChangesForActivity
+  // to ensure added/deleted source types are also rendered
+  const allSourceTypes: Record<string, any> = { ...sourceTypes };
+
+  sourceTypeChangesForActivity?.forEach((change) => {
+    const sourceTypeName = change.sourceTypeName;
+    if (change.changeType === "added" && !allSourceTypes[sourceTypeName]) {
+      allSourceTypes[sourceTypeName] = change.newValue;
+    } else if (
+      change.changeType === "deleted" &&
+      !allSourceTypes[sourceTypeName]
+    ) {
+      allSourceTypes[sourceTypeName] = change.oldValue;
+    }
+  });
 
   return (
     <Box key={activityName} mb={3} style={styles.sourceCard}>
@@ -67,7 +80,7 @@ export const ActivityRenderer: React.FC<ActivityRendererProps> = ({
       >
         {activityName}
       </Box>
-      {Object.entries(sourceTypes)
+      {Object.entries(allSourceTypes)
         .sort(([keyA], [keyB]) => {
           const aEm = keyA.toLowerCase().includes("emissions");
           const bEm = keyB.toLowerCase().includes("emissions");

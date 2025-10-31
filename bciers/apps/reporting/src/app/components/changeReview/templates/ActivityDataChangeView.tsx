@@ -1,3 +1,4 @@
+// File: `ActivityDataChangeView.tsx`
 import React from "react";
 import { Box } from "@mui/material";
 import { ActivityRenderer } from "../components/ActivityRenderer";
@@ -13,18 +14,26 @@ export const ActivityDataChangeView: React.FC<ActivityDataChangeViewProps> = ({
   const sourceTypeChangesByActivity =
     groupSourceTypeChangesByActivity(sourceTypeChanges);
 
+  const normalize = (name: string) =>
+    (name || "").replace(/(^['"]|['"]$)/g, "").trim();
+
   return (
     <Box>
       {Object.entries(activities).map(([activityName, activity]) => {
-        const sourceTypeChangesForActivity =
-          sourceTypeChangesByActivity[activityName] || [];
+        const key = normalize(activityName);
 
-        // Filter added and deleted activities specific to the current activity
-        const filteredAddedActivities = addedActivities.filter(
-          (added) => added.activity === activityName,
+        // Try normalized key first, fall back to raw activityName if grouping uses raw keys
+        const sourceTypeChangesForActivity =
+          sourceTypeChangesByActivity[key] ||
+          sourceTypeChangesByActivity[activityName] ||
+          [];
+
+        // Filter added and deleted activities specific to the current activity (normalized)
+        const filteredAddedActivities = (addedActivities || []).filter(
+          (added) => normalize(added.activity) === key,
         );
-        const filteredDeletedActivities = deletedActivities.filter(
-          (deleted) => deleted.activity === activityName,
+        const filteredDeletedActivities = (deletedActivities || []).filter(
+          (deleted) => normalize(deleted.activity) === key,
         );
 
         return (

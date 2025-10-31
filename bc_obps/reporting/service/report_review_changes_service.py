@@ -71,6 +71,20 @@ class ReportReviewChangesService:
             ),
             'suffix_group': 4,
         },
+        {
+            'regex': re.compile(
+                r"root\['facility_reports'\]\['([^']+)'\]\['report_emission_allocation'\]\['report_product_emission_allocations'\]\[(\d+)\](.*)"
+            ),
+            'index_groups': [2],  # allocation index only
+            'root': 'facility_reports',
+            'subkeys': ['report_emission_allocation', 'report_product_emission_allocations'],
+            'name_key': 'emission_category_name',
+            'format': (
+                "root['facility_reports']['{facility}']"
+                "['report_emission_allocation']['report_product_emission_allocations']['{category_name}']{suffix}"
+            ),
+            'suffix_group': 3,
+        },
     ]
 
     COMPLIANCE_CONFIG: ComplianceConfig = {
@@ -176,22 +190,25 @@ class ReportReviewChangesService:
         suffix = match.group(config['suffix_group'])
 
         if "facility_reports" in config['root']:
-            facility_name = match.group(1)  # captured in regex
+            facility_name = match.group(1)
             allocations = serialized_data['facility_reports'][facility_name]['report_emission_allocation'][
                 'report_product_emission_allocations'
             ]
-
-            alloc_idx, product_idx = idxs
-            allocation = allocations[alloc_idx]
+            allocation = allocations[idxs[0]]
             category_name = allocation['emission_category_name'] or allocation['emission_category_id']
-            product_name = allocation['products'][product_idx]['product_name']
 
-            return config['format'].format(
-                facility=facility_name,
-                category_name=category_name,
-                product_name=product_name,
-                suffix=suffix,
-            )
+            # Build format parameters
+            format_params = {
+                'facility': facility_name,
+                'category_name': category_name,
+                'suffix': suffix,
+            }
+
+            # Add product name if this is allocation + product (2 indexes)
+            if len(idxs) == 2:
+                format_params['product_name'] = allocation['products'][idxs[1]]['product_name']
+
+            return config['format'].format(**format_params)
 
         item = ReportReviewChangesService._get_item_by_indexes(serialized_data, config['root'], config['subkeys'], idxs)
         if item is None:
@@ -255,6 +272,56 @@ class ReportReviewChangesService:
             "change_type": change_type,
         }
 
+    @staticmethod
+    def _normalize_facilities(facilities: Any) -> Dict[str, dict]:
+        """Normalize facility_reports value (list or dict) into a dict keyed by identifier (uuid or name)."""
+        if isinstance(facilities, list):
+            return {str(f.get('facility') or f.get('facility_name')): f for f in facilities if isinstance(f, dict)}
+        if isinstance(facilities, dict):
+            return facilities
+        return {}
+
+    @staticmethod
+    def _build_uuid_map(facilities: Dict[str, dict]) -> Dict[str, str]:
+        """Return a mapping of facility UUID -> facility key (name or key used in dict)."""
+        uuid_map: Dict[str, str] = {}
+        for key, fac in facilities.items():
+            if isinstance(fac, dict):
+                fac_uuid = fac.get('facility')
+                if fac_uuid:
+                    uuid_map[str(fac_uuid)] = key
+        return uuid_map
+
+    @classmethod
+    def _detect_renames(
+        cls, prev_facilities: Dict[str, dict], curr_facilities: Dict[str, dict]
+    ) -> List[Dict[str, Any]]:
+        """Detect facility renames (same uuid, different keys). Mutates prev_facilities to map to new keys for later diffs.
+        Returns list of rename change dicts."""
+        changes: List[Dict[str, Any]] = []
+        prev_uuid_map = cls._build_uuid_map(prev_facilities)
+        curr_uuid_map = cls._build_uuid_map(curr_facilities)
+
+        shared = set(prev_uuid_map.keys()) & set(curr_uuid_map.keys())
+        for uuid in shared:
+            prev_key = prev_uuid_map[uuid]
+            curr_key = curr_uuid_map[uuid]
+            if prev_key != curr_key:
+                changes.append(
+                    {
+                        "field": f"root['facility_reports']['{curr_key}']['facility_name']",
+                        "old_value": prev_key,
+                        "new_value": curr_key,
+                        "change_type": 'modified',
+                    }
+                )
+                # Ensure further comparisons run under the new key
+                prev_fac = prev_facilities.pop(prev_key, None)
+                if prev_fac is not None:
+                    prev_facilities[curr_key] = prev_fac
+
+        return changes
+
     @classmethod
     def get_report_version_diff_changes(cls, previous: dict, current: dict) -> List[Dict[str, Any]]:
         changes: List[Dict[str, Any]] = []
@@ -276,11 +343,14 @@ class ReportReviewChangesService:
             )
 
         # --- Facility name changes / added / removed ---
-        prev_facilities = previous.get("facility_reports", [])
-        curr_facilities = current.get("facility_reports", [])
+        prev_facilities = cls._normalize_facilities(previous.get('facility_reports', []))
+        curr_facilities = cls._normalize_facilities(current.get('facility_reports', []))
+
+        # Detect renames first (mutates prev_facilities so we don't later mark as added/removed)
+        changes.extend(cls._detect_renames(prev_facilities, curr_facilities))
 
         # Detect removed facilities
-        for fac_name, prev_fac in prev_facilities.items():
+        for fac_name, prev_fac in list(prev_facilities.items()):
             if fac_name not in curr_facilities:
                 changes.append(
                     {
