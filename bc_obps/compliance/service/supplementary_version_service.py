@@ -238,26 +238,23 @@ class DecreasedObligationHandler:
         # 3) Build a normalized strategy dict
         # The strategy object returned by the determination functions is the single contract used _process_adjustment_after_commit
         # invoices: list of InvoiceAdjustment entries, each with `version_id`, `applied`, `net_outstanding_after`, `mark_fully_met`, `should_void_invoice`.
-        # credits_tonnes: number of tonnes to create as earned credits.
-        # create_earned_credits: boolean flag.
+        # should_record_manual_handling: boolean flag.
 
-        if invoices:
-            # anchor_prev_excess comes from the newest unpaid CRV (first in the list)
-            anchor_prev_excess = invoices[0]["prev_excess_emissions"]
-        else:
-            # no invoices: compare against the previous_summary’s excess as the baseline
-            anchor_prev_excess = previous_summary.excess_emissions
+                
+        if not invoices:
+            # Should never happen; handled by SupercedeVersionHandler 
+            return None 
+        anchor_prev_excess = invoices[0]["prev_excess_emissions"]        
 
         strategy: AdjustmentStrategy = DecreasedObligationHandler._build_adjustment_strategy(
             new_excess_emissions=new_summary.excess_emissions,
             anchor_prev_excess=anchor_prev_excess,
             charge_rate=charge_rate,
-            credited_emissions=new_summary.credited_emissions,
             invoices=invoices,  # 0/1/many
         )
 
         # 4) Defer all side effects until after the DB transaction commits, guaranteeing consistency.
-        # All changes that touch invoices, create adjustments, mark CRV statuses or create earned credits are performed inside `_process_adjustment_after_commit`
+        # All changes that touch invoices, create adjustments, mark CRV statuses are performed inside `_process_adjustment_after_commit`
         transaction.on_commit(
             lambda: DecreasedObligationHandler._process_adjustment_after_commit(
                 compliance_report_version_id=compliance_report_version.id,
@@ -283,10 +280,6 @@ class DecreasedObligationHandler:
           - Post a signed negative adjustment (reduces outstanding).
           - If net outstanding hits zero, mark that previous CRV as FULLY_MET.
           - If fully met AND no prior CASH payments, void the invoice.
-
-        After invoices:
-          - If "create_earned_credits" is True, create earned credits on the NEW CRV
-            using "credits_tonnes".
         """
         for entry in strategy.invoices:
             applied = entry.applied
@@ -308,8 +301,8 @@ class DecreasedObligationHandler:
             if entry.should_void_invoice:
                 DecreasedObligationHandler._void_unpaid_invoices(entry.version_id)
 
-        if strategy.create_earned_credits and strategy.credits_tonnes > ZERO_DECIMAL:
-            DecreasedObligationHandler._create_earned_credits(compliance_report_version_id, strategy.credits_tonnes)
+        if strategy.should_record_manual_handling:
+            DecreasedObligationHandler._record_manual_handling(compliance_report_version_id )
 
     # -------------------------------
     # Version strategy
@@ -320,40 +313,36 @@ class DecreasedObligationHandler:
         new_excess_emissions: Decimal,
         anchor_prev_excess: Decimal,
         charge_rate: Decimal,
-        credited_emissions: Optional[Decimal],
         invoices: list[dict],
     ) -> AdjustmentStrategy:
         """
-        Determine how to allocate a decreased-obligation refund across zero, one, or multiple invoices.
+        Allocate a decreased-obligation refund across zero/one/many invoices 
+        and compute *refundable* tonnes 
 
-        Behavior:
-        - Works for any number of unpaid invoices (0/1/many), newest → oldest.
-        - Calculates total refund since the anchor CRV:
-            refund_pool = max(-(new_excess_emissions - anchor_prev_excess) * charge_rate, 0)
-        - Deducts any supplementary adjustments already applied since the anchor.
-        - For each invoice:
-            * Apply refund up to its outstanding balance.
-            * Mark FULLY_MET if outstanding becomes zero.
-            * VOID invoice only if FULLY_MET and no prior cash payments.
-        - If all invoices are cleared, converts any remaining refund_pool to earned credits.
-        - Always includes over-compliance tonnes and credited_emissions in total credits.
+        Key ideas
+        ----------
+        1) Refund pool (in dollars) comes from the *decrease* in obligation versus the
+        chosen anchor CRV:
+            delta_emiss = new_excess_emissions - anchor_prev_excess
+            money_delta = delta_emiss * charge_rate
+            refund_pool = max(-money_delta, 0)
 
-        Returns:
-            AdjustmentStrategy: containing invoice adjustments, total credits, and a flag
-            indicating whether to create earned credits.
+        2) Refundable tonnes come from *leftover refund dollars* after allocating to invoices, capped by the sum of prior CASH payments
+           Captured in CRV for manual handling          
         """
 
+        # ---- Normalize inputs ----------------------------------------------------
         rate = (charge_rate or ZERO_DECIMAL).quantize(Decimal("0.00"))
         excess_new = (new_excess_emissions or ZERO_DECIMAL).quantize(EMISS)
         anchor_prev = (anchor_prev_excess or ZERO_DECIMAL).quantize(EMISS)
-        credited_in = (credited_emissions or ZERO_DECIMAL).quantize(EMISS)
 
-        # Negative delta means "refund owed"; convert to positive dollars for allocation
+        # ---- Build initial refund pool (dollars) from the delta vs anchor --------
+        # Negative delta means a *decrease* in obligation; convert to +$ by negating.
         delta_emiss = (excess_new - anchor_prev).quantize(EMISS)
         money_delta = (delta_emiss * rate).quantize(MONEY)
         total_refund_vs_anchor = max(-money_delta, ZERO_DECIMAL).quantize(MONEY)
 
-        # Subtract supplementary credits already applied across these invoices since the anchor
+        # Deduct supplementary adjustments already applied since the anchor
         anchor_crv_id = invoices[0]["version_id"] if invoices else None
         invoice_ids = [i["invoice_id"] for i in invoices if "invoice_id" in i]
         already_applied = (
@@ -365,15 +354,18 @@ class DecreasedObligationHandler:
         )
         refund_pool = max(total_refund_vs_anchor - already_applied, ZERO_DECIMAL).quantize(MONEY)
 
+        # ---- Allocate newest → oldest across invoices ----------------------------
         per_invoice: list[InvoiceAdjustment] = []
-        all_cleared = True  # tracks whether every invoice ended at $0 outstanding
+        all_cleared = True            # remains True only if EVERY invoice ends at $0
+        cash_paid_total = ZERO_DECIMAL  # sum of prior CASH payments across considered invoices
 
         for inv in invoices:
-            outstanding = (inv["outstanding"] or ZERO_DECIMAL).quantize(MONEY)
-            prev_payments = (inv["paid"] or ZERO_DECIMAL).quantize(MONEY)
+            outstanding = (inv.get("outstanding") or ZERO_DECIMAL).quantize(MONEY)
+            prev_payments = (inv.get("paid") or ZERO_DECIMAL).quantize(MONEY)
+            cash_paid_total = (cash_paid_total + prev_payments).quantize(MONEY)
 
-            # If nothing left to allocate, carry current state forward
             if refund_pool <= ZERO_DECIMAL:
+                # Nothing left to apply: carry forward current state
                 all_cleared = False
                 per_invoice.append(
                     InvoiceAdjustment(
@@ -386,13 +378,13 @@ class DecreasedObligationHandler:
                 )
                 continue
 
-            # Apply as much as possible to this invoice's outstanding
+            # Apply as much as possible to this invoice
             apply_abs = min(refund_pool, outstanding).quantize(MONEY)
             net_outstanding_after = (outstanding - apply_abs).quantize(MONEY)
-            mark_fully_met = net_outstanding_after == ZERO_DECIMAL
+            mark_fully_met = (net_outstanding_after == ZERO_DECIMAL)
 
-            # Void only if fully met and no prior cash payments
-            should_void = mark_fully_met and prev_payments == ZERO_DECIMAL
+            # Void only if fully met and there were no prior CASH payments
+            should_void = mark_fully_met and (prev_payments == ZERO_DECIMAL)
 
             per_invoice.append(
                 InvoiceAdjustment(
@@ -404,24 +396,23 @@ class DecreasedObligationHandler:
                 )
             )
 
-            # Reduce the shared pool for next (older) invoice
             refund_pool = (refund_pool - apply_abs).quantize(MONEY)
-
             if not mark_fully_met:
                 all_cleared = False
 
-        # Credits: if all invoices cleared, convert remaining refund_pool to tonnes at rate.
-        over_compliance_tonnes = max(-excess_new, ZERO_DECIMAL).quantize(EMISS)
-        converted_tonnes = (
-            (refund_pool / rate).quantize(EMISS) if (all_cleared and rate > ZERO_DECIMAL) else ZERO_DECIMAL
-        )
-        credits_tonnes = (credited_in + over_compliance_tonnes + converted_tonnes).quantize(EMISS)
+        # Refundable: leftover refund dollars → tonnes:
+        #   - ALL cleared,
+        #   - and LIMITED to total prior CASH payments
+        if all_cleared and rate > ZERO_DECIMAL:
+            refundable_dollars = min(refund_pool, cash_paid_total).quantize(MONEY)
+        else:
+            refundable_dollars = ZERO_DECIMAL
 
         return AdjustmentStrategy(
             invoices=per_invoice,
-            credits_tonnes=credits_tonnes,
-            create_earned_credits=(credits_tonnes > ZERO_DECIMAL),
+            should_record_manual_handling=(refundable_dollars > ZERO_DECIMAL)
         )
+
 
     # ------------------------------------------------------------
     #  Collecting helpers
@@ -644,26 +635,22 @@ class DecreasedObligationHandler:
     @staticmethod
     def _mark_previous_version_fully_met(previous_version_id: int) -> None:
         """
-        Set the previous CRV's status to OBILGATION_FULLY_MET when its invoice reaches $0 outstanding.
+        Set the previous CRV's status to OBLIGATION_FULLY_MET when its invoice reaches $0 outstanding.
         """
         ComplianceReportVersion.objects.filter(id=previous_version_id).update(
             status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         )
-
+    
     @staticmethod
-    def _create_earned_credits(compliance_report_version_id: int, tonnes: Decimal) -> None:
+    def _record_manual_handling(
+        compliance_report_version_id: int,
+    ) -> None:
         """
-        Create an earned-credits record on the NEW CRV and set status accordingly.
+        Set requires_manual_handling refundable dollars
         """
-        crv = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
-        ComplianceEarnedCreditsService.create_earned_credits_record(
-            compliance_report_version=crv,
-            amount=int(tonnes),
-        )
         ComplianceReportVersion.objects.filter(id=compliance_report_version_id).update(
-            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+            requires_manual_handling=True,
         )
-
 
 # Concrete strategy for no significant change
 class NoChangeHandler:
@@ -786,17 +773,20 @@ class DecreasedCreditHandler:
         previous_compliance_report_version = ComplianceReportVersion.objects.get(
             report_compliance_summary=previous_summary,
         )
-        # Get the original earned credit record
-        previous_earned_credit_record = ComplianceEarnedCredit.objects.get(
+        # Get the original earned credit record (safely check existence)
+        # No credit on previous CRV can happen if:
+        # - approved credit (manual-handling path),
+        has_prev_credit = ComplianceEarnedCredit.objects.filter(
             compliance_report_version=previous_compliance_report_version
-        )
-        if not previous_earned_credit_record:
+        ).only("id").exists()
+        if not has_prev_credit:
             return False
+
         return (
             previous_summary.credited_emissions > ZERO_DECIMAL
             and new_summary.credited_emissions < previous_summary.credited_emissions
-            and previous_earned_credit_record.issuance_status != ComplianceEarnedCredit.IssuanceStatus.APPROVED
         )
+
 
     @staticmethod
     def handle(
@@ -825,6 +815,12 @@ class DecreasedCreditHandler:
         previous_earned_credit = ComplianceEarnedCredit.objects.get(
             compliance_report_version=previous_compliance_version
         )
+
+        # Previously approved → flag manual handling, do not mutate/move prior credit
+        if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
+            compliance_report_version.requires_manual_handling = True
+            compliance_report_version.save(update_fields=["status", "requires_manual_handling"])
+            return compliance_report_version
 
         # if credits weren't requested, update the previous earned credit record
         if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED:
