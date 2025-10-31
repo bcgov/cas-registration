@@ -12,19 +12,19 @@ class RegulatoryValueSchema(Schema):
 
 class ReportProductComplianceSchema(Schema):
     name: str
-    annual_production: Decimal | int
-    apr_dec_production: Decimal | int
+    annual_production: float
+    apr_dec_production: float
     emission_intensity: Decimal
-    allocated_industrial_process_emissions: Decimal | int
-    allocated_compliance_emissions: Decimal | int
+    allocated_industrial_process_emissions: float
+    allocated_compliance_emissions: float
 
 
 class ComplianceDataSchemaOut(Schema):
-    emissions_attributable_for_reporting: Decimal | int
-    reporting_only_emissions: Decimal | int
-    emissions_attributable_for_compliance: Decimal | int
-    emissions_limit: Decimal | int
-    excess_emissions: Decimal | int
-    credited_emissions: Decimal | int
+    emissions_attributable_for_reporting: float
+    reporting_only_emissions: float
+    emissions_attributable_for_compliance: float
+    emissions_limit: float
+    excess_emissions: float
+    credited_emissions: float
     regulatory_values: RegulatoryValueSchema
     products: List[ReportProductComplianceSchema]

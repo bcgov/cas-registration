@@ -25,6 +25,7 @@ from reporting.models import (
 )
 from reporting.schema.compliance_data import ComplianceDataSchemaOut
 from reporting.schema.emission_category import EmissionSummarySchemaOut
+from reporting.schema.report_emission_allocation import ReportEmissionAllocationSchemaOut
 from reporting.service.compliance_service import ComplianceService
 from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.service.report_emission_allocation_service import (
@@ -214,8 +215,8 @@ class FacilityReportSchema(ModelSchema):
     activity_data: Dict[str, ReportRawActivityDataSchema] = {}
     report_products: Dict[str, ReportProductionDataSchema] = {}
     reportnonattributableemissions_records: List[ReportNonAttributableEmissionSchema] = []
-    emission_summary: Optional[Any] = None
-    report_emission_allocation: Optional[Any] = None
+    emission_summary: Optional[EmissionSummarySchemaOut] = None
+    report_emission_allocation: Optional[ReportEmissionAllocationSchemaOut] = None
 
     @staticmethod
     def resolve_activity_data(obj: FacilityReport) -> Dict[str, ReportRawActivityData]:
@@ -283,6 +284,7 @@ class ReportAdditionalDataSchema(ModelSchema):
 class ReportNewEntrantEmissionSchema(ModelSchema):
     emission_category: str
     category_type: str
+    emission: float
 
     @staticmethod
     def resolve_emission_category(obj: ReportNewEntrantEmission) -> Optional[str]:
@@ -300,6 +302,7 @@ class ReportNewEntrantEmissionSchema(ModelSchema):
 class ReportProductionSchema(ModelSchema):
     product: str
     unit: str
+    production_amount: float
 
     @staticmethod
     def resolve_product(obj: ReportNewEntrantProduction) -> Optional[str]:

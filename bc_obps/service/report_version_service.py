@@ -150,6 +150,7 @@ class ReportVersionService:
             ReportVersion: The ReportVersion with selected related objects prefetched.
         """
         # Get operation_type in a single lightweight query
+
         operation_type = (
             ReportVersion.objects.select_related("report_operation")
             .values_list("report_operation__operation_type", flat=True)

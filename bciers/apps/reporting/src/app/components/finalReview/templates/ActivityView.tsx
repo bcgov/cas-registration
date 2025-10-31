@@ -6,6 +6,9 @@ import {
   WHITE,
 } from "@bciers/styles";
 import StatusLabel from "@bciers/components/form/fields/StatusLabel";
+import { NumberField } from "@base-ui-components/react/number-field";
+import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
+import { numberStyles } from "../formCustomization/FinalReviewStringField";
 
 const styles = {
   sourceCard: {
@@ -135,18 +138,52 @@ const renderObject = (
   }
 
   if (obj && typeof obj === "object") {
-    return Object.entries(obj).map(([key, value], idx) => (
-      <div key={`${key}-${idx}`} style={{ marginBottom: 4 }}>
-        {!excludedKeys.includes(key.toLowerCase()) && (
-          <strong style={deletedStyles}>{formatKey(key)}</strong>
-        )}
-        <span style={deletedStyles}>
-          {typeof value === "object" && value !== null
-            ? renderObject(value, key, isDeleted)
-            : ` ${String(value)}`}
-        </span>
-      </div>
-    ));
+    return Object.entries(obj).map(([key, value], idx) => {
+      const isNumberValue = typeof value === "number";
+      const isObjectOrArray = typeof value === "object" && value !== null;
+
+      return (
+        <div
+          key={`${key}-${idx}`}
+          style={{
+            marginBottom: 4,
+            ...(isNumberValue || !isObjectOrArray
+              ? { display: "flex", alignItems: "center", gap: "4px" }
+              : {}),
+          }}
+        >
+          {!excludedKeys.includes(key.toLowerCase()) && (
+            <strong style={deletedStyles}>{formatKey(key)}:</strong>
+          )}
+          {isNumberValue ? (
+            <NumberField.Root
+              name={key}
+              disabled
+              value={transformToNumberOrUndefined(value)}
+              format={{
+                maximumFractionDigits: 4,
+              }}
+            >
+              <NumberField.Group>
+                <NumberField.Input
+                  style={{
+                    ...numberStyles,
+                    ...deletedStyles,
+                  }}
+                  name={key}
+                />
+              </NumberField.Group>
+            </NumberField.Root>
+          ) : (
+            <span style={deletedStyles}>
+              {isObjectOrArray
+                ? renderObject(value, key, isDeleted)
+                : String(value)}
+            </span>
+          )}
+        </div>
+      );
+    });
   }
 
   return <span style={deletedStyles}>{String(obj)}</span>;
@@ -166,9 +203,17 @@ const renderFuels = (
     {Object.entries(sourceTypeValue).map(([key, value]) => {
       if (["fuel name", "fuel unit"].includes(key.toLowerCase())) {
         return (
-          <div key={key} style={{ marginBottom: 4 }}>
-            <strong style={deletedStyles}>{formatKey(key)}</strong>
-            <span style={deletedStyles}>{`: ${String(value)}`}</span>
+          <div
+            key={key}
+            style={{
+              marginBottom: 4,
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+            }}
+          >
+            <strong style={deletedStyles}>{formatKey(key)}:</strong>
+            <span style={deletedStyles}>{String(value)}</span>
           </div>
         );
       }

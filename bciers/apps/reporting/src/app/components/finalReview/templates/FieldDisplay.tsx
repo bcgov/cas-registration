@@ -11,6 +11,7 @@ interface FieldDisplayProps {
   unit?: string;
   showSeparator?: boolean;
   isDate?: boolean;
+  isYear?: boolean;
   isDeleted?: boolean;
   isAdded?: boolean;
   oldValue?: any;
@@ -27,6 +28,7 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
   unit,
   showSeparator = true,
   isDate = false,
+  isYear = false,
   isDeleted = false,
   oldValue,
   changeType,
@@ -72,7 +74,7 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
         }}
       >
         <label className="font-semibold">{label}</label>
-        {typeof value === "number" ? (
+        {typeof value === "number" && !isYear ? (
           <NumberField.Root
             name={label}
             disabled

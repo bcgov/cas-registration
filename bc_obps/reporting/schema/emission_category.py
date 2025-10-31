@@ -1,6 +1,5 @@
 from ninja import ModelSchema, Schema
 from reporting.models import EmissionCategory
-from decimal import Decimal
 
 
 class EmissionCategorySchema(ModelSchema):
@@ -18,15 +17,15 @@ class BasicEmissionCategoriesSchema(Schema):
     Schema for the get basic emission categories endpoint request output
     """
 
-    flaring: Decimal | int
-    fugitive: Decimal | int
-    industrial_process: Decimal | int
-    onsite_transportation: Decimal | int
-    stationary_combustion: Decimal | int
-    venting_useful: Decimal | int
-    venting_non_useful: Decimal | int
-    waste: Decimal | int
-    wastewater: Decimal | int
+    flaring: float
+    fugitive: float
+    industrial_process: float
+    onsite_transportation: float
+    stationary_combustion: float
+    venting_useful: float
+    venting_non_useful: float
+    waste: float
+    wastewater: float
 
 
 class FuelExcludedEmissionCategoriesSchema(Schema):
@@ -34,9 +33,9 @@ class FuelExcludedEmissionCategoriesSchema(Schema):
     Schema for the get fuel excluded emission categories endpoint request output
     """
 
-    woody_biomass: Decimal | int
-    excluded_biomass: Decimal | int
-    excluded_non_biomass: Decimal | int
+    woody_biomass: float
+    excluded_biomass: float
+    excluded_non_biomass: float
 
 
 class OtherExcludedEmissionCategoriesSchema(Schema):
@@ -44,8 +43,8 @@ class OtherExcludedEmissionCategoriesSchema(Schema):
     Schema for the get other excluded emission categories endpoint request output
     """
 
-    lfo_excluded: Decimal | int
-    fog_excluded: Decimal | int
+    lfo_excluded: float
+    fog_excluded: float
 
 
 class EmissionSummarySchemaOut(Schema):
@@ -53,9 +52,9 @@ class EmissionSummarySchemaOut(Schema):
     Schema for the get emission summary endpoint request output
     """
 
-    attributable_for_reporting: Decimal | int
-    attributable_for_reporting_threshold: Decimal | int
-    reporting_only_emission: Decimal | int
+    attributable_for_reporting: float
+    attributable_for_reporting_threshold: float
+    reporting_only_emission: float
     emission_categories: BasicEmissionCategoriesSchema
     fuel_excluded: FuelExcludedEmissionCategoriesSchema
     other_excluded: OtherExcludedEmissionCategoriesSchema
