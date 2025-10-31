@@ -66,7 +66,6 @@ export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
   data,
   isDeleted = false,
 }) => {
-  console.log("rawdata", data);
   // Early return if data is undefined or null
   if (!data) {
     return null;
@@ -130,8 +129,6 @@ export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
       },
     );
   }
-  console.log("transformedData", transformedData);
-
   return (
     <SectionReview
       title="Allocation of Emissions"
