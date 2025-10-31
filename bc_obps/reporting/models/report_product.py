@@ -1,3 +1,5 @@
+import typing
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from registration.models.regulated_product import RegulatedProduct
@@ -43,7 +45,9 @@ class ReportProduct(TimeStampedModel):
         db_comment="The total annual production for the product, expressed in the unit of this same model."
     )
     production_data_apr_dec = models.FloatField(
-        db_comment="The total production amount for April to December period, expressed in the unit of this same model."
+        db_comment="The total production amount for April to December period, expressed in the unit of this same model.",
+        blank=True,
+        null=True,
     )
     production_methodology = models.CharField(
         max_length=10000,
@@ -91,7 +95,7 @@ class ReportProduct(TimeStampedModel):
             ),
             models.CheckConstraint(
                 name="other_methodology_must_have_description",
-                check=~Q(
+                condition=~Q(
                     production_methodology="other",
                     production_methodology_description__isnull=True,
                 ),
@@ -104,3 +108,12 @@ class ReportProduct(TimeStampedModel):
         ]
 
     Rls = ReportProductRls
+
+    @typing.no_type_check
+    def save(self, *args, **kwargs) -> None:
+        """
+        Override the save method to validate the reporting year.
+        """
+        if self.report_version.report.reporting_year_id == 2024 and self.production_data_apr_dec is None:
+            raise ValidationError("Apr-Dec production data needs to be reported for reporting year 2024.")
+        super().save(*args, **kwargs)
