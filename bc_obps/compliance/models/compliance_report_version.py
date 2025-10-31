@@ -71,24 +71,6 @@ class ComplianceReportVersion(TimeStampedModel):
         db_comment="Boolean value identifies whether this record requires manual handling outside of the app",
     )
 
-    earned_tonnes_creditable = models.DecimalField(
-            max_digits=20,
-            decimal_places=4,
-            default=Decimal("0.0000"),
-            db_comment=(
-                "Tonnes representing a compliance surplus (over-compliance or credited). Recorded for manual processing."
-            ),
-        )
-
-    earned_tonnes_refundable = models.DecimalField(
-        max_digits=20,
-        decimal_places=4,
-        default=Decimal("0.0000"),
-        db_comment=(
-            "Tonnes attributable to a decreased-obligation refund when all related invoices have been fully cleared. Recorded for manual processing."
-        ),
-    )
-
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
         db_table_comment = "The compliance_report_version table records are generated from the compliance summary data when an emission report is submitted"

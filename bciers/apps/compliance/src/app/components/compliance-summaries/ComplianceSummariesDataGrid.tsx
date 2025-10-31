@@ -28,9 +28,9 @@ const ComplianceSummariesDataGrid = ({
     [SearchCell, isAllowedCas],
   );
 
-  // ✅ highlight rows that require manual handling
+  // Highlight rows that require manual handling
   const getRowClassName = (params: GridRowParams) =>
-    params.row?.requires_manual_handling ? "row--manual" : "";
+    params.row?.requires_manual_handling ? "row--highlight" : "";
 
   return (
     <DataGrid
@@ -40,12 +40,6 @@ const ComplianceSummariesDataGrid = ({
       columnGroupModel={columnGroup}
       paginationMode="server"
       getRowClassName={getRowClassName}
-      // Optional: styles since wrapper doesn't include them
-      sx={{
-        "& .row--manual": {
-          backgroundColor: "rgba(255,193,7,0.12)", // subtle amber
-        },
-      }}
     />
   );
 };

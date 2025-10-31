@@ -238,15 +238,11 @@ class DecreasedObligationHandler:
         # 3) Build a normalized strategy dict
         # The strategy object returned by the determination functions is the single contract used _process_adjustment_after_commit
         # invoices: list of InvoiceAdjustment entries, each with `version_id`, `applied`, `net_outstanding_after`, `mark_fully_met`, `should_void_invoice`.
-        # credits_tonnes: number of tonnes to create as earned credits.
-        # create_earned_credits: boolean flag.
+        # should_record_manual_handling: boolean flag.
 
                 
         if not invoices:
-            # Should never happen; handled by SupercedeVersionHandler
-            logger.error(
-                f"DecreasedObligationHandler skipped: no invoice compliance report {compliance_report_version.id}"
-            )            
+            # Should never happen; handled by SupercedeVersionHandler 
             return None 
         anchor_prev_excess = invoices[0]["prev_excess_emissions"]        
 
@@ -254,12 +250,11 @@ class DecreasedObligationHandler:
             new_excess_emissions=new_summary.excess_emissions,
             anchor_prev_excess=anchor_prev_excess,
             charge_rate=charge_rate,
-            credited_emissions=new_summary.credited_emissions,
             invoices=invoices,  # 0/1/many
         )
 
         # 4) Defer all side effects until after the DB transaction commits, guaranteeing consistency.
-        # All changes that touch invoices, create adjustments, mark CRV statuses or create earned credits are performed inside `_process_adjustment_after_commit`
+        # All changes that touch invoices, create adjustments, mark CRV statuses are performed inside `_process_adjustment_after_commit`
         transaction.on_commit(
             lambda: DecreasedObligationHandler._process_adjustment_after_commit(
                 compliance_report_version_id=compliance_report_version.id,
@@ -285,10 +280,6 @@ class DecreasedObligationHandler:
           - Post a signed negative adjustment (reduces outstanding).
           - If net outstanding hits zero, mark that previous CRV as FULLY_MET.
           - If fully met AND no prior CASH payments, void the invoice.
-
-        After invoices:
-          - If "create_earned_credits" is True, create earned credits on the NEW CRV
-            using "credits_tonnes".
         """
         for entry in strategy.invoices:
             applied = entry.applied
@@ -310,8 +301,8 @@ class DecreasedObligationHandler:
             if entry.should_void_invoice:
                 DecreasedObligationHandler._void_unpaid_invoices(entry.version_id)
 
-        if strategy.should_record_earned_tonnes:
-            DecreasedObligationHandler._record_earned_tonnes(compliance_report_version_id, strategy.earned_tonnes_creditable, strategy.earned_tonnes_refundable )
+        if strategy.should_record_manual_handling:
+            DecreasedObligationHandler._record_manual_handling(compliance_report_version_id )
 
     # -------------------------------
     # Version strategy
@@ -322,12 +313,11 @@ class DecreasedObligationHandler:
         new_excess_emissions: Decimal,
         anchor_prev_excess: Decimal,
         charge_rate: Decimal,
-        credited_emissions: Optional[Decimal],
         invoices: list[dict],
     ) -> AdjustmentStrategy:
         """
         Allocate a decreased-obligation refund across zero/one/many invoices 
-        and compute *creditable* and *refundable* tonnes 
+        and compute *refundable* tonnes 
 
         Key ideas
         ----------
@@ -338,19 +328,13 @@ class DecreasedObligationHandler:
             refund_pool = max(-money_delta, 0)
 
         2) Refundable tonnes come from *leftover refund dollars* after allocating to invoices, capped by the sum of prior CASH payments
-           Captured in CRV for manual handling
-        
-        3) Creditable tonnes are sourced from credited_emissions (+) any over-compliance tonnes (i.e., negative excess emmissions)
-            Captured in CRV for manual handling     
-
-        
+           Captured in CRV for manual handling          
         """
 
         # ---- Normalize inputs ----------------------------------------------------
         rate = (charge_rate or ZERO_DECIMAL).quantize(Decimal("0.00"))
         excess_new = (new_excess_emissions or ZERO_DECIMAL).quantize(EMISS)
         anchor_prev = (anchor_prev_excess or ZERO_DECIMAL).quantize(EMISS)
-        credited_in = (credited_emissions or ZERO_DECIMAL).quantize(EMISS)
 
         # ---- Build initial refund pool (dollars) from the delta vs anchor --------
         # Negative delta means a *decrease* in obligation; convert to +$ by negating.
@@ -416,27 +400,17 @@ class DecreasedObligationHandler:
             if not mark_fully_met:
                 all_cleared = False
 
-        # ---- Compute creditable & refundable tonnes ------------------------------
-        # Creditable: credits explicitly declared on the report + over-compliance only.
-        over_compliance_tonnes = max(-excess_new, ZERO_DECIMAL).quantize(EMISS)
-        earned_tonnes_creditable = (credited_in + over_compliance_tonnes).quantize(EMISS)
-
         # Refundable: leftover refund dollars → tonnes:
         #   - ALL cleared,
         #   - and LIMITED to total prior CASH payments
         if all_cleared and rate > ZERO_DECIMAL:
             refundable_dollars = min(refund_pool, cash_paid_total).quantize(MONEY)
-            earned_tonnes_refundable = (refundable_dollars / rate).quantize(EMISS)
         else:
-            earned_tonnes_refundable = ZERO_DECIMAL
+            refundable_dollars = ZERO_DECIMAL
 
         return AdjustmentStrategy(
             invoices=per_invoice,
-            earned_tonnes_creditable=earned_tonnes_creditable,
-            earned_tonnes_refundable=earned_tonnes_refundable,
-            should_record_earned_tonnes=(
-                (earned_tonnes_creditable > ZERO_DECIMAL) or (earned_tonnes_refundable > ZERO_DECIMAL)
-            ),
+            should_record_manual_handling=(refundable_dollars > ZERO_DECIMAL)
         )
 
 
@@ -668,22 +642,14 @@ class DecreasedObligationHandler:
         )
     
     @staticmethod
-    def _record_earned_tonnes(
+    def _record_manual_handling(
         compliance_report_version_id: int,
-        creditable_tonnes: Decimal,
-        refundable_tonnes: Decimal,
     ) -> None:
         """
-        Record the per-CRV tonnes:
-          - earned_tonnes_creditable: creditable tonnes from summary report
-          - earned_tonnes_refundable: refund-derived tonnes
-        We set requires_manual_handling if a creditable or refundable earned tonne exists
+        Set requires_manual_handling refundable dollars
         """
-        requires_manual = (creditable_tonnes > ZERO_DECIMAL) or (refundable_tonnes > ZERO_DECIMAL)
         ComplianceReportVersion.objects.filter(id=compliance_report_version_id).update(
-            earned_tonnes_creditable=creditable_tonnes,
-            earned_tonnes_refundable=refundable_tonnes,
-            requires_manual_handling=requires_manual,
+            requires_manual_handling=True,
         )
 
 # Concrete strategy for no significant change
@@ -807,7 +773,7 @@ class DecreasedCreditHandler:
         previous_compliance_report_version = ComplianceReportVersion.objects.get(
             report_compliance_summary=previous_summary,
         )
-        # Get the original earned credit record
+        # Get the original earned credit record (invariant: lives on the immediate previous CRV)
         previous_earned_credit_record = ComplianceEarnedCredit.objects.get(
             compliance_report_version=previous_compliance_report_version
         )
@@ -832,7 +798,23 @@ class DecreasedCreditHandler:
                 compliance_report, previous_summary
             )
         )
-        # Create a compliance_report_version record with the 'earned credits' status (status will change if credits not requested)
+        """
+        Create a supplementary ComplianceReportVersion for a decrease in credited emissions
+        and manage the related ComplianceEarnedCredit by prior issuance status.
+
+        Rules:
+          - APPROVED: Do not change/move credits. Create new CRV, flag manual handling.
+          - CREDITS_NOT_ISSUED: Adjust amount by whole-tonne delta and re-attach the same
+            credit to the new CRV; set CRV status to NO_OBLIGATION_OR_EARNED_CREDITS.
+          - In-flight (e.g., ISSUANCE_REQUESTED/CHANGES_REQUIRED): Create a new credit for
+            the new CRV and set the prior credit to DECLINED.
+
+        Returns:
+          The newly created supplementary ComplianceReportVersion.
+        """
+
+
+        # Create a new supplementary CRV
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
@@ -841,34 +823,35 @@ class DecreasedCreditHandler:
             is_supplementary=True,
             previous_version=previous_compliance_version,
         )
-        # Get the previous earned_credit record
+
+        # Fetch the credit on the immediate previous CRV (per invariant)
         previous_earned_credit = ComplianceEarnedCredit.objects.get(
             compliance_report_version=previous_compliance_version
         )
 
-        # if previously approved → flag for manual intervention
+        # If previously approved → manual intervention; do NOT move/mutate credits
         if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
             compliance_report_version.requires_manual_handling = True
-            compliance_report_version.save()
+            compliance_report_version.save(update_fields=["requires_manual_handling"])
             return compliance_report_version
 
-        # if credits weren't requested, update the previous earned credit record
+        # If credits weren't issued yet → update amount AND carry the same record forward
         if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED:
-
             previous_earned_credit.earned_credits_amount = (
                 previous_earned_credit.earned_credits_amount + credited_emission_delta
             )
-            previous_earned_credit.save()
+            # Enforce invariant: the active credit always belongs to the latest CRV
+            previous_earned_credit.compliance_report_version = compliance_report_version
+            previous_earned_credit.save(update_fields=["earned_credits_amount", "compliance_report_version"])
 
             compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
-            compliance_report_version.save()
-
+            compliance_report_version.save(update_fields=["status"])
             return compliance_report_version
 
-        # if credits were requested, create a new earned credit record and decline the old one
+        # If issuance was requested / in-flight → create new credit on the new CRV; decline the old
         ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
         previous_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.DECLINED
-        previous_earned_credit.save()
+        previous_earned_credit.save(update_fields=["issuance_status"])
 
         return compliance_report_version
 

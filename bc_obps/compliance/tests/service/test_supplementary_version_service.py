@@ -49,7 +49,7 @@ COLLECT_UNPAID_PATH = f"{DEC_OBL}._collect_unpaid_obligations_for_crv_chain_newe
 VOID_PATH = f"{DEC_OBL}._void_unpaid_invoices"
 MARK_FULLY_MET_PATH = f"{DEC_OBL}._mark_previous_version_fully_met"
 SUM_ALREADY_APPLIED_PATH = f"{DEC_OBL}._sum_already_applied_supplementary_adjustments_since_anchor"
-RECORD_EARNED_TONNES_PATH = f"{DEC_OBL}._record_earned_tonnes"
+RECORD_MANUAL_HANDLING_PATH = f"{DEC_OBL}._record_manual_handling"
 
 ON_COMMIT_PATH = "django.db.transaction.on_commit"
 ZERO_DECIMAL = Decimal("0")
@@ -63,8 +63,8 @@ GET_RATE_PATH = "compliance.service.compliance_charge_rate_service." "Compliance
 
 
 @pytest.fixture
-def mock_record_earned_tonnes():
-    with patch(RECORD_EARNED_TONNES_PATH) as mock:
+def mock_record_manual_handling():
+    with patch(RECORD_MANUAL_HANDLING_PATH) as mock:
         yield mock
 
 
@@ -681,7 +681,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_find_newest_unpaid_anchor,
         mock_get_rate,
         mock_create_adjustment,
-        mock_record_earned_tonnes,
+        mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
         mock_mark_fully_met,
@@ -759,7 +759,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Not fully met → no mark/void and no credits
         mock_mark_fully_met.assert_not_called()
         mock_void_invoices.assert_not_called()
-        mock_record_earned_tonnes.assert_not_called()
+        mock_record_manual_handling.assert_not_called()
 
         # New CRV remains at placeholder status (no earned credits created)
         refreshed = ComplianceReportVersion.objects.get(id=result.id)
@@ -770,7 +770,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_find_newest_unpaid_anchor,
         mock_get_rate,
         mock_create_adjustment,
-        mock_record_earned_tonnes,
+        mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
         mock_mark_fully_met,
@@ -847,7 +847,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_void_invoices.assert_called_once_with(prev_crv.id)
 
         # No remainder, no over-compliance, no credited_emissions → no manual handling created
-        mock_record_earned_tonnes.assert_not_called()
+        mock_record_manual_handling.assert_not_called()
 
         # New CRV stays in placeholder status (since no credits were created)
         refreshed = ComplianceReportVersion.objects.get(id=result.id)
@@ -859,7 +859,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_find_newest_unpaid_anchor,
         mock_get_rate,
         mock_create_adjustment,
-        mock_record_earned_tonnes,
+        mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
         mock_mark_fully_met,
@@ -924,7 +924,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
 
         mock_mark_fully_met.assert_not_called()
         mock_void_invoices.assert_not_called()
-        mock_record_earned_tonnes.assert_not_called()
+        mock_record_manual_handling.assert_not_called()
 
         refreshed = ComplianceReportVersion.objects.get(id=result.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -934,7 +934,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_find_newest_unpaid_anchor,
         mock_get_rate,
         mock_create_adjustment,
-        mock_record_earned_tonnes,
+        mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
         mock_mark_fully_met,
@@ -1001,7 +1001,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
 
         mock_mark_fully_met.assert_called_once_with(prev_crv.id)
         mock_void_invoices.assert_not_called()
-        mock_record_earned_tonnes.assert_not_called()
+        mock_record_manual_handling.assert_not_called()
 
         refreshed = ComplianceReportVersion.objects.get(id=result.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -1012,7 +1012,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_find_newest_unpaid_anchor,
         mock_get_rate,
         mock_create_adjustment,
-        mock_record_earned_tonnes,
+        mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
         mock_mark_fully_met,
@@ -1076,7 +1076,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
 
         mock_mark_fully_met.assert_not_called()
         mock_void_invoices.assert_not_called()
-        mock_record_earned_tonnes.assert_not_called()
+        mock_record_manual_handling.assert_not_called()
         assert (
             ComplianceReportVersion.objects.get(id=res.id).status
             == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -1087,7 +1087,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_find_newest_unpaid_anchor,
         mock_get_rate,
         mock_create_adjustment,
-        mock_record_earned_tonnes,
+        mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
         mock_mark_fully_met,
@@ -1148,7 +1148,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_mark_fully_met.assert_any_call(older.id)
         # No cash on either -> void both
         assert mock_void_invoices.call_count == 2
-        mock_record_earned_tonnes.assert_not_called()
+        mock_record_manual_handling.assert_not_called()
         assert (
             ComplianceReportVersion.objects.get(id=res.id).status
             == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -1159,7 +1159,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_find_newest_unpaid_anchor,
         mock_get_rate,
         mock_create_adjustment,
-        mock_record_earned_tonnes,
+        mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
         mock_mark_fully_met,
@@ -1256,7 +1256,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         assert mock_void_invoices.call_count == 1
 
         # Not all invoices cleared → no manual handling
-        mock_record_earned_tonnes.assert_not_called()
+        mock_record_manual_handling.assert_not_called()
 
         refreshed = ComplianceReportVersion.objects.get(id=result.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -1267,7 +1267,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_find_newest_unpaid_anchor,
         mock_get_rate,
         mock_create_adjustment,
-        mock_record_earned_tonnes,
+        mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
         mock_mark_fully_met,
@@ -1329,14 +1329,14 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         assert adj["adjustment_total"] == Decimal("-8000.00")
         mock_mark_fully_met.assert_not_called()
         mock_void_invoices.assert_not_called()
-        mock_record_earned_tonnes.assert_not_called()
+        mock_record_manual_handling.assert_not_called()
 
     def test_handle__full_refund_multi_invoices_with_payment__adjustments_all_fully_met_no_void(
         self,
         mock_find_newest_unpaid_anchor,
         mock_get_rate,
         mock_create_adjustment,
-        mock_record_earned_tonnes,
+        mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
         mock_mark_fully_met,
@@ -1396,14 +1396,14 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_mark_fully_met.assert_any_call(anchor.id)
         mock_mark_fully_met.assert_any_call(older.id)
         mock_void_invoices.assert_not_called()
-        mock_record_earned_tonnes.assert_not_called()
+        mock_record_manual_handling.assert_not_called()
 
     def test_handle__over_refund_multi_invoices_with_payment__adjustments_conditionally_met_no_void(
         self,
         mock_find_newest_unpaid_anchor,
         mock_get_rate,
         mock_create_adjustment,
-        mock_record_earned_tonnes,
+        mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
         mock_mark_fully_met,
@@ -1467,7 +1467,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # CASH present on anchor → DO NOT void
         mock_void_invoices.assert_not_called()
         # Not all cleared → no manual handling
-        mock_record_earned_tonnes.assert_not_called()
+        mock_record_manual_handling.assert_not_called()
         
 
  
@@ -1888,9 +1888,12 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
             ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
             ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
             ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+            ComplianceEarnedCredit.IssuanceStatus.APPROVED,
         ],
     )
-    def test_can_handle_decreased_credits_no_previous_approval(self, issuance_status):
+    def test_can_handle_decreased_credits(self, issuance_status):
+        """Decreased credits between summaries → returns True regardless of issuance_status"""
+    
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
@@ -1928,44 +1931,6 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
         # Assert
         assert result is True
 
-    def test_can_handle_decreased_credits_previous_approval(self):
-        # Arrange
-        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
-            self.previous_summary = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=0,
-                credited_emissions=Decimal('600'),
-                report_version=self.report_version_1,
-            )
-            self.new_summary = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=0,
-                credited_emissions=Decimal('500'),
-                report_version=self.report_version_2,
-            )
-        self.compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
-        )
-        self.previous_compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            report_compliance_summary=self.previous_summary,
-            is_supplementary=False,
-        )
-        baker.make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
-            compliance_report_version=self.previous_compliance_report_version,
-            earned_credits_amount=600,
-            issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED,
-            bccr_trading_name='Test Trading Name',
-            bccr_holding_account_id='123',
-        )
-
-        # Act
-        result = DecreasedCreditHandler.can_handle(self.new_summary, self.previous_summary)
-
-        # Assert
-        assert result is True
-
     @pytest.mark.parametrize(
         "issuance_status",
         [
@@ -1973,6 +1938,7 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
             ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
             ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
             ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+            ComplianceEarnedCredit.IssuanceStatus.APPROVED,
         ],
     )
     def test_correctly_calls_decreased_credit_handler(
@@ -2195,6 +2161,119 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
 
         # Assert
         assert result is True
+
+    def test_handle__approved_credit_marks_manual_handling(self):
+        """
+        Simulate supplementary report flow:
+        - An initial report earns APPROVED credits.
+        - A new supplementary report decreases credited emissions.
+        - The new version is created with requires_manual_handling=True.
+        """
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            prev_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                credited_emissions=Decimal('800'),
+            )
+            new_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                credited_emissions=Decimal('500'),
+            )
+
+        prev_crv = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=prev_summary,
+        )      
+        _prev_credit = baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=prev_crv,
+            earned_credits_amount=800,
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED,
+            bccr_trading_name="Test Trading Name",
+            bccr_holding_account_id="12345",
+        )
+
+        # Act
+        new_crv = DecreasedCreditHandler.handle(prev_crv.compliance_report, new_summary, prev_summary, 2)
+
+        # Assert
+        assert isinstance(new_crv, ComplianceReportVersion)
+        assert new_crv.previous_version == prev_crv
+        assert new_crv.credited_emissions_delta_from_previous == Decimal("-300")
+        assert new_crv.requires_manual_handling is True
+        old_credit = ComplianceEarnedCredit.objects.get(compliance_report_version=prev_crv)
+        assert old_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED
+
+    def test_handle_supplementary_chain_multiple_from_manual_handling(self):
+        """
+        Starting from a CRV flagged for manual handling with credits NOT issued,
+        multiple supplementary reports should:
+        - create new chained CRVs each time,
+        - keep updating the SAME earned credit record cumulatively,
+        Sequence: 700 -> 500 -> 450
+        """
+
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            s0 = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                credited_emissions=Decimal('700'),
+            )
+            s1 = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                credited_emissions=Decimal('500'),
+            )
+            s2 = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                credited_emissions=Decimal('450'),
+            )
+
+        # Base CRV already marked for manual handling
+        base_crv = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=s0,
+            requires_manual_handling=True,
+        )
+
+        # Single earned credit record, not issued yet
+        credit = baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=base_crv,
+            earned_credits_amount=Decimal('700'),
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+            bccr_trading_name="Test Trading Name",
+            bccr_holding_account_id="123",
+        )
+
+        # Act
+        # --- First supplementary: 700 -> 500 (delta -200) ---
+        crv1 = DecreasedCreditHandler.handle(base_crv.compliance_report, s1, s0, 2)
+
+        # Assert
+        assert isinstance(crv1, ComplianceReportVersion)
+        assert crv1.is_supplementary is True
+        assert crv1.previous_version == base_crv
+        assert crv1.credited_emissions_delta_from_previous == Decimal("-200")
+        assert crv1.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+
+        credit.refresh_from_db()
+        assert credit.earned_credits_amount == Decimal('500')
+        assert credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+        assert ComplianceEarnedCredit.objects.count() == 1  # no new record
+
+        # Act
+        # --- Second supplementary: 500 -> 450 (delta -50) ---
+        crv2 = DecreasedCreditHandler.handle(base_crv.compliance_report, s2, s1, 3)
+
+        # Assert
+        assert isinstance(crv2, ComplianceReportVersion)
+        assert crv2.is_supplementary is True
+        assert crv2.previous_version == crv1
+        assert crv2.credited_emissions_delta_from_previous == Decimal("-50")
+        assert crv2.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+
+        credit.refresh_from_db()
+        assert credit.earned_credits_amount == Decimal('450')
+        assert credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+        assert ComplianceEarnedCredit.objects.count() == 1  # still the same record
 
 
 class TestSupercededHandler(BaseSupplementaryVersionServiceTest):

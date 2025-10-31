@@ -196,6 +196,16 @@ const DataGrid: React.FC<Props> = ({
         height: isRowsEmpty && !loading ? "40vh" : "0",
         display: isRowsEmpty && !loading ? "block" : "none",
       },
+      // Row class styling (works with getRowClassName returning "row--highlight")
+      "& .MuiDataGrid-row.row--highlight": {
+        backgroundColor: "rgba(255,193,7,0.12)",
+      },
+      "& .MuiDataGrid-row.row--highlight:hover": {
+        backgroundColor: "rgba(255,193,7,0.18)",
+      },
+      "& .MuiDataGrid-row.row--highlight.Mui-selected": {
+        backgroundColor: "rgba(255,193,7,0.22)",
+      },
       // Allow overriding styles with sx prop
       ...sx,
     };
