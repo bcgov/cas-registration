@@ -787,9 +787,9 @@ class DecreasedCreditHandler:
             report_compliance_summary=previous_summary,
         )
         # Get the original earned credit record
-        previous_earned_credit_record = ComplianceEarnedCredit.objects.get(
+        previous_earned_credit_record = ComplianceEarnedCredit.objects.filter(
             compliance_report_version=previous_compliance_report_version
-        )
+        ).first()
         if not previous_earned_credit_record:
             return False
         return (
