@@ -773,6 +773,7 @@ class IncreasedCreditHandler:
                 ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
             ):
                 previous_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.DECLINED
+                previous_earned_credit.supplementary_declined = True
                 previous_earned_credit.save()
 
         return compliance_report_version
@@ -842,6 +843,7 @@ class DecreasedCreditHandler:
         # if credits were requested, create a new earned credit record and decline the old one
         ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
         previous_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.DECLINED
+        previous_earned_credit.supplementary_declined = True
         previous_earned_credit.save()
 
         return compliance_report_version

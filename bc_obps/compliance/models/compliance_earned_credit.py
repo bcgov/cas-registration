@@ -129,6 +129,11 @@ class ComplianceEarnedCredit(TimeStampedModel):
         db_comment="The date on which the earned credits were requested to be issued by the industry user",
     )
 
+    supplementary_declined = models.BooleanField(
+        default=False,
+        db_comment="Boolean value identifies whether this earned credit record was declined due to a supplementary report changing the amount of earned credits",
+    )
+
     history = HistoricalRecords(
         table_name='erc_history"."compliance_earned_credit_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
