@@ -48,6 +48,7 @@ Solving issues:
 ## Schemas
 
 Use generics?
+https://docs.pydantic.dev/latest/concepts/models/#generic-models
 
 ```py
 # A payload type that is a ninja schema itself
