@@ -1,3 +1,28 @@
+# [4.3.0](https://github.com/bcgov/cas-registration/compare/v4.1.0...v4.3.0) (2025-10-31)
+
+### Bug Fixes
+
+- add schedule_month to scheduled task sync ([8729eb4](https://github.com/bcgov/cas-registration/commit/8729eb48b314126f5c558c7b7786f0d5c374bcb1))
+- can access track status of issuance page when credits requested ([df4c5ac](https://github.com/bcgov/cas-registration/commit/df4c5ace05462106efa2c2a1e05ba066c6a61aee))
+- compliance emails use operation and operator name from reporting ([c7808be](https://github.com/bcgov/cas-registration/commit/c7808bed3bb086fd2901138bf7b14334b8f2a88b))
+- compliance issues after transferring an operation ([109126b](https://github.com/bcgov/cas-registration/commit/109126b58014aa765930539845b5a5afd71e2a99))
+- drop vestigial param ([2e54cf0](https://github.com/bcgov/cas-registration/commit/2e54cf07da93b48bbaeb1cdaf43d60d3f32cacac))
+- ensure tags already released to main are only immutable ([327ebfe](https://github.com/bcgov/cas-registration/commit/327ebfe10c2c079cb662889feee1138e5d23afb2))
+- explicitly set service account ([603a1eb](https://github.com/bcgov/cas-registration/commit/603a1eb157493c31e8626d0bcf9574bcd293f4d5))
+- import from correct subpackage ([1ac0107](https://github.com/bcgov/cas-registration/commit/1ac0107a82f35bf4d59f67f092b028230ab6a17b))
+- imports incompatible with Airflow 2 ([fdfe364](https://github.com/bcgov/cas-registration/commit/fdfe364162703c213f79a49a1f39d29d99f77727))
+
+### Features
+
+- consider both payments and adjustments when determining final penalty accrual end date ([7a3c084](https://github.com/bcgov/cas-registration/commit/7a3c084c5beffbeae1e96fc452ac0ce40118d6d7))
+- DecreasedCreditHandler can handle all statuses except approved ([e5eab16](https://github.com/bcgov/cas-registration/commit/e5eab161fe2007ed37c5bef50821ed36b475f1fd))
+- invoice grid for external users ([2a16c63](https://github.com/bcgov/cas-registration/commit/2a16c6350250a5e0bc6012501bc0983b2e9bbec1))
+- restrictions on updates after final analyst suggestions ([acb95cf](https://github.com/bcgov/cas-registration/commit/acb95cfe01b55055a1590ea77315d519709ee647))
+- services to send obligation due email ([c1e02b6](https://github.com/bcgov/cas-registration/commit/c1e02b679a11106fab0fa13ecd818b87e3d4e0c9))
+- services to send obligation met email ([84cf6d8](https://github.com/bcgov/cas-registration/commit/84cf6d89f5b129894fc2db41bfc8591f0c43332d))
+- services to send obligation reminder email ([026766d](https://github.com/bcgov/cas-registration/commit/026766dd9fc7f865ff90f8a25f0d853acdf4e92a))
+- update payment instructions UI with clearer language and add CleanBC logo ([f94265a](https://github.com/bcgov/cas-registration/commit/f94265a4fe5a10840e4ff287ca21bd38def6876d))
+
 # [4.2.0](https://github.com/bcgov/cas-registration/compare/v4.1.0...v4.2.0) (2025-10-15)
 
 ### Bug Fixes
