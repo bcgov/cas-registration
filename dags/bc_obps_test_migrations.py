@@ -1,12 +1,19 @@
 from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 from airflow.providers.cncf.kubernetes.operators.job import KubernetesJobOperator
-from airflow.providers.standard.operators.python import PythonOperator
-from airflow.sdk import Param
 from datetime import datetime, timedelta
 from airflow import DAG
 import os
 import sys
+
+try:
+    # Airflow 3
+    from airflow.providers.standard.operators.python import PythonOperator
+    from airflow.sdk import Param
+except ImportError:
+    # Airflow 2
+    from airflow.operators.python import PythonOperator
+    from airflow.models.param import Param
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 TWO_DAYS_AGO = datetime.now() - timedelta(days=2)
@@ -49,12 +56,12 @@ test_migrations_dag = DAG(
 # Postgres operator chart
 POSTGRES_CHART_INSTANCE = os.getenv("POSTGRES_CHART_INSTANCE", "postgres-migration-test")
 POSTGRES_CHART_SHORTNAME = os.getenv("POSTGRES_CHART_SHORTNAME", "pg-migration-test")
-POSTGRES_CHART = "cas-registration/migration-test/cas-obps-postgres-migration-test"
+POSTGRES_CHART = "cas-registration/cas-obps-postgres-migration-test"
 
 # Backend chart
 BACKEND_CHART_INSTANCE = os.getenv("BACKEND_CHART_INSTANCE", "backend-migration-test")
 BACKEND_CHART_SHORTNAME = os.getenv("BACKEND_CHART_SHORTNAME", "be-migration-test")
-BACKEND_CHART = "cas-registration/migration-test/cas-obps-backend-migration-test"
+BACKEND_CHART = "cas-registration/cas-obps-backend-migration-test"
 BACKEND_CHART_TAG = os.getenv("BACKEND_CHART_TAG")
 
 
@@ -73,7 +80,7 @@ postgres_helm_install = KubernetesJobOperator(
         "--namespace {{ params.destination_namespace }} "
         "--set sourceNamespace={{ params.source_namespace }} "
         "{{ params.postgres_chart_instance | default('postgres-migration-test') }} "
-        "cas-registration/migration-test/cas-obps-postgres-migration-test"
+        "cas-registration/cas-obps-postgres-migration-test"
     ],
     get_logs=True,
     is_delete_operator_pod=True,
@@ -116,7 +123,7 @@ backend_helm_install = KubernetesJobOperator(
         "--namespace {{ params.destination_namespace }} "
         "--set sourceNamespace={{ params.source_namespace }} "
         "{{ params.backend_chart_instance | default('backend-migration-test') }} "
-        "cas-registration/migration-test/cas-obps-backend-migration-test "
+        "cas-registration/cas-obps-backend-migration-test "
         "--set defaultImageTag={{ params.backend_chart_tag }}"
     ],
     get_logs=True,
@@ -146,8 +153,10 @@ uninstall_helm_charts = KubernetesJobOperator(
     image=K8S_IMAGE,
     cmds=["bash", "-c"],
     arguments=[
-        f"helm uninstall {POSTGRES_CHART_INSTANCE} -n {{ params.destination_namespace }} && "
-        f"helm uninstall {BACKEND_CHART_INSTANCE} -n {{ params.destination_namespace }}"
+        "helm uninstall {{ params.postgres_chart_instance | default('postgres-migration-test') }} ",
+        "--namespace {{ params.destination_namespace }} && ",
+        "helm uninstall {{ params.backend_chart_instance | default('backend-migration-test') }} ",
+        "--namespace {{ params.destination_namespace }}",
     ],
     get_logs=True,
     is_delete_operator_pod=True,
