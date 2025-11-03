@@ -56,7 +56,7 @@ class ComplianceDashboardService:
             )
             .prefetch_related(
                 "obligation__elicensing_invoice__elicensing_line_items",
-            )            
+            )
             .exclude(
                 # Exclude supplementary versions with NO_OBLIGATION_OR_EARNED_CREDITS
                 # **unless** they require manual handling
