@@ -20,6 +20,9 @@ subjects:
   - kind: ServiceAccount
     name: cas-airflow-worker
     namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: cas-airflow-worker
+    namespace: {{ .Values.airflowNamespace }}
 roleRef:
   kind: Role
   name: cas-job-status

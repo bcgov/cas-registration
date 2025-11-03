@@ -55,6 +55,7 @@ install: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESP
 										--set download-migration-test-dags.dagConfiguration="$$migrationTestDagConfig" \
 										--set download-database-reset-dag.dagConfiguration="$$resetDataDagConfig" \
 										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml \
+										--set airflowNamespace="$(AIRFLOW_NAMESPACE_PREFIX)-$(ENVIRONMENT)" \
 										--set cas-logging-sidecar.host=elasticsearch.$(GGIRCS_NAMESPACE_PREFIX)-tools.svc.cluster.local
 install:
 	@set -euo pipefail; \
