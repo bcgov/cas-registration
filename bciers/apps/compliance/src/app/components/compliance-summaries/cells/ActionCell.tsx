@@ -18,7 +18,16 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
     issuance_status: issuanceStatus,
     penalty_status: penaltyStatus,
     id,
-  } = row;
+    requires_manual_handling: requiresManualHandling,
+  } = row as ComplianceSummary & { requires_manual_handling?: boolean };
+
+  // Check if "Contact Us"
+  if (requiresManualHandling) {
+    return {
+      cellText: "Contact Us",
+      // NOTE: no basePath means "not clickable"
+    };
+  }
 
   const basePath = `/compliance-administration/compliance-summaries/${id}`;
 
@@ -117,6 +126,10 @@ const ActionCell = (params: ActionCellProps) => {
     params.row,
     params.isAllowedCas,
   );
+
+  if (!basePath) {
+    return <span>{cellText}</span>;
+  }
 
   const cell = ActionCellFactory({
     generateHref: () => basePath,

@@ -157,6 +157,7 @@ export interface ComplianceSummary {
   outstanding_balance_equivalent_value?: number;
   emissions_attributable_for_compliance?: string;
   emissions_limit?: string;
+  requires_manual_handling?: boolean;
 }
 
 export interface ComplianceAppliedUnitsData {

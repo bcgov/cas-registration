@@ -37,6 +37,7 @@ class ComplianceReportVersionListOut(ModelSchema):
     )  # for supplementary reports, this is the delta from the previous report
     issuance_status: Optional[str] = Field(None, alias=ISSUANCE_STATUS_ALIAS)
     penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
+    requires_manual_handling: Optional[bool] = None
 
     class Meta:
         model = ComplianceReportVersion
@@ -54,6 +55,7 @@ class ComplianceReportVersionOut(ModelSchema):
     outstanding_balance_tco2e: Optional[Decimal] = None
     outstanding_balance_equivalent_value: Optional[Decimal] = None
     penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
+    requires_manual_handling: Optional[bool] = None
 
     class Meta:
         model = ComplianceReportVersion
