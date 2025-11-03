@@ -1,8 +1,8 @@
-from typing import Literal, Optional, Tuple
+from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
-from reporting.api.v2 import router
-from reporting.api.v2.base_schema import ReportingBaseSchema
+from reporting.api.v2.forms.form_response_builder import FormResponseBuilder
+from reporting.api.v2.forms.form_schema import ReportingFormSchema
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.models.report_product import ReportProduct
 from reporting.schema.generic import Message
@@ -11,14 +11,12 @@ from reporting.service.report_product_service import ReportProductService
 from service.error_service import custom_codes_4xx
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 
-
-class TestSchema(ReportingBaseSchema[ProductionDataOut]):
-    some_stuff: Optional[int] = 0
+from ..router import router
 
 
 @router.get(
     "report-version/{version_id}/facilities/{facility_id}/forms/production-data",
-    response={200: TestSchema, custom_codes_4xx: Message},
+    response={200: ReportingFormSchema[ProductionDataOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for the production data page from the multiple ReportProduct rows""",
     exclude_none=True,
@@ -34,5 +32,8 @@ def get_production_data(request: HttpRequest, version_id: int, facility_id: UUID
         .all()
     )
     allowed_products = ReportProductService.get_allowed_products(version_id)
+    payload = {"report_products": report_products, "allowed_products": allowed_products}
 
-    return 200, {"report_products": report_products, "allowed_products": allowed_products}
+    response = FormResponseBuilder.build(version_id, payload)
+
+    return 200, response
