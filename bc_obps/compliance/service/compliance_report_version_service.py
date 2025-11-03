@@ -1,3 +1,4 @@
+from typing import Optional
 from registration.models.operator import Operator
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
@@ -285,3 +286,15 @@ class ComplianceReportVersionService:
             'report_compliance_summary__report_version__report__reporting_year',
             'report_compliance_summary__report_version__report_operation',
         )
+
+    @classmethod
+    def get_latest_compliance_report_version_id(cls, compliance_report_version_id: int) -> Optional[int]:
+        compliance_report_version = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
+
+        latest_compliance_report_version = (
+            ComplianceReportVersion.objects.filter(compliance_report_id=compliance_report_version.compliance_report_id)
+            .order_by("created_at")
+            .last()
+        )
+
+        return latest_compliance_report_version.id if latest_compliance_report_version else None
