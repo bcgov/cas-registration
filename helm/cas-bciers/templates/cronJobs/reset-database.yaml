@@ -6,6 +6,9 @@ metadata:
   name: reset-database
   labels: {{- include "cas-bciers.labels" . | nindent 4 }}
   namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-weight": "-10"
 spec:
   suspend: true # This cron job is intended to be triggered manually by Airflow
   schedule: "0 * * * *"
