@@ -465,6 +465,6 @@ describe("ComplianceSummariesDataGrid component", () => {
     ).toBeNull();
 
     //highlighted row class if your DataGrid passes getRowClassName
-    expect(manualRowEl!).toHaveClass("row--manual");
+    expect(manualRowEl!).toHaveClass("row--highlight");
   });
 });
