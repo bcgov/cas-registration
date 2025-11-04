@@ -9,7 +9,7 @@ def reset_dashboard_data_fn(_, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('common', '0092_notice_of_obligation_met_email_template'),
+        ('common', '0093_V4_3_0'),
     ]
 
     operations = [
