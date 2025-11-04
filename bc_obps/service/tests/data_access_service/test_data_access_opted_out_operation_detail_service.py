@@ -3,6 +3,8 @@ from unittest.mock import patch, MagicMock
 from service.data_access_service.opted_out_operation_detail_service import OptedOutOperationDataAccessService
 
 
+# Disclosure: this file was largely written by ChatGPT.
+
 @pytest.fixture
 def opted_in_operation_detail_mock():
     """Fixture for a mocked OptedInOperationDetail instance."""
@@ -36,8 +38,9 @@ def opted_out_operation_detail_data():
 # Tests for create_opted_out_operation_detail
 # ---------------------------------------------------------------------
 
-@patch("registration.services.opted_out_operation_data_access_service.OptedOutOperationDetail")
-@patch("registration.services.opted_out_operation_data_access_service.OptedInOperationDetail")
+
+@patch("service.data_access_service.opted_out_operation_detail_service.OptedOutOperationDetail")
+@patch("service.data_access_service.opted_out_operation_detail_service.OptedInOperationDetail")
 def test_create_opted_out_operation_detail(
     mock_opted_in_model,
     mock_opted_out_model,
@@ -57,9 +60,7 @@ def test_create_opted_out_operation_detail(
 
     # Assert
     mock_opted_in_model.objects.get.assert_called_once_with(id=1)
-    mock_opted_out_model.objects.create.assert_called_once_with(
-        effective_date="Start of 2026"
-    )
+    mock_opted_out_model.objects.create.assert_called_once_with(effective_date="Start of 2026")
 
     opted_in_operation_detail_mock.save.assert_called_once()
     assert result == opted_out_operation_detail_mock
@@ -68,6 +69,7 @@ def test_create_opted_out_operation_detail(
 # ---------------------------------------------------------------------
 # Tests for update_opted_out_operation_detail
 # ---------------------------------------------------------------------
+
 
 @patch("registration.services.opted_out_operation_data_access_service.update_model_instance")
 @patch("registration.services.opted_out_operation_data_access_service.OptedOutOperationDetail")
