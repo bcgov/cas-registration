@@ -33,9 +33,9 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                 total_allocated = sum(product.allocated_quantity for product in category.products)
                 if total_allocated != category.emission_total:
                     errors[
-                        f"facility_{fr.facility_id}_category_{category.emission_category_id}_allocation_mismatch"
+                        f"allocation_mismatch_facility_{fr.facility_id}_category_{category.emission_category_id}"
                     ] = ReportValidationError(
                         Severity.ERROR,
-                        f"Emissions allocated for {fr.facility_name} in '{category.emission_category_name}' category do not match reported emissions.",
+                        f"Emissions allocated for {fr.facility_name} in '{category.emission_category_name}' category do not match reported emissions. Please correct this issue on the Allocation of Emissions page.",
                     )
     return errors

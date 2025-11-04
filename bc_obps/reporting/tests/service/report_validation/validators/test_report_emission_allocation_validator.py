@@ -127,8 +127,8 @@ class TestReportEmissionAllocationValidator(TestCase):
         )
         result = validate(self.test_infrastructure.report_version)
         assert result == {
-            f"facility_{self.test_infrastructure.facility_report.facility_id}_category_{self.FLARING_CATEGORY_ID}_allocation_mismatch": ReportValidationError(
+            f"allocation_mismatch_facility_{self.test_infrastructure.facility_report.facility_id}_category_{self.FLARING_CATEGORY_ID}": ReportValidationError(
                 Severity.ERROR,
-                f"Emissions allocated for {self.test_infrastructure.facility_report.facility_name} in 'Flaring emissions' category do not match reported emissions.",
+                f"Emissions allocated for {self.test_infrastructure.facility_report.facility_name} in 'Flaring emissions' category do not match reported emissions. Please correct this issue on the Allocation of Emissions page.",
             )
         }
