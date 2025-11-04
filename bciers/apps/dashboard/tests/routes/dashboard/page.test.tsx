@@ -7,6 +7,17 @@ vi.mock("@bciers/utils/src/sessionUtils", () => ({
   getSessionRole: vi.fn(),
 }));
 
+vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
+  getReportingYear: vi.fn(() =>
+    Promise.resolve({
+      reporting_year: 2024,
+      report_due_date: "2025-05-31",
+      reporting_window_end: "2025-03-31",
+      report_due_year: 2025,
+    }),
+  ),
+}));
+
 const roles = [
   "cas_admin",
   "cas_analyst",
@@ -98,9 +109,6 @@ const tiles = [
     ],
   },
 ];
-
-const noteContent =
-  "Important: Please always ensure that the information in Registration is complete and accurate before submitting or amending reports in Reporting.";
 
 const msgContent =
   "By logging in, you have automatically requested access.Once approved, you will receive a confirmation email. You can then log back in using your IDIR.";
@@ -203,48 +211,6 @@ describe("Registration dashboard page", () => {
     expect(
       screen.getByRole("link", { name: /report problems to/i }),
     ).toBeVisible();
-  });
-
-  it("renders the Note component for industry_admin role", async () => {
-    (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(
-      "industry_admin",
-    );
-
-    render(await DashboardPage());
-
-    const note = screen.getByTestId("note");
-    expect(note).toBeVisible();
-    expect(note).toHaveTextContent(noteContent);
-  });
-
-  it("renders the Note component for industry_user role", async () => {
-    (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(
-      "industry_user",
-    );
-
-    render(await DashboardPage());
-
-    const note = screen.getByTestId("note");
-    expect(note).toBeVisible();
-    expect(note).toHaveTextContent(noteContent);
-  });
-
-  it("does not render the Note component for cas_admin", async () => {
-    (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue("cas_admin");
-
-    render(await DashboardPage());
-
-    expect(screen.queryByTestId("note")).not.toBeInTheDocument();
-  });
-
-  it("does not render the Note component for cas_analyst", async () => {
-    (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(
-      "cas_analyst",
-    );
-
-    render(await DashboardPage());
-
-    expect(screen.queryByTestId("note")).not.toBeInTheDocument();
   });
 
   it("renders the dashboard-pending-message card for cas_pending role", async () => {
