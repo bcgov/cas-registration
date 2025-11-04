@@ -61,6 +61,20 @@ CREATE_ADJUSTMENT_PATH = (
     "ComplianceAdjustmentService.create_adjustment_for_target_version"
 )
 GET_RATE_PATH = "compliance.service.compliance_charge_rate_service." "ComplianceChargeRateService.get_rate_for_year"
+ELICENSING_OBL_BASE = "compliance.service.elicensing.elicensing_obligation_service." "ElicensingObligationService"
+IS_INVOICE_DATE_REACHED_PATH = f"{ELICENSING_OBL_BASE}._is_invoice_generation_date_reached"
+
+
+@pytest.fixture
+def before_invoice_date():
+    with patch(IS_INVOICE_DATE_REACHED_PATH, return_value=False):
+        yield
+
+
+@pytest.fixture
+def after_invoice_date():
+    with patch(IS_INVOICE_DATE_REACHED_PATH, return_value=True):
+        yield
 
 
 @pytest.fixture
@@ -2912,7 +2926,11 @@ class TestSupercededHandler(BaseSupplementaryVersionServiceTest):
         assert credit_record.earned_credits_amount == Decimal('500')
         assert credit_record.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
 
-    def test_handle_supercede_obligation_success(self):
+    def test_handle_supercede_obligation_success_before_invoice_date(
+        self,
+        before_invoice_date,
+        run_on_commit_immediately,
+    ):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
@@ -2932,6 +2950,52 @@ class TestSupercededHandler(BaseSupplementaryVersionServiceTest):
             report_compliance_summary=self.previous_summary,
             is_supplementary=False,
             status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION,
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=self.previous_compliance_report_version,
+        )
+        # Act
+        new_compliance_version = SupercedeVersionHandler.handle(
+            self.previous_compliance_report_version.compliance_report, self.new_summary, self.previous_summary, 2
+        )
+        self.previous_compliance_report_version.refresh_from_db()
+        new_compliance_version.refresh_from_db()
+
+        # Assert
+        assert (
+            new_compliance_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
+        )
+        assert self.previous_compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+        assert new_compliance_version.report_compliance_summary_id == self.new_summary.id
+        assert new_compliance_version.is_supplementary is True
+        assert new_compliance_version.previous_version == self.previous_compliance_report_version
+
+    def test_handle_supercede_obligation_success_after_invoice_date(
+        self,
+        after_invoice_date,
+        run_on_commit_immediately,
+    ):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('800'),
+                credited_emissions=0,
+                report_version=self.report_version_1,
+            )
+            self.new_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('500'),
+                credited_emissions=0,
+                report_version=self.report_version_2,
+            )
+        self.previous_compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=self.previous_summary,
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
         )
         baker.make_recipe(
             'compliance.tests.utils.compliance_obligation',
