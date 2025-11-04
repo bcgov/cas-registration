@@ -7,6 +7,8 @@ from registration.models import Operation
 from reporting.models import ReportingYear
 from compliance.models import ComplianceReportVersion, ComplianceObligation, ComplianceEarnedCredit
 
+from unittest.mock import patch
+
 pytestmark = pytest.mark.django_db
 
 migration_module = importlib.import_module('compliance.migrations.0004_generate_compliance_reports')
@@ -36,7 +38,7 @@ def generate_emission_report_data(excess: Decimal, credited: Decimal, purpose: s
 
 class TestGenerateComplianceReportsMigration(TestCase):
     @override_settings(ENVIRONMENT="prod")
-    def test_generates_expected_data(self):
+    def test_generates_expected_data__before_invoice_generation_date(self):
         """Test the handle_emissions function with various scenarios."""
         # DATA SETUP
         regulated_with_emissions = generate_emission_report_data(
@@ -52,14 +54,22 @@ class TestGenerateComplianceReportsMigration(TestCase):
         # CALL MIGRATION
         from django.apps import apps
 
-        perform_migration(apps, None)
+        # Force “not yet reached” → should end as PENDING_INVOICE_CREATION
+        with patch(
+            "compliance.service.elicensing.elicensing_obligation_service."
+            "ElicensingObligationService._is_invoice_generation_date_reached",
+            return_value=False,
+        ), patch(
+            "django.db.transaction.on_commit",
+            side_effect=lambda fn: fn(),
+        ):
+            perform_migration(apps, None)
 
         # ASSERTIONS
         assert ComplianceReportVersion.objects.all().count() == 3
-        assert (
-            ComplianceReportVersion.objects.get(report_compliance_summary_id=regulated_with_emissions.id).status
-            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
-        )
+        crv_emissions = ComplianceReportVersion.objects.get(report_compliance_summary_id=regulated_with_emissions.id)
+        assert crv_emissions.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
+
         assert (
             ComplianceReportVersion.objects.get(report_compliance_summary_id=regulated_with_credits.id).status
             == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
@@ -74,6 +84,59 @@ class TestGenerateComplianceReportsMigration(TestCase):
         )
         assert ComplianceEarnedCredit.objects.all().first().earned_credits_amount == int(
             regulated_with_credits.credited_emissions
+        )
+
+    @override_settings(ENVIRONMENT="prod")
+    def test_generates_expected_data__on_or_after_invoice_generation_date(self):
+        """Same data, but simulate date reached → obligation ends as NOT_MET after integration."""
+        # DATA SETUP
+        regulated_with_emissions = generate_emission_report_data(
+            Decimal('10000'), Decimal('0'), Operation.Purposes.OBPS_REGULATED_OPERATION
+        )
+        regulated_with_credits = generate_emission_report_data(
+            Decimal('0'), Decimal('5000'), Operation.Purposes.OPTED_IN_OPERATION
+        )
+        regulated_neither = generate_emission_report_data(
+            Decimal('0'), Decimal('0'), Operation.Purposes.NEW_ENTRANT_OPERATION
+        )
+
+        # CALL MIGRATION
+        from django.apps import apps
+        from compliance.models import ComplianceObligation, ComplianceReportVersion
+
+        # Side-effect stub: when handle_obligation_integration is called and date is “reached”,
+        # simulate a successful integration by marking the CRV as NOT_MET immediately.
+        def _mark_not_met(obligation_id, compliance_period):
+            ob = ComplianceObligation.objects.get(id=obligation_id)
+            crv = ob.compliance_report_version
+            crv.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+            crv.save(update_fields=["status"])
+
+        with patch(
+            "compliance.service.elicensing.elicensing_obligation_service."
+            "ElicensingObligationService._is_invoice_generation_date_reached",
+            return_value=True,
+        ), patch(
+            "compliance.service.elicensing.elicensing_obligation_service."
+            "ElicensingObligationService.handle_obligation_integration",
+            side_effect=_mark_not_met,
+        ), patch(
+            "django.db.transaction.on_commit",
+            side_effect=lambda fn: fn(),
+        ):
+            perform_migration(apps, None)
+
+        # ASSERTIONS
+        crv_emissions = ComplianceReportVersion.objects.get(report_compliance_summary_id=regulated_with_emissions.id)
+        assert crv_emissions.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+
+        assert (
+            ComplianceReportVersion.objects.get(report_compliance_summary_id=regulated_with_credits.id).status
+            == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
+        assert (
+            ComplianceReportVersion.objects.get(report_compliance_summary_id=regulated_neither.id).status
+            == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
         )
 
     @override_settings(ENVIRONMENT="prod")
