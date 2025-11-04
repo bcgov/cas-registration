@@ -148,6 +148,7 @@ class OptedInOperationDetailIn(OptedInOperationDetailOut):
 class OptedOutOperationDetailOut(ModelSchema):
     class Meta:
         model = OptedOutOperationDetail
+        fields = ["effective_date"]
 
 
 class OptedOutOperationDetailIn(OptedOutOperationDetailOut):
