@@ -4,6 +4,7 @@ import { Box } from "@mui/material";
 import { ActivityRenderer } from "../components/ActivityRenderer";
 import { groupSourceTypeChangesByActivity } from "../utils/sourceTypeUtils";
 import { ActivityDataChangeViewProps } from "../../finalReview/templates/types";
+import { normalize } from "@reporting/src/app/components/changeReview/utils/utils";
 
 export const ActivityDataChangeView: React.FC<ActivityDataChangeViewProps> = ({
   activities,
@@ -13,9 +14,6 @@ export const ActivityDataChangeView: React.FC<ActivityDataChangeViewProps> = ({
 }) => {
   const sourceTypeChangesByActivity =
     groupSourceTypeChangesByActivity(sourceTypeChanges);
-
-  const normalize = (name: string) =>
-    (name || "").replace(/(^['"]|['"]$)/g, "").trim();
 
   return (
     <Box>
