@@ -224,7 +224,10 @@ class ApplyComplianceUnitsService:
             compliance_report=compliance_report,
             compliance_report_version=compliance_report_version,
         )
-        bccr_units = bccr_account_service.client.list_all_units(account_id=account_id)
+        compliance_period_year = compliance_report.compliance_period.start_date.year
+        bccr_units = bccr_account_service.client.list_all_units(
+            account_id=account_id, vintage_year=compliance_period_year
+        )
 
         obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(
             compliance_report_version_id
@@ -339,8 +342,9 @@ class ApplyComplianceUnitsService:
         # When fetching applied units, we have to use both ACTIVE and RETIRED states
         # ACTIVE units are those that are applied but not yet retired by industry users,
         # while RETIRED units are those that have been retired by industry users.
+        compliance_period_year = compliance_report_version.compliance_report.compliance_period.start_date.year
         applied_units = bccr_account_service.client.list_all_units(
-            account_id=bccr_subaccount_id, state_filter="ACTIVE,RETIRED"
+            account_id=bccr_subaccount_id, vintage_year=compliance_period_year, state_filter="ACTIVE,RETIRED"
         )
         formatted_units = cls._format_bccr_units_for_grid_display(applied_units.get("entities", []))
 

@@ -518,7 +518,7 @@ class TestBCCarbonRegistryAPIClient:
         )
         mock_request.return_value = mock_response
         # Act
-        result = client.list_all_units(account_id="123", limit=10, start=0)
+        result = client.list_all_units(account_id="123", vintage_year=2022, limit=10, start=0)
         # Assert
         assert result["totalEntities"] == 1
         assert len(result["entities"]) == 1
@@ -546,7 +546,7 @@ class TestBCCarbonRegistryAPIClient:
         # Act & Assert
         with caplog.at_level(logging.ERROR):
             with pytest.raises(ValueError, match="account_id must be a numeric string"):
-                client.list_all_units(account_id="invalid")
+                client.list_all_units(account_id="invalid", vintage_year=2022)
             assert "Invalid account_id" in caplog.text
 
     def test_list_all_units_no_units_in_vintage(self, authenticated_client):
@@ -566,7 +566,7 @@ class TestBCCarbonRegistryAPIClient:
         mock_request.return_value = mock_response
 
         # Act
-        result = client.list_all_units(account_id="123", limit=10, start=0)
+        result = client.list_all_units(account_id="123", vintage_year=2022, limit=10, start=0)
 
         # Assert
         assert result["totalEntities"] == 0
