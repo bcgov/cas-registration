@@ -130,6 +130,7 @@ class OptedInOperationDetailOut(ModelSchema):
             "meets_producing_gger_schedule_a1_regulated_product",
             "meets_reporting_and_regulated_obligations",
             "meets_notification_to_director_on_criteria_change",
+            "opted_out_operation",
         ]
 
 
@@ -142,6 +143,15 @@ class OptedInOperationDetailIn(OptedInOperationDetailOut):
     meets_producing_gger_schedule_a1_regulated_product: bool = Field(...)
     meets_reporting_and_regulated_obligations: bool = Field(...)
     meets_notification_to_director_on_criteria_change: bool = Field(...)
+
+
+class OptedOutOperationDetailOut(ModelSchema):
+    class Meta:
+        model = OptedOutOperationDetail
+
+
+class OptedOutOperationDetailIn(OptedOutOperationDetailOut):
+    effective_date: str = Field(...)
 
 
 class OperationOut(ModelSchema):
