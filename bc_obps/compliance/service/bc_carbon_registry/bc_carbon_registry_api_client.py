@@ -229,14 +229,20 @@ class BCCarbonRegistryAPIClient:
         )
 
     def list_all_units(
-        self, account_id: Union[str, int], limit: int = 20, start: int = 0, state_filter: str = "ACTIVE"
+        self,
+        account_id: Union[str, int],
+        vintage_year: int,
+        limit: int = 20,
+        start: int = 0,
+        state_filter: str = "ACTIVE",
     ) -> Dict:
         """
         List compliance units for a given holding account.
-        We need to list the units that are ACTIVE and issued in the last 3 years.(Using vintage filter)
+        Filters units by vintage year (units with vintage >= vintage_year).
 
         Args:
             account_id: The ID of the account
+            vintage_year: Vintage year to filter by. Filters units with vintage >= vintage_year.
             limit: Maximum number of units to return
             start: Starting index for pagination
             state_filter: State filter for units. Can be single state like "ACTIVE"
@@ -261,7 +267,7 @@ class BCCarbonRegistryAPIClient:
                     },
                     vintage={
                         "columnFilters": [
-                            ColumnFilter(filterType="Number", type="greaterThanOrEqual", filter=timezone.now().year - 3)
+                            ColumnFilter(filterType="Number", type="greaterThanOrEqual", filter=vintage_year - 3)
                         ]
                     },
                 ),

@@ -204,30 +204,14 @@ class ApplyComplianceUnitsService:
         holding_account_details = bccr_account_service.get_account_details(account_id=account_id)
         # If no holding account details are found, exit early with None values
         if not holding_account_details:
-            return ComplianceUnitsPageData(
-                bccr_trading_name=None,
-                bccr_compliance_account_id=None,
-                charge_rate=None,
-                outstanding_balance=None,
-                bccr_units=[],
-                compliance_unit_cap_limit=None,
-                compliance_unit_cap_remaining=None,
-            )
+            raise UserError("Account not found in BCCR")
 
         # Validate that this holding account should own the compliance sub-account for this operation
-        if not bccr_account_service.validate_holding_account_ownership(
+        # We don't need to raise an error here because we will create a new compliance sub-account if not found
+        bccr_account_service.validate_holding_account_ownership(
             holding_account_id=account_id,
             compliance_report_version_id=compliance_report_version_id,
-        ):
-            return ComplianceUnitsPageData(
-                bccr_trading_name=None,
-                bccr_compliance_account_id=None,
-                charge_rate=None,
-                outstanding_balance=None,
-                bccr_units=[],
-                compliance_unit_cap_limit=None,
-                compliance_unit_cap_remaining=None,
-            )
+        )
 
         # Get compliance report data for subsequent operations
         compliance_report_version = ComplianceReportVersionService.get_compliance_report_version(
@@ -240,7 +224,10 @@ class ApplyComplianceUnitsService:
             compliance_report=compliance_report,
             compliance_report_version=compliance_report_version,
         )
-        bccr_units = bccr_account_service.client.list_all_units(account_id=account_id)
+        compliance_period_year = compliance_report.compliance_period.start_date.year
+        bccr_units = bccr_account_service.client.list_all_units(
+            account_id=account_id, vintage_year=compliance_period_year
+        )
 
         obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(
             compliance_report_version_id
@@ -285,11 +272,14 @@ class ApplyComplianceUnitsService:
             UserError: If any validation or transfer step fails.
         """
         # Validate holding account ownership first
-        if not bccr_account_service.validate_holding_account_ownership(
-            holding_account_id=account_id,
-            compliance_report_version_id=compliance_report_version_id,
+        if (
+            bccr_account_service.validate_holding_account_ownership(
+                holding_account_id=account_id,
+                compliance_report_version_id=compliance_report_version_id,
+            )
+            is False
         ):
-            raise UserError("The provided holding account does not own the compliance sub-account for this operation.")
+            raise UserError("The holding account does not own the compliance sub-account for this operation.")
 
         # Check we are working with fresh elicensing data
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
@@ -352,8 +342,9 @@ class ApplyComplianceUnitsService:
         # When fetching applied units, we have to use both ACTIVE and RETIRED states
         # ACTIVE units are those that are applied but not yet retired by industry users,
         # while RETIRED units are those that have been retired by industry users.
+        compliance_period_year = compliance_report_version.compliance_report.compliance_period.start_date.year
         applied_units = bccr_account_service.client.list_all_units(
-            account_id=bccr_subaccount_id, state_filter="ACTIVE,RETIRED"
+            account_id=bccr_subaccount_id, vintage_year=compliance_period_year, state_filter="ACTIVE,RETIRED"
         )
         formatted_units = cls._format_bccr_units_for_grid_display(applied_units.get("entities", []))
 

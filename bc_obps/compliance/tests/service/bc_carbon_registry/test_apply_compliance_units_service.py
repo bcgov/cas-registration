@@ -240,19 +240,12 @@ class TestApplyComplianceUnitsService:
         # Arrange
         mock_bccr_service.get_account_details.return_value = None
 
-        # Act
-        result = ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
-            account_id="123",
-            compliance_report_version_id=1,
-        )
-
-        # Assert
-        assert isinstance(result, ComplianceUnitsPageData)
-        assert result.bccr_trading_name is None
-        assert result.bccr_compliance_account_id is None
-        assert result.charge_rate is None
-        assert result.outstanding_balance is None
-        assert result.bccr_units == []
+        # Act & Assert
+        with pytest.raises(UserError, match="Account not found in BCCR"):
+            ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
+                account_id="123",
+                compliance_report_version_id=1,
+            )
 
         # Verify that subsequent service calls were not made
         mock_compliance_report_version_service.get_compliance_report_version.assert_not_called()
@@ -704,7 +697,7 @@ class TestApplyComplianceUnitsService:
         mock_compliance_charge_rate_service,
         mock_get_obligation_data,
     ):
-        """Test that invalid holding account ownership returns empty data."""
+        """Test that invalid holding account ownership raises an error."""
         # Arrange
         mock_bccr_service.get_account_details.return_value = Mock(
             entity_id="123",
@@ -713,8 +706,10 @@ class TestApplyComplianceUnitsService:
             trading_name="Test Corp",
         )
 
-        # Mock ownership validation to return False (invalid ownership)
-        mock_bccr_service.validate_holding_account_ownership.return_value = False
+        # Mock ownership validation to raise error (invalid ownership)
+        mock_bccr_service.validate_holding_account_ownership.side_effect = UserError(
+            "The sub-account does not belong to the holding account."
+        )
 
         operation = baker.make_recipe(
             "registration.tests.utils.operation",
@@ -725,21 +720,12 @@ class TestApplyComplianceUnitsService:
             "compliance.tests.utils.compliance_report_version", compliance_report__report__operation=operation
         )
 
-        # Act
-        result = ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
-            account_id="123",
-            compliance_report_version_id=1,
-        )
-
-        # Assert
-        assert isinstance(result, ComplianceUnitsPageData)
-        assert result.bccr_trading_name is None
-        assert result.bccr_compliance_account_id is None
-        assert result.charge_rate is None
-        assert result.outstanding_balance is None
-        assert result.bccr_units == []
-        assert result.compliance_unit_cap_limit is None
-        assert result.compliance_unit_cap_remaining is None
+        # Act & Assert
+        with pytest.raises(UserError, match="The sub-account does not belong to the holding account."):
+            ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
+                account_id="123",
+                compliance_report_version_id=1,
+            )
 
         # Verify that ownership validation was called
         mock_bccr_service.validate_holding_account_ownership.assert_called_once()
@@ -780,7 +766,7 @@ class TestApplyComplianceUnitsService:
 
         # Act & Assert
         with pytest.raises(
-            UserError, match="The provided holding account does not own the compliance sub-account for this operation."
+            UserError, match="The holding account does not own the compliance sub-account for this operation."
         ):
             ApplyComplianceUnitsService.apply_compliance_units(account_id, compliance_report_version.id, payload)
 
