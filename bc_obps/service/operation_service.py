@@ -163,7 +163,7 @@ class OperationService:
     ) -> OptedOutOperationDetail:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
         if not operation.opted_in_operation.opted_out_operation:
-            raise UserError("This operation has not yet opted-out.")
+            raise UserError("This operation has no opted-out record.")
         return OptedOutOperationDataAccessService.update_opted_out_operation_detail(
             operation.opted_in_operation.opted_out_operation.id, payload
         )
