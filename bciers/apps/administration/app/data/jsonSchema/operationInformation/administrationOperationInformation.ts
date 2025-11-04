@@ -56,6 +56,7 @@ export const administrationOperationInformationUiSchema: UiSchema = {
       "potential_reporting_preface",
       "activities",
       "regulated_products",
+      "opted_out_operation_detail",
       "opted_in_operation",
       "new_entrant_application",
     ],
