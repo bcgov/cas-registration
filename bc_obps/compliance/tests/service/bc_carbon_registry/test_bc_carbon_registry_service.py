@@ -1,6 +1,7 @@
 import pytest
 from model_bakery import baker
 from unittest.mock import patch
+from common.exceptions import UserError
 from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
 from compliance.dataclass import BCCRAccountResponseDetails, BCCRComplianceAccountResponseDetails
 from registration.models.operation import Operation
@@ -270,14 +271,13 @@ class TestBCCarbonRegistryAccountService:
             ]
         }
 
-        # Act
-        result = service.validate_holding_account_ownership(
-            holding_account_id="123456789012345",
-            compliance_report_version_id=compliance_report_version.id,
-        )
+        # Act & Assert
+        with pytest.raises(UserError, match="The sub-account does not belong to the holding account."):
+            service.validate_holding_account_ownership(
+                holding_account_id="123456789012345",
+                compliance_report_version_id=compliance_report_version.id,
+            )
 
-        # Assert
-        assert result is False
         mock_api_client.get_account_details.assert_called_once_with(account_id="987654321012345")
 
     def test_validate_holding_account_ownership_no_existing_subaccount_valid(self, service, mock_api_client):
@@ -313,6 +313,7 @@ class TestBCCarbonRegistryAccountService:
             "entities": [
                 {
                     "entityId": "999",
+                    "masterAccountId": "123456789012345",  # Same as holding account
                 }
             ]
         }

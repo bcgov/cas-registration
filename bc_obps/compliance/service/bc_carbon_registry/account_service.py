@@ -1,4 +1,5 @@
 from typing import Dict, Optional, Any, TypeVar, cast
+from common.exceptions import UserError
 from compliance.models import ComplianceReport
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
@@ -168,31 +169,38 @@ class BCCarbonRegistryAccountService:
             compliance_report_version_id: The compliance report version ID to fetch and check ownership for
 
         Returns:
-            True if the holding account should own the compliance sub-account, False otherwise
+            None if the holding account should own the compliance sub-account, True if the sub-account exists and belongs to the holding account, False otherwise
+        Raises:
+            UserError: If the sub-account does not exist in BCCR or does not belong to the holding account
         """
         # Fetch compliance report from version ID
         compliance_report_version = ComplianceReportVersionService.get_compliance_report_version(
             compliance_report_version_id
         )
         compliance_report = compliance_report_version.compliance_report
-        compliance_year = compliance_report.compliance_period.end_date.year
-        boro_id = compliance_report.report.operation.bc_obps_regulated_operation.id  # type: ignore[union-attr]
 
         # If we already have a bccr_subaccount_id, check if it belongs to this holding account
         if compliance_report.bccr_subaccount_id:
             subaccount_details = self.client.get_account_details(account_id=compliance_report.bccr_subaccount_id)
             subaccount_entity = self._get_first_entity(subaccount_details)
 
-            if subaccount_entity:
-                master_account_id = subaccount_entity.get("masterAccountId")
-                return str(master_account_id) == str(holding_account_id)
+            if not subaccount_entity:
+                raise UserError("The sub-account does not exist in BCCR")
 
-        # Check if there should be a compliance account for this holding account, year, and boro_id
+            master_account_id = subaccount_entity.get("masterAccountId")
+            if str(master_account_id) != str(holding_account_id):
+                raise UserError("The sub-account does not belong to the holding account.")
+            return True
+
+        # If we don't have a bccr_subaccount_id, check if there should be one for this holding account, compliance year and boro_id
+        compliance_year = compliance_report.compliance_period.end_date.year
+        boro_id = compliance_report.report.operation.bc_obps_regulated_operation.id  # type: ignore[union-attr]
         existing_compliance_account = self.client.get_compliance_account(
             master_account_id=holding_account_id, compliance_year=compliance_year, boro_id=boro_id
         )
-
-        return bool(self._get_first_entity(existing_compliance_account))
+        if existing_compliance_account:
+            return bool(self._get_first_entity(existing_compliance_account))
+        return False
 
     def get_or_create_compliance_account(
         self,
