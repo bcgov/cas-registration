@@ -2,6 +2,12 @@ import { ChangeItem } from "../constants/types";
 import { ChangeType } from "@reporting/src/app/components/finalReview/templates/types";
 
 /**
+ * Normalize a name by removing leading/trailing quotes and trimming whitespace
+ */
+export const normalize = (name: string) =>
+  (name || "").replace(/(^['"]|['"]$)/g, "").trim();
+
+/**
  * Generate a human-readable label from a field key
  */
 export function generateDynamicLabel(fieldKey: string): string {
