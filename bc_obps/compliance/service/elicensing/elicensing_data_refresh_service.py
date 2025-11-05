@@ -19,6 +19,7 @@ from pydantic import ValidationError
 from django.utils import timezone
 
 from common.utils import format_timestamp_en_ca
+from rls.utils.manager import RlsManager
 
 logger = logging.getLogger(__name__)
 
@@ -106,36 +107,40 @@ class ElicensingDataRefreshService:
             invoice_number: The invoice number of the invoice to refresh from elicensing
             supplementary_compliance_report_version_id: ID of the supplementary compliance report version that triggered this refresh
         """
-
-        client_operator = ElicensingClientOperator.objects.get(id=client_operator_id)
-        invoice_response = elicensing_api_client.query_invoice(
-            client_id=client_operator.client_object_id, invoice_number=invoice_number
-        )
-        invoice_record, _ = ElicensingInvoice.objects.update_or_create(
-            elicensing_client_operator=client_operator,
-            invoice_number=invoice_response.invoiceNumber,
-            defaults={
-                "due_date": date.fromisoformat(invoice_response.invoicePaymentDueDate),
-                "outstanding_balance": Decimal(invoice_response.invoiceOutstandingBalance).quantize(Decimal("0.00")),
-                "invoice_fee_balance": Decimal(invoice_response.invoiceFeeBalance).quantize(Decimal("0.00")),
-                "invoice_interest_balance": Decimal(invoice_response.invoiceInterestBalance).quantize(Decimal("0.00")),
-                "last_refreshed": timezone.now(),
-            },
-        )
-        for fee in invoice_response.fees:
-            fee_record, _ = ElicensingLineItem.objects.update_or_create(
-                elicensing_invoice=invoice_record,
-                object_id=fee.feeObjectId,
-                guid=fee.feeGUID,
-                line_item_type=ElicensingLineItem.LineItemType.FEE,
+        with RlsManager.bypass_rls():
+            client_operator = ElicensingClientOperator.objects.get(id=client_operator_id)
+            invoice_response = elicensing_api_client.query_invoice(
+                client_id=client_operator.client_object_id, invoice_number=invoice_number
+            )
+            invoice_record, _ = ElicensingInvoice.objects.update_or_create(
+                elicensing_client_operator=client_operator,
+                invoice_number=invoice_response.invoiceNumber,
                 defaults={
-                    "fee_date": date.fromisoformat(fee.feeDate),
-                    "description": fee.description,
-                    "base_amount": Decimal(fee.baseAmount).quantize(Decimal("0.00")),
+                    "due_date": date.fromisoformat(invoice_response.invoicePaymentDueDate),
+                    "outstanding_balance": Decimal(invoice_response.invoiceOutstandingBalance).quantize(
+                        Decimal("0.00")
+                    ),
+                    "invoice_fee_balance": Decimal(invoice_response.invoiceFeeBalance).quantize(Decimal("0.00")),
+                    "invoice_interest_balance": Decimal(invoice_response.invoiceInterestBalance).quantize(
+                        Decimal("0.00")
+                    ),
+                    "last_refreshed": timezone.now(),
                 },
             )
-            cls._process_fee_payments(fee_record, fee.payments)
-            cls._process_fee_adjustments(fee_record, fee.adjustments, supplementary_compliance_report_version_id)
+            for fee in invoice_response.fees:
+                fee_record, _ = ElicensingLineItem.objects.update_or_create(
+                    elicensing_invoice=invoice_record,
+                    object_id=fee.feeObjectId,
+                    guid=fee.feeGUID,
+                    line_item_type=ElicensingLineItem.LineItemType.FEE,
+                    defaults={
+                        "fee_date": date.fromisoformat(fee.feeDate),
+                        "description": fee.description,
+                        "base_amount": Decimal(fee.baseAmount).quantize(Decimal("0.00")),
+                    },
+                )
+                cls._process_fee_payments(fee_record, fee.payments)
+                cls._process_fee_adjustments(fee_record, fee.adjustments, supplementary_compliance_report_version_id)
 
     @classmethod
     def _process_fee_payments(cls, fee_record: ElicensingLineItem, payments: list) -> None:
