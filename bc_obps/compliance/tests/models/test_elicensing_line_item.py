@@ -87,14 +87,26 @@ class TestElicensingLineItemRls(BaseTestCase):
             )
 
         def update_function(cursor):
-            return ElicensingLineItem.objects.filter(id=approved_elicensing_line_item.id).update(
-                base_amount=Decimal('999')
+            cursor.execute(
+                """
+                    UPDATE "erc"."elicensing_line_item"
+                    SET base_amount = %s
+                    WHERE id = %s
+                """,
+                (Decimal('999'), approved_elicensing_line_item.id),
             )
+            return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            return ElicensingLineItem.objects.filter(id=random_elicensing_line_item.id).update(
-                base_amount=Decimal('999')
+            cursor.execute(
+                """
+                    UPDATE "erc"."elicensing_line_item"
+                    SET base_amount = %s
+                    WHERE id = %s
+                """,
+                (Decimal('999'), random_elicensing_line_item.id),
             )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ElicensingLineItem,
