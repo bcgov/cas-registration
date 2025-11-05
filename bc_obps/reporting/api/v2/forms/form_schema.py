@@ -9,6 +9,11 @@ class CommonProgramDataSchema(Schema):
     report_version_id: Optional[int]
 
 
+class CommonFacilityDataSchema(Schema):
+    facility_type: Optional[str]
+
+
 class ReportingFormSchema(Schema, Generic[TPayload]):
     payload: TPayload
-    program_data: Optional[CommonProgramDataSchema] = None  # Optional
+    report_data: Optional[CommonProgramDataSchema] = None  # Optional
+    facility_data: Optional[CommonFacilityDataSchema] = None
