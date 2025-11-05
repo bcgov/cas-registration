@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from compliance.models import ElicensingLineItem, ElicensingInvoice, ElicensingPayment, ElicensingAdjustment
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
@@ -26,6 +26,7 @@ ELICENSING_REFRESH_DATA_BY_INVOICE_PATH = f"{ELICENSING_DATA_REFRESH_SERVICE}.re
 ELICENSING_REFRESH_DATA_WRAPPER = (
     f"{ELICENSING_DATA_REFRESH_SERVICE}.refresh_data_wrapper_by_compliance_report_version_id"
 )
+RLS_BYPASS_RLS_PATH = "rls.utils.manager.RlsManager.bypass_rls"
 
 
 @pytest.fixture
@@ -49,7 +50,8 @@ def mock_refresh_wrapper():
 class TestElicensingOperatorService:
     """Tests for the ElicensingDataRefreshService class"""
 
-    def test_refreshes_data_from_elicensing(self, mock_query_invoice):
+    @patch(RLS_BYPASS_RLS_PATH)
+    def test_refreshes_data_from_elicensing(self, mock_bypass_rls, mock_query_invoice):
         """Test sync_client_with_elicensing successfully creates a new client"""
         # Setup mocks
         client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
@@ -104,11 +106,14 @@ class TestElicensingOperatorService:
         )
 
         mock_query_invoice.return_value = mock_inv
+        mock_bypass_rls.return_value = MagicMock()
 
         # Call the method
         ElicensingDataRefreshService.refresh_data_by_invoice(
             client_operator_id=client_operator.id, invoice_number="inv-001"
         )
+
+        mock_bypass_rls.assert_called_once()
 
         # Assert record creation successful & accurate
         invoice = ElicensingInvoice.objects.get(invoice_number='inv-001')
