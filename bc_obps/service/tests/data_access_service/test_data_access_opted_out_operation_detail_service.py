@@ -71,8 +71,8 @@ def test_create_opted_out_operation_detail(
 # ---------------------------------------------------------------------
 
 
-@patch("registration.services.opted_out_operation_data_access_service.update_model_instance")
-@patch("registration.services.opted_out_operation_data_access_service.OptedOutOperationDetail")
+@patch("service.data_access_service.opted_out_operation_detail_service.update_model_instance")
+@patch("service.data_access_service.opted_out_operation_detail_service.OptedOutOperationDetail")
 def test_update_opted_out_operation_detail(
     mock_opted_out_model,
     mock_update_model_instance,
