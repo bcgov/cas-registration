@@ -1,5 +1,8 @@
 from dataclasses import dataclass
 import dataclasses
+from typing import Self
+import uuid
+from reporting.models.facility_report import FacilityReport
 from reporting.models.report_version import ReportVersion
 
 
@@ -13,29 +16,45 @@ from reporting.models.report_version import ReportVersion
 
 
 @dataclass
-class ProgramData:
+class ReportData:
     reporting_year: int
     report_version_id: int
+
+
+@dataclass
+class FacilityData:
+    facility_type: str
 
 
 class FormResponseBuilder:
     """
     Builder to make API responses for reporting form GET requests.
 
-    Note: This could be extended with a plugin or configuration pattern, to allow the builder to assemble multiple
-    pieces: program data, tasklist data, json schemas, etc.
+    It's meant to be a configurable
     """
 
-    @staticmethod
-    def build(report_version_id: int, payload: dict = {}) -> dict:
+    def __init__(self, report_version_id: int):
         report_version = ReportVersion.objects.select_related("report").get(pk=report_version_id)
-
-        program_data = ProgramData(
+        report_data = ReportData(
             reporting_year=report_version.report.reporting_year_id,
             report_version_id=report_version.id,
         )
 
-        return {
-            "program_data": dataclasses.asdict(program_data),
-            "payload": payload,
+        self.report_version_id = report_version_id
+        self.response = {
+            "report_data": dataclasses.asdict(report_data),
         }
+
+    def facility_data(self, facility_id: uuid.UUID) -> Self:
+        facility_report = FacilityReport.objects.get(report_version_id=self.report_version_id, facility_id=facility_id)
+        facility_data = FacilityData(facility_type=facility_report.facility_type)
+
+        self.response["facility_data"] = dataclasses.asdict(facility_data)
+        return self
+
+    def payload(self, payload: dict) -> Self:
+        self.response["payload"] = payload
+        return self
+
+    def build(self) -> dict:
+        return self.response

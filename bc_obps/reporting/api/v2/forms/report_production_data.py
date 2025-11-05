@@ -34,6 +34,6 @@ def get_production_data(request: HttpRequest, version_id: int, facility_id: UUID
     allowed_products = ReportProductService.get_allowed_products(version_id)
     payload = {"report_products": report_products, "allowed_products": allowed_products}
 
-    response = FormResponseBuilder.build(version_id, payload)
+    response = FormResponseBuilder(version_id).payload(payload).facility_data(facility_id).build()
 
     return 200, response
