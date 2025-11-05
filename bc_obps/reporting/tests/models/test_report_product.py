@@ -109,5 +109,19 @@ class ReportProductModelTest(BaseTestCase):
             production_methodology=ReportProduct.ProductionMethodologyChoices.OBPS_CALCULATOR,
         )
 
+    def test_cant_save_a_report_product_with_missing_apr_dec_data_for_2024(self):
+        facility_report = make_recipe(
+            "reporting.tests.utils.facility_report", report_version__report__reporting_year_id=2024
+        )
+        product = make_recipe("registration.tests.utils.regulated_product")
+
+        product = make(
+            ReportProduct,
+            report_version=facility_report.report_version,
+            facility_report=facility_report,
+            production_data_apr_dec=None,
+            product=product,
+        )
+
     def test_immutable_after_report_version_submitted(self):
         assert_immutable_report_version("reporting.tests.utils.report_product")
