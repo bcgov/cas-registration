@@ -51,6 +51,8 @@ class TestComplianceReportVersionEarnedCreditsEndpoint(SimpleTestCase):
             "compliance_report_version.compliance_report.compliance_period.end_date.year": kwargs.get(
                 'reporting_year', 2025
             ),
+            "supplementary_declined": kwargs.get('supplementary_declined', False),
+            "latest_compliance_report_version_id": kwargs.get('latest_compliance_report_version_id', None),
         }
 
     @patch(GET_SERVICE_PATH)
@@ -64,6 +66,7 @@ class TestComplianceReportVersionEarnedCreditsEndpoint(SimpleTestCase):
             bccr_trading_name="Test Trading Name",
             analyst_comment="Test analyst comment",
             director_comment="Test director comment",
+            latest_compliance_report_version_id=2,
         )
         mock_get_earned_credits.return_value = earned_credits
         # Act
@@ -80,6 +83,7 @@ class TestComplianceReportVersionEarnedCreditsEndpoint(SimpleTestCase):
         assert response_data["analyst_comment"] == "Test analyst comment"
         assert response_data["director_comment"] == "Test director comment"
         assert response_data["supplementary_declined"] is False
+        assert response_data["latest_compliance_report_version_id"] == 2
 
     @patch(GET_CURRENT_USER_PATH)
     @patch(UPDATE_SERVICE_PATH)

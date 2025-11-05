@@ -2,6 +2,7 @@ import logging
 from compliance.dataclass import ComplianceEarnedCreditsUpdate
 from compliance.models import ComplianceEarnedCredit, ComplianceReportVersion
 from typing import Dict, Optional
+from django.db.models import Subquery, UUIDField
 from common.exceptions import UserError
 from compliance.service.bc_carbon_registry.project_service import BCCarbonRegistryProjectService
 from compliance.service.bc_carbon_registry.credit_issuance_service import BCCarbonRegistryCreditIssuanceService
@@ -34,11 +35,23 @@ class ComplianceEarnedCreditsService:
             compliance_report_version_id: The ID of the compliance report version to retrieve earned credits data for
 
         Returns:
-            The EarnedCredits object if it exists
+            The EarnedCredits object if it exists annotated with the latest compliance report version id
         """
-        earned_credits_record = ComplianceEarnedCredit.objects.filter(
-            compliance_report_version_id=compliance_report_version_id
-        ).first()
+        compliance_report_version = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
+        latest_compliance_report_version_subquery = (
+            ComplianceReportVersion.objects.filter(compliance_report_id=compliance_report_version.compliance_report_id)
+            .order_by("-id")
+            .values("id")[:1]
+        )
+        earned_credits_record = (
+            ComplianceEarnedCredit.objects.filter(compliance_report_version_id=compliance_report_version_id)
+            .annotate(
+                latest_compliance_report_version_id=Subquery(
+                    latest_compliance_report_version_subquery, output_field=UUIDField()
+                )
+            )
+            .first()
+        )
         return earned_credits_record
 
     @classmethod

@@ -5,7 +5,6 @@ from compliance.constants import COMPLIANCE
 from compliance.models import ComplianceEarnedCredit
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
-from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from registration.schema.generic import Message
 from compliance.api.router import router
 from typing import Optional
@@ -26,19 +25,11 @@ from compliance.api.permissions import (
 )
 def get_compliance_report_version_earned_credits(
     request: HttpRequest, compliance_report_version_id: int
-) -> Tuple[int, Optional[ComplianceEarnedCreditsOut]]:
+) -> Tuple[int, Optional[ComplianceEarnedCredit]]:
     compliance_earned_credits = ComplianceEarnedCreditsService.get_earned_credit_data_by_report_version(
         compliance_report_version_id
     )
-    if compliance_earned_credits is not None and compliance_earned_credits.supplementary_declined is True:
-        latest_compliance_report_version_id = ComplianceReportVersionService.get_latest_compliance_report_version_id(
-            compliance_report_version_id
-        )
-
-    response = ComplianceEarnedCreditsOut.from_orm(compliance_earned_credits)
-    response.latest_compliance_report_version_id = latest_compliance_report_version_id
-
-    return 200, response
+    return 200, compliance_earned_credits
 
 
 @router.put(
