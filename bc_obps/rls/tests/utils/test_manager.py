@@ -184,3 +184,22 @@ class TestRlsManager(TestCase):
         mock_drop_policies.assert_called_once()
         mock_reset_privileges_for_roles.assert_called_once()
         mock_apply_rls.assert_called_once()
+
+    @patch('rls.utils.manager.settings')
+    @patch('django.db.connection.cursor')
+    def test_bypass_rls(self, mock_cursor, mock_settings):
+        mock_settings.DB_USER = 'db_user'
+        mock_cursor_instance = mock_cursor.return_value.__enter__.return_value
+        # Mock the fetchone to return the original role
+        mock_cursor_instance.fetchone.return_value = ['original_user']
+
+        # Test that bypass_rls works as a context manager
+        with RlsManager.bypass_rls():
+            pass
+
+        # Verify that SELECT current_user was called first
+        mock_cursor_instance.execute.assert_any_call("SELECT current_user")
+        # Verify that set role was called with DB_USER
+        mock_cursor_instance.execute.assert_any_call(SQL("set role {}").format(Identifier('db_user')))
+        # Verify that set role was called to restore original role
+        mock_cursor_instance.execute.assert_any_call(SQL("set role {}").format(Identifier('original_user')))
