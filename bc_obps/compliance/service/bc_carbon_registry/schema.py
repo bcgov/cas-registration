@@ -278,3 +278,4 @@ class SubAccountPayload(BaseModel):
     transfer_approval_required: Optional[bool] = True
     disable_outgoing_transfer: Optional[bool] = False
     terms_conditions: Optional[bool] = True
+    newRecord: Optional[bool] = True
