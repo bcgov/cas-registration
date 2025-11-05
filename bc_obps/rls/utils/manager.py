@@ -13,13 +13,19 @@ class RlsManager:
     @staticmethod
     @contextmanager
     def bypass_rls() -> Any:
+        original_role = None
         with connection.cursor() as cursor:
+            cursor.execute("SELECT current_user")
+            original_role = cursor.fetchone()[0]
             cursor.execute(SQL("set role {}").format(Identifier(settings.DB_USER)))
         try:
             yield
         finally:
             with connection.cursor() as cursor:
-                cursor.execute("reset role;")
+                if original_role:
+                    cursor.execute(SQL("set role {}").format(Identifier(original_role)))
+                else:
+                    cursor.execute("reset role;")
 
     @staticmethod
     def reset_privileges_for_roles() -> None:
