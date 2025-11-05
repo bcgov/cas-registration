@@ -1,8 +1,8 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
-from reporting.api.v2.forms.form_response_builder import FormResponseBuilder
-from reporting.api.v2.forms.form_schema import ReportingFormSchema
+from .form_response_builder import FormResponseBuilder
+from .form_schema import ReportingFormSchema
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.models.report_product import ReportProduct
 from reporting.schema.generic import Message

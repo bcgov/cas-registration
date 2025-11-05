@@ -7,7 +7,6 @@ import { getReportInformationTasklist } from "@reporting/src/app/utils/getReport
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
 import { getOverlappingIndustrialProcessEmissions } from "@reporting/src/app/utils/getOverlappingIndProcessEmissions";
-import { getFacilityReportDetails } from "../../utils/getFacilityReportDetails";
 
 export default async function ProductionDataPage({
   version_id,
@@ -15,22 +14,25 @@ export default async function ProductionDataPage({
 }: HasFacilityId) {
   const response = await getProductionData(version_id, facility_id);
 
-  const allowedProductNames = response.allowed_products.map((p) => p.name);
-  const allowedProducts = response.allowed_products.map((p) => ({
+  const allowedProductNames = response.payload.allowed_products.map(
+    (p) => p.name,
+  );
+  const allowedProducts = response.payload.allowed_products.map((p) => ({
     product_id: p.id,
     product_name: p.name,
     unit: p.unit,
   }));
 
-  const facilityType = (await getFacilityReportDetails(version_id, facility_id))
-    .facility_type;
+  const facilityType = response.facility_data.facility_type;
 
   const schema: any = buildProductionDataSchema(
+    response.report_data.reporting_year,
     "Jan 1",
     "Dec 31",
     allowedProductNames,
     facilityType,
   );
+
   const tasklistData = await getReportInformationTasklist(
     version_id,
     facility_id,
@@ -68,8 +70,9 @@ export default async function ProductionDataPage({
       report_version_id={version_id}
       facility_id={facility_id}
       facilityType={facilityType}
+      reportingYear={response.report_data.reporting_year}
       allowedProducts={allowedProducts}
-      initialData={response.report_products}
+      initialData={response.payload.report_products}
       schema={schema}
       navigationInformation={navInfo}
       isPulpAndPaper={isPulpAndPaper}

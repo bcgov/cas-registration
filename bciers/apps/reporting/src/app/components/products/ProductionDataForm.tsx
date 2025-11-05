@@ -2,7 +2,7 @@
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { useState } from "react";
 import { RJSFSchema } from "@rjsf/utils";
-import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
+import { buildProductionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { ProductData } from "@bciers/types/form/productionData";
 import { postProductionData } from "@bciers/actions/api";
 import { NavigationInformation } from "../taskList/types";
@@ -11,6 +11,7 @@ interface Props {
   report_version_id: number;
   facility_id: string;
   facilityType: string;
+  reportingYear: number;
   allowedProducts: { product_id: number; product_name: string }[];
   initialData: ProductData[];
   schema: RJSFSchema;
@@ -23,6 +24,7 @@ const ProductionDataForm: React.FC<Props> = ({
   report_version_id,
   facility_id,
   facilityType,
+  reportingYear,
   schema,
   allowedProducts,
   initialData,
@@ -97,7 +99,7 @@ const ProductionDataForm: React.FC<Props> = ({
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
       schema={schema}
-      uiSchema={productionDataUiSchema}
+      uiSchema={buildProductionDataUiSchema(reportingYear)}
       formData={formData}
       baseUrl={"#"}
       cancelUrl={"#"}

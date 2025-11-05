@@ -6,12 +6,8 @@ import {
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
-import {
-  buildProductionDataSchema2024,
-  productionDataUiSchema2024,
-} from "./2024/productionData";
 
-const buildProductionDataSchemaDefault = (
+export const buildProductionDataSchema2024 = (
   compliance_period_start: string,
   compliance_period_end: string,
   product_selection: string[],
@@ -126,29 +122,7 @@ const buildProductionDataSchemaDefault = (
   } as RJSFSchema;
 };
 
-export const buildProductionDataSchema = (
-  reporting_year: number,
-  compliance_period_start: string,
-  compliance_period_end: string,
-  product_selection: string[],
-  facility_type: string,
-) => {
-  if (reporting_year == 2024)
-    return buildProductionDataSchema2024(
-      compliance_period_start,
-      compliance_period_end,
-      product_selection,
-      facility_type,
-    );
-  return buildProductionDataSchemaDefault(
-    compliance_period_start,
-    compliance_period_end,
-    product_selection,
-    facility_type,
-  );
-};
-
-const productionDataUiSchemaDefault: UiSchema = {
+export const productionDataUiSchema2024: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   product_selection_title: {
@@ -196,11 +170,4 @@ const productionDataUiSchemaDefault: UiSchema = {
       },
     },
   },
-};
-
-export const buildProductionDataUiSchema = (reporting_year: number) => {
-  if (reporting_year == 2024) {
-    return productionDataUiSchema2024;
-  }
-  return productionDataUiSchemaDefault;
 };
