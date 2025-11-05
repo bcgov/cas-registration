@@ -32,6 +32,7 @@ class OptedInOperationDetailModelTest(BaseTestCase):
                 None,
                 None,
             ),
+            ("opted_out_operation", "opted out operation", None, None),
             ("created_at", "created at", None, None),
             ("updated_at", "updated at", None, None),
             ("archived_at", "archived at", None, None),
