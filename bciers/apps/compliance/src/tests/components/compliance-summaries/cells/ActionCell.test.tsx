@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import ActionCell from "@/compliance/src/app/components/compliance-summaries/cells/ActionCell";
 import { ComplianceSummary } from "@/compliance/src/app/types";
-import { IssuanceStatus } from "@bciers/utils/src/enums";
+import { IssuanceStatus, PenaltyStatus } from "@bciers/utils/src/enums";
 
 describe("ActionCell", () => {
   interface ActionCellParams extends GridRenderCellParams {
@@ -19,6 +19,7 @@ describe("ActionCell", () => {
     obligation_id?: string,
     status?: string,
     issuance_status?: string,
+    penalty_status?: PenaltyStatus,
   ): ActionCellParams =>
     ({
       id: id,
@@ -27,6 +28,7 @@ describe("ActionCell", () => {
         obligation_id,
         status,
         issuance_status,
+        penalty_status,
       } as ComplianceSummary,
       isAllowedCas: isAllowedCas,
     }) as ActionCellParams;
@@ -52,6 +54,23 @@ describe("ActionCell", () => {
             ),
           ),
         );
+        expectLink(
+          "Manage Obligation",
+          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+        );
+      });
+
+      it("displays 'Manage Obligation' when obligation is fully met and penalty is accruing for external user", () => {
+        const params = createMockParams(
+          123,
+          false,
+          "24-0001-1-1",
+          "Obligation fully met",
+          undefined,
+          PenaltyStatus.ACCRUING,
+        );
+
+        render(ActionCell(params));
         expectLink(
           "Manage Obligation",
           "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",

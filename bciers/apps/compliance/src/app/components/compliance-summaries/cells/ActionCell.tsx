@@ -4,6 +4,7 @@ import { ComplianceSummary } from "@/compliance/src/app/types";
 import {
   ComplianceSummaryStatus,
   IssuanceStatus,
+  PenaltyStatus,
 } from "@bciers/utils/src/enums";
 
 interface ActionCellProps extends GridRenderCellParams<ComplianceSummary> {
@@ -15,10 +16,16 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
     obligation_id: obligationId,
     status,
     issuance_status: issuanceStatus,
+    penalty_status: penaltyStatus,
     id,
   } = row;
 
   const basePath = `/compliance-administration/compliance-summaries/${id}`;
+
+  const isPenaltyAccruingOrNotPaid = [
+    PenaltyStatus.ACCRUING,
+    PenaltyStatus.NOT_PAID,
+  ].some((s) => s === penaltyStatus);
 
   // Obligation logic
   if (obligationId) {
@@ -30,7 +37,11 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
           cellText: "Pending Invoice Creation",
           basePath: "#",
         };
-      } else if (status === ComplianceSummaryStatus.OBLIGATION_NOT_MET) {
+      } else if (
+        status === ComplianceSummaryStatus.OBLIGATION_NOT_MET ||
+        (status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET &&
+          isPenaltyAccruingOrNotPaid)
+      ) {
         return {
           cellText: "Manage Obligation",
           basePath: `${basePath}/review-compliance-obligation-report`,
