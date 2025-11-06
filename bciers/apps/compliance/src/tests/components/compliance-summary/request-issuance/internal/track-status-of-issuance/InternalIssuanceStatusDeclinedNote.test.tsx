@@ -51,6 +51,26 @@ describe("InternalIssuanceStatusDeclinedNote", () => {
     }
   });
 
+  it("displays the correct text content when the issuance is declined because an industry user submits a supplementary report", () => {
+    render(
+      <InternalIssuanceStatusDeclinedNote
+        formContext={{
+          analystSuggestion: AnalystSuggestion.READY_TO_APPROVE,
+          supplementaryDeclined: true,
+        }}
+      />,
+    );
+
+    const declinedNoteTextPatterns = [
+      /This issuance request is automatically declined because a supplementary/i,
+      /report was submitted./i,
+    ];
+
+    for (const textPattern of declinedNoteTextPatterns) {
+      expect(screen.getByText(textPattern)).toBeVisible();
+    }
+  });
+
   it("displays the AlertIcon with correct props", () => {
     render(
       <InternalIssuanceStatusDeclinedNote

@@ -12,7 +12,6 @@ import { IssuanceStatusDeclinedNote } from "@/compliance/src/app/components/comp
 import { IssuanceStatusChangesRequiredNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusChangesRequiredNote";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
-import { IssuanceStatusSupplementaryDeclinedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusSupplementaryDeclinedNote";
 
 export const trackStatusOfIssuanceSchema: RJSFSchema = {
   type: "object",
@@ -26,37 +25,6 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
 
   dependencies: {
     issuance_status: {
-      allOf: [
-        {
-          if: {
-            properties: {
-              issuance_status: { const: IssuanceStatus.DECLINED },
-              supplementary_declined: { const: true },
-            },
-          },
-          then: {
-            properties: {
-              issuance_status: { const: IssuanceStatus.DECLINED },
-              supplementary_declined_note: readOnlyStringField(),
-            },
-          },
-        },
-        {
-          if: {
-            properties: {
-              issuance_status: { const: IssuanceStatus.DECLINED },
-              supplementary_declined: { const: false },
-            },
-          },
-          then: {
-            properties: {
-              issuance_status: { const: IssuanceStatus.DECLINED },
-              declined_note: readOnlyStringField(),
-              director_comment: readOnlyStringField("Director's Comment:"),
-            },
-          },
-        },
-      ],
       oneOf: [
         {
           properties: {
@@ -76,6 +44,13 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
           properties: {
             issuance_status: { enum: [IssuanceStatus.ISSUANCE_REQUESTED] },
             awaiting_note: readOnlyStringField(),
+          },
+        },
+        {
+          properties: {
+            issuance_status: { enum: [IssuanceStatus.DECLINED] },
+            declined_note: readOnlyStringField(),
+            director_comment: readOnlyStringField("Director's Comment:"),
           },
         },
       ],
@@ -111,10 +86,6 @@ export const trackStatusOfIssuanceUiSchema: UiSchema = {
   },
   declined_note: {
     "ui:widget": IssuanceStatusDeclinedNote,
-    "ui:options": { label: false, inline: true },
-  },
-  supplementary_declined_note: {
-    "ui:widget": IssuanceStatusSupplementaryDeclinedNote,
     "ui:options": { label: false, inline: true },
   },
   changes_required_note: {

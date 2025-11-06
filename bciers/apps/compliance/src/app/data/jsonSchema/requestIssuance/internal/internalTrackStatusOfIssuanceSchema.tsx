@@ -8,7 +8,6 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { InternalIssuanceStatusApprovedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/track-status-of-issuance/InternalIssuanceStatusApprovedNote";
 import { InternalIssuanceStatusDeclinedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/track-status-of-issuance/InternalIssuanceStatusDeclinedNote";
-import { InternalIssuanceStatusSupplementaryDeclinedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/track-status-of-issuance/InternalIssuanceStatusSupplementaryDeclinedNote";
 import { IssuanceStatus, AnalystSuggestion } from "@bciers/utils/src/enums";
 import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
 
@@ -27,62 +26,6 @@ export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
 
   dependencies: {
     issuance_status: {
-      allOf: [
-        {
-          if: {
-            properties: {
-              issuance_status: { const: IssuanceStatus.DECLINED },
-              supplementary_declined: { const: true },
-            },
-          },
-          then: {
-            properties: {
-              issuance_status: { const: IssuanceStatus.DECLINED },
-              supplementary_declined_note: readOnlyStringField(),
-            },
-          },
-        },
-        {
-          if: {
-            properties: {
-              issuance_status: { const: IssuanceStatus.DECLINED },
-              supplementary_declined: { const: false },
-            },
-          },
-          then: {
-            properties: {
-              issuance_status: {
-                enum: [IssuanceStatus.DECLINED],
-              },
-              declined_note: readOnlyStringField(),
-            },
-            allOf: [
-              {
-                if: {
-                  properties: {
-                    analyst_suggestion: {
-                      const: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
-                    },
-                    is_internal_reviewer: { const: true },
-                  },
-                },
-                then: {
-                  properties: {
-                    analyst_comment: readOnlyStringField("Analyst's Comment:"),
-                  },
-                },
-                else: {
-                  properties: {
-                    director_comment: readOnlyStringField(
-                      "Director's Comment:",
-                    ),
-                  },
-                },
-              },
-            ],
-          },
-        },
-      ],
       oneOf: [
         {
           properties: {
@@ -92,6 +35,36 @@ export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
             approved_note: readOnlyStringField(),
             director_comment: readOnlyStringField("Director's Comment:"),
           },
+        },
+        {
+          properties: {
+            issuance_status: {
+              enum: [IssuanceStatus.DECLINED],
+            },
+            declined_note: readOnlyStringField(),
+          },
+          allOf: [
+            {
+              if: {
+                properties: {
+                  analyst_suggestion: {
+                    const: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+                  },
+                  is_internal_reviewer: { const: true },
+                },
+              },
+              then: {
+                properties: {
+                  analyst_comment: readOnlyStringField("Analyst's Comment:"),
+                },
+              },
+              else: {
+                properties: {
+                  director_comment: readOnlyStringField("Director's Comment:"),
+                },
+              },
+            },
+          ],
         },
       ],
     },
@@ -106,7 +79,6 @@ export const internalTrackStatusOfIssuanceUiSchema: UiSchema = {
     "status_header",
     "approved_note",
     "declined_note",
-    "supplementary_declined_note",
     "earned_credits_amount",
     "issuance_status",
     "bccr_trading_name",
@@ -124,10 +96,6 @@ export const internalTrackStatusOfIssuanceUiSchema: UiSchema = {
   },
   declined_note: {
     "ui:widget": InternalIssuanceStatusDeclinedNote,
-    "ui:options": { label: false, inline: true },
-  },
-  supplementary_declined_note: {
-    "ui:widget": InternalIssuanceStatusSupplementaryDeclinedNote,
     "ui:options": { label: false, inline: true },
   },
   earned_credits: commonReadOnlyOptions,
