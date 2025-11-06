@@ -480,8 +480,20 @@ class PenaltyCalculationService:
             raise ValueError("No interest rates configured in the system")
 
         def get_rate_for_date(date_to_check: date) -> Decimal:
+            m = date_to_check.month
+            y = date_to_check.year
+            match m:
+                case 1 | 2 | 3:
+                    reference_date = date(y - 1, 12, 15)
+                case 4 | 5 | 6:
+                    reference_date = date(y, 3, 15)
+                case 7 | 8 | 9:
+                    reference_date = date(y, 6, 15)
+                case 10 | 11 | 12:
+                    reference_date = date(y, 9, 15)
+
             for rate in interest_rates:
-                if rate.start_date <= date_to_check <= rate.end_date:
+                if rate.start_date <= reference_date <= rate.end_date:
                     return rate.interest_rate
             return ElicensingInterestRate.objects.filter(is_current_rate=True).first().interest_rate  # type: ignore[union-attr]
 

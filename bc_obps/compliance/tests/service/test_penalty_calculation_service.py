@@ -496,7 +496,7 @@ class TestPenaltyCalculationService:
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
         mock_get_submission_date.return_value = date(2025, 3, 15)
 
-        # Rate 1: Jan 1, 2024 → Feb 28, 2025 at 6.95% (should apply to Dec, Jan, Feb)
+        # Rate 1: Jan 1, 2024 → Feb 28, 2025 at 6.95
         baker.make_recipe(
             "compliance.tests.utils.elicensing_interest_rate",
             start_date=date(2024, 1, 1),
@@ -505,20 +505,29 @@ class TestPenaltyCalculationService:
             is_current_rate=False,
         )
 
-        # Rate 2: Mar 1, 2025 → Dec 31, 2025 at 7.95% (should apply to Mar, Apr)
+        # Rate 2: Mar 1, 2025 → May 31, 2025 at 7.95%
         baker.make_recipe(
             "compliance.tests.utils.elicensing_interest_rate",
             start_date=date(2025, 3, 1),
-            end_date=date(2025, 12, 31),
+            end_date=date(2025, 5, 31),
             interest_rate=Decimal("0.0795"),
+            is_current_rate=False,
+        )
+
+        # Rate 3: Jun 1, 2025 → Dec 31, 2025 at 8.25%
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_interest_rate",
+            start_date=date(2025, 6, 1),
+            end_date=date(2025, 12, 31),
+            interest_rate=Decimal("0.0825"),
             is_current_rate=True,
         )
 
-        # Expected: Dec, Jan, Feb use 6.95%; Mar, Apr use 7.95%
+        # Expected: Dec, Jan, Feb, Mar use 6.95%; Apr, May, Jun use 7.95%; Jul uses 8.25%
         PenaltyCalculationService._calculate_late_submission_penalty(
             obligation=self.obligation,
             accrual_start_date=date(2024, 12, 1),
-            final_accrual_date=date(2025, 4, 14),
+            final_accrual_date=date(2025, 7, 14),
             persist_penalty_data=True,
         )
 
@@ -530,9 +539,9 @@ class TestPenaltyCalculationService:
         assert penalty_record.accrual_frequency == CompliancePenalty.AccrualFrequency.MONTHLY
         assert penalty_record.is_compounding is True
         assert penalty_record.accrual_start_date == date(2024, 12, 1)
-        assert penalty_record.accrual_final_date == date(2025, 4, 14)
-        assert penalty_record.penalty_amount == Decimal("31002.04")
-        assert penalty_record.compliance_penalty_accruals.count() == 5
+        assert penalty_record.accrual_final_date == date(2025, 7, 14)
+        assert penalty_record.penalty_amount == Decimal("51019.63")
+        assert penalty_record.compliance_penalty_accruals.count() == 8
 
         # Verify each accrual used correct interest rate
         accruals = penalty_record.compliance_penalty_accruals.order_by('date')
@@ -549,13 +558,25 @@ class TestPenaltyCalculationService:
         assert accruals[2].date == date(2025, 2, 1)
         assert accruals[2].interest_rate == Decimal("0.0058")
 
-        # Mar 2025: 7.95% / 12 = 0.006625
+        # Mar 2025: 6.95% / 12 = 0.005791
         assert accruals[3].date == date(2025, 3, 1)
-        assert accruals[3].interest_rate == Decimal("0.0066")
+        assert accruals[3].interest_rate == Decimal("0.0058")
 
         # Apr 2025: 7.95% / 12
         assert accruals[4].date == date(2025, 4, 1)
         assert accruals[4].interest_rate == Decimal("0.0066")
+
+        # May 2025: 7.95% / 12
+        assert accruals[5].date == date(2025, 5, 1)
+        assert accruals[5].interest_rate == Decimal("0.0066")
+
+        # Jun 2025: 7.95% / 12
+        assert accruals[6].date == date(2025, 6, 1)
+        assert accruals[6].interest_rate == Decimal("0.0066")
+
+        # Jul 2025: 8.25% / 12 = 0.006875
+        assert accruals[7].date == date(2025, 7, 1)
+        assert accruals[7].interest_rate == Decimal("0.0069")
 
     def test_get_last_supplementary_submission_date_with_early_submission(self):
         """Test _get_last_supplementary_submission_date returns None when supplementary is submitted before deadline"""
