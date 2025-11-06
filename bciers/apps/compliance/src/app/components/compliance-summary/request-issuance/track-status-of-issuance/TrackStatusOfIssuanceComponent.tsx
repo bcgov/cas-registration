@@ -39,6 +39,7 @@ export default function TrackStatusOfIssuanceComponent({
         analystSuggestion: data.analyst_suggestion,
         latestComplianceReportVersionId:
           data.latest_compliance_report_version_id,
+        supplementaryDeclined: data.supplementary_declined,
       }}
     >
       <ComplianceStepButtons

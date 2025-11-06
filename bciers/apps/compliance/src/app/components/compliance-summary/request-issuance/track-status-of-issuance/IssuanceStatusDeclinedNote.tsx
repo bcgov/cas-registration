@@ -11,12 +11,27 @@ import { AnalystSuggestion } from "@bciers/utils/src/enums";
 type Props = {
   formContext?: {
     analystSuggestion?: AnalystSuggestion;
+    latestComplianceReportVersionId?: number;
+    supplementaryDeclined?: boolean;
   };
 };
 
 export const IssuanceStatusDeclinedNote = (props: Props) => {
   const analystSuggestion = props.formContext?.analystSuggestion;
-  return (
+  const latestComplianceReportVersionId =
+    props.formContext?.latestComplianceReportVersionId;
+  const supplementaryDeclined = props.formContext?.supplementaryDeclined;
+  const path = `/compliance/compliance-administration/compliance-summaries/${latestComplianceReportVersionId}/review-compliance-earned-credits-report`;
+
+  return supplementaryDeclined ? (
+    <AlertNote>
+      This issuance request is declined because you submitted a supplementary
+      report. Please{" "}
+      <Link href={path} className="text-bc-link-blue decoration-bc-link-blue">
+        submit a new issuance of earned credits request.
+      </Link>
+    </AlertNote>
+  ) : (
     <AlertNote>
       <>
         Your request is declined. The earned credits will not be issued to your
