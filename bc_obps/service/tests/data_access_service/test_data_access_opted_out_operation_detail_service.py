@@ -5,6 +5,7 @@ from service.data_access_service.opted_out_operation_detail_service import Opted
 
 # Disclosure: this file was largely written by ChatGPT.
 
+
 @pytest.fixture
 def opted_in_operation_detail_mock():
     """Fixture for a mocked OptedInOperationDetail instance."""
