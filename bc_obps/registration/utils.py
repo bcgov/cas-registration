@@ -127,7 +127,7 @@ def data_url_to_file(data_url: str) -> ContentFile:
     return ContentFile(file_data, file_name)
 
 
-def custom_reverse_lazy(view_name: str, *args: Any, **kwargs: DictStrAny) -> Union[str, Any]:
+def custom_reverse_lazy(view_name: str, *args: Any, **kwargs: Any) -> Union[str, Any]:
     """
     A custom reverse_lazy function that includes the default API namespace.
     """
