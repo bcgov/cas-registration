@@ -15,5 +15,5 @@ class CommonFacilityDataSchema(Schema):
 
 class ReportingFormSchema(Schema, Generic[TPayload]):
     payload: TPayload
-    report_data: Optional[CommonProgramDataSchema] = None  # Optional
+    report_data: Optional[CommonProgramDataSchema] = None
     facility_data: Optional[CommonFacilityDataSchema] = None

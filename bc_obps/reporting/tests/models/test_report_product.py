@@ -110,12 +110,36 @@ class ReportProductModelTest(BaseTestCase):
         )
 
     def test_cant_save_a_report_product_with_missing_apr_dec_data_for_2024(self):
-        facility_report = make_recipe(
+        facility_report_2024 = make_recipe(
             "reporting.tests.utils.facility_report", report_version__report__reporting_year_id=2024
         )
+        facility_report = make_recipe(
+            "reporting.tests.utils.facility_report", report_version__report__reporting_year_id=2023
+        )
+
         product = make_recipe("registration.tests.utils.regulated_product")
 
-        product = make(
+        with pytest.raises(
+            ValidationError, match='Apr-Dec production data needs to be reported for reporting year 2024.'
+        ):
+            make(
+                ReportProduct,
+                report_version=facility_report_2024.report_version,
+                facility_report=facility_report_2024,
+                production_data_apr_dec=None,
+                product=product,
+            )
+
+        make(
+            ReportProduct,
+            report_version=facility_report_2024.report_version,
+            facility_report=facility_report_2024,
+            production_data_apr_dec=1234,
+            product=product,
+        )
+
+        # None value should be allowed for a reporting year not 2024
+        make(
             ReportProduct,
             report_version=facility_report.report_version,
             facility_report=facility_report,
