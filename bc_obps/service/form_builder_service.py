@@ -13,7 +13,7 @@ from reporting.models import (
     CustomMethodologySchema,
     FacilityReport,
 )
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Sequence
 from django.db.models import QuerySet
 from django.db.models import Prefetch
 from service.data_access_service.fuel_service import FuelTypeDataAccessService
@@ -34,8 +34,8 @@ def handle_methodologies(
     gas_type_id: int,
     activity_id: int,
     source_type_id: int,
-    fetched_configuration_elements: List[ConfigurationElement],
-    config_element_for_methodologies: List[ConfigurationElement],
+    fetched_configuration_elements: Sequence[ConfigurationElement],
+    config_element_for_methodologies: Sequence[ConfigurationElement],
     gas_type_one_of: Dict,
     index: int,
     add_not_applicable_methodology: bool,
