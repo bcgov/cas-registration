@@ -9,6 +9,7 @@ from django.db.models import Min, F
 from dataclasses import dataclass
 from django.db.models import Prefetch
 from reporting.models import ReportVersion, FacilityReport, ReportActivity, ReportNonAttributableEmissions
+from typing import Union, List, Any
 
 
 @dataclass
@@ -157,7 +158,7 @@ class ReportVersionService:
             .get(id=version_id)
         )
         # Build prefetches
-        prefetches = [
+        prefetches: List[Union[str, Prefetch[Any, Any, Any]]] = [
             "report_electricity_import_data",
             "report_new_entrant",
             "report_compliance_summary",
@@ -191,10 +192,11 @@ class ReportVersionService:
                     ),
                 )
             )
-        return (
+        report_version: ReportVersion = (
             ReportVersion.objects.select_related(
                 "report_operation", "report_verification", "report_additional_data", "report_person_responsible"
             )
             .prefetch_related(*prefetches)
             .get(id=version_id)
         )
+        return report_version
