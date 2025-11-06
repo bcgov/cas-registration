@@ -19,6 +19,8 @@ Solving issues:
     // Program-wide constants that most page typically use:
     // Reporting year, Report ID, Operation ID, ...
   },
+  // more stuff
+  // ... ,
   "payload": {
     // Answer to the API request
   }
