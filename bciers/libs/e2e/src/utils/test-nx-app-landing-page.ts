@@ -1,4 +1,6 @@
-import { test } from "@playwright/test";
+import { test as baseTest } from "@playwright/test";
+import { test as happoTest } from "happo-playwright";
+import { mergeTests } from "@playwright/test";
 // ☰ Enums
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
@@ -8,7 +10,7 @@ import * as dotenv from "dotenv";
 
 dotenv.config({ path: "./e2e/.env.local" });
 
-const happoPlaywright = require("happo-playwright");
+const test = mergeTests(baseTest, happoTest);
 
 // NOTE:: This is just a quick basic test setup to ensure that the database and auth are working in CI
 // Feel free to delete this or modify it as needed
@@ -19,14 +21,6 @@ const testNxProjectLandingPage = async (zones: string[]) => {
     // So, ensure this runs only once by using only 1 worker
     // Setup fixtures for admin-industry_user
     await setupTestEnvironment();
-  });
-
-  test.beforeEach(async ({ context }) => {
-    await happoPlaywright.init(context);
-  });
-
-  test.afterEach(async () => {
-    await happoPlaywright.finish();
   });
 
   // 🏷 Annotate test suite as serial
@@ -45,7 +39,7 @@ const testNxProjectLandingPage = async (zones: string[]) => {
 
       test.use({ storageState: storageState });
 
-      test("Test Selfie", async ({ page }) => {
+      test("Test Selfie", async ({ page, happoScreenshot }) => {
         // 🛸 Navigate to landing page
         await page.goto(url);
 
@@ -54,7 +48,7 @@ const testNxProjectLandingPage = async (zones: string[]) => {
 
         // 📷 Cheese!
         const pageContent = page.locator("html");
-        await happoPlaywright.screenshot(page, pageContent, {
+        await happoScreenshot(pageContent, {
           component: `Authenticated ${zone} page - ${user}`,
           variant: "default",
         });
