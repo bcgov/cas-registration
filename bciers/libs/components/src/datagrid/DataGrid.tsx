@@ -11,6 +11,7 @@ import {
   GridSortItem,
   GridRowIdGetter,
 } from "@mui/x-data-grid";
+import type { GridRowParams } from "@mui/x-data-grid";
 import Pagination from "@bciers/components/datagrid/Pagination";
 import SortIcon from "@bciers/components/icons/SortIcon";
 import styles from "@bciers/components/datagrid/styles";
@@ -31,6 +32,7 @@ interface Props {
   rowSelection?: boolean;
   noDataMessage?: JSX.Element | string;
   hideFooter?: boolean;
+  getRowClassName?: (params: GridRowParams) => string;
 }
 
 const AscendingIcon = () => {
@@ -59,6 +61,7 @@ const DataGrid: React.FC<Props> = ({
   rowSelection,
   noDataMessage,
   hideFooter = false,
+  getRowClassName: rowClassName,
 }) => {
   const PAGE_SIZE = pageSize ? pageSize : 20;
   const [rows, setRows] = useState(initialData.rows ?? []);
@@ -193,6 +196,16 @@ const DataGrid: React.FC<Props> = ({
         height: isRowsEmpty && !loading ? "40vh" : "0",
         display: isRowsEmpty && !loading ? "block" : "none",
       },
+      // Row class styling (works with getRowClassName returning "row--highlight")
+      "& .MuiDataGrid-row.row--highlight": {
+        backgroundColor: "rgba(255,193,7,0.12)",
+      },
+      "& .MuiDataGrid-row.row--highlight:hover": {
+        backgroundColor: "rgba(255,193,7,0.18)",
+      },
+      "& .MuiDataGrid-row.row--highlight.Mui-selected": {
+        backgroundColor: "rgba(255,193,7,0.22)",
+      },
       // Allow overriding styles with sx prop
       ...sx,
     };
@@ -234,6 +247,7 @@ const DataGrid: React.FC<Props> = ({
         disableVirtualization
         rowSelection={rowSelection}
         hideFooter={hideFooter}
+        getRowClassName={rowClassName}
       />
     </div>
   );

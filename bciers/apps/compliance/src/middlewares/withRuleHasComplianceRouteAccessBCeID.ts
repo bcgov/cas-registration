@@ -172,6 +172,33 @@ const permissionRules: PermissionRule[] = [
     redirect: makeRuleRedirect<RuleContext>(ONBOARDING_PATH),
   },
   /**
+   * Rule: redirectManualHandling
+   *
+   * Purpose:
+   *   Redirect users to the summaries hub when the targeted compliance report version
+   *   requires manual handling (no direct navigation into the CRV workflow).
+   *
+   * Access Criteria:
+   *   - Applies when:
+   *     • The request path contains a valid CRV id, and
+   *     • The compliance summary for that CRV has requires_manual_handling = true.
+   *
+   * Redirect Rules:
+   *   - If requires_manual_handling is true → Redirect to REVIEW_COMPLIANCE_SUMMARIES.
+   *   - Otherwise → Continue to the requested route (no redirect).
+   */
+  {
+    name: "redirectManualHandling",
+    isApplicable: async (_request, id, context) => {
+      if (typeof id !== "number") return false;
+      const summary = await context!.getComplianceSummaryData(id);
+      return Boolean(summary?.requires_manual_handling);
+    },
+    validate: async () => false,
+    redirect: makeRuleRedirect(HUB_SUMMARIES_PATH),
+  },
+
+  /**
    * Rule: accessNoObligation
    *
    * Purpose:

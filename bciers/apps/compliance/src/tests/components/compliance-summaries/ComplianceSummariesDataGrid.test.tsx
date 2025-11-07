@@ -422,4 +422,49 @@ describe("ComplianceSummariesDataGrid component", () => {
       within(dataRow!).getByRole("link", { name: "Pending Invoice Creation" }),
     ).toHaveAttribute("href", "#");
   });
+
+  it("shows 'Contact Us' (non-link) and highlights the row when requires_manual_handling is true", () => {
+    const manualRow: ComplianceSummary = {
+      id: 99,
+      operation_name: "Operation Manual",
+      reporting_year: 2024,
+      excess_emissions: 0,
+      outstanding_balance: 0,
+      status: "No obligation or earned credits",
+      penalty_status: null,
+      obligation_id: null,
+      requires_manual_handling: true,
+    } as unknown as ComplianceSummary;
+
+    const dataWithManual = {
+      ...mockResponse,
+      rows: [...mockResponse.rows, manualRow],
+      row_count: (mockResponse.row_count ?? 0) + 1,
+    };
+
+    render(
+      <ComplianceSummariesDataGrid
+        initialData={dataWithManual}
+        isAllowedCas={false}
+      />,
+    );
+
+    // find the row by operation name
+    const summaryRows = screen.getAllByRole("row");
+    const manualRowEl = summaryRows.find((row) =>
+      within(row).queryByText("Operation Manual"),
+    );
+    expect(manualRowEl).toBeTruthy();
+
+    // shows Contact Us text
+    expect(within(manualRowEl!).getByText("Contact Us")).toBeVisible();
+
+    // not a link (non-clickable)
+    expect(
+      within(manualRowEl!).queryByRole("link", { name: /Contact Us/i }),
+    ).toBeNull();
+
+    //highlighted row class if your DataGrid passes getRowClassName
+    expect(manualRowEl!).toHaveClass("row--highlight");
+  });
 });
