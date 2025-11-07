@@ -897,7 +897,6 @@ class NewEarnedCreditsHandler:
         previous_summary: ReportComplianceSummary,
         version_count: int,
     ) -> Optional[ComplianceReportVersion]:
-        # Get the previous compliance report version
         previous_compliance_version = (
             SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
                 compliance_report, previous_summary
