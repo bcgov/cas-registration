@@ -136,6 +136,12 @@ def mock_logger():
 
 
 @pytest.fixture
+def mock_capture_sentry_exception():
+    with patch('compliance.service.supplementary_version_service.ExceptionHandler.capture_sentry_exception') as mock:
+        yield mock
+
+
+@pytest.fixture
 def mock_superceded_can_handle():
     with patch(SUPERCEDED_VERSION_HANDLER_PATH) as mock:
         yield mock
@@ -254,6 +260,7 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_no_change_handler,
         mock_increased_credit_handler,
         mock_decreased_credit_handler,
+        mock_capture_sentry_exception,
     ):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
@@ -300,6 +307,7 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_no_change_handler.assert_not_called()
         mock_increased_credit_handler.assert_not_called()
         mock_decreased_credit_handler.assert_not_called()
+        mock_capture_sentry_exception.assert_not_called()
 
     def test_handle_decreased_obligation_success(
         self,
@@ -308,6 +316,7 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_no_change_handler,
         mock_increased_credit_handler,
         mock_decreased_credit_handler,
+        mock_capture_sentry_exception,
     ):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
@@ -354,9 +363,26 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_no_change_handler.assert_not_called()
         mock_increased_credit_handler.assert_not_called()
         mock_decreased_credit_handler.assert_not_called()
+        mock_capture_sentry_exception.assert_not_called()
 
+    @patch('compliance.service.supplementary_version_service.ExceptionHandler.capture_sentry_exception')
+    @patch('compliance.service.supplementary_version_service.IncreasedObligationHandler.can_handle')
+    @patch('compliance.service.supplementary_version_service.DecreasedObligationHandler.can_handle')
+    @patch('compliance.service.supplementary_version_service.NoChangeHandler.can_handle')
+    @patch('compliance.service.supplementary_version_service.NewEarnedCreditsHandler.can_handle')
+    @patch('compliance.service.supplementary_version_service.IncreasedCreditHandler.can_handle')
+    @patch('compliance.service.supplementary_version_service.DecreasedCreditHandler.can_handle')
+    @patch('compliance.service.supplementary_version_service.SupercedeVersionHandler.can_handle')
     def test_handle_supplementary_version_no_handler_found(
         self,
+        mock_supercede_can_handle,
+        mock_decreased_credit_can_handle,
+        mock_increased_credit_can_handle,
+        mock_new_earned_credits_can_handle,
+        mock_no_change_can_handle,
+        mock_decreased_obligation_can_handle,
+        mock_increased_obligation_can_handle,
+        mock_capture_sentry_exception,
         mock_increased_handler,
         mock_decreased_handler,
         mock_no_change_handler,
@@ -366,6 +392,15 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_logger,
     ):
         # Arrange
+        # Mock all handlers' can_handle to return False to test the "no handler found" error case
+        mock_supercede_can_handle.return_value = False
+        mock_increased_obligation_can_handle.return_value = False
+        mock_decreased_obligation_can_handle.return_value = False
+        mock_no_change_can_handle.return_value = False
+        mock_new_earned_credits_can_handle.return_value = False
+        mock_increased_credit_can_handle.return_value = False
+        mock_decreased_credit_can_handle.return_value = False
+
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
                 'reporting.tests.utils.report_compliance_summary',
@@ -398,9 +433,25 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         )
 
         # Act
-        SupplementaryVersionService().handle_supplementary_version(self.compliance_report, self.report_version_2, 2)
+        result = SupplementaryVersionService().handle_supplementary_version(
+            self.compliance_report, self.report_version_2, 2
+        )
 
         # Assert
+        assert result is None
+        mock_logger.error.assert_called_once_with(
+            f"No handler found for report version {self.report_version_2.id} and compliance report {self.compliance_report.id}"
+        )
+        expected_message = f"No handler found for report version {self.report_version_2.id} and compliance report {self.compliance_report.id}"
+
+        # Verify capture_sentry_exception was called with the correct exception and tag
+        from unittest.mock import ANY
+
+        mock_capture_sentry_exception.assert_called_once_with(ANY, "no_handler_found")
+        # Verify the exception message separately since Exception objects are compared by identity
+        exception_arg = mock_capture_sentry_exception.call_args[0][0]
+        assert isinstance(exception_arg, Exception)
+        assert str(exception_arg) == expected_message
         mock_increased_handler.assert_not_called()
         mock_decreased_handler.assert_not_called()
         mock_no_change_handler.assert_not_called()
