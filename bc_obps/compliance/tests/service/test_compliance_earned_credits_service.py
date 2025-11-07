@@ -93,9 +93,11 @@ class TestComplianceEarnedCreditsService:
         assert earned_credit.bccr_holding_account_id == self.bccr_holding_account_id
         assert earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
         assert result == earned_credit
+        # Email should be sent when industry user successfully updates
         mock_send_email.execute.assert_called_once_with(result.pk)
 
-    def test_update_earned_credit_industry_user_invalid_status(self):
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
+    def test_update_earned_credit_industry_user_invalid_status(self, mock_send_email):
         # Arrange
         with pgtrigger.ignore("compliance.ComplianceEarnedCredit:restrict_bccr_fields_unless_not_issued"):
             earned_credit = make_recipe(
@@ -113,8 +115,11 @@ class TestComplianceEarnedCreditsService:
             ComplianceEarnedCreditsService.update_earned_credit(
                 earned_credit.compliance_report_version_id, payload, self.industry_user
             )
+        # Email should not be sent when update fails
+        mock_send_email.execute.assert_not_called()
 
-    def test_update_earned_credit_industry_user_missing_bccr_trading_name(self):
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
+    def test_update_earned_credit_industry_user_missing_bccr_trading_name(self, mock_send_email):
         # Arrange
         earned_credit = self.earned_credit_no_bccr_fields
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
@@ -129,8 +134,11 @@ class TestComplianceEarnedCreditsService:
             ComplianceEarnedCreditsService.update_earned_credit(
                 earned_credit.compliance_report_version_id, payload, self.industry_user
             )
+        # Email should not be sent when update fails
+        mock_send_email.execute.assert_not_called()
 
-    def test_update_earned_credit_industry_user_missing_bccr_holding_account_id(self):
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
+    def test_update_earned_credit_industry_user_missing_bccr_holding_account_id(self, mock_send_email):
         # Arrange
         earned_credit = self.earned_credit_no_bccr_fields
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
@@ -145,8 +153,11 @@ class TestComplianceEarnedCreditsService:
             ComplianceEarnedCreditsService.update_earned_credit(
                 earned_credit.compliance_report_version_id, payload, self.industry_user
             )
+        # Email should not be sent when update fails
+        mock_send_email.execute.assert_not_called()
 
-    def test_update_earned_credit_industry_user_missing_both_bccr_fields(self):
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
+    def test_update_earned_credit_industry_user_missing_both_bccr_fields(self, mock_send_email):
         # Arrange
         earned_credit = self.earned_credit_no_bccr_fields
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
@@ -161,8 +172,11 @@ class TestComplianceEarnedCreditsService:
             ComplianceEarnedCreditsService.update_earned_credit(
                 earned_credit.compliance_report_version_id, payload, self.industry_user
             )
+        # Email should not be sent when update fails
+        mock_send_email.execute.assert_not_called()
 
-    def test_update_earned_credit_cas_analyst_success(self):
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
+    def test_update_earned_credit_cas_analyst_success(self, mock_send_email):
         # Arrange
         earned_credit = self.earned_credit_base
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
@@ -186,8 +200,11 @@ class TestComplianceEarnedCreditsService:
         assert earned_credit.analyst_comment == "Looks good to approve"
         assert earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
         assert result == earned_credit
+        # Email should not be sent when CAS analyst updates
+        mock_send_email.execute.assert_not_called()
 
-    def test_update_earned_credit_cas_analyst_changes_required(self):
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
+    def test_update_earned_credit_cas_analyst_changes_required(self, mock_send_email):
         # Arrange
         earned_credit = self.earned_credit_base
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
@@ -214,8 +231,11 @@ class TestComplianceEarnedCreditsService:
         assert earned_credit.analyst_comment == "Please update the holding account ID"
         assert earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED
         assert result == earned_credit
+        # Email should not be sent when CAS analyst updates
+        mock_send_email.execute.assert_not_called()
 
-    def test_update_earned_credit_cas_analyst_declined(self):
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
+    def test_update_earned_credit_cas_analyst_declined(self, mock_send_email):
         # Arrange
         earned_credit = self.earned_credit_base
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
@@ -241,6 +261,8 @@ class TestComplianceEarnedCreditsService:
         assert earned_credit.analyst_comment == "Additional documentation required"
         assert earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.DECLINED
         assert result == earned_credit
+        # Email should not be sent when CAS analyst updates
+        mock_send_email.execute.assert_not_called()
 
     def test_update_earned_credit_cas_analyst_invalid_status(self):
         # Arrange
@@ -302,9 +324,12 @@ class TestComplianceEarnedCreditsService:
                 earned_credit.compliance_report_version_id, payload, self.cas_analyst
             )
 
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
     @patch.object(ComplianceEarnedCreditsService, 'create_bccr_project_for_earned_credit')
     @patch.object(ComplianceEarnedCreditsService, 'issue_bccr_credits_for_earned_credit')
-    def test_update_earned_credit_cas_director_approve_success(self, mock_issue_credits, mock_create_project):
+    def test_update_earned_credit_cas_director_approve_success(
+        self, mock_issue_credits, mock_create_project, mock_send_email
+    ):
         # Arrange
         earned_credit = self.earned_credit_base
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
@@ -332,11 +357,14 @@ class TestComplianceEarnedCreditsService:
         assert earned_credit.issued_by is not None
         mock_create_project.assert_called_once_with(earned_credit)
         mock_issue_credits.assert_called_once_with(earned_credit, {"id": "project_123"})
+        # Email should not be sent when CAS director updates
+        mock_send_email.execute.assert_not_called()
 
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
     @patch('compliance.service.earned_credits_service.bccr_project_service')
     @patch('compliance.service.earned_credits_service.bccr_credit_issuance_service')
     def test_update_earned_credit_cas_director_decline_success(
-        self, mock_credit_issuance_service, mock_project_service
+        self, mock_credit_issuance_service, mock_project_service, mock_send_email
     ):
         # Arrange
         earned_credit = self.earned_credit_base
@@ -362,6 +390,8 @@ class TestComplianceEarnedCreditsService:
         assert result == earned_credit
         mock_project_service.create_project.assert_not_called()
         mock_credit_issuance_service.issue_credits.assert_not_called()
+        # Email should not be sent when CAS director updates
+        mock_send_email.execute.assert_not_called()
 
     def test_update_earned_credit_cas_director_missing_bccr_fields(self):
         # Arrange
@@ -472,7 +502,8 @@ class TestComplianceEarnedCreditsService:
                 compliance_report_version.id, payload, self.industry_user
             )
 
-    def test_update_earned_credit_preserves_other_fields(self):
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
+    def test_update_earned_credit_preserves_other_fields(self, mock_send_email):
         # Arrange
         original_earned_credits_amount = 150
         original_issued_date = "2024-01-15"
@@ -486,7 +517,7 @@ class TestComplianceEarnedCreditsService:
         payload = {"bccr_trading_name": self.bccr_trading_name, "bccr_holding_account_id": self.bccr_holding_account_id}
 
         # Act
-        ComplianceEarnedCreditsService.update_earned_credit(
+        result = ComplianceEarnedCreditsService.update_earned_credit(
             earned_credit.compliance_report_version_id, payload, self.industry_user
         )
 
@@ -497,6 +528,8 @@ class TestComplianceEarnedCreditsService:
         assert earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
         assert earned_credit.earned_credits_amount == original_earned_credits_amount
         assert str(earned_credit.issued_date) == original_issued_date
+        # Email should be sent when industry user successfully updates
+        mock_send_email.execute.assert_called_once_with(result.pk)
 
     @patch('compliance.service.earned_credits_service.bccr_project_service')
     def test_create_bccr_project_for_earned_credit_idempotent(self, mock_project_service):
