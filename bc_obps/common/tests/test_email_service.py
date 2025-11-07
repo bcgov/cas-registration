@@ -192,19 +192,20 @@ def test_send_email_by_template_includes_cc_in_prod(email_service: EmailService,
     email_service.send_email_by_template(mock_template, email_context, recipients)
 
     # Assert
-    mock_merge_template.assert_called_once()
-    call_args = mock_merge_template.call_args[0][0]  # Get the email_data argument
-    assert 'contexts' in call_args
-    assert len(call_args['contexts']) == 1
-    context = call_args['contexts'][0]
-    assert 'cc' in context
-    assert context['cc'] == [GHG_REGULATOR_EMAIL]
-    assert context['to'] == recipients
-    assert context['context'] == email_context
-    assert call_args['body'] == mock_template.body
-    assert call_args['subject'] == mock_template.subject
-    assert call_args['from'] == 'no-reply.cas@gov.bc.ca'
-    assert call_args['bodyType'] == 'html'
+    expected_email_data = {
+        'bodyType': 'html',
+        'body': mock_template.body,
+        'contexts': [
+            {
+                'context': email_context,
+                'to': recipients,
+                'cc': [GHG_REGULATOR_EMAIL],
+            }
+        ],
+        'from': 'no-reply.cas@gov.bc.ca',
+        'subject': mock_template.subject,
+    }
+    mock_merge_template.assert_called_once_with(expected_email_data)
 
 
 def test_send_email_by_template_excludes_cc_in_non_prod(email_service: EmailService, mocker, settings):
@@ -223,15 +224,20 @@ def test_send_email_by_template_excludes_cc_in_non_prod(email_service: EmailServ
     email_service.send_email_by_template(mock_template, email_context, recipients)
 
     # Assert
-    mock_merge_template.assert_called_once()
-    call_args = mock_merge_template.call_args[0][0]  # Get the email_data argument
-    assert 'contexts' in call_args
-    assert len(call_args['contexts']) == 1
-    context = call_args['contexts'][0]
-    assert 'cc' in context
-    assert context['cc'] == []  # Should be empty in non-prod
-    assert context['to'] == recipients
-    assert context['context'] == email_context
+    expected_email_data = {
+        'bodyType': 'html',
+        'body': mock_template.body,
+        'contexts': [
+            {
+                'context': email_context,
+                'to': recipients,
+                'cc': [],  # Should be empty in non-prod
+            }
+        ],
+        'from': 'no-reply.cas@gov.bc.ca',
+        'subject': mock_template.subject,
+    }
+    mock_merge_template.assert_called_once_with(expected_email_data)
 
 
 def test_send_email_by_template_excludes_cc_when_disabled_in_prod(email_service: EmailService, mocker, settings):
@@ -250,12 +256,51 @@ def test_send_email_by_template_excludes_cc_when_disabled_in_prod(email_service:
     email_service.send_email_by_template(mock_template, email_context, recipients, cc_ghg_regulator=False)
 
     # Assert
-    mock_merge_template.assert_called_once()
-    call_args = mock_merge_template.call_args[0][0]  # Get the email_data argument
-    assert 'contexts' in call_args
-    assert len(call_args['contexts']) == 1
-    context = call_args['contexts'][0]
-    assert 'cc' in context
-    assert context['cc'] == []  # Should be empty when cc_ghg_regulator=False
-    assert context['to'] == recipients
-    assert context['context'] == email_context
+    expected_email_data = {
+        'bodyType': 'html',
+        'body': mock_template.body,
+        'contexts': [
+            {
+                'context': email_context,
+                'to': recipients,
+                'cc': [],  # Should be empty when cc_ghg_regulator=False
+            }
+        ],
+        'from': 'no-reply.cas@gov.bc.ca',
+        'subject': mock_template.subject,
+    }
+    mock_merge_template.assert_called_once_with(expected_email_data)
+
+
+def test_send_email_by_template_excludes_cc_when_regulator_is_recipient_in_prod(
+    email_service: EmailService, mocker, settings
+):
+    # Arrange
+    settings.ENVIRONMENT = 'prod'
+    mock_template = mocker.Mock(spec=EmailNotificationTemplate)
+    mock_template.body = "Test email body"
+    mock_template.subject = "Test Subject"
+    mock_template.pk = 1
+    mock_merge_template = mocker.patch.object(email_service, 'merge_template_and_send')
+    mock_merge_template.return_value = {'txId': 'test-tx-id', 'messages': [{'msgId': 'test-msg-id'}]}
+    email_context = {"test": "value"}
+    recipients = [GHG_REGULATOR_EMAIL, "test@example.com"]
+
+    # Act
+    email_service.send_email_by_template(mock_template, email_context, recipients)
+
+    # Assert
+    expected_email_data = {
+        'bodyType': 'html',
+        'body': mock_template.body,
+        'contexts': [
+            {
+                'context': email_context,
+                'to': recipients,
+                'cc': [],  # Should be empty when GHG regulator is already a recipient
+            }
+        ],
+        'from': 'no-reply.cas@gov.bc.ca',
+        'subject': mock_template.subject,
+    }
+    mock_merge_template.assert_called_once_with(expected_email_data)
