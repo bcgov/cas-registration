@@ -24,10 +24,6 @@ export const PaymentInstructionsDetails = () => {
       <h3>Pay by electronic funds transfer (EFT) or by wire transfer</h3>
       <ul>
         <li>Include the invoice number as a reference</li>
-        <li>
-          Plan to make your payment at least five business days before the
-          compliance obligation deadline to allow for payment processing
-        </li>
       </ul>
       <h3>Provide correct information for timely processing</h3>
       <p>
