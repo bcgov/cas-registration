@@ -218,7 +218,8 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 20000000
 # Only enable sentry in production and test environments
 SENTRY_ENVIRONMENT = os.environ.get('SENTRY_ENVIRONMENT')
 SENTRY_TRACE_SAMPLE_RATE = os.environ.get('SENTRY_TRACE_SAMPLE_RATE')
-if SENTRY_ENVIRONMENT in ['prod', 'test']:
+ENABLE_SENTRY = SENTRY_ENVIRONMENT in ['prod', 'test']
+if ENABLE_SENTRY:
     # Map environment values to maintain backward compatibility with existing Sentry issues
     environment_mapping = {'prod': 'production', 'test': 'test'}
     sentry_environment = environment_mapping.get(SENTRY_ENVIRONMENT, SENTRY_ENVIRONMENT)
