@@ -12,13 +12,13 @@ import {
   OperationRegistrationSteps,
   RegistrationPurposes,
 } from "@/registration/app/components/operations/registration/enums";
-const happoPlaywright = require("happo-playwright");
+
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
 test.describe("Test register operations", () => {
-  test("Register a new SFO operation", async ({ page }) => {
+  test("Register a new SFO operation", async ({ page, happoScreenshot }) => {
     // 🛸 Navigate to registration page
     const registrationPage = new RegistrationPOM(page);
     await registrationPage.route();
@@ -32,7 +32,7 @@ test.describe("Test register operations", () => {
     await registrationPage.fillNewOperationInformation(
       RegistrationPurposes.NEW_ENTRANT_OPERATION,
     );
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "filled",
     });
@@ -47,7 +47,7 @@ test.describe("Test register operations", () => {
       OperationRegistrationSteps.FACILITY_INFORMATION,
     );
     await registrationPage.fillSfoFacilityInformation();
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "filled",
     });
@@ -59,7 +59,7 @@ test.describe("Test register operations", () => {
     componentName = "Registration New Entrant Information";
     await registrationPage.assertHeading(/new entrant operation/i);
     await registrationPage.fillNewEntrantInformation();
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "filled",
     });
@@ -73,7 +73,7 @@ test.describe("Test register operations", () => {
       OperationRegistrationSteps.OPERATION_REPRESENTATIVE,
     );
     await registrationPage.fillNewOperationRepresentative();
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "filled",
     });
@@ -86,7 +86,7 @@ test.describe("Test register operations", () => {
     componentName = "Registration Submission";
     await registrationPage.assertHeading(OperationRegistrationSteps.SUBMISSION);
     await registrationPage.fillSubmission();
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "filled",
     });
@@ -98,13 +98,16 @@ test.describe("Test register operations", () => {
     await expect(
       registrationPage.page.getByText(/registration complete/i),
     ).toBeVisible();
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "default",
     });
     await analyzeAccessibility(page);
   });
-  test("Register an existing LFO operation", async ({ page }) => {
+  test("Register an existing LFO operation", async ({
+    page,
+    happoScreenshot,
+  }) => {
     // 🛸 Navigate to registration page
     const registrationPage = new RegistrationPOM(page);
     await registrationPage.route();
@@ -126,7 +129,7 @@ test.describe("Test register operations", () => {
     componentName = "Registration LFO Facility Information";
     await clickButton(registrationPage.page, /add new facility/i);
     await registrationPage.fillLfoFacilityInformation();
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "filled",
     });
@@ -142,7 +145,7 @@ test.describe("Test register operations", () => {
     );
 
     await registrationPage.fillOptInInformation(registrationPage.page);
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "filled",
     });
