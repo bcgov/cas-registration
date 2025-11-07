@@ -19,11 +19,16 @@ email_service = EmailService()
 
 
 def _send_email_or_raise(
-    template: EmailNotificationTemplate, email_context: Dict[str, object], recipient_emails: List[str]
+    template: EmailNotificationTemplate,
+    email_context: Dict[str, object],
+    recipient_emails: List[str],
+    cc_ghg_regulator: bool = True,
 ) -> None:
     try:
 
-        response_json = email_service.send_email_by_template(template, email_context, recipient_emails)
+        response_json = email_service.send_email_by_template(
+            template, email_context, recipient_emails, cc_ghg_regulator=cc_ghg_regulator
+        )
         # Create an email notification record to store transaction and message IDs
         if response_json:
             email_service.create_email_notification_record(
@@ -141,7 +146,8 @@ def send_notice_of_credits_requested_generated_email(compliance_earned_credit_id
 
     recipient_emails = [GHG_REGULATOR_EMAIL]
 
-    _send_email_or_raise(template, email_context, recipient_emails)
+    # We don't CC the GHG regulator for this email because the recipient is already the GHG regulator
+    _send_email_or_raise(template, email_context, recipient_emails, cc_ghg_regulator=False)
 
 
 def _prepare_obligation_context(obligation: ComplianceObligation) -> Dict:
