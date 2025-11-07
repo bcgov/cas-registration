@@ -19,7 +19,7 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
     penalty_status: penaltyStatus,
     id,
     requires_manual_handling: requiresManualHandling,
-  } = row as ComplianceSummary & { requires_manual_handling?: boolean };
+  } = row;
 
   // Check if "Contact Us"
   if (requiresManualHandling) {

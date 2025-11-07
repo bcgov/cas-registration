@@ -11,6 +11,7 @@ describe("ActionCell", () => {
     obligation_id?: string;
     status?: string;
     issuance_status?: string;
+    requires_manual_handling?: boolean;
   }
 
   const createMockParams = (
@@ -20,6 +21,7 @@ describe("ActionCell", () => {
     status?: string,
     issuance_status?: string,
     penalty_status?: PenaltyStatus,
+    requires_manual_handling?: boolean,
   ): ActionCellParams =>
     ({
       id: id,
@@ -29,6 +31,7 @@ describe("ActionCell", () => {
         status,
         issuance_status,
         penalty_status,
+        requires_manual_handling,
       } as ComplianceSummary,
       isAllowedCas: isAllowedCas,
     }) as ActionCellParams;
@@ -317,6 +320,49 @@ describe("ActionCell", () => {
           "/compliance-administration/compliance-summaries/123/track-status-of-issuance",
         );
       });
+    });
+  });
+
+  describe("Contact Us (requires_manual_handling)", () => {
+    it("renders non-clickable 'Contact Us' when requires_manual_handling is true", () => {
+      render(
+        ActionCell(
+          createMockParams(
+            123,
+            false, // external or internal doesn't matter
+            undefined, // obligation_id
+            "Other status", // status
+            undefined, // issuance_status
+            undefined, // penalty_status
+            true, // requires_manual_handling ✅
+          ),
+        ),
+      );
+
+      // Text is present…
+      expect(screen.getByText("Contact Us")).toBeVisible();
+      // …but not a link
+      expect(screen.queryByRole("link", { name: "Contact Us" })).toBeNull();
+    });
+
+    it("ignores other routing logic (e.g., obligation present) when requires_manual_handling is true", () => {
+      render(
+        ActionCell(
+          createMockParams(
+            456,
+            true, // internal
+            "24-0001-1-1", // obligation exists
+            "Obligation not met", // would normally create a link
+            undefined,
+            undefined,
+            true, // requires_manual_handling ✅
+          ),
+        ),
+      );
+
+      // Still just plain text — no link
+      expect(screen.getByText("Contact Us")).toBeVisible();
+      expect(screen.queryByRole("link", { name: "Contact Us" })).toBeNull();
     });
   });
 
