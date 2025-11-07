@@ -14,6 +14,12 @@ class ReportingField(BaseModel):
     field_units = models.CharField(
         max_length=1000, blank=True, null=True, db_comment="Units of measurement relating to the field."
     )
+    field_display_title = models.CharField(
+        max_length=1000,
+        blank=True,
+        null=True,
+        db_comment="Optional display title for the field to be used in forms.",
+    )
 
     def serialize(self) -> "dict[str,str| None]":
         return {"fieldName": self.field_name, "fieldType": self.field_type, "fieldUnits": self.field_units}
