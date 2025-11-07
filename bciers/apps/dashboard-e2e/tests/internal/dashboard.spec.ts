@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import { DashboardPOM } from "@/dashboard-e2e/poms/dashboard";
 import {
@@ -12,8 +12,6 @@ import {
   InternalDashboardTiles,
 } from "@/dashboard-e2e/utils/enums";
 
-const happoPlaywright = require("happo-playwright");
-
 const userRoles = [
   UserRole.CAS_ADMIN,
   UserRole.CAS_ANALYST,
@@ -21,12 +19,14 @@ const userRoles = [
 ];
 
 userRoles.forEach((role) => {
+  const test = setupBeforeEachTest(role);
   test.describe(" Internal user dashboard", () => {
     test.describe.configure({ mode: "serial" });
 
-    // Setup for this specific role
-    const roleTest = setupBeforeEachTest(role);
-    roleTest(`Dashboard for role: ${role.toUpperCase()}`, async ({ page }) => {
+    test(`Dashboard for role: ${role.toUpperCase()}`, async ({
+      page,
+      happoScreenshot,
+    }) => {
       // 🛸 Navigate to dashboard page
       const dashboardPage = new DashboardPOM(page);
       await dashboardPage.route();
@@ -34,7 +34,7 @@ userRoles.forEach((role) => {
 
       component = `Main Dashboard for ${role.toUpperCase()}`;
       // Say cheese!
-      await takeStabilizedScreenshot(happoPlaywright, page, {
+      await takeStabilizedScreenshot(happoScreenshot, page, {
         component: component,
         variant: "default",
       });
