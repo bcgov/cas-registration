@@ -182,7 +182,11 @@ class EmailService(object):
         Returns:
             Optional[dict]: A dictionary containing the response from the email service provider, or None if the email sending fails.
         """
-        cc_emails = [GHG_REGULATOR_EMAIL] if cc_ghg_regulator and settings.ENVIRONMENT == 'prod' else []
+        # Only CC GHG regulator in prod if cc_ghg_regulator is True and not already a recipient
+        should_cc_ghg_regulator = all(
+            [cc_ghg_regulator, settings.ENVIRONMENT == 'prod', GHG_REGULATOR_EMAIL not in recipients_email]
+        )
+        cc_emails = [GHG_REGULATOR_EMAIL] if should_cc_ghg_regulator else []
 
         email_data = {
             'bodyType': 'html',
