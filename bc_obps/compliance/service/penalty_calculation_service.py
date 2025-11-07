@@ -1,6 +1,6 @@
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
-from typing import Dict, Any, Callable
+from typing import Dict, Any
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
     ElicensingInvoice,
@@ -462,42 +462,23 @@ class PenaltyCalculationService:
         )
 
     @classmethod
-    def _get_interest_rate_resolver(
-        cls, accrual_start_date: date, final_accrual_date: date
-    ) -> Callable[[date], Decimal]:
-        """
-        Return an interest rate resolver for the accrual period.
-        """
-        interest_rates = ElicensingInterestRate.objects.filter(
-            start_date__lte=final_accrual_date,
-            end_date__gte=accrual_start_date,
-        ).order_by('-start_date')
+    def _get_rate_for_date(cls, date_to_check: date) -> Decimal:
+        m = date_to_check.month
+        y = date_to_check.year
+        match m:
+            case 1 | 2 | 3:
+                reference_date = date(y - 1, 12, 15)
+            case 4 | 5 | 6:
+                reference_date = date(y, 3, 15)
+            case 7 | 8 | 9:
+                reference_date = date(y, 6, 15)
+            case 10 | 11 | 12:
+                reference_date = date(y, 9, 15)
 
-        if not interest_rates.exists():
-            interest_rates = ElicensingInterestRate.objects.filter(is_current_rate=True)
-
-        if not interest_rates.exists():
-            raise ValueError("No interest rates configured in the system")
-
-        def get_rate_for_date(date_to_check: date) -> Decimal:
-            m = date_to_check.month
-            y = date_to_check.year
-            match m:
-                case 1 | 2 | 3:
-                    reference_date = date(y - 1, 12, 15)
-                case 4 | 5 | 6:
-                    reference_date = date(y, 3, 15)
-                case 7 | 8 | 9:
-                    reference_date = date(y, 6, 15)
-                case 10 | 11 | 12:
-                    reference_date = date(y, 9, 15)
-
-            for rate in interest_rates:
-                if rate.start_date <= reference_date <= rate.end_date:
-                    return rate.interest_rate
-            return ElicensingInterestRate.objects.filter(is_current_rate=True).first().interest_rate  # type: ignore[union-attr]
-
-        return get_rate_for_date
+        return ElicensingInterestRate.objects.get(
+            start_date__lte=reference_date,
+            end_date__gte=reference_date,
+        ).interest_rate
 
     @classmethod
     @transaction.atomic
@@ -557,11 +538,9 @@ class PenaltyCalculationService:
             else:
                 current_date = date(current_date.year, current_date.month + 1, 1)
 
-        get_rate_for_date = cls._get_interest_rate_resolver(accrual_start_date, final_accrual_date)
-
         # Calculate penalty for each monthly accrual date
         for accrual_date in monthly_accrual_dates:
-            annual_rate = get_rate_for_date(accrual_date)
+            annual_rate = cls._get_rate_for_date(accrual_date)
             monthly_rate = annual_rate / 12
             payments = cls.sum_payments_before_date(invoice, accrual_date)
             adjustments = cls.sum_adjustments_before_date(invoice, accrual_date)

@@ -4,7 +4,7 @@ from decimal import Decimal
 from unittest.mock import patch
 from model_bakery import baker
 from django.utils import timezone
-from compliance.models import CompliancePenalty, ComplianceObligation, ComplianceReportVersion
+from compliance.models import CompliancePenalty, ComplianceObligation, ComplianceReportVersion, ElicensingInterestRate
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.dataclass import RefreshWrapperReturn
 
@@ -739,3 +739,39 @@ class TestPenaltyCalculationService:
             penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
         )
         assert penalty_record.penalty_amount == Decimal("28791.00")
+
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
+    )
+    def test_calculate_late_submission_penalty_raises_when_interest_rate_does_not_cover_reference_date(
+        self, mock_refresh_data
+    ):
+        """Integration: calculation should raise when no interest rate covers the reference date."""
+        clean_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2024, 11, 30),
+            outstanding_balance=Decimal("0.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=clean_invoice,
+            base_amount=Decimal("1000000.00"),
+        )
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
+
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_interest_rate",
+            start_date=date(2025, 1, 1),
+            end_date=date(2025, 12, 31),
+            interest_rate=Decimal("0.0500"),
+            is_current_rate=True,
+        )
+
+        with pytest.raises(ElicensingInterestRate.DoesNotExist):
+            PenaltyCalculationService._calculate_late_submission_penalty(
+                obligation=self.obligation,
+                accrual_start_date=date(2024, 12, 1),
+                final_accrual_date=date(2025, 1, 1),
+                persist_penalty_data=True,
+            )
