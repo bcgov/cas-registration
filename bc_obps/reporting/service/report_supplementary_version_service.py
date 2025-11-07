@@ -1,3 +1,4 @@
+from django.core.files.storage import default_storage
 from django.db import transaction
 from django.forms import model_to_dict
 from typing import Optional
@@ -209,7 +210,10 @@ class ReportSupplementaryVersionService:
         old_attachments = ReportAttachment.objects.filter(report_version_id=old_report_version)
         # Clone each attachment for the new report version
         for attachment in old_attachments:
+            new_name = default_storage.duplicate_file(attachment.get_file_field().name)  # type: ignore
+
             attachment.pk = None
+            attachment.attachment = new_name
             attachment.report_version = new_report_version
             attachment.save()
 
