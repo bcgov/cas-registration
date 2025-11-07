@@ -433,19 +433,10 @@ export function getStorageStateForRole(role: string) {
 }
 
 // Open a new browser context instead of logging out and logging in as a new user
-export async function openNewBrowserContextAs(
-  role: string,
-  happoPlaywright?: any,
-) {
+export async function openNewBrowserContextAs(role: string) {
   const browser = await getBrowser();
   const storageState = await getStorageStateForRole(role);
   const context = await browser.newContext({ storageState });
-
-  // To take a screenshot in the new browserContext, we first need to close the current context for the screenshot to be saved properly, then re-initialize using the new browserContext
-  if (happoPlaywright) {
-    await happoPlaywright.finish();
-    await happoPlaywright.init(context);
-  }
   const newPage = await context.newPage();
   return newPage;
 }
@@ -562,16 +553,16 @@ export async function waitForElementToStabilize(page: Page, element: string) {
   await el?.waitForElementState("stable");
 }
 
-// This function can be used instead of `happoPlaywright.screenshot` when experiencing flaky screenshots. It waits for the page to be stable before taking a screenshot.
+// This function can be used instead of `happoScreenshot` directly when experiencing flaky screenshots. It waits for the page to be stable before taking a screenshot.
 export async function takeStabilizedScreenshot(
-  happoPlaywright: any,
+  happoScreenshot: any,
   page: Page,
   happoArgs: { component: string; variant: string; targets?: string[] },
 ) {
   const { component, variant, targets } = happoArgs;
   const pageContent = page.locator("html");
   await waitForElementToStabilize(page, "main");
-  await happoPlaywright.screenshot(page, pageContent, {
+  await happoScreenshot(pageContent, {
     component,
     variant,
     targets,

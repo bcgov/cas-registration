@@ -14,8 +14,6 @@ import {
   ExternalDashboardTiles,
 } from "@/dashboard-e2e/utils/enums";
 
-const happoPlaywright = require("happo-playwright");
-
 const userRoles = [
   "INDUSTRY_USER_ADMIN",
   "INDUSTRY_USER_REPORTER",
@@ -26,7 +24,7 @@ const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 test.describe.configure({ mode: "serial" });
 userRoles.forEach((role) => {
   test.describe("External user dashboard", () => {
-    test(`Dashboard for role: ${role}`, async ({ page }) => {
+    test(`Dashboard for role: ${role}`, async ({ page, happoScreenshot }) => {
       if (role === "INDUSTRY_USER_REPORTER") {
         // Update the role to reporter in the DB since we do not have this set up
         const userId = process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string;
@@ -43,7 +41,7 @@ userRoles.forEach((role) => {
 
       // Say cheese!
       component = `Main Dashboard for ${role}`;
-      await takeStabilizedScreenshot(happoPlaywright, page, {
+      await takeStabilizedScreenshot(happoScreenshot, page, {
         component: component,
         variant: "default",
       });
