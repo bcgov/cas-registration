@@ -47,6 +47,7 @@ class TestComplianceEmailHelpers:
             template_instance,
             context,
             recipients,
+            cc_ghg_regulator=True,
         )
 
         # Assert that only one email notification record is created
@@ -135,6 +136,7 @@ class TestComplianceEmailHelpers:
             template_instance,
             expected_context,
             expected_recipients,
+            cc_ghg_regulator=True,
         )
 
         # Assert that only one email notification record is created
@@ -373,7 +375,7 @@ class TestSendNotifications:
         # Call the function with the earned credit id
         send_notice_of_credits_requested_generated_email(earned_credit.id)
         mock_send_email_or_raise.assert_called_once_with(
-            template_instance, expected_context, ['GHGRegulator@gov.bc.ca']
+            template_instance, expected_context, ['GHGRegulator@gov.bc.ca'], cc_ghg_regulator=False
         )
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)

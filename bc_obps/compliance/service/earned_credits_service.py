@@ -93,6 +93,7 @@ class ComplianceEarnedCreditsService:
         earned_credit.bccr_holding_account_id = update_payload.bccr_holding_account_id
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
         earned_credit.save(update_fields=["issuance_status", "bccr_trading_name", "bccr_holding_account_id"])
+        retryable_send_notice_of_credits_requested_email.execute(earned_credit.id)
 
     @classmethod
     def _handle_cas_analyst_update(
@@ -229,5 +230,4 @@ class ComplianceEarnedCreditsService:
         else:
             raise UserError("This user is not authorized to update earned credit")
         earned_credit.refresh_from_db()
-        retryable_send_notice_of_credits_requested_email.execute(earned_credit.id)
         return earned_credit
