@@ -76,6 +76,7 @@ export default function ChangeReviewForm({
 
     setIsSaving(false);
   };
+  console.log("changesData", changesData);
 
   return (
     <MultiStepWrapperWithTaskList

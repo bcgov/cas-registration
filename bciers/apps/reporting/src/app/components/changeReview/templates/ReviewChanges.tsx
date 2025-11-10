@@ -187,8 +187,8 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
 
   const reportOperationItems = sectioned["Report Operation"] || [];
   return (
-    <Box>
-      <div className="form-heading text-xl font-bold flex items-cente">
+    <Box className="w-full">
+      <div className="form-heading text-xl font-bold flex items-center">
         Review Changes
       </div>
       <div className="form-group w-full my-8">
@@ -219,7 +219,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
           };
 
           return (
-            <Box key={facilityName} mb={4}>
+            <Box key={facilityName} mb={4} className="w-full">
               <FacilityReportChanges
                 facilityName={facilityName}
                 facilityData={cleanFacilityData} // Pass clean data (without added/deleted activities)
