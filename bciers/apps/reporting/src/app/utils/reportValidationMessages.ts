@@ -24,8 +24,17 @@ const reportValidationMessagesMap: Record<ReportValidationMessageKey, string> =
   };
 
 function extractErrorKey(
-  error: unknown,
+  error: string,
 ): ReportValidationMessageKey | undefined {
+  for (const key of Object.keys(reportValidationMessagesMap)) {
+    if (error === key) {
+      return key as ReportValidationMessageKey;
+    }
+  }
+  return undefined;
+}
+
+function cleanErrorString(error: unknown): string {
   const errorStr =
     typeof error === "string"
       ? error
@@ -43,20 +52,36 @@ function extractErrorKey(
     trimmedError = trimmedError.slice(1, -1).trim();
   }
 
-  // Check if the error string exactly matches one of the keys.
-  for (const key of Object.keys(reportValidationMessagesMap)) {
-    if (trimmedError === key) {
-      return key as ReportValidationMessageKey;
-    }
-  }
+  return trimmedError;
+}
 
+function getAllocationMismatchMessage(errorStr: string): string {
+  // Everything before the colon is the error key, and looks scary, so we strip it out.
+  const msgStartIndex = errorStr.indexOf(":");
+  return msgStartIndex !== -1
+    ? errorStr.substring(msgStartIndex + 1).trim()
+    : "";
+}
+
+function handleAllocationMismatchError(errorStr: string): string | undefined {
+  const prefix = "Allocation Mismatch Facility ";
+  if (errorStr.startsWith(prefix)) {
+    return `${getAllocationMismatchMessage(errorStr)}`;
+  }
   return undefined;
 }
 
 export function getValidationErrorMessage(error: unknown): string {
-  const key = extractErrorKey(error);
+  const errorString = cleanErrorString(error);
+  const key = extractErrorKey(errorString);
   if (key) {
     return reportValidationMessagesMap[key];
   }
+
+  const allocationMismatchError = handleAllocationMismatchError(errorString);
+  if (allocationMismatchError) {
+    return allocationMismatchError;
+  }
+
   return `${error}`;
 }
