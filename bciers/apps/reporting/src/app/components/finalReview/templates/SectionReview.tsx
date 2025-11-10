@@ -113,6 +113,7 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
                 return (
                   <FieldDisplay
                     key={`${key || "field"}-${idx}`}
+                    fieldKey={key}
                     label={label!}
                     value={nestedValue?.value || nestedValue}
                     unit={unit}

@@ -1,4 +1,8 @@
+"use client";
 import React from "react";
+import { TextareaAutosize } from "@mui/material";
+import { DARK_GREY_BG_COLOR } from "@bciers/styles/colors";
+
 interface ReasonForChangeProps {
   reasonForChange: string;
   onReasonChange: (val: string) => void;
@@ -8,6 +12,18 @@ const ReasonForChangeForm: React.FC<ReasonForChangeProps> = ({
   reasonForChange,
   onReasonChange,
 }) => {
+  const borderColor = DARK_GREY_BG_COLOR;
+  const styles: React.CSSProperties = {
+    width: "100%",
+    padding: "8px",
+    fontSize: "16px",
+    fontFamily: "BCSans, sans-serif",
+    borderRadius: "4px",
+    border: `1px solid ${borderColor}`,
+    backgroundColor: "white",
+    resize: "vertical",
+  };
+
   return (
     <form
       onSubmit={(e) => {
@@ -28,11 +44,15 @@ const ReasonForChangeForm: React.FC<ReasonForChangeProps> = ({
             previous report occurred.
             <span className="text-red-500">*</span>
           </label>
-          <textarea
+          <TextareaAutosize
+            aria-label="Reason for change"
             value={reasonForChange}
-            onChange={(e) => onReasonChange(e.target.value)}
-            rows={4}
-            className="w-2/3 p-2 border border-gray-400 rounded resize-vertical"
+            onChange={(e) =>
+              onReasonChange((e.target as HTMLTextAreaElement).value)
+            }
+            minRows={4}
+            className="w-2/3"
+            style={styles}
           />
         </div>
       </div>
