@@ -67,7 +67,6 @@ export const trackStatusOfIssuanceUiSchema: UiSchema = {
     "approved_note",
     "awaiting_note",
     "declined_note",
-    "supplementary_declined_note",
     "changes_required_note",
     "earned_credits_amount",
     "issuance_status",

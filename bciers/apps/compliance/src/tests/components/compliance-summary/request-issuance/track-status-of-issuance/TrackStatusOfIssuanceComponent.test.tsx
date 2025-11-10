@@ -19,15 +19,6 @@ vi.mock(
 );
 
 vi.mock(
-  "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusSupplementaryDeclinedNote",
-  () => ({
-    IssuanceStatusSupplementaryDeclinedNote: () => (
-      <div>Supplementary Declined Note</div>
-    ),
-  }),
-);
-
-vi.mock(
   "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusAwaitingNote",
   () => ({
     IssuanceStatusAwaitingNote: () => <div>Awaiting Note</div>,
@@ -64,6 +55,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
     analyst_submitted_by: "Test Analyst",
     analyst_submitted_date: "2023-01-01",
     analyst_suggestion: "ready_to_approve" as any,
+    supplementary_declined: false,
     latest_compliance_report_version_id: 4,
   };
 
@@ -203,23 +195,6 @@ describe("TrackStatusOfIssuanceComponent", () => {
     );
 
     expect(screen.getByText("Declined Note")).toBeVisible();
-  });
-
-  it("displays supplementary declined note for declined status from a supplementary report", () => {
-    const declinedData = {
-      ...mockData,
-      issuance_status: IssuanceStatus.DECLINED,
-      suplementary_declined: true,
-    };
-
-    render(
-      <TrackStatusOfIssuanceComponent
-        data={declinedData}
-        complianceReportVersionId={mockComplianceReportVersionId}
-      />,
-    );
-
-    expect(screen.getByText("Supplementary Declined Note")).toBeVisible();
   });
 
   it("displays awaiting note for issuance requested status", () => {
