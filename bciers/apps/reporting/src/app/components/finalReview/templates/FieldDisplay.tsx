@@ -1,5 +1,5 @@
 import React from "react";
-import { LIGHT_GREY_BG_COLOR } from "@bciers/styles";
+import { BC_GOV_COMPONENTS_GREY, LIGHT_GREY_BG_COLOR } from "@bciers/styles";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 import { NumberField } from "@base-ui-components/react/number-field";
 import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
@@ -16,6 +16,7 @@ interface FieldDisplayProps {
   isAdded?: boolean;
   oldValue?: any;
   changeType?: "modified" | "added" | "removed";
+  fieldKey?: string;
 }
 
 /**
@@ -32,7 +33,11 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
   isDeleted = false,
   oldValue,
   changeType,
+  fieldKey,
 }) => {
+  // Use a stacked layout on small screens and a responsive flex with fixed widths on md+
+  const isReasonForChange = fieldKey === "reason_for_change";
+
   const formatValue = (val: any) => {
     if (val === null || val === undefined) {
       return <span>N/A</span>;
@@ -65,60 +70,81 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
 
   return (
     <div className="w-full my-3">
+      {/* stacked on mobile, horizontal on md+ */}
       <div
-        className="grid"
-        style={{
-          gridTemplateColumns: "400px 200px 300px",
-          columnGap: "3rem",
-          alignItems: "start",
-        }}
+        className={`flex flex-col md:flex-row md:gap-x-12 gap-y-2 items-start`}
       >
-        <label className="font-semibold">{label}</label>
-        {typeof value === "number" && !isYear ? (
-          <NumberField.Root
-            name={label}
-            disabled
-            value={transformToNumberOrUndefined(value)}
-            format={{
-              maximumFractionDigits: 4,
-            }}
-          >
-            <NumberField.Group>
-              <NumberField.Input
+        {/* label - fixed width on md (1/3 for reason_for_change, 3/12 otherwise) */}
+        <div
+          className={`w-full ${isReasonForChange ? "md:w-4/12" : "md:w-3/12"}`}
+        >
+          <label className="font-semibold">{label}</label>
+        </div>
+
+        {/* value area - for reason_for_change take 2/3, otherwise use existing mid width */}
+        <div
+          className={`w-full ${
+            isReasonForChange
+              ? "md:w-8/12"
+              : isReasonForChange
+              ? "md:w-8/12"
+              : "md:w-4/12"
+          }`}
+        >
+          {typeof value === "number" && !isYear ? (
+            <NumberField.Root
+              name={label}
+              disabled
+              value={transformToNumberOrUndefined(value)}
+              format={{
+                maximumFractionDigits: 4,
+              }}
+            >
+              <NumberField.Group>
+                <NumberField.Input
+                  style={{
+                    ...numberStyles,
+                    ...deletedValueStyles,
+                  }}
+                  name={label}
+                />
+              </NumberField.Group>
+            </NumberField.Root>
+          ) : changeType === "modified" ? (
+            <>
+              <span
                 style={{
-                  ...numberStyles,
-                  ...deletedValueStyles,
+                  textDecoration: "line-through",
+                  color: BC_GOV_COMPONENTS_GREY,
                 }}
-                name={label}
-              />
-            </NumberField.Group>
-          </NumberField.Root>
-        ) : changeType === "modified" ? (
-          <>
-            <span style={{ textDecoration: "line-through", color: "#666" }}>
-              {formatValue(oldValue)}
-              {unit && ` ${unit}`}
-            </span>
-            <span className="mx-2">→</span>
-            <span>
-              {formatValue(value)}
-              {unit && ` ${unit}`}
-            </span>
-          </>
-        ) : (
-          <div style={deletedValueStyles}>{formatValue(value)}</div>
-        )}
-        {unit ? (
+              >
+                {formatValue(oldValue)}
+                {unit && ` ${unit}`}
+              </span>
+              <span className="mx-2">→</span>
+              <span>
+                {formatValue(value)}
+                {unit && ` ${unit}`}
+              </span>
+            </>
+          ) : (
+            <div style={deletedValueStyles}>{formatValue(value)}</div>
+          )}
+        </div>
+
+        {/* unit / extra column - render only for non-reason_for_change to avoid 3-column layout */}
+        {!isReasonForChange ? (
           <div
-            className="text-bc-bg-blue relative flex items-center"
+            className={`w-full md:w-5/12 flex items-center ${
+              unit ? "text-bc-bg-blue" : ""
+            }`}
             style={deletedValueStyles}
           >
-            {unit}
+            {unit ? <div className="relative">{unit}</div> : <div />}
           </div>
-        ) : (
-          <div />
-        )}
+        ) : null}
       </div>
+
       {showSeparator && (
         <hr
           className="mt-5"

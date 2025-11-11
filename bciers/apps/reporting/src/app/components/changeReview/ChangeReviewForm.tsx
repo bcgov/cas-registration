@@ -76,7 +76,6 @@ export default function ChangeReviewForm({
 
     setIsSaving(false);
   };
-
   return (
     <MultiStepWrapperWithTaskList
       initialStep={navigationInformation.headerStepIndex}
