@@ -281,8 +281,7 @@ class ElicensingObligationService:
     @classmethod
     def send_notice_for_penalty_accrual_for_current_period(cls) -> None:
         """
-        Sends penalty-accrual notices for obligations in the current compliance period
-        whose obligation due date is on/before the business deadline and still have an outstanding balance.
+        Sends penalty-accrual notices for obligations in the current compliance period that have an outstanding balance and are past due.
 
         Steps:
         1) Get current reporting year
@@ -301,11 +300,10 @@ class ElicensingObligationService:
             return
 
         # Reuse the reminders base (unpaid, unmet, non-void, has invoice)
-        # Filter reminders on due date has passed (<= compliance_deadline).
-        obligations = cls._get_obligations_for_reminders(compliance_period).filter(
-            elicensing_invoice__due_date__lte=getattr(
-                compliance_period, "obligation_deadline", compliance_period.compliance_deadline
-            )
+        # Filter reminders on obligation_deadline has passed compliance_deadline
+        obligations = (
+            cls._get_obligations_for_reminders(compliance_period)
+            .filter(obligation_deadline__lte=compliance_period.compliance_deadline)
         )
 
         if not obligations.exists():
