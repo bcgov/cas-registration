@@ -13,7 +13,7 @@ class BCCRUnit:
     id: Optional[str] = None
     type: Optional[str] = None
     serial_number: Optional[str] = None
-    vintage_year: Optional[int] = None
+    vintage_year: Optional[str] = None
 
     # BCCR Unit specific fields
     quantity_available: Optional[str] = None
@@ -31,7 +31,7 @@ class AppliedComplianceUnit:
     id: Optional[str] = None
     type: Optional[str] = None
     serial_number: Optional[str] = None
-    vintage_year: Optional[int] = None
+    vintage_year: Optional[str] = None
     quantity_applied: Optional[str] = None
     equivalent_emission_reduced: Optional[str] = None
     equivalent_value: Optional[str] = None

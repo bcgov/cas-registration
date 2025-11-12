@@ -10,7 +10,7 @@ class BCCRUnit(Schema):
     id: str
     type: str
     serial_number: str
-    vintage_year: int
+    vintage_year: str
     quantity_available: int
     quantity_to_be_applied: Optional[int] = None
 
@@ -21,7 +21,7 @@ class AppliedComplianceUnit(Schema):
     id: Optional[str] = None
     type: Optional[str] = None
     serial_number: Optional[str] = None
-    vintage_year: Optional[int] = None
+    vintage_year: Optional[str] = None
     quantity_applied: Optional[str] = None
     equivalent_value: Optional[str] = None
 

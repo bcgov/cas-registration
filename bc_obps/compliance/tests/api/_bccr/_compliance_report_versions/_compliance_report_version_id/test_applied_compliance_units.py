@@ -35,7 +35,7 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
                 id="1",
                 type="Earned Credits",
                 serial_number="SN-123",
-                vintage_year=2025,
+                vintage_year="2024 - 2025",
                 quantity_applied="50",
                 equivalent_value="4000.00",
             )
@@ -54,7 +54,7 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
                     "id": "1",
                     "type": "Earned Credits",
                     "serial_number": "SN-123",
-                    "vintage_year": 2025,
+                    "vintage_year": "2024 - 2025",
                     "quantity_applied": "50",
                     "equivalent_value": "4000.00",
                 }

@@ -10,7 +10,7 @@ describe("ApplyComplianceUnitCell", () => {
       id: "1",
       type: "Earned Credits",
       serial_number: "BC-123",
-      vintage_year: 2024,
+      vintage_year: "2024",
       quantity_available: "100",
       quantity_to_be_applied: 0,
     },
