@@ -10,7 +10,16 @@ const LinkTaskListItem: React.FC<TaskListItemProps> = ({ item }) => {
 
   return (
     <ListItem sx={{ pl: 5, pb: 2 }}>
-      <ListItemButton component="a" href={item.link} rel="noopener noreferrer">
+      <ListItemButton
+        component="a"
+        href={item.link}
+        rel="noopener noreferrer"
+        sx={{
+          "& svg": {
+            flexShrink: 0, // Prevent the icon from shrinking when the text is long
+          },
+        }}
+      >
         <BackIcon />
         <Typography
           sx={{

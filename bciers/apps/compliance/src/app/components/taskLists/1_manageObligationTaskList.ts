@@ -78,7 +78,15 @@ export const generateManageObligationTaskList: (
     },
   ];
 
+  const backLink = {
+    type: "Link" as const,
+    text: "Back to compliance obligation report",
+    title: "Back to compliance obligation report",
+    link: `/compliance/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`,
+  };
+
   const complianceSection: TaskListElement[] = [
+    ...(activePage === ActivePage.ApplyComplianceUnits ? [backLink] : []),
     {
       type: "Section",
       title: `${reportingYear} Compliance Summary`,
