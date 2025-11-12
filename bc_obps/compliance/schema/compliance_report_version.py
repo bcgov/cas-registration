@@ -35,6 +35,7 @@ class ComplianceReportVersionListOut(ModelSchema):
     excess_emissions: Decimal = Field(
         ..., alias=EXCESS_EMISSIONS_ALIAS
     )  # for supplementary reports, this is the delta from the previous report
+    display_status: Optional[str] = None
     issuance_status: Optional[str] = Field(None, alias=ISSUANCE_STATUS_ALIAS)
     penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
     requires_manual_handling: Optional[bool] = None
@@ -71,6 +72,6 @@ class OperationByComplianceSummaryOut(ModelSchema):
 class ComplianceReportVersionFilterSchema(FilterSchema):
     operator_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator_name__icontains'})
     operation_name: Optional[str] = Field(None, json_schema_extra={'q': 'operation_name__icontains'})
-    status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})
+    display_status: Optional[str] = Field(None, json_schema_extra={'q': 'display_status__icontains'})
     penalty_status: Optional[str] = Field(None, json_schema_extra={'q': 'penalty_status__icontains'})
     obligation_id: Optional[str] = Field(None, json_schema_extra={'q': 'obligation_id__icontains'})
