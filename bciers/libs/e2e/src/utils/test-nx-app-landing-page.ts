@@ -6,7 +6,22 @@ import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import { setupTestEnvironment } from "@bciers/e2e/utils/helpers";
 
-const test = mergeTests(baseTest, happoTest);
+// Only merge Happo if we're in CI or if API keys are present
+const isHappoEnabled =
+  process.env.CI === "true" ||
+  (process.env.HAPPO_API_KEY && process.env.HAPPO_API_SECRET);
+
+const test = isHappoEnabled
+  ? mergeTests(baseTest, happoTest)
+  : baseTest.extend<{
+      happoScreenshot: (locator: any, options: any) => Promise<void>;
+    }>({
+      // Provide a no-op happoScreenshot fixture when Happo is disabled
+      happoScreenshot: async ({}, use) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        await use(() => Promise.resolve());
+      },
+    });
 
 // NOTE:: This is just a quick basic test setup to ensure that the database and auth are working in CI
 // Feel free to delete this or modify it as needed
