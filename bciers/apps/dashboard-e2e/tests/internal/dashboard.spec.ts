@@ -18,6 +18,20 @@ const userRoles = [
   UserRole.CAS_DIRECTOR,
 ];
 
+const getLinkVisibility = (
+  link: InternalDashboardLinks,
+  role: UserRole,
+): boolean => {
+  const isTransferLink =
+    link === InternalDashboardLinks.TRANSFER_OPERATION_OR_FACILITY;
+  // Transfer link should be hidden for admin only, visible for analyst and director
+  // All other links should be visible for all roles
+  if (isTransferLink && role === UserRole.CAS_ADMIN) {
+    return false;
+  }
+  return true;
+};
+
 userRoles.forEach((role) => {
   const test = setupBeforeEachTest(role);
   test.describe(" Internal user dashboard", () => {
@@ -41,19 +55,8 @@ userRoles.forEach((role) => {
       await analyzeAccessibility(page);
 
       for (const linkToCheck of Object.values(InternalDashboardLinks)) {
-        if (role === UserRole.CAS_ADMIN) {
-          if (
-            linkToCheck ===
-            InternalDashboardLinks.TRANSFER_OPERATION_OR_FACILITY
-          )
-            await linkIsVisible(page, linkToCheck, false, true);
-          else await linkIsVisible(page, linkToCheck, true, true);
-        } else if (
-          role === UserRole.CAS_ANALYST ||
-          role === UserRole.CAS_DIRECTOR
-        ) {
-          await linkIsVisible(page, linkToCheck, true, true);
-        }
+        const shouldBeVisible = getLinkVisibility(linkToCheck, role);
+        await linkIsVisible(page, linkToCheck, shouldBeVisible, true);
       }
 
       for (const tile of InternalDashboardTiles) {
