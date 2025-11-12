@@ -28,7 +28,7 @@ TEMPLATE_BODY = '''
     </p>
     <p>To meet your compliance obligation:</p>
     <ul>
-        <li>Navigate to the <b>Compliance</b> module and click <b>My Compliance &gt; Compliance Summaries</b>.</li>
+        <li>Navigate to the Compliance module and click <i>My Compliance &gt; Compliance Summaries</i>.</li>
         <li>Find your operation in the grid and click <b>Manage Operation</b>.</li>
     </ul>
     <br/>
