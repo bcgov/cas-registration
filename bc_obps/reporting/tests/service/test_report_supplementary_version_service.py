@@ -1,5 +1,5 @@
 from django.test import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 from model_bakery.baker import make_recipe
 from django.core.files.base import ContentFile
 from registration.models import Operation
@@ -446,9 +446,16 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             )
 
         # ACT: Clone the ReportAttachment instances.
-        ReportSupplementaryVersionService.clone_report_version_attachments(
-            self.old_report_version, self.new_report_version
-        )
+        with patch("django.core.files.storage.default_storage.duplicate_file") as mock_duplicate:
+            mock_duplicate.return_value = "test_file"
+
+            ReportSupplementaryVersionService.clone_report_version_attachments(
+                self.old_report_version, self.new_report_version
+            )
+            assert mock_duplicate.mock_calls == [
+                call("report_attachments/2025/file1.pdf"),
+                call("report_attachments/2025/file2.doc"),
+            ]
 
         # ASSERT: Verify that two ReportAttachment instances have been cloned.
         new_attachments = ReportAttachment.objects.filter(report_version=self.new_report_version)
