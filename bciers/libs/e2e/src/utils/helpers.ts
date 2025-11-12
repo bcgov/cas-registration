@@ -559,6 +559,10 @@ export async function takeStabilizedScreenshot(
   page: Page,
   happoArgs: { component: string; variant: string; targets?: string[] },
 ) {
+  // Skip Happo screenshots if Happo is not enabled (e.g., running locally without API keys)
+  if (!happoScreenshot) {
+    return;
+  }
   const { component, variant, targets } = happoArgs;
   const pageContent = page.locator("html");
   await waitForElementToStabilize(page, "main");
