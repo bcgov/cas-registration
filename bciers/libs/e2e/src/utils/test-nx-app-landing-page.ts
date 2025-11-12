@@ -5,10 +5,6 @@ import { mergeTests } from "@playwright/test";
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import { setupTestEnvironment } from "@bciers/e2e/utils/helpers";
-// ℹ️ Environment variables
-import * as dotenv from "dotenv";
-
-dotenv.config({ path: "./e2e/.env.local" });
 
 const test = mergeTests(baseTest, happoTest);
 
