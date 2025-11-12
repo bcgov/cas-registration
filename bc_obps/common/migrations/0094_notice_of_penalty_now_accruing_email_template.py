@@ -23,7 +23,7 @@ TEMPLATE_BODY = '''
     </p>
     <br/>
     <p>
-        To review your compliance obligation and/or penalty, including how it was calculated, log into BCIERS at
+        To review your compliance obligation and/or penalty, including how it was calculated, log-into BCIERS at
         <a href="https://industrialemissions.gov.bc.ca/onboarding">https://industrialemissions.gov.bc.ca/onboarding</a>.
     </p>
     <p>To meet your compliance obligation:</p>
