@@ -16,7 +16,7 @@ const test = isHappoEnabled
       happoScreenshot: (locator: any, options: any) => Promise<void>;
     }>({
       // Provide a no-op happoScreenshot fixture when Happo is disabled
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty-pattern
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       happoScreenshot: async ({}, use) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         await use(() => Promise.resolve());
@@ -27,7 +27,6 @@ export function setupTest(role: string, hookType: "beforeEach" | "beforeAll") {
   const storageState = getStorageStateForRole(role);
 
   const testWithRole = test.extend({
-    // eslint-disable-next-line react-hooks/rules-of-hooks, @typescript-eslint/no-explicit-any
     context: async (
       { browser, baseURL }: { browser: any; baseURL: any },
       use: (context: BrowserContext) => Promise<void>,
