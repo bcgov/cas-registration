@@ -17,7 +17,7 @@ TEMPLATE_BODY = '''
     <br/>
     <p>
         The unmet compliance obligation is now subject to daily compounding penalties, as well as interest under
-        the <i>Financial Administration Act (FAA)</i>. These charges will continue to accrue until the outstanding
+        the <i>Financial Administration Act</i> (FAA). These charges will continue to accrue until the outstanding
         obligation is met. Upon meeting the obligation, the BCIERS will calculate and invoice the amount of the
         penalty. You will be able to pay the penalty and interest once you receive the penalty invoice.
     </p>
