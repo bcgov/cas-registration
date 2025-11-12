@@ -344,7 +344,7 @@ class ApplyComplianceUnitsService:
         # while RETIRED units are those that have been retired by industry users.
         compliance_period_year = compliance_report_version.compliance_report.compliance_period.start_date.year
         applied_units = bccr_account_service.client.list_all_units(
-            account_id=bccr_subaccount_id, vintage_year=compliance_period_year, state_filter="ACTIVE,RETIRED"
+            account_id=bccr_subaccount_id, vintage_year=compliance_period_year, state_filter="ACTIVE,RETIRED", limit=100
         )
         formatted_units = cls._format_bccr_units_for_grid_display(applied_units.get("entities", []))
 

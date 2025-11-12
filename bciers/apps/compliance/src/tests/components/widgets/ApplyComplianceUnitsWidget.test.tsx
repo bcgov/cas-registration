@@ -16,7 +16,7 @@ const mockUnits: BccrUnit[] = [
     type: "Earned Credits",
     serial_number:
       "BC-BCO-IN-104100000030260-01012025-31122039-21887521-21888518-SPG",
-    vintage_year: 2025,
+    vintage_year: "2025",
     quantity_available: 100,
     quantity_to_be_applied: 0,
     equivalent_emission_reduced: 0,
@@ -27,7 +27,7 @@ const mockUnits: BccrUnit[] = [
     type: "Offset Units",
     serial_number:
       "BC-BCO-IN-104100000030260-01012024-31122039-21887521-21888518-SPG",
-    vintage_year: 2024,
+    vintage_year: "2024",
     quantity_available: 200,
     quantity_to_be_applied: 0,
     equivalent_emission_reduced: 0,

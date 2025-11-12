@@ -116,14 +116,14 @@ class TestApplyComplianceUnitsService:
                 "id": "1",
                 "unitType": "BCE",
                 "serialNo": "BCE-2023-0001",
-                "vintage": 2023,
+                "vintage": "2023",
                 "holdingQuantity": 100,
             },
             {
                 "id": "2",
                 "unitType": "BCO",
                 "serialNo": "BCO-2023-0001",
-                "vintage": 2023,
+                "vintage": "2022 - 2023",
                 "holdingQuantity": 50,
             },
             None,  # Test handling of None values
@@ -138,14 +138,14 @@ class TestApplyComplianceUnitsService:
         assert result[0].id == "1"
         assert result[0].type == "Earned Credits"
         assert result[0].serial_number == "BCE-2023-0001"
-        assert result[0].vintage_year == 2023
+        assert result[0].vintage_year == "2023"
         assert result[0].quantity_available == 100
 
         assert isinstance(result[1], BCCRUnit)
         assert result[1].id == "2"
         assert result[1].type == "Offset Units"
         assert result[1].serial_number == "BCO-2023-0001"
-        assert result[1].vintage_year == 2023
+        assert result[1].vintage_year == "2022 - 2023"
         assert result[1].quantity_available == 50
 
     def test_get_apply_compliance_units_page_data_success(

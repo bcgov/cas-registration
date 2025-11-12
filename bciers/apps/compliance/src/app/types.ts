@@ -54,7 +54,7 @@ export interface BccrUnit {
   id: string;
   type: string;
   serial_number: string;
-  vintage_year: number;
+  vintage_year: string;
   quantity_available: number;
   quantity_to_be_applied: number;
   equivalent_emission_reduced: number;

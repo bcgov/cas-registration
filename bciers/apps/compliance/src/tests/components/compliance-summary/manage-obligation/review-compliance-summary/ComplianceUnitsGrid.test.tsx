@@ -21,7 +21,7 @@ const appliedComplianceUnits = {
       id: "1",
       type: "Offset Units",
       serial_number: "BC-123-456",
-      vintage_year: "2024",
+      vintage_year: "2023 - 2024",
       quantity_applied: 100,
       equivalent_value: 8000,
     },
@@ -80,7 +80,7 @@ describe("ComplianceUnitsGrid", () => {
     const firstRow = rows[1];
     expect(within(firstRow).getByText("Offset Units")).toBeVisible();
     expect(within(firstRow).getByText("BC-123-456")).toBeVisible();
-    expect(within(firstRow).getByText("2024")).toBeVisible();
+    expect(within(firstRow).getByText("2023 - 2024")).toBeVisible();
     expect(within(firstRow).getByText("100")).toBeVisible();
     expect(within(firstRow).getByText("100 tCO2e")).toBeVisible();
     expect(within(firstRow).getByText("$8,000.00")).toBeVisible();

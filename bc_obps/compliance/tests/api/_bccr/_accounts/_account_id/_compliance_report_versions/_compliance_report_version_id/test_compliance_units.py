@@ -46,7 +46,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
                     id="1",
                     type="Earned Credits",
                     serial_number="BCE-2023-0001",
-                    vintage_year=2023,
+                    vintage_year="2022 - 2023",
                     quantity_available="1000",
                 )
             ],
@@ -67,6 +67,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         assert len(response_data["bccr_units"]) == 1
         assert response_data["bccr_units"][0]["type"] == "Earned Credits"
         assert response_data["bccr_units"][0]["serial_number"] == "BCE-2023-0001"
+        assert response_data["bccr_units"][0]["vintage_year"] == "2022 - 2023"
 
         # Verify service call
         mock_service.assert_called_once_with(
@@ -164,7 +165,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
                 "id": "1",
                 "type": "Earned Credits",
                 "serial_number": "BCE-2023-0001",
-                "vintage_year": 2023,
+                "vintage_year": "2023",
                 "quantity_available": 100,
                 "quantity_to_be_applied": 50,
             },
@@ -172,7 +173,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
                 "id": "2",
                 "type": "Offset Units",
                 "serial_number": "BCO-2023-0001",
-                "vintage_year": 2023,
+                "vintage_year": "2023",
                 "quantity_available": 200,
                 "quantity_to_be_applied": 75,
             },
@@ -232,7 +233,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
                 "id": "1",
                 "type": "Earned Credits",
                 "serial_number": "BCE-2023-0001",
-                "vintage_year": 2023,
+                "vintage_year": "2023",
                 "quantity_available": 100,
                 "quantity_to_be_applied": 1,
             },
@@ -240,7 +241,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
                 "id": "2",
                 "type": "Offset Units",
                 "serial_number": "BCO-2023-0001",
-                "vintage_year": 2023,
+                "vintage_year": "2023",
                 "quantity_available": 200,
                 "quantity_to_be_applied": 0,
             },
@@ -248,7 +249,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
                 "id": "3",
                 "type": "Offset Units",
                 "serial_number": "BCO-2023-0002",
-                "vintage_year": 2023,
+                "vintage_year": "2023",
                 "quantity_available": 10,
                 "quantity_to_be_applied": None,
             },
