@@ -564,8 +564,27 @@ export async function takeStabilizedScreenshot(
     return;
   }
   const { component, variant, targets } = happoArgs;
-  const pageContent = page.locator("html");
+
+  // Wait for page to be fully loaded and stable
+  await page.waitForLoadState("networkidle");
   await waitForElementToStabilize(page, "main");
+
+  // Wait a bit more to ensure everything is stable
+  await page.waitForTimeout(100);
+
+  // Re-query the locator right before taking screenshot to ensure it's still valid
+  // This prevents "Frame has been detached" errors if the page navigated
+  const pageContent = page.locator("html");
+
+  // Verify the page is still attached by checking if we can evaluate on it
+  try {
+    await page.evaluate(() => document.readyState);
+  } catch (error) {
+    throw new Error(
+      `Page frame was detached before screenshot. This usually means the page navigated or reloaded. Error: ${error}`,
+    );
+  }
+
   await happoScreenshot(pageContent, {
     component,
     variant,
