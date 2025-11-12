@@ -35,13 +35,6 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
         },
         {
           properties: {
-            issuance_status: { enum: [IssuanceStatus.DECLINED] },
-            declined_note: readOnlyStringField(),
-            director_comment: readOnlyStringField("Director's Comment:"),
-          },
-        },
-        {
-          properties: {
             issuance_status: { enum: [IssuanceStatus.CHANGES_REQUIRED] },
             changes_required_note: readOnlyStringField(),
             analyst_comment: readOnlyStringField("Analyst’s Comment:"),
@@ -51,6 +44,13 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
           properties: {
             issuance_status: { enum: [IssuanceStatus.ISSUANCE_REQUESTED] },
             awaiting_note: readOnlyStringField(),
+          },
+        },
+        {
+          properties: {
+            issuance_status: { enum: [IssuanceStatus.DECLINED] },
+            declined_note: readOnlyStringField(),
+            director_comment: readOnlyStringField("Director's Comment:"),
           },
         },
       ],

@@ -35,7 +35,12 @@ export default function TrackStatusOfIssuanceComponent({
       uiSchema={trackStatusOfIssuanceUiSchema}
       formData={data}
       className="w-full"
-      formContext={{ analystSuggestion: data.analyst_suggestion }}
+      formContext={{
+        analystSuggestion: data.analyst_suggestion,
+        latestComplianceReportVersionId:
+          data.latest_compliance_report_version_id,
+        supplementaryDeclined: data.supplementary_declined,
+      }}
     >
       <ComplianceStepButtons
         key="form-buttons"

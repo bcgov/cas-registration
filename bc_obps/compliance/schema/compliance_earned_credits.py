@@ -12,6 +12,7 @@ class ComplianceEarnedCreditsOut(ModelSchema):
 
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
     analyst_submitted_by: Optional[str] = Field(None, alias="analyst_submitted_by.get_full_name")
+    latest_compliance_report_version_id: Optional[int] = Field(None)
 
     class Meta:
         model = ComplianceEarnedCredit
@@ -24,6 +25,7 @@ class ComplianceEarnedCreditsOut(ModelSchema):
             "director_comment",
             "analyst_submitted_date",
             "analyst_suggestion",
+            "supplementary_declined",
         ]
 
 

@@ -79,4 +79,31 @@ describe("IssuanceStatusDeclinedNote", () => {
       ),
     ).toBeVisible();
   });
+
+  it("displays the correct text content", () => {
+    render(
+      <IssuanceStatusDeclinedNote
+        formContext={{
+          latestComplianceReportVersionId: 2,
+          supplementaryDeclined: true,
+        }}
+      />,
+    );
+
+    const declinedNoteTextPatterns = [
+      /This issuance request is declined because you submitted a supplementary/i,
+      /report. Please/i,
+    ];
+    const link = `/compliance/compliance-administration/compliance-summaries/2/review-compliance-earned-credits-report`;
+
+    for (const textPattern of declinedNoteTextPatterns) {
+      expect(screen.getByText(textPattern)).toBeVisible();
+    }
+    // Verify BCCR link and href
+    const bccrAnchor = screen.getByRole("link", {
+      name: /submit a new issuance of earned credits request./i,
+    });
+    expect(bccrAnchor).toBeVisible();
+    expect(bccrAnchor).toHaveAttribute("href", link);
+  });
 });

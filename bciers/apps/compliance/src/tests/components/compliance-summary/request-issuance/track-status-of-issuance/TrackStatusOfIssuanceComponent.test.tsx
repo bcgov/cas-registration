@@ -55,6 +55,8 @@ describe("TrackStatusOfIssuanceComponent", () => {
     analyst_submitted_by: "Test Analyst",
     analyst_submitted_date: "2023-01-01",
     analyst_suggestion: "ready_to_approve" as any,
+    supplementary_declined: false,
+    latest_compliance_report_version_id: 4,
   };
 
   beforeEach(() => {

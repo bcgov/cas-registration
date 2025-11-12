@@ -91,6 +91,8 @@ export interface RequestIssuanceComplianceSummaryData {
   analyst_submitted_date: string;
   analyst_submitted_by: string;
   analyst_suggestion: AnalystSuggestion;
+  supplementary_declined: boolean;
+  latest_compliance_report_version_id?: number;
 }
 
 export interface ComplianceEarnedCreditData {
