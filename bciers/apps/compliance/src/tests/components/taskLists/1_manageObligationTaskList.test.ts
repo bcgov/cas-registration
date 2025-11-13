@@ -68,14 +68,14 @@ describe("generateManageObligationTaskList", () => {
     });
   });
 
-  it("generates task list with subsection when in Apply Units page", () => {
+  it("generates task list with back link and subsection when in Apply Units page", () => {
     const taskList = generateManageObligationTaskList(
       mockComplianceReportVersionId,
       mockObligationTasklistData,
       ActivePage.ApplyComplianceUnits,
     );
-
-    const taskItems = taskList[0].elements;
+    expect(taskList[0].text).toBe("Back to compliance obligation report");
+    const taskItems = taskList[1].elements;
     expect(taskItems).toHaveLength(3);
 
     // Check Review Summary with Apply Units subsection
