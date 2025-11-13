@@ -1,9 +1,24 @@
+from datetime import datetime
 import os
+import shutil
 from typing import Any
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from storages.backends.gcloud import GoogleCloudStorage  # type: ignore
 from django.core.files.base import ContentFile
+
+
+def add_filename_suffix(filename: str, suffix: str | None = None) -> str:
+    """
+    Small utility to add a suffix to a file name, before a potential extension.
+    Defaults to a timestamp integer (YYYYMMDDHHmmSS)
+    Example:
+      the/path/the_file.txt -> the/path/the_file_20250522245133.txt
+    """
+    (name, extension) = os.path.splitext(filename)
+    file_suffix = suffix if suffix is not None else f'_{datetime.now().strftime("%Y%m%d%H%M%S")}'
+
+    return f"{name}{file_suffix}{extension}"
 
 
 class SimpleLocal(FileSystemStorage):
@@ -13,6 +28,15 @@ class SimpleLocal(FileSystemStorage):
 
     def get_file_bucket(self, name: str) -> str | None:
         return "Clean"
+
+    def duplicate_file(self, name: str) -> str:
+        """
+        Duplicate a file
+        """
+        new_file = add_filename_suffix(name)
+        shutil.copy2(f"{self.location}/{name}", f"{self.location}/{new_file}")
+
+        return new_file
 
 
 class UnifiedGcsStorage(GoogleCloudStorage):
@@ -77,3 +101,21 @@ class UnifiedGcsStorage(GoogleCloudStorage):
             return "Quarantined"
 
         return None
+
+    def duplicate_file(self, name: str) -> str:
+        """
+        Duplicate a file
+        """
+        new_file = add_filename_suffix(name)
+
+        if not self._exists_in_clean_bucket(name):
+            raise Exception("Cannot duplicate an unscanned file")
+
+        bucket = self._clean_handler().bucket
+        blob = bucket.blob(name)
+
+        # From the GCP API documentation: For a destination
+        # object that does not yet exist, set the if_generation_match precondition to 0.
+        blob_copy = bucket.copy_blob(blob, bucket, new_file, if_generation_match=0)
+
+        return blob_copy.name  # type: ignore
