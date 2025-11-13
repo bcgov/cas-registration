@@ -9,12 +9,7 @@ import {
   Browser,
 } from "@playwright/test";
 import { baseUrlSetup } from "@bciers/e2e/utils/constants";
-import {
-  DataTestID,
-  E2EValue,
-  FormField,
-  MessageTextResponse,
-} from "@bciers/e2e/utils/enums";
+import { DataTestID, MessageTextResponse } from "@bciers/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
 import path from "path";
 
@@ -38,7 +33,7 @@ export async function analyzeAccessibility(
 }
 
 export async function clickButton(page: Page, buttonName: string | RegExp) {
-  page
+  await page
     .getByRole("button", {
       name: buttonName,
     })
@@ -66,7 +61,7 @@ export async function fillDropdownByLabel(
   labelText: string | RegExp,
   value: string,
 ) {
-  const input = await page.getByLabel(labelText);
+  const input = page.getByLabel(labelText);
   await expect(input).toBeVisible();
   await expect(input).toBeEnabled();
   await input.fill(value);
@@ -84,34 +79,13 @@ export async function checkAllRadioButtons(page: Page) {
   }
 }
 
-// 🛠️ Function: checks expected alert mesage
+// 🛠️ Function: checks expected alert message
 export async function checkAlertMessage(
   page: Page,
   alertMessage: string | RegExp,
   index: number = 0,
 ) {
   await expect(page.getByRole("alert").nth(index)).toHaveText(alertMessage);
-}
-
-// 🛠️ Function: checks the visibility of each text within the specified column of the provided table
-export async function checkColumnTextVisibility(
-  table: Locator,
-  columnIdentifier: number | string,
-  columnText: string[],
-): Promise<void> {
-  let columnSelector: string;
-  if (typeof columnIdentifier === "number") {
-    columnSelector = `[data-colindex="${columnIdentifier}"]`; // Use data-colindex
-  } else {
-    columnSelector = `[data-field="${columnIdentifier}"]`; // Use data-field
-  }
-  // Check for visibility of each text within the column
-  for (const text of columnText) {
-    const cell = await table
-      .locator(`[role="gridcell"]${columnSelector}:has-text("${text}")`)
-      .first();
-    await expect(cell).toBeVisible();
-  }
 }
 
 // 🛠️ Function: checks read only of form inputs
@@ -129,54 +103,16 @@ export async function checkFormFieldsReadOnly(
         field.isEditable(),
       ]);
       // Assert visibility to be true
-      await expect(visible).toBeTruthy();
-      if (readonly === true) {
-        await expect(disabled).toBeTruthy();
-        await expect(editable).toBeFalsy();
+      expect(visible).toBeTruthy();
+      if (readonly) {
+        expect(disabled).toBeTruthy();
+        expect(editable).toBeFalsy();
       } else {
-        await expect(disabled).toBeFalsy();
-        await expect(editable).toBeTruthy();
+        expect(disabled).toBeFalsy();
+        expect(editable).toBeTruthy();
       }
     }),
   );
-}
-
-// 🛠️ Function: check locator visiblity true or false
-export async function checkLocatorsVisibility(
-  page: Page,
-  locators: Locator[],
-  visible: boolean = true,
-) {
-  for (const locator of locators) {
-    if (visible) {
-      await expect(locator).toBeVisible();
-    } else {
-      await expect(locator).not.toBeVisible();
-    }
-  }
-}
-
-// 🛠️ Function: get all label elements with required field character * within form fieldset
-export async function getFieldRequired(page: Page) {
-  const fieldset = page.locator("fieldset#root");
-  const requiredFields = await fieldset.locator('label:has-text("*")').all();
-  return requiredFields;
-}
-
-// 🛠️ Function: checking required field values
-export async function checkRequiredFieldValue(page: Page) {
-  const requiredFields = await getFieldRequired(page);
-  const allFieldsHaveValue = await Promise.all(
-    requiredFields.map(async (field) => !!field),
-  );
-  return allFieldsHaveValue.every((value) => value);
-}
-
-// 🛠️ Function: get all alert elements within form fieldset
-export async function getFieldAlerts(page: Page) {
-  const fieldset = page.locator("fieldset#root");
-  const alertElements = await fieldset.locator('div[role="alert"]').all();
-  return alertElements;
 }
 
 /**
@@ -206,46 +142,8 @@ export async function getAllFormInputs(page: Page) {
 
 // 🛠️ Function: gets table row's cell value
 export async function getRowCellBySelector(row: Locator, selector: string) {
-  const cell = await row.locator(`[role="gridcell"]${selector}`).first();
+  const cell = row.locator(`[role="gridcell"]${selector}`).first();
   return cell;
-}
-// 🛠️ Function: gets table row by cell value selector
-export async function getTableRowByCellSelector(
-  table: Locator,
-  selector: string,
-) {
-  const row = await table
-    .locator(`[role="gridcell"]${selector}`)
-    .first()
-    .locator('xpath=ancestor::div[@role="row"]')
-    .first();
-  return row;
-}
-
-// 🛠️ Function: gets table row by row id
-export async function getTableRowById(table: Locator, rowId: string) {
-  const row = await table.locator(`[role="row"][data-id="${rowId}"]`).first();
-  return row;
-}
-
-// 🛠️ Function: get a table column's values
-export async function getTableColumnTextValues(
-  table: Locator,
-  dataField: string,
-): Promise<string[]> {
-  const uniqueColumnValues = new Set<string>();
-  const rows = await table.locator('[role="row"]').all();
-  const rowsLength = rows.length;
-  const indexStart = 2; //skip header row; skip search row
-
-  for (let i = indexStart; i < rowsLength; i++) {
-    const row = rows[i];
-    const cell = await getRowCellBySelector(row, `[data-field="${dataField}"]`);
-    const text = (await cell.textContent()) || "";
-    uniqueColumnValues.add(text.trim());
-  }
-
-  return Array.from(uniqueColumnValues);
 }
 
 // 🛠️ Function: find the nth row where a unique value resides in a given column and return that row Locator
@@ -272,19 +170,6 @@ export async function getRowByUniqueCellValue(
   return null; // uniqueCellValue not found
 }
 
-// 🛠️ Function: clears form fields
-export async function fieldsClear(page: Page, formFields: string | any[]) {
-  // 📛 Clear the required input fields
-  for (const input of formFields) {
-    const labelText = await input.textContent();
-    const inputField = await page.getByLabel(labelText as string);
-    // Click the field to focus it
-    await inputField.click();
-    // Clear the field
-    await inputField.clear();
-  }
-}
-
 // 🛠️ Function: fills required form fields correctly
 export async function fillRequiredFormFields(
   page: Page,
@@ -293,7 +178,7 @@ export async function fillRequiredFormFields(
   mode: "fill" | "read" = "fill",
 ) {
   for (const labelText of fieldLabels) {
-    const inputFields = await page.getByLabel(labelText);
+    const inputFields = page.getByLabel(labelText);
     const inputField = inputFields.nth((await inputFields.count()) - 1);
     if (mode === "fill") {
       const currentValue = await inputField.inputValue();
@@ -312,68 +197,12 @@ export async function fillRequiredFormFields(
       const expectedValue = isPhoneField
         ? `+1 ${values[labelText]}`
         : values[labelText];
-      const text = await page.getByText(expectedValue, { exact: true });
+      const text = page.getByText(expectedValue, { exact: true });
       await expect(text).toBeVisible();
     }
   }
 }
 
-// 🛠️ Function: fills all form fields with correct formatting. Selector argument is used to selectively fill parts of the form. Use "fieldset#root" as the argument if filling the entire form, otherwise use the a section's fieldset.
-export async function fillAllFormFields(page: Page, selector: string) {
-  // Locate all fields within the fieldset
-  const fieldset = await page.locator(selector).first();
-  if (!fieldset) {
-    throw new Error("Fieldset not found");
-  }
-  const fields = await fieldset.locator("label").all();
-  if (fields) {
-    for (const input of fields) {
-      const labelText = await input.textContent();
-      // We use the same labels multiple times in some forms (e.g., the parent operator section in the operator form has a Legal Name field, as does the main operator form), so this ensures we only getByLabel in the desired section of the form
-      const formSection = page.locator(selector);
-      const inputField = await formSection
-        .getByLabel(labelText as string)
-        .first();
-      if (labelText === FormField.IS_BUSINESS_ADDRESS_SAME) {
-        break;
-      }
-      // Click the field to focus it
-      await inputField.click();
-      switch (labelText) {
-        case FormField.PHONE:
-          await inputField.fill(E2EValue.INPUT_PHONE);
-          break;
-        case FormField.CRA:
-          await inputField.fill(E2EValue.INPUT_CRA);
-          break;
-        case FormField.BC_CRN:
-          await inputField.fill(E2EValue.INPUT_BC_CRN);
-          break;
-        case FormField.BUSINESS_STRUCTURE:
-          await inputField.fill(E2EValue.INPUT_BUSINESS_STRUCTRE);
-          await formSection
-            .getByRole("option", { name: E2EValue.INPUT_BUSINESS_STRUCTRE })
-            .click();
-          break;
-        case FormField.PROVINCE:
-          await inputField.fill(E2EValue.INPUT_PROVINCE);
-          await formSection
-            .getByRole("option", { name: E2EValue.INPUT_PROVINCE })
-            .click();
-          break;
-        case FormField.POSTAL_CODE:
-          await inputField.fill(E2EValue.INPUT_POSTAL_CODE);
-          break;
-        case FormField.WEB_SITE:
-          await inputField.fill(E2EValue.INPUT_WEB_SITE);
-          break;
-        default:
-          await inputField.fill(`E2E ${labelText}`);
-          break;
-      }
-    }
-  }
-}
 // 🛠️ Function: verifies whether the column names displayed on the page match the expected column names provided as input
 export async function tableColumnNamesAreCorrect(
   page: Page,
@@ -381,7 +210,7 @@ export async function tableColumnNamesAreCorrect(
 ) {
   const columnHeaders = page.locator(".MuiDataGrid-columnHeaderTitle");
   const actualColumnNames = await columnHeaders.allTextContents();
-  await expect(actualColumnNames).toEqual(expectedColumnNames);
+  expect(actualColumnNames).toEqual(expectedColumnNames);
 }
 
 export async function tableHasExpectedRowCount(
@@ -461,92 +290,6 @@ export async function setupTestEnvironment(
   expect(response.status()).toBe(200);
 }
 
-export async function sortTableByColumnLabel(
-  page: Page,
-  columnLabel: string,
-  expectedFirstSortedCell: string,
-  expectedSortDirection: "ascending" | "descending" | "none" = "ascending",
-) {
-  const header = page.getByRole("columnheader").getByText(columnLabel);
-
-  const colIndex = await page
-    .locator(`[aria-label="${columnLabel}"]`)
-    .getAttribute("aria-colindex");
-  await header.click();
-
-  // wait for aria-sort to be set to ascending
-  const ariaSort = await page
-    .locator(`[aria-label="${columnLabel}"]`)
-    .getAttribute("aria-sort");
-
-  expect(ariaSort).toBe(expectedSortDirection);
-
-  // wait for response to complete
-  await page.waitForResponse((response) => response.status() === 200);
-
-  const table = page.locator(DataTestID.GRID);
-
-  // Get the first row cell that was sorted
-  const firstSortedCell = await getRowCellBySelector(
-    table,
-    `[aria-colindex="${colIndex}"]`,
-  );
-
-  // Longer timeout to wait for sorting to complete
-  await expect(firstSortedCell).toHaveText(expectedFirstSortedCell, {
-    timeout: 20000,
-  });
-}
-export async function filterTableByFieldId(
-  page: Page,
-  fieldId: string,
-  columnLabel: string,
-  filterValue: string,
-  expectEmptyTable: boolean = false,
-) {
-  const filter = page.locator(`[id="${fieldId}"]`);
-  await filter.fill(filterValue);
-  expect(await filter.inputValue()).toBe(filterValue);
-
-  // wait for response to complete
-  await page.waitForResponse((response) => response.status() === 200);
-
-  if (expectEmptyTable) {
-    const emptyTable = page.getByText("No records found");
-    await expect(emptyTable).toBeVisible({ timeout: 20000 });
-    return;
-  }
-
-  const colIndex = await page
-    .locator(`[aria-label="${columnLabel}"]`)
-    .getAttribute("aria-colindex");
-
-  const table = page.locator(DataTestID.GRID);
-
-  // get the first row cell that was filtered
-  const firstFilteredCell = await getRowCellBySelector(
-    table,
-    `[aria-colindex="${colIndex}"]`,
-  );
-
-  // Longer timeout to wait for filtering to complete
-  await expect(firstFilteredCell).toContainText(filterValue, {
-    timeout: 20000,
-  });
-}
-
-export async function tableRowCount(page: Page, expectedRowCount: number) {
-  const tableContent = page.locator(`.MuiDataGrid-virtualScroller`);
-  const rows = tableContent.locator('[role="row"]');
-  await expect(rows).toHaveCount(expectedRowCount, { timeout: 20000 });
-}
-
-export async function clearTableFilter(page: Page, fieldId: string) {
-  const filter = page.locator(`[id="${fieldId}"]`);
-  await filter.clear();
-  expect(await filter.inputValue()).toBe("");
-}
-
 export async function waitForElementToStabilize(page: Page, element: string) {
   await page.waitForLoadState();
   const el = await page.$(element);
@@ -591,20 +334,17 @@ export async function takeStabilizedScreenshot(
     targets,
   });
 }
-export async function assertCount(elementsToCount: Locator) {
-  expect(elementsToCount).toHaveCount(0);
-}
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
   await tableHasExpectedRowCount(page, expectedRowCount);
-  await assertCount(page.locator(".MuiDataGrid-row:hover")); // on hover, the table row colour changes, creating happo diffs
 }
+
 export async function stabilizeAccordion(
   page: Page,
   expectedArrowDropdownCount: number,
 ) {
   await waitForElementToStabilize(page, "section");
-  const arrowDropDownElements = await page.locator(
+  const arrowDropDownElements = page.locator(
     `[data-testid=${DataTestID.ARROW_DROPDOWN_ICON}]`,
   );
   expect(await arrowDropDownElements.count()).toBe(expectedArrowDropdownCount);
@@ -644,7 +384,7 @@ export async function linkIsVisible(
   exact?: boolean,
 ) {
   if (exact === undefined) exact = false;
-  const link = await page.getByRole("link", { name: text, exact: exact });
+  const link = page.getByRole("link", { name: text, exact: exact });
   await expect(link).toBeVisible({ visible: visible });
   return link;
 }
@@ -667,7 +407,7 @@ export async function selectItemFromMuiSelect(
   else roleCell = page.locator(".MuiFormControl-root");
   await expect(roleCell).toBeVisible();
   await roleCell.click();
-  const optionsContainer = await page.locator(".MuiList-root");
+  const optionsContainer = page.locator(".MuiList-root");
   await expect(optionsContainer).toBeVisible();
   const option = optionsContainer.getByRole("option", {
     name: choice,
@@ -679,7 +419,7 @@ export async function selectItemFromMuiSelect(
 
 export async function urlIsCorrect(page: Page, expectedPath: string) {
   const currentUrl = page.url();
-  await expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
+  expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
 }
 
 // 🛠️ Function: checks if the breadcrumb contains the specified text using getByText
