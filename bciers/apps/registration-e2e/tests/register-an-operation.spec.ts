@@ -77,6 +77,7 @@ test.describe("Test register operations", () => {
       component: componentName,
       variant: "filled",
     });
+    await clickButton(registrationPage.page, /save operation representative/i);
     // TODO fix the accessibility errors and uncomment:  https://github.com/bcgov/cas-registration/issues/3198
     // await analyzeAccessibility(page, componentName);
     await clickButton(registrationPage.page, /continue/i); // button on this form is `Continue` instead of `Save and Continue`
