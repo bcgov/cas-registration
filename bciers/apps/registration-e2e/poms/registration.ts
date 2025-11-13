@@ -156,7 +156,6 @@ export class RegistrationPOM {
     await this.page
       .getByLabel(/postal code+/i)
       .fill(ContactE2EValue.POSTAL_CODE);
-    await clickButton(this.page, /save operation representative/i);
   }
 
   async fillExistingOperationRepresentative() {
