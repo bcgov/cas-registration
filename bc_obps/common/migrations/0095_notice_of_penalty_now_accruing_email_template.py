@@ -92,7 +92,7 @@ def reverse_penalty_accrual_template(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('common', '0093_V4_3_0'),
+        ('common', '0094_update_dashboard_data'),
     ]
 
     operations = [

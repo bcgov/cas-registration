@@ -194,6 +194,7 @@ def mock_obligation() -> MagicMock:
     obligation.compliance_report_version = mock_compliance_report_version
     return obligation
 
+
 def _make_obligation_for_period_with_deadline(
     cp: CompliancePeriod,
     *,
@@ -217,9 +218,10 @@ def _make_obligation_for_period_with_deadline(
     return make_recipe(
         "compliance.tests.utils.compliance_obligation",
         compliance_report_version=crv,
-        elicensing_invoice=inv,                  # has invoice (base needs it)
-        obligation_deadline=obligation_deadline, # <- field used by service filter
+        elicensing_invoice=inv,  # has invoice (base needs it)
+        obligation_deadline=obligation_deadline,  # <- field used by service filter
     )
+
 
 class _FauxQueryset(list):
     def exists(self):
@@ -801,9 +803,7 @@ class TestElicensingObligationService:
         filtered_out = _make_obligation_for_period_with_deadline(cp, obligation_deadline=date(2025, 12, 1))
 
         # Return a real QuerySet so the service's .filter(...) runs in DB
-        base_qs = ComplianceObligation.objects.filter(
-            pk__in=[will_send_1.pk, will_send_2.pk, filtered_out.pk]
-        )
+        base_qs = ComplianceObligation.objects.filter(pk__in=[will_send_1.pk, will_send_2.pk, filtered_out.pk])
         mock_get_current_reporting_year.return_value = ry
         mock_get_obligations_for_reminders.return_value = base_qs
 

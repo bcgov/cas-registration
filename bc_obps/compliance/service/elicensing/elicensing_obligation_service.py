@@ -301,9 +301,8 @@ class ElicensingObligationService:
 
         # Reuse the reminders base (unpaid, unmet, non-void, has invoice)
         # Filter reminders on obligation_deadline has passed compliance_deadline
-        obligations = (
-            cls._get_obligations_for_reminders(compliance_period)
-            .filter(obligation_deadline__lte=compliance_period.compliance_deadline)
+        obligations = cls._get_obligations_for_reminders(compliance_period).filter(
+            obligation_deadline__lte=compliance_period.compliance_deadline
         )
 
         if not obligations.exists():
