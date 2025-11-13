@@ -5,7 +5,15 @@ import {
   penaltiesRegulationLink,
 } from "@bciers/utils/src/urls";
 
-export const PaymentInstructionsDetails = () => {
+type Props = {
+  formContext: {
+    isPenaltyPage?: boolean;
+  };
+};
+
+export const PaymentInstructionsDetails = ({
+  formContext: { isPenaltyPage },
+}: Props) => {
   return (
     <div className="w-full mb-8">
       <h3>Before making a payment</h3>
@@ -24,6 +32,12 @@ export const PaymentInstructionsDetails = () => {
       <h3>Pay by electronic funds transfer (EFT) or by wire transfer</h3>
       <ul>
         <li>Include the invoice number as a reference</li>
+        {!isPenaltyPage && (
+          <li>
+            Plan to make your payment at least five business days before the
+            compliance obligation deadline to allow for payment processing
+          </li>
+        )}
       </ul>
       <h3>Provide correct information for timely processing</h3>
       <p>

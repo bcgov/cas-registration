@@ -11,7 +11,7 @@ import * as Sentry from "@sentry/nextjs";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: { id: string; isPenaltyPage: boolean } },
 ) {
   const id = params.id;
 

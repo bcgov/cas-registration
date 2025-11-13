@@ -20,6 +20,7 @@ class PaymentInstructionsService:
         cls,
         compliance_report_version_id: int,
         invoice_type: ComplianceInvoiceTypes = ComplianceInvoiceTypes.OBLIGATION,
+        is_penalty_page: bool = False,
     ) -> Tuple[Generator[bytes, None, None], str, int]:
         """
         Generate a PDF payment instructions and return a generator that yields chunks of the PDF data.
@@ -33,8 +34,7 @@ class PaymentInstructionsService:
         """
         try:
             context = PaymentInstructionsService._prepare_payment_instructions_context(
-                compliance_report_version_id,
-                invoice_type,
+                compliance_report_version_id, invoice_type, is_penalty_page
             )
             filename = f"payment_instructions_{context['invoice_number']}_{timezone.now().strftime('%Y%m%d')}.pdf"
 
@@ -56,6 +56,7 @@ class PaymentInstructionsService:
     def _prepare_payment_instructions_context(
         compliance_report_version_id: int,
         invoice_type: ComplianceInvoiceTypes,
+        is_penalty_page: bool,
     ) -> Dict[str, Any]:
         """
         Prepare context data for the payment instructions template.
@@ -74,6 +75,7 @@ class PaymentInstructionsService:
             if refreshResult.invoice
             else "Missing Invoice Number",
             'logo_base64': CLEAN_BC_LOGO_COMPLIANCE_INVOICE,
+            'is_penalty_page': is_penalty_page,
         }
 
         return context
