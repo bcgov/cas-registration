@@ -132,7 +132,6 @@ test.describe("Test changing registration purpose", () => {
     const row = await operationPage.findRowByBcghgId(
       ChangeRegistrationPurposeE2EValues.REGULATED_BCGHG_ID_FIELD_VALUE,
     );
-    await stabilizeGrid(page, 1);
 
     // Go to operation details page
     await operationPage.goToOperation(row);
