@@ -11,7 +11,8 @@ class TestAutomatedProcessService:
     @patch(
         'compliance.service.automated_process.automated_process_service.ElicensingDataRefreshService.refresh_data_by_invoice'
     )
-    def test_run_scheduled_compliance_sync(self, mock_refresh_data, mock_handler_manager_class):
+    @patch('compliance.models.elicensing_invoice.ElicensingInvoice.refresh_from_db')
+    def test_run_scheduled_compliance_sync(self, mock_refresh_from_db, mock_refresh_data, mock_handler_manager_class):
         # Setup mock handler manager
         mock_handler_manager = MagicMock()
         mock_handler_manager_class.return_value = mock_handler_manager
@@ -41,6 +42,9 @@ class TestAutomatedProcessService:
         assert sorted(actual_refresh_calls, key=lambda x: x['invoice_number']) == sorted(
             expected_refresh_calls, key=lambda x: x['invoice_number']
         )
+
+        # Verify refresh_from_db is called for each invoice
+        assert mock_refresh_from_db.call_count == 3
 
         assert mock_handler_manager_class.call_count == 3
         assert mock_handler_manager.process_compliance_updates.call_count == 3
