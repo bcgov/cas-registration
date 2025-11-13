@@ -312,19 +312,35 @@ export async function takeStabilizedScreenshot(
   await page.waitForLoadState("networkidle");
   await waitForElementToStabilize(page, "main");
 
+  // Wait for any pending navigations to complete
+  try {
+    await page.waitForLoadState("domcontentloaded", { timeout: 5000 });
+  } catch {
+    // Ignore timeout - page might already be loaded
+  }
+
   // Wait a bit more to ensure everything is stable
   await page.waitForTimeout(100);
 
-  // Re-query the locator right before taking screenshot to ensure it's still valid
+  // Verify the page is still attached right before taking screenshot
   // This prevents "Frame has been detached" errors if the page navigated
-  const pageContent = page.locator("html");
-
-  // Verify the page is still attached by checking if we can evaluate on it
   try {
     await page.evaluate(() => document.readyState);
   } catch (error) {
     throw new Error(
       `Page frame was detached before screenshot. This usually means the page navigated or reloaded. Error: ${error}`,
+    );
+  }
+
+  // Re-query the locator right before taking screenshot to ensure it's still valid
+  const pageContent = page.locator("html");
+
+  // Final check that page is still attached right before screenshot
+  try {
+    await page.evaluate(() => document.body);
+  } catch (error) {
+    throw new Error(
+      `Page frame was detached immediately before screenshot. Error: ${error}`,
     );
   }
 
