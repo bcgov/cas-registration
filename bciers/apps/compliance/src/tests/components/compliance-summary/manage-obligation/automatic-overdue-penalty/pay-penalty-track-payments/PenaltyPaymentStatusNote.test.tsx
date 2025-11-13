@@ -31,7 +31,7 @@ vi.mock("@bciers/components/icons/Check", () => ({
 describe("PenaltyPaymentStatusNote", () => {
   const createFormContext = (
     outstanding_amount: string,
-    penalty_status: PenaltyStatus,
+    penalty_status: string,
   ) => ({
     outstanding_amount,
     penalty_status,
@@ -41,7 +41,7 @@ describe("PenaltyPaymentStatusNote", () => {
   });
 
   it("displays success message with check icon when penalty is paid", () => {
-    const formContext = createFormContext("0", PenaltyStatus.PAID);
+    const formContext = createFormContext("0", "Paid");
 
     render(<PenaltyPaymentStatusNote formContext={formContext} />);
 
