@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 from unittest.mock import patch
 from model_bakery import baker
-from compliance.models import CompliancePenalty
+from compliance.models import CompliancePenalty, ComplianceObligation
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.dataclass import RefreshWrapperReturn
 
@@ -140,6 +140,7 @@ class TestPenaltyCalculationService:
         assert penalty_record.compliance_penalty_accruals.all().count() == 10
         assert penalty_record.fee_date == date.today()
         assert penalty_record.penalty_type == CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
+        assert self.obligation.penalty_status == ComplianceObligation.PenaltyStatus.NOT_PAID
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'

@@ -256,6 +256,8 @@ class PenaltyCalculationService:
             compliance_penalty_record.elicensing_invoice = penalty_invoice
             compliance_penalty_record.penalty_amount = total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
             compliance_penalty_record.save()
+            obligation.penalty_status = ComplianceObligation.PenaltyStatus.NOT_PAID
+            obligation.save(update_fields=['penalty_status'])
 
         total_amount = total_penalty + faa_interest
 
