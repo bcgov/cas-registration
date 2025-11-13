@@ -14,7 +14,7 @@ export const PenaltyPaymentStatusNote = ({
 }: PenaltyPaymentStatusNoteProps) => {
   const isPaid =
     Number(formContext.outstanding_amount) === 0 &&
-    formContext.penalty_status === PenaltyStatus.PAID;
+    formContext.penalty_status.toUpperCase() === PenaltyStatus.PAID;
 
   if (isPaid) {
     return (
