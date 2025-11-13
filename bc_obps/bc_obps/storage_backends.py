@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import shutil
 from typing import Any
@@ -7,14 +8,17 @@ from storages.backends.gcloud import GoogleCloudStorage  # type: ignore
 from django.core.files.base import ContentFile
 
 
-def add_filename_suffix(filename: str, suffix: str = "_copy") -> str:
+def add_filename_suffix(filename: str, suffix: str | None = None) -> str:
     """
     Small utility to add a suffix to a file name, before a potential extension.
+    Defaults to a timestamp integer (YYYYMMDDHHmmSS)
     Example:
-      the/path/the_file.txt -> the/path/the_file_copy.txt
+      the/path/the_file.txt -> the/path/the_file_20250522245133.txt
     """
     (name, extension) = os.path.splitext(filename)
-    return f"{name}{suffix}{extension}"
+    file_suffix = suffix if suffix is not None else f'_{datetime.now().strftime("%Y%m%d%H%M%S")}'
+
+    return f"{name}{file_suffix}{extension}"
 
 
 class SimpleLocal(FileSystemStorage):
