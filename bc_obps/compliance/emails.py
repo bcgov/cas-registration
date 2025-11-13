@@ -219,3 +219,23 @@ def send_notice_of_obligation_met_email(obligation_id: int) -> None:
     _send_email_to_operators_approved_users_or_raise(
         obligation.compliance_report_version.compliance_report.report.operator, template, email_context
     )
+
+
+def send_notice_of_penalty_accrual_email(obligation_id: int) -> None:
+    """
+    Sends an email to every operator's industry user when the obligation's due date has passed and penalties are now accruing
+
+    Args:
+        obligation_id: The id of the ComplianceObligation instance for which to send notification emails.
+    """
+    obligation = ComplianceObligation.objects.get(id=obligation_id)
+    template = EmailNotificationTemplateService.get_template_by_name(
+        'Compliance Obligation Due Date Passed - Penalty now Accruing'
+    )
+    email_context = _prepare_obligation_context(obligation)
+
+    _send_email_to_operators_approved_users_or_raise(
+        obligation.compliance_report_version.compliance_report.report.operator,
+        template,
+        email_context,
+    )

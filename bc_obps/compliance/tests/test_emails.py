@@ -19,6 +19,7 @@ from compliance.emails import (
     send_notice_of_obligation_generated_email,
     send_reminder_of_obligation_due_email,
     send_notice_of_obligation_met_email,
+    send_notice_of_penalty_accrual_email,
 )
 
 pytestmark = pytest.mark.django_db
@@ -546,3 +547,64 @@ class TestSendNotifications:
             template_instance,
             expected_context,
         )
+
+
+@patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
+@patch('compliance.emails._prepare_obligation_context')
+def test_penalty_accrual_email(
+    mock_prepare_obligation_context,
+    mock_send_email_to_operators_approved_users_or_raise,
+):
+    # admin user
+    approved_user_operator = baker.make_recipe(
+        'registration.tests.utils.approved_user_operator',
+    )
+
+    # Build report hierarchy
+    report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
+    compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
+
+    report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+    report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+    report_compliance_summary = baker.make_recipe(
+        'compliance.tests.utils.report_compliance_summary', report_version=report_version
+    )
+
+    compliance_report_version = baker.make_recipe(
+        'compliance.tests.utils.compliance_report_version',
+        compliance_report=compliance_report,
+        report_compliance_summary=report_compliance_summary,
+    )
+    invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', outstanding_balance=Decimal('123.45'))
+    obligation = baker.make_recipe(
+        'compliance.tests.utils.compliance_obligation',
+        compliance_report_version=compliance_report_version,
+        elicensing_invoice=invoice,
+    )
+
+    # Expected template and context
+    template_instance = EmailNotificationTemplateService.get_template_by_name(
+        'Compliance Obligation Due Date Passed - Penalty now Accruing'
+    )
+    reporting_year = report.reporting_year.reporting_year
+    expected_context = {
+        "operator_legal_name": report_operation.operator_legal_name,
+        "operation_name": report_operation.operation_name,
+        "compliance_period": reporting_year,
+        "year_due": reporting_year + 1,
+        # values below aren’t used directly in this assertion path; they come from the helper:
+        "tonnes_of_co2": '1,000.1234',
+        "outstanding_balance": '$123.45',
+    }
+    mock_prepare_obligation_context.return_value = expected_context
+
+    # Act
+    send_notice_of_penalty_accrual_email(obligation.id)
+
+    # Assert
+    mock_prepare_obligation_context.assert_called_once_with(obligation)
+    mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
+        approved_user_operator.operator,
+        template_instance,
+        expected_context,
+    )

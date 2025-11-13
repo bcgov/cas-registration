@@ -8,6 +8,7 @@ from compliance.emails import (
     send_notice_of_no_obligation_no_credits_generated_email,
     send_notice_of_obligation_due_email,
     send_notice_of_obligation_generated_email,
+    send_notice_of_penalty_accrual_email,
     send_reminder_of_obligation_due_email,
     send_notice_of_obligation_met_email,
 )
@@ -81,6 +82,13 @@ retryable_notice_of_obligation_met_email = create_retryable(
     max_retries=5,
     retry_delay_minutes=10,
 )
+retryable_send_notice_of_penalty_accrual_email = create_retryable(
+    func=send_notice_of_penalty_accrual_email,
+    tag="obligation_penalty_accrual_email_notifications",
+    max_retries=5,
+    retry_delay_minutes=10,
+)
+
 
 ###################
 # Scheduled tasks #
@@ -118,5 +126,14 @@ SCHEDULED_TASKS = [
         schedule_hour=4,
         schedule_minute=0,
         tag="obligation_reminder",
+    ),
+    ScheduledTaskConfig(
+        func=ElicensingObligationService.send_notice_for_penalty_accrual_for_current_period,
+        schedule_type="yearly",
+        schedule_day_of_month=1,
+        schedule_month=12,
+        schedule_hour=4,
+        schedule_minute=0,
+        tag="obligation_penalty_reminder",
     ),
 ]

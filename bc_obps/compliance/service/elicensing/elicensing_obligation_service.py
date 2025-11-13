@@ -277,3 +277,37 @@ class ElicensingObligationService:
 
         for obligation in obligations:
             retryable_send_reminder_of_obligation_due_email.execute(obligation.id)
+
+    @classmethod
+    def send_notice_for_penalty_accrual_for_current_period(cls) -> None:
+        """
+        Sends penalty-accrual notices for obligations in the current compliance period that have an outstanding balance and are past due.
+
+        Steps:
+        1) Get current reporting year
+        2) Find the compliance period
+        3) Take the “reminders” queryset and further restrict to obligation due date <= period deadline
+        """
+        from service.reporting_year_service import ReportingYearService
+        from compliance.tasks import retryable_send_notice_of_penalty_accrual_email
+
+        current_reporting_year = ReportingYearService.get_current_reporting_year()
+
+        try:
+            compliance_period = CompliancePeriod.objects.get(reporting_year=current_reporting_year)
+        except CompliancePeriod.DoesNotExist:
+            logger.warning(f"No compliance period found for reporting year {current_reporting_year.reporting_year}")
+            return
+
+        # Reuse the reminders base (unpaid, unmet, non-void, has invoice)
+        # Filter reminders on obligation_deadline has passed compliance_deadline
+        obligations = cls._get_obligations_for_reminders(compliance_period).filter(
+            obligation_deadline__lte=compliance_period.compliance_deadline
+        )
+
+        if not obligations.exists():
+            logger.info("No obligations found that need penalty-accrual notices")
+            return
+
+        for obligation in obligations:
+            retryable_send_notice_of_penalty_accrual_email.execute(obligation.id)
