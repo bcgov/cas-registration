@@ -76,6 +76,7 @@ class ReportFacilitiesService:
     @staticmethod
     @transaction.atomic
     def get_all_facilities_for_review(version_id: int) -> dict:
+        report_year = ReportVersion.objects.get(id=version_id).report.reporting_year.reporting_year
         selected_facilities = set(
             FacilityReport.objects.filter(report_version_id=version_id).values_list('facility_id', flat=True)
         )
@@ -86,7 +87,7 @@ class ReportFacilitiesService:
             FacilityDesignatedOperationTimeline.objects.filter(operation_id=operation_id)
             .order_by('facility__name')
             .distinct()
-            .values('facility_id', 'facility__name', 'end_date')
+            .values('facility_id', 'facility__name', 'start_date', 'end_date')
         )
 
         current_facilities: list = []
@@ -100,6 +101,9 @@ class ReportFacilitiesService:
                 "facility_id": facility['facility_id'],
                 "facility__name": facility['facility__name'],
             }
+            if facility['start_date'] and facility['start_date'].year > report_year:
+                # Skip facilities that were added after the reporting year
+                continue
 
             if facility['end_date']:
                 # Past facilities should only be selected if explicitly present in selected_facilities
