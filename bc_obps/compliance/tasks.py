@@ -11,6 +11,7 @@ from compliance.emails import (
     send_notice_of_penalty_accrual_email,
     send_reminder_of_obligation_due_email,
     send_notice_of_obligation_met_email,
+    send_supplementary_report_submitted_after_deadline,
 )
 from task_scheduler.service.retry_task.factories import create_retryable
 from task_scheduler.service.scheduled_task.dataclass import ScheduledTaskConfig
@@ -89,6 +90,12 @@ retryable_send_notice_of_penalty_accrual_email = create_retryable(
     retry_delay_minutes=10,
 )
 
+retryable_notice_of_supplementary_report_post_deadline_increases_emissions = create_retryable(
+    func=send_supplementary_report_submitted_after_deadline,
+    tag="past_deadline_increased_emissions_email_notifications",
+    max_retries=5,
+    retry_delay_minutes=10,
+)
 
 ###################
 # Scheduled tasks #
