@@ -13,12 +13,22 @@ import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSu
 export default async function InternalComplianceSummaryReviewPage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<HasComplianceReportVersion>) {
+  console.log("--------------------in internalcompliancesummaryreviewpage");
+
   const complianceSummaryReviewPageData: ComplianceSummary =
     await getComplianceSummary(complianceReportVersionId);
-
+  const {
+    penalty_status: penaltyStatus,
+    reporting_year: reportingYear,
+    outstanding_balance_tco2e: outstandingBalance,
+  } = complianceSummaryReviewPageData;
   const taskListElements = generateReviewObligationPenaltyTaskList(
     complianceReportVersionId,
-    complianceSummaryReviewPageData.reporting_year,
+    {
+      penaltyStatus,
+      reportingYear,
+      outstandingBalance,
+    },
     ActivePage.ReviewComplianceObligationReport,
   );
 
