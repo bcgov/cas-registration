@@ -222,7 +222,7 @@ ENABLE_SENTRY = SENTRY_ENVIRONMENT in ['prod', 'test']
 if ENABLE_SENTRY:
     # Map environment values to maintain backward compatibility with existing Sentry issues
     environment_mapping = {'prod': 'production', 'test': 'test'}
-    sentry_environment = environment_mapping.get(SENTRY_ENVIRONMENT, SENTRY_ENVIRONMENT)
+    sentry_environment = environment_mapping.get(SENTRY_ENVIRONMENT, SENTRY_ENVIRONMENT)  # type: ignore[arg-type]
 
     sentry_sdk.init(
         dsn="https://cf402cd8318aab5c911728a16cbf8fcc@o646776.ingest.sentry.io/4506624068026368",
