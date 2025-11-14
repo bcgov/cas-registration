@@ -300,7 +300,7 @@ class TransferEventService:
     @classmethod
     def _get_and_validate_transfer_event_for_update(cls, transfer_id: UUID, user_guid: UUID) -> TransferEvent:
         user = UserDataAccessService.get_by_guid(user_guid)
-        if not user.is_cas_analyst():
+        if not user.is_cas_analyst() and not user.is_cas_director():
             raise Exception(UNAUTHORIZED_MESSAGE)
         transfer_event = TransferEventDataAccessService.get_by_id(transfer_id)
         if transfer_event.status != TransferEvent.Statuses.TO_BE_TRANSFERRED:
