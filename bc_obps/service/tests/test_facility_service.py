@@ -574,21 +574,23 @@ class TestManageBcghgId:
 
 class TestUpdateFacilitysOperation:
     @staticmethod
+    @pytest.mark.parametrize("role", [('cas_admin'), ('cas_pending'), ('industry_operator_user')])
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
-    def test_unauthorized_user_cannot_update(mock_get_by_guid):
-        cas_admin = baker.make_recipe('registration.tests.utils.cas_admin')
-        mock_get_by_guid.return_value = cas_admin
+    def test_unauthorized_user_cannot_update(mock_get_by_guid, role):
+        user = baker.make_recipe(f'registration.tests.utils.{role}')
+        mock_get_by_guid.return_value = user
         operation = MagicMock()
         operation_id = uuid4()
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            FacilityService.update_operation_for_facility(cas_admin.user_guid, operation, operation_id)
+            FacilityService.update_operation_for_facility(user.user_guid, operation, operation_id)
 
     @staticmethod
+    @pytest.mark.parametrize("role", [('cas_analyst'), ('cas_director')])
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
-    def test_update_operation_for_facility_success(mock_get_by_guid):
-        cas_analyst = baker.make_recipe('registration.tests.utils.cas_analyst')
-        mock_get_by_guid.return_value = cas_analyst
+    def test_update_operation_for_facility_success(mock_get_by_guid, role):
+        user = baker.make_recipe(f'registration.tests.utils.{role}')
+        mock_get_by_guid.return_value = user
         operation = baker.make_recipe('registration.tests.utils.operation')
         facility = baker.make_recipe('registration.tests.utils.facility')
-        FacilityService.update_operation_for_facility(cas_analyst.user_guid, facility, operation.id)
+        FacilityService.update_operation_for_facility(user.user_guid, facility, operation.id)
         assert facility.operation == operation
