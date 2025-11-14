@@ -262,7 +262,8 @@ class TestComplianceReportVersionService:
         # Link an ElicensingInvoice with an outstanding balance
         invoice = baker.make_recipe(
             'compliance.tests.utils.elicensing_invoice',
-            outstanding_balance=Decimal("100.00"),
+            outstanding_balance=Decimal("105.00"),
+            invoice_fee_balance=Decimal("100.00"),
         )
         obligation.elicensing_invoice = invoice
         obligation.save()
@@ -292,7 +293,8 @@ class TestComplianceReportVersionService:
 
         invoice = baker.make_recipe(
             'compliance.tests.utils.elicensing_invoice',
-            outstanding_balance=Decimal("0.00"),
+            outstanding_balance=Decimal("2.00"),
+            invoice_fee_balance=Decimal("0.00"),
         )
         obligation.elicensing_invoice = invoice
         obligation.save()
