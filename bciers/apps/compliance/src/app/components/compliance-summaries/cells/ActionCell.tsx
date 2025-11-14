@@ -21,15 +21,22 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
     requires_manual_handling: requiresManualHandling,
   } = row;
 
-  // Check if "Contact Us"
+  const basePath = `/compliance-administration/compliance-summaries/${id}`;
+
+  // Manual Handling case
   if (requiresManualHandling) {
+    if (isAllowedCas) {
+      return {
+        cellText: "Resolve Issue",
+        basePath: `${basePath}/review-manual-handling`,
+      };
+    }
+
     return {
       cellText: "Contact Us",
       // NOTE: no basePath means "not clickable"
     };
   }
-
-  const basePath = `/compliance-administration/compliance-summaries/${id}`;
 
   const isPenaltyAccruingOrNotPaid = [
     PenaltyStatus.ACCRUING,

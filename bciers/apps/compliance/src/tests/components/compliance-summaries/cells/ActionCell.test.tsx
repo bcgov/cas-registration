@@ -336,18 +336,18 @@ describe("ActionCell", () => {
     });
   });
 
-  describe("Contact Us (requires_manual_handling)", () => {
-    it("renders non-clickable 'Contact Us' when requires_manual_handling is true", () => {
+  describe("Manual Handling (requires_manual_handling)", () => {
+    it("renders non-clickable 'Contact Us' when requires_manual_handling is true for external users", () => {
       render(
         ActionCell(
           createMockParams(
             123,
-            false, // external or internal doesn't matter
+            false, // external user
             undefined, // obligation_id
             "Other status", // status
             undefined, // issuance_status
             undefined, // penalty_status
-            true, // requires_manual_handling ✅
+            true, // requires_manual_handling
           ),
         ),
       );
@@ -356,26 +356,35 @@ describe("ActionCell", () => {
       expect(screen.getByText("Contact Us")).toBeVisible();
       // …but not a link
       expect(screen.queryByRole("link", { name: "Contact Us" })).toBeNull();
+      // And no Resolve Issue link either
+      expect(screen.queryByRole("link", { name: "Resolve Issue" })).toBeNull();
     });
 
-    it("ignores other routing logic (e.g., obligation present) when requires_manual_handling is true", () => {
+    it("renders 'Resolve Issue' link to review-manual-handling for CAS users when requires_manual_handling is true", () => {
       render(
         ActionCell(
           createMockParams(
             456,
-            true, // internal
-            "24-0001-1-1", // obligation exists
-            "Obligation not met", // would normally create a link
+            true, // internal CAS user
+            "24-0001-1-1", // obligation exists (should be ignored in favour of manual handling)
+            "Obligation not met",
             undefined,
             undefined,
-            true, // requires_manual_handling ✅
+            true, // requires_manual_handling
           ),
         ),
       );
 
-      // Still just plain text — no link
-      expect(screen.getByText("Contact Us")).toBeVisible();
-      expect(screen.queryByRole("link", { name: "Contact Us" })).toBeNull();
+      // Should show a clickable Resolve Issue link
+      const link = screen.getByRole("link", { name: "Resolve Issue" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute(
+        "href",
+        "/compliance-administration/compliance-summaries/456/review-manual-handling",
+      );
+
+      // And not show the Contact Us non-link label in this case
+      expect(screen.queryByText("Contact Us")).toBeNull();
     });
   });
 
