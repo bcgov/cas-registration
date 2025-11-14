@@ -13,6 +13,7 @@ from .compliance_penalty_rate import CompliancePenaltyRate
 from .compliance_penalty import CompliancePenalty
 from .compliance_penalty_accrual import CompliancePenaltyAccrual
 from .elicensing_interest_rate import ElicensingInterestRate
+from .compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 
 __all__ = [
     'ComplianceChargeRate',
@@ -30,4 +31,5 @@ __all__ = [
     'CompliancePenalty',
     'CompliancePenaltyAccrual',
     'ElicensingInterestRate',
+    'ComplianceReportVersionManualHandling',
 ]

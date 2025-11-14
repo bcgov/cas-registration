@@ -15,6 +15,7 @@ from compliance.models import (
     CompliancePenalty,
     CompliancePenaltyAccrual,
     ElicensingInterestRate,
+    ComplianceReportVersionManualHandling,
 )
 from reporting.tests.utils.baker_recipes import report, report_compliance_summary, reporting_year
 from registration.tests.utils.baker_recipes import (
@@ -124,3 +125,12 @@ compliance_penalty_accrual = Recipe(CompliancePenaltyAccrual, compliance_penalty
 
 # ElicensingInterestRate recipe
 elicensing_interest_rate = Recipe(ElicensingInterestRate, interest_rate=Decimal('0.0007'), is_current_rate=False)
+
+# ComplianceReportVersionManualHandling recipe
+compliance_report_version_manual_handling = Recipe(
+    ComplianceReportVersionManualHandling,
+    compliance_report_version=foreign_key(compliance_report_version),
+    analyst_comment="Test analyst comment",
+    director_comment="Test director comment",
+    director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
+)

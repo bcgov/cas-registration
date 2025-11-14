@@ -5,6 +5,7 @@ class ComplianceTableNames(Enum):
     COMPLIANCE_PERIOD = "compliance_period"
     COMPLIANCE_REPORT = "compliance_report"
     COMPLIANCE_REPORT_VERSION = "compliance_report_version"
+    COMPLIANCE_REPORT_VERSION_MANUAL_HANDLING = "compliance_report_version_manual_handling"
     COMPLIANCE_OBLIGATION = "compliance_obligation"
     COMPLIANCE_CHARGE_RATE = "compliance_charge_rate"
     COMPLIANCE_EARNED_CREDIT = "compliance_earned_credit"
