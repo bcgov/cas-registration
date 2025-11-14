@@ -40,11 +40,13 @@ class Rls:
                 RlsOperations.UPDATE,
                 RlsOperations.DELETE,  # Granting this permission so that user can remove the instance from the through table
             ],
-            RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
-            RlsRoles.CAS_ADMIN: [
+            RlsRoles.CAS_DIRECTOR: [
                 RlsOperations.SELECT,
                 RlsOperations.DELETE,
-            ],  # Granting this permission so that user can remove the instance from the through table when transferring an operation,
+            ],  # Granting delete permission so that user can remove the instance from the through table when transferring an operation,
+            RlsRoles.CAS_ADMIN: [
+                RlsOperations.SELECT,
+            ],
             RlsRoles.CAS_ANALYST: [
                 RlsOperations.SELECT,
                 RlsOperations.DELETE,
