@@ -13,6 +13,14 @@ class TestStorageBackends(SimpleTestCase):
             mock_datetime.now.return_value = datetime.datetime(2000, 1, 1)
             assert add_filename_suffix("test/case/test_file.ext") == "test/case/test_file_20000101000000.ext"
 
+        # Replaces timestamp if there is already one
+        with patch("bc_obps.storage_backends.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime.datetime(3333, 12, 12)
+            assert (
+                add_filename_suffix("test/case/test_file_20000101000000.ext")
+                == "test/case/test_file_33331212000000.ext"
+            )
+
         # Allows to specify a suffix
         assert add_filename_suffix("case/test/file_test.txe", "suffix") == "case/test/file_testsuffix.txe"
 
