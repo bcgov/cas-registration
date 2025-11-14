@@ -27,10 +27,10 @@ TEMPLATE_BODY = '''
         <a href="https://industrialemissions.gov.bc.ca/onboarding">https://industrialemissions.gov.bc.ca/onboarding</a>.
     </p>
     <p>To meet your compliance obligation:</p>
-    <ul>
+    <ol>
         <li>Navigate to the Compliance module and click <i>My Compliance &gt; Compliance Summaries</i>.</li>
-        <li>Find your operation in the grid and click <i>Manage Obligation</i>.</li>
-    </ul>
+        <li>Find your operation in the grid and click <em>Manage Obligation</em>.</li>
+    </ol>
     <br/>
     <p>
         <b>Please Note:</b> It may take up to five business days for payments to be processed and reconciled.
