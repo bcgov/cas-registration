@@ -14,6 +14,7 @@ import ReadOnlyRadioWidget from "../widgets/readOnly/ReadOnlyRadioWidget";
 import {
   BcghgIdWidget,
   BoroIdWidget,
+  OptedOutOperationWidget,
   OperationRepresentativeWidget,
 } from "../widgets";
 import ApplyComplianceUnitsWidget from "@/compliance/src/app/widgets/ApplyComplianceUnitsWidget";
@@ -40,6 +41,7 @@ const readOnlyTheme = {
     URLWidget: ReadOnlyWidget,
     BoroIdWidget: BoroIdWidget,
     BcghgIdWidget: BcghgIdWidget,
+    OptedOutOperationWidget: OptedOutOperationWidget,
     OperationRepresentativeWidget: OperationRepresentativeWidget,
     BccrHoldingAccountWidget: ReadOnlyWidget,
     ApplyComplianceUnitsWidget: ApplyComplianceUnitsWidget,

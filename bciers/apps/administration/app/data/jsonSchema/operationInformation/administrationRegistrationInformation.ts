@@ -192,7 +192,6 @@ export const createAdministrationRegistrationInformationSchema =
                 opted_out_operation_detail: {
                   title: "If opted out, operation is opted out as of:",
                   type: "string",
-                  enum: ["Start of 2026", "End of 2026"],
                 },
                 opted_in_preface: {
                   // Not an actual field, just used to display a message
@@ -314,7 +313,10 @@ export const registrationInformationUiSchema: UiSchema = {
     "ui:widget": "RadioWidget",
   },
   opted_out_operation_detail: {
-    "ui:widget": "RadioWidget",
+    "ui:widget": "OptedOutOperationWidget",
+    "ui:options": {
+      wide: true
+    }
   },
   new_entrant_application: {
     "ui:widget": "FileWidget",
