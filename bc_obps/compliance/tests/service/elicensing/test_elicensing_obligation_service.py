@@ -42,6 +42,8 @@ RETRYABLE_OBLIGATION_INTEGRATION_PATH = "compliance.tasks.retryable_process_obli
 
 OBLIGATION_DUE_EMAIL_PATH = 'compliance.tasks.retryable_send_notice_of_obligation_due_email'
 
+PAST_DEADLINE_EMAIL_PATH = 'compliance.tasks.retryable_notice_of_supplementary_report_post_deadline_increases_emissions'
+
 SYNC_WITH_ELICENSING_PATH = (
     f"{ELICENSING_OBLIGATION_SERVICE_PATH}.ElicensingOperatorService.sync_client_with_elicensing"
 )
@@ -130,6 +132,12 @@ def mock_retryable_integration():
 @pytest.fixture
 def mock_retryable_obligation_due_email():
     with patch(OBLIGATION_DUE_EMAIL_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_retryable_notice_of_supplementary_report_post_deadline_increases_emissions():
+    with patch(PAST_DEADLINE_EMAIL_PATH) as mock:
         yield mock
 
 
@@ -257,17 +265,19 @@ class TestElicensingObligationService:
         assert result["businessAreaCode"] == "OBPS"
         assert result["fees"] == [fee_id]
 
-    def test_process_obligation_integration_success(
+    def test_process_obligation_integration_success_before_deadline(
         self,
         mock_update_status,
         mock_refresh_by_invoice,
         mock_create_invoice,
         mock_create_fees,
         mock_retryable_obligation_due_email,
+        mock_retryable_notice_of_supplementary_report_post_deadline_increases_emissions,
+        mock_timezone,
     ) -> None:
         """Test successful full obligation integration process"""
         # Setup mocks
-
+        self._set_vancouver_today(mock_timezone, date(2025, 11, 30))
         obligation = make_recipe('compliance.tests.utils.compliance_obligation')
         client_operator = make_recipe(
             'compliance.tests.utils.elicensing_client_operator',
@@ -301,6 +311,63 @@ class TestElicensingObligationService:
 
         mock_update_status.assert_called_once_with(obligation.compliance_report_version)
         mock_retryable_obligation_due_email.execute.assert_called_once_with(obligation.pk)
+        mock_retryable_notice_of_supplementary_report_post_deadline_increases_emissions.execute.assert_not_called()
+
+    def test_process_obligation_integration_success_after_deadline(
+        self,
+        mock_update_status,
+        mock_refresh_by_invoice,
+        mock_create_invoice,
+        mock_create_fees,
+        mock_retryable_obligation_due_email,
+        mock_retryable_notice_of_supplementary_report_post_deadline_increases_emissions,
+        mock_timezone,
+    ) -> None:
+        """Test successful full obligation integration process if a supplmentary report has been submitted after the deadline."""
+        # Setup mocks
+        self._set_vancouver_today(mock_timezone, date(2025, 12, 1))
+
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation')
+        compliance_report_version = obligation.compliance_report_version
+        compliance_report_version.is_supplementary = True
+        compliance_report_version.save()
+
+        client_operator = make_recipe(
+            'compliance.tests.utils.elicensing_client_operator',
+            operator_id=obligation.compliance_report_version.compliance_report.report.operator_id,
+        )
+
+        # Setup API responses
+        mock_fee_response = FeeResponse(
+            clientObjectId=client_operator.client_object_id,
+            clientGUID=client_operator.client_guid,
+            fees=[FeeItem(feeGUID=str(uuid.uuid4()), feeObjectId="1")],
+        )
+
+        mock_create_fees.return_value = mock_fee_response
+
+        mock_invoice_response = TestInvoiceResponse(invoiceNumber='inv-001')
+        mock_create_invoice.return_value = mock_invoice_response
+
+        mock_refresh_by_invoice.return_value = None
+        mock_update_status.return_value = None
+
+        invoice = make_recipe('compliance.tests.utils.elicensing_invoice', invoice_number='inv-001')
+
+        # Call the method
+        ElicensingObligationService.process_obligation_integration(obligation.id)
+
+        obligation.refresh_from_db()
+
+        # Invoice has been assigned to obligation
+        assert obligation.elicensing_invoice_id == invoice.id
+
+        mock_update_status.assert_called_once_with(obligation.compliance_report_version)
+        # brianna
+        mock_retryable_obligation_due_email.execute.assert_not_called()
+        mock_retryable_notice_of_supplementary_report_post_deadline_increases_emissions.execute.assert_called_once_with(
+            obligation.pk
+        )
 
     def test_process_obligation_integration_failure_sets_pending_status_and_does_not_email(
         self, mock_sync_client, mock_create_fees, mock_retryable_obligation_due_email
