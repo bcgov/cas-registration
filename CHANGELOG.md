@@ -1,3 +1,30 @@
+# [4.4.0](https://github.com/bcgov/cas-registration/compare/v4.3.0...v4.4.0) (2025-11-14)
+
+### Bug Fixes
+
+- add cc_ghg_regulator parameter to \_send_email_or_raise function for email notifications ([e11835a](https://github.com/bcgov/cas-registration/commit/e11835a53922a12a5e8094f5f3df5f4c5e1e7cf9))
+- add newRecord field to sub-account creation payload ([c3d9706](https://github.com/bcgov/cas-registration/commit/c3d9706c71e928db0a3d77832218963a4020de89))
+- adding rls and permissions for director to manipulate facility transfers ([d2924bc](https://github.com/bcgov/cas-registration/commit/d2924bc06b73220a8e83eda275019072e05846e2))
+- bypass rls during invoice refresh process ([90dc733](https://github.com/bcgov/cas-registration/commit/90dc733efe6ff9aa3ccdbb218cfdad62291cfab0))
+- create link in apply compliance units tasklist ([49079a8](https://github.com/bcgov/cas-registration/commit/49079a88208c325e3203c97a14fcbcca3dc6c491))
+- cronjob not always available in time for db reset airflow trigger ([2351011](https://github.com/bcgov/cas-registration/commit/23510112f471fbf58dd289a95f1179a36a48ede5))
+- director can remove the appropriate through table when deleting an operation transfer ([e7bfdfb](https://github.com/bcgov/cas-registration/commit/e7bfdfb7a27eaf88709cc989d2fc4cd0b8036af9))
+- fix error handling for account ownership validation ([4a3a2c3](https://github.com/bcgov/cas-registration/commit/4a3a2c35215ddd1ede1ecb8906aa845b971ef64f))
+- fix typo in obligation unmet email ([859350a](https://github.com/bcgov/cas-registration/commit/859350a20696f11c7f955796355f95ede6a677f6))
+- get the first ec record to handle cases with no existing records ([ef4295b](https://github.com/bcgov/cas-registration/commit/ef4295b0fd5955268378008f9a15f3b6df66259e))
+- set penalty status to NOT_PAID when creating automatic overdue penalty ([5fc9dc5](https://github.com/bcgov/cas-registration/commit/5fc9dc53794fe87b5c87dba37f79d42ed8f1d339))
+- supplementary report version service duplicates attachments on the storage ([3f30579](https://github.com/bcgov/cas-registration/commit/3f3057998883adf2b0fc09c214e01b218b96aabf))
+- update type from number to string ([bb2847e](https://github.com/bcgov/cas-registration/commit/bb2847e4559b142116b05abde217ffe8d10e2dc1))
+- update email template list formatting from unordered to ordered ([07a3f25](https://github.com/bcgov/cas-registration/commit/07a3f258e9473e8ec210a25aa2c9ea784a7615a5))
+- update obligation management link visibility based on penalty status ([3ddf260](https://github.com/bcgov/cas-registration/commit/3ddf2603cae570d0f1fe43c29f8a091272c49288))
+- use compliance period year as the vintage year for units ([b0fb1d1](https://github.com/bcgov/cas-registration/commit/b0fb1d18fa7d561ac7e35312e11eb585d4aa89c1))
+
+### Features
+
+- add emission allocation validation on submit ([485e3a5](https://github.com/bcgov/cas-registration/commit/485e3a506fe40ed4e4158186bea6a33490a30d25))
+- authorize cas_director to transfer ([20b0eee](https://github.com/bcgov/cas-registration/commit/20b0eee332b6c5e38a4f343c5153e26a6eb14a4f))
+- Create alert notes for if a compliance summary is declined automatically from creation of supp reports ([b03f640](https://github.com/bcgov/cas-registration/commit/b03f640248ad0a6e6d7e393114e5f572b8d70542))
+
 # [4.3.0](https://github.com/bcgov/cas-registration/compare/v4.1.0...v4.3.0) (2025-10-31)
 
 ### Bug Fixes
