@@ -25,6 +25,14 @@ export function isCIEnvironment(): boolean {
 }
 
 /**
+ * Detects if the code is running in a Playwright e2e test environment
+ * @returns true if running in Playwright e2e tests, false otherwise
+ */
+export function isPlaywrightEnvironment(): boolean {
+  return process.env.E2E_BASEURL === "http://localhost:3000/";
+}
+
+/**
  * Detects if the code is running in a production environment
  * @returns true if running in production, false otherwise
  */
