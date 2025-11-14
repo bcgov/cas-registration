@@ -85,6 +85,7 @@ describe("OperationReviewForm Component", () => {
         reportType={reportType}
         reportingYear={2024}
         facilityId={`1234`}
+        allRepresentatives={allRepresentatives}
       />,
     );
   };
@@ -202,5 +203,40 @@ describe("OperationReviewForm Component", () => {
       /Select what type of report you are filling/i,
     );
     expect(reportTypeSelect).toHaveValue("Simple Report");
+  });
+
+  it("shows an error message when no operation representative exists", async () => {
+    render(
+      <OperationReviewForm
+        formData={formData}
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        schema={schema}
+        allActivities={[]}
+        allRegulatedProducts={[]}
+        reportType={reportType}
+        reportingYear={2024}
+        facilityId={`1234`}
+        allRepresentatives={[]}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Before you can continue,/, { exact: false }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/add an operation representative for this operation/i),
+      ).toBeInTheDocument();
+    });
+
+    // The link should point to the admin operations page for the operation
+    const link = screen
+      .getByText(/add an operation representative for this operation/i)
+      .closest("a");
+    expect(link).toHaveAttribute(
+      "href",
+      expect.stringContaining("/administration/operations/"),
+    );
   });
 });

@@ -19,6 +19,7 @@ import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacil
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
+import { operationRepresentativeLink } from "@reporting/src/data/jsonSchema/reviewOperationInformationText";
 
 interface Props {
   formData: any;
@@ -29,8 +30,10 @@ interface Props {
   reportingYear: number;
   allActivities: any[];
   allRegulatedProducts: any[];
+  allRepresentatives: any[];
   facilityId: string;
 }
+
 export default function OperationReviewForm({
   formData,
   version_id,
@@ -40,13 +43,32 @@ export default function OperationReviewForm({
   reportingYear,
   allActivities,
   allRegulatedProducts,
+  allRepresentatives,
   facilityId,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [pageSchema, setPageSchema] = useState(schema);
-  const [errors, setErrors] = useState<string[]>();
+  // Single errors state: can hold string messages or React nodes (for linked message)
+  const [errors, setErrors] = useState<
+    (string | React.ReactNode)[] | undefined
+  >(
+    allRepresentatives?.length === 0
+      ? [
+          <>
+            {operationRepresentativeLink(
+              formData.operation_id,
+              formData.operation_name,
+            )}
+          </>,
+        ]
+      : undefined,
+  );
+  // Track current available representatives so we can disable the save button when none exist
+  const [availableReps, setAvailableReps] = useState<any[]>(
+    allRepresentatives || [],
+  );
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [navigationInfo, setNavigationInfo] = useState(navigationInformation);
@@ -64,7 +86,6 @@ export default function OperationReviewForm({
       setErrors([response?.error]);
       return false;
     }
-
     setErrors(undefined);
     return true;
   };
@@ -110,9 +131,28 @@ export default function OperationReviewForm({
       ),
     );
     setFormDataState(newData.report_operation);
-    setErrors(undefined);
-    setIsSnackbarOpen(true);
+
+    const reps = newData.all_representatives || [];
+    // update local available reps so UI (save button) reflects synced data
+    setAvailableReps(reps);
+    if (reps.length === 0) {
+      // set the linked helper embedded in the sentence as the single error node
+      setErrors([
+        <>
+          Before you can continue,{" "}
+          {operationRepresentativeLink(
+            formData.operation_id,
+            formData.operation_name,
+          )}{" "}
+          then return to this report
+        </>,
+      ]);
+    } else {
+      setErrors(undefined);
+      setIsSnackbarOpen(true);
+    }
   };
+
   const uiSchema = buildOperationReviewUiSchema(
     formData.operation_id,
     formData.operation_name,
@@ -173,6 +213,8 @@ export default function OperationReviewForm({
           },
         }}
         formData={formDataState}
+        saveButtonDisabled={availableReps.length === 0}
+        submitButtonDisabled={availableReps.length === 0}
         onSubmit={saveHandler}
         onChange={onChangeHandler}
         backUrl={navigationInfo.backUrl}
