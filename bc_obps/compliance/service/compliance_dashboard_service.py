@@ -280,6 +280,7 @@ class ComplianceDashboardService:
         annotated = qs.annotate(
             display_status=Case(
                 When(status__isnull=True, then=Value("N/A")),
+                When(requires_manual_handling=True, then=Value("Supplementary report - action required")),
                 When(
                     status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET.value,
                     then=Value("Obligation - not met"),
