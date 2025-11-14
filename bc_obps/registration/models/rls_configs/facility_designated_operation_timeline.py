@@ -10,7 +10,8 @@ class Rls:
             RlsOperations.INSERT,
             RlsOperations.DELETE,
         ],  # Industry User needs delete permission for the specific flow when changing registration purpose from EIO
-        RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
+        # CAS_DIRECTOR can do Transfers
+        RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
         # CAS_ANALYST can do Transfers
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],

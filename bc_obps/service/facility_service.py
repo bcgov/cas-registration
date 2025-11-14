@@ -287,7 +287,7 @@ class FacilityService:
         """
 
         user = UserDataAccessService.get_by_guid(user_guid)
-        if not user.is_cas_analyst():
+        if not user.is_cas_analyst() and not user.is_cas_director():
             raise Exception(UNAUTHORIZED_MESSAGE)
         facility.operation_id = operation_id
         facility.save(update_fields=["operation_id"])
