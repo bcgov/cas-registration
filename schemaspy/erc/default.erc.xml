@@ -52,7 +52,7 @@
             <column ascending="true" name="valid_to_id"/>
          </index>
       </table>
-      <table name="activity_source_type_json_schema" numRows="139" remarks="Intersection table that assigns a json_schema as valid for a period of time given an activity-sourceType pair" schema="erc" type="TABLE">
+      <table name="activity_source_type_json_schema" numRows="138" remarks="Intersection table that assigns a json_schema as valid for a period of time given an activity-sourceType pair" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="activity_source_type_base_schema_id" foreignKey="report_source_type_activity_source_type_a5907d1b_fk_activity_" implied="false" onDeleteCascade="false" schema="erc" table="report_source_type"/>
          </column>
@@ -355,6 +355,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="compliance_report_version_id" nullable="false" remarks="The compliance report version this earned_credit record belongs to" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="compliance_earned_cr_compliance_report_ve_d9d2d8c3_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_report_version"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="supplementary_declined" nullable="false" remarks="Boolean value identifies whether this earned credit record was declined due to a supplementary report changing the amount of earned credits" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="compliance_earned_credit_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -667,6 +668,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="compliance_report_ve_updated_by_id_6679f933_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="requires_manual_handling" nullable="false" remarks="Boolean value identifies whether this record requires manual handling outside of the app" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="compliance_report_version_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -716,7 +718,7 @@
          </index>
          <index name="exclude_overlapping_configuration_records_by_date_range" unique="false"/>
       </table>
-      <table name="configuration_element" numRows="1180" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
+      <table name="configuration_element" numRows="1142" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="configurationelement_id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -767,7 +769,7 @@
             <column ascending="true" name="valid_to_id"/>
          </index>
       </table>
-      <table name="configuration_element_reporting_fields" numRows="1039" remarks="" schema="erc" type="TABLE">
+      <table name="configuration_element_reporting_fields" numRows="1010" remarks="" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="configurationelement_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
@@ -3590,6 +3592,7 @@
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="field_type" nullable="false" remarks="Type definition for field." size="1000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="field_units" nullable="true" remarks="Units of measurement relating to the field." size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="field_display_title" nullable="true" remarks="Optional display title for the field to be used in forms." size="1000" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="reporting_field_pkey" unique="true">
             <column ascending="true" name="id"/>

@@ -232,6 +232,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="25" name="issued_by_id" nullable="true" remarks="The user who issued the earned credits" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="26" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="27" name="supplementary_declined" nullable="false" remarks="Boolean value identifies whether this earned credit record was declined due to a supplementary report changing the amount of earned credits" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="compliance_earned_credit_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
