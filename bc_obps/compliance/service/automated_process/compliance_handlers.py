@@ -102,7 +102,9 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         compliance_report_version.save(update_fields=['status'])
         retryable_notice_of_obligation_met_email.execute(obligation.id)
         logger.info(f"Updated compliance status for obligation {obligation.obligation_id}")
-        if invoice.due_date < timezone.now().date():
+        final_transaction_date = PenaltyCalculationService.determine_last_transaction_date(obligation)
+        # If we are past the deadline & the last transaction that brought the obligation to zero was also received past the deadline, create a penalty
+        if invoice.due_date < timezone.now().date() and final_transaction_date > invoice.due_date:  # type: ignore [operator]
             PenaltyCalculationService.create_penalty(obligation)
             logger.info(f"Created penalty for obligation {obligation.obligation_id}")
 

@@ -281,6 +281,28 @@ class PenaltyCalculationService:
 
         return result
 
+    @staticmethod
+    def determine_last_transaction_date(obligation: ComplianceObligation) -> date | None:
+        # Determine the last date that reduced the triggering obligation to 0.
+        fee_line_item = ElicensingLineItem.objects.get(
+            elicensing_invoice=obligation.elicensing_invoice,
+            line_item_type=ElicensingLineItem.LineItemType.FEE,
+        )
+
+        last_payment = (
+            ElicensingPayment.objects.filter(elicensing_line_item=fee_line_item).order_by('-received_date').first()
+        )
+        last_payment_received_date = last_payment.received_date if last_payment else None
+
+        last_adjustment = (
+            ElicensingAdjustment.objects.filter(elicensing_line_item=fee_line_item, adjustment_date__isnull=False)
+            .order_by('-adjustment_date')
+            .first()
+        )
+        last_adjustment_date = last_adjustment.adjustment_date if last_adjustment else None
+
+        return max(filter(None, [last_payment_received_date, last_adjustment_date]), default=None)
+
     @classmethod
     def create_penalty(cls, obligation: ComplianceObligation) -> CompliancePenalty:
         """
@@ -301,25 +323,7 @@ class PenaltyCalculationService:
         # Get the date at which the penalty started accruing
         penalty_accrual_start_date = obligation.elicensing_invoice.due_date + timedelta(days=1)  # type: ignore [union-attr]
 
-        # Determine the last date that reduced the triggering obligation to 0.
-        fee_line_item = ElicensingLineItem.objects.get(
-            elicensing_invoice=obligation.elicensing_invoice,
-            line_item_type=ElicensingLineItem.LineItemType.FEE,
-        )
-
-        last_payment = (
-            ElicensingPayment.objects.filter(elicensing_line_item=fee_line_item).order_by('-received_date').first()
-        )
-        last_payment_received_date = last_payment.received_date if last_payment else None
-
-        last_adjustment = (
-            ElicensingAdjustment.objects.filter(elicensing_line_item=fee_line_item, adjustment_date__isnull=False)
-            .order_by('-adjustment_date')
-            .first()
-        )
-        last_adjustment_date = last_adjustment.adjustment_date if last_adjustment else None
-
-        final_transaction_date = max(filter(None, [last_payment_received_date, last_adjustment_date]), default=None)
+        final_transaction_date = PenaltyCalculationService.determine_last_transaction_date(obligation)
 
         # Calculate the penalty data, persist it to our database & create the invoice/fee in elicensing for the penalty
         cls.calculate_penalty(

@@ -10,9 +10,7 @@ from compliance.service.automated_process.compliance_handlers import (
     ObligationPaidHandler,
     ComplianceHandlerManager,
 )
-from compliance.models.compliance_obligation import ComplianceObligation
-from compliance.models.compliance_report_version import ComplianceReportVersion
-
+from compliance.models import ComplianceObligation, ComplianceReportVersion
 
 pytestmark = pytest.mark.django_db
 
@@ -170,6 +168,14 @@ class TestObligationPaidHandler:
             outstanding_balance=Decimal("0.00"),
             due_date=timezone.now().date() - timedelta(days=1),  # Past due
         )
+        self.line_item = baker.make_recipe(
+            "compliance.tests.utils.elicensing_line_item", elicensing_invoice=self.invoice
+        )
+        self.payment = baker.make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=self.line_item,
+            received_date=self.invoice.due_date + timedelta(days=1),
+        )
         self.handler = ObligationPaidHandler()
 
     def test_can_handle_obligation_not_met_and_paid(self):
@@ -223,6 +229,24 @@ class TestObligationPaidHandler:
     ):
         self.invoice.due_date = timezone.now().date() + timedelta(days=1)
         self.invoice.save()
+
+        self.handler.handle(self.invoice)
+
+        self.compliance_report_version.refresh_from_db()
+        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        mock_create_penalty.assert_not_called()
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')
+    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    def test_handle_updates_compliance_status_but_does_not_create_penalty_when_payment_received_on_time(
+        self,
+        mock_retryable_notice_of_obligation_met_email,
+        mock_create_penalty,
+    ):
+        # This tests when the due date has passed, but the payment was received on time, just not processed until after the invoice due date
+        self.payment.received_date = self.invoice.due_date - timedelta(days=1)
+        self.payment.save()
 
         self.handler.handle(self.invoice)
 
@@ -308,6 +332,12 @@ class TestComplianceHandlerManager:
             compliance_obligation=self.obligation,
             outstanding_balance=Decimal("0.00"),
             due_date=timezone.now().date() - timedelta(days=1),  # Overdue
+        )
+        line_item = baker.make_recipe("compliance.tests.utils.elicensing_line_item", elicensing_invoice=invoice)
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=line_item,
+            received_date=invoice.due_date + timedelta(days=1),
         )
 
         # Spy on all handlers to verify which ones are called

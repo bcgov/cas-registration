@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 import uuid
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
-from datetime import date
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 import pytest
 from compliance.models.compliance_obligation import ComplianceObligation
@@ -13,6 +13,7 @@ from registration.models.operator import Operator
 from model_bakery.baker import make_recipe
 from compliance.service.elicensing.schema import FeeResponse, FeeItem
 from dataclasses import dataclass
+from compliance.service.elicensing.elicensing_api_client import InvoiceCreationRequest
 
 pytestmark = pytest.mark.django_db
 
@@ -351,6 +352,65 @@ class TestElicensingObligationService:
         # Assert
         mock_transaction.on_commit.assert_called_once()
         mock_retryable_integration.execute.assert_called_once_with(obligation.id)
+
+    def test_handle_obligation_integration_after_deadline_has_passed(
+        self, mock_timezone, mock_transaction, mock_create_fees, mock_create_invoice
+    ):
+        # Arrange
+        mock_datetime = MagicMock()
+        mock_datetime.astimezone.return_value.date.return_value = date(2025, 12, 15)  # After Nov 1, 2025
+        mock_timezone.now.return_value = mock_datetime
+
+        compliance_period = make_recipe(
+            'compliance.tests.utils.compliance_period',
+            invoice_generation_date=date(2025, 11, 1),
+            compliance_deadline=date(2025, 11, 30),
+        )
+        compliance_report = make_recipe('compliance.tests.utils.compliance_report', compliance_period=compliance_period)
+        compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            created_at='2025-12-15',
+        )
+
+        obligation = make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=compliance_report_version,
+            created_at='2025-12-15',
+        )
+        obligation.created_at = datetime(2025, 12, 15, 11, 11)
+        obligation.save()
+        client_operator = make_recipe(
+            'compliance.tests.utils.elicensing_client_operator',
+            operator_id=obligation.compliance_report_version.compliance_report.report.operator_id,
+        )
+
+        # Mock transaction.on_commit to execute the callback immediately
+        def mock_on_commit(callback):
+            callback()
+
+        mock_transaction.on_commit.side_effect = mock_on_commit
+        mock_fee_response = FeeResponse(
+            clientObjectId=client_operator.client_object_id,
+            clientGUID=client_operator.client_guid,
+            fees=[FeeItem(feeGUID=str(uuid.uuid4()), feeObjectId="1")],
+        )
+
+        mock_create_fees.return_value = mock_fee_response
+
+        # Act
+        ElicensingObligationService.handle_obligation_integration(obligation.id, compliance_period)
+
+        # Assert
+        correct_due_date = obligation.created_at + timedelta(days=30)
+        invoice_data = {
+            "paymentDueDate": str(correct_due_date.strftime("%Y-%m-%d")),
+            "businessAreaCode": "OBPS",
+            "fees": ['1'],
+        }
+        mock_create_invoice.assert_called_once_with(
+            client_operator.client_object_id, InvoiceCreationRequest(**invoice_data)
+        )
 
     def test_handle_obligation_integration_sets_pending_status_when_invoice_generation_date_not_passed(
         self, mock_timezone
