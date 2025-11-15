@@ -8,6 +8,7 @@ from compliance.service.compliance_charge_rate_service import ComplianceChargeRa
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
+from service.error_service.handle_exception import ExceptionHandler
 from compliance.models.elicensing_line_item import ElicensingLineItem
 
 from compliance.dataclass import InvoiceAdjustment, AdjustmentStrategy
@@ -18,6 +19,7 @@ from django.db import transaction
 from decimal import Decimal
 from typing import Dict, List, Protocol, Optional, cast
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +76,7 @@ class SupercedeVersionHandler:
         return False
 
     @staticmethod
+    @transaction.atomic()
     def handle(
         compliance_report: ComplianceReport,
         new_summary: ReportComplianceSummary,
@@ -139,6 +142,7 @@ class IncreasedObligationHandler:
         )
 
     @staticmethod
+    @transaction.atomic()
     def handle(
         compliance_report: ComplianceReport,
         new_summary: ReportComplianceSummary,
@@ -816,6 +820,7 @@ class DecreasedCreditHandler:
         )
 
     @staticmethod
+    @transaction.atomic()
     def handle(
         compliance_report: ComplianceReport,
         new_summary: ReportComplianceSummary,
@@ -871,6 +876,50 @@ class DecreasedCreditHandler:
         return compliance_report_version
 
 
+# Concrete strategy for new earned credits (no previous obligation or earned credits)
+class NewEarnedCreditsHandler:
+    @staticmethod
+    def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
+        # Return True if previous version had no earned credits and new version has earned credits
+        previous_compliance_report_version = ComplianceReportVersion.objects.get(
+            report_compliance_summary=previous_summary,
+        )
+        previous_earned_credit_record = ComplianceEarnedCredit.objects.filter(
+            compliance_report_version=previous_compliance_report_version
+        ).first()
+        if previous_earned_credit_record:
+            return False
+        return previous_summary.credited_emissions == ZERO_DECIMAL and new_summary.credited_emissions > ZERO_DECIMAL
+
+    @staticmethod
+    @transaction.atomic()
+    def handle(
+        compliance_report: ComplianceReport,
+        new_summary: ReportComplianceSummary,
+        previous_summary: ReportComplianceSummary,
+        version_count: int,
+    ) -> Optional[ComplianceReportVersion]:
+        previous_compliance_version = (
+            SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
+                compliance_report, previous_summary
+            )
+        )
+
+        credited_emission_delta = int(new_summary.credited_emissions - previous_summary.credited_emissions)
+        compliance_report_version = ComplianceReportVersion.objects.create(
+            compliance_report=compliance_report,
+            report_compliance_summary=new_summary,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
+            credited_emissions_delta_from_previous=credited_emission_delta,
+            is_supplementary=True,
+            previous_version=previous_compliance_version,
+        )
+
+        ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
+
+        return compliance_report_version
+
+
 class SupplementaryVersionService:
     def __init__(self) -> None:
         self.handlers: list[SupplementaryScenarioHandler] = [
@@ -879,6 +928,7 @@ class SupplementaryVersionService:
             NoChangeHandler(),
             IncreasedCreditHandler(),
             DecreasedCreditHandler(),
+            NewEarnedCreditsHandler(),
         ]
 
     @staticmethod
@@ -950,5 +1000,11 @@ class SupplementaryVersionService:
                 )
         logger.error(
             f"No handler found for report version {report_version.id} and compliance report {compliance_report.id}"
+        )
+        ExceptionHandler.capture_sentry_exception(
+            Exception(
+                f"No handler found for report version {report_version.id} and compliance report {compliance_report.id}"
+            ),
+            "no_handler_found",
         )
         return None

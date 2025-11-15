@@ -57,7 +57,7 @@ class ExceptionHandler:
     @staticmethod
     def capture_sentry_exception(exc: Any, tag: Optional[str] = None) -> Optional[str]:
         """Capture exception in Sentry with optional tag."""
-        if settings.SENTRY_ENVIRONMENT != "prod":
+        if not settings.ENABLE_SENTRY:
             return None
         if tag:
             set_tag(tag, True)
