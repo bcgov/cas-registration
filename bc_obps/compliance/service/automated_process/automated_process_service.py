@@ -28,6 +28,9 @@ class AutomatedProcessService:
             cls._refresh_invoice_data(invoice)
             successful_refreshes += 1
 
+            # Make sure the invoice has been refreshed before processing updates
+            invoice.refresh_from_db()
+
             cls._process_compliance_updates(invoice)
             successful_updates += 1
 
