@@ -75,3 +75,4 @@ class ComplianceReportVersionFilterSchema(FilterSchema):
     display_status: Optional[str] = Field(None, json_schema_extra={'q': 'display_status__icontains'})
     penalty_status: Optional[str] = Field(None, json_schema_extra={'q': 'penalty_status__icontains'})
     obligation_id: Optional[str] = Field(None, json_schema_extra={'q': 'obligation_id__icontains'})
+    reporting_year: Optional[str] = Field(None, json_schema_extra={'q': 'reporting_year__icontains'})

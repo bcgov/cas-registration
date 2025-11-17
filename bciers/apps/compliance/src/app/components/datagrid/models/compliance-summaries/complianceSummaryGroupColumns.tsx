@@ -10,7 +10,7 @@ const complianceSummaryGroupColumns = (
   isAllowedCas: boolean,
 ): GridColumnGroupingModel => {
   const groups: GridColumnGroupingModel = [
-    createColumnGroup("reporting_year", "Compliance Period", EmptyGroupCell),
+    createColumnGroup("reporting_year", "Compliance Period", SearchCell),
     // "operator_name" is inserted conditionally
     createColumnGroup("operation_name", "Operation Name", SearchCell),
     createColumnGroup("excess_emissions", "Excess Emissions", EmptyGroupCell),
