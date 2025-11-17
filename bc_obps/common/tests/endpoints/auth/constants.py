@@ -373,13 +373,6 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_automatic_overdue_penalty",
-            "kwargs": {
-                "compliance_report_version_id": MOCK_INT,
-            },
-        },
-        {
-            "method": "get",
             "endpoint_name": "get_penalty_by_compliance_report_version_id",
             "kwargs": {
                 "compliance_report_version_id": MOCK_INT,
@@ -595,6 +588,13 @@ ENDPOINTS = {
             "method": "get",
             "endpoint_name": "get_operation_by_compliance_report_version_id",
             "kwargs": {"compliance_report_version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_automatic_overdue_penalty",
+            "kwargs": {
+                "compliance_report_version_id": MOCK_INT,
+            },
         },
     ],
     "authorized_irc_user_and_industry_admin_user": [],

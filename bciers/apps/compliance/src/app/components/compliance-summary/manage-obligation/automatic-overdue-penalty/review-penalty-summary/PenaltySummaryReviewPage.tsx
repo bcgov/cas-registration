@@ -42,6 +42,7 @@ export default async function PenaltySummaryReviewPage({
         data={penaltyData}
         reportingYear={reportingYear}
         complianceReportVersionId={complianceReportVersionId}
+        isInternalUser={false}
       />
     </CompliancePageLayout>
   );
