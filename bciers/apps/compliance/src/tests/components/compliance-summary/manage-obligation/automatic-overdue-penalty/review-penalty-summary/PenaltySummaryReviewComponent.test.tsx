@@ -97,6 +97,7 @@ describe("PenaltySummaryReviewComponent", () => {
         data={mockData}
         reportingYear={2024}
         complianceReportVersionId={123}
+        isInternalUser={false}
       />,
     );
 
@@ -107,12 +108,13 @@ describe("PenaltySummaryReviewComponent", () => {
     expect(formData).toHaveTextContent(JSON.stringify(mockData));
   });
 
-  it("renders step buttons with correct URLs", () => {
+  it("renders step buttons with correct URLs for an external user", () => {
     render(
       <PenaltySummaryReviewComponent
         data={mockData}
         reportingYear={2024}
         complianceReportVersionId={123}
+        isInternalUser={false}
       />,
     );
 
@@ -134,6 +136,31 @@ describe("PenaltySummaryReviewComponent", () => {
     );
   });
 
+  it("renders step buttons with correct URLs for an internal user", () => {
+    render(
+      <PenaltySummaryReviewComponent
+        data={mockData}
+        reportingYear={2024}
+        complianceReportVersionId={123}
+        isInternalUser={true}
+      />,
+    );
+
+    const backButton = screen.getByTestId("back-button");
+    expect(backButton).toBeVisible();
+    expect(backButton).toHaveAttribute(
+      "data-url",
+      "/compliance-administration/compliance-summaries/123/review",
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Generate Penalty Invoice" }),
+    ).not.toBeInTheDocument();
+
+    const continueButton = screen.queryByTestId("continue-button");
+    expect(continueButton).not.toBeInTheDocument();
+  });
+
   it("handles invoice generation correctly", async () => {
     const user = userEvent.setup();
 
@@ -153,6 +180,7 @@ describe("PenaltySummaryReviewComponent", () => {
         data={mockData}
         reportingYear={2024}
         complianceReportVersionId={123}
+        isInternalUser={false}
       />,
     );
 
@@ -197,6 +225,7 @@ describe("PenaltySummaryReviewComponent", () => {
         data={mockData}
         reportingYear={2024}
         complianceReportVersionId={999}
+        isInternalUser={false}
       />,
     );
 
