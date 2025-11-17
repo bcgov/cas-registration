@@ -48,6 +48,8 @@ describe("InternalComplianceSummaryReviewPage (Manage Obligation)", () => {
   const mockData = {
     id: 2,
     reporting_year: 2026,
+    outstanding_balance_tco2e: 0,
+    penalty_status: "NOT MET",
     operation_name: "Mock Operation",
     excess_emissions: 0,
   } as any;
@@ -76,7 +78,11 @@ describe("InternalComplianceSummaryReviewPage (Manage Obligation)", () => {
     );
     expect(generateReviewObligationPenaltyTaskList).toHaveBeenCalledWith(
       456,
-      2026,
+      {
+        reportingYear: 2026,
+        outstandingBalance: 0,
+        penaltyStatus: "NOT MET",
+      },
       ActivePage.ReviewComplianceObligationReport,
     );
   });

@@ -13,8 +13,6 @@ import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSu
 export default async function InternalComplianceSummaryReviewPage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<HasComplianceReportVersion>) {
-  console.log("--------------------in internalcompliancesummaryreviewpage");
-
   const complianceSummaryReviewPageData: ComplianceSummary =
     await getComplianceSummary(complianceReportVersionId);
   const {
