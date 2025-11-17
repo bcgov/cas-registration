@@ -1,7 +1,7 @@
 from uuid import UUID
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from django.db.models import QuerySet, Value, Q, F
-from compliance.models import ComplianceReportVersion, ElicensingPayment
+from compliance.models import ComplianceReportVersion, ElicensingPayment, ComplianceEarnedCredit
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models import Operation
@@ -73,11 +73,11 @@ class ComplianceDashboardService:
 
         # Annotate DB-side aliases
         compliance_report_version_queryset = cls._annotate_for_schema(compliance_report_version_queryset)
+        compliance_report_version_queryset = cls._annotate_status(compliance_report_version_queryset)
         # Build a Django order_by key from the requested sort inputs.
         order = (sort_order or "asc").lower()
         sort_direction = "-" if order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}" if sort_field else None
-
         if user.is_irc_user():
             # Internal users: filter
             qs = filters.filter(compliance_report_version_queryset)
@@ -100,6 +100,7 @@ class ComplianceDashboardService:
                 ).operator,
             )
             current_ops_qs = cls._annotate_for_schema(current_ops_qs)
+            current_ops_qs = cls._annotate_status(current_ops_qs)
             current_ops_qs = filters.filter(current_ops_qs)
 
             # Previously owned → apply filters BEFORE union
@@ -115,6 +116,7 @@ class ComplianceDashboardService:
                 | Q(status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED)
             )
             previously_owned_qs = cls._annotate_for_schema(previously_owned_qs)
+            previously_owned_qs = cls._annotate_status(previously_owned_qs)
             previously_owned_qs = filters.filter(previously_owned_qs)
 
             # Union AFTER filtering both sides
@@ -266,6 +268,59 @@ class ComplianceDashboardService:
             obligation_id=Case(
                 When(obligation__obligation_id__isnull=True, then=Value("N/A")),
                 default=F("obligation__obligation_id"),
+                output_field=CharField(),
+            ),
+        )
+        return cast(QuerySet[ComplianceReportVersion], annotated)
+
+    @staticmethod
+    def _annotate_status(
+        qs: QuerySet[ComplianceReportVersion],
+    ) -> QuerySet[ComplianceReportVersion]:
+        annotated = qs.annotate(
+            display_status=Case(
+                When(status__isnull=True, then=Value("N/A")),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET.value,
+                    then=Value("Obligation - not met"),
+                ),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET.value,
+                    then=Value("Obligation - met"),
+                ),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION.value,
+                    then=Value("Obligation - pending invoice creation"),
+                ),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value,
+                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED.value,
+                    then=Value("Earned credits - not requested"),
+                ),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value,
+                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED.value,
+                    then=Value("Earned credits - issuance requested"),
+                ),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value,
+                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED.value,
+                    then=Value("Earned credits - approved"),
+                ),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value,
+                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.DECLINED.value,
+                    then=Value("Earned credits - declined"),
+                ),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value,
+                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED.value,
+                    then=Value("Earned credits - changes required"),
+                ),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value, then=Value("Earned credits")
+                ),
+                default=F("status"),
                 output_field=CharField(),
             ),
         )
