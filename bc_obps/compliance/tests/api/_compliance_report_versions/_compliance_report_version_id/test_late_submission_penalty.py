@@ -21,7 +21,6 @@ class TestLateSubmissionPenaltyEndpoint(CommonTestSetup):
             "has_penalty": True,
             "penalty_status": ComplianceObligation.PenaltyStatus.ACCRUING,
             "penalty_type": CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-            "penalty_charge_rate": Decimal("9.95"),
             "penalty_amount": Decimal("15000.00"),
             "faa_interest": Decimal("0.00"),
             "total_amount": Decimal("15000.00"),
@@ -54,7 +53,6 @@ class TestLateSubmissionPenaltyEndpoint(CommonTestSetup):
         assert response_data["has_penalty"] is True
         assert response_data["penalty_status"] == "Accruing"  # resolver makes this title case
         assert response_data["penalty_type"] == "Late Submission"
-        assert response_data["penalty_charge_rate"] == "9.95"
         assert response_data["penalty_amount"] == "15000.00"
         assert response_data["faa_interest"] == "0.00"
         assert response_data["total_amount"] == "15000.00"

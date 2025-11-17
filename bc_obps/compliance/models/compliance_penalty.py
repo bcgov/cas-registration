@@ -10,7 +10,7 @@ class CompliancePenalty(TimeStampedModel):
         AUTOMATIC_OVERDUE = 'Automatic Overdue'
         LATE_SUBMISSION = 'Late Submission'
 
-    class AccrualFrequency(models.TextChoices):
+    class Frequency(models.TextChoices):
         DAILY = 'Daily'
         MONTHLY = 'Monthly'
 
@@ -44,13 +44,16 @@ class CompliancePenalty(TimeStampedModel):
 
     accrual_frequency = models.CharField(
         max_length=20,
-        choices=AccrualFrequency.choices,
-        db_comment="Defines how often the penalty accrues (e.g., daily for Automatic Overdue, monthly for Late Submission)",
+        choices=Frequency.choices,
+        db_comment="Defines how often the penalty accrues (e.g., daily for Automatic Overdue, daily for Late Submission)",
     )
 
-    is_compounding = models.BooleanField(
-        default=True,
-        db_comment="Indicates whether the penalty uses compounding for the selected accrual frequency",
+    compounding_frequency = models.CharField(
+        max_length=20,
+        choices=Frequency.choices,
+        null=True,
+        blank=True,
+        db_comment="Defines how often interest is compounded for this penalty (e.g., daily or monthly).",
     )
 
     penalty_amount = models.DecimalField(

@@ -17,7 +17,7 @@ class CompliancePenaltyTest(BaseTestCase):
             ("accrual_start_date", "accrual start date", None, None),
             ("accrual_final_date", "accrual final date", None, None),
             ("accrual_frequency", "accrual frequency", None, None),
-            ("is_compounding", "is compounding", None, None),
+            ("compounding_frequency", "compounding frequency", None, None)
             ("penalty_amount", "penalty amount", None, None),
             ("compliance_penalty_accruals", "compliance penalty accrual", None, None),
             ("fee_date", "fee date", None, None),

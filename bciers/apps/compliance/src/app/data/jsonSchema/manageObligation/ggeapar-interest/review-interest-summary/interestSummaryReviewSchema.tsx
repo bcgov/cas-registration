@@ -16,7 +16,12 @@ export const interestSummaryReviewSchema: RJSFSchema = {
     interest_header: readOnlyObjectField("GGEAPAR Interest"),
     interest_alert: readOnlyStringField(),
     penalty_status: readOnlyStringField("Status:"),
-    penalty_charge_rate: readOnlyStringField("GGEAPAR Interest Rate (Annual):"),
+    penalty_charge_rate: {
+      type: "string",
+      title: "GGEAPAR Interest Rate (Annual):",
+      readOnly: true,
+      default: "Prime + 3.00%",
+    },
     penalty_amount: readOnlyStringField("GGEAPAR Interest Amount:"),
     faa_interest: readOnlyStringField("FAA Interest (Annual):"),
     total_amount: readOnlyStringField("Total Amount:"),
@@ -36,12 +41,7 @@ export const interestSummaryReviewUiSchema: UiSchema = {
     },
   },
   penalty_status: commonReadOnlyOptions,
-  penalty_charge_rate: {
-    ...commonReadOnlyOptions,
-    "ui:options": {
-      suffix: "%",
-    },
-  },
+  penalty_charge_rate: commonReadOnlyOptions,
   penalty_amount: currencyUiConfig,
   faa_interest: currencyUiConfig,
   total_amount: currencyUiConfig,

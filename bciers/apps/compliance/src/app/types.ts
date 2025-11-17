@@ -204,7 +204,6 @@ export interface LateSubmissionPenalty {
   has_penalty: boolean;
   penalty_status: string;
   penalty_type: string;
-  penalty_charge_rate: string;
   penalty_amount: string;
   faa_interest: string;
   total_amount: string;

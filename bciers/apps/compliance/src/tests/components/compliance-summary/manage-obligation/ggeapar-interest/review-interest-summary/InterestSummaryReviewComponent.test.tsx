@@ -11,7 +11,6 @@ const mockData = {
   has_penalty: true,
   penalty_status: "Not Paid",
   penalty_type: "Late Submission",
-  penalty_charge_rate: "5",
   penalty_amount: "100.00",
   faa_interest: "10.00",
   total_amount: "110.00",
@@ -41,10 +40,10 @@ describe("InterestSummaryReviewComponent", () => {
     expect(screen.getByText("Not Paid")).toBeVisible();
 
     expect(screen.getByText("GGEAPAR Interest Rate (Annual):")).toBeVisible();
-    expect(screen.getByText("100.00")).toBeVisible();
+    expect(screen.getByText("Prime + 3.00%"));
 
     expect(screen.getByText("GGEAPAR Interest Amount:")).toBeVisible();
-    expect(screen.getByText("5")).toBeVisible();
+    expect(screen.getByText("100.00")).toBeVisible();
 
     expect(screen.getByText("FAA Interest (Annual):")).toBeVisible();
     expect(screen.getByText("10.00")).toBeVisible();

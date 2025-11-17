@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0011_compliancereportversion_requires_manual_handling'),
+        ('compliance', '0013_V4_4_0'),
     ]
 
     operations = [
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             name='accrual_frequency',
             field=models.CharField(
                 choices=[('Daily', 'Daily'), ('Monthly', 'Monthly')],
-                db_comment='Defines how often the penalty accrues (e.g., daily for Automatic Overdue, monthly for Late Submission)',
+                db_comment='Defines how often the penalty accrues (e.g., daily for Automatic Overdue, daily for Late Submission)',
                 default='Daily',
                 max_length=20,
             ),
@@ -32,10 +32,13 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='compliancepenalty',
-            name='is_compounding',
-            field=models.BooleanField(
-                db_comment='Indicates whether the penalty uses compounding for the selected accrual frequency',
-                default=True,
+            name='compounding_frequency',
+            field=models.CharField(
+                blank=True,
+                choices=[('Daily', 'Daily'), ('Monthly', 'Monthly')],
+                db_comment='Defines how often interest is compounded for this penalty (e.g., daily or monthly).',
+                max_length=20,
+                null=True,
             ),
         ),
         migrations.AddField(
