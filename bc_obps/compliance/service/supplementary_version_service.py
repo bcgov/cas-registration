@@ -1019,13 +1019,12 @@ class SupplementaryVersionService:
         if ManualHandler.can_handle(
             new_summary=new_version_compliance_summary, previous_summary=previous_version_compliance_summary
         ):
-            ManualHandler.handle(
+            return ManualHandler.handle(
                 compliance_report=compliance_report,
                 new_summary=new_version_compliance_summary,
                 previous_summary=previous_version_compliance_summary,
                 version_count=version_count,
             )
-            return None
 
         # If the previous version can be superceded, run the supercede handler & exit
         if SupercedeVersionHandler.can_handle(

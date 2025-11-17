@@ -5,6 +5,7 @@ from compliance.models import (
 )
 from reporting.models import ReportVersion
 from compliance.service.supplementary_version_service import (
+    ManualHandler,
     NoChangeHandler,
     SupplementaryVersionService,
     IncreasedObligationHandler,
@@ -39,6 +40,7 @@ DECREASED_CREDIT_HANDLER_PATH = svc("DecreasedCreditHandler.handle")
 NEW_EARNED_CREDITS_HANDLER_PATH = svc("NewEarnedCreditsHandler.handle")
 INCREASED_OBLIGATION_HANDLER_PATH = svc("IncreasedObligationHandler.handle")
 NO_OBLIGATION_HANDLER_PATH = svc("NoChangeHandler.handle")
+MANUAL_HANDLER_PATH = svc("ManualHandler.handle")
 DECREASED_OBLIGATION_HANDLER_PATH = svc("DecreasedObligationHandler.handle")
 
 # Sub-base for DecreasedObligationHandler
@@ -184,6 +186,12 @@ def mock_no_change_handler():
 
 
 @pytest.fixture
+def mock_manual_handler():
+    with patch(MANUAL_HANDLER_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
 def mock_handle_integration():
     # Mock handle_obligation_integration to do nothing but simulate that the version status is updated
     with patch(HANDLE_OBLIGATION_INTEGRATION_PATH) as mock:
@@ -253,6 +261,62 @@ class BaseSupplementaryVersionServiceTest:
 
 
 class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
+    def test_handle_manual_handling_success(
+        self,
+        mock_increased_handler,
+        mock_decreased_handler,
+        mock_no_change_handler,
+        mock_increased_credit_handler,
+        mock_decreased_credit_handler,
+        mock_manual_handler,
+        mock_capture_sentry_exception,
+    ):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('500'),
+                credited_emissions=0,
+                report_version=self.report_version_1,
+            )
+        self.new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('800'),
+            credited_emissions=0,
+            report_version=self.report_version_2,
+        )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        self.compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=self.compliance_report,
+            report_compliance_summary=self.previous_summary,
+            requires_manual_handling=True,
+        )
+        mock_result = MagicMock(spec=ComplianceReportVersion)
+        mock_manual_handler.return_value = mock_result
+
+        # Act
+        result = SupplementaryVersionService().handle_supplementary_version(
+            self.compliance_report, self.report_version_2, 2
+        )
+
+        # Assert
+        mock_manual_handler.assert_called_once_with(
+            compliance_report=self.compliance_report,
+            new_summary=self.new_summary,
+            previous_summary=self.previous_summary,
+            version_count=2,
+        )
+        assert result == mock_result
+        mock_increased_handler.assert_not_called()
+        mock_decreased_handler.assert_not_called()
+        mock_no_change_handler.assert_not_called()
+        mock_increased_credit_handler.assert_not_called()
+        mock_decreased_credit_handler.assert_not_called()
+        mock_capture_sentry_exception.assert_not_called()
+
     def test_handle_increased_obligation_success(
         self,
         mock_increased_handler,
@@ -499,6 +563,115 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_new_earned_credits_handler.assert_not_called()
 
     # THE FOLLOWING TWO TESTS WILL NEED REWRITING AFTER HANDLING SCENARIOS WHERE CREDITS HAVE BEEN ISSUED/REQUESTED
+
+
+class TestManualHandler(BaseSupplementaryVersionServiceTest):
+    def test_can_handle_report_that_previously_required_manual_handling(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('500'),
+                credited_emissions=0,
+                report_version=self.report_version_1,
+            )
+
+        self.new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('800'),
+            credited_emissions=0,
+            report_version=self.report_version_2,
+        )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+
+        self.compliance_report_version_1 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=self.compliance_report,
+            report_compliance_summary=self.previous_summary,
+            requires_manual_handling=True,
+        )
+        # Act
+        result = ManualHandler.can_handle(self.new_summary, self.previous_summary)
+        # Assert
+        assert result is True
+
+    def test_cannot_handle_report_that_did_not_previously_require_manual_handling(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('500'),
+                credited_emissions=0,
+                report_version=self.report_version_1,
+            )
+
+        self.new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('800'),
+            credited_emissions=0,
+            report_version=self.report_version_2,
+        )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+
+        self.compliance_report_version_1 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=self.compliance_report,
+            report_compliance_summary=self.previous_summary,
+            requires_manual_handling=False,
+        )
+        # Act
+        result = ManualHandler.can_handle(self.new_summary, self.previous_summary)
+        # Assert
+        assert result is False
+
+    def test_handle_creates_compliance_report_version(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('500'),
+                credited_emissions=0,
+                report_version=self.report_version_1,
+            )
+        self.new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('800'),
+            credited_emissions=0,
+            report_version=self.report_version_2,
+        )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        self.previous_compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=self.compliance_report,
+            report_compliance_summary=self.previous_summary,
+            requires_manual_handling=True,
+        )
+        version_count = 2
+
+        # Act
+        result = ManualHandler.handle(
+            compliance_report=self.compliance_report,
+            new_summary=self.new_summary,
+            previous_summary=self.previous_summary,
+            version_count=version_count,
+        )
+
+        # Assert
+        assert isinstance(result, ComplianceReportVersion)
+        assert result.compliance_report == self.compliance_report
+        assert result.report_compliance_summary == self.new_summary
+        assert result.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        # brianna?
+        assert result.excess_emissions_delta_from_previous == Decimal('0')
+        assert result.credited_emissions_delta_from_previous == Decimal('0')
+        assert result.is_supplementary is True
+        assert result.previous_version == self.previous_compliance_report_version
 
 
 class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
