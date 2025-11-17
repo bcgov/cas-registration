@@ -1,10 +1,9 @@
 import pytest
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 from decimal import Decimal
 from unittest.mock import patch
 from model_bakery import baker
-from django.utils import timezone
-from compliance.models import CompliancePenalty, ComplianceObligation, ComplianceReportVersion, ElicensingInterestRate
+from compliance.models import CompliancePenalty, ComplianceObligation, ElicensingInterestRate
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.dataclass import RefreshWrapperReturn
 
@@ -481,9 +480,7 @@ class TestPenaltyCalculationService:
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
     )
-    def test_calculate_late_submission_penalty_with_multiple_interest_rates(
-        self, mock_refresh_data
-    ):
+    def test_calculate_late_submission_penalty_with_multiple_interest_rates(self, mock_refresh_data):
         """Test _calculate_late_submission_penalty with multiple interest rate periods during accrual."""
 
         clean_invoice = baker.make_recipe(

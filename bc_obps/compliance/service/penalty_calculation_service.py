@@ -17,7 +17,6 @@ from compliance.models import (
     CompliancePenaltyAccrual,
     ElicensingClientOperator,
     ElicensingInterestRate,
-    ComplianceReportVersion,
 )
 import uuid
 from compliance.service.elicensing.elicensing_api_client import (
@@ -385,7 +384,7 @@ class PenaltyCalculationService:
         # Determine if late submission penalty applies
         compliance_period = obligation.compliance_report_version.compliance_report.compliance_period
         compliance_deadline = compliance_period.compliance_deadline
-        submission_date = obligation.created_at.date()
+        submission_date = obligation.created_at.date()  # type: ignore[union-attr]
         has_late_submission = submission_date > compliance_deadline
 
         if has_late_submission:
@@ -490,7 +489,7 @@ class PenaltyCalculationService:
             daily_rate = cls._get_rate_for_date(current_date)
             payments = cls.sum_payments_before_date(invoice, current_date)
             adjustments = cls.sum_adjustments_before_date(invoice, current_date)
-            
+
             outstanding_base = base - payments + adjustments
             principal_for_interest = outstanding_base + accumulated_compounding
             penalty_amount = principal_for_interest * daily_rate
@@ -544,13 +543,13 @@ class PenaltyCalculationService:
         late_submission_start_date = compliance_deadline + timedelta(days=1)
 
         # Get supplementary submission date + 30 days
-        late_submission_final_date = obligation.created_at.date() + timedelta(days=30)
+        late_submission_final_date = obligation.created_at.date() + timedelta(days=30)  # type: ignore[union-attr]
 
         # Calculate late submission penalty
         penalty_record = cls._calculate_late_submission_penalty(
             obligation=obligation,
             accrual_start_date=late_submission_start_date,
-            final_accrual_date=late_submission_final_date,  # type: ignore[arg-type]
+            final_accrual_date=late_submission_final_date, 
             persist_penalty_data=True,
         )
 
