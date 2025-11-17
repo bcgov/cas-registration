@@ -16,14 +16,20 @@ interface Props {
   data: AutomaticOverduePenalty;
   reportingYear: number;
   complianceReportVersionId: number;
+  isInternalUser: boolean;
 }
 
 const PenaltySummaryReviewComponent = ({
   data,
   reportingYear,
   complianceReportVersionId,
+  isInternalUser,
 }: Props) => {
-  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
+  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/${
+    isInternalUser
+      ? "review-compliance-obligation-report"
+      : "pay-obligation-track-payments"
+  }`;
   const saveAndContinueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`;
 
   const [errors, setErrors] = useState<string[]>([]);
@@ -57,14 +63,16 @@ const PenaltySummaryReviewComponent = ({
       >
         <ComplianceStepButtons
           backUrl={backUrl}
-          continueUrl={saveAndContinueUrl}
+          continueUrl={isInternalUser ? undefined : saveAndContinueUrl} // passing undefined will hide the  button because it only shows if this prop is present. Same strategy for the middle button below
           middleButtonDisabled={isGeneratingPenaltyInvoice}
           middleButtonText={
             isGeneratingPenaltyInvoice
               ? "Generating Penalty Invoice..."
               : "Generate Penalty Invoice"
           }
-          onMiddleButtonClick={handleGeneratePenaltyInvoice}
+          onMiddleButtonClick={
+            isInternalUser ? undefined : handleGeneratePenaltyInvoice
+          }
           className="mt-44"
         />
         {/* Render any errors */}

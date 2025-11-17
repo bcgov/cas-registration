@@ -6,7 +6,6 @@ import CompliancePageLayout from "@/compliance/src/app/components/layout/Complia
 import getAutomaticOverduePenalty from "@/compliance/src/app/utils/getAutomaticOverduePenalty";
 import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
 import PenaltySummaryReviewComponent from "../../automatic-overdue-penalty/review-penalty-summary/PenaltySummaryReviewComponent";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 
 interface Props {
   compliance_report_version_id: number;
@@ -15,7 +14,6 @@ interface Props {
 export default async function InternalPenaltySummaryReviewPage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<Props>) {
-  // const { reporting_year: reportingYear } = await getReportingYear();
   const penaltyData = await getAutomaticOverduePenalty(
     complianceReportVersionId,
   );
@@ -43,6 +41,7 @@ export default async function InternalPenaltySummaryReviewPage({
         data={penaltyData}
         reportingYear={reportingYear}
         complianceReportVersionId={complianceReportVersionId}
+        isInternalUser={true}
       />
     </CompliancePageLayout>
   );
