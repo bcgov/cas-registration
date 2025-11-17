@@ -5,7 +5,7 @@ import pytest
 from model_bakery.baker import make_recipe
 from compliance.dataclass import RefreshWrapperReturn
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
-from compliance.models import ComplianceReportVersion
+from compliance.models import ComplianceReportVersion, ComplianceEarnedCredit
 from registration.models import Operation
 from django.core.exceptions import ObjectDoesNotExist
 from reporting.models.reporting_year import ReportingYear
@@ -990,3 +990,322 @@ class TestComplianceDashboardService:
             filters=ComplianceReportVersionFilterSchema(operation_name='01'),
         )
         assert result_filtered.count() == 11  # 001 and 010-019
+
+    def test_get_compliance_report_versions_annotates_status_correctly(self, mock_current_reporting_year):
+        # setup
+        user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+
+        # 1 - not met
+        operation_1 = make_recipe(
+            'registration.tests.utils.operation',
+            operator=user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        reporting_year = make_recipe('reporting.tests.utils.reporting_year')
+        mock_current_reporting_year.return_value = reporting_year
+
+        report_1 = make_recipe(
+            'reporting.tests.utils.report',
+            operator=user_operator.operator,
+            operation=operation_1,
+            reporting_year=reporting_year,
+        )
+        compliance_report_1 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_1,
+            compliance_period__reporting_year=reporting_year,
+        )
+        report_version_1 = make_recipe('reporting.tests.utils.report_version', report=report_1)
+        report_compliance_summary_1 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_1
+        )
+        compliance_report_version_1 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_1,
+            report_compliance_summary=report_compliance_summary_1,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+
+        # 2 - met
+        operation_2 = make_recipe(
+            'registration.tests.utils.operation',
+            operator=user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        report_2 = make_recipe(
+            'reporting.tests.utils.report',
+            operator=user_operator.operator,
+            operation=operation_2,
+            reporting_year=reporting_year,
+        )
+        compliance_report_2 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_2,
+            compliance_period__reporting_year=reporting_year,
+        )
+        report_version_2 = make_recipe('reporting.tests.utils.report_version', report=report_2)
+        report_compliance_summary_2 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_2
+        )
+        compliance_report_version_2 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_2,
+            report_compliance_summary=report_compliance_summary_2,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET,
+        )
+
+        # 3 - pending invoice creation
+        operation_3 = make_recipe(
+            'registration.tests.utils.operation',
+            operator=user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        report_3 = make_recipe(
+            'reporting.tests.utils.report',
+            operator=user_operator.operator,
+            operation=operation_3,
+            reporting_year=reporting_year,
+        )
+        compliance_report_3 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_3,
+            compliance_period__reporting_year=reporting_year,
+        )
+        report_version_3 = make_recipe('reporting.tests.utils.report_version', report=report_3)
+        report_compliance_summary_3 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_3
+        )
+        compliance_report_version_3 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_3,
+            report_compliance_summary=report_compliance_summary_3,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION,
+        )
+
+        # 4 - not requested
+        operation_4 = make_recipe(
+            'registration.tests.utils.operation',
+            operator=user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        report_4 = make_recipe(
+            'reporting.tests.utils.report',
+            operator=user_operator.operator,
+            operation=operation_4,
+            reporting_year=reporting_year,
+        )
+        compliance_report_4 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_4,
+            compliance_period__reporting_year=reporting_year,
+        )
+        report_version_4 = make_recipe('reporting.tests.utils.report_version', report=report_4)
+        report_compliance_summary_4 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_4
+        )
+        compliance_report_version_4 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_4,
+            report_compliance_summary=report_compliance_summary_4,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
+        )
+        make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+            compliance_report_version_id=compliance_report_version_4.id,
+        )
+
+        # 5 - issuance requested
+        operation_5 = make_recipe(
+            'registration.tests.utils.operation',
+            operator=user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        report_5 = make_recipe(
+            'reporting.tests.utils.report',
+            operator=user_operator.operator,
+            operation=operation_5,
+            reporting_year=reporting_year,
+        )
+        report_version_5 = make_recipe('reporting.tests.utils.report_version', report=report_5)
+        report_compliance_summary_5 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_5
+        )
+        compliance_report_5 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_5,
+            compliance_period__reporting_year=reporting_year,
+        )
+        compliance_report_version_5 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_5,
+            report_compliance_summary=report_compliance_summary_5,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
+        )
+        make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+            compliance_report_version_id=compliance_report_version_5.id,
+            bccr_trading_name="test bccr trading name",
+            bccr_holding_account_id="12346",
+        )
+
+        # 6 - approved
+        operation_6 = make_recipe(
+            'registration.tests.utils.operation',
+            operator=user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        report_6 = make_recipe(
+            'reporting.tests.utils.report',
+            operator=user_operator.operator,
+            operation=operation_6,
+            reporting_year=reporting_year,
+        )
+        compliance_report_6 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_6,
+            compliance_period__reporting_year=reporting_year,
+        )
+        report_version_6 = make_recipe('reporting.tests.utils.report_version', report=report_6)
+        report_compliance_summary_6 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_6
+        )
+        compliance_report_version_6 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_6,
+            report_compliance_summary=report_compliance_summary_6,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
+        )
+        make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED,
+            compliance_report_version_id=compliance_report_version_6.id,
+            bccr_trading_name="test bccr trading name 2",
+            bccr_holding_account_id="12347",
+        )
+
+        # 7 - declined
+        operation_7 = make_recipe(
+            'registration.tests.utils.operation',
+            operator=user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        report_7 = make_recipe(
+            'reporting.tests.utils.report',
+            operator=user_operator.operator,
+            operation=operation_7,
+            reporting_year=reporting_year,
+        )
+        compliance_report_7 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_7,
+            compliance_period__reporting_year=reporting_year,
+        )
+        report_version_7 = make_recipe('reporting.tests.utils.report_version', report=report_7)
+        report_compliance_summary_7 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_7
+        )
+        compliance_report_version_7 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_7,
+            report_compliance_summary=report_compliance_summary_7,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
+        )
+        make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+            compliance_report_version_id=compliance_report_version_7.id,
+            bccr_trading_name="test bccr trading name 3",
+            bccr_holding_account_id="12348",
+        )
+
+        # 8 - changes required
+        operation_8 = make_recipe(
+            'registration.tests.utils.operation',
+            operator=user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        report_8 = make_recipe(
+            'reporting.tests.utils.report',
+            operator=user_operator.operator,
+            operation=operation_8,
+            reporting_year=reporting_year,
+        )
+        compliance_report_8 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_8,
+            compliance_period__reporting_year=reporting_year,
+        )
+        report_version_8 = make_recipe('reporting.tests.utils.report_version', report=report_8)
+        report_compliance_summary_8 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_8
+        )
+        compliance_report_version_8 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_8,
+            report_compliance_summary=report_compliance_summary_8,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
+        )
+        make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
+            compliance_report_version_id=compliance_report_version_8.id,
+            bccr_trading_name="test bccr trading name 4",
+            bccr_holding_account_id="12349",
+        )
+
+        # 9 - earned credits
+        operation_9 = make_recipe(
+            'registration.tests.utils.operation',
+            operator=user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        report_9 = make_recipe(
+            'reporting.tests.utils.report',
+            operator=user_operator.operator,
+            operation=operation_9,
+            reporting_year=reporting_year,
+        )
+        compliance_report_9 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_9,
+            compliance_period__reporting_year=reporting_year,
+        )
+        report_version_9 = make_recipe('reporting.tests.utils.report_version', report=report_9)
+        report_compliance_summary_9 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_9
+        )
+        compliance_report_version_9 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_9,
+            report_compliance_summary=report_compliance_summary_9,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
+        )
+
+        # checks
+        result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+            user_guid=user_operator.user_id,
+            sort_field="id",
+            sort_order="asc",
+            filters=_NoopFilters(),
+        )
+
+        assert result[0].id == compliance_report_version_1.id
+        assert result[0].display_status == "Obligation - not met"
+        assert result[1].id == compliance_report_version_2.id
+        assert result[1].display_status == "Obligation - met"
+        assert result[2].id == compliance_report_version_3.id
+        assert result[2].display_status == "Obligation - pending invoice creation"
+        assert result[3].id == compliance_report_version_4.id
+        assert result[3].display_status == "Earned credits - not requested"
+        assert result[4].id == compliance_report_version_5.id
+        assert result[4].display_status == "Earned credits - issuance requested"
+        assert result[5].id == compliance_report_version_6.id
+        assert result[5].display_status == "Earned credits - approved"
+        assert result[6].id == compliance_report_version_7.id
+        assert result[6].display_status == "Earned credits - declined"
+        assert result[7].id == compliance_report_version_8.id
+        assert result[7].display_status == "Earned credits - changes required"
+        assert result[8].id == compliance_report_version_9.id
+        assert result[8].display_status == "Earned credits"

@@ -1,7 +1,7 @@
 from uuid import UUID
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from django.db.models import QuerySet, Value, Q, F
-from compliance.models import ComplianceReportVersion, ElicensingPayment
+from compliance.models import ComplianceReportVersion, ElicensingPayment, ComplianceEarnedCredit
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models import Operation
@@ -10,7 +10,7 @@ from compliance.service.elicensing.elicensing_data_refresh_service import Elicen
 from compliance.dataclass import PaymentDataWithFreshnessFlag
 from service.user_operator_service import UserOperatorService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
-from compliance.enums import ComplianceInvoiceTypes, ComplianceSummaryStatus, IssuanceStatus
+from compliance.enums import ComplianceInvoiceTypes
 from service.reporting_year_service import ReportingYearService
 from ninja import Query
 from compliance.schema.compliance_report_version import ComplianceReportVersionFilterSchema
@@ -280,38 +280,46 @@ class ComplianceDashboardService:
         annotated = qs.annotate(
             display_status=Case(
                 When(status__isnull=True, then=Value("N/A")),
-                When(status=ComplianceSummaryStatus.OBLIGATION_NOT_MET.value, then=Value("Obligation - not met")),
-                When(status=ComplianceSummaryStatus.OBLIGATION_FULLY_MET.value, then=Value("Obligation - met")),
                 When(
-                    status=ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION.value,
+                    status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET.value,
+                    then=Value("Obligation - not met"),
+                ),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET.value,
+                    then=Value("Obligation - met"),
+                ),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION.value,
                     then=Value("Obligation - pending invoice creation"),
                 ),
                 When(
-                    status=ComplianceSummaryStatus.EARNED_CREDITS.value,
-                    issuance_status=IssuanceStatus.CREDITS_NOT_ISSUED.value,
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value,
+                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED.value,
                     then=Value("Earned credits - not requested"),
                 ),
                 When(
-                    status=ComplianceSummaryStatus.EARNED_CREDITS.value,
-                    issuance_status=IssuanceStatus.ISSUANCE_REQUESTED.value,
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value,
+                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED.value,
                     then=Value("Earned credits - issuance requested"),
                 ),
                 When(
-                    status=ComplianceSummaryStatus.EARNED_CREDITS.value,
-                    issuance_status=IssuanceStatus.APPROVED.value,
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value,
+                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED.value,
                     then=Value("Earned credits - approved"),
                 ),
                 When(
-                    status=ComplianceSummaryStatus.EARNED_CREDITS.value,
-                    issuance_status=IssuanceStatus.DECLINED.value,
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value,
+                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.DECLINED.value,
                     then=Value("Earned credits - declined"),
                 ),
                 When(
-                    status=ComplianceSummaryStatus.EARNED_CREDITS.value,
-                    issuance_status=IssuanceStatus.CHANGES_REQUIRED.value,
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value,
+                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED.value,
                     then=Value("Earned credits - changes required"),
                 ),
-                When(status=ComplianceSummaryStatus.EARNED_CREDITS.value, then=Value("Earned credits")),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value, then=Value("Earned credits")
+                ),
                 default=F("status"),
                 output_field=CharField(),
             ),

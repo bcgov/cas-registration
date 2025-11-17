@@ -22,19 +22,3 @@ class ComplianceTableNames(Enum):
 class ComplianceInvoiceTypes(Enum):
     OBLIGATION = "obligation"
     AUTOMATIC_OVERDUE_PENALTY = "automatic overdue penalty"
-
-
-class ComplianceSummaryStatus(Enum):
-    OBLIGATION_NOT_MET = "Obligation not met"
-    OBLIGATION_FULLY_MET = "Obligation fully met"
-    OBLIGATION_PENDING_INVOICE_CREATION = "Obligation pending invoice creation"
-    EARNED_CREDITS = "Earned credits"
-    NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits"
-
-
-class IssuanceStatus(Enum):
-    CREDITS_NOT_ISSUED = "Credits Not Issued in BCCR"
-    ISSUANCE_REQUESTED = "Issuance Requested"
-    CHANGES_REQUIRED = "Changes Required"
-    APPROVED = "Approved"
-    DECLINED = "Declined"
