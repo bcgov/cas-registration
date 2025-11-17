@@ -11,7 +11,6 @@ from compliance.dataclass import PaymentDataWithFreshnessFlag
 from service.user_operator_service import UserOperatorService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.enums import ComplianceInvoiceTypes
-from service.reporting_year_service import ReportingYearService
 from ninja import Query
 from compliance.schema.compliance_report_version import ComplianceReportVersionFilterSchema
 
@@ -36,8 +35,6 @@ class ComplianceDashboardService:
         Fetches all compliance summaries for the user's operations
         """
         user = UserDataAccessService.get_by_guid(user_guid)
-        # Get current reporting
-        reporting_year: int = ReportingYearService.get_current_reporting_year().reporting_year
 
         compliance_report_version_queryset = (
             ComplianceReportVersion.objects.select_related(
@@ -67,8 +64,6 @@ class ComplianceDashboardService:
                 )
                 | Q(status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED)
             )
-            # filter for current reporting year
-            .filter(report_compliance_summary__report_version__report__reporting_year=reporting_year)
         )
 
         # Annotate DB-side aliases
