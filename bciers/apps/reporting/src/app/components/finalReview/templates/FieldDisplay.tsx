@@ -1,3 +1,4 @@
+// typescript
 import React from "react";
 import { BC_GOV_COMPONENTS_GREY, LIGHT_GREY_BG_COLOR } from "@bciers/styles";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
@@ -48,7 +49,7 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
     if (typeof val === "boolean") {
       return <span>{val ? "Yes" : "No"}</span>;
     }
-    if (typeof val === "string" && val.includes(";")) {
+    if (typeof val === "string" && val.includes(";") && !isReasonForChange) {
       return (
         <ul style={{ listStyleType: "none", paddingLeft: 0, margin: 0 }}>
           {val.split(";").map((item, idx) => (
@@ -74,22 +75,12 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
       <div
         className={`flex flex-col md:flex-row md:gap-x-12 gap-y-2 items-start`}
       >
-        {/* label - fixed width on md (1/3 for reason_for_change, 3/12 otherwise) */}
-        <div
-          className={`w-full ${isReasonForChange ? "md:w-4/12" : "md:w-3/12"}`}
-        >
+        <div className={`w-full md:w-3/12`}>
           <label className="font-semibold">{label}</label>
         </div>
 
-        {/* value area - for reason_for_change take 2/3, otherwise use existing mid width */}
         <div
-          className={`w-full ${
-            isReasonForChange
-              ? "md:w-8/12"
-              : isReasonForChange
-              ? "md:w-8/12"
-              : "md:w-4/12"
-          }`}
+          className={`w-full ${isReasonForChange ? "md:w-9/12" : "md:w-4/12"}`}
         >
           {typeof value === "number" && !isYear ? (
             <NumberField.Root
