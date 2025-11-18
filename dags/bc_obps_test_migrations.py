@@ -4,6 +4,7 @@ from airflow.providers.cncf.kubernetes.operators.job import KubernetesJobOperato
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator
+from airflow.providers.standard.sensors.time_delta import TimeDeltaSensor
 from airflow.sdk import Param
 import os
 import sys
@@ -87,6 +88,12 @@ def trigger_k8s_cronjob_with_params(job_name_template, **context):
     trigger_k8s_cronjob(job_name, namespace)
 
 
+# Postgres can take some time to restore, add a delay to make the restore check more reliable
+time_delay_postgres = TimeDeltaSensor(
+    task_id="wait_time_before_postgres_initial_ready_check",
+    delta=timedelta(seconds=480),
+)
+
 trigger_wait_for_postgres_restore = PythonOperator(
     python_callable=trigger_k8s_cronjob_with_params,
     task_id="wait_for_postgres_restore",
@@ -122,6 +129,11 @@ backend_helm_install = KubernetesJobOperator(
     get_logs=True,
     is_delete_operator_pod=True,
     dag=test_migrations_dag,
+)
+
+# Initial delay is 150 seconds for the backend pod ready check
+time_delay_backend = TimeDeltaSensor(
+    task_id="wait_time_before_backend_initial_ready_check", delta=timedelta(seconds=150)
 )
 
 trigger_wait_for_backend = PythonOperator(
@@ -172,9 +184,11 @@ uninstall_backend_helm_charts = KubernetesJobOperator(
 
 (
     postgres_helm_install
+    >> time_delay_postgres
     >> trigger_wait_for_postgres_restore
     >> trigger_postgres_migration_test_cronjob
     >> backend_helm_install
+    >> time_delay_backend
     >> trigger_wait_for_backend
     >> trigger_backend_migration_test_cronjob
     >> [uninstall_postgres_helm_charts, uninstall_backend_helm_charts]
