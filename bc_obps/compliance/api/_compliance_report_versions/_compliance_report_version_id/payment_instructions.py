@@ -32,8 +32,7 @@ def generate_payment_instructions(
         A streaming response containing the PDF
     """
     result = PaymentInstructionsService.generate_payment_instructions_pdf(
-        compliance_report_version_id,
-        invoice_type=invoice_type,
+        compliance_report_version_id, invoice_type=invoice_type
     )
 
     # If result is an error dictionary, stream it back with status 400

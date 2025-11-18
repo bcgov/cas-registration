@@ -53,7 +53,9 @@ export default function PaymentInstructionsDownloadComponent({
 
     try {
       const query = invoiceType
-        ? buildQueryParams({ invoice_type: invoiceType })
+        ? buildQueryParams({
+            invoice_type: invoiceType,
+          })
         : "";
       const res = await fetch(
         `/compliance/api/payment-instructions/${complianceReportVersionId}${query}`,
@@ -115,6 +117,10 @@ export default function PaymentInstructionsDownloadComponent({
       uiSchema={downloadPaymentInstructionsUiSchema}
       formData={instructionFormData}
       className="w-full"
+      formContext={{
+        isPenalty:
+          invoiceType === ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
+      }}
     >
       <ComplianceStepButtons
         key="form-buttons"

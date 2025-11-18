@@ -33,8 +33,7 @@ class PaymentInstructionsService:
         """
         try:
             context = PaymentInstructionsService._prepare_payment_instructions_context(
-                compliance_report_version_id,
-                invoice_type,
+                compliance_report_version_id, invoice_type
             )
             filename = f"payment_instructions_{context['invoice_number']}_{timezone.now().strftime('%Y%m%d')}.pdf"
 
@@ -73,6 +72,7 @@ class PaymentInstructionsService:
             'invoice_number': refreshResult.invoice.invoice_number
             if refreshResult.invoice
             else "Missing Invoice Number",
+            'is_penalty': True if invoice_type == ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY else False,
             'logo_base64': CLEAN_BC_LOGO_COMPLIANCE_INVOICE,
         }
 
