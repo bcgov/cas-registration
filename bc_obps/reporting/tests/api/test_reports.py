@@ -193,3 +193,17 @@ class TestReportsEndpoint(CommonTestSetup):
         # Verify that the service methods were called with the correct arguments
         mock_get_report_by_id.assert_called_once_with(report.id)
         mock_create_report_version.assert_called_once_with(report)
+
+    def test_get_reporting_year_by_report_id_returns_expected_data(self):
+        report = report_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=report.operator)
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy("get_reporting_year_by_report_id", kwargs={"report_id": report.id}),
+        )
+        assert response.status_code == 200
+        response_data = response.json()
+        assert response_data["reporting_year"] == report.reporting_year.reporting_year
+        assert "report_due_date" in response_data
+        assert isinstance(response_data["report_due_date"], str)

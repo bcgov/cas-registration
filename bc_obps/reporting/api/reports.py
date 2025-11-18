@@ -64,6 +64,20 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
 
 
 @router.get(
+    "/report/{report_id}/reporting-year",
+    response={200: ReportingYearOut, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Returns json object with reporting year and due date for a specific report.""",
+    auth=authorize("all_roles"),
+)
+def get_reporting_year_by_report_id(request: HttpRequest, report_id: int) -> Tuple[Literal[200], ReportingYear]:
+    from reporting.models import Report
+
+    report = Report.objects.select_related('reporting_year').get(id=report_id)
+    return 200, report.reporting_year
+
+
+@router.get(
     "/report-version/{version_id}/report-operation/regulated-products",
     response={200: List[RegulatedProductOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
