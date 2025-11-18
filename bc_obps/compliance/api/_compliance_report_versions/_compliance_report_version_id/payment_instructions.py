@@ -18,7 +18,6 @@ from compliance.api.permissions import approved_industry_user_compliance_report_
 def generate_payment_instructions(
     request: HttpRequest,
     compliance_report_version_id: int,
-    is_penalty_page: bool,
     invoice_type: ComplianceInvoiceTypes = ComplianceInvoiceTypes.OBLIGATION,
 ) -> StreamingHttpResponse:
     """
@@ -33,7 +32,7 @@ def generate_payment_instructions(
         A streaming response containing the PDF
     """
     result = PaymentInstructionsService.generate_payment_instructions_pdf(
-        compliance_report_version_id, invoice_type=invoice_type, is_penalty_page=is_penalty_page
+        compliance_report_version_id, invoice_type=invoice_type
     )
 
     # If result is an error dictionary, stream it back with status 400

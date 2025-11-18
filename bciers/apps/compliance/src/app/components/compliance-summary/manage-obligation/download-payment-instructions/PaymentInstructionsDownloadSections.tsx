@@ -7,12 +7,12 @@ import {
 
 type Props = {
   formContext: {
-    isPenaltyPage?: boolean;
+    isPenalty?: boolean;
   };
 };
 
 export const PaymentInstructionsDetails = ({
-  formContext: { isPenaltyPage },
+  formContext: { isPenalty },
 }: Props) => {
   return (
     <div className="w-full mb-8">
@@ -32,7 +32,7 @@ export const PaymentInstructionsDetails = ({
       <h3>Pay by electronic funds transfer (EFT) or by wire transfer</h3>
       <ul>
         <li>Include the invoice number as a reference</li>
-        {!isPenaltyPage && (
+        {!isPenalty && (
           <li>
             Plan to make your payment at least five business days before the
             compliance obligation deadline to allow for payment processing

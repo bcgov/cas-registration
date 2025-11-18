@@ -17,7 +17,6 @@ interface Props {
   readonly customContinueUrl?: string;
   readonly customBackUrl?: string;
   readonly invoiceType?: ComplianceInvoiceTypes;
-  readonly isPenaltyPage?: boolean;
 }
 
 export default function PaymentInstructionsDownloadComponent({
@@ -26,7 +25,6 @@ export default function PaymentInstructionsDownloadComponent({
   customContinueUrl,
   customBackUrl,
   invoiceType,
-  isPenaltyPage,
 }: Props) {
   const backUrl =
     customBackUrl ??
@@ -57,7 +55,6 @@ export default function PaymentInstructionsDownloadComponent({
       const query = invoiceType
         ? buildQueryParams({
             invoice_type: invoiceType,
-            is_penalty_page: isPenaltyPage,
           })
         : "";
       const res = await fetch(
@@ -120,7 +117,10 @@ export default function PaymentInstructionsDownloadComponent({
       uiSchema={downloadPaymentInstructionsUiSchema}
       formData={instructionFormData}
       className="w-full"
-      formContext={{ isPenaltyPage: isPenaltyPage }}
+      formContext={{
+        isPenalty:
+          invoiceType === ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
+      }}
     >
       <ComplianceStepButtons
         key="form-buttons"
