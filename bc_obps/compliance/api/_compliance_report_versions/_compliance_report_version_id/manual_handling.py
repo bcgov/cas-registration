@@ -14,11 +14,7 @@ from compliance.service.compliance_report_version_manual_handling_service import
 
 @router.get(
     "/compliance-report-versions/{compliance_report_version_id}/manual-handling",
-    response={
-        200: ComplianceReportVersionManualHandlingOut,
-        204: None,
-        custom_codes_4xx: Message,
-    },
+    response={200: ComplianceReportVersionManualHandlingOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Get manual handling data for a compliance report version",
     exclude_none=True,
@@ -27,15 +23,12 @@ from compliance.service.compliance_report_version_manual_handling_service import
 def get_compliance_report_version_manual_handling(
     request: HttpRequest,
     compliance_report_version_id: int,
-) -> Tuple[Literal[200, 204], Optional[ComplianceReportVersionManualHandling]]:
-    # record = ComplianceManualHandlingService.get_manual_handling_by_report_version(
-    #     compliance_report_version_id
-    # )
+) -> Tuple[int, Optional[ComplianceReportVersionManualHandling]]:
+    record = ComplianceManualHandlingService.get_manual_handling_by_report_version(
+        compliance_report_version_id
+    )
 
-    # if record is None:
-    #     return 204, None
-
-    return 200, None
+    return 200, record
 
 
 

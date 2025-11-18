@@ -12,15 +12,31 @@ from compliance.models.rls_configs.compliance_report_version_manual_handling imp
 class ComplianceReportVersionManualHandling(TimeStampedModel):
     """Tracks manual handling resolution for a compliance report version."""
 
+    class HandlingType(models.TextChoices):
+        OBLIGATION = "obligation", "Obligation"
+        EARNED_CREDITS = "earned_credits", "Earned Credits"
+
+
     class DirectorDecision(models.TextChoices):
         PENDING_MANUAL_HANDLING = "pending_manual_handling", "Pending manual handling"
         ISSUE_RESOLVED = "issue_resolved", "Issue has been resolved"
+
 
     compliance_report_version = models.OneToOneField(
         ComplianceReportVersion,
         on_delete=models.CASCADE,
         related_name="manual_handling_record",
         db_comment="The CRV that requires manual handling.",
+    )
+
+    handling_type = models.CharField(
+        max_length=50,
+        choices=HandlingType.choices,
+        db_comment="The type of manual handling.",
+    )
+
+    context = models.TextField(
+        db_comment="Reason for requiring manual handling.",
     )
 
     analyst_comment = models.TextField(

@@ -247,6 +247,8 @@ export type ElicensingInvoice = {
 
 export interface ManualHandlingData {
   analyst_comment?: string;
+  analyst_submitted_date: string;
+  analyst_submitted_by: string;
   director_comment?: string;
-  director_decision?: "pending_manual_handling" | "issue_resolved";
+  director_decision?: string;
 }

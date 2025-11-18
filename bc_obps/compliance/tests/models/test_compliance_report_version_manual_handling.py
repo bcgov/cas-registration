@@ -320,18 +320,22 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
         # RLS as seen by the *current* operator (new_user_operator)
         #
         def select_function(cursor):
+            # Should be able to read their own manual-handling record
             ComplianceReportVersionManualHandling.objects.get(id=new_operator_manual_handling.id)
 
         def forbidden_select_function(cursor):
+            # Must NOT be able to see previous operator's record
             ComplianceReportVersionManualHandling.objects.get(id=old_operator_manual_handling.id)
 
         def insert_function(cursor):
+            # Should be able to create a manual-handling record for their own CRV
             ComplianceReportVersionManualHandling.objects.create(
                 compliance_report_version=new_operator_compliance_report_version_for_insert,
                 analyst_comment="New manual handling record for current operator",
             )
 
         def forbidden_insert_function(cursor):
+            # Must NOT be able to create a manual-handling record for the old operator's CRV
             cursor.execute(
                 """
                     INSERT INTO "erc"."compliance_report_version_manual_handling" (
@@ -345,17 +349,6 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
                 (old_operator_compliance_report_version_for_insert.id, "Should be forbidden"),
             )
 
-        def update_function(cursor):
-            cursor.execute(
-                """
-                    UPDATE "erc"."compliance_report_version_manual_handling"
-                    SET director_comment = %s
-                    WHERE id = %s
-                """,
-                ("Updated by current operator", new_operator_manual_handling.id),
-            )
-            return cursor.rowcount
-
         def forbidden_update_function(cursor):
             cursor.execute(
                 """
@@ -363,17 +356,7 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
                     SET director_comment = %s
                     WHERE id = %s
                 """,
-                ("Should be forbidden", old_operator_manual_handling.id),
-            )
-            return cursor.rowcount
-
-        def delete_function(cursor):
-            cursor.execute(
-                """
-                    DELETE FROM "erc"."compliance_report_version_manual_handling"
-                    WHERE id = %s
-                """,
-                (new_operator_manual_handling.id,),
+                ("Should be forbidden", new_operator_manual_handling.id),
             )
             return cursor.rowcount
 
@@ -383,7 +366,7 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
                     DELETE FROM "erc"."compliance_report_version_manual_handling"
                     WHERE id = %s
                 """,
-                (old_operator_manual_handling.id,),
+                (new_operator_manual_handling.id,),
             )
             return cursor.rowcount
 
@@ -392,8 +375,9 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
             new_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
-            update_function=update_function,
-            delete_function=delete_function,
+            # UPDATE/DELETE should NOT be allowed for industry users
+            update_function=None,
+            delete_function=None,
             forbidden_select_function=forbidden_select_function,
             forbidden_insert_function=forbidden_insert_function,
             forbidden_update_function=forbidden_update_function,
@@ -404,18 +388,22 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
         # RLS as seen by the *previous* operator (old_user_operator)
         #
         def select_function(cursor):
+            # Previous operator should see their own manual-handling record
             ComplianceReportVersionManualHandling.objects.get(id=old_operator_manual_handling.id)
 
         def forbidden_select_function(cursor):
+            # Must NOT see the new operator's record
             ComplianceReportVersionManualHandling.objects.get(id=new_operator_manual_handling.id)
 
         def insert_function(cursor):
+            # Should be able to create manual-handling for their own CRV
             ComplianceReportVersionManualHandling.objects.create(
                 compliance_report_version=old_operator_compliance_report_version_for_insert,
                 analyst_comment="New manual handling record for previous operator",
             )
 
         def forbidden_insert_function(cursor):
+            # Must NOT be able to create manual-handling for the new operator's CRV
             cursor.execute(
                 """
                     INSERT INTO "erc"."compliance_report_version_manual_handling" (
@@ -429,17 +417,6 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
                 (new_operator_compliance_report_version.id, "Should be forbidden"),
             )
 
-        def update_function(cursor):
-            cursor.execute(
-                """
-                    UPDATE "erc"."compliance_report_version_manual_handling"
-                    SET director_comment = %s
-                    WHERE id = %s
-                """,
-                ("Updated by previous operator", old_operator_manual_handling.id),
-            )
-            return cursor.rowcount
-
         def forbidden_update_function(cursor):
             cursor.execute(
                 """
@@ -447,17 +424,7 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
                     SET director_comment = %s
                     WHERE id = %s
                 """,
-                ("Should be forbidden", new_operator_manual_handling.id),
-            )
-            return cursor.rowcount
-
-        def delete_function(cursor):
-            cursor.execute(
-                """
-                    DELETE FROM "erc"."compliance_report_version_manual_handling"
-                    WHERE id = %s
-                """,
-                (old_operator_manual_handling.id,),
+                ("Should be forbidden", old_operator_manual_handling.id),
             )
             return cursor.rowcount
 
@@ -467,7 +434,7 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
                     DELETE FROM "erc"."compliance_report_version_manual_handling"
                     WHERE id = %s
                 """,
-                (new_operator_manual_handling.id,),
+                (old_operator_manual_handling.id,),
             )
             return cursor.rowcount
 
@@ -476,8 +443,8 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
             old_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
-            update_function=update_function,
-            delete_function=delete_function,
+            update_function=None,
+            delete_function=None,
             forbidden_select_function=forbidden_select_function,
             forbidden_insert_function=forbidden_insert_function,
             forbidden_update_function=forbidden_update_function,

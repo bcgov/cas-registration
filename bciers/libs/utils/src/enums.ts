@@ -139,3 +139,8 @@ export enum ComplianceInvoiceTypes {
   AUTOMATIC_OVERDUE_PENALTY = "automatic overdue penalty",
   LATE_SUBMISSION_PENALTY = "late submission penalty",
 }
+
+export enum ManualHandlingDecison {
+  PENDING_MANUAL_HANDLING = "Pending manual handling",
+  ISSUE_RESOLVED = "Issue has been resolved",
+}

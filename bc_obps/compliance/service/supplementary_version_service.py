@@ -10,6 +10,7 @@ from compliance.service.earned_credits_service import ComplianceEarnedCreditsSer
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from service.error_service.handle_exception import ExceptionHandler
 from compliance.models.elicensing_line_item import ElicensingLineItem
+from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 
 from compliance.dataclass import InvoiceAdjustment, AdjustmentStrategy
 
@@ -453,7 +454,7 @@ class DecreasedObligationHandler:
         )
 
         should_record_manual_handling = False
-        has_cash = False  # keep for logging if you print later
+        has_cash = False
         if fully_paid_obligation and refund_pool > ZERO_DECIMAL:
             # Prefer using precomputed per-invoice 'paid' when available.
             has_cash = any((inv.get("paid") or ZERO_DECIMAL) > ZERO_DECIMAL for inv in invoices)
@@ -710,15 +711,36 @@ class DecreasedObligationHandler:
             status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         )
 
+
+
     @staticmethod
     def _record_manual_handling(
         compliance_report_version_id: int,
     ) -> None:
         """
-        Set requires_manual_handling refundable dollars
+        Flag the CRV as requiring manual handling and create the related
+        ComplianceReportVersionManualHandling record.
+
+        Manual handling is required when:
+        • The obligation is fully paid (no outstanding invoices), and
+        • The refund pool contains real refundable cash (not just prior adjustments).
         """
-        ComplianceReportVersion.objects.filter(id=compliance_report_version_id).update(
-            requires_manual_handling=True,
+        crv = ComplianceReportVersion.objects.get(
+            id=compliance_report_version_id
+        )
+
+        # Flag the CRV for manual handing
+        if not crv.requires_manual_handling:
+            crv.requires_manual_handling = True
+            crv.save(update_fields=["requires_manual_handling"])
+
+        # Create manual-handling record for this obligation
+        ComplianceReportVersionManualHandling.objects.create(
+            compliance_report_version=crv,
+            handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
+            context=(
+                "Obligation is fully paid and the refund pool contains refundable cash."
+            ),
         )
 
 
@@ -889,6 +911,15 @@ class DecreasedCreditHandler:
         if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
             compliance_report_version.requires_manual_handling = True
             compliance_report_version.save(update_fields=["requires_manual_handling"])
+            # Create manual-handling record for this obligation
+            ComplianceReportVersionManualHandling.objects.create(
+                compliance_report_version=compliance_report_version,
+                handling_type=ComplianceReportVersionManualHandling.HandlingType.EARNED_CREDITS,
+                context=(
+                    "Earned credits have been previously approved."
+                ),
+            )
+
             return compliance_report_version
 
         # if credits weren't requested, update the previous earned credit record

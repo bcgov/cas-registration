@@ -49,14 +49,10 @@ class ComplianceManualHandlingService:
         """
         Ensure there is a manual handling record for the given CRV.
         """
-        record, created = ComplianceReportVersionManualHandling.objects.get_or_create(
+        record= ComplianceReportVersionManualHandling.objects.get_or_create(
             compliance_report_version=crv
         )
-        if created:
-            logger.info(
-                "Created manual handling record for compliance_report_version %s",
-                crv.id,
-            )
+
         return record
 
 
