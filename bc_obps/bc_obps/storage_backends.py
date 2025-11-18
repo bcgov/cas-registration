@@ -3,7 +3,7 @@ import os
 import shutil
 from typing import Any
 from django.conf import settings
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import FileSystemStorage, Storage
 from storages.backends.gcloud import GoogleCloudStorage  # type: ignore
 from django.core.files.base import ContentFile
 
@@ -19,6 +19,16 @@ def add_filename_suffix(filename: str, suffix: str | None = None) -> str:
     file_suffix = suffix if suffix is not None else f'_{datetime.now().strftime("%Y%m%d%H%M%S")}'
 
     return f"{name}{file_suffix}{extension}"
+
+
+def keep_deleted_items(storage_instance: Storage) -> Storage:
+    """
+    Wrapper function to make a storage instance keep deleted files on the storage.
+    This is to allow compatibility with the `simple_history` module which assumes
+    file references are kept on the storage medium.
+    """
+    setattr(storage_instance, "delete", lambda *_: None)
+    return storage_instance
 
 
 class SimpleLocal(FileSystemStorage):

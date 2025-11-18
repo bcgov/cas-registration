@@ -93,7 +93,7 @@ def file_to_data_url(document: Document) -> Optional[str]:  # type: ignore[retur
     """
     timeout_seconds = 10
     # Handles local storage when running in CI
-    if os.environ.get("CI", None) == "true":
+    if os.environ.get("CI", None) == "true" or os.environ.get("ENVIRONMENT", None) == "local":
         encoded_content = base64.b64encode(document.get_file_content().read()).decode("utf-8")
         return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";scanstatus=" + document.status + ";base64," + encoded_content  # type: ignore[no-any-return]
     else:

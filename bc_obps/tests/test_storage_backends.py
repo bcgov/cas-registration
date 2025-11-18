@@ -1,7 +1,7 @@
 import datetime
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
-from bc_obps.storage_backends import SimpleLocal, UnifiedGcsStorage, add_filename_suffix
+from bc_obps.storage_backends import SimpleLocal, UnifiedGcsStorage, add_filename_suffix, keep_deleted_items
 from django.conf import settings
 from django.test import SimpleTestCase
 
@@ -19,6 +19,16 @@ class TestStorageBackends(SimpleTestCase):
         # Empty cases don't break
         assert add_filename_suffix("f", "") == "f"
         assert add_filename_suffix("", "") == ""
+
+    def test_keep_deleted_items(self):
+
+        test_storage = MagicMock()
+        delete_method = test_storage.delete
+
+        keep_deleted_items(test_storage)
+
+        test_storage.delete("something")
+        delete_method.assert_not_called()
 
 
 class TestSimpleLocalStorageBackend(SimpleTestCase):

@@ -1,4 +1,5 @@
 import typing
+from bc_obps.storage_backends import keep_deleted_items
 from common.models.scanned_file_storage_mixin import ScannedFileStorageMixin
 from django.db import models
 from common.enums import Schemas
@@ -12,7 +13,7 @@ from django.db.models.fields.files import FieldFile
 
 class Document(TimeStampedModel, ScannedFileStorageMixin):
     file = models.FileField(
-        storage=default_storage,
+        storage=keep_deleted_items(default_storage),
         upload_to="documents",
         db_comment="The file format, metadata, etc.",
     )
