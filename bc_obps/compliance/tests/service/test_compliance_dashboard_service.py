@@ -8,8 +8,6 @@ from compliance.service.compliance_dashboard_service import ComplianceDashboardS
 from compliance.models import ComplianceReportVersion, ComplianceEarnedCredit
 from registration.models import Operation
 from django.core.exceptions import ObjectDoesNotExist
-from reporting.models.reporting_year import ReportingYear
-from reporting.tests.utils.bakers import reporting_year_baker
 
 
 pytestmark = pytest.mark.django_db
@@ -23,7 +21,6 @@ DASHBOARD_BASE_PATH = "compliance.service.compliance_dashboard_service"
 ELICENSING_DATA_REFRESH_SERVICE_PATH = f"{DASHBOARD_BASE_PATH}.ElicensingDataRefreshService"
 COMPLIANCE_REPORT_VERSION_SERVICE_PATH = f"{DASHBOARD_BASE_PATH}.ComplianceReportVersionService"
 COMPLIANCE_CHARGE_RATE_SERVICE_PATH = f"{DASHBOARD_BASE_PATH}.ComplianceChargeRateService"
-REPORTING_YEAR_SERVICE_PATH = f"{DASHBOARD_BASE_PATH}.ReportingYearService"
 
 # Specific methods to patch
 ELICENSING_DATA_REFRESH_WRAPPER_PATH = (
@@ -34,7 +31,6 @@ GET_PREVIOUSLY_OWNED_CRV_PATH = (
 )
 CALCULATE_OUTSTANDING_TCO2E_PATH = f"{COMPLIANCE_REPORT_VERSION_SERVICE_PATH}.calculate_outstanding_balance_tco2e"
 GET_RATE_FOR_YEAR_PATH = f"{COMPLIANCE_CHARGE_RATE_SERVICE_PATH}.get_rate_for_year"
-GET_CURRENT_REPORTING_YEAR_PATH = f"{REPORTING_YEAR_SERVICE_PATH}.get_current_reporting_year"
 
 
 @pytest.fixture
@@ -58,12 +54,6 @@ def mock_get_rate():
 @pytest.fixture
 def mock_calculate_tco2e():
     with patch(CALCULATE_OUTSTANDING_TCO2E_PATH) as mock:
-        yield mock
-
-
-@pytest.fixture
-def mock_current_reporting_year():
-    with patch(GET_CURRENT_REPORTING_YEAR_PATH) as mock:
         yield mock
 
 
@@ -131,7 +121,8 @@ class TestComplianceDashboardService:
         assert returned_data.data.last() == payment_2
 
     def test_get_compliance_report_versions_for_dashboard_excludes_versions_correctly(
-        self, mock_previously_owned, mock_current_reporting_year
+        self,
+        mock_previously_owned,
     ):
         user_operator = make_recipe('registration.tests.utils.approved_user_operator')
 
@@ -139,21 +130,15 @@ class TestComplianceDashboardService:
             'registration.tests.utils.operation', operator=user_operator.operator, status=Operation.Statuses.REGISTERED
         )
 
-        # Create reporting year first to ensure consistency
-        reporting_year = make_recipe('reporting.tests.utils.reporting_year')
-
         report = make_recipe(
             'reporting.tests.utils.report',
             operator=user_operator.operator,
             operation=operation,
-            reporting_year=reporting_year,
         )
         compliance_report = make_recipe(
-            'compliance.tests.utils.compliance_report', report=report, compliance_period__reporting_year=reporting_year
+            'compliance.tests.utils.compliance_report',
+            report=report,
         )
-
-        # Mock the service to use the same reporting year
-        mock_current_reporting_year.return_value = reporting_year
 
         # Create properly linked ReportVersion and ReportComplianceSummary for the first compliance report version
         report_version_1 = make_recipe('reporting.tests.utils.report_version', report=report)
@@ -175,12 +160,10 @@ class TestComplianceDashboardService:
             'reporting.tests.utils.report',
             operator=user_operator.operator,
             operation=operation_2,
-            reporting_year=reporting_year,
         )
         compliance_report_2 = make_recipe(
             'compliance.tests.utils.compliance_report',
             report=report_2,
-            compliance_period__reporting_year=reporting_year,
         )
 
         # Create properly linked ReportVersion and ReportComplianceSummary for the second compliance report version
@@ -210,10 +193,7 @@ class TestComplianceDashboardService:
         assert result.first() == compliance_report_version
         assert result.last() == previous_compliance_report_version
 
-    def test_get_compliance_report_versions_for_dashboard_unions_results(self, mock_current_reporting_year):
-        # Use unique year to avoid conflicts with other tests
-        test_reporting_year = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2126)
-        mock_current_reporting_year.return_value = test_reporting_year
+    def test_get_compliance_report_versions_for_dashboard_unions_results(self):
 
         current_operator = make_recipe('registration.tests.utils.operator')
         previous_operator = make_recipe('registration.tests.utils.operator')
@@ -259,7 +239,6 @@ class TestComplianceDashboardService:
 
         xferred_emissions_report = make_recipe(
             'reporting.tests.utils.report',
-            reporting_year=test_reporting_year,  # same year as active
             operation=xferred_operation.operation,
             operator=previous_operator,
         )
@@ -293,7 +272,6 @@ class TestComplianceDashboardService:
 
         active_emissions_report = make_recipe(
             'reporting.tests.utils.report',
-            reporting_year=test_reporting_year,
             operation=active_operation.operation,
             operator=current_operator,
         )
@@ -329,7 +307,8 @@ class TestComplianceDashboardService:
         assert xferred_crv not in active_result  # explicit ownership-check
 
     def test_get_compliance_report_versions_for_dashboard_excludes_supplementary_reports_with_no_obligation_and_no_credits(
-        self, mock_previously_owned, mock_current_reporting_year
+        self,
+        mock_previously_owned,
     ):
         user_operator = make_recipe("registration.tests.utils.approved_user_operator")
 
@@ -339,23 +318,16 @@ class TestComplianceDashboardService:
             operator=user_operator.operator,
             status=Operation.Statuses.REGISTERED,
         )
-        # Create reporting year first to ensure consistency
-        reporting_year = make_recipe('reporting.tests.utils.reporting_year')
 
         report_1 = make_recipe(
             "reporting.tests.utils.report",
             operator=user_operator.operator,
             operation=operation_1,
-            reporting_year=reporting_year,
         )
         compliance_report_1 = make_recipe(
             "compliance.tests.utils.compliance_report",
             report=report_1,
-            compliance_period__reporting_year=reporting_year,
         )
-
-        # Mock the service to use the same reporting year
-        mock_current_reporting_year.return_value = reporting_year
 
         # Create properly linked ReportVersion and ReportComplianceSummary for report_1
         report_version_1 = make_recipe('reporting.tests.utils.report_version', report=report_1)
@@ -379,12 +351,10 @@ class TestComplianceDashboardService:
             'reporting.tests.utils.report',
             operator=user_operator.operator,
             operation=operation_1_supplementary,
-            reporting_year=reporting_year,
         )
         compliance_report_1_supplementary = make_recipe(
             "compliance.tests.utils.compliance_report",
             report=report_1_supplementary,
-            compliance_period__reporting_year=reporting_year,
         )
 
         # Create properly linked ReportVersion and ReportComplianceSummary for the supplementary version
@@ -412,12 +382,10 @@ class TestComplianceDashboardService:
             "reporting.tests.utils.report",
             operator=user_operator.operator,
             operation=operation_2,
-            reporting_year=reporting_year,
         )
         compliance_report_2 = make_recipe(
             "compliance.tests.utils.compliance_report",
             report=report_2,
-            compliance_period__reporting_year=reporting_year,  # <- pin year here
         )
         # Create properly linked ReportVersion and ReportComplianceSummary for report_2
         report_version_2 = make_recipe('reporting.tests.utils.report_version', report=report_2)
@@ -439,13 +407,11 @@ class TestComplianceDashboardService:
             "compliance.tests.utils.compliance_report_version",
             is_supplementary=False,
             status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-            compliance_report__compliance_period__reporting_year=reporting_year,  # <- optional, recommended
         )
         previous_compliance_report_version_2 = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             is_supplementary=True,
             status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-            compliance_report__compliance_period__reporting_year=reporting_year,  # <- optional, recommended
         )
 
         mock_previously_owned.return_value = ComplianceReportVersion.objects.filter(
@@ -477,7 +443,9 @@ class TestComplianceDashboardService:
         )
         assert ids == expected_ids
 
-    def test_user_access_control_for_compliance_report_versions(self, mock_current_reporting_year):
+    def test_user_access_control_for_compliance_report_versions(
+        self,
+    ):
         """Test that CAS director can see all compliance report versions while industry users can only see their own"""
 
         cas_director = make_recipe('registration.tests.utils.cas_director')
@@ -507,9 +475,6 @@ class TestComplianceDashboardService:
             report=report_1,
             compliance_period__reporting_year=reporting_year,
         )
-
-        # Mock the service to use the same reporting year
-        mock_current_reporting_year.return_value = reporting_year
 
         # Create properly linked ReportVersion and ReportComplianceSummary for report_1
         report_version_1 = make_recipe('reporting.tests.utils.report_version', report=report_1)
@@ -638,13 +603,15 @@ class TestComplianceDashboardService:
         user_guid = user_operator.user.user_guid
 
         # --- Report chain
-        reporting_year = make_recipe('reporting.tests.utils.reporting_year')
         operation = make_recipe("registration.tests.utils.operation", operator=operator)
         report = make_recipe(
-            "reporting.tests.utils.report", operator=operator, operation=operation, reporting_year=reporting_year
+            "reporting.tests.utils.report",
+            operator=operator,
+            operation=operation,
         )
         compliance_report = make_recipe(
-            "compliance.tests.utils.compliance_report", report=report, compliance_period__reporting_year=reporting_year
+            "compliance.tests.utils.compliance_report",
+            report=report,
         )
 
         # --- Compliance_report_version
@@ -699,7 +666,9 @@ class TestComplianceDashboardService:
         mock_get_rate.assert_called_once()
         mock_calculate_tco2e.assert_called_once_with(result)
 
-    def test_get_compliance_report_versions_for_dashboard_sets_calculated_fields(self, mock_current_reporting_year):
+    def test_get_compliance_report_versions_for_dashboard_sets_calculated_fields(
+        self,
+    ):
         """Test that the service sets calculated fields correctly for compliance report versions"""
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
 
@@ -738,9 +707,6 @@ class TestComplianceDashboardService:
             report=report_1,
             compliance_period__reporting_year=reporting_year,
         )
-
-        # Mock the service to use the same reporting year
-        mock_current_reporting_year.return_value = reporting_year
 
         # Create properly linked ReportVersion and ReportComplianceSummary for report_1
         report_version_1 = make_recipe('reporting.tests.utils.report_version', report=report_1)
@@ -838,129 +804,17 @@ class TestComplianceDashboardService:
         assert result[2].id == compliance_report_version_2_2.id
         assert result[2].report_compliance_summary.excess_emissions == Decimal("5.0")
 
-    def test_get_compliance_report_versions_for_dashboard_excludes_past_years_far_future(
-        mock_previously_owned,
-        mock_current_reporting_year,
+    def test_get_compliance_report_versions_for_dashboard_sorts_and_filters(
+        self,
     ):
-        """
-        Only current reporting-year versions should be returned.
-        Past-year versions (including previously-owned) must be excluded.
-        Using far-future years avoids uniqueness clashes with other tests.
-        """
-        CURRENT_YEAR = 2101
-        PAST_YEAR = 2100
-
-        # Force the service to consider CURRENT_YEAR as the active reporting year
-        mock_current_reporting_year.return_value.reporting_year = CURRENT_YEAR
-
-        # Far-future reporting years (via your helper)
-        ry_current = reporting_year_baker(reporting_year=CURRENT_YEAR)
-        ry_past = reporting_year_baker(reporting_year=PAST_YEAR)
-
-        # User & operation
-        user_operator = make_recipe("registration.tests.utils.approved_user_operator")
-        operation = make_recipe(
-            "registration.tests.utils.operation",
-            operator=user_operator.operator,
-            status=Operation.Statuses.REGISTERED,
-        )
-
-        # Compliance periods tied to those years
-        cp_current = make_recipe("compliance.tests.utils.compliance_period", reporting_year=ry_current)
-        cp_past = make_recipe("compliance.tests.utils.compliance_period", reporting_year=ry_past)
-
-        # --- current-year version (INCLUDED) ---
-        report_current = make_recipe(
-            "reporting.tests.utils.report",
-            operator=user_operator.operator,
-            operation=operation,
-            reporting_year=ry_current,  # Ensure Report's reporting_year matches
-        )
-        cr_current = make_recipe(
-            "compliance.tests.utils.compliance_report",
-            report=report_current,
-            compliance_period=cp_current,
-        )
-        # Create properly linked ReportVersion and ReportComplianceSummary for current
-        report_version_current = make_recipe('reporting.tests.utils.report_version', report=report_current)
-        report_compliance_summary_current = make_recipe(
-            'reporting.tests.utils.report_compliance_summary', report_version=report_version_current
-        )
-
-        v_current = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=cr_current,
-            report_compliance_summary=report_compliance_summary_current,
-        )
-
-        # --- past-year version (EXCLUDED) ---
-        report_past = make_recipe(
-            "reporting.tests.utils.report",
-            operator=user_operator.operator,
-            operation=operation,
-            reporting_year=ry_past,  # Ensure Report's reporting_year matches
-        )
-        cr_past = make_recipe(
-            "compliance.tests.utils.compliance_report",
-            report=report_past,
-            compliance_period=cp_past,
-        )
-        # Create properly linked ReportVersion and ReportComplianceSummary for past
-        report_version_past = make_recipe('reporting.tests.utils.report_version', report=report_past)
-        report_compliance_summary_past = make_recipe(
-            'reporting.tests.utils.report_compliance_summary', report_version=report_version_past
-        )
-
-        v_past = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=cr_past,
-            report_compliance_summary=report_compliance_summary_past,
-        )
-
-        # --- previously-owned (past year) (EXCLUDED) ---
-        prev_owned_past = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report__compliance_period=cp_past,
-        )
-        mock_previously_owned.return_value = ComplianceReportVersion.objects.filter(id=prev_owned_past.id)
-
-        # Call
-        result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=user_operator.user.user_guid,
-            sort_field="id",
-            sort_order="asc",
-            filters=_NoopFilters(),
-        )
-
-        # Asserts
-        ids = set(result.values_list("id", flat=True))
-        assert v_current.id in ids, "Expected current-year version to be included"
-        assert v_past.id not in ids, "Past-year version must be excluded"
-        assert prev_owned_past.id not in ids, "Previously-owned past-year version must be excluded"
-
-        # Sanity: all results are for CURRENT_YEAR
-        years = set(
-            result.values_list(
-                "compliance_report__compliance_period__reporting_year__reporting_year",
-                flat=True,
-            )
-        )
-        assert years == {CURRENT_YEAR}
-
-    def test_get_compliance_report_versions_for_dashboard_sorts_and_filters(self, mock_current_reporting_year):
 
         user = make_recipe('registration.tests.utils.cas_analyst')
-
-        reporting_year_2025 = ReportingYear.objects.get(reporting_year=2025)
-        # Mock the service to return that instance
-        mock_current_reporting_year.return_value = reporting_year_2025
 
         # Create enough rows for multiple pages; deterministic names for stable sort
         versions = []
         for i in range(45):
             v = make_recipe(
                 "compliance.tests.utils.compliance_report_version",
-                report_compliance_summary__report_version__report__reporting_year=reporting_year_2025,
                 report_compliance_summary__report_version__report_operation__operation_name=f"Plant {i:03d}",
             )
             versions.append(v)
@@ -991,7 +845,9 @@ class TestComplianceDashboardService:
         )
         assert result_filtered.count() == 11  # 001 and 010-019
 
-    def test_get_compliance_report_versions_annotates_status_correctly(self, mock_current_reporting_year):
+    def test_get_compliance_report_versions_annotates_status_correctly(
+        self,
+    ):
         # setup
         user_operator = make_recipe('registration.tests.utils.approved_user_operator')
 
@@ -1002,7 +858,6 @@ class TestComplianceDashboardService:
             status=Operation.Statuses.REGISTERED,
         )
         reporting_year = make_recipe('reporting.tests.utils.reporting_year')
-        mock_current_reporting_year.return_value = reporting_year
 
         report_1 = make_recipe(
             'reporting.tests.utils.report',
