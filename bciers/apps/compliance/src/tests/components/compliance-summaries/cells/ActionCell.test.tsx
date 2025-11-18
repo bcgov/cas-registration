@@ -360,7 +360,7 @@ describe("ActionCell", () => {
       expect(screen.queryByRole("link", { name: "Resolve Issue" })).toBeNull();
     });
 
-    it("renders 'Resolve Issue' link to review-manual-handling for CAS users when requires_manual_handling is true", () => {
+    it("renders 'Resolve Issue' link to resolve-issue for CAS users when requires_manual_handling is true", () => {
       render(
         ActionCell(
           createMockParams(
@@ -380,7 +380,7 @@ describe("ActionCell", () => {
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
         "href",
-        "/compliance-administration/compliance-summaries/456/review-manual-handling",
+        "/compliance-administration/compliance-summaries/456/resolve-issue",
       );
 
       // And not show the Contact Us non-link label in this case

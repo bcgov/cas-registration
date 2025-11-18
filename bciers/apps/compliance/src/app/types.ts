@@ -244,3 +244,9 @@ export type ElicensingInvoice = {
   is_void: false;
   last_refreshed: string;
 };
+
+export interface ManualHandlingData {
+  analyst_comment?: string;
+  director_comment?: string;
+  director_decision?: "pending_manual_handling" | "issue_resolved";
+}

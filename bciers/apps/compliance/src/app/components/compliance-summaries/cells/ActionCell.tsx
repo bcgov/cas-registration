@@ -28,7 +28,7 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
     if (isAllowedCas) {
       return {
         cellText: "Resolve Issue",
-        basePath: `${basePath}/review-manual-handling`,
+        basePath: `${basePath}/resolve-issue`,
       };
     }
 
