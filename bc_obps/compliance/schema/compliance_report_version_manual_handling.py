@@ -42,7 +42,6 @@ class ComplianceReportVersionManualHandlingIn(Schema):
 
     analyst_comment: Optional[str] = None
     director_comment: Optional[str] = None
-    # Use the *values* of the TextChoices (not the human labels)
     director_decision: Optional[
         Literal["pending_manual_handling", "issue_resolved"]
     ] = None

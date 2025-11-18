@@ -16,7 +16,10 @@ class ComplianceReportVersionManualHandling(TimeStampedModel):
         OBLIGATION = "obligation", "Obligation"
         EARNED_CREDITS = "earned_credits", "Earned Credits"
 
-
+    class HandilingStatus(models.TextChoices):
+        ACTION_REQUIRED = "action_required", "Supplementary report- action required"
+        ISSUE_RESOLVED = "issue_resolved", "Supplementary report - resolved" 
+        
     class DirectorDecision(models.TextChoices):
         PENDING_MANUAL_HANDLING = "pending_manual_handling", "Pending manual handling"
         ISSUE_RESOLVED = "issue_resolved", "Issue has been resolved"
@@ -37,6 +40,13 @@ class ComplianceReportVersionManualHandling(TimeStampedModel):
 
     context = models.TextField(
         db_comment="Reason for requiring manual handling.",
+    )
+
+    status = models.CharField(
+        max_length=100,
+        choices=HandilingStatus.choices, 
+        default=HandilingStatus.ACTION_REQUIRED,
+        db_comment="The status of the manual handling.",
     )
 
     analyst_comment = models.TextField(

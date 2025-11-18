@@ -21,7 +21,6 @@ class ComplianceManualHandlingService:
     - Ensuring there is a manual-handling record for a ComplianceReportVersion
     - Letting CAS analysts add / update context comments for manual handling
     - Letting CAS directors record a decision and comment
-    - Keeping the ComplianceReportVersion.requires_manual_handling flag in sync
     """
 
     @staticmethod
@@ -65,15 +64,11 @@ class ComplianceManualHandlingService:
 
         - CAS Analyst:
             * May update `analyst_comment`
-            * Keeps / sets CRV.requires_manual_handling = True
             * Cannot change director_decision
 
         - CAS Director:
             * May update `director_comment`
             * Must provide a valid `director_decision`
-            * Updates CRV.requires_manual_handling based on decision:
-                - ISSUE_RESOLVED → requires_manual_handling = False
-                - PENDING_MANUAL_HANDLING → requires_manual_handling = True
 
         Other users are not allowed to update manual handling data.
         """
@@ -118,11 +113,6 @@ class ComplianceManualHandlingService:
             record.analyst_comment = update_payload.analyst_comment
             record.save(update_fields=["analyst_comment"])
 
-        # Ensure the CRV remains flagged as requiring manual handling
-        crv = record.compliance_report_version
-        if not crv.requires_manual_handling:
-            crv.requires_manual_handling = True
-            crv.save(update_fields=["requires_manual_handling"])
 
     @classmethod
     def _handle_cas_director_update(
@@ -136,9 +126,6 @@ class ComplianceManualHandlingService:
         Business rules:
         - Director must provide a valid director_decision
         - Director may also update director_comment
-        - Decision controls the CRV.requires_manual_handling flag:
-            * ISSUE_RESOLVED → False
-            * PENDING_MANUAL_HANDLING → True
         """
         if update_payload.director_decision is None:
             raise UserError("Director decision is required to update manual handling")
@@ -153,12 +140,3 @@ class ComplianceManualHandlingService:
             record.director_comment = update_payload.director_comment
 
         record.save(update_fields=["director_decision", "director_comment"])
-
-        # Sync the CRV.requires_manual_handling flag with the decision
-        crv = record.compliance_report_version
-        if record.director_decision == ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED:
-            crv.requires_manual_handling = False
-        else:
-            crv.requires_manual_handling = True
-
-        crv.save(update_fields=["requires_manual_handling"])

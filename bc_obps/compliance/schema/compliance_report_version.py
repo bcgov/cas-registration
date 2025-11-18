@@ -39,11 +39,17 @@ class ComplianceReportVersionListOut(ModelSchema):
     display_status: Optional[str] = None
     issuance_status: Optional[str] = Field(None, alias=ISSUANCE_STATUS_ALIAS)
     penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
+    
+    # status is derived from annotated `display_status`
+    # (manual-handling status can override the raw CRV.status)
+    status: str = Field(..., alias="display_status")
+
+    # derived flag: True only when manual_handling_record.status = ACTION_REQUIRED
     requires_manual_handling: Optional[bool] = None
 
     class Meta:
         model = ComplianceReportVersion
-        fields = ['id', 'status']
+        fields = ['id']
 
 
 class ComplianceReportVersionOut(ModelSchema):
@@ -57,6 +63,12 @@ class ComplianceReportVersionOut(ModelSchema):
     outstanding_balance_tco2e: Optional[Decimal] = None
     outstanding_balance_equivalent_value: Optional[Decimal] = None
     penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
+    
+    # status is derived from annotated `display_status`
+    # (manual-handling status can override the raw CRV.status)
+    status: str = Field(..., alias="display_status")
+
+    # derived flag: True only when manual_handling_record.status = ACTION_REQUIRED
     requires_manual_handling: Optional[bool] = None
     has_late_submission_penalty: bool
     has_overdue_penalty: bool
@@ -89,7 +101,7 @@ class ComplianceReportVersionOut(ModelSchema):
 
     class Meta:
         model = ComplianceReportVersion
-        fields = ['id', 'status']
+        fields = ['id']
 
 
 class OperationByComplianceSummaryOut(ModelSchema):

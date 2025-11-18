@@ -718,23 +718,13 @@ class DecreasedObligationHandler:
         compliance_report_version_id: int,
     ) -> None:
         """
-        Flag the CRV as requiring manual handling and create the related
-        ComplianceReportVersionManualHandling record.
-
-        Manual handling is required when:
-        • The obligation is fully paid (no outstanding invoices), and
-        • The refund pool contains real refundable cash (not just prior adjustments).
+        Create a related ComplianceReportVersionManualHandling record.
         """
         crv = ComplianceReportVersion.objects.get(
             id=compliance_report_version_id
         )
 
-        # Flag the CRV for manual handing
-        if not crv.requires_manual_handling:
-            crv.requires_manual_handling = True
-            crv.save(update_fields=["requires_manual_handling"])
-
-        # Create manual-handling record for this obligation
+        # Create manual-handling record for this supplementary report
         ComplianceReportVersionManualHandling.objects.create(
             compliance_report_version=crv,
             handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
@@ -909,9 +899,7 @@ class DecreasedCreditHandler:
 
         # Previously approved → flag manual handling, do not mutate/move prior credit
         if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
-            compliance_report_version.requires_manual_handling = True
-            compliance_report_version.save(update_fields=["requires_manual_handling"])
-            # Create manual-handling record for this obligation
+            # Create manual-handling record for this supplementary report
             ComplianceReportVersionManualHandling.objects.create(
                 compliance_report_version=compliance_report_version,
                 handling_type=ComplianceReportVersionManualHandling.HandlingType.EARNED_CREDITS,

@@ -2697,7 +2697,6 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
         assert isinstance(new_crv, ComplianceReportVersion)
         assert new_crv.previous_version == prev_crv
         assert new_crv.is_supplementary is True
-        assert new_crv.requires_manual_handling is True
 
         approved.refresh_from_db()
         assert approved.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED

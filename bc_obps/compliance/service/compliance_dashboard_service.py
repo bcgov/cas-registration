@@ -12,8 +12,9 @@ from compliance.service.compliance_charge_rate_service import ComplianceChargeRa
 from compliance.enums import ComplianceInvoiceTypes
 from ninja import Query
 from compliance.schema.compliance_report_version import ComplianceReportVersionFilterSchema
+from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 
-from django.db.models import Case, When, CharField
+from django.db.models import Case, When, CharField, BooleanField
 from typing import cast
 
 
@@ -49,18 +50,19 @@ class ComplianceDashboardService:
                 "report_compliance_summary__report_version__report__operator",
                 "report_compliance_summary__report_version__report__operation",
                 "report_compliance_summary__report_version__report__reporting_year",
+                "manual_handling_record",
             )
             .prefetch_related(
                 "obligation__elicensing_invoice__elicensing_line_items",
             )
             .exclude(
-                # Exclude supplementary versions with NO_OBLIGATION_OR_EARNED_CREDITS
-                # **unless** they require manual handling
+                # Exclude supplementary NO_OBLIG CRVs that have *no* manual-handling record
                 Q(
                     is_supplementary=True,
                     status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-                    requires_manual_handling=False,  # <── only exclude if manual handling is False
+                    manual_handling_record__isnull=True,
                 )
+                # Exclude SUPERCEDED
                 | Q(status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED)
             )
         )
@@ -143,20 +145,48 @@ class ComplianceDashboardService:
             The requested ComplianceReportVersion object or None if not found
         """
         user = UserDataAccessService.get_by_guid(user_guid)
-        compliance_report_version_queryset = ComplianceReportVersion.objects.select_related(
-            'compliance_report',
-            'compliance_report__report__operation',
-            'compliance_report__compliance_period',
-            'compliance_report__compliance_period__reporting_year',
-            'compliance_report__report__operator',
-            'obligation',
-            'obligation__elicensing_invoice',
-            'report_compliance_summary',
-            'report_compliance_summary__report_version__report__operator',
-            'report_compliance_summary__report_version__report__operation',
-            'report_compliance_summary__report_version__report__reporting_year',
-        ).prefetch_related(
-            'obligation__elicensing_invoice__elicensing_line_items',
+        compliance_report_version_queryset = (
+            ComplianceReportVersion.objects.select_related(
+                "compliance_report",
+                "compliance_report__report__operation",
+                "compliance_report__compliance_period",
+                "compliance_report__compliance_period__reporting_year",
+                "compliance_report__report__operator",
+                "obligation",
+                "obligation__elicensing_invoice",
+                "report_compliance_summary",
+                "report_compliance_summary__report_version__report__operator",
+                "report_compliance_summary__report_version__report__operation",
+                "report_compliance_summary__report_version__report__reporting_year",
+                "manual_handling_record",
+            )
+            .prefetch_related(
+                "obligation__elicensing_invoice__elicensing_line_items",
+            )
+            .annotate(                
+                # Derived status based on existing ComplianceReportVersionManualHandling
+                display_status=Case(
+                    When(
+                        manual_handling_record__status=ComplianceReportVersionManualHandling.HandilingStatus.ACTION_REQUIRED,
+                        then=Value(ComplianceReportVersionManualHandling.HandilingStatus.ACTION_REQUIRED.label),
+                    ),
+                    When(
+                        manual_handling_record__status=ComplianceReportVersionManualHandling.HandilingStatus.ISSUE_RESOLVED,
+                        then=Value(ComplianceReportVersionManualHandling.HandilingStatus.ISSUE_RESOLVED.label),
+                    ),
+                    default=F("status"),
+                    output_field=CharField(),
+                ),
+                # Derived flag: True only when manual_handling_record.status = ACTION_REQUIRED
+                requires_manual_handling=Case(
+                    When(
+                        manual_handling_record__status=ComplianceReportVersionManualHandling.HandilingStatus.ACTION_REQUIRED,
+                        then=Value(True),
+                    ),
+                    default=Value(False),
+                    output_field=BooleanField(),
+                ),
+            )
         )
 
         if user.is_irc_user():
@@ -264,6 +294,27 @@ class ComplianceDashboardService:
                 default=F("obligation__obligation_id"),
                 output_field=CharField(),
             ),
+            # Derived status based on existing ComplianceReportVersionManualHandling
+            display_status=Case(
+                When(
+                    manual_handling_record__status=ComplianceReportVersionManualHandling.HandilingStatus.ACTION_REQUIRED,
+                    then=Value(ComplianceReportVersionManualHandling.HandilingStatus.ACTION_REQUIRED.label),
+                ),
+                When(
+                    manual_handling_record__status=ComplianceReportVersionManualHandling.HandilingStatus.ISSUE_RESOLVED,
+                    then=Value(ComplianceReportVersionManualHandling.HandilingStatus.ISSUE_RESOLVED.label),
+                ),
+                default=F("status"),
+                output_field=CharField(),
+            ),
+            requires_manual_handling=Case(
+            When(
+                manual_handling_record__status=ComplianceReportVersionManualHandling.HandilingStatus.ACTION_REQUIRED,
+                then=Value(True),
+            ),
+            default=Value(False),
+            output_field=BooleanField(),
+        ),
         )
         return cast(QuerySet[ComplianceReportVersion], annotated)
 
