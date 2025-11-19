@@ -319,7 +319,6 @@ class ElicensingInvoiceService:
         return line1, line2
 
     @staticmethod
-    # brianna
     def calculate_invoice_amount_due(
         invoice: ElicensingInvoice,
     ) -> Tuple[Decimal, List[Dict[str, Any]], Decimal, Decimal, Decimal]:
