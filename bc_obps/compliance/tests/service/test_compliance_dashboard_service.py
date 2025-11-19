@@ -628,7 +628,7 @@ class TestComplianceDashboardService:
         )
 
         # --- Invoice & obligation
-        invoice = make_recipe("compliance.tests.utils.elicensing_invoice", outstanding_balance=Decimal("20.0"))
+        invoice = make_recipe("compliance.tests.utils.elicensing_invoice", invoice_fee_balance=Decimal("20.0"))
         make_recipe(
             "compliance.tests.utils.compliance_obligation",
             elicensing_invoice=invoice,

@@ -164,7 +164,7 @@ class TestComplianceObligationService:
         """Test _get_outstanding_balance_dollars returns elicensing invoice balance when available"""
         # Create obligation with elicensing invoice
         elicensing_invoice = baker.make_recipe(
-            'compliance.tests.utils.elicensing_invoice', outstanding_balance=Decimal('1500.00')
+            'compliance.tests.utils.elicensing_invoice', invoice_fee_balance=Decimal('1500.00')
         )
         obligation = baker.make_recipe(
             'compliance.tests.utils.compliance_obligation',
@@ -230,7 +230,7 @@ class TestComplianceObligationService:
 
         # Create elicensing invoice with outstanding balance
         elicensing_invoice = baker.make_recipe(
-            'compliance.tests.utils.elicensing_invoice', outstanding_balance=Decimal('2000.00')
+            'compliance.tests.utils.elicensing_invoice', invoice_fee_balance=Decimal('2000.00')
         )
 
         baker.make_recipe(
