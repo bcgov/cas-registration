@@ -47,7 +47,7 @@ def reverse_supplementary_report_submitted_after_deadline_template(apps, schema_
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('common', '0095_notice_of_penalty_now_accruing_email_template'),
+        ('common', '0096_V4_4_0'),
     ]
 
     operations = [
