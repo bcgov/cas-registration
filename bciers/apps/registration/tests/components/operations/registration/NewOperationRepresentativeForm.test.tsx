@@ -350,7 +350,7 @@ describe("the NewOperationRepresentativeForm component", () => {
             last_name: "Newton",
             position_title: "Scientist",
             email: "isaac.newton@email.com",
-            phone_number: "+1 1 604 401 4321",
+            phone_number: "+1 604 401 4321",
             street_address: "123 Under the Apple Tree",
             municipality: "Gravityville",
             province: "AB",

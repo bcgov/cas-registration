@@ -2,7 +2,7 @@
 
 ## Welcome to the Monorepo 🚝
 
-Note: The monorepo uses Node v20's Corepack Yarn and assumes a global install of nx (`npm add --global nx@18.2.1`). If you don't want to install it globally, prepend all `nx ...` commands: `yarn nx ...`
+Note: The monorepo uses Node v24's Corepack Yarn and assumes a global install of nx (`npm add --global nx@18.2.1`). If you don't want to install it globally, prepend all `nx ...` commands: `yarn nx ...`
 
 ### General commands
 

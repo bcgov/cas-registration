@@ -183,7 +183,7 @@ This guide will help you set up the frontend development environment for the CAS
 
 1. **Node.js**
 
-   - Version: 20.11.0 (as specified in `.tool-versions`)
+   - Version: 24.11.1 (as specified in `.tool-versions`)
    - Required for running the JavaScript/TypeScript codebase
 
 2. **Package Manager**
@@ -222,24 +222,24 @@ This guide will help you set up the frontend development environment for the CAS
 3. **Install Node.js**
 
    ```bash
-   asdf install nodejs 20.11.0
+   asdf install nodejs 24.11.1
    ```
 
 4. **Set Node.js version globally or locally**
    ```bash
-   asdf global nodejs 20.11.0  # for global setting
+   asdf global nodejs 24.11.1  # for global setting
    # OR
-   asdf local nodejs 20.11.0   # for project-specific setting
+   asdf local nodejs 24.11.1   # for project-specific setting
    ```
 
 ### Alternative Method (Without asdf)
 
-1. **Install Node.js 20.11.0**
+1. **Install Node.js 24.11.1**
 
    - Using nvm:
      ```bash
-     nvm install 20.11.0
-     nvm use 20.11.0
+     nvm install 24.11.1
+     nvm use 24.11.1
      ```
    - Or download directly from [Node.js website](https://nodejs.org/)
 
@@ -373,7 +373,7 @@ The shared libraries are automatically available to all applications in the mono
 
 ### Prerequisites
 
-- Node.js 20.11.0 (managed by asdf)
+- Node.js 24.11.1 (managed by asdf)
 - Yarn (via Node's Corepack)
 - Nx CLI (installed via project dependencies)
 
@@ -445,7 +445,7 @@ yarn nx run coam:test   # Run tests
      ```bash
      node --version
      ```
-   - Should output: v20.11.0
+   - Should output: v24.11.1
 
 2. **Yarn issues**
 
@@ -468,7 +468,7 @@ yarn nx run coam:test   # Run tests
 
 ## Additional Resources
 
-- [Node.js Documentation](https://nodejs.org/docs/v20.11.0/api/)
+- [Node.js Documentation](https://nodejs.org/docs/v24.11.1/api/)
 - [Yarn Documentation](https://yarnpkg.com/getting-started)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Nx Documentation](https://nx.dev/getting-started/intro)

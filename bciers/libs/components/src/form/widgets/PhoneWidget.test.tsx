@@ -66,7 +66,7 @@ describe("RJSF PhoneWidget", () => {
     );
     const phoneField = screen.getByLabelText(phoneRequiredLabel);
     await userEvent.type(phoneField, "+1-250-555-BUGS");
-    expect(phoneField).toHaveValue("1 250 555");
+    expect(phoneField).toHaveValue("250 555");
   });
 
   it("should display the Canadian flag by default", async () => {

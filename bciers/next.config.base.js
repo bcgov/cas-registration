@@ -10,6 +10,7 @@ const baseConfig = {
       bodySizeLimit: "25mb",
     },
   },
+  transpilePackages: ["mui-tel-input"],
   modularizeImports: {
     "@mui/icons-material": {
       transform: "@mui/icons-material/{{member}}",
