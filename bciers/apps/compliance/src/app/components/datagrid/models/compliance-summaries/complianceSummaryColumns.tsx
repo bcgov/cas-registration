@@ -33,7 +33,7 @@ const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
     },
     {
       field: "excess_emissions",
-      headerName: "Excess Emission",
+      headerName: "Excess Emission as of invoice date",
       width: getColumnWidth(180, 150),
       valueFormatter: (params) => `${params.value} tCO2e`,
     },
