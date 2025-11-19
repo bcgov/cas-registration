@@ -8,7 +8,7 @@ const baseConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: "25mb",
-    }
+    },
   },
   transpilePackages: ["mui-tel-input"],
   modularizeImports: {
