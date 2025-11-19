@@ -8,7 +8,7 @@ from reporting.models.report_product import ReportProduct
 from reporting.schema.generic import Message
 from reporting.schema.report_product import ProductionDataOut
 from reporting.service.report_product_service import ReportProductService
-from service.error_service import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 
 from ..router import router
@@ -22,7 +22,7 @@ from ..router import router
     exclude_none=True,
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_production_data(request: HttpRequest, version_id: int, facility_id: UUID) -> Tuple[Literal[200], dict]:
+def get_production_form_data(request: HttpRequest, version_id: int, facility_id: UUID) -> Tuple[Literal[200], dict]:
 
     report_products = (
         ReportProduct.objects.filter(

@@ -12,9 +12,7 @@ from registration.utils import generate_useful_error
 # Docs: https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
 # Filtering is case sensitive matching the filter expression anywhere inside the tag.
 api = NinjaAPI(
-    title="BCIERS API",
-    docs=Swagger(settings={"filter": True, "operationsSorter": "method", "tagsSorter": "alpha"}),
-    version='1.0.0',
+    title="BCIERS API", docs=Swagger(settings={"filter": True, "operationsSorter": "method", "tagsSorter": "alpha"})
 )
 
 
