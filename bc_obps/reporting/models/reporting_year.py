@@ -18,6 +18,11 @@ class ReportingYear(BaseModel):
     report_due_date = models.DateTimeField(
         blank=False, null=False, db_comment="Due date for the annual report for that reporting year, UTC-based"
     )
+    report_open_date = models.DateTimeField(
+        blank=True,
+        null=True,
+        db_comment="Date when reporting opens for that reporting year, defaults to March 1 of the year after the reporting year, UTC-based",
+    )
 
     description = models.CharField(max_length=10000, db_comment="Description for the reporting year")
 

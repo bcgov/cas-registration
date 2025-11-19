@@ -5,10 +5,17 @@ import { createReport } from "@reporting/src/app/utils/createReport";
 import { createReportVersion } from "@reporting/src/app/utils/createReportVersion";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import Button from "@mui/material/Button";
-import { BC_GOV_LINKS_COLOR } from "@bciers/styles";
+import {
+  BC_GOV_LINKS_COLOR,
+  BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
+} from "@bciers/styles";
 import { ReportOperationStatus } from "@bciers/utils/src/enums";
 
-const ActionCell = (params: GridRenderCellParams) => {
+interface ActionCellProps extends GridRenderCellParams {
+  isReportingOpen?: boolean;
+}
+
+const ActionCell: React.FC<ActionCellProps> = (params) => {
   const reportId = params?.row?.report_id;
   let reportVersionId = params?.row?.report_version_id;
   const reportStatus = params?.row?.report_status;
@@ -16,6 +23,8 @@ const ActionCell = (params: GridRenderCellParams) => {
   const operationId = params.row.operation_id;
   const [responseError, setResponseError] = React.useState<string | null>(null);
   const [hasClicked, setHasClicked] = React.useState<boolean>(false);
+
+  const isReportingOpen = params.isReportingOpen ?? true; // Default to open if not provided
 
   // Create a new report
   const handleStartReport = async (reportingYear: number): Promise<string> => {
@@ -84,6 +93,21 @@ const ActionCell = (params: GridRenderCellParams) => {
       buttonText = "View Details";
       buttonAction = async () => router.push(`${reportVersionId}/submitted`);
     }
+  }
+
+  // Show "Available Soon" if reporting is not open and no report version exists
+  if (!isReportingOpen && !reportVersionId) {
+    return (
+      <div
+        style={{
+          whiteSpace: "normal",
+          fontSize: "16px",
+          color: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
+        }}
+      >
+        Available Soon
+      </div>
+    );
   }
 
   return (

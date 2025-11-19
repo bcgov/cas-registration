@@ -22,7 +22,7 @@ describe("operationColumns function", () => {
   });
 
   it("returns an array of column definitions", () => {
-    const columns: GridColDef[] = operationColumns();
+    const columns: GridColDef[] = operationColumns(true);
 
     expect(columns).toHaveLength(7);
 
@@ -56,7 +56,7 @@ describe("operationColumns function", () => {
   });
 
   it("renders an empty string in UpdatedAtCell if report_status is DRAFT", () => {
-    const columns = operationColumns();
+    const columns = operationColumns(true);
     const params = {
       row: { report_status: ReportOperationStatus.DRAFT },
       value: "2024-03-01T12:00:00Z",
@@ -66,7 +66,7 @@ describe("operationColumns function", () => {
   });
 
   it("renders a formatted timestamp in UpdatedAtCell if report_status is not DRAFT", () => {
-    const columns = operationColumns();
+    const columns = operationColumns(true);
     const params = {
       row: { report_status: "Submitted" },
       value: "2024-03-01T12:00:00Z",
@@ -78,7 +78,7 @@ describe("operationColumns function", () => {
   });
 
   it("renders an empty string in SubmittedByCell if report_status is DRAFT", () => {
-    const columns = operationColumns();
+    const columns = operationColumns(true);
     const params = {
       row: {
         report_status: ReportOperationStatus.DRAFT,
@@ -90,7 +90,7 @@ describe("operationColumns function", () => {
   });
 
   it("renders the submitted_by value in SubmittedByCell if report_status is not DRAFT", () => {
-    const columns = operationColumns();
+    const columns = operationColumns(true);
     const params = {
       row: { report_status: "Submitted", report_submitted_by: "User A" },
     };
@@ -99,7 +99,7 @@ describe("operationColumns function", () => {
   });
 
   it("has a 'start' button in the 'Actions' column when report_version_id is null", () => {
-    const columns: GridColDef[] = operationColumns();
+    const columns: GridColDef[] = operationColumns(true);
 
     const row = {
       id: "2",
@@ -126,7 +126,7 @@ describe("operationColumns function", () => {
   });
 
   it("has a 'continue' button in the 'Actions' column when report_id exists", () => {
-    const columns: GridColDef[] = operationColumns();
+    const columns: GridColDef[] = operationColumns(true);
 
     const row = {
       id: "1",
@@ -155,7 +155,7 @@ describe("operationColumns function", () => {
   it("navigates to the matching report page when clicking the 'Continue' button", async () => {
     const user = userEvent.setup();
 
-    const columns = operationColumns();
+    const columns = operationColumns(true);
 
     const row = {
       id: "1",
@@ -181,5 +181,33 @@ describe("operationColumns function", () => {
     await user.click(screen.getByText("Continue"));
 
     expect(mockPush).toHaveBeenCalledWith(`15/review-operation-information`);
+  });
+
+  it("shows 'Available Soon' when reporting is not open and no report version exists", () => {
+    const columns: GridColDef[] = operationColumns(false);
+
+    const row = {
+      id: "2",
+      bcghg_id: "12111130002",
+      operation_name: "Operation without report",
+      report_id: null,
+      report_version_id: null,
+      report_status: null,
+    };
+
+    const params = {
+      row,
+      value: row.report_version_id,
+    };
+
+    function WrapperComponent() {
+      const cell = columns[5].renderCell;
+
+      return <div>{cell(params)}</div>;
+    }
+
+    render(<WrapperComponent />);
+    expect(screen.getByText("Available Soon")).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });

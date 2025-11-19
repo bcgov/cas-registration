@@ -10,11 +10,13 @@ import { OperationRow } from "./types";
 
 const OperationDataGrid = ({
   initialData,
+  isReportingOpen,
 }: {
   initialData: {
     rows: OperationRow[];
     row_count: number;
   };
+  isReportingOpen?: boolean;
 }) => {
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
@@ -23,7 +25,7 @@ const OperationDataGrid = ({
     [lastFocusedField, setLastFocusedField],
   );
 
-  const columns = operationColumns();
+  const columns = operationColumns(isReportingOpen);
 
   const columnGroup = useMemo(
     () => operationGroupColumns(false, SearchCell),
