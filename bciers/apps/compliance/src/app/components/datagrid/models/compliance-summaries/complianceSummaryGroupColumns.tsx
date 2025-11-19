@@ -13,7 +13,11 @@ const complianceSummaryGroupColumns = (
     createColumnGroup("reporting_year", "Compliance Period", SearchCell),
     // "operator_name" is inserted conditionally
     createColumnGroup("operation_name", "Operation Name", SearchCell),
-    createColumnGroup("excess_emissions", "Excess Emissions", EmptyGroupCell),
+    createColumnGroup(
+      "excess_emissions",
+      "Excess Emissions as of invoice date",
+      EmptyGroupCell,
+    ),
     createColumnGroup(
       "outstanding_balance_tco2e",
       "Outstanding Balance",
