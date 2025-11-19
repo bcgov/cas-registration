@@ -5,8 +5,10 @@ const baseConfig = {
   reactStrictMode: true,
   swcMinify: true,
   output: "standalone",
-  serverActions: {
-    bodySizeLimit: "25mb",
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "25mb",
+    }
   },
   transpilePackages: ["mui-tel-input"],
   modularizeImports: {
