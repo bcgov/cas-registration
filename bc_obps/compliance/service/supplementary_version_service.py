@@ -45,7 +45,7 @@ class SupplementaryScenarioHandler(Protocol):
         ...
 
 
-# Concrete strategy for flagging compliance report versions as requiring manual handling when the previous version also required manual handling. (There are too many variables in how a version can be manually handled in ways that the app is not aware of, so we can't really safely and accurately predict how to handle any subsequent child versions once a version has been closed via actions outside of the app.)
+# Concrete strategy for flagging compliance report versions as requiring manual handling and having 0 excess anad credited emissions when the previous version also required manual handling. (There are too many variables in how a version can be manually handled in ways that the app is not aware of, so we can't really safely and accurately predict how to handle any subsequent child versions once a version has been closed via actions outside of the app.)
 class ManualHandler:
     @staticmethod
     def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:

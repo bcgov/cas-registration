@@ -667,7 +667,6 @@ class TestManualHandler(BaseSupplementaryVersionServiceTest):
         assert result.compliance_report == self.compliance_report
         assert result.report_compliance_summary == self.new_summary
         assert result.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
-        # brianna?
         assert result.excess_emissions_delta_from_previous == Decimal('0')
         assert result.credited_emissions_delta_from_previous == Decimal('0')
         assert result.is_supplementary is True
