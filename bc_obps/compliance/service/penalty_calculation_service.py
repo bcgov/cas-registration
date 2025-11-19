@@ -504,7 +504,7 @@ class PenaltyCalculationService:
                 CompliancePenaltyAccrual.objects.create(
                     compliance_penalty=compliance_penalty_record,
                     date=current_date,
-                    interest_rate=daily_rate.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP),
+                    interest_rate=daily_rate.quantize(Decimal('0.0000000001'), rounding=ROUND_HALF_UP),
                     daily_penalty=penalty_amount.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
                     daily_compounded=monthly_compounding.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
                     accumulated_penalty=accumulated_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),

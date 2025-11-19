@@ -45,8 +45,8 @@ class Migration(migrations.Migration):
             model_name='compliancepenaltyaccrual',
             name='interest_rate',
             field=models.DecimalField(
-                db_comment='The interest rate used for this accrual period',
-                decimal_places=4,
+                db_comment='The interest rate used for this accrual period as per the Greenhouse Gas Emission Administrative Penalties and Appeals Regulation (https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/248_2015#section2)',
+                decimal_places=10,
                 default=0.0038,
                 max_digits=10,
             ),
