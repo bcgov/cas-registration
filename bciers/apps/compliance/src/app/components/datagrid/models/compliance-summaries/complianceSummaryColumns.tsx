@@ -25,7 +25,6 @@ const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
       field: "reporting_year",
       headerName: "Compliance Period",
       width: getColumnWidth(150, 130),
-      sortable: false,
     },
     {
       field: "operation_name",
