@@ -436,7 +436,7 @@ class PenaltyCalculationService:
         cls,
         obligation: ComplianceObligation,
         accrual_start_date: date,
-        final_accrual_date: date,
+        final_accrual_date: date | None,
         persist_penalty_data: bool = False,
     ) -> CompliancePenalty | None:
         """
@@ -452,6 +452,9 @@ class PenaltyCalculationService:
         Returns:
             CompliancePenalty when persist_penalty_data is True; otherwise None.
         """
+        if final_accrual_date is None:
+            raise ValueError("final_accrual_date is required for late submission penalty calculation")
+
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
@@ -541,8 +544,7 @@ class PenaltyCalculationService:
 
         # Late submission penalty: Dec 1 (day after Nov 30)
         late_submission_start_date = compliance_deadline + timedelta(days=1)
-
-        late_submission_final_date = PenaltyCalculationService.determine_last_transaction_date(obligation)  # type: ignore[union-attr]
+        late_submission_final_date = PenaltyCalculationService.determine_last_transaction_date(obligation)
 
         # Calculate late submission penalty
         penalty_record = cls._calculate_late_submission_penalty(
