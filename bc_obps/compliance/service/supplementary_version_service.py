@@ -45,6 +45,45 @@ class SupplementaryScenarioHandler(Protocol):
         ...
 
 
+# Concrete strategy for flagging compliance report versions as requiring manual handling and having 0 excess anad credited emissions when the previous version also required manual handling. (There are too many variables in how a version can be manually handled in ways that the app is not aware of, so we can't really safely and accurately predict how to handle any subsequent child versions once a version has been closed via actions outside of the app.)
+class ManualHandler:
+    @staticmethod
+    def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
+        previous_compliance_report_version = ComplianceReportVersion.objects.get(
+            report_compliance_summary=previous_summary
+        )
+        if previous_compliance_report_version.requires_manual_handling:
+            return True
+        return False
+
+    @staticmethod
+    @transaction.atomic()
+    def handle(
+        compliance_report: ComplianceReport,
+        new_summary: ReportComplianceSummary,
+        previous_summary: ReportComplianceSummary,
+        version_count: int,
+    ) -> Optional[ComplianceReportVersion]:
+
+        previous_compliance_version = (
+            SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
+                compliance_report, previous_summary
+            )
+        )
+
+        # Create new version with the manual handling flag set to true
+        compliance_report_version = ComplianceReportVersion.objects.create(
+            compliance_report=compliance_report,
+            report_compliance_summary=new_summary,
+            status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+            is_supplementary=True,
+            previous_version=previous_compliance_version,
+            requires_manual_handling=True,
+        )
+
+        return compliance_report_version
+
+
 # Concrete strategy for superceding compliance report versions when no binding action has occurred (invoice generated / earned credits requested or issued)
 class SupercedeVersionHandler:
     @staticmethod
@@ -976,6 +1015,17 @@ class SupplementaryVersionService:
         new_version_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=report_version.id)
         previous_version_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=previous_version.id)
 
+        # If the previous version was handled manually, run the manual handler & exit
+        if ManualHandler.can_handle(
+            new_summary=new_version_compliance_summary, previous_summary=previous_version_compliance_summary
+        ):
+            return ManualHandler.handle(
+                compliance_report=compliance_report,
+                new_summary=new_version_compliance_summary,
+                previous_summary=previous_version_compliance_summary,
+                version_count=version_count,
+            )
+
         # If the previous version can be superceded, run the supercede handler & exit
         if SupercedeVersionHandler.can_handle(
             new_summary=new_version_compliance_summary, previous_summary=previous_version_compliance_summary
@@ -987,6 +1037,7 @@ class SupplementaryVersionService:
                 version_count=version_count,
             )
             return None
+
         # Find the right handler and delegate
         for handler in self.handlers:
             if handler.can_handle(
