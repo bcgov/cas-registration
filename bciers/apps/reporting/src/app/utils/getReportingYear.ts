@@ -6,6 +6,7 @@ export const getReportingYear = async (): Promise<{
   report_due_date: string;
   reporting_window_end: string;
   report_due_year: number;
+  report_open_date: string;
 }> => {
   const endpoint = "reporting/reporting-year";
   const response = await actionHandler(endpoint, "GET");

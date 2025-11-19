@@ -13,4 +13,5 @@ class ReportingYearOut(ModelSchema):
             'reporting_year',
             'report_due_date',
             'reporting_window_end',
+            'report_open_date',
         ]
