@@ -542,14 +542,13 @@ class PenaltyCalculationService:
         # Late submission penalty: Dec 1 (day after Nov 30)
         late_submission_start_date = compliance_deadline + timedelta(days=1)
 
-        # Get supplementary submission date + 30 days
-        late_submission_final_date = obligation.created_at.date() + timedelta(days=30)  # type: ignore[union-attr]
+        late_submission_final_date = PenaltyCalculationService.determine_last_transaction_date(obligation)  # type: ignore[union-attr]
 
         # Calculate late submission penalty
         penalty_record = cls._calculate_late_submission_penalty(
             obligation=obligation,
             accrual_start_date=late_submission_start_date,
-            final_accrual_date=late_submission_final_date, 
+            final_accrual_date=late_submission_final_date,
             persist_penalty_data=True,
         )
 

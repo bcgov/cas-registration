@@ -423,7 +423,7 @@ class TestPenaltyCalculationService:
 
         PenaltyCalculationService.create_late_submission_penalty(self.obligation)
 
-        expected_payment_deadline = submission_date + timedelta(days=30)
+        expected_payment_date = date(2025, 5, 15)
         expected_start_date = (
             self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
             + timedelta(days=1)
@@ -432,7 +432,7 @@ class TestPenaltyCalculationService:
         mock_calculate.assert_called_once_with(
             obligation=self.obligation,
             accrual_start_date=expected_start_date,
-            final_accrual_date=expected_payment_deadline,
+            final_accrual_date=expected_payment_date,
             persist_penalty_data=True,
         )
 
@@ -533,7 +533,7 @@ class TestPenaltyCalculationService:
         assert penalty_record.accrual_frequency == CompliancePenalty.Frequency.DAILY
         assert penalty_record.compounding_frequency == CompliancePenalty.Frequency.MONTHLY
         assert penalty_record.accrual_start_date == date(2024, 12, 1)
-        assert penalty_record.penalty_amount == Decimal("47845.11")
+        assert penalty_record.penalty_amount == Decimal("46704.72")
         assert penalty_record.compliance_penalty_accruals.count() == (date(2025, 7, 14) - date(2024, 12, 1)).days
 
     @patch(
