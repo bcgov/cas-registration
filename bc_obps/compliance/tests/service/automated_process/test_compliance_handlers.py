@@ -81,6 +81,38 @@ class TestPenaltyPaidHandler:
 
         mock_update_status.assert_not_called()
 
+    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
+    def test_handle_does_not_update_status_if_any_penalty_unpaid(self, mock_update_status):
+        other_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            outstanding_balance=Decimal("100.00"),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            elicensing_invoice=other_invoice,
+            compliance_obligation=self.obligation,
+        )
+
+        self.handler.handle(self.invoice)
+
+        mock_update_status.assert_not_called()
+
+    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
+    def test_handle_updates_status_when_all_penalties_paid_multiple(self, mock_update_status):
+        other_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            outstanding_balance=Decimal("0.00"),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            elicensing_invoice=other_invoice,
+            compliance_obligation=self.obligation,
+        )
+
+        self.handler.handle(self.invoice)
+
+        mock_update_status.assert_called_once_with(self.obligation.pk, ComplianceObligation.PenaltyStatus.PAID)
+
 
 class TestPenaltyAccruingHandler:
     def setup_method(self):

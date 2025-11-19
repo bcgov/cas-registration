@@ -134,6 +134,31 @@ describe("PenaltySummaryReviewComponent", () => {
     );
   });
 
+  it("uses review-interest-summary as back URL when hasLateSubmissionPenalty is true", () => {
+    render(
+      <PenaltySummaryReviewComponent
+        data={mockData}
+        reportingYear={2024}
+        complianceReportVersionId={456}
+        hasLateSubmissionPenalty
+      />,
+    );
+
+    const backButton = screen.getByTestId("back-button");
+    expect(backButton).toBeVisible();
+    expect(backButton).toHaveAttribute(
+      "data-url",
+      "/compliance-administration/compliance-summaries/456/review-interest-summary",
+    );
+
+    const continueButton = screen.getByTestId("continue-button");
+    expect(continueButton).toBeVisible();
+    expect(continueButton).toHaveAttribute(
+      "data-url",
+      "/compliance-administration/compliance-summaries/456/download-payment-penalty-instructions",
+    );
+  });
+
   it("handles invoice generation correctly", async () => {
     const user = userEvent.setup();
 

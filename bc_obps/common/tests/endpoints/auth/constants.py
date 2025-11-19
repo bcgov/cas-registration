@@ -380,6 +380,13 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_late_submission_penalty",
+            "kwargs": {
+                "compliance_report_version_id": MOCK_INT,
+            },
+        },
+        {
+            "method": "get",
             "endpoint_name": "get_penalty_by_compliance_report_version_id",
             "kwargs": {
                 "compliance_report_version_id": MOCK_INT,

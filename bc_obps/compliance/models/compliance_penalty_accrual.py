@@ -18,6 +18,12 @@ class CompliancePenaltyAccrual(TimeStampedModel):
         db_comment="The date of accrual for this record",
     )
 
+    interest_rate = models.DecimalField(
+        decimal_places=10,
+        max_digits=10,
+        db_comment="The interest rate used for this accrual period as per the Greenhouse Gas Emission Administrative Penalties and Appeals Regulation (https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/248_2015#section2)",
+    )
+
     daily_penalty = models.DecimalField(
         decimal_places=2,
         max_digits=20,

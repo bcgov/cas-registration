@@ -14,6 +14,7 @@ export default async function ApplyComplianceUnitsPage({
     penalty_status: penaltyStatus,
     reporting_year: reportingYear,
     outstanding_balance_tco2e: outstandingBalance,
+    has_late_submission_penalty: hasLateSubmissionPenalty,
   } = await getComplianceSummary(complianceReportVersionId);
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
@@ -21,6 +22,7 @@ export default async function ApplyComplianceUnitsPage({
       penaltyStatus,
       reportingYear,
       outstandingBalance,
+      hasLateSubmissionPenalty,
     },
     ActivePage.ApplyComplianceUnits,
   );

@@ -1,8 +1,9 @@
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, Any
 from ninja import ModelSchema, Field, FilterSchema
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from reporting.models.report_operation import ReportOperation
+from compliance.models import CompliancePenalty
 
 # report aliases
 OPERATOR_NAME_ALIAS = "report_compliance_summary.report_version.report_operation.operator_legal_name"
@@ -57,6 +58,20 @@ class ComplianceReportVersionOut(ModelSchema):
     outstanding_balance_equivalent_value: Optional[Decimal] = None
     penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
     requires_manual_handling: Optional[bool] = None
+    has_late_submission_penalty: Optional[bool] = None
+
+    @staticmethod
+    def resolve_has_late_submission_penalty(obj: Any) -> bool:
+        """
+        Check if a late submission penalty exists for this compliance report version.
+        """
+
+        if not hasattr(obj, 'obligation') or not obj.obligation:
+            return False
+
+        return CompliancePenalty.objects.filter(
+            compliance_obligation=obj.obligation, penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION
+        ).exists()
 
     class Meta:
         model = ComplianceReportVersion

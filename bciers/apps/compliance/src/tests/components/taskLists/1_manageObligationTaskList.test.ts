@@ -3,6 +3,7 @@ import {
   generateManageObligationTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 import { generateAutomaticOverduePenaltyTaskList } from "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList";
+import { generateGgeaparInterestTaskList } from "@/compliance/src/app/components/taskLists/ggeaparInterestTaskList";
 import { PenaltyStatus } from "@bciers/utils/src/enums";
 import { screen } from "@testing-library/react";
 
@@ -17,6 +18,21 @@ vi.mock(
         isExpanded: true,
       },
     ]),
+  }),
+);
+
+vi.mock(
+  "@/compliance/src/app/components/taskLists/ggeaparInterestTaskList",
+  () => ({
+    generateGgeaparInterestTaskList: vi
+      .fn()
+      .mockImplementation((id: number, isActive?: boolean) => [
+        {
+          type: "Section",
+          title: "GGEAPAR Interest",
+          isExpanded: Boolean(isActive),
+        },
+      ]),
   }),
 );
 
@@ -66,6 +82,62 @@ describe("generateManageObligationTaskList", () => {
       link: "/compliance-administration/compliance-summaries/123/pay-obligation-track-payments",
       isActive: false,
     });
+  });
+
+  it("does not add GGEAPAR Interest section when hasLateSubmissionPenalty is false", () => {
+    const dataWithoutInterest = {
+      ...mockObligationTasklistData,
+      hasLateSubmissionPenalty: false,
+    };
+
+    const taskList = generateManageObligationTaskList(
+      mockComplianceReportVersionId,
+      dataWithoutInterest,
+    );
+
+    expect(taskList).toHaveLength(1);
+    expect(screen.queryByText("GGEAPAR Interest")).not.toBeInTheDocument();
+    expect(generateGgeaparInterestTaskList).not.toHaveBeenCalled();
+  });
+
+  it("adds GGEAPAR Interest section when hasLateSubmissionPenalty is true (inactive by default)", () => {
+    const dataWithInterest = {
+      ...mockObligationTasklistData,
+      hasLateSubmissionPenalty: true,
+    };
+
+    const taskList = generateManageObligationTaskList(
+      mockComplianceReportVersionId,
+      dataWithInterest,
+    );
+
+    expect(taskList).toHaveLength(2);
+    expect(taskList[1].title).toBe("GGEAPAR Interest");
+    expect(generateGgeaparInterestTaskList).toHaveBeenCalledWith(
+      mockComplianceReportVersionId,
+      false,
+    );
+  });
+
+  it("marks GGEAPAR Interest active when ActivePage.ReviewInterestSummary is selected", () => {
+    const dataWithInterest = {
+      ...mockObligationTasklistData,
+      hasLateSubmissionPenalty: true,
+    };
+
+    const taskList = generateManageObligationTaskList(
+      mockComplianceReportVersionId,
+      dataWithInterest,
+      ActivePage.ReviewInterestSummary,
+    );
+
+    expect(taskList).toHaveLength(2);
+    expect(taskList[1].title).toBe("GGEAPAR Interest");
+    expect(taskList[1].isExpanded).toBe(true);
+    expect(generateGgeaparInterestTaskList).toHaveBeenCalledWith(
+      mockComplianceReportVersionId,
+      true,
+    );
   });
 
   it("generates task list with back link and subsection when in Apply Units page", () => {

@@ -16,14 +16,20 @@ interface Props {
   data: AutomaticOverduePenalty;
   reportingYear: number;
   complianceReportVersionId: number;
+  hasLateSubmissionPenalty?: boolean;
 }
 
 const PenaltySummaryReviewComponent = ({
   data,
   reportingYear,
   complianceReportVersionId,
+  hasLateSubmissionPenalty,
 }: Props) => {
-  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
+  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/${
+    hasLateSubmissionPenalty
+      ? "review-interest-summary"
+      : "pay-obligation-track-payments"
+  }`;
   const saveAndContinueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`;
 
   const [errors, setErrors] = useState<string[]>([]);

@@ -20,6 +20,8 @@ export default async function ComplianceSummaryReviewPage({
   const reportingYear = complianceSummaryReviewPageData.reporting_year;
   const outstandingBalance =
     complianceSummaryReviewPageData.outstanding_balance_tco2e;
+  const hasLateSubmissionPenalty =
+    complianceSummaryReviewPageData.has_late_submission_penalty;
 
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
@@ -27,6 +29,7 @@ export default async function ComplianceSummaryReviewPage({
       penaltyStatus,
       reportingYear,
       outstandingBalance,
+      hasLateSubmissionPenalty,
     },
     ActivePage.ReviewComplianceSummary,
   );

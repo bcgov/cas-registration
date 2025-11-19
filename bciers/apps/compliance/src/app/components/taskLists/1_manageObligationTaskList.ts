@@ -1,5 +1,6 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { generateAutomaticOverduePenaltyTaskList } from "./automaticOverduePenaltyTaskList";
+import { generateGgeaparInterestTaskList } from "./ggeaparInterestTaskList";
 import { PenaltyStatus } from "@bciers/utils/src/enums";
 import { ObligationTasklistData } from "@/compliance/src/app/types";
 
@@ -8,6 +9,7 @@ export enum ActivePage {
   ApplyComplianceUnits = "ApplyComplianceUnits",
   DownloadPaymentObligationInstructions = "DownloadPaymentObligationInstructions",
   PayObligationTrackPayments = "PayObligationTrackPayments",
+  ReviewInterestSummary = "ReviewInterestSummary",
   ReviewPenaltySummary = "ReviewPenaltySummary",
   DownloadPaymentPenaltyInstruction = "DownloadPaymentPenaltyInstruction",
   PayPenaltyTrackPayments = "PayPenaltyTrackPayments",
@@ -38,7 +40,12 @@ export const generateManageObligationTaskList: (
     defaultActiveIndex === undefined
       ? ActivePage.ReviewComplianceSummary
       : defaultActiveIndex;
-  const { reportingYear, outstandingBalance, penaltyStatus } = tasklistData;
+  const {
+    reportingYear,
+    outstandingBalance,
+    penaltyStatus,
+    hasLateSubmissionPenalty,
+  } = tasklistData;
 
   const taskItems = [
     activePage === ActivePage.ApplyComplianceUnits
@@ -95,6 +102,15 @@ export const generateManageObligationTaskList: (
     },
   ];
 
+  let ggeaparInterestSection: TaskListElement[] = [];
+
+  if (hasLateSubmissionPenalty) {
+    ggeaparInterestSection = generateGgeaparInterestTaskList(
+      complianceReportVersionId,
+      activePage === ActivePage.ReviewInterestSummary,
+    );
+  }
+
   let automaticPenaltySection: TaskListElement[] = [];
 
   if (
@@ -108,5 +124,9 @@ export const generateManageObligationTaskList: (
     );
   }
 
-  return [...complianceSection, ...automaticPenaltySection];
+  return [
+    ...complianceSection,
+    ...ggeaparInterestSection,
+    ...automaticPenaltySection,
+  ];
 };
