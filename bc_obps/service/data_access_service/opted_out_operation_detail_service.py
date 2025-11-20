@@ -18,7 +18,9 @@ class OptedOutOperationDataAccessService:
         opted_out_operation_detail = OptedOutOperationDetail.objects.create(
             effective_date=opted_out_operation_detail_data.effective_date
         )
-        opted_in_operation_detail.opted_out_operation = opted_in_operation_detail
+        print(opted_out_operation_detail)
+        print(type(opted_out_operation_detail))
+        opted_in_operation_detail.opted_out_operation = opted_out_operation_detail
         opted_in_operation_detail.save()
 
         return opted_out_operation_detail

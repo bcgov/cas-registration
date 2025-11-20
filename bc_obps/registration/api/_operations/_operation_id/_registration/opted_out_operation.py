@@ -39,6 +39,7 @@ def operation_registration_update_opted_out_operation_detail(
 def operation_registration_create_opted_out_operation_detail(
     request: HttpRequest, operation_id: UUID, payload: OptedOutOperationDetailIn
 ) -> Tuple[Literal[200, 400], OptedOutOperationDetailOut]:
+    print(f"\n\n\n\n\n{payload}\n\n\n")
     return 200, OperationService.create_opted_out_operation_detail(
         get_current_user_guid(request), operation_id, payload
     )
