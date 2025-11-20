@@ -7,6 +7,7 @@ import { Button } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
 import { DARK_GREY_BG_COLOR } from "@bciers/styles";
+import { AlertIcon } from "@bciers/components/icons";
 
 const styles = {
   "& .MuiOutlinedInput-root": {
@@ -27,6 +28,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   const [status, setStatus] = useState<string>("Opted-in");
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [optedOutDate, setOptedOutDate] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const isCasDirector = Boolean(formContext?.isCasDirector);
 
@@ -36,6 +38,18 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   ];
 
   const isDisabled = !isCasDirector || !isEditing;
+
+  function saveOptedOutDetail(
+    operationId: string,
+  ) {
+    const endpoint = `registration/operations/${operationId}/registration/opted-out-operation-detail`;
+    const method = value === undefined ? "POST" : "PUT"
+    const payload = JSON.stringify({ effective_date: optedOutDate})
+
+    return actionHandler(endpoint, method, "", {
+      body: payload
+    })
+  }
 
   // ---------- Handlers ------------------
   const handleRadioSelect = (val) => {
@@ -54,16 +68,22 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
     }
   }
 
-  const handleSave = () => {
-    const endpoint = `registration/operations/${formContext.operationId}/registration/opted-out-operation-detail`;
-    const payload = JSON.stringify({ effective_date: optedOutDate})
-    console.log(value);
-    const method = value === undefined ? "POST" : "PUT"
+  const handleSave = async () => {
 
+    console.log(value);
+    const response = await saveOptedOutDetail(formContext?.operationId)
+    
+    if (response?.error) {
+      setError(response?.error)
+      return;
+    }
     setIsEditing(false);
-    return actionHandler(endpoint, method, "", {
-      body: payload
-    })
+    setError(undefined);
+  }
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setError(undefined);
   }
   // ---------------------------------------
 
@@ -89,7 +109,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
           <div className="flex gap-2 pt-2">
             {isEditing ? (
               <>
-                <Button onClick={() => setIsEditing(false)}>Cancel</Button>
+                <Button onClick={handleCancel}>Cancel</Button>
                 <Button onClick={handleSave}>Save</Button>
               </>
             ) : (
@@ -102,6 +122,17 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
           (Opt-out details appear here when the operation is opted-out.)
         </div>
       )}
+    {error && (
+      <div
+        className="flex items-center w-full text-red-600 ml-0"
+        role="alert"
+      >
+        <div className="hidden md:block mr-3">
+          <AlertIcon />
+        </div>
+        <span>{error}</span>
+      </div>
+    )}
     </div>
   );
 };
