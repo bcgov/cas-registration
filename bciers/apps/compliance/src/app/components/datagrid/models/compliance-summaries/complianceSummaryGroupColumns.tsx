@@ -15,7 +15,7 @@ const complianceSummaryGroupColumns = (
     createColumnGroup("operation_name", "Operation Name", SearchCell),
     createColumnGroup(
       "excess_emissions",
-      "Excess Emissions as of invoice date",
+      "Excess Emissions as of Invoice Date",
       EmptyGroupCell,
     ),
     createColumnGroup(
