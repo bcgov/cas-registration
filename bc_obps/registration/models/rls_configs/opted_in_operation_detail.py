@@ -12,7 +12,7 @@ class Rls:
             RlsOperations.UPDATE,
             RlsOperations.DELETE,
         ],
-        RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
+        RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE, RlsOperations.DELETE],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
