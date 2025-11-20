@@ -32,6 +32,13 @@ def get_current_user_operator_has_registered_operation(request: HttpRequest) -> 
             return 200, {"has_registered_operation": False}
         # Use the service to check if the operator has a registered operation
         has_registered_operation = OperationDataAccessService.check_current_users_registered_operation(operator.id)
+        if not has_registered_operation:
+            has_any_current_operation = OperationDataAccessService.check_current_users_any_current_operation(
+                operator.id
+            )
+            had_operation = OperationDataAccessService.check_current_users_past_operations(operator.id)
+            # If the user has no current associated operation but DID previously have an operation, they are considered registered
+            return 200, {"has_registered_operation": had_operation and not has_any_current_operation}
         return 200, {"has_registered_operation": has_registered_operation}
     except ObjectDoesNotExist:
         # Handle the case where no user_operator is found for the user

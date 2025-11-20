@@ -45,6 +45,12 @@ def validate_user_reporting_access(request: HttpRequest, report_version_id: Opti
     )
 
     if not has_reporting_registered_operation:
+        has_any_current_operation = OperationDataAccessService.check_current_users_any_current_operation(operator.id)
+        had_past_operation = OperationDataAccessService.check_current_users_past_operations(operator.id)
+        # If the user has no current associated operation but DID used to have an operation, they are considered registered
+        if not has_any_current_operation and had_past_operation:
+            return {"status": UserStatusEnum.REGISTERED.value}
+
         return {"status": UserStatusEnum.NOT_REGISTERED.value}
 
     # If no report_version_id provided, return just the registration status

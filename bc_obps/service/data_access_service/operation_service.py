@@ -3,6 +3,7 @@ from uuid import UUID
 from registration.models import Operation, User, RegulatedProduct, Activity
 from ninja.types import DictStrAny
 from django.db.models import QuerySet
+from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from service.user_operator_service import UserOperatorService
 
 
@@ -59,6 +60,20 @@ class OperationDataAccessService:
             .exclude(registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
             .exists()
         )
+
+    @classmethod
+    def check_current_users_any_current_operation(cls, operator_id: UUID) -> bool:
+        """
+        Returns True if the userOperator's operator has at least one operation in any status.
+        """
+        return Operation.objects.filter(operator_id=operator_id).exists()
+
+    @classmethod
+    def check_current_users_past_operations(cls, operator_id: UUID) -> bool:
+        """
+        Returns True if the userOperator's operator has had at least one operation in their timeline.
+        """
+        return OperationDesignatedOperatorTimeline.objects.filter(operator_id=operator_id).exists()
 
     @classmethod
     def create_operation(
