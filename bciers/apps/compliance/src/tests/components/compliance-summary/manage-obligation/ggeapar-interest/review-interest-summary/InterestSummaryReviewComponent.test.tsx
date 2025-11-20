@@ -66,4 +66,19 @@ describe("InterestSummaryReviewComponent", () => {
       "/compliance-administration/compliance-summaries/123/pay-obligation-track-payments",
     );
   });
+
+  it("disables the Generate Interest Invoice button when penalty is accruing", () => {
+    render(
+      <InterestSummaryReviewComponent
+        data={mockData}
+        penaltyStatus="ACCRUING"
+        complianceReportVersionId={123}
+      />,
+    );
+
+    const generateInterestInvoiceButton = screen.getByRole("button", {
+      name: "Generate Interest Invoice",
+    });
+    expect(generateInterestInvoiceButton).toBeDisabled();
+  });
 });

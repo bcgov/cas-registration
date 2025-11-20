@@ -257,9 +257,12 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
     // penalty gate
     it.each(
       moPaths.flatMap((path) =>
-        [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].map(
-          (status) => [path, status] as const,
-        ),
+        [
+          PenaltyStatus.NOT_PAID,
+          PenaltyStatus.PAID,
+          PenaltyStatus.ACCRUING,
+          PenaltyStatus.DUE,
+        ].map((status) => [path, status] as const),
       ),
     )("allows route '%s' when penalty_status = '%s'", async (path, status) => {
       mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);

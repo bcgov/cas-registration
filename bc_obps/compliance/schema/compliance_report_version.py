@@ -58,7 +58,7 @@ class ComplianceReportVersionOut(ModelSchema):
     outstanding_balance_equivalent_value: Optional[Decimal] = None
     penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
     requires_manual_handling: Optional[bool] = None
-    has_late_submission_penalty: Optional[bool] = None
+    has_late_submission_penalty: bool
 
     @staticmethod
     def resolve_has_late_submission_penalty(obj: Any) -> bool:

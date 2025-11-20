@@ -158,7 +158,7 @@ export interface ComplianceSummary {
   emissions_attributable_for_compliance?: string;
   emissions_limit?: string;
   requires_manual_handling?: boolean;
-  has_late_submission_penalty?: boolean;
+  has_late_submission_penalty: boolean;
 }
 
 export interface ComplianceAppliedUnitsData {

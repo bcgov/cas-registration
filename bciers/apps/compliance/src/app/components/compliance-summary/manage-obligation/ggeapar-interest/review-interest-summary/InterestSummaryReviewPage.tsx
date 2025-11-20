@@ -43,6 +43,7 @@ export default async function InterestSummaryReviewPage({
     >
       <InterestSummaryReviewComponent
         data={interestData}
+        penaltyStatus={penaltyStatus}
         complianceReportVersionId={complianceReportVersionId}
       />
     </CompliancePageLayout>

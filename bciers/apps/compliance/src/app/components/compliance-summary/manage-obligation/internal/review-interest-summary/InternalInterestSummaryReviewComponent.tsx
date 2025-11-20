@@ -1,6 +1,6 @@
 "use client";
 
-import FormBase from "@bciers/components/form/FormBase";
+import { FormBase } from "@bciers/components/form";
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import {
   interestSummaryReviewSchema,
@@ -11,17 +11,31 @@ import { PenaltyStatus } from "@bciers/utils/src/enums";
 
 interface Props {
   data: LateSubmissionPenalty;
-  penaltyStatus?: string;
   complianceReportVersionId: number;
+  penaltyStatus?: string;
+  outstandingBalance?: number;
 }
 
-const InterestSummaryReviewComponent = ({
+const InternalInterestSummaryReviewComponent = ({
   data,
-  penaltyStatus,
   complianceReportVersionId,
-}: Props) => {
-  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
-  const isAccruing = penaltyStatus === PenaltyStatus.ACCRUING;
+  penaltyStatus,
+  outstandingBalance,
+}: Readonly<Props>) => {
+  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`;
+
+  const showPenalty =
+    Number(outstandingBalance) === 0 &&
+    [
+      PenaltyStatus.NOT_PAID,
+      PenaltyStatus.PAID,
+      PenaltyStatus.ACCRUING,
+      PenaltyStatus.DUE,
+    ].includes(penaltyStatus as PenaltyStatus);
+
+  const continueUrl = showPenalty
+    ? `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`
+    : undefined;
 
   return (
     <FormBase
@@ -32,14 +46,11 @@ const InterestSummaryReviewComponent = ({
     >
       <ComplianceStepButtons
         backUrl={backUrl}
-        middleButtonDisabled={isAccruing}
-        middleButtonText="Generate Interest Invoice"
-        // TODO: Implement PDF invoice generation
-        onMiddleButtonClick={() => {}}
+        continueUrl={continueUrl}
         className="mt-44"
       />
     </FormBase>
   );
 };
 
-export default InterestSummaryReviewComponent;
+export default InternalInterestSummaryReviewComponent;

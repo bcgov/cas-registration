@@ -9,12 +9,13 @@ import {
 import { AutomaticOverduePenalty } from "@/compliance/src/app/types";
 import { useState } from "react";
 import generateInvoice from "@/compliance/src/app/utils/generateInvoice";
-import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
+import { ComplianceInvoiceTypes, PenaltyStatus } from "@bciers/utils/src/enums";
 import FormAlerts from "@bciers/components/form/FormAlerts";
 
 interface Props {
   data: AutomaticOverduePenalty;
   reportingYear: number;
+  penaltyStatus?: string;
   complianceReportVersionId: number;
   hasLateSubmissionPenalty?: boolean;
 }
@@ -22,6 +23,7 @@ interface Props {
 const PenaltySummaryReviewComponent = ({
   data,
   reportingYear,
+  penaltyStatus,
   complianceReportVersionId,
   hasLateSubmissionPenalty,
 }: Props) => {
@@ -35,8 +37,10 @@ const PenaltySummaryReviewComponent = ({
   const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingPenaltyInvoice, setIsGeneratingPenaltyInvoice] =
     useState(false);
+  const isAccruing = penaltyStatus === PenaltyStatus.ACCRUING;
 
   const handleGeneratePenaltyInvoice = async () => {
+    if (isAccruing || isGeneratingPenaltyInvoice) return;
     setErrors([]);
     setIsGeneratingPenaltyInvoice(true);
 
@@ -64,7 +68,7 @@ const PenaltySummaryReviewComponent = ({
         <ComplianceStepButtons
           backUrl={backUrl}
           continueUrl={saveAndContinueUrl}
-          middleButtonDisabled={isGeneratingPenaltyInvoice}
+          middleButtonDisabled={isGeneratingPenaltyInvoice || isAccruing}
           middleButtonText={
             isGeneratingPenaltyInvoice
               ? "Generating Penalty Invoice..."

@@ -9,6 +9,7 @@ from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.dataclass import ObligationData
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
+from compliance.service.penalty_calculation_service import PenaltyCalculationService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -70,6 +71,9 @@ class ComplianceObligationService:
             fee_date=date.today(),
             penalty_status=ComplianceObligation.PenaltyStatus.NONE,
         )
+
+        # Create initial empty penalties for this obligation
+        PenaltyCalculationService.create_initial_penalties_for_obligation(obligation)
 
         logger.info(f"Created compliance obligation {obligation.id} for report version {compliance_report_version_id}")
         from compliance.tasks import retryable_send_notice_of_obligation_email

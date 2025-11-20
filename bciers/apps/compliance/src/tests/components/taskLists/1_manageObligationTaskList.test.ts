@@ -197,34 +197,31 @@ describe("generateManageObligationTaskList", () => {
     expect(generateAutomaticOverduePenaltyTaskList).not.toHaveBeenCalled();
   });
 
-  it.each(["ACCRUING", "NONE"])(
-    "does not add automatic penalty section when there is no confirmed penalty",
-    (penaltyStatus) => {
-      const dataWithZeroBalance = {
-        reportingYear: 2024,
-        outstandingBalance: 0,
-        penaltyStatus: penaltyStatus,
-      };
+  it("does not add automatic penalty section when there is no confirmed penalty", () => {
+    const dataWithZeroBalance = {
+      reportingYear: 2024,
+      outstandingBalance: 0,
+      penaltyStatus: "NONE",
+    };
 
-      // Generate task list
-      const taskList = generateManageObligationTaskList(
-        mockComplianceReportVersionId,
-        dataWithZeroBalance,
-      );
+    // Generate task list
+    const taskList = generateManageObligationTaskList(
+      mockComplianceReportVersionId,
+      dataWithZeroBalance,
+    );
 
-      // Verify that the automatic penalty section was not added
-      expect(taskList).toHaveLength(1);
-      expect(taskList[0].title).toBe("2024 Compliance Summary");
-      expect(
-        screen.queryByText("Automatic Overdue Penalty"),
-      ).not.toBeInTheDocument();
+    // Verify that the automatic penalty section was not added
+    expect(taskList).toHaveLength(1);
+    expect(taskList[0].title).toBe("2024 Compliance Summary");
+    expect(
+      screen.queryByText("Automatic Overdue Penalty"),
+    ).not.toBeInTheDocument();
 
-      // Verify that generateAutomaticOverduePenaltyTaskList was notcalled
-      expect(generateAutomaticOverduePenaltyTaskList).not.toHaveBeenCalled();
-    },
-  );
-  it.each(["NOT PAID", "PAID"])(
-    "adds automatic penalty section when there is a paid or unpaid penalty and outstanding balance is 0",
+    // Verify that generateAutomaticOverduePenaltyTaskList was not called
+    expect(generateAutomaticOverduePenaltyTaskList).not.toHaveBeenCalled();
+  });
+  it.each(["NOT PAID", "PAID", "ACCRUING", "DUE"])(
+    "adds automatic penalty section when there is a confirmed penalty and outstanding balance is 0",
     (penaltyStatus) => {
       const dataWithZeroBalance = {
         reportingYear: 2024,
