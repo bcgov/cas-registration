@@ -84,10 +84,14 @@ const InternalManualHandlingComponent = ({
 
   return (
     <FormBase
-      schema={internalManualHandlingSchema(isCasAnalyst)}
+      schema={internalManualHandlingSchema({
+        isCasAnalyst,
+        handlingType: initialFormData.handling_type, // or handlingType
+        directorDecision: formData?.director_decision, // current radio selection
+      })}
       uiSchema={internalManualHandlingUiSchema(
-        formData?.analyst_submitted_date,
-        formData?.analyst_submitted_by,
+        initialFormData.handling_type, // handlingType
+        formData?.director_decision, // directorDecision
       )}
       formData={formData}
       onChange={handleFormChange}

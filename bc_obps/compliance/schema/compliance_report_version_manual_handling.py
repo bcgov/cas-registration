@@ -1,6 +1,5 @@
-from typing import Literal, Optional
-
-from ninja import ModelSchema, Field, Schema
+from typing import Optional, Literal
+from ninja import ModelSchema, Schema, Field
 
 from compliance.models.compliance_report_version_manual_handling import (
     ComplianceReportVersionManualHandling,
@@ -12,6 +11,7 @@ class ComplianceReportVersionManualHandlingOut(ModelSchema):
     Schema for manual handling data associated with a compliance report version.
     """
 
+    # Project related users as full names instead of nested user objects
     analyst_submitted_by: Optional[str] = Field(
         None, alias="analyst_submitted_by.get_full_name"
     )
@@ -22,11 +22,17 @@ class ComplianceReportVersionManualHandlingOut(ModelSchema):
     class Meta:
         model = ComplianceReportVersionManualHandling
         fields = [
+            "handling_type",
+            "status",
+            "context",
             "analyst_comment",
             "analyst_submitted_date",
             "director_comment",
             "director_decision",
             "director_decision_date",
+            # add these if you want them in the payload as well:
+            # "id",
+            # "compliance_report_version",
         ]
 
 

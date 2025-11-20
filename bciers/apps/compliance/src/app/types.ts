@@ -245,10 +245,20 @@ export type ElicensingInvoice = {
   last_refreshed: string;
 };
 
-export interface ManualHandlingData {
-  analyst_comment?: string;
-  analyst_submitted_date: string;
-  analyst_submitted_by: string;
-  director_comment?: string;
-  director_decision?: string;
-}
+export type ManualHandlingData = {
+  // from model
+  handling_type: "obligation" | "earned_credits";
+  status: "action_required" | "issue_resolved";
+  context: string;
+
+  // analyst fields
+  analyst_comment?: string | null;
+  analyst_submitted_date?: string | null;
+  analyst_submitted_by?: string | null;
+
+  // director fields
+  director_comment?: string | null;
+  director_decision?: "pending_manual_handling" | "issue_resolved";
+  director_decision_date?: string | null;
+  director_decision_by?: string | null;
+};
