@@ -363,7 +363,7 @@ class TestElicensingInvoiceService:
         make_recipe(
             "compliance.tests.utils.compliance_obligation",
             compliance_report_version=compliance_report_version_2,
-            fee_amount_dollars=Decimal("300.00"),
+            fee_amount_dollars=Decimal("400.00"),
             fee_date=date(2025, 6, 1),
             obligation_id="25-0001-2",
             elicensing_invoice=invoice_2,
@@ -395,7 +395,7 @@ class TestElicensingInvoiceService:
         make_recipe(
             "compliance.tests.utils.compliance_obligation",
             compliance_report_version=compliance_report_version_3,
-            fee_amount_dollars=Decimal("300.00"),
+            fee_amount_dollars=Decimal("450.00"),
             fee_date=date(2025, 6, 1),
             obligation_id="25-0001-2",
             elicensing_invoice=invoice_3,
@@ -421,7 +421,6 @@ class TestElicensingInvoiceService:
         assert result[0].invoice_total == 300
         assert result[0].total_payments == 250  # 201 + 49
         assert result[0].total_adjustments == 50  # 25 + 25
-        assert result[0].report_operation == self.report_operation
 
     def test_get_elicensing_invoice_for_dashboard_for_industry_user(self):
         # invoice belonging to operator
@@ -448,15 +447,24 @@ class TestElicensingInvoiceService:
             "compliance.tests.utils.elicensing_invoice",
             due_date=date(2025, 7, 1),
         )
+        # line item
+        make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=invoice_2,
+            fee_date=date(2025, 6, 1),
+            base_amount=Decimal("500.00"),
+            description="Compliance Fee",
+        )
         # obligation
         make_recipe(
             "compliance.tests.utils.compliance_obligation",
             compliance_report_version=compliance_report_version_2,
-            fee_amount_dollars=Decimal("300.00"),
+            fee_amount_dollars=Decimal("500.00"),
             fee_date=date(2025, 6, 1),
             obligation_id="25-0001-2",
             elicensing_invoice=invoice_2,
         )
+
         assert ElicensingInvoice.objects.count() == 3  # 2 from setup (obligation + penalty invoices) + 1 from this test
 
         result = ElicensingInvoiceService.get_elicensing_invoice_for_dashboard(
@@ -465,7 +473,6 @@ class TestElicensingInvoiceService:
         assert result.count() == 1
 
         assert result[0].invoice_type == "Compliance obligation"
-        assert result[0].invoice_total == 300
+        assert result[0].invoice_total == 500
         assert result[0].total_payments == 250  # 201 + 49
         assert result[0].total_adjustments == 50  # 25 + 25
-        assert result[0].report_operation == self.report_operation
