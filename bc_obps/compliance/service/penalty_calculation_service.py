@@ -384,15 +384,6 @@ class PenaltyCalculationService:
             compliance_report_version_id=obligation.compliance_report_version_id
         )
 
-        # Determine if late submission penalty applies
-        compliance_period = obligation.compliance_report_version.compliance_report.compliance_period
-        compliance_deadline = compliance_period.compliance_deadline
-        submission_date = obligation.created_at.date()  # type: ignore[union-attr]
-        has_late_submission = submission_date > compliance_deadline
-
-        if has_late_submission:
-            cls.create_late_submission_penalty(obligation)
-
         penalty_accrual_start_date = obligation.elicensing_invoice.due_date + timedelta(days=1)  # type: ignore[union-attr]
 
         final_transaction_date = PenaltyCalculationService.determine_last_transaction_date(obligation)
@@ -545,11 +536,6 @@ class PenaltyCalculationService:
         Returns:
             CompliancePenalty Record
         """
-
-        # Refresh the elicensing data
-        ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
-            compliance_report_version_id=obligation.compliance_report_version_id
-        )
 
         # Get the compliance deadline (Nov 30 of the year following the compliance period)
         compliance_period = obligation.compliance_report_version.compliance_report.compliance_period
