@@ -50,6 +50,4 @@ class MockTimeMiddleware:
 
     def set_database_time_for_transaction(self, datetime_iso_str: str) -> None:
         with connection.cursor() as cursor:
-            cursor.execute("select mocks.set_mocked_time_in_transaction(%s);", [datetime_iso_str])
-            cursor.execute("select now();")
-            print("~~~~~~~~~~~~~~~~~~~~~~~~~", cursor.fetchall())
+            cursor.execute("select mocks.set_mocked_time_in_transaction(%s::timestamptz);", [datetime_iso_str])
