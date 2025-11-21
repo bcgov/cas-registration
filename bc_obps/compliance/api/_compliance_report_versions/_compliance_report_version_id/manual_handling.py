@@ -37,9 +37,9 @@ def get_compliance_report_version_manual_handling(
     response={200: ComplianceReportVersionManualHandlingOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description=(
-        "Update manual handling data for a compliance report version.\n\n"
-        "- CAS Analyst: may update `analyst_comment`.\n"
-        "- CAS Director: may update `director_comment` and `director_decision`."
+        "Update manual handling data for a compliance report version."
+        "- CAS Analyst: may update `analyst_comment`."
+        "- CAS Director: may update `director_decision`."
     ),
     auth=approved_authorized_roles_compliance_report_version_composite_auth,
 )

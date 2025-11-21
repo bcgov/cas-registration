@@ -9,10 +9,8 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/manualHandling/internal/internalManualHandlingSchema";
 
 import { ManualHandlingData } from "@/compliance/src/app/types";
-import { ManualHandlingDecison } from "@bciers/utils/src/enums";
 
 import { IChangeEvent } from "@rjsf/core";
-import { useRouter } from "next/navigation";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
 import { actionHandler } from "@bciers/actions";
@@ -29,71 +27,55 @@ const InternalManualHandlingComponent = ({
   complianceReportVersionId,
 }: Readonly<Props>) => {
   const userRole = useSessionRole();
-  const router = useRouter();
-  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`;
-  const continueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-by-director`;
-
   const isCasAnalyst = userRole === FrontEndRoles.CAS_ANALYST;
+  const isCasDirector = userRole === FrontEndRoles.CAS_DIRECTOR;
+
   const [errors, setErrors] = useState<string[] | undefined>();
   const [formData, setFormState] = useState<ManualHandlingData | undefined>(
     initialFormData,
   );
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Consider the suggestion final only if a prior submission exists
-  // const hasPriorAnalystSubmission = Boolean(
-  //   initialFormData?.analyst_submitted_date ||
-  //     initialFormData?.analyst_submitted_by,
-  // );
-  // const isFinalDirectorDecision =
-  //   hasPriorAnalystSubmission &&
-  //   (formData?. === "Ready to approve" ||
-  //     formData?.analyst_suggestion === "Requiring supplementary report");
+  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`;
 
   const handleFormChange = (e: IChangeEvent<ManualHandlingData>) => {
     setFormState(e.formData);
   };
 
   const handleSubmit = async () => {
-    // If the user is not a CAS Analyst OR a final suggestion exists, navigate forward
-    // if (!isCasAnalyst || isFinalAnalystSuggestion) {
-    //   router.push(continueUrl);
-    //   return;
-    // }
     if (isSubmitting) {
       return;
     }
     setIsSubmitting(true);
-    // only send the data that is needed for the update by the analyst
     const payload = {
-      // analyst_suggestion: formData?.analyst_suggestion,
       analyst_comment: formData?.analyst_comment,
+      director_decision: formData?.director_decision,
     };
-    const endpoint = `compliance/compliance-report-versions/${complianceReportVersionId}/earned-credits`;
-    const pathToRevalidate = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-by-director`;
-    const response = await actionHandler(endpoint, "PUT", pathToRevalidate, {
+    const endpoint = `compliance/compliance-report-versions/${complianceReportVersionId}/manual-handling`;
+    const response = await actionHandler(endpoint, "PUT", "", {
       body: JSON.stringify(payload),
     });
-    if (response && !response.error) {
-      router.push(continueUrl);
-    } else {
+
+    if (response?.error) {
       setErrors([response.error || "Failed to submit request"]);
       setIsSubmitting(false);
+    } else {
+      setErrors(undefined);
     }
   };
 
   return (
     <FormBase
-      schema={internalManualHandlingSchema({
-        isCasAnalyst,
-        handlingType: initialFormData.handling_type, // or handlingType
-        directorDecision: formData?.director_decision, // current radio selection
-      })}
+      schema={internalManualHandlingSchema}
       uiSchema={internalManualHandlingUiSchema(
-        initialFormData.handling_type, // handlingType
-        formData?.director_decision, // directorDecision
+        initialFormData?.analyst_submitted_date || "",
+        initialFormData?.analyst_submitted_by || "",
       )}
-      formData={formData}
+      formData={{
+        ...initialFormData,
+        is_cas_analyst: isCasAnalyst,
+        is_cas_director: isCasDirector,
+      }}
       onChange={handleFormChange}
       onSubmit={handleSubmit}
       className="w-full min-h-[62vh] flex flex-col justify-between"
@@ -104,7 +86,7 @@ const InternalManualHandlingComponent = ({
         submitButtonDisabled={isSubmitting}
         className="mt-8"
       >
-        <SubmitButton isSubmitting={isSubmitting}>Continue</SubmitButton>
+        <SubmitButton isSubmitting={isSubmitting}>Submit</SubmitButton>
       </ComplianceStepButtons>
     </FormBase>
   );

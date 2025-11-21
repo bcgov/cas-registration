@@ -30,9 +30,6 @@ class ComplianceReportVersionManualHandlingOut(ModelSchema):
             "director_comment",
             "director_decision",
             "director_decision_date",
-            # add these if you want them in the payload as well:
-            # "id",
-            # "compliance_report_version",
         ]
 
 

@@ -35,27 +35,6 @@ class ComplianceManualHandlingService:
         )
 
     @classmethod
-    def _get_crv(cls, compliance_report_version_id: int) -> ComplianceReportVersion:
-        try:
-            return ComplianceReportVersion.objects.get(id=compliance_report_version_id)
-        except ComplianceReportVersion.DoesNotExist:
-            raise UserError("No compliance report version found for the given ID")
-
-    @classmethod
-    def _ensure_manual_handling_record(
-        cls, crv: ComplianceReportVersion
-    ) -> ComplianceReportVersionManualHandling:
-        """
-        Ensure there is a manual handling record for the given CRV.
-        """
-        record= ComplianceReportVersionManualHandling.objects.get_or_create(
-            compliance_report_version=crv
-        )
-
-        return record
-
-
-    @classmethod
     def update_manual_handling(
         cls, compliance_report_version_id: int, payload: Dict, user: User
     ) -> ComplianceReportVersionManualHandling:
@@ -67,13 +46,14 @@ class ComplianceManualHandlingService:
             * Cannot change director_decision
 
         - CAS Director:
-            * May update `director_comment`
-            * Must provide a valid `director_decision`
+            * May update a valid `director_decision`
 
         Other users are not allowed to update manual handling data.
         """
-        crv = cls._get_crv(compliance_report_version_id)
-        record = cls._ensure_manual_handling_record(crv)
+        crv = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
+        record = ComplianceReportVersionManualHandling.objects.get(
+            compliance_report_version=crv
+        )
         update_payload = ManualHandlingUpdate(**payload)
 
         if user.is_cas_analyst():
@@ -125,7 +105,6 @@ class ComplianceManualHandlingService:
 
         Business rules:
         - Director must provide a valid director_decision
-        - Director may also update director_comment
         """
         if update_payload.director_decision is None:
             raise UserError("Director decision is required to update manual handling")
@@ -136,7 +115,4 @@ class ComplianceManualHandlingService:
 
         record.director_decision = update_payload.director_decision
 
-        if update_payload.director_comment is not None:
-            record.director_comment = update_payload.director_comment
-
-        record.save(update_fields=["director_decision", "director_comment"])
+        record.save(update_fields=["director_decision"])

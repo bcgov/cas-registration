@@ -47,13 +47,20 @@ class SupplementaryScenarioHandler(Protocol):
 # Concrete strategy for flagging compliance report versions as requiring manual handling and for assigning 0 excess and credited emissions when the previous version also required manual handling. (There are too many variables in how a version can be manually handled in ways that the app is not aware of, so we can't really safely and accurately predict how to handle any subsequent child versions once a version has been closed via actions outside of the app.)
 class ManualHandler:
     @staticmethod
-    def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
-        previous_compliance_report_version = ComplianceReportVersion.objects.get(
+    def can_handle(
+        new_summary: ReportComplianceSummary,
+        previous_summary: ReportComplianceSummary,
+    ) -> bool:
+        """
+        This handler applies when the *previous* compliance report version
+        already has a manual-handling record, ComplianceReportVersionManualHandling.
+        """
+        previous_crv = ComplianceReportVersion.objects.get(
             report_compliance_summary=previous_summary
         )
-        if previous_compliance_report_version.requires_manual_handling:
-            return True
-        return False
+
+        # Use the existence of the one-to-one manual_handling_record instead of a boolean flag
+        return hasattr(previous_crv, "manual_handling_record")
 
     @staticmethod
     @transaction.atomic()
@@ -63,6 +70,9 @@ class ManualHandler:
         previous_summary: ReportComplianceSummary,
         version_count: int,
     ) -> Optional[ComplianceReportVersion]:
+        """
+        Create a new supplementary NO_OBLIG / earned-credits version.
+        """
 
         previous_compliance_version = (
             SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
@@ -70,17 +80,17 @@ class ManualHandler:
             )
         )
 
-        # Create new version with the manual handling flag set to true
+        # Create new version; no requires_manual_handling flag needed anymore
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
             status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
             is_supplementary=True,
             previous_version=previous_compliance_version,
-            requires_manual_handling=True,
         )
 
         return compliance_report_version
+
 
 
 # Concrete strategy for superceding compliance report versions when no binding action has occurred (invoice generated / earned credits requested or issued)

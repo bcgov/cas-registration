@@ -141,6 +141,18 @@ export enum ComplianceInvoiceTypes {
 }
 
 export enum ManualHandlingDecison {
-  PENDING_MANUAL_HANDLING = "Pending manual handling",
-  ISSUE_RESOLVED = "Issue has been resolved",
+  PENDING_MANUAL_HANDLING = "pending_manual_handling",
+  ISSUE_RESOLVED = "issue_resolved",
+}
+export const MANUAL_HANDLING_DECISION_LABELS: Record<
+  ManualHandlingDecison,
+  string
+> = {
+  [ManualHandlingDecison.PENDING_MANUAL_HANDLING]: "Pending manual handling",
+  [ManualHandlingDecison.ISSUE_RESOLVED]: "Issue has been resolved",
+};
+
+export enum ManualHandlingTypes {
+  OBLIGATION = "obligation",
+  EARNED_CREDITS = "earned_credits",
 }
