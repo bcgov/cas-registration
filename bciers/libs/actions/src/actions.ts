@@ -82,8 +82,12 @@ export async function actionHandler(
         });
 
         // Passing mock time cookie through if present
+        // Except in production
         const clientCookies = cookies();
-        if (clientCookies.has("mock-time")) {
+        if (
+          process.env.NODE_ENV !== "production" &&
+          clientCookies.has("mock-time")
+        ) {
           requestHeaders.append(
             "Cookie",
             `mock-time=${cookies().get("mock-time")?.value}`,
