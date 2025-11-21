@@ -22,6 +22,10 @@ export interface OptedInOperationFormData {
 }
 
 export type OperationInformationFormData = Dict;
+export interface OptedOutOperationFormData {
+  effective_date: string;
+}
+
 
 export interface OperationRepresentativeFormData {
   operation_representatives?: number[];

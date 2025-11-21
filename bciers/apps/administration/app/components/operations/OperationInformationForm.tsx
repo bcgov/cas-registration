@@ -209,7 +209,7 @@ const OperationInformationForm = ({
           isRegulatedOperation: regulatedOperationPurposes.includes(
             confirmedFormData.registration_purpose as RegistrationPurposes,
           ),
-          isOptedOut: formData.registration_purpose?.match(RegistrationPurposes.OPTED_IN_OPERATION.valueOf()),
+          isOptedOut: formData.opted_out_operation !== undefined ,
           isCasDirector: role === FrontEndRoles.CAS_DIRECTOR,
           isEio: confirmedFormData.registration_purpose?.match(
             RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION.valueOf(),
