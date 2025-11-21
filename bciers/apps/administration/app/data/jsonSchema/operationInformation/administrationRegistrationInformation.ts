@@ -189,7 +189,7 @@ export const createAdministrationRegistrationInformationSchema =
                 activities: {
                   ...reportingActivitiesSchema,
                 },
-                opted_out_operation_detail: {
+                opted_out_operation: {
                   title: "Opt-in status:",
                   type: "string",
                 },
@@ -312,7 +312,7 @@ export const registrationInformationUiSchema: UiSchema = {
   date_of_first_shipment: {
     "ui:widget": "RadioWidget",
   },
-  opted_out_operation_detail: {
+  opted_out_operation: {
     "ui:widget": "OptedOutOperationWidget",
     "ui:options": {
       wide: true

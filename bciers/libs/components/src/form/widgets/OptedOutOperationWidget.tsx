@@ -24,10 +24,12 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   formContext,
   name,
 }) => {
-  const isOptedOut = formContext?.isOptedOut;
-  const [status, setStatus] = useState<string>("Opted-in");
+  const [status, setStatus] = useState<string>(formContext?.isOptedOut ? "Opted-out" : "Opted-in");
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [optedOutDate, setOptedOutDate] = useState<string | undefined>(undefined);
+  // savedEffectiveDate reflects the value stored in the database
+  const [savedEffectiveDate, setSavedEffectiveDate] = useState<string | undefined>(value?.effective_date);
+  // pendingEffectiveDate reflects the value that is rendered in the UI
+  const [pendingEffectiveDate, setPendingEffectiveDate] = useState<string | undefined>(value?.effective_date);
   const [error, setError] = useState<string | undefined>(undefined);
 
   const isCasDirector = Boolean(formContext?.isCasDirector);
@@ -43,10 +45,10 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
     operationId: string,
   ) {
     const endpoint = `registration/operations/${operationId}/registration/opted-out-operation-detail`;
-    const method = value === undefined ? "POST" : "PUT"
-    const payload = JSON.stringify({ effective_date: optedOutDate})
 
-    return actionHandler(endpoint, method, "", {
+    const payload = JSON.stringify({ effective_date: pendingEffectiveDate})
+
+    return actionHandler(endpoint, "POST", "", {
       body: payload
     })
   }
@@ -54,7 +56,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   // ---------- Handlers ------------------
   const handleRadioSelect = (val) => {
     if (!isEditing || isDisabled) return;
-    setOptedOutDate(val);
+    setPendingEffectiveDate(val);
   }
 
   const handleToggle = () => {
@@ -69,19 +71,20 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   }
 
   const handleSave = async () => {
-
-    console.log(value);
     const response = await saveOptedOutDetail(formContext?.operationId)
     
     if (response?.error) {
       setError(response?.error)
       return;
     }
+    setSavedEffectiveDate(response.effective_date)
+    setPendingEffectiveDate(response.effective_date)
     setIsEditing(false);
     setError(undefined);
   }
 
   const handleCancel = () => {
+    setPendingEffectiveDate(savedEffectiveDate)
     setIsEditing(false);
     setError(undefined);
   }
@@ -90,17 +93,17 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   return (
     <div className="space-y-3 p-4">
       <div className="flex items-center justify-between">
-        <button type="button" className={`px-3 py-1 rounded-full text-sm ${isOptedOut ? "bg-blue-500 text-white" : "bg-gray-200"}`} onClick={isCasDirector ? handleToggle : undefined}>
+        <button type="button" className={`px-3 py-1 rounded-full text-sm ${status === "Opted-in" ? "bg-blue-500 text-white" : "bg-gray-200"}`} onClick={isCasDirector ? handleToggle : undefined}>
           {status}
         </button>
       </div>
-      {isOptedOut && !isDisabled ? (
+      {status === "Opted-out" ? (
       <>
         <div className="text-sm font-semibold">Operation is opted out as of:</div>
         <div className="flex flex-col gap-2">
           {optOutDateOptions.map((opt) => (
             <label key={opt.value} className="flex items-center gap-2">
-              <input type="radio" checked={optedOutDate === opt.value} onChange={() => handleRadioSelect(opt.value)} disabled={!isEditing || isDisabled} />
+              <input type="radio" checked={pendingEffectiveDate === opt.value} onChange={() => handleRadioSelect(opt.value)} disabled={!isEditing || isDisabled} />
                 <span>{opt.label}</span>
             </label>
           ))}

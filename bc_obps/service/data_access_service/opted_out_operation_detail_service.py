@@ -6,37 +6,41 @@ from registration.utils import update_model_instance
 
 class OptedOutOperationDataAccessService:
     @classmethod
-    def create_opted_out_operation_detail(
+    def upsert_opted_out_operation_detail(
         cls,
         opted_in_operation_detail_id: int,
         opted_out_operation_detail_data: OptedOutOperationDetailIn,
     ) -> OptedOutOperationDetail:
         """
-        Creates a new OptedOutOperationDetail instance.
+        Creates a new OptedOutOperationDetail instance or updates the existing instance for an OptedInOperationDetail record.
         """
         opted_in_operation_detail = OptedInOperationDetail.objects.get(id=opted_in_operation_detail_id)
-        opted_out_operation_detail = OptedOutOperationDetail.objects.create(
-            effective_date=opted_out_operation_detail_data.effective_date
-        )
-        print(opted_out_operation_detail)
-        print(type(opted_out_operation_detail))
-        opted_in_operation_detail.opted_out_operation = opted_out_operation_detail
-        opted_in_operation_detail.save()
 
+        print(f"\n\n\n opted_in_operation {str(opted_in_operation_detail)}")
+        print(str(opted_in_operation_detail.opted_out_operation))
+
+        # if there already exists an opted_out_operation_detail record for the opted-in operation,
+        # update the existing record
+        if opted_in_operation_detail.opted_out_operation:
+            print("updating")
+            print(opted_out_operation_detail_data)
+            print(opted_out_operation_detail_data.dict().keys())
+            print(opted_out_operation_detail_data.dict())
+            opted_out_operation_detail = update_model_instance(
+                opted_in_operation_detail.opted_out_operation,
+                opted_out_operation_detail_data.dict().keys(),
+                opted_out_operation_detail_data.dict()
+            )
+            opted_out_operation_detail.save()
+
+        # otherwise an opted_out_operation_detail record doesn't exist, so create it
+        # and associate it with the opted_in_operation_detail
+        else:
+            print("\n\n\n\nCREATING")
+            opted_out_operation_detail = OptedOutOperationDetail.objects.create(
+                effective_date=opted_out_operation_detail_data.effective_date
+            )
+            opted_in_operation_detail.opted_out_operation = opted_out_operation_detail
+            opted_in_operation_detail.save(update_fields=["opted_out_operation"])
         return opted_out_operation_detail
-
-    @classmethod
-    def update_opted_out_operation_detail(
-        cls, opted_out_operation_detail_id: int, opted_out_operation_detail_data: OptedOutOperationDetailIn
-    ) -> OptedOutOperationDetail:
-        """
-        Updates an existing OptedOutOperationDetail instance.
-        """
-        opted_out_operation_detail = OptedOutOperationDetail.objects.get(id=opted_out_operation_detail_id)
-        updated_opted_out_operation_detail_instance = update_model_instance(
-            opted_out_operation_detail,
-            opted_out_operation_detail_data.dict().keys(),
-            opted_out_operation_detail_data.dict(),
-        )
-        updated_opted_out_operation_detail_instance.save()
-        return updated_opted_out_operation_detail_instance
+    

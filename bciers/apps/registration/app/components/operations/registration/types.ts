@@ -21,6 +21,10 @@ export interface OptedInOperationFormData {
   meets_notification_to_director_on_criteria_change: boolean | null;
 }
 
+export interface OptedOutOperationFormData {
+  effective_date: string;
+}
+
 export interface OperationInformationFormData {}
 
 export interface OperationRepresentativeFormData {

@@ -1,4 +1,4 @@
-import { OptedInOperationFormData } from "@/registration/app/components/operations/registration/types";
+import { OptedInOperationFormData, OptedOutOperationFormData } from "@/registration/app/components/operations/registration/types";
 import { UUID } from "crypto";
 
 export interface OperationRow {
@@ -50,6 +50,7 @@ export interface OperationInformationFormData {
   regulated_products?: number[];
   forcasted_emmisions?: string;
   opted_in_operation?: OptedInOperationFormData;
+  opted_out_operation?: OptedOutOperationFormData;
 }
 
 export interface OperationInformationPartialFormData {
@@ -76,4 +77,5 @@ export interface OperationInformationPartialFormData {
   status?: string;
   new_entrant_application?: string;
   date_of_first_shipment?: string;
+  opted_out_operation?: OptedOutOperationFormData;
 }
