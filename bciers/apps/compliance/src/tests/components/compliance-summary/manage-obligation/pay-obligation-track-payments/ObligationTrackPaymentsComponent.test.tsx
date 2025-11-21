@@ -73,7 +73,7 @@ describe("ObligationTrackPaymentsComponent", () => {
 
     // Check Equivalent Value label and value
     expect(
-      screen.getByText("Equivalent Value (Does not include interest):"),
+      screen.getByText("Equivalent Value (Not including interest):"),
     ).toBeVisible();
     expect(screen.getByText("$0.00")).toBeVisible();
 

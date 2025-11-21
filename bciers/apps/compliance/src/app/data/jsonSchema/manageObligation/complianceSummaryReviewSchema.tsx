@@ -35,7 +35,7 @@ export const createComplianceSummaryReviewSchema = (
     ),
     outstanding_balance_tco2e: readOnlyStringField("Outstanding Balance:"),
     outstanding_balance_equivalent_value: readOnlyStringField(
-      "Equivalent Value (Does not include interest):",
+      "Equivalent Value (Not including interest):",
     ),
   },
 });

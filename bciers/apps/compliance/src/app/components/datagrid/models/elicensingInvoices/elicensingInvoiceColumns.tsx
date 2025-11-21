@@ -53,7 +53,7 @@ const elicensingInvoiceColumns = (isInternalUser: boolean): GridColDef[] => {
     },
     {
       field: "invoice_interest_balance",
-      headerName: "FAA Interest Balance",
+      headerName: "FAA Interest",
       flex: 1,
       valueFormatter: (params) => formatMonetaryValue(Number(params.value)),
     },

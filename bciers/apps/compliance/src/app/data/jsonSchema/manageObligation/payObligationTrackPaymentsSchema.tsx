@@ -39,7 +39,7 @@ export const createPayObligationTrackPaymentsSchema = (): RJSFSchema => ({
     payment_status_note: readOnlyStringField(),
     outstanding_balance: readOnlyNumberField("Outstanding Balance:"),
     equivalent_value: readOnlyNumberField(
-      "Equivalent Value (Does not include interest):",
+      "Equivalent Value (Not including interest):",
     ),
 
     // Payments Section
