@@ -4,6 +4,7 @@ from registration.utils import update_model_instance
 from registration.models import Operator, User, UserOperator
 from uuid import UUID
 from ninja.types import DictStrAny
+from compliance.models import ComplianceReportVersion
 
 
 class OperatorDataAccessService:
@@ -54,3 +55,7 @@ class OperatorDataAccessService:
         )
         operator.save()
         return operator
+
+    @classmethod
+    def check_operator_has_compliance_reports(cls, operator_id: UUID) -> bool:
+        return ComplianceReportVersion.objects.filter(compliance_report__report__operator_id=operator_id).exists()
