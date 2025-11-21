@@ -164,7 +164,7 @@ def _prepare_obligation_context(obligation: ComplianceObligation) -> Dict:
         "compliance_period": reporting_year,
         "year_due": reporting_year + 1,
         "tonnes_of_co2": f"{ComplianceReportVersionService.calculate_outstanding_balance_tco2e(report_version):,.4f}",
-        "outstanding_balance": f"${obligation.elicensing_invoice.outstanding_balance:,.2f}",  # type: ignore[union-attr]
+        "outstanding_balance": f"${obligation.elicensing_invoice.invoice_fee_balance:,.2f}",  # type: ignore[union-attr]
     }
     return email_context
 
