@@ -24,14 +24,14 @@ class ElicensingInvoice(TimeStampedModel):
     outstanding_balance = models.DecimalField(
         decimal_places=2,
         max_digits=20,
-        db_comment="The outstanding balance for this invoice. invoiceOutstandingBalance in elicensing",
+        db_comment="The outstanding balance for this invoice. invoiceOutstandingBalance in elicensing. This value is the combination of invoice_fee_balance & invoice_interest_balance.",
     )
 
     invoice_fee_balance = models.DecimalField(
         decimal_places=2,
         max_digits=20,
         null=True,
-        db_comment="The balance of fees for this invoice. invoiceFeeBalance in elicensing",
+        db_comment="The balance of fees for this invoice. invoiceFeeBalance in elicensing. This value does not include FAA interest (invoice_interest_balance).",
     )
 
     invoice_interest_balance = models.DecimalField(
