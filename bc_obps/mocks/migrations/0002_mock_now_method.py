@@ -45,6 +45,6 @@ BEGIN;
 
 COMMIT;
 """,
-            reverse_sql="DROP FUNCTION mocks.now();",
+            reverse_sql="drop function mocks.now();",
         ),
     ]

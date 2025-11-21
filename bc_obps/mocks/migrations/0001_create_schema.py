@@ -10,10 +10,10 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL(
             sql="""
-CREATE SCHEMA IF NOT EXISTS mocks;
-GRANT USAGE ON SCHEMA mocks TO industry_user, cas_director, cas_admin, cas_analyst, cas_pending, cas_view_only;
-COMMENT ON SCHEMA mocks IS 'A schema for mock functions that can be used for either tests or local/dev/test environments';
+create schema if not exists mocks;
+grant usage on schema mocks to industry_user, cas_director, cas_admin, cas_analyst, cas_pending, cas_view_only;
+comment on schema mocks is 'A schema for mock functions that can be used for either tests or local/dev/test environments';
 """,
-            reverse_sql="DROP SCHEMA mocks CASCADE;",
+            reverse_sql="drop schema mocks cascade;",
         ),
     ]
