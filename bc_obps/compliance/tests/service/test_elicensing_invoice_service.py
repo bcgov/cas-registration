@@ -418,10 +418,10 @@ class TestElicensingInvoiceService:
         ]
         # spot-checking the details
         assert result[0].invoice_type == "Compliance obligation"
-        result[0].invoice_total = 300
-        result[0].total_payments = 250  # 201 + 49
-        result[0].total_adjustments = 50  # 25 + 25
-        result[0].report_operation = self.report_operation
+        assert result[0].invoice_total == 300
+        assert result[0].total_payments == 250  # 201 + 49
+        assert result[0].total_adjustments == 50  # 25 + 25
+        assert result[0].report_operation == self.report_operation
 
     def test_get_elicensing_invoice_for_dashboard_for_industry_user(self):
         # invoice belonging to operator
@@ -465,7 +465,7 @@ class TestElicensingInvoiceService:
         assert result.count() == 1
 
         assert result[0].invoice_type == "Compliance obligation"
-        result[0].invoice_total = 300
-        result[0].total_payments = 250  # 201 + 49
-        result[0].total_adjustments = 50  # 25 + 25
-        result[0].report_operation = self.report_operation
+        assert result[0].invoice_total == 300
+        assert result[0].total_payments == 250  # 201 + 49
+        assert result[0].total_adjustments == 50  # 25 + 25
+        assert result[0].report_operation == self.report_operation

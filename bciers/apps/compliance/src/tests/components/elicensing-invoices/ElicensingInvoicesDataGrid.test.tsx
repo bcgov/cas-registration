@@ -132,7 +132,6 @@ describe("ElicensingInvoicesDataGrid component", () => {
 
     // Verify data displays
     const summaryRows = screen.getAllByRole("row");
-    console.log("summaryrow", summaryRows);
     expect(summaryRows.length).toBe(4); // header + search cell + 2 data rows
   });
 });

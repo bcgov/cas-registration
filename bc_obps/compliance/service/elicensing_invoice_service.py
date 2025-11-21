@@ -416,7 +416,7 @@ class ElicensingInvoiceService:
         filters: ElicensingInvoiceFilterSchema = Query(...),
     ) -> QuerySet[ElicensingInvoice]:
         """
-        Fetches all compliance invoices for the user's operations for the current reporting year.
+        Fetches all compliance invoices for the user's operations.
         """
         invoice_total_subquery = (
             ElicensingLineItem.objects.filter(
