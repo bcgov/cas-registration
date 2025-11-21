@@ -80,13 +80,14 @@ BCCR_API_URL = os.getenv("BCCR_API_URL")
 BCCR_CLIENT_ID = os.getenv("BCCR_CLIENT_ID")
 BCCR_CLIENT_SECRET = os.getenv("BCCR_CLIENT_SECRET")
 
-LOCAL_APPS = ["registration", "reporting", "common", "rls", "task_scheduler", "compliance"]
+NON_PROD_ENVIRONMENT = ENVIRONMENT in ["CI", "local", "dev", "test"] or CI == "true"
 
-NON_PROD_APPS: list[str] = []
+LOCAL_APPS = ["registration", "reporting", "common", "rls", "task_scheduler", "compliance"]
+NON_PROD_APPS: list[str] = ["mocks"]
 
 RLS_GRANT_APPS = ["registration", "reporting", "compliance"]
 
-if ENVIRONMENT in ["CI", "local", "dev", "test"] or CI == "true":
+if NON_PROD_ENVIRONMENT:
     LOCAL_APPS += NON_PROD_APPS
 
 # Apps that should not be included in production migrations
@@ -110,7 +111,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
-    "common.middleware.mock_time_middleware.MockTimeMiddleware",
+    *(["mocks.middleware.mock_time_middleware.MockTimeMiddleware"] if NON_PROD_ENVIRONMENT else []),
     "common.middleware.kubernetes_health_check.KubernetesHealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
