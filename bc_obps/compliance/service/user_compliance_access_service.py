@@ -3,7 +3,7 @@ from typing import Optional
 from uuid import UUID
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from service.data_access_service.user_service import UserDataAccessService
-from service.data_access_service.operation_service import OperationDataAccessService
+from service.data_access_service.operator_service import OperatorDataAccessService
 from compliance.models import ComplianceReportVersion
 
 
@@ -36,8 +36,8 @@ class UserComplianceAccessService:
         # Get the operator associated with the current user
         operator = UserDataAccessService.get_operator_by_user(user_guid)
 
-        # Check if the operator has a registered regulated operation
-        if not OperationDataAccessService.check_current_users_registered_regulated_operation(operator.id):
+        # Check if the operator has any compliance reports associated with it
+        if not OperatorDataAccessService.check_operator_has_compliance_reports(operator.id):
             return UserStatusEnum.INVALID.value
 
         # If a compliance report version ID is provided, check if it belongs to this operator
