@@ -93,7 +93,9 @@ export default async function RootLayout({
                   <SessionTimeoutHandler />
                   {children}
                 </Main>
-                <Footer />
+                <Footer
+                  showMockTimePicker={process.env.NODE_ENV !== "production"}
+                />
               </ThemeProvider>
             </NextAppDirEmotionCacheProvider>
           </SessionRoleContextProvider>
