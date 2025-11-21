@@ -88,30 +88,200 @@ class TestCompliancePenaltyRls(BaseTestCase):
             'compliance.tests.utils.compliance_penalty', compliance_obligation=new_operator_compliance_obligation
         )
 
+        # current (new operator owns the obligation)
         def select_function(cursor):
             CompliancePenalty.objects.get(id=new_operator_compliance_penalty.id)
 
         def forbidden_select_function(cursor):
             CompliancePenalty.objects.get(id=old_operator_compliance_penalty.id)
+
+        def insert_function(cursor):
+            cursor.execute(
+                '''
+                    INSERT INTO "erc"."compliance_penalty" (
+                        compliance_obligation_id,
+                        penalty_type,
+                        status,
+                        penalty_amount,
+                        accrual_frequency,
+                        compounding_frequency
+                    ) VALUES (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+                    )
+                ''',
+                (
+                    new_operator_compliance_obligation.id,
+                    CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+                    CompliancePenalty.Status.NONE,
+                    0,
+                    CompliancePenalty.Frequency.DAILY,
+                    CompliancePenalty.Frequency.DAILY,
+                ),
+            )
+
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                '''
+                    INSERT INTO "erc"."compliance_penalty" (
+                        compliance_obligation_id,
+                        penalty_type,
+                        status,
+                        penalty_amount,
+                        accrual_frequency,
+                        compounding_frequency
+                    ) VALUES (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+                    )
+                ''',
+                (
+                    old_operator_compliance_obligation.id,
+                    CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+                    CompliancePenalty.Status.NONE,
+                    0,
+                    CompliancePenalty.Frequency.DAILY,
+                    CompliancePenalty.Frequency.DAILY,
+                ),
+            )
+
+        def update_function(cursor):
+            cursor.execute(
+                '''
+                    UPDATE "erc"."compliance_penalty"
+                    SET status = %s
+                    WHERE id = %s
+                ''',
+                (CompliancePenalty.Status.PAID, new_operator_compliance_penalty.id),
+            )
+            return cursor.rowcount
+
+        def forbidden_update_function(cursor):
+            cursor.execute(
+                '''
+                    UPDATE "erc"."compliance_penalty"
+                    SET status = %s
+                    WHERE id = %s
+                ''',
+                (CompliancePenalty.Status.PAID, old_operator_compliance_penalty.id),
+            )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             CompliancePenalty,
             new_user_operator.user,
             select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
             forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
         )
 
+        # previous (old operator owned the obligation)
         def select_function(cursor):
             CompliancePenalty.objects.get(id=old_operator_compliance_penalty.id)
 
         def forbidden_select_function(cursor):
             CompliancePenalty.objects.get(id=new_operator_compliance_penalty.id)
 
+        def insert_function(cursor):
+            cursor.execute(
+                '''
+                    INSERT INTO "erc"."compliance_penalty" (
+                        compliance_obligation_id,
+                        penalty_type,
+                        status,
+                        penalty_amount,
+                        accrual_frequency,
+                        compounding_frequency
+                    ) VALUES (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+                    )
+                ''',
+                (
+                    old_operator_compliance_obligation.id,
+                    CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+                    CompliancePenalty.Status.NONE,
+                    0,
+                    CompliancePenalty.Frequency.DAILY,
+                    CompliancePenalty.Frequency.DAILY,
+                ),
+            )
+
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                '''
+                    INSERT INTO "erc"."compliance_penalty" (
+                        compliance_obligation_id,
+                        penalty_type,
+                        status,
+                        penalty_amount,
+                        accrual_frequency,
+                        compounding_frequency
+                    ) VALUES (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+                    )
+                ''',
+                (
+                    new_operator_compliance_obligation.id,
+                    CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+                    CompliancePenalty.Status.NONE,
+                    0,
+                    CompliancePenalty.Frequency.DAILY,
+                    CompliancePenalty.Frequency.DAILY,
+                ),
+            )
+
+        def update_function(cursor):
+            cursor.execute(
+                '''
+                    UPDATE "erc"."compliance_penalty"
+                    SET status = %s
+                    WHERE id = %s
+                ''',
+                (CompliancePenalty.Status.PAID, old_operator_compliance_penalty.id),
+            )
+            return cursor.rowcount
+
+        def forbidden_update_function(cursor):
+            cursor.execute(
+                '''
+                    UPDATE "erc"."compliance_penalty"
+                    SET status = %s
+                    WHERE id = %s
+                ''',
+                (CompliancePenalty.Status.PAID, new_operator_compliance_penalty.id),
+            )
+            return cursor.rowcount
+
         assert_policies_for_industry_user(
             CompliancePenalty,
             old_user_operator.user,
             select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
             forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
         )
 
     def test_compliance_penalty_rls_cas_users(self):
