@@ -11,6 +11,8 @@ vi.unmock("@sentry/nextjs");
 vi.mock("next/headers", () => ({
   cookies: vi.fn(() => ({
     toString: vi.fn(() => "cookie"),
+    get: vi.fn(),
+    has: vi.fn().mockReturnValue(false),
   })),
 }));
 
