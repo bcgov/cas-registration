@@ -28,6 +28,19 @@ BACKEND_CHART_TAG = os.getenv("BACKEND_CHART_TAG")
 
 default_args = {**default_dag_args, "start_date": TWO_DAYS_AGO}
 
+DAG_DOC = """
+DAG to test the database and backend migrations. This DAG will uninstall the helm charts after the tests are complete, but **if the tests fail, the charts will remain installed**.
+
+The _time_delay_postgres_ (8 minutes) and _time_delay_backend_ (150 seconds) tasks are used to give the pods time to start up before initiating checks.
+
+The following parameters are available:
+
+- **destination_namespace**: The namespace to deploy the test charts into. This will ONLY work if the environment matches this Airflow instance.
+- **source_namespace**: The namespace to use as the source of backups. Generally, this should be _'-prod'_.
+- **backend_chart_tag**: The built image tag to pull within the backend chart (not the chart tag).
+- **helm_options**: Helm install options, shouldn't need to be changed.
+"""
+
 
 @dag(
     dag_id=TEST_MIGRATIONS_DAG_NAME,
@@ -35,6 +48,7 @@ default_args = {**default_dag_args, "start_date": TWO_DAYS_AGO}
     schedule=None,
     catchup=False,
     is_paused_upon_creation=False,
+    doc_md=DAG_DOC,
 )
 def test_migrations(
     destination_namespace: str = BCIERS_NAMESPACE,
@@ -72,6 +86,7 @@ def test_migrations(
     time_delay_postgres = TimeDeltaSensor(
         task_id="wait_time_before_postgres_initial_ready_check",
         delta=timedelta(minutes=8),
+        doc_md="""Waits for 8 minutes before checking if the postgres pod is ready.""",
     )
 
     wait_for_postgres_restore = trigger_k8s_cronjob_with_params.override(task_id="wait_for_postgres_restore")(
@@ -107,6 +122,7 @@ def test_migrations(
     time_delay_backend = TimeDeltaSensor(
         task_id="wait_time_before_backend_initial_ready_check",
         delta=timedelta(seconds=150),
+        doc_md="""Waits for 150 seconds (based on the initial ready check time set in the backend) before checking if the backend pod is ready.""",
     )
 
     wait_for_backend = trigger_k8s_cronjob_with_params.override(task_id="wait_for_backend")(
