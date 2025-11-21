@@ -16,11 +16,15 @@ const links = footerLinks.map((link, index) => (
   </Link>
 ));
 
-const Footer = () => (
+const Footer: React.FC<{ showMockTimePicker: boolean }> = ({
+  showMockTimePicker,
+}) => (
   <footer className="relative w-full">
-    <div className={`flex w-64`}>
-      <MockTimePicker />
-    </div>
+    {showMockTimePicker && (
+      <div className={`flex w-64`}>
+        <MockTimePicker />
+      </div>
+    )}
     <div className="bg-bc-primary-blue relative left-1/2 transform -translate-x-1/2 w-screen max-w-none">
       <div className="max-w-page mx-auto padding-page h-fit text-lg flex align-start flex-col sm:flex-row">
         {links}
