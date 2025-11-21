@@ -75,14 +75,25 @@ export async function actionHandler(
           endpoint = endpoint.replace(`/${userGuid}`, ""); // if there's no userGuid, this replaces slashes
         }
         // Add user_guid to Django API Authorization header
+        const requestHeaders = new Headers({
+          Authorization: JSON.stringify({
+            user_guid: userGuid,
+          }),
+        });
+
+        // Passing mock time cookie through if present
+        const clientCookies = cookies();
+        if (clientCookies.has("mock-time")) {
+          requestHeaders.append(
+            "Cookie",
+            `mock-time=${cookies().get("mock-time")?.value}`,
+          );
+        }
+
         const defaultOptions: RequestInit = {
           cache: "no-store", // Default cache option
           method,
-          headers: new Headers({
-            Authorization: JSON.stringify({
-              user_guid: userGuid,
-            }),
-          }),
+          headers: requestHeaders,
         };
 
         const mergedOptions: RequestInit = {

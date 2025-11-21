@@ -1,5 +1,7 @@
-import Link from "@mui/material/Link";
+"use client";
 
+import Link from "@mui/material/Link";
+import MockTimePicker from "../mocks/MockTimePicker";
 import footerLinks from "@bciers/data/footer.json";
 
 const links = footerLinks.map((link, index) => (
@@ -16,6 +18,9 @@ const links = footerLinks.map((link, index) => (
 
 const Footer = () => (
   <footer className="relative w-full">
+    <div className={`flex w-64`}>
+      <MockTimePicker />
+    </div>
     <div className="bg-bc-primary-blue relative left-1/2 transform -translate-x-1/2 w-screen max-w-none">
       <div className="max-w-page mx-auto padding-page h-fit text-lg flex align-start flex-col sm:flex-row">
         {links}
