@@ -177,7 +177,7 @@ export const createAdministrationRegistrationInformationSchema =
                 activities: {
                   ...reportingActivitiesSchema,
                 },
-                opted_out_operation_detail: {
+                opted_out_operation: {
                   title: "Opt-in status:",
                   type: "string",
                 },

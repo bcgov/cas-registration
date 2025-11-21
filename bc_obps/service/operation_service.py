@@ -146,27 +146,14 @@ class OperationService:
 
     @classmethod
     @transaction.atomic()
-    def create_opted_out_operation_detail(
+    def create_or_update_opted_out_operation_detail(
         cls, user_guid: UUID, operation_id: UUID, payload: OptedOutOperationDetailIn
     ) -> OptedOutOperationDetail:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
         if not operation.opted_in_operation:
             raise UserError("An operation can only opt-out if it has registered as opted-in.")
-        return OptedOutOperationDataAccessService.create_opted_out_operation_detail(
+        return OptedOutOperationDataAccessService.upsert_opted_out_operation_detail(
             operation.opted_in_operation.id, payload
-        )
-
-    @classmethod
-    @transaction.atomic()
-    def update_opted_out_operation_detail(
-        cls, user_guid: UUID, operation_id: UUID, payload: OptedOutOperationDetailIn
-    ) -> OptedOutOperationDetail:
-        operation = OperationService.get_if_authorized(user_guid, operation_id)
-        opted_in_detail = operation.opted_in_operation
-        if opted_in_detail is not None and opted_in_detail.opted_out_operation is None:
-            raise UserError("This operation has no opted-out record.")
-        return OptedOutOperationDataAccessService.update_opted_out_operation_detail(
-            opted_in_detail.opted_out_operation.id, payload
         )
 
     @classmethod
