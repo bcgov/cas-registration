@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "@mui/material/Link";
 import MockTimePicker from "../mocks/MockTimePicker";
 import footerLinks from "@bciers/data/footer.json";
