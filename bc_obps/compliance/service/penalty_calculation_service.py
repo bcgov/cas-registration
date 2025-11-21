@@ -171,7 +171,10 @@ class PenaltyCalculationService:
 
     @staticmethod
     def create_penalty_invoice(
-        obligation: ComplianceObligation, total_penalty: Decimal, final_accrual_date: date
+        obligation: ComplianceObligation,
+        total_penalty: Decimal,
+        final_accrual_date: date,
+        penalty_type: str = "Automatic Overdue Penalty",
     ) -> ElicensingInvoice:
         """
         Create a fee and invoice for the penalty in elicensing
@@ -195,7 +198,7 @@ class PenaltyCalculationService:
             "businessAreaCode": "OBPS",
             "feeGUID": str(uuid.uuid4()),
             "feeProfileGroupName": "OBPS Administrative Penalty",
-            "feeDescription": "Automatic Overdue Penalty",
+            "feeDescription": penalty_type,
             "feeAmount": float(total_penalty),
             "feeDate": (final_accrual_date + timedelta(days=1)).strftime("%Y-%m-%d"),
         }
@@ -514,8 +517,18 @@ class PenaltyCalculationService:
             current_date += timedelta(days=1)
 
         if persist_penalty_data:
+            penalty_invoice = PenaltyCalculationService.create_penalty_invoice(
+                obligation=obligation,
+                total_penalty=total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+                final_accrual_date=final_accrual_date,
+                penalty_type="Late Submission",
+            )
+            compliance_penalty_record.elicensing_invoice = penalty_invoice
             compliance_penalty_record.penalty_amount = total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
             compliance_penalty_record.save()
+            obligation.penalty_status = ComplianceObligation.PenaltyStatus.NOT_PAID
+            obligation.save(update_fields=['penalty_status'])
+
             return compliance_penalty_record
 
         return None
