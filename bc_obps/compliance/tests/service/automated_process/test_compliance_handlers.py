@@ -1,3 +1,4 @@
+from datetime import datetime
 import pytest
 from decimal import Decimal
 from datetime import timedelta
@@ -11,6 +12,7 @@ from compliance.service.automated_process.compliance_handlers import (
     ComplianceHandlerManager,
 )
 from compliance.models import ComplianceObligation, ComplianceReportVersion
+from common.lib import pgtrigger
 
 pytestmark = pytest.mark.django_db
 
@@ -208,6 +210,10 @@ class TestObligationPaidHandler:
             elicensing_line_item=self.line_item,
             received_date=self.invoice.due_date + timedelta(days=1),
         )
+        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+            self.obligation.elicensing_invoice = self.invoice
+            self.obligation.created_at = timezone.now()
+            self.obligation.save()
         self.handler = ObligationPaidHandler()
 
     def test_can_handle_obligation_not_met_and_paid(self):
@@ -238,26 +244,31 @@ class TestObligationPaidHandler:
         result = self.handler.can_handle(self.invoice)
         assert result is False
 
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_late_submission_penalty')
     @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')
     @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
     def test_handle_updates_compliance_status_and_creates_penalty_when_overdue(
         self,
         mock_retryable_notice_of_obligation_met_email,
         mock_create_penalty,
+        mock_create_late_penalty,
     ):
         self.handler.handle(self.invoice)
+        print(self.obligation.created_at)
 
         self.compliance_report_version.refresh_from_db()
         assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         mock_create_penalty.assert_called_once_with(self.obligation)
         mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
 
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_late_submission_penalty')
     @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')
     @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
     def test_handle_updates_compliance_status_but_does_not_create_penalty_when_not_overdue(
         self,
         mock_retryable_notice_of_obligation_met_email,
         mock_create_penalty,
+        mock_create_late_penalty,
     ):
         self.invoice.due_date = timezone.now().date() + timedelta(days=1)
         self.invoice.save()
@@ -269,12 +280,58 @@ class TestObligationPaidHandler:
         mock_create_penalty.assert_not_called()
         mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
 
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_late_submission_penalty')
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')
+    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    def test_handle_creates_late_submission_penalty_when_obligation_created_past_deadline(
+        self,
+        mock_retryable_notice_of_obligation_met_email,
+        mock_create_penalty,
+        mock_create_late_penalty,
+    ):
+        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+            deadline_date = (
+                self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
+            )
+            deadline_datetime = datetime(deadline_date.year, deadline_date.month, deadline_date.day)
+            self.obligation.created_at = deadline_datetime + timedelta(days=5)
+            self.obligation.save()
+
+        self.handler.handle(self.invoice)
+
+        mock_create_late_penalty.assert_called_once_with(self.obligation)
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_late_submission_penalty')
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')
+    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    def test_handle_does_not_create_late_submission_penalty_when_obligation_created_before_deadline(
+        self,
+        mock_retryable_notice_of_obligation_met_email,
+        mock_create_penalty,
+        mock_create_late_penalty,
+    ):
+        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+            deadline_date = (
+                self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
+            )
+            deadline_datetime = datetime(deadline_date.year, deadline_date.month, deadline_date.day)
+            self.obligation.created_at = deadline_datetime - timedelta(days=5)
+            self.obligation.save()
+
+        self.handler.handle(self.invoice)
+
+        mock_create_late_penalty.assert_not_called()
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_late_submission_penalty')
     @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')
     @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
     def test_handle_updates_compliance_status_but_does_not_create_penalty_when_payment_received_on_time(
         self,
         mock_retryable_notice_of_obligation_met_email,
         mock_create_penalty,
+        mock_create_late_penalty,
     ):
         # This tests when the due date has passed, but the payment was received on time, just not processed until after the invoice due date
         self.payment.received_date = self.invoice.due_date - timedelta(days=1)
@@ -300,6 +357,9 @@ class TestComplianceHandlerManager:
             compliance_report_version=self.compliance_report_version,
             penalty_status=ComplianceObligation.PenaltyStatus.NOT_PAID,
         )
+        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+            self.obligation.created_at = timezone.now()
+            self.obligation.save()
 
     def test_initialization(self):
         assert len(self.manager.handlers) == 3
@@ -358,7 +418,10 @@ class TestComplianceHandlerManager:
         mock_update_status.assert_called_once_with(self.obligation.pk, ComplianceObligation.PenaltyStatus.ACCRUING)
 
     @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')
-    def test_process_compliance_updates_obligation_paid_handler_matches(self, mock_create_penalty):
+    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_late_submission_penalty')
+    def test_process_compliance_updates_obligation_paid_handler_matches(
+        self, mock_create_late_submission_penalty, mock_create_penalty
+    ):
         invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
             compliance_obligation=self.obligation,
@@ -394,3 +457,4 @@ class TestComplianceHandlerManager:
 
         # Verify penalty creation service was called
         mock_create_penalty.assert_called_once_with(self.obligation)
+        mock_create_late_submission_penalty.assert_called_once_with(self.obligation)
