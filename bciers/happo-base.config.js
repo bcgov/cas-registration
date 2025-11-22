@@ -1,29 +1,37 @@
-const { RemoteBrowserTarget } = require("happo.io");
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, ".env") });
 
 const VIEWPORT = "1366x768";
 const MAXHEIGHT = 20000;
 
-module.exports = {
+const baseConfig = {
   apiKey: process.env.HAPPO_API_KEY,
   apiSecret: process.env.HAPPO_API_SECRET,
-  project: "cas-registration",
+  integration: {
+    type: "playwright",
+  },
   targets: {
-    chrome: new RemoteBrowserTarget("chrome", {
+    chrome: {
+      type: "chrome",
       viewport: VIEWPORT,
       maxHeight: MAXHEIGHT,
-    }),
-    firefox: new RemoteBrowserTarget("firefox", {
+    },
+    firefox: {
+      type: "firefox",
       viewport: VIEWPORT,
       maxHeight: MAXHEIGHT,
-    }),
-    safari: new RemoteBrowserTarget("safari", {
+    },
+    safari: {
+      type: "safari",
       viewport: VIEWPORT,
       maxHeight: MAXHEIGHT,
-    }),
-    edge: new RemoteBrowserTarget("edge", {
+    },
+    edge: {
+      type: "edge",
       viewport: VIEWPORT,
       maxHeight: MAXHEIGHT,
-    }),
+    },
   },
 };
+
+module.exports = { baseConfig };

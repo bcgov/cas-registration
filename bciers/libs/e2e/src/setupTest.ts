@@ -1,9 +1,11 @@
 import { test as baseTest, type BrowserContext } from "@playwright/test";
-import { test as happoTest } from "happo-playwright";
+import { test as happoTest } from "happo/playwright";
 import { mergeTests } from "@playwright/test";
 import { AppName } from "@/administration-e2e/utils/constants";
-import { setupTestEnvironment } from "@bciers/e2e/utils/helpers";
-import { getStorageStateForRole } from "@bciers/e2e/utils/helpers";
+import {
+  setupTestEnvironment,
+  getStorageStateForRole,
+} from "@bciers/e2e/utils/helpers";
 
 // Only merge Happo if we're in CI or if API keys are present
 const isHappoEnabled =
