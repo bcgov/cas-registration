@@ -448,7 +448,7 @@ class TestElicensingInvoiceService:
             due_date=date(2025, 7, 1),
         )
         # line item
-        make_recipe(
+        line_item_2 = make_recipe(
             "compliance.tests.utils.elicensing_line_item",
             elicensing_invoice=invoice_2,
             fee_date=date(2025, 6, 1),
@@ -464,6 +464,11 @@ class TestElicensingInvoiceService:
             obligation_id="25-0001-2",
             elicensing_invoice=invoice_2,
         )
+        # Add payments and adjustments
+        make_recipe("compliance.tests.utils.elicensing_payment", elicensing_line_item=line_item_2, amount=201)
+        make_recipe("compliance.tests.utils.elicensing_payment", elicensing_line_item=line_item_2, amount=49)
+        make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=line_item_2, amount=25)
+        make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=line_item_2, amount=25)
 
         assert ElicensingInvoice.objects.count() == 3  # 2 from setup (obligation + penalty invoices) + 1 from this test
 
