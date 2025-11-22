@@ -9,7 +9,7 @@
   "include": [
     "**/*.ts",
     "**/*.js",
-    ".happo.js",
+    "happo.config.ts",
     "playwright.config.ts",
     "tests/**/*.spec.ts",
     "tests/**/*.spec.js",
