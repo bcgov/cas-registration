@@ -123,7 +123,7 @@ describe("ComplianceSummariesDataGrid component", () => {
     ).toBeVisible();
     expect(
       screen.getByRole("columnheader", {
-        name: "Excess Emission as of invoice date",
+        name: "Excess Emission as of Invoice Date",
       }),
     ).toBeVisible();
     expect(
