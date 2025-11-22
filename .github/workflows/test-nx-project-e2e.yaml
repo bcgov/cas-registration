@@ -77,13 +77,13 @@ jobs:
 
       - name: 📥 install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install  chromium
+        run: npx playwright install chromium
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
       - name: 🎭 Run Playwright Tests
         run: DEBUG=pw:api yarn nx run ${{ inputs.nx_project }}:e2e:ci -- --project=chromium
         env:
-          XDEBUG: pw:api,pw:browser*
+          NX_PROJECT: ${{ inputs.nx_project }}
           API_URL: http://127.0.0.1:8000/api/
           DB_USER: postgres
           DB_PASSWORD: postgres
