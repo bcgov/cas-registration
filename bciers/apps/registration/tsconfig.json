@@ -19,7 +19,7 @@
   },
   "include": [
     "./**/*",
-    "./.happo.js",
+    "./happo.config.ts",
     "./.eslintrc.json",
     "./.next/types/**/*.ts",
     ".next/types/**/*.ts",

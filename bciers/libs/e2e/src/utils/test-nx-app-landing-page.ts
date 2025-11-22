@@ -1,6 +1,5 @@
-import { test as baseTest } from "@playwright/test";
-import { test as happoTest } from "happo-playwright";
-import { mergeTests } from "@playwright/test";
+import { test as baseTest, mergeTests } from "@playwright/test";
+import { test as happoTest } from "happo/playwright";
 // ☰ Enums
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
