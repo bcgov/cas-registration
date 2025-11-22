@@ -114,7 +114,16 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         retryable_notice_of_obligation_met_email.execute(obligation.id)
         logger.info(f"Updated compliance status for obligation {obligation.obligation_id}")
         final_transaction_date = PenaltyCalculationService.determine_last_transaction_date(obligation)
-        # If we are past the deadline & the last transaction that brought the obligation to zero was also received past the deadline, create a penalty
+
+        # Determine if late submission penalty applies
+        compliance_period = obligation.compliance_report_version.compliance_report.compliance_period
+        compliance_deadline = compliance_period.compliance_deadline
+        submission_date = obligation.created_at.date()  # type: ignore[union-attr]
+        has_late_submission = submission_date > compliance_deadline
+        # Create a late submission penalty if obligation was submitted late
+        if has_late_submission:
+            PenaltyCalculationService.create_late_submission_penalty(obligation)
+        # If we are past the deadline & the last transaction that brought the obligation to zero was also received past the deadline, create an automatic overdue penalty
         if invoice.due_date < timezone.now().date() and final_transaction_date > invoice.due_date:  # type: ignore [operator]
             PenaltyCalculationService.create_penalty(obligation)
             logger.info(f"Created penalties for obligation {obligation.obligation_id}")
