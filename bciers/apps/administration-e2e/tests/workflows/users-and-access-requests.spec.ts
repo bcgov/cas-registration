@@ -170,10 +170,10 @@ test.describe("External User", () => {
       MessageTextOperatorSelect.SELECT_ANOTHER_OPERATOR,
       true,
     );
-    // await takeStabilizedScreenshot(happoScreenshot, newPage, {
-    //   component: "Decline a user operator request",
-    //   variant: "default",
-    // });
+    await takeStabilizedScreenshot(happoScreenshot, newPage, {
+      component: "Decline a user operator request",
+      variant: "default",
+    });
   });
 
   test("Edit a request", async ({ page }) => {
