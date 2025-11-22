@@ -29,13 +29,13 @@
     "e2e": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "if [ -n \"$HAPPO_API_KEY\" ] && [ -n \"$HAPPO_API_SECRET\" ]; then happo -- playwright test; else playwright test; fi"
+        "command": "playwright test"
       }
     },
     "e2e:ui": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "if [ -n \"$HAPPO_API_KEY\" ] && [ -n \"$HAPPO_API_SECRET\" ]; then happo -- playwright test --ui; else playwright test --ui; fi"
+        "command": "playwright test --ui"
       }
     },
     "e2e:report": {
