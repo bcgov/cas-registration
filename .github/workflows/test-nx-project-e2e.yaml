@@ -81,7 +81,6 @@ jobs:
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
       - name: 🎭 Run Playwright Tests
-        run: DEBUG=pw:api yarn nx run ${{ inputs.nx_project }}:e2e:ci -- --project=chromium
         env:
           NX_PROJECT: ${{ inputs.nx_project }}
           API_URL: http://127.0.0.1:8000/api/
@@ -114,6 +113,7 @@ jobs:
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
+        run: DEBUG=pw:api yarn nx run "$NX_PROJECT":e2e:ci -- --project=chromium
         working-directory: ./bciers
 
   #     Reports weren't being used regularly though leaving this in here for debugging purposes.
