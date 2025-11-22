@@ -254,7 +254,6 @@ class TestObligationPaidHandler:
         mock_create_late_penalty,
     ):
         self.handler.handle(self.invoice)
-        print(self.obligation.created_at)
 
         self.compliance_report_version.refresh_from_db()
         assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
