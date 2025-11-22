@@ -76,7 +76,7 @@ describe("ElicensingInvoicesDataGrid component", () => {
 
     // Verify data displays
     const summaryRows = screen.getAllByRole("row");
-    expect(summaryRows.length).toBe(3); // header + 2 data rows
+    expect(summaryRows.length).toBe(4); // // header + search cell + 2 data rows
 
     // Check first row in detail
     const firstRow = summaryRows.find((row) =>
@@ -92,6 +92,7 @@ describe("ElicensingInvoicesDataGrid component", () => {
     expect(within(firstRow!).getByText("$5.00")).toBeVisible();
     expect(within(firstRow!).getByText("$0.00")).toBeVisible();
   });
+
   it("renders the ElicensingInvoicesDataGrid with initial data for an external user", async () => {
     render(
       <ElicensingInvoicesDataGrid
@@ -131,6 +132,6 @@ describe("ElicensingInvoicesDataGrid component", () => {
 
     // Verify data displays
     const summaryRows = screen.getAllByRole("row");
-    expect(summaryRows.length).toBe(3); // header + 2 data rows
+    expect(summaryRows.length).toBe(4); // header + search cell + 2 data rows
   });
 });

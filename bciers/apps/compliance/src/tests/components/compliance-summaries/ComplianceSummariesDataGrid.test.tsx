@@ -102,7 +102,7 @@ const mockResponse = {
       obligation_id: null,
     },
   ] as ComplianceSummary[],
-  row_count: 7,
+  row_count: 8,
 };
 
 describe("ComplianceSummariesDataGrid component", () => {
@@ -140,7 +140,7 @@ describe("ComplianceSummariesDataGrid component", () => {
 
     // Verify data displays
     const summaryRows = screen.getAllByRole("row");
-    expect(summaryRows.length).toBe(10); // header + 8 data rows
+    expect(summaryRows.length).toBe(10); // header + search cell + 8 data rows
 
     // Check first row - Obligation not met (Operation 1)
     const firstRow = summaryRows.find((row) =>

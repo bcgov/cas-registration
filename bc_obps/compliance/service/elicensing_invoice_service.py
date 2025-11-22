@@ -1,17 +1,20 @@
 from uuid import UUID
 from compliance.enums import ComplianceInvoiceTypes
 from compliance.models.compliance_penalty import CompliancePenalty
-from django.db.models import Prefetch, QuerySet
+from compliance.models.elicensing_adjustment import ElicensingAdjustment
+from compliance.models.elicensing_payment import ElicensingPayment
+from django.db.models import Prefetch, QuerySet, OuterRef, Subquery
 from typing import Dict, Any, List, Optional, Tuple, Generator
 from decimal import ROUND_HALF_UP, Decimal
 from django.utils import timezone
 from compliance.constants import CLEAN_BC_LOGO_COMPLIANCE_INVOICE
+from ninja import Query
 from service.data_access_service.user_service import UserDataAccessService
 from service.pdf.pdf_generator_service import PDFGeneratorService
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from compliance.models import ComplianceChargeRate
 from compliance.service.exceptions import ComplianceInvoiceError
-from django.db.models import Q, F, Value, When, Case
+from django.db.models import Q, F, Value, When, Case, Sum, DecimalField
 from django.db.models.functions import Coalesce
 
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
@@ -35,8 +38,8 @@ from compliance.dataclass import (
 )
 import json
 from django.http import StreamingHttpResponse
-from service.reporting_year_service import ReportingYearService
 from service.user_operator_service import UserOperatorService
+from compliance.schema.elicensing_invoice import ElicensingInvoiceFilterSchema
 
 
 class ElicensingInvoiceService:
@@ -405,58 +408,94 @@ class ElicensingInvoiceService:
         return total, billing_items
 
     @classmethod
-    def get_elicensing_invoice_for_dashboard(cls, user_guid: UUID) -> QuerySet[ElicensingInvoice]:
+    def get_elicensing_invoice_for_dashboard(
+        cls,
+        user_guid: UUID,
+        sort_field: Optional[str],
+        sort_order: Optional[str],
+        filters: ElicensingInvoiceFilterSchema = Query(...),
+    ) -> QuerySet[ElicensingInvoice]:
         """
-        Fetches all compliance invoices for the user's operations for the current reporting year.
+        Fetches all compliance invoices for the user's operations.
         """
-        user = UserDataAccessService.get_by_guid(user_guid)
-        current_reporting_year = ReportingYearService.get_current_reporting_year()
+        invoice_total_subquery = (
+            ElicensingLineItem.objects.filter(
+                elicensing_invoice_id=OuterRef("pk"), line_item_type=ElicensingLineItem.LineItemType.FEE
+            )
+            .values("elicensing_invoice_id")
+            .annotate(total=Sum("base_amount"))
+            .values("total")
+        )
+        total_payments_subquery = (
+            ElicensingPayment.objects.filter(
+                elicensing_line_item__elicensing_invoice_id=OuterRef("pk"),
+                elicensing_line_item__line_item_type=ElicensingLineItem.LineItemType.FEE,
+            )
+            .values("elicensing_line_item__elicensing_invoice_id")
+            .annotate(total=Sum("amount"))
+            .values("total")
+        )
 
-        qs = (
-            ElicensingInvoice.objects.select_related(
-                "compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",
-                "compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation",
-                "compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",
-                "compliance_penalty__compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation",
+        total_adjustments_subquery = (
+            ElicensingAdjustment.objects.filter(
+                elicensing_line_item__elicensing_invoice_id=OuterRef("pk"),
+                elicensing_line_item__line_item_type=ElicensingLineItem.LineItemType.FEE,
             )
-            .filter(
-                Q(
-                    compliance_obligation__compliance_report_version__compliance_report__report__reporting_year=current_reporting_year
-                )
-                | Q(
-                    compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year=current_reporting_year
-                )
-            )
-            .annotate(
-                compliance_period=Coalesce(
-                    F(
-                        "compliance_obligation__compliance_report_version__compliance_report__report__reporting_year__reporting_year"
-                    ),
-                    F(
-                        "compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year__reporting_year"
-                    ),
+            .values("elicensing_line_item__elicensing_invoice_id")
+            .annotate(total=Sum("amount"))
+            .values("total")
+        )
+
+        user = UserDataAccessService.get_by_guid(user_guid)
+        qs = ElicensingInvoice.objects.select_related(
+            "compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",
+            "compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation",
+            "compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",
+            "compliance_penalty__compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation",
+        ).annotate(
+            compliance_period=Coalesce(
+                F(
+                    "compliance_obligation__compliance_report_version__compliance_report__report__reporting_year__reporting_year"
                 ),
-                operation_name=Coalesce(
-                    F(
-                        "compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation__operation_name"
-                    ),
-                    F(
-                        "compliance_penalty__compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation__operation_name"
-                    ),
+                F(
+                    "compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year__reporting_year"
                 ),
-                operator_legal_name=Coalesce(
-                    F(
-                        "compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation__operator_legal_name"
-                    ),
-                    F(
-                        "compliance_penalty__compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation__operator_legal_name"
-                    ),
+            ),
+            operation_name=Coalesce(
+                F(
+                    "compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation__operation_name"
                 ),
-                invoice_type=Case(
-                    When(compliance_penalty__isnull=False, then=Value("Automatic overdue penalty")),
-                    default=Value("Compliance obligation"),
+                F(
+                    "compliance_penalty__compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation__operation_name"
                 ),
-            )
+            ),
+            operator_legal_name=Coalesce(
+                F(
+                    "compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation__operator_legal_name"
+                ),
+                F(
+                    "compliance_penalty__compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation__operator_legal_name"
+                ),
+            ),
+            invoice_type=Case(
+                When(compliance_penalty__isnull=False, then=Value("Automatic overdue penalty")),
+                default=Value("Compliance obligation"),
+            ),
+            invoice_total=Coalesce(
+                Subquery(invoice_total_subquery),
+                0,
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            ),
+            total_payments=Coalesce(
+                Subquery(total_payments_subquery),
+                0,
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            ),
+            total_adjustments=Coalesce(
+                Subquery(total_adjustments_subquery),
+                0,
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            ),
         )
 
         if user.is_irc_user():
@@ -470,12 +509,11 @@ class ElicensingInvoiceService:
                 )
             )
 
-        for invoice in compliance_invoices:
-            _, _, total_fee, total_payments, total_adjustments = ElicensingInvoiceService.calculate_invoice_amount_due(
-                invoice
-            )
-            invoice.invoice_total = total_fee  # type: ignore[attr-defined]
-            invoice.total_payments = total_payments  # type: ignore[attr-defined]
-            invoice.total_adjustments = total_adjustments  # type: ignore[attr-defined]
-
-        return compliance_invoices
+        # Build a Django order_by key from the requested sort inputs.
+        order = (sort_order or "asc").lower()
+        sort_direction = "-" if order == "desc" else ""
+        sort_by = f"{sort_direction}{sort_field}" if sort_field else None
+        result = filters.filter(compliance_invoices)
+        if sort_by:
+            result = result.order_by(sort_by)
+        return result
