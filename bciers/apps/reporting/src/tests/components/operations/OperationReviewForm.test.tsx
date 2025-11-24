@@ -5,6 +5,8 @@ import { actionHandler } from "@bciers/actions";
 import OperationReviewForm from "@reporting/src/app/components/operations/OperationReviewForm";
 import { buildOperationReviewSchema } from "@reporting/src/data/jsonSchema/operations";
 import { dummyNavigationInformation } from "../taskList/utils";
+import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -15,10 +17,26 @@ vi.mock("next/navigation", () => ({
   useSearchParams: vi.fn(),
 }));
 
+vi.mock("@reporting/src/app/utils/getUpdatedReportOperationDetails", () => ({
+  getUpdatedReportOperationDetails: vi.fn(),
+}));
+
+vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
+  getNavigationInformation: vi.fn(),
+}));
+
 const mockUseRouter = useRouter as vi.MockedFunction<typeof useRouter>;
 const mockActionHandler = actionHandler as vi.MockedFunction<
   typeof actionHandler
 >;
+const mockGetUpdatedReportOperationDetails =
+  getUpdatedReportOperationDetails as vi.MockedFunction<
+    typeof getUpdatedReportOperationDetails
+  >;
+const mockGetNavigationInformation =
+  getNavigationInformation as vi.MockedFunction<
+    typeof getNavigationInformation
+  >;
 
 const formData = {
   operator_legal_name: "Bravo Technologies - has partner operator",
@@ -238,5 +256,47 @@ describe("OperationReviewForm Component", () => {
       "href",
       expect.stringContaining("/administration/operations/"),
     );
+  });
+
+  it("updates hasReps state and clears errors when syncing with representatives", async () => {
+    mockGetUpdatedReportOperationDetails.mockResolvedValue({
+      report_operation: formData,
+      all_representatives: allRepresentatives,
+      show_regulated_products: true,
+      show_boro_id: true,
+      show_activities: true,
+    });
+    mockGetNavigationInformation.mockResolvedValue(dummyNavigationInformation);
+
+    render(
+      <OperationReviewForm
+        formData={formData}
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        schema={schema}
+        allActivities={[]}
+        allRegulatedProducts={[]}
+        reportType={reportType}
+        reportingYear={2024}
+        facilityId={`1234`}
+        allRepresentatives={[]} // Start with no representatives
+      />,
+    );
+
+    expect(
+      screen.getByText(/Before you can continue,/, { exact: false }),
+    ).toBeInTheDocument();
+
+    const syncButton = screen.getByRole("button", { name: /sync/i });
+    fireEvent.click(syncButton);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/Before you can continue,/, { exact: false }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText(/Changes synced successfully/i),
+      ).toBeInTheDocument();
+    });
   });
 });

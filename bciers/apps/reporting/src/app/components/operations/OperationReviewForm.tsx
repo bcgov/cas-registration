@@ -50,25 +50,16 @@ export default function OperationReviewForm({
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [pageSchema, setPageSchema] = useState(schema);
-  // Single errors state: can hold string messages or React nodes (for linked message)
+  const [hasReps, setHasReps] = useState(allRepresentatives.length > 0);
+
+  const missingOperationRepresentativeError = operationRepresentativeLink(
+    formData.operation_id,
+    formData.operation_name,
+  );
+
   const [errors, setErrors] = useState<
     (string | React.ReactNode)[] | undefined
-  >(
-    allRepresentatives?.length === 0
-      ? [
-          <>
-            {operationRepresentativeLink(
-              formData.operation_id,
-              formData.operation_name,
-            )}
-          </>,
-        ]
-      : undefined,
-  );
-  // Track current available representatives so we can disable the save button when none exist
-  const [availableReps, setAvailableReps] = useState<any[]>(
-    allRepresentatives || [],
-  );
+  >(hasReps ? undefined : [missingOperationRepresentativeError]);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [navigationInfo, setNavigationInfo] = useState(navigationInformation);
@@ -133,20 +124,9 @@ export default function OperationReviewForm({
     setFormDataState(newData.report_operation);
 
     const reps = newData.all_representatives || [];
-    // update local available reps so UI (save button) reflects synced data
-    setAvailableReps(reps);
+    setHasReps(reps.length > 0);
     if (reps.length === 0) {
-      // set the linked helper embedded in the sentence as the single error node
-      setErrors([
-        <>
-          Before you can continue,{" "}
-          {operationRepresentativeLink(
-            formData.operation_id,
-            formData.operation_name,
-          )}{" "}
-          then return to this report
-        </>,
-      ]);
+      setErrors([missingOperationRepresentativeError]);
     } else {
       setErrors(undefined);
       setIsSnackbarOpen(true);
@@ -213,8 +193,8 @@ export default function OperationReviewForm({
           },
         }}
         formData={formDataState}
-        saveButtonDisabled={availableReps.length === 0}
-        submitButtonDisabled={availableReps.length === 0}
+        saveButtonDisabled={!hasReps}
+        submitButtonDisabled={!hasReps}
         onSubmit={saveHandler}
         onChange={onChangeHandler}
         backUrl={navigationInfo.backUrl}
