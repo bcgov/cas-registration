@@ -195,7 +195,7 @@ class ComplianceObligationService:
             ComplianceObligation.DoesNotExist: If no obligation exists for the compliance report version
         """
         # Refresh elicensing data before accessing it
-        refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+        ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id
         )
 
@@ -222,5 +222,4 @@ class ComplianceObligationService:
             obligation_id=obligation.obligation_id,
             penalty_status=obligation.penalty_status,
             fee_amount_dollars=obligation.fee_amount_dollars,
-            data_is_fresh=refreshed_data.data_is_fresh,
         )

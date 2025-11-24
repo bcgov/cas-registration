@@ -35,8 +35,7 @@ describe("PenaltyPaymentStatusNote", () => {
   ) => ({
     outstanding_amount,
     penalty_status,
-    data_is_fresh: true,
-    payment_data: { data_is_fresh: true, rows: [], row_count: 0 },
+    payment_data: { rows: [], row_count: 0 },
     payments: [],
   });
 

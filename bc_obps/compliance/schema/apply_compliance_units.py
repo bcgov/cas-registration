@@ -31,7 +31,6 @@ class AppliedComplianceUnitsOut(Schema):
 
     applied_compliance_units: List[AppliedComplianceUnit]
     can_apply_compliance_units: bool
-    data_is_fresh: bool
 
 
 class ApplyComplianceUnitsOut(Schema):

@@ -3,7 +3,7 @@ from unittest.mock import patch
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from compliance.dataclass import ObligationData, PaymentDataWithFreshnessFlag
+from compliance.dataclass import ObligationData
 from compliance.models import ElicensingPayment
 
 VALIDATE_VERSION_OWNERSHIP_PATH = "compliance.api.permissions._validate_version_ownership_in_url"
@@ -39,14 +39,10 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
             fee_amount_dollars=Decimal("40000.00"),
             obligation_id="23-0001-1-1",
             penalty_status="NONE",
-            data_is_fresh=True,
         )
         mock_get_obligation_data.return_value = mock_obligation_data
 
-        mock_payment_data = PaymentDataWithFreshnessFlag(
-            data_is_fresh=True,
-            data=ElicensingPayment.objects.none(),
-        )
+        mock_payment_data = ElicensingPayment.objects.none()
         mock_get_payment_data.return_value = mock_payment_data
 
         # Act
@@ -64,8 +60,6 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         assert response_data["outstanding_balance"] == "1000.00"
         assert response_data["equivalent_value"] == "40000.00"
         assert response_data["obligation_id"] == "23-0001-1-1"
-        assert response_data["data_is_fresh"] is True
-        assert response_data["payment_data"]["data_is_fresh"] is True
         assert response_data["payment_data"]["rows"] == []
         assert response_data["payment_data"]["row_count"] == 0
 
@@ -95,14 +89,10 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
             fee_amount_dollars=Decimal("0.00"),
             obligation_id="23-0001-1-1",
             penalty_status="NONE",
-            data_is_fresh=True,
         )
         mock_get_obligation_data.return_value = mock_obligation_data
 
-        mock_payment_data = PaymentDataWithFreshnessFlag(
-            data_is_fresh=True,
-            data=ElicensingPayment.objects.none(),
-        )
+        mock_payment_data = ElicensingPayment.objects.none()
         mock_get_payment_data.return_value = mock_payment_data
 
         # Act
@@ -143,14 +133,10 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
             fee_amount_dollars=Decimal("39999999.60"),
             obligation_id="24-0999-999-999",
             penalty_status="NONE",
-            data_is_fresh=True,
         )
         mock_get_obligation_data.return_value = mock_obligation_data
 
-        mock_payment_data = PaymentDataWithFreshnessFlag(
-            data_is_fresh=True,
-            data=ElicensingPayment.objects.none(),
-        )
+        mock_payment_data = ElicensingPayment.objects.none()
         mock_get_payment_data.return_value = mock_payment_data
 
         # Act

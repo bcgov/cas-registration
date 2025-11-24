@@ -24,7 +24,6 @@ class TestLateSubmissionPenaltyEndpoint(CommonTestSetup):
             "penalty_amount": Decimal("15000.00"),
             "faa_interest": Decimal("0.00"),
             "total_amount": Decimal("15000.00"),
-            "data_is_fresh": True,
         }
         mock_get_late_submission_penalty_data.return_value = penalty_data
 
@@ -56,4 +55,3 @@ class TestLateSubmissionPenaltyEndpoint(CommonTestSetup):
         assert response_data["penalty_amount"] == "15000.00"
         assert response_data["faa_interest"] == "0.00"
         assert response_data["total_amount"] == "15000.00"
-        assert response_data["data_is_fresh"]

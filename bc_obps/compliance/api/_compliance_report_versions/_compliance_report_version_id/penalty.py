@@ -30,7 +30,6 @@ def get_penalty_by_compliance_report_version_id(
     )
 
     payment_data = ElicensingPaymentListOut(
-        data_is_fresh=penalty_with_payments_data["payments_is_fresh"],
         rows=list(penalty_with_payments_data["payments"]),
         row_count=len(penalty_with_payments_data["payments"]),
     )
@@ -38,7 +37,6 @@ def get_penalty_by_compliance_report_version_id(
     penalty_with_payments = PenaltyWithPaymentsOut(
         outstanding_amount=penalty_with_payments_data["outstanding_amount"],
         penalty_status=penalty_with_payments_data["penalty_status"],
-        data_is_fresh=penalty_with_payments_data["data_is_fresh"],
         payment_data=payment_data,
     )
 

@@ -6,7 +6,6 @@ from typing import Any
 
 class _PenaltyStatusBase(Schema):
     penalty_status: str
-    data_is_fresh: bool
 
     @staticmethod
     def resolve_penalty_status(obj: Any) -> str:

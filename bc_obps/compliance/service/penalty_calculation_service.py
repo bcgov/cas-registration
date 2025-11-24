@@ -73,7 +73,6 @@ class PenaltyCalculationService:
             "total_penalty": penalty.penalty_amount,
             "faa_interest": faa_interest,
             "total_amount": total_amount,
-            "data_is_fresh": refresh_result.data_is_fresh,
         }
 
     @classmethod
@@ -94,7 +93,6 @@ class PenaltyCalculationService:
                 - penalty_amount: Total penalty amount
                 - faa_interest: FAA interest amount (currently 0.00)
                 - total_amount: Total amount including FAA interest
-                - data_is_fresh: Flag indicating if data is fresh from eLicensing API
         """
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id
@@ -114,7 +112,6 @@ class PenaltyCalculationService:
                 "penalty_amount": Decimal('0.00'),
                 "faa_interest": Decimal('0.00'),
                 "total_amount": Decimal('0.00'),
-                "data_is_fresh": refresh_result.data_is_fresh,
             }
 
         penalty_amount = late_submission_penalty.penalty_amount
@@ -128,7 +125,6 @@ class PenaltyCalculationService:
             "penalty_amount": penalty_amount,
             "faa_interest": faa_interest,
             "total_amount": total_amount,
-            "data_is_fresh": refresh_result.data_is_fresh,
         }
 
     @classmethod
@@ -258,7 +254,6 @@ class PenaltyCalculationService:
                 - total_penalty: Total penalty from eLicensing
                 - faa_interest: FAA interest from eLicensing
                 - total_amount: Total penalty including FAA interest
-                - data_is_fresh: Flag indicating if the data is fresh from the eLicensing API
         """
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
@@ -335,7 +330,6 @@ class PenaltyCalculationService:
             "total_penalty": total_penalty,
             "faa_interest": faa_interest,
             "total_amount": total_amount,
-            "data_is_fresh": refresh_result.data_is_fresh,
         }
 
         # Format all Decimal values to 2 decimal places

@@ -14,7 +14,6 @@ class LateSubmissionPenaltyOut(Schema):
     penalty_amount: Decimal
     faa_interest: Decimal
     total_amount: Decimal
-    data_is_fresh: bool
 
     @staticmethod
     def resolve_penalty_status(obj: Any) -> str:

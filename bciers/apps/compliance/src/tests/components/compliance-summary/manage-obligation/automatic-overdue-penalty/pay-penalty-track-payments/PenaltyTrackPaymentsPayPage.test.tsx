@@ -63,7 +63,6 @@ describe("PenaltyTrackPaymentsPayPage", () => {
     equivalent_value: 500.0,
     penalty_id: "test-penalty-id",
     payment_data: {
-      data_is_fresh: true,
       rows: [
         {
           id: 1,
@@ -136,7 +135,6 @@ describe("PenaltyTrackPaymentsPayPage", () => {
       equivalent_value: 500.0,
       penalty_id: "test-penalty-id",
       payment_data: {
-        data_is_fresh: true,
         rows: [
           {
             id: 1,

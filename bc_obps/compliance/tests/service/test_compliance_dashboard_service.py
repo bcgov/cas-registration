@@ -83,9 +83,8 @@ class TestComplianceDashboardService:
         returned_data = ComplianceDashboardService.get_compliance_obligation_payments_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
-        assert returned_data.data_is_fresh == True  # noqa: E712
-        assert returned_data.data.first() == payment_1
-        assert returned_data.data.last() == payment_2
+        assert returned_data.first() == payment_1
+        assert returned_data.last() == payment_2
 
     def test_get_penalty_payments_by_compliance_report_version_id(self, mock_refresh):
         """Test retrieval of penalty payments linked to a compliance report version"""
@@ -116,9 +115,8 @@ class TestComplianceDashboardService:
             compliance_report_version_id=penalty.compliance_obligation.compliance_report_version_id
         )
 
-        assert returned_data.data_is_fresh == True  # noqa: E712
-        assert returned_data.data.first() == payment_1
-        assert returned_data.data.last() == payment_2
+        assert returned_data.first() == payment_1
+        assert returned_data.last() == payment_2
 
     def test_get_compliance_report_versions_for_dashboard_excludes_versions_correctly(
         self,

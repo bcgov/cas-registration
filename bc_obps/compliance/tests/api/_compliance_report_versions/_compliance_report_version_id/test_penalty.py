@@ -24,8 +24,6 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
         mock_get_summary.return_value = {
             "outstanding_amount": Decimal("38656.43"),
             "penalty_status": "Accruing",
-            "data_is_fresh": True,
-            "payments_is_fresh": True,
             "payments": ElicensingPayment.objects.none(),
         }
 
@@ -52,8 +50,6 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
         data = response.json()
         assert data["outstanding_amount"] == "38656.43"
         assert data["penalty_status"] == "Accruing"
-        assert data["data_is_fresh"]
-        assert data["payment_data"]["data_is_fresh"]
         assert data["payment_data"]["row_count"] == 0
         assert data["payment_data"]["rows"] == []
 

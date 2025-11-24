@@ -20,6 +20,5 @@ class ElicensingPaymentOut(ModelSchema):
 
 
 class ElicensingPaymentListOut(Schema):
-    data_is_fresh: bool
     rows: List[ElicensingPaymentOut]
     row_count: int

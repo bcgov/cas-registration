@@ -23,6 +23,6 @@ def get_compliance_obligation_payments_by_compliance_report_version_id(
         compliance_report_version_id=compliance_report_version_id
     )
     response = ElicensingPaymentListOut(
-        data_is_fresh=payment_data.data_is_fresh, rows=list(payment_data.data), row_count=len(payment_data.data)  # type: ignore [arg-type] # Mypy does not recognize queryset as iterable. Function is working as expected
+        rows=list(payment_data), row_count=len(payment_data)  # type: ignore [arg-type] # Mypy does not recognize queryset as iterable. Function is working as expected
     )
     return 200, response
