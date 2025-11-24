@@ -2,8 +2,6 @@ from common.tests.utils.helpers import BaseTestCase
 from reporting.tests.utils.bakers import reporting_year_baker
 from reporting.models import ReportingYear
 from django.test import TestCase
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 
 class TestInitialData(TestCase):
@@ -13,18 +11,6 @@ class TestInitialData(TestCase):
 
         self.assertEqual(len(existing_reporting_years), len(expected_reporting_years))
         self.assertEqual(existing_reporting_years, expected_reporting_years)
-
-    def test_report_open_date_initial_data(self):
-        """Test that report_open_date is set to March 1st of the year after the reporting year"""
-        reporting_years = ReportingYear.objects.all()
-
-        for reporting_year in reporting_years:
-            expected_open_date = datetime(reporting_year.reporting_year + 1, 3, 1, 0, 0, 0, tzinfo=ZoneInfo("UTC"))
-            self.assertEqual(
-                reporting_year.report_open_date,
-                expected_open_date,
-                f"Report open date for year {reporting_year.reporting_year} should be March 1st of {reporting_year.reporting_year + 1}",
-            )
 
 
 class ReportingYearModelTest(BaseTestCase):

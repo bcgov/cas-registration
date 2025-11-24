@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             name='report_open_date',
             field=models.DateTimeField(
                 blank=True,
-                db_comment='Date when reporting opens for that reporting year, defaults to March 1 of the year after the reporting year, PST-based',
+                db_comment='Date when reporting opens for that reporting year, defaults to March 1 of the year after the reporting year, UTC-based',
                 null=True,
             ),
         ),
