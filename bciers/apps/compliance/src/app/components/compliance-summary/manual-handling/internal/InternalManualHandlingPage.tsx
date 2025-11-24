@@ -17,7 +17,7 @@ export default async function InternalManualHandlingPage({
   const taskListElements = generateManualHandlingTaskList(
     complianceReportVersionId,
   );
-  console.log(data);
+
   return (
     <CompliancePageLayout
       complianceReportVersionId={complianceReportVersionId}
