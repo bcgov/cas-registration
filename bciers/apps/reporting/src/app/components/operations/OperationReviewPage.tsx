@@ -42,6 +42,7 @@ export default async function OperationReviewPage({
       reportingYear={data.reporting_year}
       allActivities={data.all_activities}
       allRegulatedProducts={data.all_regulated_products}
+      allRepresentatives={data.all_representatives}
       facilityId={data.facility_id}
     />
   );

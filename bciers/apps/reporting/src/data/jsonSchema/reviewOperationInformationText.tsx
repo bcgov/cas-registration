@@ -1,7 +1,11 @@
 import InfoIcon from "@mui/icons-material/Info";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Box, Link, Paper, Tooltip, Typography } from "@mui/material";
-import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
+import {
+  BC_GOV_LINKS_COLOR,
+  BC_GOV_TEXT,
+  LIGHT_BLUE_BG_COLOR,
+} from "@bciers/styles";
 import React from "react";
 export const purposeNote = (
   operationId: string = "",
@@ -40,5 +44,32 @@ export const purposeNote = (
   </Paper>
 );
 
+export const operationRepresentativeLink = (
+  operationId: string = "",
+  operationName: string = "",
+) => {
+  const href = `/administration/operations/${operationId}?operations_title=${operationName}&isNewTab=true`;
+  const commonSx = {
+    color: BC_GOV_LINKS_COLOR,
+    textDecoration: "underline",
+    display: "inline-flex",
+    alignItems: "center",
+    "& .MuiSvgIcon-root": {
+      color: BC_GOV_LINKS_COLOR,
+      marginLeft: ".1rem",
+    },
+  } as const;
+
+  return (
+    <>
+      Before you can continue, you must{" "}
+      <Link href={href} target="_blank" rel="noopener noreferrer" sx={commonSx}>
+        add an operation representative for this operation
+        <OpenInNewIcon fontSize="inherit" />
+      </Link>{" "}
+      then return to this report
+    </>
+  );
+};
 export const reportTypeHelperText =
   "Simple Reports are submitted by reporting operations that previously emitted greater than or equal to 10 000 tCO2e of attributable emissions in a reporting period, but now emit under 10 000 tCO2e of attributable emissions and have an obligation to continue reporting emissions for three consecutive reporting periods. This report type is not applicable for any operations that received third party verification in the immediately preceding reporting period, and is not applicable for opted-in operations.";

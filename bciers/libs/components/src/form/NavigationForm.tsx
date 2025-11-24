@@ -20,7 +20,7 @@ export interface NavigationFormProps
   onSubmit?: (data: any, navigateAfterSubmit: boolean) => Promise<boolean>;
   buttonText?: string;
   onChange?: (data: any) => void;
-  errors?: string[];
+  errors?: (string | React.ReactNode)[];
   saveButtonDisabled?: boolean;
   submitButtonDisabled?: boolean;
   noSaveButton?: boolean;

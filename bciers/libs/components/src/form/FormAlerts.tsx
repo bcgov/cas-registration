@@ -2,7 +2,7 @@ import React from "react";
 import { Alert } from "@mui/material";
 
 interface FormAlertsProps {
-  errors: string[] | undefined;
+  errors: (string | React.ReactNode)[] | undefined;
 }
 
 const FormAlerts: React.FC<FormAlertsProps> = ({ errors }) => {
@@ -12,9 +12,9 @@ const FormAlerts: React.FC<FormAlertsProps> = ({ errors }) => {
 
   return (
     <div className="min-h-[48px] box-border mt-4">
-      {errors.map((e, index) => (
+      {errors.map((error, index) => (
         <Alert key={index} severity="error">
-          {e}
+          {error}
         </Alert>
       ))}
     </div>
