@@ -17,19 +17,6 @@ export default async function Operations({
 
   const reportingYear = await getReportingYear();
 
-  // Calculate if reporting is open by comparing current time with report_open_date in Pacific timezone
-  const now = new Date();
-  const reportOpenDate = new Date(reportingYear.report_open_date);
-
-  const nowPST = new Date(
-    now.toLocaleString("en-CA", { timeZone: "America/Vancouver" }),
-  );
-  const reportOpenDatePST = new Date(
-    reportOpenDate.toLocaleString("en-CA", { timeZone: "America/Vancouver" }),
-  );
-
-  const isReportingOpen = nowPST > reportOpenDatePST;
-
   if (!operations) {
     return <div>No operations data in database.</div>;
   }
@@ -38,7 +25,7 @@ export default async function Operations({
     <div className="mt-5">
       <OperationDataGrid
         initialData={operations}
-        isReportingOpen={isReportingOpen}
+        isReportingOpen={reportingYear.is_reporting_open}
       />
     </div>
   );

@@ -18,7 +18,7 @@ const SubmittedByCell = ({ row }: GridRenderCellParams) =>
     ? row.report_submitted_by
     : "";
 
-const dashboardColumns = (isReportingOpen?: boolean): GridColDef[] => {
+const dashboardColumns = (isReportingOpen: boolean): GridColDef[] => {
   const columns: GridColDef[] = [
     {
       field: "operation_name",

@@ -12,7 +12,7 @@ import {
 import { ReportOperationStatus } from "@bciers/utils/src/enums";
 
 interface ActionCellProps extends GridRenderCellParams {
-  isReportingOpen?: boolean;
+  isReportingOpen: boolean;
 }
 
 const ActionCell: React.FC<ActionCellProps> = (params) => {
@@ -24,7 +24,7 @@ const ActionCell: React.FC<ActionCellProps> = (params) => {
   const [responseError, setResponseError] = React.useState<string | null>(null);
   const [hasClicked, setHasClicked] = React.useState<boolean>(false);
 
-  const isReportingOpen = params.isReportingOpen ?? true; // Default to open if not provided
+  const isReportingOpen = params.isReportingOpen;
 
   // Create a new report
   const handleStartReport = async (reportingYear: number): Promise<string> => {
@@ -74,6 +74,21 @@ const ActionCell: React.FC<ActionCellProps> = (params) => {
       router.push(`${reportVersionId}/review-operation-information`);
   };
 
+  // Show "Available Soon" for all actions if reporting is not open
+  if (!isReportingOpen) {
+    return (
+      <div
+        style={{
+          whiteSpace: "normal",
+          fontSize: "16px",
+          color: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
+        }}
+      >
+        Available Soon
+      </div>
+    );
+  }
+
   let buttonText = "Start";
   let buttonAction: () => Promise<void> = async () => handleStartClick();
   let buttonDisabled = hasClicked;
@@ -93,21 +108,6 @@ const ActionCell: React.FC<ActionCellProps> = (params) => {
       buttonText = "View Details";
       buttonAction = async () => router.push(`${reportVersionId}/submitted`);
     }
-  }
-
-  // Show "Available Soon" if reporting is not open and no report version exists
-  if (!isReportingOpen && !reportVersionId) {
-    return (
-      <div
-        style={{
-          whiteSpace: "normal",
-          fontSize: "16px",
-          color: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-        }}
-      >
-        Available Soon
-      </div>
-    );
   }
 
   return (

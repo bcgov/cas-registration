@@ -5,7 +5,7 @@ import dashboardColumns from "@reporting/src/app/components/datagrid/models/dash
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
-const operationColumns = (isReportingOpen?: boolean): GridColDef[] => {
+const operationColumns = (isReportingOpen: boolean): GridColDef[] => {
   const baseColumns = dashboardColumns(isReportingOpen);
   // Add the bcghg_id field at the start
   const columns: GridColDef[] = [

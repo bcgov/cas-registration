@@ -8,19 +8,24 @@ from django.utils import timezone
 def populate_report_open_date(apps, schema_editor):
     """
     Populate report_open_date for existing reporting years.
-    Sets it to March 1st at midnight UTC for the year after the reporting year.
     """
     ReportingYear = apps.get_model('reporting', 'ReportingYear')
 
-    reporting_years = ReportingYear.objects.all()
-    for reporting_year in reporting_years:
-        if not reporting_year.report_open_date:
-            # Set to March 1st at midnight UTC for the year after the reporting year
-            next_year = reporting_year.reporting_year + 1
-            reporting_year.report_open_date = timezone.make_aware(datetime(next_year, 3, 1, 0, 0, 0))
+    reporting_year_2023 = ReportingYear.objects.get(reporting_year=2023)
+    reporting_year_2023.report_open_date = timezone.make_aware(datetime(2024, 3, 1, 0, 0, 0))
+    reporting_year_2023.save()
 
-    # Bulk update all reporting years
-    ReportingYear.objects.bulk_update(reporting_years, ['report_open_date'])
+    reporting_year_2024 = ReportingYear.objects.get(reporting_year=2024)
+    reporting_year_2024.report_open_date = timezone.make_aware(datetime(2025, 3, 1, 0, 0, 0))
+    reporting_year_2024.save()
+
+    reporting_year_2025 = ReportingYear.objects.get(reporting_year=2025)
+    reporting_year_2025.report_open_date = timezone.make_aware(datetime(2026, 3, 5, 0, 0, 0))
+    reporting_year_2025.save()
+
+    reporting_year_2026 = ReportingYear.objects.get(reporting_year=2026)
+    reporting_year_2026.report_open_date = timezone.make_aware(datetime(2027, 3, 1, 0, 0, 0))
+    reporting_year_2026.save()
 
 
 def reverse_populate_report_open_date(apps, schema_editor):
