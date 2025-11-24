@@ -7,6 +7,7 @@ import {
   FacilityReviewFormData,
 } from "@reporting/src/app/components/facility/FacilityReviewForm";
 import { dummyNavigationInformation } from "../taskList/utils";
+import { buildFacilitySchema } from "@reporting/src/data/jsonSchema/facilities";
 
 // Mocks for external dependencies
 vi.mock("@bciers/actions", () => ({
@@ -171,5 +172,67 @@ describe("The FacilityReview component", () => {
       ).toBeInTheDocument();
     });
     expect(mockActionHandler).not.toHaveBeenCalled();
+  });
+
+  it("includes sync button in uiSchema when isSyncAllowed is true", async () => {
+    render(
+      <FacilityReview
+        version_id={1000}
+        facility_id="abcd"
+        activitiesData={mockActivitiesData}
+        navigationInformation={dummyNavigationInformation}
+        formsData={mockFormData}
+        schema={mockSchema}
+        operationId="1234"
+        isSyncAllowed={true}
+      />,
+    );
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+
+    // Verify that sync_button has the onSync function in uiSchema
+    expect(calledProps.uiSchema.sync_button).toBeDefined();
+    expect(calledProps.uiSchema.sync_button["ui:options"]).toBeDefined();
+    expect(
+      calledProps.uiSchema.sync_button["ui:options"].onSync,
+    ).toBeInstanceOf(Function);
+  });
+
+  it("does not include sync button in uiSchema when isSyncAllowed is false", async () => {
+    render(
+      <FacilityReview
+        version_id={1000}
+        facility_id="abcd"
+        activitiesData={mockActivitiesData}
+        navigationInformation={dummyNavigationInformation}
+        formsData={mockFormData}
+        schema={mockSchema}
+        operationId="1234"
+        isSyncAllowed={false}
+      />,
+    );
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+
+    // Verify that sync_button does not have the onSync function in uiSchema when isSyncAllowed is false
+    expect(
+      calledProps.uiSchema.sync_button["ui:options"]?.onSync,
+    ).toBeUndefined();
+  });
+
+  it("schema includes info_note and sync_button when isSyncAllowed is true", () => {
+    const schemaWithSync = buildFacilitySchema(mockActivitiesData, true);
+
+    // Verify info_note and sync_button are in the schema properties
+    expect(schemaWithSync.properties?.info_note).toBeDefined();
+    expect(schemaWithSync.properties?.sync_button).toBeDefined();
+  });
+
+  it("schema excludes info_note and sync_button when isSyncAllowed is false", () => {
+    const schemaWithoutSync = buildFacilitySchema(mockActivitiesData, false);
+
+    // Verify info_note and sync_button are NOT in the schema properties
+    expect(schemaWithoutSync.properties?.info_note).toBeUndefined();
+    expect(schemaWithoutSync.properties?.sync_button).toBeUndefined();
   });
 });

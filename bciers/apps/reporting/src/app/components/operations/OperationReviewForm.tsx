@@ -114,6 +114,7 @@ export default function OperationReviewForm({
         newData.show_regulated_products,
         newData.show_boro_id,
         newData.show_activities,
+        isSyncAllowed,
       ),
     );
     setNavigationInfo(
