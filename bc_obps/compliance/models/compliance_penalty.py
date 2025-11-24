@@ -15,9 +15,6 @@ class CompliancePenalty(TimeStampedModel):
         MONTHLY = 'Monthly'
 
     class Status(models.TextChoices):
-        NONE = 'NONE', 'None'
-        ACCRUING = 'ACCRUING', 'Accruing'
-        DUE = 'DUE', 'Due'
         NOT_PAID = 'NOT PAID', 'Not Paid'
         PAID = 'PAID', 'Paid'
 
@@ -40,8 +37,6 @@ class CompliancePenalty(TimeStampedModel):
     fee_date = models.DateField(null=True, blank=True, db_comment="The date the fee was created")
 
     accrual_start_date = models.DateField(
-        null=True,
-        blank=True,
         db_comment="The date on which the penalty began accruing. It will always be the day after the obligation's due date",
     )
 
@@ -81,7 +76,7 @@ class CompliancePenalty(TimeStampedModel):
     status = models.CharField(
         max_length=50,
         choices=Status.choices,
-        default=Status.NONE,
+        default=Status.NOT_PAID,
         db_comment="The status of this penalty (e.g., NONE, DUE, ACCRUING, NOT PAID, PAID)",
     )
 

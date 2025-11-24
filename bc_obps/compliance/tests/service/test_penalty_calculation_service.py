@@ -129,12 +129,6 @@ class TestPenaltyCalculationService:
             outstanding_balance=Decimal("1000000.00"),
             invoice_interest_balance=Decimal("0.00"),
         )
-        baker.make_recipe(
-            "compliance.tests.utils.compliance_penalty",
-            compliance_obligation=self.obligation,
-            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            status=CompliancePenalty.Status.NONE,
-        )
         PenaltyCalculationService.calculate_penalty(
             obligation=self.obligation,
             persist_penalty_data=True,
@@ -294,8 +288,6 @@ class TestPenaltyCalculationService:
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.obligation,
             penalty_amount=Decimal("1000000.00"),
-            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            status=CompliancePenalty.Status.ACCRUING,
         )
         # accrual
         baker.make_recipe(
@@ -381,7 +373,7 @@ class TestPenaltyCalculationService:
         result = PenaltyCalculationService.get_late_submission_penalty_data(self.compliance_report_version.id)
 
         assert result["has_penalty"] is False
-        assert result["penalty_status"] == CompliancePenalty.Status.NONE
+        assert result["penalty_status"] == CompliancePenalty.Status.NOT_PAID
         assert result["penalty_type"] == CompliancePenalty.PenaltyType.LATE_SUBMISSION
         assert result["penalty_amount"] == Decimal("0.00")
         assert result["faa_interest"] == Decimal("0.00")
@@ -679,13 +671,6 @@ class TestPenaltyCalculationService:
             end_date=date(2025, 12, 31),
             interest_rate=Decimal("0.0500"),
             is_current_rate=True,
-        )
-
-        baker.make_recipe(
-            "compliance.tests.utils.compliance_penalty",
-            compliance_obligation=self.obligation,
-            penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-            status=CompliancePenalty.Status.NONE,
         )
 
         with pytest.raises(ElicensingInterestRate.DoesNotExist):

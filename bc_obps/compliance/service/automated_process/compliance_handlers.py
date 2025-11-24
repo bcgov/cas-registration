@@ -89,15 +89,6 @@ class PenaltyAccruingHandler(ComplianceUpdateHandler):
             )
             logger.info(f"Updated penalty status to ACCRUING for obligation {obligation.obligation_id}")
 
-        # Set both penalties for this obligation to ACCRUING when the obligation invoice is overdue
-        CompliancePenalty.objects.filter(
-            compliance_obligation=obligation,
-            penalty_type__in=[
-                CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-                CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-            ],
-        ).update(status=CompliancePenalty.Status.ACCRUING)
-
 
 class ObligationPaidHandler(ComplianceUpdateHandler):
     """Handler for handling obligations that are fully paid."""
@@ -106,8 +97,8 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         """Check if the obligation is fully paid and should be updated to OBLIGATION_FULLY_MET."""
 
         # Ensure this is an obligation invoice, not a penalty invoice
-        has_penalty_invoice = CompliancePenalty.objects.filter(elicensing_invoice=invoice).exists()
-        if has_penalty_invoice:
+        has_penalty = hasattr(invoice, 'compliance_penalty') and getattr(invoice, 'compliance_penalty', None)
+        if has_penalty:
             return False
         return (
             invoice.compliance_obligation.compliance_report_version.status
