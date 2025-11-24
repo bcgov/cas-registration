@@ -198,7 +198,6 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         response_data = response.json()
         assert response_data["success"] is True
         assert response_data["can_apply_compliance_units"] is True
-        assert response_data["data_is_fresh"] is True
 
         # Verify service calls
         mock_apply_compliance_units.assert_called_once_with(
@@ -274,7 +273,6 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         response_data = response.json()
         assert response_data["success"] is True
         assert response_data["can_apply_compliance_units"] is True
-        assert response_data["data_is_fresh"] is True
 
         # Verify service call
         mock_apply_compliance_units.assert_called_once_with(

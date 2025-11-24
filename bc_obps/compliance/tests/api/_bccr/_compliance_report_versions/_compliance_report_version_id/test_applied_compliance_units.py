@@ -60,7 +60,6 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
                 }
             ],
             "can_apply_compliance_units": True,
-            "data_is_fresh": True,
         }
 
     @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
@@ -79,7 +78,6 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
         assert response.json() == {
             "applied_compliance_units": [],
             "can_apply_compliance_units": False,
-            "data_is_fresh": True,
         }
 
     @patch(SERVICE_PATH)

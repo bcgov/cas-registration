@@ -307,7 +307,6 @@ class TestPenaltyCalculationService:
             "total_penalty": Decimal("1000000.00"),
             "faa_interest": Decimal("0"),
             "total_amount": Decimal("1000000.00"),
-            "data_is_fresh": True,
         }
 
     @patch(
@@ -356,7 +355,6 @@ class TestPenaltyCalculationService:
         assert result["penalty_amount"] == Decimal("15000.00")
         assert result["faa_interest"] == Decimal("0.00")
         assert result["total_amount"] == Decimal("15000.00")
-        assert result["data_is_fresh"] is True
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
@@ -379,7 +377,6 @@ class TestPenaltyCalculationService:
         assert result["penalty_amount"] == Decimal("0.00")
         assert result["faa_interest"] == Decimal("0.00")
         assert result["total_amount"] == Decimal("0.00")
-        assert result["data_is_fresh"] is True
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'

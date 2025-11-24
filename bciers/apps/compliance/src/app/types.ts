@@ -125,7 +125,6 @@ export interface Payment {
 }
 
 export interface PaymentData {
-  data_is_fresh?: boolean;
   rows: Payment[];
   row_count: number;
 }
@@ -137,7 +136,6 @@ export interface ObligationData {
   obligation_id: string;
   payment_data: PaymentData;
   penalty_status?: string;
-  data_is_fresh?: string;
 }
 
 export interface PayObligationTrackPaymentsFormData extends ObligationData {
@@ -197,7 +195,6 @@ export interface AutomaticOverduePenalty {
   total_penalty: string;
   faa_interest: string;
   total_amount: string;
-  data_is_fresh: boolean;
 }
 
 export interface LateSubmissionPenalty {
@@ -207,13 +204,11 @@ export interface LateSubmissionPenalty {
   penalty_amount: string;
   faa_interest: string;
   total_amount: string;
-  data_is_fresh: boolean;
 }
 
 export interface PenaltyData {
   outstanding_amount: string;
   penalty_status: string;
-  data_is_fresh: boolean;
   payment_data: PaymentData;
 }
 

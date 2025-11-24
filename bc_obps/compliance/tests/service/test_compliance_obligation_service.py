@@ -254,7 +254,6 @@ class TestComplianceObligationService:
         )
         assert result.equivalent_value == Decimal('2000.00')  # This is the outstanding balance in dollars
         assert result.obligation_id == "23-0001-1-1"
-        assert result.data_is_fresh
 
         # Verify refresh was called
         mock_refresh_data.assert_called_once_with(compliance_report_version_id=compliance_report_version.id)

@@ -63,7 +63,6 @@ describe("ObligationTrackPaymentsPayPage", () => {
     obligation_id: "test-obligation-id",
     penalty_status: "NONE",
     payment_data: {
-      data_is_fresh: true,
       rows: [
         {
           id: 1,
@@ -130,7 +129,6 @@ describe("ObligationTrackPaymentsPayPage", () => {
       obligation_id: "test-obligation-id",
       penalty_status: "NONE",
       payment_data: {
-        data_is_fresh: true,
         rows: [
           {
             id: 1,

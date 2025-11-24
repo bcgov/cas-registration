@@ -32,9 +32,8 @@ def get_obligation_by_compliance_report_version_id(
     obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(compliance_report_version_id)
 
     payment_data = ElicensingPaymentListOut(
-        data_is_fresh=payments.data_is_fresh,
-        rows=list(payments.data),  # type: ignore [arg-type] # Mypy does not recognize queryset as iterable. Function is working as expected
-        row_count=len(payments.data),
+        rows=list(payments),  # type: ignore [arg-type] # Mypy does not recognize queryset as iterable. Function is working as expected
+        row_count=len(payments),
     )
 
     response = ObligationWithPaymentsOut(

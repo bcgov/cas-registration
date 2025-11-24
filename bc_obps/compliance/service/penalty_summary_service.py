@@ -23,17 +23,14 @@ class PenaltySummaryService:
             Dict with the following keys:
             - outstanding_amount (Decimal): Remaining penalty after applying all penalty payments.
             - penalty_status (str): Current penalty status from penalty calculation data.
-            - data_is_fresh (bool): Whether the penalty calculation data is up to date.
-            - payments_is_fresh (bool): Whether the payment data is up to date.
             - payments (QuerySet[ElicensingPayment]): Payments associated with the penalty invoice.
         """
         penalty_data = PenaltyCalculationService.get_automatic_overdue_penalty_data(compliance_report_version_id)
 
-        payments_wrapper = ComplianceDashboardService.get_penalty_payments_by_compliance_report_version_id(
+        payments = ComplianceDashboardService.get_penalty_payments_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id
         )
 
-        payments = payments_wrapper.data
         payments_sum: Decimal = payments.aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
 
         outstanding_amount: Decimal = penalty_data["total_amount"] - payments_sum
@@ -41,7 +38,5 @@ class PenaltySummaryService:
         return {
             "outstanding_amount": outstanding_amount,
             "penalty_status": penalty_data["penalty_status"],
-            "data_is_fresh": penalty_data["data_is_fresh"],
-            "payments_is_fresh": payments_wrapper.data_is_fresh,
             "payments": payments,
         }

@@ -7,7 +7,6 @@ from service.data_access_service.operation_service import OperationDataAccessSer
 from registration.models import Operation
 from typing import Optional
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
-from compliance.dataclass import PaymentDataWithFreshnessFlag
 from service.user_operator_service import UserOperatorService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.enums import ComplianceInvoiceTypes
@@ -202,7 +201,7 @@ class ComplianceDashboardService:
     @classmethod
     def get_compliance_obligation_payments_by_compliance_report_version_id(
         cls, compliance_report_version_id: int
-    ) -> PaymentDataWithFreshnessFlag:
+    ) -> QuerySet[ElicensingPayment]:
         """
         Fetches the monetary payments made towards a compliance obligation
 
@@ -216,16 +215,15 @@ class ComplianceDashboardService:
         refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id
         )
-        payments = ElicensingPayment.objects.select_related('elicensing_line_item').filter(
+
+        return ElicensingPayment.objects.select_related('elicensing_line_item').filter(
             elicensing_line_item__elicensing_invoice=refreshed_data.invoice
         )
-
-        return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)
 
     @classmethod
     def get_penalty_payments_by_compliance_report_version_id(
         cls, compliance_report_version_id: int
-    ) -> PaymentDataWithFreshnessFlag:
+    ) -> QuerySet[ElicensingPayment]:
         """
         Fetches the monetary payments made towards a compliance penalty
 
@@ -240,9 +238,7 @@ class ComplianceDashboardService:
             invoice_type=ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
         )
 
-        payments = ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)
-
-        return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)
+        return ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)
 
     @staticmethod
     def _annotate_for_schema(

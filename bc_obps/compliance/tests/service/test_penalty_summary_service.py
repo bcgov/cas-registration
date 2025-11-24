@@ -4,7 +4,6 @@ from django.test import TestCase
 from unittest.mock import patch
 import pytest
 from model_bakery.baker import make_recipe
-from compliance.dataclass import PaymentDataWithFreshnessFlag
 from compliance.models import ElicensingPayment
 from compliance.service.penalty_summary_service import PenaltySummaryService
 
@@ -38,12 +37,8 @@ class TestPenaltySummaryService(TestCase):
         mock_get_automatic_overdue_penalty_data.return_value = {
             "total_amount": Decimal("100.00"),
             "penalty_status": ComplianceObligation.PenaltyStatus.NOT_PAID,
-            "data_is_fresh": True,
         }
-        mock_get_payments.return_value = PaymentDataWithFreshnessFlag(
-            data_is_fresh=True,
-            data=payments,
-        )
+        mock_get_payments.return_value = payments
 
         # Act
         summary = PenaltySummaryService.get_summary_by_compliance_report_version_id(
@@ -52,8 +47,6 @@ class TestPenaltySummaryService(TestCase):
 
         # Assert
         assert summary["penalty_status"] == ComplianceObligation.PenaltyStatus.NOT_PAID
-        assert summary["data_is_fresh"] is True
-        assert summary["payments_is_fresh"] is True
         assert summary["outstanding_amount"] == Decimal("74.50")
         assert list(summary["payments"]) == list(payments)
 
@@ -70,12 +63,8 @@ class TestPenaltySummaryService(TestCase):
         mock_get_automatic_overdue_penalty_data.return_value = {
             "total_amount": Decimal("42.00"),
             "penalty_status": ComplianceObligation.PenaltyStatus.NOT_PAID,
-            "data_is_fresh": True,
         }
-        mock_get_payments.return_value = PaymentDataWithFreshnessFlag(
-            data_is_fresh=False,
-            data=ElicensingPayment.objects.none(),
-        )
+        mock_get_payments.return_value = ElicensingPayment.objects.none()
 
         # Act
         summary = PenaltySummaryService.get_summary_by_compliance_report_version_id(
@@ -84,5 +73,4 @@ class TestPenaltySummaryService(TestCase):
 
         # Assert
         assert summary["outstanding_amount"] == Decimal("42.00")
-        assert summary["payments_is_fresh"] is False
         assert list(summary["payments"]) == []

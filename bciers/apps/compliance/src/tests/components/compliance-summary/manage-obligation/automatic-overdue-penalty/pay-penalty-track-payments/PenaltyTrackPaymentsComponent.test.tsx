@@ -30,9 +30,7 @@ const baseData = {
   reporting_year: 2024,
   outstanding_amount: "2500.0",
   penalty_status: PenaltyStatus.ACCRUING,
-  data_is_fresh: true,
   payment_data: {
-    data_is_fresh: true,
     rows: [
       {
         id: 1,

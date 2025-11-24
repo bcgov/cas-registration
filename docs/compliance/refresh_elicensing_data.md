@@ -18,19 +18,19 @@ The e-licensing refresh service (bc_obps/compliance/service/elicensing/elicensin
 
 ## Example Usage
 
-If a service requires e-licensing data, it should first call the wrapper & save the boolean return value to a variable. The service should then fetch the required data from the BCIERS models & return the data along with the boolean flag to the API. The flag can in turn be passed to the frontend where a message can be displayed if the communication with e-licensing was not successful.
+If a service requires e-licensing data, it should call the wrapper to refresh the data in order to get the most recent invoice. The service should then fetch the required data from the BCIERS models & return the data to the API. A flag is returned indicating if the update is unsuccessful, but it should not be passed to the frontend for a message to be displayed per endpoint, this is done with shared layout ElicensingStaleDataAlert.
 
 Example (get payments for an obligation)
 
 ```python
 def get_compliance_obligation_payments_by_compliance_report_version_id(
         cls, compliance_report_version_id: int
-    ) -> PaymentDataWithFreshnessFlag:
+    ) -> QuerySet[ElicensingPayment]:
 
         refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id
         )
-        payments = ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)
-
-        return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)
+        return ElicensingPayment.objects.select_related('elicensing_line_item').filter(
+            elicensing_line_item__elicensing_invoice=refreshed_data.invoice
+        )
 ```
