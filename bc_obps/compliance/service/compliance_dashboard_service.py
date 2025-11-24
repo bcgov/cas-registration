@@ -14,7 +14,7 @@ from ninja import Query
 from compliance.schema.compliance_report_version import ComplianceReportVersionFilterSchema
 from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 
-from django.db.models import Case, When, CharField
+from django.db.models import Case, When, CharField, BooleanField
 from typing import cast
 
 
@@ -265,7 +265,15 @@ class ComplianceDashboardService:
                 When(obligation__obligation_id__isnull=True, then=Value("N/A")),
                 default=F("obligation__obligation_id"),
                 output_field=CharField(),
+            ),            
+            requires_manual_handling=Case(
+            When(
+                manual_handling_record__status=ComplianceReportVersionManualHandling.HandilingStatus.ACTION_REQUIRED,
+                then=Value(True),
             ),
+            default=Value(False),
+            output_field=BooleanField(),
+        ),
         )
         return cast(QuerySet[ComplianceReportVersion], annotated)
 

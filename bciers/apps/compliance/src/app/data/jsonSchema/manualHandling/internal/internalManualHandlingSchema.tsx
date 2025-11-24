@@ -30,6 +30,7 @@ export const internalManualHandlingSchema: RJSFSchema = {
       type: "string",
       title: "Analyst's Comment:",
     },
+
     director_decision: {
       type: "string",
       title: "Director's Decision:",
@@ -52,23 +53,28 @@ export const internalManualHandlingSchema: RJSFSchema = {
       default: ManualHandlingDecison.PENDING_MANUAL_HANDLING,
     },
 
-    // role flags — set from React via formData
+    // role flags — set from React
     is_cas_analyst: { type: "boolean", default: false },
     is_cas_director: { type: "boolean", default: false },
+
+    // internal field to control notes display after submit
+    _initial_director_decision: {
+      type: "string",
+      default: ManualHandlingDecison.PENDING_MANUAL_HANDLING,
+    },
   },
 
   allOf: [
-    // --- handling_type / director_decision logic for notes ---
+    // Pending + earned_credits -> credit_note exists
     {
-      // Pending + earned_credits -> credit_note exists
       if: {
         properties: {
-          director_decision: {
+          _initial_director_decision: {
             const: ManualHandlingDecison.PENDING_MANUAL_HANDLING,
           },
           handling_type: { const: ManualHandlingTypes.EARNED_CREDITS },
         },
-        required: ["director_decision", "handling_type"],
+        required: ["_initial_director_decision", "handling_type"],
       },
       then: {
         properties: {
@@ -76,16 +82,16 @@ export const internalManualHandlingSchema: RJSFSchema = {
         },
       },
     },
+    // Pending + obligation -> obligation_note exists
     {
-      // Pending + obligation -> obligation_note exists
       if: {
         properties: {
-          director_decision: {
+          _initial_director_decision: {
             const: ManualHandlingDecison.PENDING_MANUAL_HANDLING,
           },
           handling_type: { const: ManualHandlingTypes.OBLIGATION },
         },
-        required: ["director_decision", "handling_type"],
+        required: ["_initial_director_decision", "handling_type"],
       },
       then: {
         properties: {
@@ -93,15 +99,15 @@ export const internalManualHandlingSchema: RJSFSchema = {
         },
       },
     },
+    // Issue resolved -> resolve_note exists
     {
-      // Issue resolved -> resolve_note exists
       if: {
         properties: {
-          director_decision: {
+          _initial_director_decision: {
             const: ManualHandlingDecison.ISSUE_RESOLVED,
           },
         },
-        required: ["director_decision"],
+        required: ["_initial_director_decision"],
       },
       then: {
         properties: {
@@ -110,39 +116,30 @@ export const internalManualHandlingSchema: RJSFSchema = {
       },
     },
 
-    // --- role-based access control ---
-
-    // Only CAS Analyst can *edit* analyst_comment; others see it read-only
-    // and once director_decision === ISSUE_RESOLVED, it is read-only for everyone.
+    // CAS Analyst editable logic
     {
       if: {
         properties: {
           is_cas_analyst: { const: true },
           director_decision: {
-            // anything except ISSUE_RESOLVED
             not: { const: ManualHandlingDecison.ISSUE_RESOLVED },
           },
         },
         required: ["is_cas_analyst", "director_decision"],
       },
       then: {
-        // CAS Analyst, decision is NOT "issue_resolved" → editable field
         properties: {
-          analyst_comment: {
-            type: "string",
-            title: "Analyst's Comment:",
-          },
+          analyst_comment: { type: "string", title: "Analyst's Comment:" },
         },
       },
       else: {
-        // everyone else OR director_decision === "issue_resolved" → read-only
         properties: {
           analyst_comment: readOnlyStringField("Analyst's Comment:"),
         },
       },
     },
 
-    // Only CAS Director can *edit* director_decision; others see it read-only
+    // CAS Director editable logic
     {
       if: {
         properties: { is_cas_director: { const: true } },
@@ -181,41 +178,6 @@ export const internalManualHandlingSchema: RJSFSchema = {
   ],
 };
 
-// Same pattern as internalReviewCreditsIssuanceRequestUiSchema
-const getAnalystSubmissionInfoElement = (
-  analystSubmittedBy?: string,
-  analystSubmittedDate?: string,
-) => {
-  if (!analystSubmittedBy && !analystSubmittedDate) return null;
-
-  const formatDate = (dateString: string) => {
-    try {
-      // Parse the date string as local date to avoid timezone issues
-      const [year, month, day] = dateString.split("-").map(Number);
-      const date = new Date(year, month - 1, day); // month is 0-indexed
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    } catch {
-      // Fallback to original format if parsing fails
-      return dateString;
-    }
-  };
-
-  const formattedDate = analystSubmittedDate
-    ? formatDate(analystSubmittedDate)
-    : "";
-
-  return (
-    <small className="m-0">
-      Submitted{analystSubmittedBy ? ` by ${analystSubmittedBy}` : ""}
-      {formattedDate ? ` on ${formattedDate}` : ""}
-    </small>
-  );
-};
-
 export const internalManualHandlingUiSchema = (
   analystSubmittedDate?: string,
   analystSubmittedBy?: string,
@@ -230,8 +192,7 @@ export const internalManualHandlingUiSchema = (
     "handling_type",
     "analyst_comment",
     "director_decision",
-    "is_cas_analyst",
-    "is_cas_director",
+    "*", // include internal fields like _initial_director_decision and role flags
   ],
 
   section_header: headerUiConfig,
@@ -252,14 +213,11 @@ export const internalManualHandlingUiSchema = (
   handling_type: { "ui:widget": "hidden" },
   is_cas_analyst: { "ui:widget": "hidden" },
   is_cas_director: { "ui:widget": "hidden" },
+  _initial_director_decision: { "ui:widget": "hidden" },
 
   analyst_comment: {
     "ui:widget": "TextAreaWidget",
     "ui:classNames": "md:gap-16 [&>div:last-child]:w-full",
-    "ui:help": getAnalystSubmissionInfoElement(
-      analystSubmittedBy,
-      analystSubmittedDate,
-    ),
   },
 
   director_decision: {

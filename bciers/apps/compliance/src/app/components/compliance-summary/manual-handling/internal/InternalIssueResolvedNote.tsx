@@ -3,8 +3,10 @@ import Check from "@bciers/components/icons/Check";
 
 export const InternalIssueResolvedNote = () => {
   return (
-    <AlertNote icon={<Check width={20} height={20} />}>
-      The issue has been resolved.
-    </AlertNote>
+    <div className="w-full">
+      <AlertNote icon={<Check width={20} height={20} />}>
+        The issue has been resolved.
+      </AlertNote>
+    </div>
   );
 };

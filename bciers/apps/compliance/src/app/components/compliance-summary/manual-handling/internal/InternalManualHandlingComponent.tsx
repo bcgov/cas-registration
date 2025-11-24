@@ -7,9 +7,7 @@ import {
   internalManualHandlingSchema,
   internalManualHandlingUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manualHandling/internal/internalManualHandlingSchema";
-
 import { ManualHandlingData } from "@/compliance/src/app/types";
-
 import { IChangeEvent } from "@rjsf/core";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
@@ -22,6 +20,12 @@ interface Props {
   complianceReportVersionId: number;
 }
 
+interface ManualHandlingDataWithInitial extends ManualHandlingData {
+  _initial_director_decision: ManualHandlingData["director_decision"] | null;
+  is_cas_analyst: boolean;
+  is_cas_director: boolean;
+}
+
 const InternalManualHandlingComponent = ({
   initialFormData,
   complianceReportVersionId,
@@ -31,26 +35,30 @@ const InternalManualHandlingComponent = ({
   const isCasDirector = userRole === FrontEndRoles.CAS_DIRECTOR;
 
   const [errors, setErrors] = useState<string[] | undefined>();
-  const [formData, setFormState] = useState<ManualHandlingData | undefined>(
-    initialFormData,
-  );
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [formData, setFormState] = useState<ManualHandlingDataWithInitial>({
+    ...initialFormData,
+    _initial_director_decision: initialFormData.director_decision,
+    is_cas_analyst: isCasAnalyst,
+    is_cas_director: isCasDirector,
+  });
+
+  const [formKey, setFormKey] = useState(0); // remounts form to re-evaluate notes
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`;
 
-  const handleFormChange = (e: IChangeEvent<ManualHandlingData>) => {
-    setFormState(e.formData);
-  };
-
-  const handleSubmit = async () => {
-    if (isSubmitting) {
-      return;
-    }
+  const handleSubmit = async (
+    e: IChangeEvent<ManualHandlingDataWithInitial>,
+  ) => {
+    const submittedData = e.formData!;
+    if (isSubmitting) return;
     setIsSubmitting(true);
+
     const payload = {
-      analyst_comment: formData?.analyst_comment,
-      director_decision: formData?.director_decision,
+      analyst_comment: submittedData.analyst_comment,
+      director_decision: submittedData.director_decision,
     };
+
     const endpoint = `compliance/compliance-report-versions/${complianceReportVersionId}/manual-handling`;
     const response = await actionHandler(endpoint, "PUT", "", {
       body: JSON.stringify(payload),
@@ -58,25 +66,32 @@ const InternalManualHandlingComponent = ({
 
     if (response?.error) {
       setErrors([response.error || "Failed to submit request"]);
-      setIsSubmitting(false);
     } else {
       setErrors(undefined);
+
+      // Update both director_decision (field) and _initial_director_decision (notes)
+      setFormState((prev) => ({
+        ...prev,
+        director_decision: submittedData.director_decision, // update field value
+        _initial_director_decision: submittedData.director_decision, // update notes logic
+      }));
+
+      // force remount so notes widgets re-render
+      setFormKey((prev) => prev + 1);
     }
+
+    setIsSubmitting(false);
   };
 
   return (
     <FormBase
+      key={formKey}
       schema={internalManualHandlingSchema}
       uiSchema={internalManualHandlingUiSchema(
-        initialFormData?.analyst_submitted_date || "",
-        initialFormData?.analyst_submitted_by || "",
+        initialFormData.analyst_submitted_date || "",
+        initialFormData.analyst_submitted_by || "",
       )}
-      formData={{
-        ...initialFormData,
-        is_cas_analyst: isCasAnalyst,
-        is_cas_director: isCasDirector,
-      }}
-      onChange={handleFormChange}
+      formData={formData}
       onSubmit={handleSubmit}
       className="w-full min-h-[62vh] flex flex-col justify-between"
     >
