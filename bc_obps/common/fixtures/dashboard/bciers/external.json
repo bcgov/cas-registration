@@ -161,14 +161,6 @@
             "title": "Reporting",
             "icon": "File",
             "content": "Submit, view and edit your annual reports or previous years’ reports.",
-            "conditions": [
-              {
-                "api": "reporting/validate-user-reporting-access",
-                "field": "status",
-                "operator": "equals",
-                "value": "Registered"
-              }
-            ],
             "links": [
               {
                 "title": "View Annual Reports",
