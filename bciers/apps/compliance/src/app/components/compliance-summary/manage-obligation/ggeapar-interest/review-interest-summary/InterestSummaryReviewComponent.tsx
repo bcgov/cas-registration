@@ -7,35 +7,33 @@ import {
   interestSummaryReviewUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/ggeapar-interest/review-interest-summary/interestSummaryReviewSchema";
 import { LateSubmissionPenalty } from "@/compliance/src/app/types";
-import { PenaltyStatus } from "@bciers/utils/src/enums";
 
 interface Props {
   data: LateSubmissionPenalty;
-  penaltyStatus?: string;
   complianceReportVersionId: number;
 }
 
 const InterestSummaryReviewComponent = ({
   data,
-  penaltyStatus,
   complianceReportVersionId,
 }: Props) => {
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
-  const isAccruing = penaltyStatus === PenaltyStatus.ACCRUING;
+
+  const displayPenaltyStatus =
+    data.penalty_status === "Not Paid" ? "Due" : data.penalty_status;
+
+  const formData = { ...data, penalty_status: displayPenaltyStatus };
 
   return (
     <FormBase
       schema={interestSummaryReviewSchema}
       uiSchema={interestSummaryReviewUiSchema}
-      formData={data}
+      formData={formData}
       className="w-full"
     >
       <ComplianceStepButtons
         backUrl={backUrl}
-        middleButtonDisabled={isAccruing}
         middleButtonText="Generate Interest Invoice"
-        // TODO: Implement PDF invoice generation
-        onMiddleButtonClick={() => {}}
         className="mt-44"
       />
     </FormBase>

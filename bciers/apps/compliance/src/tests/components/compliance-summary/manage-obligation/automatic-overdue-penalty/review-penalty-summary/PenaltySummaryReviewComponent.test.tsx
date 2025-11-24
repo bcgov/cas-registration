@@ -24,13 +24,11 @@ vi.mock("@/compliance/src/app/components/ComplianceStepButtons", () => ({
     backUrl,
     continueUrl,
     middleButtonText,
-    middleButtonDisabled,
     onMiddleButtonClick,
   }: {
     backUrl: string;
     continueUrl: string;
     middleButtonText?: string;
-    middleButtonDisabled?: boolean;
     onMiddleButtonClick?: () => void;
   }) => (
     <div data-testid="step-buttons">
@@ -38,11 +36,7 @@ vi.mock("@/compliance/src/app/components/ComplianceStepButtons", () => ({
         Back
       </button>
       {middleButtonText && (
-        <button
-          data-testid="middle-button"
-          onClick={onMiddleButtonClick}
-          disabled={middleButtonDisabled}
-        >
+        <button data-testid="middle-button" onClick={onMiddleButtonClick}>
           {middleButtonText}
         </button>
       )}
@@ -249,19 +243,5 @@ describe("PenaltySummaryReviewComponent", () => {
     );
     expect(hasErrorText).toBe(true);
     expect(getGeneratePenaltyInvoiceButton()).toBeEnabled();
-  });
-
-  it("disables the generate button when penalty is accruing", () => {
-    render(
-      <PenaltySummaryReviewComponent
-        data={mockData}
-        reportingYear={2024}
-        complianceReportVersionId={123}
-        penaltyStatus="ACCRUING"
-      />,
-    );
-
-    const button = getGeneratePenaltyInvoiceButton();
-    expect(button).toBeDisabled();
   });
 });

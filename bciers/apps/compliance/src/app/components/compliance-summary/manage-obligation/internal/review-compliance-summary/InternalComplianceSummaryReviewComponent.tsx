@@ -29,12 +29,9 @@ export function InternalComplianceSummaryReviewComponent({
 
   const showPenalty =
     Number(outstandingBalance) === 0 &&
-    [
-      PenaltyStatus.NOT_PAID,
-      PenaltyStatus.PAID,
-      PenaltyStatus.ACCRUING,
-      PenaltyStatus.DUE,
-    ].includes(penaltyStatus as PenaltyStatus);
+    [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].includes(
+      penaltyStatus as PenaltyStatus,
+    );
 
   const continueUrl = hasLateSubmissionPenalty
     ? `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-interest-summary`

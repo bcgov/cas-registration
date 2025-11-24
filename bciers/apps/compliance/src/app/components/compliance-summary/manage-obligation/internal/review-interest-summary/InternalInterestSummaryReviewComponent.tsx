@@ -24,14 +24,16 @@ const InternalInterestSummaryReviewComponent = ({
 }: Readonly<Props>) => {
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`;
 
+  const displayPenaltyStatus =
+    data.penalty_status === "Not Paid" ? "Due" : data.penalty_status;
+
+  const formData = { ...data, penalty_status: displayPenaltyStatus };
+
   const showPenalty =
     Number(outstandingBalance) === 0 &&
-    [
-      PenaltyStatus.NOT_PAID,
-      PenaltyStatus.PAID,
-      PenaltyStatus.ACCRUING,
-      PenaltyStatus.DUE,
-    ].includes(penaltyStatus as PenaltyStatus);
+    [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].includes(
+      penaltyStatus as PenaltyStatus,
+    );
 
   const continueUrl = showPenalty
     ? `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`
@@ -41,7 +43,7 @@ const InternalInterestSummaryReviewComponent = ({
     <FormBase
       schema={interestSummaryReviewSchema}
       uiSchema={interestSummaryReviewUiSchema}
-      formData={data}
+      formData={formData}
       className="w-full"
     >
       <ComplianceStepButtons

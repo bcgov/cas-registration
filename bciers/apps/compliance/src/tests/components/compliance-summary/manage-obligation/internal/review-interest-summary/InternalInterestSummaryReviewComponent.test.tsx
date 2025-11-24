@@ -51,7 +51,7 @@ describe("InternalInterestSummaryReviewComponent", () => {
     ).toBeVisible();
 
     expect(screen.getByText("Status:")).toBeVisible();
-    expect(screen.getByText("Not Paid")).toBeVisible();
+    expect(screen.getByText("Due")).toBeVisible();
 
     expect(screen.getByText("GGEAPAR Interest Rate (Annual):")).toBeVisible();
     expect(screen.getByText("Prime + 3.00%"));

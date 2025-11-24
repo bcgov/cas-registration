@@ -132,7 +132,6 @@ export enum PenaltyStatus {
   PAID = "PAID",
   NONE = "NONE",
   NOT_PAID = "NOT PAID",
-  DUE = "DUE",
 }
 
 export enum ComplianceInvoiceTypes {

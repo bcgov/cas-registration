@@ -43,7 +43,6 @@ export default async function PenaltySummaryReviewPage({
       <PenaltySummaryReviewComponent
         data={penaltyData}
         reportingYear={reportingYear}
-        penaltyStatus={penaltyStatus}
         complianceReportVersionId={complianceReportVersionId}
         hasLateSubmissionPenalty={hasLateSubmissionPenalty}
       />

@@ -112,14 +112,12 @@ export const generateManageObligationTaskList: (
   }
 
   let automaticPenaltySection: TaskListElement[] = [];
+
   if (
     Number(outstandingBalance) === 0 &&
-    [
-      PenaltyStatus.NOT_PAID,
-      PenaltyStatus.PAID,
-      PenaltyStatus.ACCRUING,
-      PenaltyStatus.DUE,
-    ].includes(penaltyStatus as PenaltyStatus)
+    [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].includes(
+      penaltyStatus as PenaltyStatus,
+    )
   ) {
     automaticPenaltySection = generateAutomaticOverduePenaltyTaskList(
       complianceReportVersionId,

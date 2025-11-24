@@ -43,12 +43,9 @@ export const generateReviewObligationPenaltyTaskList: (
 
   const showPenalty =
     Number(outstandingBalance) === 0 &&
-    [
-      PenaltyStatus.NOT_PAID,
-      PenaltyStatus.PAID,
-      PenaltyStatus.ACCRUING,
-      PenaltyStatus.DUE,
-    ].includes(penaltyStatus as PenaltyStatus);
+    [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].includes(
+      penaltyStatus as PenaltyStatus,
+    );
 
   if (showPenalty) {
     elements.push({

@@ -94,7 +94,7 @@ describe("generateReviewObligationPenaltyTaskList", () => {
     ).toBe(false);
   });
 
-  it.each(["NOT PAID", "PAID", "ACCRUING", "DUE"])(
+  it.each(["NOT PAID", "PAID"])(
     "includes penalty page when there is a confirmed penalty status and zero outstanding balance",
     (penaltyStatus) => {
       const taskList = generateReviewObligationPenaltyTaskList(

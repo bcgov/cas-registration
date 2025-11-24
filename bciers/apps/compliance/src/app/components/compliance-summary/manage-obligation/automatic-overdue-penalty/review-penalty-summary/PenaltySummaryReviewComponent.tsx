@@ -9,13 +9,12 @@ import {
 import { AutomaticOverduePenalty } from "@/compliance/src/app/types";
 import { useState } from "react";
 import generateInvoice from "@/compliance/src/app/utils/generateInvoice";
-import { ComplianceInvoiceTypes, PenaltyStatus } from "@bciers/utils/src/enums";
+import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 import FormAlerts from "@bciers/components/form/FormAlerts";
 
 interface Props {
   data: AutomaticOverduePenalty;
   reportingYear: number;
-  penaltyStatus?: string;
   complianceReportVersionId: number;
   hasLateSubmissionPenalty?: boolean;
 }
@@ -23,7 +22,6 @@ interface Props {
 const PenaltySummaryReviewComponent = ({
   data,
   reportingYear,
-  penaltyStatus,
   complianceReportVersionId,
   hasLateSubmissionPenalty,
 }: Props) => {
@@ -37,10 +35,13 @@ const PenaltySummaryReviewComponent = ({
   const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingPenaltyInvoice, setIsGeneratingPenaltyInvoice] =
     useState(false);
-  const isAccruing = penaltyStatus === PenaltyStatus.ACCRUING;
+
+  const displayPenaltyStatus =
+    data.penalty_status === "Not Paid" ? "Due" : data.penalty_status;
+
+  const formData = { ...data, penalty_status: displayPenaltyStatus };
 
   const handleGeneratePenaltyInvoice = async () => {
-    if (isAccruing || isGeneratingPenaltyInvoice) return;
     setErrors([]);
     setIsGeneratingPenaltyInvoice(true);
 
@@ -62,13 +63,13 @@ const PenaltySummaryReviewComponent = ({
       <FormBase
         schema={createPenaltySummaryReviewSchema(reportingYear)}
         uiSchema={penaltySummaryReviewUiSchema}
-        formData={data}
+        formData={formData}
         className="w-full"
       >
         <ComplianceStepButtons
           backUrl={backUrl}
           continueUrl={saveAndContinueUrl}
-          middleButtonDisabled={isGeneratingPenaltyInvoice || isAccruing}
+          middleButtonDisabled={isGeneratingPenaltyInvoice}
           middleButtonText={
             isGeneratingPenaltyInvoice
               ? "Generating Penalty Invoice..."
