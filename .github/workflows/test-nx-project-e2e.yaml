@@ -36,7 +36,8 @@ env:
 
 jobs:
   e2e-tests:
-    if: ${{ inputs.is_nx_affected }}
+    # TODO: Temporarily forcing to true to keep screenshots up to date - remove this change later
+    if: true
     name: 🧪 e2e tests chromium
     runs-on: ubuntu-latest
     timeout-minutes: 60
