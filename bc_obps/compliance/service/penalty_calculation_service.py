@@ -285,7 +285,9 @@ class PenaltyCalculationService:
         for _ in range(1, days_late + 1):
             payments = cls.sum_payments_before_date(invoice, current_date)
             adjustments = cls.sum_adjustments_before_date(invoice, current_date)
-            penalty_amount = (base - payments + adjustments) * cls.DAILY_PENALTY_RATE
+            penalty_amount = max(
+                Decimal('0'), (base - payments + adjustments) * cls.DAILY_PENALTY_RATE
+            )  # max of 0 to prevent negative penalty accrual edge case
             daily_compounding = (accumulated_penalty + accumulated_compounding) * cls.DAILY_PENALTY_RATE
             accumulated_penalty += penalty_amount
             accumulated_compounding += daily_compounding
@@ -483,7 +485,9 @@ class PenaltyCalculationService:
 
             outstanding_base = base - payments + adjustments
             principal_for_interest = outstanding_base + accumulated_compounding
-            penalty_amount = principal_for_interest * daily_rate
+            penalty_amount = max(
+                Decimal('0'), principal_for_interest * daily_rate
+            )  # max of 0 to prevent negative penalty accrual edge case
             uncompounded_penalty += penalty_amount
             accumulated_penalty += penalty_amount
             total_penalty = accumulated_penalty
