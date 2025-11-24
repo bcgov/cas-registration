@@ -32,6 +32,7 @@ interface Props {
   allRegulatedProducts: any[];
   allRepresentatives: any[];
   facilityId: string;
+  isSyncAllowed: boolean;
 }
 
 export default function OperationReviewForm({
@@ -45,7 +46,9 @@ export default function OperationReviewForm({
   allRegulatedProducts,
   allRepresentatives,
   facilityId,
+  isSyncAllowed,
 }: Props) {
+  console.log("isSyncAllowerd", isSyncAllowed);
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
@@ -184,13 +187,15 @@ export default function OperationReviewForm({
         schema={pageSchema}
         uiSchema={{
           ...uiSchema,
-          sync_button: {
-            ...uiSchema.sync_button,
-            "ui:FieldTemplate": SyncFacilitiesButton,
-            "ui:options": {
-              onSync: handleSync,
+          ...(isSyncAllowed && {
+            sync_button: {
+              ...uiSchema.sync_button,
+              "ui:FieldTemplate": SyncFacilitiesButton,
+              "ui:options": {
+                onSync: handleSync,
+              },
             },
-          },
+          }),
         }}
         formData={formDataState}
         saveButtonDisabled={!hasReps}

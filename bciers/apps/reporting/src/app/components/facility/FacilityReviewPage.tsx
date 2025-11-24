@@ -36,7 +36,8 @@ export default async function FacilityReviewPage({
       (activity: { name: any }) => activity.name,
     ),
   };
-  const reviewSchema = buildFacilitySchema(activitiesData);
+  const isSyncAllowed = facilityData.is_sync_allowed ?? true;
+  const reviewSchema = buildFacilitySchema(activitiesData, isSyncAllowed);
   return (
     <FacilityReviewForm
       version_id={version_id}
@@ -46,6 +47,7 @@ export default async function FacilityReviewPage({
       formsData={formData}
       schema={reviewSchema}
       operationId={facilityData.operation_id}
+      isSyncAllowed={isSyncAllowed}
     />
   );
 }

@@ -19,6 +19,7 @@ interface Props {
   navigationInformation: NavigationInformation;
   formsData: FacilityReviewFormData;
   schema: RJSFSchema;
+  isSyncAllowed?: boolean;
 }
 
 export interface FacilityReviewFormData {
@@ -38,6 +39,7 @@ export const FacilityReview: React.FC<Props> = ({
   navigationInformation,
   formsData,
   schema,
+  isSyncAllowed = true,
 }) => {
   const [formData, setFormData] = useState<FacilityReviewFormData>(formsData);
   const [errors, setErrors] = useState<string[] | undefined>();
@@ -106,12 +108,14 @@ export const FacilityReview: React.FC<Props> = ({
         schema={schema}
         uiSchema={{
           ...uiSchema,
-          sync_button: {
-            ...uiSchema.sync_button,
-            "ui:options": {
-              onSync: handleSync,
+          ...(isSyncAllowed && {
+            sync_button: {
+              ...uiSchema.sync_button,
+              "ui:options": {
+                onSync: handleSync,
+              },
             },
-          },
+          }),
         }}
         formData={formData}
         onSubmit={handleSubmit}

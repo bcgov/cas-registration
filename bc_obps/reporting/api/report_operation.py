@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Literal, Tuple, Union
 
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -19,6 +19,7 @@ from ..schema.report_operation import (
     ReportOperationSchemaOut,
 )
 from ..service.report_operation_service import ReportOperationService
+from ..service.sync_validation_service import SyncValidationService
 
 """
 GET methods
@@ -59,7 +60,15 @@ PATCH methods
     description="Updates the facility report details by version_id and facility_id.",
     auth=approved_authorized_roles_report_version_composite_auth,
 )
-def get_update_report(request: HttpRequest, version_id: int) -> tuple[Literal[200], dict]:
+def get_update_report(
+    request: HttpRequest, version_id: int
+) -> Union[Tuple[Literal[200], dict], Tuple[Literal[403], dict[str, str]]]:
+    # Validate that sync is allowed before proceeding
+    if not SyncValidationService.is_sync_allowed(version_id):
+        return 403, {
+            "message": "Sync is not allowed for reports from previous reporting years or when operation ownership has been transferred"
+        }
+
     report_operation = ReportOperationService.update_report_operation(version_id)
     return 200, report_operation
 

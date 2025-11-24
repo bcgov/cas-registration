@@ -20,6 +20,8 @@ export default async function OperationReviewPage({
     data.facility_id,
   );
 
+  const isSyncAllowed = data.is_sync_allowed ?? true;
+
   const schema = buildOperationReviewSchema(
     data.report_operation,
     data.reporting_year,
@@ -30,6 +32,7 @@ export default async function OperationReviewPage({
     data.show_regulated_products,
     data.show_boro_id,
     data.show_activities,
+    isSyncAllowed,
   );
 
   return (
@@ -44,6 +47,7 @@ export default async function OperationReviewPage({
       allRegulatedProducts={data.all_regulated_products}
       allRepresentatives={data.all_representatives}
       facilityId={data.facility_id}
+      isSyncAllowed={isSyncAllowed}
     />
   );
 }

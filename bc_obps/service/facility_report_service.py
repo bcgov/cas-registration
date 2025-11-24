@@ -9,6 +9,7 @@ from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.schema.facility_report import FacilityReportListInSchema, FacilityReportFilterSchema
 from django.db.models import QuerySet
 from django.db.models import F
+from reporting.service.sync_validation_service import SyncValidationService
 
 
 class SaveFacilityReportData:
@@ -30,9 +31,12 @@ class SaveFacilityReportData:
 class FacilityReportService:
     @classmethod
     def get_facility_report_by_version_and_id(cls, report_version_id: int, facility_id: UUID) -> FacilityReport:
-        return FacilityReport.objects.annotate(operation_id=F('report_version__report__operation_id')).get(
+        facility_report = FacilityReport.objects.annotate(operation_id=F('report_version__report__operation_id')).get(
             report_version_id=report_version_id, facility_id=facility_id
         )
+
+        facility_report.is_sync_allowed = SyncValidationService.is_sync_allowed(report_version_id)  # type: ignore[attr-defined]
+        return facility_report
 
     @classmethod
     def get_facility_report_by_version_id(cls, report_version_id: int) -> Optional[UUID]:

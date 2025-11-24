@@ -21,3 +21,4 @@ class ReportReviewFacilitySchemaOut(Schema):
     current_facilities: list[FacilityForReview]
     past_facilities: list[FacilityForReview]
     operation_id: Optional[UUID] = None
+    is_sync_allowed: bool = True
