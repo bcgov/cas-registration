@@ -4,6 +4,7 @@ from reporting.models import ReportVersion, FacilityReport, ReportOperation
 from registration.models import Facility, FacilityDesignatedOperationTimeline
 from typing import List, Dict
 from uuid import UUID
+from reporting.service.sync_validation_service import SyncValidationService
 
 
 class ReportFacilitiesService:
@@ -91,6 +92,8 @@ class ReportFacilitiesService:
 
         current_facilities: list = []
         past_facilities: list = []
+        is_sync_allowed = SyncValidationService.is_sync_allowed(version_id)
+        print('is sync allowed', is_sync_allowed)
 
         # Determine if all current facilities should be considered selected
         all_selected_for_current = not selected_facilities
@@ -116,4 +119,5 @@ class ReportFacilitiesService:
             "current_facilities": current_facilities,
             "past_facilities": past_facilities,
             "operation_id": operation_id,
+            "is_sync_allowed": is_sync_allowed,
         }

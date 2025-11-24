@@ -51,6 +51,7 @@ describe("OperationReviewPage", () => {
       show_boro_id: false,
       show_activities: true,
       facility_id: "facility-123",
+      is_sync_allowed: true,
     };
     const fakeSchema = { schema: "my schema" };
 
@@ -77,6 +78,7 @@ describe("OperationReviewPage", () => {
     expect(result.props.navigationInformation).toEqual(
       fakeNavigationInformation,
     );
+    expect(result.props.isSyncAllowed).toEqual(true);
 
     // Verify that the dependent functions were called with the expected parameters
     expect(getNavigationInformation).toHaveBeenCalledWith(
@@ -98,6 +100,7 @@ describe("OperationReviewPage", () => {
       fakeParams.show_regulated_products,
       fakeParams.show_boro_id,
       fakeParams.show_activities,
+      true, // isSyncAllowed
     );
   });
 });

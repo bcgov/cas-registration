@@ -23,6 +23,7 @@ export const buildOperationReviewSchema = (
   showRegulatedProducts: boolean,
   showBoroId: boolean,
   showActivities: boolean,
+  isSyncAllowed: boolean = true,
 ) =>
   ({
     type: "object",
@@ -33,10 +34,12 @@ export const buildOperationReviewSchema = (
       "operator_legal_name",
     ],
     properties: {
-      purpose_note: {
-        type: "object",
-        readOnly: true,
-      },
+      ...(isSyncAllowed && {
+        purpose_note: {
+          type: "object",
+          readOnly: true,
+        },
+      }),
       operation_report_type: {
         type: "string",
         title:
@@ -89,13 +92,15 @@ export const buildOperationReviewSchema = (
           title: "BORO ID",
         },
       }),
-      sync_button: {
-        type: "object",
-        properties: {
-          label: { type: "string" },
-          disabled: { type: "boolean", default: false },
+      ...(isSyncAllowed && {
+        sync_button: {
+          type: "object",
+          properties: {
+            label: { type: "string" },
+            disabled: { type: "boolean", default: false },
+          },
         },
-      },
+      }),
     },
 
     dependencies: {

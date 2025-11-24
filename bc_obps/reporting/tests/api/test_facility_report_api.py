@@ -117,14 +117,17 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         assert_report_version_ownership_is_validated("get_facility_report_by_version_id")
         assert_report_version_ownership_is_validated("save_facility_report_list", method="patch")
 
+    @patch("reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed")
     @patch("service.facility_report_service.FacilityReportService.update_facility_report")
-    def test_update_facility_report_api(self, mock_update: MagicMock):
+    def test_update_facility_report_api(self, mock_update: MagicMock, mock_is_sync_allowed: MagicMock):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
 
         updated_facility_report = baker.prepare(
             'reporting.FacilityReport', id=facility_report.id, facility_name="UPDATED"
         )
+        mock_is_sync_allowed.return_value = True
+
         mock_update.return_value = updated_facility_report
 
         endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/update'
@@ -146,3 +149,27 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         assert response.status_code == 200
         assert response.json()['facility_name'] == "UPDATED"
         mock_update.assert_called_once_with(facility_report.report_version_id, facility_report.facility_id)
+        mock_is_sync_allowed.assert_called_once_with(facility_report.report_version_id)
+
+    @patch("reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed")
+    def test_update_facility_report_returns_403_when_sync_not_allowed(self, mock_is_sync_allowed: MagicMock):
+        # Mock sync validation to return False (sync not allowed)
+        mock_is_sync_allowed.return_value = False
+
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
+        TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+
+        endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/update'
+
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            {},  # Empty payload
+            endpoint_under_test,
+        )
+
+        assert response.status_code == 403
+        assert "Sync is not allowed" in response.json()['message']
+        # Verify sync validation was called
+        mock_is_sync_allowed.assert_called_once_with(facility_report.report_version_id)

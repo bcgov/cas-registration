@@ -21,6 +21,7 @@ export default async function LFOFacilitiesPage({
         version_id={version_id}
         initialData={initialData}
         navigationInformation={navInfo}
+        isSyncAllowed={initialData.is_sync_allowed ?? true}
       />
     </>
   );

@@ -1,4 +1,4 @@
-from typing import Literal, Tuple, List, Optional
+from typing import Literal, Tuple, List, Optional, Union
 from uuid import UUID
 from django.http import HttpRequest
 
@@ -27,6 +27,7 @@ from reporting.api.permissions import (
     approved_industry_user_report_version_composite_auth,
     approved_authorized_roles_report_version_composite_auth,
 )
+from reporting.service.sync_validation_service import SyncValidationService
 
 
 @router.get(
@@ -123,7 +124,13 @@ def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> 
 )
 def update_facility_report(
     request: HttpRequest, version_id: int, facility_id: UUID
-) -> tuple[Literal[200], FacilityReport]:
+) -> Union[Tuple[Literal[200], FacilityReport], Tuple[Literal[403], dict[str, str]]]:
+    # Validate that sync is allowed before proceeding
+    if not SyncValidationService.is_sync_allowed(version_id):
+        return 403, {
+            "message": "Sync is not allowed for reports from previous reporting years or when operation ownership has been transferred"
+        }
+
     facility_report = FacilityReportService.update_facility_report(version_id, facility_id)
     return 200, facility_report
 
