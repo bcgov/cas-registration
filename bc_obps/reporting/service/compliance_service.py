@@ -197,6 +197,9 @@ class ComplianceService:
         total_allocated_for_compliance_2024 = Decimal(0)
         emissions_limit_total = Decimal(0)
 
+        # Determine whether this report's compliance calculations should use the Apr-Dec (2024) window
+        use_apr_dec = naics_data.compliance_period == 2024
+
         report_products = (
             ReportProduct.objects.order_by("product_id")
             .filter(report_version_id=report_version_id, product__is_regulated=True)
@@ -235,17 +238,28 @@ class ComplianceService:
             )
             allocated_reporting_only = ComplianceService.get_reporting_only_allocated(report_version_id, rp.product_id)
             allocated_for_compliance = allocated - allocated_reporting_only
-            allocated_for_compliance_2024 = (
-                Decimal(0)
-                if Decimal(production_totals["annual_amount"]) == 0
-                else (
-                    (allocated_for_compliance / Decimal(production_totals["annual_amount"]))
-                    * Decimal(production_totals["apr_dec"])
+            # If this compliance period is 2024, use Apr-Dec production for allocations and limits.
+            # Otherwise use full-year production and full-year allocated emissions.
+            if use_apr_dec:
+                allocated_for_compliance_2024 = (
+                    Decimal(0)
+                    if Decimal(production_totals["annual_amount"]) == 0
+                    else (
+                        (allocated_for_compliance / Decimal(production_totals["annual_amount"]))
+                        * Decimal(production_totals["apr_dec"])
+                    )
                 )
-            )
+                production_for_limit = Decimal(production_totals["apr_dec"])
+                allocated_compliance_emissions_value = round(allocated_for_compliance_2024, 4)
+            else:
+                # Not 2024: ignore apr-dec window and use full-year values
+                allocated_for_compliance_2024 = Decimal(0)
+                production_for_limit = Decimal(production_totals["annual_amount"])
+                allocated_compliance_emissions_value = round(allocated_for_compliance, 4)
+
             product_emission_limit = ComplianceService.calculate_product_emission_limit(
                 pwaei=ei,
-                apr_dec_production=Decimal(production_totals["apr_dec"]),
+                apr_dec_production=production_for_limit,
                 allocated_industrial_process=Decimal(industrial_process),
                 allocated_for_compliance=Decimal(allocated_for_compliance),
                 tightening_rate=naics_data.tightening_rate,
@@ -268,7 +282,7 @@ class ComplianceService:
                     apr_dec_production=production_totals["apr_dec"],
                     emission_intensity=ei,
                     allocated_industrial_process_emissions=industrial_process,
-                    allocated_compliance_emissions=round(allocated_for_compliance_2024, 4),
+                    allocated_compliance_emissions=Decimal(allocated_compliance_emissions_value),
                 )
             )
 
@@ -287,13 +301,21 @@ class ComplianceService:
         # Calculated Excess/credited emissions
         excess_emissions = Decimal(0)
         credited_emissions = Decimal(0)
-        if total_allocated_for_compliance_2024 > emissions_limit_total:
-            excess_emissions = total_allocated_for_compliance_2024 - emissions_limit_total
+        # Choose which allocated total to use for compliance comparisons depending on the period
+        total_allocated_for_compliance_used = (
+            total_allocated_for_compliance_2024 if use_apr_dec else total_allocated_for_compliance
+        )
+
+        if total_allocated_for_compliance_used > emissions_limit_total:
+            excess_emissions = total_allocated_for_compliance_used - emissions_limit_total
         else:
-            credited_emissions = emissions_limit_total - total_allocated_for_compliance_2024
+            credited_emissions = emissions_limit_total - total_allocated_for_compliance_used
 
         if registration_purpose == "New Entrant Operation":
+            # Zero out all compliance values for New Entrant Operations
+            total_allocated_for_compliance = Decimal(0)
             total_allocated_for_compliance_2024 = Decimal(0)
+            total_allocated_for_compliance_used = Decimal(0)
             emissions_limit_total = Decimal(0)
             excess_emissions = Decimal(0)
             credited_emissions = Decimal(0)
@@ -301,7 +323,7 @@ class ComplianceService:
         return_object = ComplianceData(
             emissions_attributable_for_reporting=attributable_for_reporting_total,
             reporting_only_emissions=round(Decimal(total_allocated_reporting_only), 4),
-            emissions_attributable_for_compliance=round(total_allocated_for_compliance_2024, 4),
+            emissions_attributable_for_compliance=round(total_allocated_for_compliance_used, 4),
             emissions_limit=round(emissions_limit_total, 4),
             excess_emissions=round(excess_emissions, 4),
             credited_emissions=round(credited_emissions, 4),

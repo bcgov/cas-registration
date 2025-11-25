@@ -6,6 +6,7 @@ import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 import { dummyNavigationInformation } from "../taskList/utils";
+import { createComplianceSummarySchema } from "@reporting/src/data/jsonSchema/complianceSummary";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -148,7 +149,7 @@ describe("ComplianceSummaryForm", () => {
     expect(mockPush).toHaveBeenCalledWith("continue");
   });
 
-  it("should render a continue button that navigates to the final review page", async () => {
+  it("should show apr_dec_production field for year 2024", async () => {
     render(
       <ComplianceSummaryForm
         summaryFormData={mockSummaryData}
@@ -156,14 +157,49 @@ describe("ComplianceSummaryForm", () => {
       />,
     );
 
-    const button = screen.getByRole("button", {
-      name: /Continue/i,
-    });
+    expect(
+      screen.getByLabelText("Production data for Apr 1 - Dec 31 2024"),
+    ).toBeInTheDocument();
+  });
 
-    expect(button).toBeVisible();
+  it("should not show apr_dec_production field for years other than 2024", async () => {
+    const mock2025Data = {
+      ...mockSummaryData,
+      regulatory_values: {
+        ...mockSummaryData.regulatory_values,
+        compliance_period: "2025",
+      },
+    };
 
-    fireEvent.click(button);
+    render(
+      <ComplianceSummaryForm
+        summaryFormData={mock2025Data}
+        navigationInformation={dummyNavigationInformation}
+      />,
+    );
 
-    expect(mockPush).toHaveBeenCalledWith("continue");
+    expect(
+      screen.queryByLabelText("Production data for Apr 1 - Dec 31 2024"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("should generate schema without apr_dec_production for non-2024 years", () => {
+    const schema2025 = createComplianceSummarySchema(2025);
+    const productsSchema = schema2025.properties?.products as any;
+    const productProperties = productsSchema?.items?.properties;
+
+    expect(productProperties).toBeDefined();
+    expect(productProperties?.apr_dec_production).toBeUndefined();
+    expect(productProperties?.annual_production).toBeDefined();
+  });
+
+  it("should generate schema with apr_dec_production for 2024", () => {
+    const schema2024 = createComplianceSummarySchema(2024);
+    const productsSchema = schema2024.properties?.products as any;
+    const productProperties = productsSchema?.items?.properties;
+
+    expect(productProperties).toBeDefined();
+    expect(productProperties?.apr_dec_production).toBeDefined();
+    expect(productProperties?.annual_production).toBeDefined();
   });
 });
