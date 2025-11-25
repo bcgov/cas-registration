@@ -137,4 +137,5 @@ export enum PenaltyStatus {
 export enum ComplianceInvoiceTypes {
   OBLIGATION = "obligation",
   AUTOMATIC_OVERDUE_PENALTY = "automatic overdue penalty",
+  LATE_SUBMISSION_PENALTY = "late submission penalty",
 }

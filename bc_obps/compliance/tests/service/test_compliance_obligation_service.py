@@ -76,7 +76,6 @@ class TestComplianceObligationService:
         self,
         mock_get_rate,
         mock_send_email,
-        mock_create_initial_penalties,
     ):
         """Test successful creation of a compliance obligation"""
         # Set up mocks

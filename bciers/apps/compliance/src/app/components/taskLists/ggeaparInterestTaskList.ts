@@ -1,15 +1,22 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { ActivePage } from "./1_manageObligationTaskList";
 
 export const generateGgeaparInterestTaskList: (
   complianceReportVersionId: number,
-  isActive?: boolean,
-) => TaskListElement[] = (complianceReportVersionId, isActive = false) => {
+  activePage?: ActivePage | null,
+) => TaskListElement[] = (complianceReportVersionId, activePage) => {
   const taskItems = [
     {
       type: "Page" as const,
       title: `Review Interest Summary`,
       link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-interest-summary`,
-      isActive,
+      isActive: activePage === ActivePage.ReviewInterestSummary,
+    },
+    {
+      type: "Page" as const,
+      title: "Download Payment Instructions",
+      link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/download-interest-payment-instructions`,
+      isActive: activePage === ActivePage.DownloadInterestPaymentInstructions,
     },
   ];
 

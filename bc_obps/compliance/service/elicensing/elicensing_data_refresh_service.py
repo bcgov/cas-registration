@@ -67,6 +67,7 @@ class ElicensingDataRefreshService:
         # Map invoice type to penalty type for filtering
         invoice_type_to_penalty_type = {
             ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY: CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY: CompliancePenalty.PenaltyType.LATE_SUBMISSION,
         }
 
         invoice = (

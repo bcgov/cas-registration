@@ -77,7 +77,7 @@ class CompliancePenalty(TimeStampedModel):
         max_length=50,
         choices=Status.choices,
         default=Status.NOT_PAID,
-        db_comment="The status of this penalty (e.g., NONE, DUE, ACCRUING, NOT PAID, PAID)",
+        db_comment="The status of this penalty (e.g., NOT PAID, PAID)",
     )
 
     class Meta(TimeStampedModel.Meta):

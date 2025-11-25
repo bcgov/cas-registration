@@ -10,6 +10,8 @@ export enum ActivePage {
   DownloadPaymentObligationInstructions = "DownloadPaymentObligationInstructions",
   PayObligationTrackPayments = "PayObligationTrackPayments",
   ReviewInterestSummary = "ReviewInterestSummary",
+  DownloadInterestPaymentInstructions = "DownloadInterestPaymentInstructions",
+  PayInterestPenaltyTrackPayments = "PayInterestPenaltyTrackPayments",
   ReviewPenaltySummary = "ReviewPenaltySummary",
   DownloadPaymentPenaltyInstruction = "DownloadPaymentPenaltyInstruction",
   PayPenaltyTrackPayments = "PayPenaltyTrackPayments",
@@ -25,6 +27,12 @@ export const penaltyPages = [
   ActivePage.ReviewPenaltySummary,
   ActivePage.DownloadPaymentPenaltyInstruction,
   ActivePage.PayPenaltyTrackPayments,
+];
+
+export const interestPages = [
+  ActivePage.ReviewInterestSummary,
+  ActivePage.DownloadInterestPaymentInstructions,
+  ActivePage.PayInterestPenaltyTrackPayments,
 ];
 
 export const generateManageObligationTaskList: (
@@ -103,18 +111,19 @@ export const generateManageObligationTaskList: (
   ];
 
   let ggeaparInterestSection: TaskListElement[] = [];
+  const isObligationFullyPaid = Number(outstandingBalance) === 0;
 
-  if (hasLateSubmissionPenalty) {
+  if (isObligationFullyPaid && hasLateSubmissionPenalty) {
     ggeaparInterestSection = generateGgeaparInterestTaskList(
       complianceReportVersionId,
-      activePage === ActivePage.ReviewInterestSummary,
+      activePage,
     );
   }
 
   let automaticPenaltySection: TaskListElement[] = [];
 
   if (
-    Number(outstandingBalance) === 0 &&
+    isObligationFullyPaid &&
     [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].includes(
       penaltyStatus as PenaltyStatus,
     )

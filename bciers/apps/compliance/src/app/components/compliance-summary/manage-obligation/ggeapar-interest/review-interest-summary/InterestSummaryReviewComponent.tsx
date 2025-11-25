@@ -18,6 +18,7 @@ const InterestSummaryReviewComponent = ({
   complianceReportVersionId,
 }: Props) => {
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
+  const continueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/download-interest-payment-instructions`;
 
   const displayPenaltyStatus =
     data.penalty_status === "Not Paid" ? "Due" : data.penalty_status;
@@ -33,6 +34,7 @@ const InterestSummaryReviewComponent = ({
     >
       <ComplianceStepButtons
         backUrl={backUrl}
+        continueUrl={continueUrl}
         middleButtonText="Generate Interest Invoice"
         className="mt-44"
       />
