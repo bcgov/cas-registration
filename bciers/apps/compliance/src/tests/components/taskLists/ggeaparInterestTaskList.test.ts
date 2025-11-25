@@ -16,7 +16,7 @@ describe("generateGgeaparInterestTaskList", () => {
 
     // Task items
     const taskItems = taskList[0].elements;
-    expect(taskItems).toHaveLength(2);
+    expect(taskItems).toHaveLength(3);
 
     expect(taskItems?.[0]).toEqual({
       type: "Page",
@@ -29,6 +29,13 @@ describe("generateGgeaparInterestTaskList", () => {
       type: "Page",
       title: "Download Payment Instructions",
       link: "/compliance-administration/compliance-summaries/123/download-interest-payment-instructions",
+      isActive: false,
+    });
+
+    expect(taskItems?.[2]).toEqual({
+      type: "Page",
+      title: "Pay Interest and Track Payment(s)",
+      link: "/compliance-administration/compliance-summaries/123/pay-interest-penalty-track-payments",
       isActive: false,
     });
   });
@@ -44,5 +51,7 @@ describe("generateGgeaparInterestTaskList", () => {
 
     expect(section.isExpanded).toBe(true);
     expect(taskItems?.[0].isActive).toBe(true);
+    expect(taskItems?.[1].isActive).toBe(false);
+    expect(taskItems?.[2].isActive).toBe(false);
   });
 });

@@ -17,6 +17,7 @@ interface Props {
   reportingYear: number;
   complianceReportVersionId: number;
   hasLateSubmissionPenalty?: boolean;
+  outstandingBalance?: number;
 }
 
 const PenaltySummaryReviewComponent = ({
@@ -24,9 +25,11 @@ const PenaltySummaryReviewComponent = ({
   reportingYear,
   complianceReportVersionId,
   hasLateSubmissionPenalty,
+  outstandingBalance,
 }: Props) => {
+  const isObligationFullyPaid = Number(outstandingBalance) === 0;
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/${
-    hasLateSubmissionPenalty
+    isObligationFullyPaid && hasLateSubmissionPenalty
       ? "review-interest-summary"
       : "pay-obligation-track-payments"
   }`;

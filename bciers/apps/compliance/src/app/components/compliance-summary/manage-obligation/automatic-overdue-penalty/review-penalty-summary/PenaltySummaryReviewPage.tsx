@@ -45,6 +45,7 @@ export default async function PenaltySummaryReviewPage({
         reportingYear={reportingYear}
         complianceReportVersionId={complianceReportVersionId}
         hasLateSubmissionPenalty={hasLateSubmissionPenalty}
+        outstandingBalance={outstandingBalance}
       />
     </CompliancePageLayout>
   );

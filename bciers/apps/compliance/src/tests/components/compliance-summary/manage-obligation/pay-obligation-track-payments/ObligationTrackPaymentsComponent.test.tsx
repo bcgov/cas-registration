@@ -89,6 +89,30 @@ describe("ObligationTrackPaymentsComponent", () => {
       <ObligationTrackPaymentsComponent
         data={mockData}
         complianceReportVersionId={mockComplianceReportVersionId}
+        outstandingBalance={0}
+        hasLateSubmissionPenalty
+        penaltyStatus="NONE"
+      />,
+    );
+
+    expect(screen.getByTestId("back-button")).toHaveAttribute(
+      "data-url",
+      "/compliance-administration/compliance-summaries/123/download-payment-instructions",
+    );
+    expect(screen.getByTestId("continue-button")).toHaveAttribute(
+      "data-url",
+      "/compliance-administration/compliance-summaries/123/review-interest-summary",
+    );
+  });
+
+  it("renders step buttons with correct URLs when automatic overdue penalty applies", () => {
+    render(
+      <ObligationTrackPaymentsComponent
+        data={mockData}
+        complianceReportVersionId={mockComplianceReportVersionId}
+        outstandingBalance={0}
+        hasLateSubmissionPenalty={false}
+        penaltyStatus="PAID"
       />,
     );
 
@@ -102,16 +126,14 @@ describe("ObligationTrackPaymentsComponent", () => {
     );
   });
 
-  it("does not set continueUrl when outstanding_balance is not 0", () => {
-    const dataWithBalance = {
-      ...mockData,
-      outstanding_balance: 100,
-    };
-
+  it("does not set continueUrl when obligation is not fully paid", () => {
     render(
       <ObligationTrackPaymentsComponent
-        data={dataWithBalance}
+        data={mockData}
         complianceReportVersionId={123}
+        outstandingBalance={100}
+        hasLateSubmissionPenalty={false}
+        penaltyStatus="NONE"
       />,
     );
 

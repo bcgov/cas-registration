@@ -18,6 +18,12 @@ export const generateGgeaparInterestTaskList: (
       link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/download-interest-payment-instructions`,
       isActive: activePage === ActivePage.DownloadInterestPaymentInstructions,
     },
+    {
+      type: "Page" as const,
+      title: "Pay Interest and Track Payment(s)",
+      link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/pay-interest-penalty-track-payments`,
+      isActive: activePage === ActivePage.PayInterestPenaltyTrackPayments,
+    },
   ];
 
   return [

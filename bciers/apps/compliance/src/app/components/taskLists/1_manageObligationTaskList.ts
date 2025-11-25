@@ -54,7 +54,6 @@ export const generateManageObligationTaskList: (
     penaltyStatus,
     hasLateSubmissionPenalty,
   } = tasklistData;
-
   const taskItems = [
     activePage === ActivePage.ApplyComplianceUnits
       ? {

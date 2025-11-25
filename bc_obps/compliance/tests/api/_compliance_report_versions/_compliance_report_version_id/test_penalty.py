@@ -10,7 +10,7 @@ from compliance.models import ElicensingPayment
 
 
 class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
-    """Tests for GET /compliance-report-versions/{id}/penalty endpoint."""
+    """Tests for GET /compliance-report-versions/{id}/automatic-overdue-penalty-summary endpoint."""
 
     @patch(
         "compliance.service.penalty_summary_service.PenaltySummaryService.get_summary_by_compliance_report_version_id"
