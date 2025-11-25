@@ -163,7 +163,11 @@ export const FinalReviewReportSections: React.FC<Props> = ({
         !isEIO && !isSFOReportingOnly && !!reportData.report_compliance_summary,
       getData: (reportData: ReportData) => reportData.report_compliance_summary,
       fields: (reportData: ReportData) =>
-        complianceSummaryFields(reportData.report_compliance_summary?.products),
+        complianceSummaryFields(
+          reportData.report_compliance_summary?.products,
+          reportData.report_compliance_summary?.regulatory_values
+            ?.compliance_period,
+        ),
     },
   ];
   return (
