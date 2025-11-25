@@ -131,6 +131,5 @@ compliance_report_version_manual_handling = Recipe(
     ComplianceReportVersionManualHandling,
     compliance_report_version=foreign_key(compliance_report_version),
     analyst_comment="Test analyst comment",
-    director_comment="Test director comment",
     director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
 )
