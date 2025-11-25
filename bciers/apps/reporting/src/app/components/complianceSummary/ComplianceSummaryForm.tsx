@@ -1,12 +1,12 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import { Box } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import FormBase from "@bciers/components/form/FormBase";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import {
-  complianceSummaryUiSchema,
-  complianceSummarySchema,
+  createComplianceSummaryUiSchema,
+  createComplianceSummarySchema,
 } from "@reporting/src/data/jsonSchema/complianceSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { NavigationInformation } from "../taskList/types";
@@ -42,6 +42,22 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   summaryFormData,
   navigationInformation,
 }) => {
+  // Extract reporting year from compliance_period
+  const reportingYear = useMemo(() => {
+    return parseInt(summaryFormData.regulatory_values.compliance_period, 10);
+  }, [summaryFormData.regulatory_values.compliance_period]);
+
+  // Generate schemas based on reporting year
+  const complianceSummarySchema = useMemo(
+    () => createComplianceSummarySchema(reportingYear),
+    [reportingYear],
+  );
+
+  const complianceSummaryUiSchema = useMemo(
+    () => createComplianceSummaryUiSchema(reportingYear),
+    [reportingYear],
+  );
+
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="compliance-summary">
