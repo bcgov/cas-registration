@@ -405,7 +405,7 @@ class TestSendNotifications:
             compliance_report=compliance_report,
             report_compliance_summary=report_compliance_summary,
         )
-        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', outstanding_balance=Decimal('5.60'))
+        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', invoice_fee_balance=Decimal('5.60'))
         obligation = baker.make_recipe(
             'compliance.tests.utils.compliance_obligation',
             compliance_report_version=compliance_report_version,
@@ -461,7 +461,7 @@ class TestSendNotifications:
             compliance_report=compliance_report,
             report_compliance_summary=report_compliance_summary,
         )
-        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', outstanding_balance=Decimal('5.60'))
+        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', invoice_fee_balance=Decimal('5.60'))
         obligation = baker.make_recipe(
             'compliance.tests.utils.compliance_obligation',
             compliance_report_version=compliance_report_version,
@@ -517,7 +517,7 @@ class TestSendNotifications:
             compliance_report=compliance_report,
             report_compliance_summary=report_compliance_summary,
         )
-        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', outstanding_balance=Decimal('0'))
+        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', invoice_fee_balance=Decimal('0'))
         obligation = baker.make_recipe(
             'compliance.tests.utils.compliance_obligation',
             compliance_report_version=compliance_report_version,

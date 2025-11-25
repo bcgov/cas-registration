@@ -34,8 +34,9 @@ export const createComplianceSummaryReviewSchema = (
       "Outstanding Compliance Obligation",
     ),
     outstanding_balance_tco2e: readOnlyStringField("Outstanding Balance:"),
-    outstanding_balance_equivalent_value:
-      readOnlyStringField("Equivalent Value:"),
+    outstanding_balance_equivalent_value: readOnlyStringField(
+      "Equivalent Value (Not including interest):",
+    ),
   },
 });
 

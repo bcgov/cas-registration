@@ -156,11 +156,11 @@ class ComplianceReportVersionService:
         """
         Calculates the outstanding balance in tonnes of CO₂ equivalent (tCO₂e) for a given compliance report version.
 
-        Converts the outstanding balance from the associated eLicensing invoice
+        Converts the invoice_fee_balance (the balance left from the obligation not including FAA interest) from the associated eLicensing invoice
         into an emissions quantity by dividing it by the applicable compliance charge rate for the reporting year. Or, if the invoice hasn't been created yet, returns the excess_emissions value (initial report) or excess_emissions_delta_from_previous (supplementary report).
 
         The calculation is performed as:
-                outstanding_balance_tCO₂e = outstanding_balance / charge_rate
+                outstanding_balance_tCO₂e = invoice_fee_balance / charge_rate
         """
         obligation = getattr(compliance_report_version, "obligation", None)
         if not obligation:
@@ -174,7 +174,7 @@ class ComplianceReportVersionService:
             else:
                 return compliance_report_version.report_compliance_summary.excess_emissions
 
-        outstanding_balance = max(obligation.elicensing_invoice.outstanding_balance or Decimal("0"), Decimal("0"))
+        invoice_fee_balance = max(obligation.elicensing_invoice.invoice_fee_balance or Decimal("0"), Decimal("0"))
 
         charge_rate = ComplianceChargeRateService.get_rate_for_year(
             compliance_report_version.compliance_report.compliance_period.reporting_year
@@ -182,35 +182,7 @@ class ComplianceReportVersionService:
         if charge_rate == 0:
             return Decimal("0")
 
-        return (outstanding_balance / charge_rate).quantize(Decimal("0.0001"))
-
-    @staticmethod
-    def calculate_outstanding_balance(compliance_report_version: ComplianceReportVersion) -> Decimal:
-        """
-        Calculates the outstanding balance for a compliance report_version.
-        The balance is equal to excess emissions if excess emissions are greater than 0,
-        and 0 otherwise.
-
-        Args:
-            compliance_report_version (ComplianceReportVersion): The compliance report version record
-
-        Returns:
-            Decimal: The outstanding balance
-        """
-
-        # Start with the base outstanding balance (excess emissions if positive, otherwise 0)
-        outstanding_balance = max(compliance_report_version.report_compliance_summary.excess_emissions, ZERO_DECIMAL)
-
-        # Future extension points:
-        # 1. Incorporate monetary payments into the calculation
-        # monetary_payments = _get_monetary_payments(compliance_summary)
-        # outstanding_balance = calculate_with_monetary_payments(outstanding_balance, monetary_payments)
-
-        # 2. Incorporate compliance credits into the calculation
-        # compliance_credits = _get_compliance_credits(compliance_summary)
-        # outstanding_balance = calculate_with_compliance_credits(outstanding_balance, compliance_credits)
-
-        return outstanding_balance
+        return (invoice_fee_balance / charge_rate).quantize(Decimal("0.0001"))
 
     @staticmethod
     def calculate_computed_value_excess_emissions(compliance_report_version: ComplianceReportVersion) -> Decimal:

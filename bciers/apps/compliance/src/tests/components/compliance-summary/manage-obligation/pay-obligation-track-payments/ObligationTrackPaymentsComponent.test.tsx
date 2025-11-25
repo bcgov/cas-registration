@@ -72,7 +72,9 @@ describe("ObligationTrackPaymentsComponent", () => {
     expect(screen.getByText("0")).toBeVisible();
 
     // Check Equivalent Value label and value
-    expect(screen.getByText("Equivalent Value:")).toBeVisible();
+    expect(
+      screen.getByText("Equivalent Value (Not including interest):"),
+    ).toBeVisible();
     expect(screen.getByText("$0.00")).toBeVisible();
 
     // Check a known payment header is rendered

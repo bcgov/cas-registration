@@ -69,7 +69,15 @@ class ElicensingInvoiceListOut(ModelSchema):
 
     class Meta:
         model = ElicensingInvoice
-        fields = ["id", "invoice_number", "outstanding_balance", "due_date", "is_void", "last_refreshed"]
+        fields = [
+            "id",
+            "invoice_number",
+            "outstanding_balance",
+            "invoice_interest_balance",
+            "due_date",
+            "is_void",
+            "last_refreshed",
+        ]
 
 
 class ElicensingInvoiceFilterSchema(FilterSchema):

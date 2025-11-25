@@ -68,6 +68,8 @@ class ElicensingInvoiceService:
     def _prepare_partial_invoice_context(
         cls, compliance_report_version_id: int, invoice: ElicensingInvoice, compliance_obligation_id: str
     ) -> Dict[str, Any]:
+
+        DATE_TODAY = timezone.now().strftime("%b %-d, %Y")
         # Get operation (from report, not admin) information
         report_operation = ComplianceReportVersionService.get_report_operation_by_compliance_report_version(
             compliance_report_version_id
@@ -85,6 +87,17 @@ class ElicensingInvoiceService:
         invoice_number = invoice.invoice_number
         invoice_due_date = invoice.due_date.strftime("%b %-d, %Y") if invoice.due_date else "—"
         amount_due, billing_items, _, _, _ = cls.calculate_invoice_amount_due(invoice)
+        # Apply interest to the invoice if interest exists
+        if invoice.invoice_interest_balance is not None and invoice.invoice_interest_balance > Decimal('0.00'):
+            billing_items.append(
+                {
+                    'date': f'{DATE_TODAY}',
+                    'description': 'FAA Interest',
+                    'amount': '${invoice.invoice_interest_balance:,.2f}',
+                }
+            )
+            amount_due += invoice.invoice_interest_balance
+
         total_amount_due = f"${amount_due.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
 
         return {
@@ -94,7 +107,7 @@ class ElicensingInvoiceService:
             "operation_name": report_operation.operation_name,
             "invoice_number": invoice_number,
             "invoice_due_date": invoice_due_date,
-            'invoice_printed_date': timezone.now().strftime("%b %-d, %Y"),
+            'invoice_printed_date': DATE_TODAY,
             "logo_base64": CLEAN_BC_LOGO_COMPLIANCE_INVOICE,
             'billing_items': billing_items,
             "total_amount_due": total_amount_due,

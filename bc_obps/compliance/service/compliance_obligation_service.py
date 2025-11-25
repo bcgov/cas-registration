@@ -166,7 +166,7 @@ class ComplianceObligationService:
     @staticmethod
     def _get_outstanding_balance_dollars(obligation: ComplianceObligation) -> Decimal:
         """
-        Gets the outstanding balance in dollars for a compliance obligation.
+        Gets the outstanding balance of tCO2e (invoice_fee_balance) in dollars for a compliance obligation.
 
         Args:
             obligation (ComplianceObligation): The compliance obligation
@@ -175,7 +175,7 @@ class ComplianceObligationService:
             Decimal: The outstanding balance amount in dollars
         """
         if obligation.elicensing_invoice:
-            return obligation.elicensing_invoice.outstanding_balance
+            return obligation.elicensing_invoice.invoice_fee_balance  # type:ignore[return-value]
         elif obligation.fee_amount_dollars:
             return obligation.fee_amount_dollars
         return Decimal('0.00')
