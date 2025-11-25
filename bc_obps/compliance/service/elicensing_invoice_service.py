@@ -93,7 +93,7 @@ class ElicensingInvoiceService:
                 {
                     'date': f'{DATE_TODAY}',
                     'description': 'FAA Interest',
-                    'amount': '${invoice.invoice_interest_balance:,.2f}',
+                    'amount': f'${invoice.invoice_interest_balance:,.2f}',
                 }
             )
             amount_due += invoice.invoice_interest_balance
