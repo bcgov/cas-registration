@@ -153,20 +153,20 @@ jobs:
   #         retention-days: 14
 
   # Call Happo api and skip the project if it wasn't affected
-  happo-skip-not-affected:
-    if: ${{ !inputs.is_nx_affected && github.ref_name != 'develop' && github.ref_name != 'main' && github.head_ref != 'develop' && github.head_ref != 'main' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: run happo skip node script
-        shell: bash
-        env:
-          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
-          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          HAPPO_PROJECT: cas-${{ inputs.nx_project }}
-          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          cd bciers
-          node libs/e2e/src/utils/happo-skip.js
+  # happo-skip-not-affected:
+  #   if: ${{ !inputs.is_nx_affected && github.ref_name != 'develop' && github.ref_name != 'main' && github.head_ref != 'develop' && github.head_ref != 'main' }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: dev env setup
+  #       uses: ./.github/actions/dev-env-setup
+  #     - name: run happo skip node script
+  #       shell: bash
+  #       env:
+  #         HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+  #         HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+  #         HAPPO_PROJECT: cas-${{ inputs.nx_project }}
+  #         COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+  #       run: |
+  #         cd bciers
+  #         node libs/e2e/src/utils/happo-skip.js
