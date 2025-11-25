@@ -1,4 +1,4 @@
-import { generateManualHandlingTaskList } from "@/compliance/src/app/components/taskLists/internal/manualHandling";
+import { generateManualHandlingTaskList } from "@/compliance/src/app/components/taskLists/internal/manualHandlingTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import InternalManualHandlingComponent from "@/compliance/src/app/components/compliance-summary/manual-handling/internal/InternalManualHandlingComponent";
 import { getManualHandlingData } from "@/compliance/src/app/utils/getManualHandlingData";

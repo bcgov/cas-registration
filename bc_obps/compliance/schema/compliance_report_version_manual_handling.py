@@ -23,7 +23,6 @@ class ComplianceReportVersionManualHandlingOut(ModelSchema):
         model = ComplianceReportVersionManualHandling
         fields = [
             "handling_type",
-            "context",
             "analyst_comment",
             "analyst_submitted_date",
             "director_decision",

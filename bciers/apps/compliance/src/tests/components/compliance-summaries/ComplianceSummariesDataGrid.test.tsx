@@ -444,6 +444,7 @@ describe("ComplianceSummariesDataGrid component", () => {
       penalty_status: null,
       obligation_id: null,
       requires_manual_handling: true,
+      director_decision: "pending_manual_handling",
     } as unknown as ComplianceSummary;
 
     const dataWithManual = {
@@ -476,5 +477,137 @@ describe("ComplianceSummariesDataGrid component", () => {
 
     //highlighted row class if your DataGrid passes getRowClassName
     expect(manualRowEl!).toHaveClass("row--highlight");
+  });
+
+  it("shows 'Issue Resolved' (non-link) when director_decision is issue_resolved", () => {
+    const resolvedRow: ComplianceSummary = {
+      id: 100,
+      operation_name: "Operation Resolved",
+      reporting_year: 2024,
+      excess_emissions: 0,
+      outstanding_balance: 0,
+      status: "No obligation or earned credits",
+      penalty_status: null,
+      obligation_id: null,
+      requires_manual_handling: false,
+      director_decision: "issue_resolved",
+    } as unknown as ComplianceSummary;
+
+    const dataWithResolved = {
+      ...mockResponse,
+      rows: [...mockResponse.rows, resolvedRow],
+      row_count: (mockResponse.row_count ?? 0) + 1,
+    };
+
+    render(
+      <ComplianceSummariesDataGrid
+        initialData={dataWithResolved}
+        isAllowedCas={false}
+      />,
+    );
+
+    const summaryRows = screen.getAllByRole("row");
+    const resolvedRowEl = summaryRows.find((row) =>
+      within(row).queryByText("Operation Resolved"),
+    );
+    expect(resolvedRowEl).toBeTruthy();
+
+    // shows Issue Resolved text
+    expect(within(resolvedRowEl!).getByText("Issue Resolved")).toBeVisible();
+
+    // not a link
+    expect(
+      within(resolvedRowEl!).queryByRole("link", { name: /Issue Resolved/i }),
+    ).toBeNull();
+  });
+
+  it("shows 'Resolve Issue' link to resolve-issue for CAS users when director_decision is pending_manual_handling", () => {
+    const manualRowCas: ComplianceSummary = {
+      id: 102,
+      operation_name: "Operation Manual CAS",
+      reporting_year: 2024,
+      excess_emissions: 0,
+      outstanding_balance: 0,
+      status: "No obligation or earned credits",
+      display_status: "Supplementary report - action required",
+      penalty_status: null,
+      obligation_id: null,
+      requires_manual_handling: true,
+      director_decision: "pending_manual_handling",
+    } as unknown as ComplianceSummary;
+
+    const dataWithManualCas = {
+      ...mockResponse,
+      rows: [...mockResponse.rows, manualRowCas],
+      row_count: (mockResponse.row_count ?? 0) + 1,
+    };
+
+    render(
+      <ComplianceSummariesDataGrid
+        initialData={dataWithManualCas}
+        isAllowedCas={true}
+      />,
+    );
+
+    const summaryRows = screen.getAllByRole("row");
+    const manualRowEl = summaryRows.find((row) =>
+      within(row).queryByText("Operation Manual CAS"),
+    );
+    expect(manualRowEl).toBeTruthy();
+
+    // CAS should see a clickable "Resolve Issue" link
+    const link = within(manualRowEl!).getByRole("link", {
+      name: "Resolve Issue",
+    });
+    expect(link).toBeVisible();
+    expect(link).toHaveAttribute(
+      "href",
+      "/compliance-administration/compliance-summaries/102/resolve-issue",
+    );
+  });
+
+  it("shows 'View Detail' link to resolve-issue for CAS users when director_decision is issue_resolved", () => {
+    const resolvedRowCas: ComplianceSummary = {
+      id: 101,
+      operation_name: "Operation Resolved CAS",
+      reporting_year: 2024,
+      excess_emissions: 0,
+      outstanding_balance: 0,
+      status: "No obligation or earned credits",
+      display_status: "Supplementary report - resolved",
+      penalty_status: null,
+      obligation_id: null,
+      requires_manual_handling: false,
+      director_decision: "issue_resolved",
+    } as unknown as ComplianceSummary;
+
+    const dataWithResolvedCas = {
+      ...mockResponse,
+      rows: [...mockResponse.rows, resolvedRowCas],
+      row_count: (mockResponse.row_count ?? 0) + 1,
+    };
+
+    render(
+      <ComplianceSummariesDataGrid
+        initialData={dataWithResolvedCas}
+        isAllowedCas={true}
+      />,
+    );
+
+    const summaryRows = screen.getAllByRole("row");
+    const resolvedRowEl = summaryRows.find((row) =>
+      within(row).queryByText("Operation Resolved CAS"),
+    );
+    expect(resolvedRowEl).toBeTruthy();
+
+    // CAS should see a clickable "View Detail" link
+    const link = within(resolvedRowEl!).getByRole("link", {
+      name: "View Detail",
+    });
+    expect(link).toBeVisible();
+    expect(link).toHaveAttribute(
+      "href",
+      "/compliance-administration/compliance-summaries/101/resolve-issue",
+    );
   });
 });
