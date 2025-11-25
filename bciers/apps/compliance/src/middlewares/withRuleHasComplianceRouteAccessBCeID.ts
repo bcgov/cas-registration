@@ -302,11 +302,12 @@ const permissionRules: PermissionRule[] = [
           | PenaltyStatus
           | undefined;
 
-        // Redirect if the balance is not 0 OR the penalty status is not NOT_PAID or PAID
+        // Redirect if the balance is not 0 OR the penalty status is not one of NOT_PAID or PAID
         const allowAccess =
           outstandingBalance === 0 &&
-          (penaltyStatus === PenaltyStatus.NOT_PAID ||
-            penaltyStatus === PenaltyStatus.PAID);
+          [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].includes(
+            penaltyStatus as PenaltyStatus,
+          );
 
         if (!allowAccess) return false;
       }

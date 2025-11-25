@@ -6,10 +6,18 @@ const generateInvoice = async (
   complianceReportVersionId: number,
   invoiceType: ComplianceInvoiceTypes,
 ) => {
-  const typeForUrl =
-    invoiceType === ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY
-      ? "automatic-overdue-penalty"
-      : "obligation";
+  let typeForUrl: string;
+
+  switch (invoiceType) {
+    case ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY:
+      typeForUrl = "automatic-overdue-penalty";
+      break;
+    case ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY:
+      typeForUrl = "late-submission-penalty";
+      break;
+    default:
+      typeForUrl = "obligation";
+  }
 
   const res = await fetch(
     `/compliance/api/invoice/${complianceReportVersionId}/${typeForUrl}`,

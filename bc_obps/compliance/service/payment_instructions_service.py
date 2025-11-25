@@ -72,7 +72,11 @@ class PaymentInstructionsService:
             'invoice_number': refreshResult.invoice.invoice_number
             if refreshResult.invoice
             else "Missing Invoice Number",
-            'is_penalty': True if invoice_type == ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY else False,
+            'is_penalty': invoice_type
+            in {
+                ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
+                ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY,
+            },
             'logo_base64': CLEAN_BC_LOGO_COMPLIANCE_INVOICE,
         }
 

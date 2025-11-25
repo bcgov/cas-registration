@@ -14,6 +14,10 @@ class CompliancePenalty(TimeStampedModel):
         DAILY = 'Daily'
         MONTHLY = 'Monthly'
 
+    class Status(models.TextChoices):
+        NOT_PAID = 'NOT PAID', 'Not Paid'
+        PAID = 'PAID', 'Paid'
+
     compliance_obligation = models.ForeignKey(
         ComplianceObligation,
         on_delete=models.CASCADE,
@@ -45,14 +49,14 @@ class CompliancePenalty(TimeStampedModel):
     accrual_frequency = models.CharField(
         max_length=20,
         choices=Frequency.choices,
+        default=Frequency.DAILY,
         db_comment="Defines how often the penalty accrues (e.g., daily for Automatic Overdue, daily for Late Submission)",
     )
 
     compounding_frequency = models.CharField(
         max_length=20,
         choices=Frequency.choices,
-        null=True,
-        blank=True,
+        default=Frequency.DAILY,
         db_comment="Defines how often interest is compounded for this penalty (e.g., daily or monthly).",
     )
 
@@ -67,6 +71,13 @@ class CompliancePenalty(TimeStampedModel):
         max_length=100,
         choices=PenaltyType.choices,
         db_comment="The type of penalty.",
+    )
+
+    status = models.CharField(
+        max_length=50,
+        choices=Status.choices,
+        default=Status.NOT_PAID,
+        db_comment="The status of this penalty (e.g., NOT PAID, PAID)",
     )
 
     class Meta(TimeStampedModel.Meta):

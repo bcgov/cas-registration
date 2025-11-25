@@ -28,6 +28,7 @@ export default async function ObligationTrackPaymentsPayPage({
     reporting_year: reportingYear,
     outstanding_balance_tco2e: outstandingBalance,
     has_late_submission_penalty: hasLateSubmissionPenalty,
+    has_overdue_penalty: hasOverduePenalty,
   } = await getComplianceSummary(complianceReportVersionId);
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
@@ -36,6 +37,7 @@ export default async function ObligationTrackPaymentsPayPage({
       reportingYear,
       outstandingBalance,
       hasLateSubmissionPenalty,
+      hasOverduePenalty,
     },
     ActivePage.PayObligationTrackPayments,
   );
@@ -48,6 +50,9 @@ export default async function ObligationTrackPaymentsPayPage({
       <ObligationTrackPaymentsComponent
         data={data}
         complianceReportVersionId={complianceReportVersionId}
+        outstandingBalance={outstandingBalance}
+        hasLateSubmissionPenalty={hasLateSubmissionPenalty}
+        penaltyStatus={penaltyStatus}
       />
     </CompliancePageLayout>
   );

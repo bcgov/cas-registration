@@ -50,6 +50,9 @@ describe("InternalComplianceSummaryReviewPage (Manage Obligation)", () => {
     reporting_year: 2026,
     operation_name: "Mock Operation",
     excess_emissions: 0,
+    has_late_submission_penalty: true,
+    penalty_status: "NOT PAID",
+    outstanding_balance_tco2e: 0,
   } as any;
 
   beforeEach(() => {
@@ -75,8 +78,13 @@ describe("InternalComplianceSummaryReviewPage (Manage Obligation)", () => {
       mockComplianceReportVersionId,
     );
     expect(generateReviewObligationPenaltyTaskList).toHaveBeenCalledWith(
-      456,
-      2026,
+      mockComplianceReportVersionId,
+      {
+        reportingYear: mockData.reporting_year,
+        penaltyStatus: mockData.penalty_status,
+        outstandingBalance: mockData.outstanding_balance_tco2e,
+        hasLateSubmissionPenalty: mockData.has_late_submission_penalty,
+      },
       ActivePage.ReviewComplianceObligationReport,
     );
   });

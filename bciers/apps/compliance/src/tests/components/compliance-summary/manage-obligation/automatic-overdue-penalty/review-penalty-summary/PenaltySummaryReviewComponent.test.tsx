@@ -133,13 +133,14 @@ describe("PenaltySummaryReviewComponent", () => {
     );
   });
 
-  it("uses review-interest-summary as back URL when hasLateSubmissionPenalty is true", () => {
+  it("uses pay-interest-penalty-track-payments as back URL when obligation is fully paid and hasLateSubmissionPenalty is true", () => {
     render(
       <PenaltySummaryReviewComponent
         data={mockData}
         reportingYear={2024}
         complianceReportVersionId={456}
         hasLateSubmissionPenalty
+        outstandingBalance={0}
       />,
     );
 
@@ -147,7 +148,7 @@ describe("PenaltySummaryReviewComponent", () => {
     expect(backButton).toBeVisible();
     expect(backButton).toHaveAttribute(
       "data-url",
-      "/compliance-administration/compliance-summaries/456/review-interest-summary",
+      "/compliance-administration/compliance-summaries/456/pay-interest-penalty-track-payments",
     );
 
     const continueButton = screen.getByTestId("continue-button");

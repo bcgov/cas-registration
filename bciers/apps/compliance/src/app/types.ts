@@ -158,7 +158,8 @@ export interface ComplianceSummary {
   emissions_attributable_for_compliance?: string;
   emissions_limit?: string;
   requires_manual_handling?: boolean;
-  has_late_submission_penalty?: boolean;
+  has_late_submission_penalty: boolean;
+  has_overdue_penalty: boolean;
 }
 
 export interface ComplianceAppliedUnitsData {
@@ -221,6 +222,7 @@ export interface ObligationTasklistData {
   penaltyStatus?: string;
   outstandingBalance?: number;
   hasLateSubmissionPenalty?: boolean;
+  hasOverduePenalty?: boolean;
 }
 export type ElicensingLastRefreshData = {
   last_refreshed_display: string;

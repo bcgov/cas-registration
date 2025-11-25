@@ -1,0 +1,27 @@
+from django.http import HttpRequest, StreamingHttpResponse
+from compliance.service.elicensing_invoice_service import ElicensingInvoiceService
+from service.error_service.custom_codes_4xx import custom_codes_4xx
+from registration.schema.generic import Message
+from compliance.api.router import router
+from compliance.constants import COMPLIANCE
+from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
+
+
+@router.get(
+    "/compliance-report-versions/{compliance_report_version_id}/late-submission-penalty/invoice/pdf",
+    response={200: None, custom_codes_4xx: Message},
+    tags=COMPLIANCE,
+    description="Generate a PDF invoice for a compliance report version's late submission penalty and stream it to the client",
+    auth=approved_industry_user_compliance_report_version_composite_auth,
+)
+def generate_compliance_report_version_late_submission_penalty_invoice(
+    request: HttpRequest, compliance_report_version_id: int
+) -> StreamingHttpResponse:
+    """
+    Generate a PDF invoice for a compliance report version's late submission penalty.
+    Delegates context-building and error handling to ElicensingInvoiceService.generate_late_submission_penalty_invoice_pdf.
+    """
+
+    result = ElicensingInvoiceService.generate_late_submission_penalty_invoice_pdf(compliance_report_version_id)
+
+    return ElicensingInvoiceService.create_pdf_response(result)

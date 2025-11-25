@@ -24,15 +24,13 @@ vi.mock(
 vi.mock(
   "@/compliance/src/app/components/taskLists/ggeaparInterestTaskList",
   () => ({
-    generateGgeaparInterestTaskList: vi
-      .fn()
-      .mockImplementation((id: number, isActive?: boolean) => [
-        {
-          type: "Section",
-          title: "GGEAPAR Interest",
-          isExpanded: Boolean(isActive),
-        },
-      ]),
+    generateGgeaparInterestTaskList: vi.fn().mockImplementation(() => [
+      {
+        type: "Section",
+        title: "GGEAPAR Interest",
+        isExpanded: true,
+      },
+    ]),
   }),
 );
 
@@ -103,6 +101,7 @@ describe("generateManageObligationTaskList", () => {
   it("adds GGEAPAR Interest section when hasLateSubmissionPenalty is true (inactive by default)", () => {
     const dataWithInterest = {
       ...mockObligationTasklistData,
+      outstandingBalance: 0,
       hasLateSubmissionPenalty: true,
     };
 
@@ -115,13 +114,14 @@ describe("generateManageObligationTaskList", () => {
     expect(taskList[1].title).toBe("GGEAPAR Interest");
     expect(generateGgeaparInterestTaskList).toHaveBeenCalledWith(
       mockComplianceReportVersionId,
-      false,
+      ActivePage.ReviewComplianceSummary,
     );
   });
 
   it("marks GGEAPAR Interest active when ActivePage.ReviewInterestSummary is selected", () => {
     const dataWithInterest = {
       ...mockObligationTasklistData,
+      outstandingBalance: 0,
       hasLateSubmissionPenalty: true,
     };
 
@@ -136,7 +136,7 @@ describe("generateManageObligationTaskList", () => {
     expect(taskList[1].isExpanded).toBe(true);
     expect(generateGgeaparInterestTaskList).toHaveBeenCalledWith(
       mockComplianceReportVersionId,
-      true,
+      ActivePage.ReviewInterestSummary,
     );
   });
 
@@ -219,7 +219,7 @@ describe("generateManageObligationTaskList", () => {
         screen.queryByText("Automatic Overdue Penalty"),
       ).not.toBeInTheDocument();
 
-      // Verify that generateAutomaticOverduePenaltyTaskList was notcalled
+      // Verify that generateAutomaticOverduePenaltyTaskList was not called
       expect(generateAutomaticOverduePenaltyTaskList).not.toHaveBeenCalled();
     },
   );
@@ -230,6 +230,7 @@ describe("generateManageObligationTaskList", () => {
         reportingYear: 2024,
         outstandingBalance: 0,
         penaltyStatus: penaltyStatus,
+        hasOverduePenalty: true,
       };
 
       // Generate task list

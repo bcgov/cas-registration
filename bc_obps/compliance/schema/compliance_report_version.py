@@ -58,7 +58,8 @@ class ComplianceReportVersionOut(ModelSchema):
     outstanding_balance_equivalent_value: Optional[Decimal] = None
     penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
     requires_manual_handling: Optional[bool] = None
-    has_late_submission_penalty: Optional[bool] = None
+    has_late_submission_penalty: bool
+    has_overdue_penalty: bool
 
     @staticmethod
     def resolve_has_late_submission_penalty(obj: Any) -> bool:
@@ -71,6 +72,19 @@ class ComplianceReportVersionOut(ModelSchema):
 
         return CompliancePenalty.objects.filter(
             compliance_obligation=obj.obligation, penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION
+        ).exists()
+
+    @staticmethod
+    def resolve_has_overdue_penalty(obj: Any) -> bool:
+        """
+        Check if an automatic overdue penalty exists for this compliance report version.
+        """
+
+        if not hasattr(obj, 'obligation') or not obj.obligation:
+            return False
+
+        return CompliancePenalty.objects.filter(
+            compliance_obligation=obj.obligation, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
         ).exists()
 
     class Meta:

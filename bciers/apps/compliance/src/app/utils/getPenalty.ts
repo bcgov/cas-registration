@@ -5,7 +5,7 @@ export const getPenaltyData = async (
   complianceReportVersionId: number,
 ): Promise<PenaltyData> => {
   const data = await actionHandler(
-    `compliance/compliance-report-versions/${complianceReportVersionId}/penalty`,
+    `compliance/compliance-report-versions/${complianceReportVersionId}/automatic-overdue-penalty-summary`,
     "GET",
     "",
   );

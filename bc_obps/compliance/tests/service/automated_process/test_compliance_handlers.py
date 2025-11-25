@@ -11,7 +11,7 @@ from compliance.service.automated_process.compliance_handlers import (
     ObligationPaidHandler,
     ComplianceHandlerManager,
 )
-from compliance.models import ComplianceObligation, ComplianceReportVersion
+from compliance.models import ComplianceObligation, ComplianceReportVersion, CompliancePenalty
 from common.lib import pgtrigger
 
 pytestmark = pytest.mark.django_db
@@ -37,6 +37,9 @@ class TestPenaltyPaidHandler:
         self.handler = PenaltyPaidHandler()
 
     def test_can_handle_with_penalty_and_paid(self):
+        self.penalty.status = CompliancePenalty.Status.NOT_PAID
+        self.penalty.save(update_fields=["status"])
+
         result = self.handler.can_handle(self.invoice)
         assert result is True
 
@@ -54,8 +57,8 @@ class TestPenaltyPaidHandler:
         assert result is False
 
     def test_can_not_handle_penalty_already_paid(self):
-        self.obligation.penalty_status = ComplianceObligation.PenaltyStatus.PAID
-        self.obligation.save()
+        self.penalty.status = CompliancePenalty.Status.PAID
+        self.penalty.save(update_fields=["status"])
 
         result = self.handler.can_handle(self.invoice)
         assert result is False

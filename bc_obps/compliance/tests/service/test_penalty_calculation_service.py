@@ -298,7 +298,7 @@ class TestPenaltyCalculationService:
         )
         result = PenaltyCalculationService.get_automatic_overdue_penalty_data(self.compliance_report_version.id)
         assert result == {
-            "penalty_status": self.obligation.penalty_status,
+            "penalty_status": compliance_penalty.status,
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             "penalty_charge_rate": PenaltyCalculationService.DAILY_PENALTY_RATE * 100,
             "days_late": 1,
@@ -338,19 +338,20 @@ class TestPenaltyCalculationService:
             interest_rate=Decimal("0.0695"),
         )
         # Create late submission penalty
-        baker.make_recipe(
+        late_penalty = baker.make_recipe(
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.obligation,
             penalty_amount=Decimal("15000.00"),
             penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
             accrual_frequency=CompliancePenalty.Frequency.DAILY,
             compounding_frequency=CompliancePenalty.Frequency.MONTHLY,
+            status=CompliancePenalty.Status.NOT_PAID,
         )
 
         result = PenaltyCalculationService.get_late_submission_penalty_data(self.compliance_report_version.id)
 
         assert result["has_penalty"] is True
-        assert result["penalty_status"] == self.obligation.penalty_status
+        assert result["penalty_status"] == late_penalty.status
         assert result["penalty_type"] == CompliancePenalty.PenaltyType.LATE_SUBMISSION
         assert result["penalty_amount"] == Decimal("15000.00")
         assert result["faa_interest"] == Decimal("0.00")
@@ -372,7 +373,7 @@ class TestPenaltyCalculationService:
         result = PenaltyCalculationService.get_late_submission_penalty_data(self.compliance_report_version.id)
 
         assert result["has_penalty"] is False
-        assert result["penalty_status"] == self.obligation.penalty_status
+        assert result["penalty_status"] == CompliancePenalty.Status.NOT_PAID
         assert result["penalty_type"] == CompliancePenalty.PenaltyType.LATE_SUBMISSION
         assert result["penalty_amount"] == Decimal("0.00")
         assert result["faa_interest"] == Decimal("0.00")

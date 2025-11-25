@@ -72,7 +72,11 @@ class TestComplianceObligationService:
 
     @patch('compliance.tasks.retryable_send_notice_of_obligation_email')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
-    def test_create_compliance_obligation_success(self, mock_get_rate, mock_send_email):
+    def test_create_compliance_obligation_success(
+        self,
+        mock_get_rate,
+        mock_send_email,
+    ):
         """Test successful creation of a compliance obligation"""
         # Set up mocks
         report_compliance_summary = baker.make_recipe(

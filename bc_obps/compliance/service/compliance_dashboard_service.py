@@ -222,20 +222,23 @@ class ComplianceDashboardService:
 
     @classmethod
     def get_penalty_payments_by_compliance_report_version_id(
-        cls, compliance_report_version_id: int
+        cls,
+        compliance_report_version_id: int,
+        invoice_type: ComplianceInvoiceTypes = ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
     ) -> QuerySet[ElicensingPayment]:
-        """
-        Fetches the monetary payments made towards a compliance penalty
+        """Fetches the monetary payments made towards a compliance penalty invoice.
 
         Args:
-            compliance_report_version_id: The ID of the compliance report version the penalty belongs to
+            compliance_report_version_id: The ID of the compliance report version the penalty belongs to.
+            invoice_type: The type of penalty invoice to use when retrieving payments.
+
         Returns:
             The set of payment records that relate to the compliance penalty via the elicensing invoice
         """
 
         refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id,
-            invoice_type=ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
+            invoice_type=invoice_type,
         )
 
         return ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)

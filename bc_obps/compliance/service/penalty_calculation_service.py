@@ -64,7 +64,7 @@ class PenaltyCalculationService:
         total_amount = penalty.penalty_amount + faa_interest if faa_interest else penalty.penalty_amount
 
         return {
-            "penalty_status": obligation.penalty_status,
+            "penalty_status": penalty.status,
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             "penalty_charge_rate": (cls.DAILY_PENALTY_RATE * 100).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
             "days_late": penalty.compliance_penalty_accruals.count(),
@@ -107,7 +107,7 @@ class PenaltyCalculationService:
         if not late_submission_penalty:
             return {
                 "has_penalty": False,
-                "penalty_status": obligation.penalty_status,
+                "penalty_status": CompliancePenalty.Status.NOT_PAID,
                 "penalty_type": CompliancePenalty.PenaltyType.LATE_SUBMISSION,
                 "penalty_amount": Decimal('0.00'),
                 "faa_interest": Decimal('0.00'),
@@ -120,7 +120,7 @@ class PenaltyCalculationService:
 
         return {
             "has_penalty": True,
-            "penalty_status": obligation.penalty_status,
+            "penalty_status": late_submission_penalty.status,
             "penalty_type": CompliancePenalty.PenaltyType.LATE_SUBMISSION,
             "penalty_amount": penalty_amount,
             "faa_interest": faa_interest,
@@ -270,6 +270,7 @@ class PenaltyCalculationService:
                 accrual_frequency=CompliancePenalty.Frequency.DAILY,
                 compounding_frequency=CompliancePenalty.Frequency.DAILY,
                 penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+                status=CompliancePenalty.Status.NOT_PAID,
             )
 
         last_calculation_day = final_accrual_date if final_accrual_date else cls.TODAY
@@ -313,7 +314,11 @@ class PenaltyCalculationService:
             total_penalty = base * Decimal('3.00')
 
         if persist_penalty_data:
-            penalty_invoice = PenaltyCalculationService.create_penalty_invoice(obligation=obligation, total_penalty=total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP), final_accrual_date=final_accrual_date)  # type: ignore [arg-type]
+            penalty_invoice = PenaltyCalculationService.create_penalty_invoice(
+                obligation=obligation,
+                total_penalty=total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+                final_accrual_date=final_accrual_date,  # type: ignore [arg-type]
+            )
             compliance_penalty_record.elicensing_invoice = penalty_invoice
             compliance_penalty_record.penalty_amount = total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
             compliance_penalty_record.save()
@@ -322,8 +327,10 @@ class PenaltyCalculationService:
 
         total_amount = total_penalty + faa_interest
 
+        penalty_status = compliance_penalty_record.status if persist_penalty_data else CompliancePenalty.Status.NOT_PAID
+
         result = {
-            "penalty_status": obligation.penalty_status,
+            "penalty_status": penalty_status,
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             "penalty_charge_rate": cls.DAILY_PENALTY_RATE * 100,
             "days_late": days_late,

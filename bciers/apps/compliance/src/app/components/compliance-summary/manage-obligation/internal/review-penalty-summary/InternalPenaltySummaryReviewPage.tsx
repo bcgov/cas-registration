@@ -3,7 +3,9 @@ import {
   ActivePage,
 } from "@/compliance/src/app/components/taskLists/internal/reviewObligationPenaltyTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
+import getAutomaticOverduePenalty from "@/compliance/src/app/utils/getAutomaticOverduePenalty";
+import { InternalPenaltySummaryReviewComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-penalty-summary/InternalPenaltySummaryReviewComponent";
+import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
 
 interface Props {
   compliance_report_version_id: number;
@@ -12,11 +14,24 @@ interface Props {
 export default async function InternalPenaltySummaryReviewPage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<Props>) {
-  const { reporting_year: reportingYear } = await getReportingYear();
+  const penaltyData = await getAutomaticOverduePenalty(
+    complianceReportVersionId,
+  );
+  const {
+    reporting_year: reportingYear,
+    penalty_status: penaltyStatus,
+    outstanding_balance_tco2e: outstandingBalance,
+    has_late_submission_penalty: hasLateSubmissionPenalty,
+  } = await getComplianceSummary(complianceReportVersionId);
 
   const taskListElements = generateReviewObligationPenaltyTaskList(
     complianceReportVersionId,
-    reportingYear,
+    {
+      reportingYear,
+      penaltyStatus,
+      outstandingBalance,
+      hasLateSubmissionPenalty,
+    },
     ActivePage.ReviewPenaltySummary,
   );
 
@@ -25,7 +40,11 @@ export default async function InternalPenaltySummaryReviewPage({
       complianceReportVersionId={complianceReportVersionId}
       taskListElements={taskListElements}
     >
-      TBD — task #280
+      <InternalPenaltySummaryReviewComponent
+        data={penaltyData}
+        complianceReportVersionId={complianceReportVersionId}
+        hasLateSubmissionPenalty={hasLateSubmissionPenalty}
+      />
     </CompliancePageLayout>
   );
 }

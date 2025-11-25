@@ -16,9 +16,21 @@ export default async function InternalComplianceSummaryReviewPage({
   const complianceSummaryReviewPageData: ComplianceSummary =
     await getComplianceSummary(complianceReportVersionId);
 
+  const {
+    reporting_year: reportingYear,
+    has_late_submission_penalty: hasLateSubmissionPenalty,
+    penalty_status: penaltyStatus,
+    outstanding_balance_tco2e: outstandingBalance,
+  } = complianceSummaryReviewPageData;
+
   const taskListElements = generateReviewObligationPenaltyTaskList(
     complianceReportVersionId,
-    complianceSummaryReviewPageData.reporting_year,
+    {
+      reportingYear,
+      penaltyStatus,
+      outstandingBalance,
+      hasLateSubmissionPenalty,
+    },
     ActivePage.ReviewComplianceObligationReport,
   );
 
@@ -29,6 +41,7 @@ export default async function InternalComplianceSummaryReviewPage({
     >
       <InternalComplianceSummaryReviewComponent
         data={complianceSummaryReviewPageData}
+        complianceReportVersionId={complianceReportVersionId}
       />
     </CompliancePageLayout>
   );

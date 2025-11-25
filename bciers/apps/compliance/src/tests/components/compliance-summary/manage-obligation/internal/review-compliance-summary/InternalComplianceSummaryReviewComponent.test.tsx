@@ -1,11 +1,20 @@
 import { render, screen } from "@testing-library/react";
 import { InternalComplianceSummaryReviewComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/InternalComplianceSummaryReviewComponent";
 
-// Mock the step buttons to assert the backUrl
+// Mock the step buttons to assert the backUrl and continueUrl
 vi.mock("@/compliance/src/app/components/ComplianceStepButtons", () => ({
   __esModule: true,
-  default: ({ backUrl }: { backUrl: string }) => (
-    <div>Mock Buttons - {backUrl}</div>
+  default: ({
+    backUrl,
+    continueUrl,
+  }: {
+    backUrl: string;
+    continueUrl?: string;
+  }) => (
+    <div>
+      <div>Back: {backUrl}</div>
+      <div>Continue: {continueUrl}</div>
+    </div>
   ),
 }));
 
@@ -26,7 +35,12 @@ describe("InternalComplianceSummaryReviewComponent", () => {
   } as any;
 
   it("renders section headers", () => {
-    render(<InternalComplianceSummaryReviewComponent data={baseData} />);
+    render(
+      <InternalComplianceSummaryReviewComponent
+        data={baseData}
+        complianceReportVersionId={123}
+      />,
+    );
 
     expect(
       screen.getByText("Review 2030 Compliance Obligation Report"),
@@ -36,7 +50,12 @@ describe("InternalComplianceSummaryReviewComponent", () => {
   });
 
   it("renders all field labels", () => {
-    render(<InternalComplianceSummaryReviewComponent data={baseData} />);
+    render(
+      <InternalComplianceSummaryReviewComponent
+        data={baseData}
+        complianceReportVersionId={123}
+      />,
+    );
 
     expect(screen.getByText("Obligation ID:")).toBeVisible();
     expect(screen.getByText("2030 Compliance Charge Rate:")).toBeVisible();
@@ -45,11 +64,58 @@ describe("InternalComplianceSummaryReviewComponent", () => {
   });
 
   it("renders step buttons with back URL", () => {
-    render(<InternalComplianceSummaryReviewComponent data={baseData} />);
+    render(
+      <InternalComplianceSummaryReviewComponent
+        data={baseData}
+        complianceReportVersionId={123}
+      />,
+    );
+    expect(
+      screen.getByText("Back: /compliance-administration/compliance-summaries"),
+    ).toBeVisible();
+  });
+
+  it("navigates to interest review when there is a late submission penalty", () => {
+    const dataWithInterest = {
+      ...baseData,
+      outstanding_balance_tco2e: 0,
+      has_late_submission_penalty: true,
+      penalty_status: "NOT PAID",
+    };
+
+    render(
+      <InternalComplianceSummaryReviewComponent
+        data={dataWithInterest as any}
+        complianceReportVersionId={123}
+      />,
+    );
+
     expect(
       screen.getByText(
-        "Mock Buttons - /compliance-administration/compliance-summaries",
+        "Continue: /compliance-administration/compliance-summaries/123/review-interest-summary",
       ),
-    ).toBeInTheDocument();
+    ).toBeVisible();
+  });
+
+  it("navigates to penalty review when balance is zero and penalty is applicable", () => {
+    const dataWithPenalty = {
+      ...baseData,
+      outstanding_balance_tco2e: 0,
+      has_late_submission_penalty: false,
+      penalty_status: "NOT PAID",
+    };
+
+    render(
+      <InternalComplianceSummaryReviewComponent
+        data={dataWithPenalty as any}
+        complianceReportVersionId={123}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "Continue: /compliance-administration/compliance-summaries/123/review-penalty-summary",
+      ),
+    ).toBeVisible();
   });
 });

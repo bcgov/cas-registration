@@ -17,6 +17,7 @@ interface Props {
   reportingYear: number;
   complianceReportVersionId: number;
   hasLateSubmissionPenalty?: boolean;
+  outstandingBalance?: number;
 }
 
 const PenaltySummaryReviewComponent = ({
@@ -24,10 +25,12 @@ const PenaltySummaryReviewComponent = ({
   reportingYear,
   complianceReportVersionId,
   hasLateSubmissionPenalty,
+  outstandingBalance,
 }: Props) => {
+  const isObligationFullyPaid = Number(outstandingBalance) === 0;
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/${
-    hasLateSubmissionPenalty
-      ? "review-interest-summary"
+    isObligationFullyPaid && hasLateSubmissionPenalty
+      ? "pay-interest-penalty-track-payments"
       : "pay-obligation-track-payments"
   }`;
   const saveAndContinueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`;
@@ -35,6 +38,11 @@ const PenaltySummaryReviewComponent = ({
   const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingPenaltyInvoice, setIsGeneratingPenaltyInvoice] =
     useState(false);
+
+  const displayPenaltyStatus =
+    data.penalty_status === "Not Paid" ? "Due" : data.penalty_status;
+
+  const formData = { ...data, penalty_status: displayPenaltyStatus };
 
   const handleGeneratePenaltyInvoice = async () => {
     setErrors([]);
@@ -58,7 +66,7 @@ const PenaltySummaryReviewComponent = ({
       <FormBase
         schema={createPenaltySummaryReviewSchema(reportingYear)}
         uiSchema={penaltySummaryReviewUiSchema}
-        formData={data}
+        formData={formData}
         className="w-full"
       >
         <ComplianceStepButtons

@@ -22,3 +22,4 @@ class ComplianceTableNames(Enum):
 class ComplianceInvoiceTypes(Enum):
     OBLIGATION = "obligation"
     AUTOMATIC_OVERDUE_PENALTY = "automatic overdue penalty"
+    LATE_SUBMISSION_PENALTY = "late submission penalty"

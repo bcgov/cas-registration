@@ -16,6 +16,9 @@ from ._compliance_report_versions._compliance_report_version_id import (
 from ._compliance_report_versions._compliance_report_version_id._automatic_overdue_penalty.invoice import (
     pdf as penalty_invoice,
 )
+from ._compliance_report_versions._compliance_report_version_id._late_submission_penalty.invoice import (
+    pdf as late_submission_penalty_invoice,
+)
 from ._compliance_report_versions._compliance_report_version_id._obligation import payments
 from ._bccr._accounts._account_id._compliance_report_versions._compliance_report_version_id import account_id
 from ._bccr._compliance_report_versions._compliance_report_version_id import applied_compliance_units

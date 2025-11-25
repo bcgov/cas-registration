@@ -36,7 +36,7 @@ describe("InterestSummaryReviewComponent", () => {
 
     // Minimal key-value checks following repo style: label and value asserted separately
     expect(screen.getByText("Status:")).toBeVisible();
-    expect(screen.getByText("Not Paid")).toBeVisible();
+    expect(screen.getByText("Due")).toBeVisible();
 
     expect(screen.getByText("GGEAPAR Interest Rate (Annual):")).toBeVisible();
     expect(screen.getByText("Prime + 3.00%"));
@@ -51,7 +51,7 @@ describe("InterestSummaryReviewComponent", () => {
     expect(screen.getByText("110.00")).toBeVisible();
   });
 
-  it("renders back button and navigates to the correct URL", () => {
+  it("navigates to the correct back and continue URLs", () => {
     render(
       <InterestSummaryReviewComponent
         data={mockData}
@@ -64,6 +64,13 @@ describe("InterestSummaryReviewComponent", () => {
     fireEvent.click(backButton);
     expect(pushMock).toHaveBeenCalledWith(
       "/compliance-administration/compliance-summaries/123/pay-obligation-track-payments",
+    );
+
+    const continueButton = screen.getByRole("button", { name: /continue/i });
+    expect(continueButton).toBeVisible();
+    fireEvent.click(continueButton);
+    expect(pushMock).toHaveBeenCalledWith(
+      "/compliance-administration/compliance-summaries/123/download-interest-payment-instructions",
     );
   });
 });

@@ -5,6 +5,7 @@ from django.utils import timezone
 from compliance.models.elicensing_invoice import ElicensingInvoice
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.models.compliance_penalty import CompliancePenalty
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 
@@ -37,10 +38,7 @@ class PenaltyPaidHandler(ComplianceUpdateHandler):
         if not penalty or not penalty.elicensing_invoice:
             return False
 
-        return (
-            penalty.compliance_obligation.penalty_status == ComplianceObligation.PenaltyStatus.NOT_PAID
-            and invoice.outstanding_balance == Decimal('0.00')
-        )
+        return penalty.status == CompliancePenalty.Status.NOT_PAID and invoice.outstanding_balance == Decimal('0.00')
 
     def handle(self, invoice: ElicensingInvoice) -> None:
         """Update obligation penalty_status to PAID if ALL penalty invoices are fully paid."""
@@ -57,12 +55,20 @@ class PenaltyPaidHandler(ComplianceUpdateHandler):
             ComplianceObligationService.update_penalty_status(obligation.pk, ComplianceObligation.PenaltyStatus.PAID)
             logger.info(f"Updated penalty status to PAID for obligation {obligation.obligation_id}")
 
+        penalty = invoice.compliance_penalty
+
+        # Mark the current penalty (for this invoice) as PAID
+        penalty.status = CompliancePenalty.Status.PAID
+        penalty.save(update_fields=['status'])
+
 
 class PenaltyAccruingHandler(ComplianceUpdateHandler):
     """Handler for handling obligations that need to start accruing penalties."""
 
     def can_handle(self, invoice: ElicensingInvoice) -> bool:
         """Check if obligation should start accruing penalties."""
+
+        # Only run for obligation invoices; skip penalty invoices
         has_penalty = hasattr(invoice, 'compliance_penalty') and getattr(invoice, 'compliance_penalty', None)
         if has_penalty:
             return False

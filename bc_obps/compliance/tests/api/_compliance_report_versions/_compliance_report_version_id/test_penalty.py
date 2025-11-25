@@ -10,7 +10,7 @@ from compliance.models import ElicensingPayment
 
 
 class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
-    """Tests for GET /compliance-report-versions/{id}/penalty endpoint."""
+    """Tests for GET /compliance-report-versions/{id}/automatic-overdue-penalty-summary endpoint."""
 
     @patch(
         "compliance.service.penalty_summary_service.PenaltySummaryService.get_summary_by_compliance_report_version_id"
@@ -68,6 +68,71 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_penalty_by_compliance_report_version_id", kwargs={"compliance_report_version_id": 123}
+            ),
+        )
+
+        assert response.status_code == 404
+        assert response.json() == {"message": "Not Found"}
+
+
+class TestLateSubmissionPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
+    """Tests for GET /compliance-report-versions/{id}/late-submission-penalty-summary endpoint."""
+
+    @patch(
+        "compliance.service.penalty_summary_service.PenaltySummaryService.get_late_submission_summary_by_compliance_report_version_id"
+    )
+    def test_successful_late_submission_penalty_retrieval(
+        self,
+        mock_get_summary,
+    ):
+        """Happy-path: service returns late submission penalty data and payments."""
+        # Arrange
+        mock_get_summary.return_value = {
+            "outstanding_amount": Decimal("12345.67"),
+            "penalty_status": "Accruing",
+            "payments": ElicensingPayment.objects.none(),
+        }
+
+        # Mock authorization
+        operator = make_recipe("registration.tests.utils.operator")
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        # Act
+        compliance_report_version = make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report__report__operator=operator,
+            compliance_report__report__operation__operator=operator,
+        )
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "get_late_submission_penalty_summary_by_compliance_report_version_id",
+                kwargs={"compliance_report_version_id": compliance_report_version.id},
+            ),
+        )
+
+        # Assert
+        assert response.status_code == 200
+        data = response.json()
+        assert data["outstanding_amount"] == "12345.67"
+        assert data["penalty_status"] == "Accruing"
+        assert data["payment_data"]["row_count"] == 0
+        assert data["payment_data"]["rows"] == []
+
+    @patch(
+        "compliance.service.penalty_summary_service.PenaltySummaryService.get_late_submission_summary_by_compliance_report_version_id",
+        side_effect=ComplianceObligation.DoesNotExist("not found"),
+    )
+    @patch("common.permissions.validate_all", return_value=True)
+    def test_invalid_compliance_report_version_id(self, _mock_get_summary, _):
+        """Endpoint should return 404 for non-existent report version id."""
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "get_late_submission_penalty_summary_by_compliance_report_version_id",
+                kwargs={"compliance_report_version_id": 123},
             ),
         )
 

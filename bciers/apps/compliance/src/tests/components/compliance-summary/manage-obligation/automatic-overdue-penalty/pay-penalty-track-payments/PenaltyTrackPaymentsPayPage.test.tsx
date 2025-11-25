@@ -27,6 +27,8 @@ vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
     penalty_status: "NOT PAID",
     outstanding_balance_tco2e: 0,
     reporting_year: 2024,
+    has_late_submission_penalty: false,
+    has_overdue_penalty: true,
   }),
 }));
 
@@ -81,7 +83,7 @@ describe("PenaltyTrackPaymentsPayPage", () => {
 
     (actionHandler as ReturnType<typeof vi.fn>).mockImplementation(
       (url: string) => {
-        if (url.includes("/penalty")) {
+        if (url.includes("/automatic-overdue-penalty-summary")) {
           return Promise.resolve(mockPenaltyWithPaymentsData);
         }
         if (url.includes("reporting/reporting-year")) {
@@ -114,6 +116,8 @@ describe("PenaltyTrackPaymentsPayPage", () => {
         penaltyStatus: "NOT PAID",
         outstandingBalance: 0,
         reportingYear: 2024,
+        hasLateSubmissionPenalty: false,
+        hasOverduePenalty: true,
       },
       ActivePage.PayPenaltyTrackPayments,
     );
