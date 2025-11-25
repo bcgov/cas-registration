@@ -28,6 +28,9 @@ export async function GET(
       case "automatic-overdue-penalty":
         url = `${apiUrl}compliance/compliance-report-versions/${id}/automatic-overdue-penalty/invoice/pdf`;
         break;
+      case "late-submission-penalty":
+        url = `${apiUrl}compliance/compliance-report-versions/${id}/late-submission-penalty/invoice/pdf`;
+        break;
       default:
         throw new Error(`Invalid invoice type: ${invoiceType}`);
     }

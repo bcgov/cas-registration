@@ -26,6 +26,8 @@ vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
     penalty_status: "NONE",
     outstanding_balance_tco2e: 5,
     reporting_year: 2024,
+    has_late_submission_penalty: false,
+    has_overdue_penalty: false,
   }),
 }));
 
@@ -107,6 +109,8 @@ describe("ObligationTrackPaymentsPayPage", () => {
         penaltyStatus: "NONE",
         outstandingBalance: 5,
         reportingYear: 2024,
+        hasLateSubmissionPenalty: false,
+        hasOverduePenalty: false,
       },
       ActivePage.PayObligationTrackPayments,
     );

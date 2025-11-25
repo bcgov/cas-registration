@@ -30,7 +30,7 @@ const PenaltySummaryReviewComponent = ({
   const isObligationFullyPaid = Number(outstandingBalance) === 0;
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/${
     isObligationFullyPaid && hasLateSubmissionPenalty
-      ? "review-interest-summary"
+      ? "pay-interest-penalty-track-payments"
       : "pay-obligation-track-payments"
   }`;
   const saveAndContinueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`;

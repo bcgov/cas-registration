@@ -33,6 +33,8 @@ vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
     penalty_status: "NOT PAID",
     outstanding_balance_tco2e: 0,
     reporting_year: 2024,
+    has_late_submission_penalty: false,
+    has_overdue_penalty: false,
   }),
 }));
 
@@ -91,6 +93,8 @@ describe("InterestPaymentInstructionsDownloadPage", () => {
         penaltyStatus: "NOT PAID",
         outstandingBalance: 0,
         reportingYear: 2024,
+        hasLateSubmissionPenalty: false,
+        hasOverduePenalty: false,
       },
       ActivePage.DownloadInterestPaymentInstructions,
     );

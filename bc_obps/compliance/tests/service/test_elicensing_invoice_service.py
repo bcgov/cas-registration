@@ -69,14 +69,22 @@ class TestElicensingInvoiceService:
         make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=self.line_item, amount=25)
         make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=self.line_item, amount=25)
 
-        # Add penalty
+        # Add automatic overdue penalty
         self.penalty_invoice = make_recipe("compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1))
-
         make_recipe(
-            'compliance.tests.utils.compliance_penalty',
+            "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.obligation,
             elicensing_invoice=self.penalty_invoice,
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+        )
+
+        # Add late submission penalty using a separate invoice
+        self.late_penalty_invoice = make_recipe("compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1))
+        make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            compliance_obligation=self.obligation,
+            elicensing_invoice=self.late_penalty_invoice,
+            penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
         )
 
     @patch("compliance.service.elicensing_invoice_service.PDFGeneratorService.generate_pdf")
@@ -111,6 +119,64 @@ class TestElicensingInvoiceService:
         mock_generate_pdf.return_value = (b"%PDF mock", "invoice_INV-001_20250601.pdf", 2048)
 
         result = ElicensingInvoiceService.generate_obligation_invoice_pdf(self.compliance_report_version.id)
+
+        assert isinstance(result, tuple)
+        content, filename, size = result
+        assert content.startswith(b"%PDF")
+        assert filename.endswith(".pdf")
+        assert size == 2048
+        mock_generate_pdf.assert_called_once()
+
+    @patch("compliance.service.elicensing_invoice_service.PDFGeneratorService.generate_pdf")
+    @patch(
+        "compliance.service.elicensing_invoice_service.ComplianceReportVersionService.get_obligation_by_compliance_report_version"
+    )
+    @patch("compliance.service.elicensing_invoice_service.ElicensingInvoiceService._prepare_partial_invoice_context")
+    @patch(
+        "compliance.service.elicensing_invoice_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
+    )
+    def test_generate_late_submission_penalty_invoice_pdf_success(
+        self,
+        mock_refresh_data,
+        mock__prepare_partial_invoice_context,
+        mock_get_obligation,
+        mock_generate_pdf,
+    ):
+        # Patch fresh data response for late submission penalty invoice
+        mock_refresh_data.return_value.invoice = self.late_penalty_invoice
+        mock_refresh_data.return_value.data_is_fresh = True
+
+        # Patch other services
+        mock_get_obligation.return_value = self.obligation
+        mock_generate_pdf.return_value = (b"%PDF mock", "invoice_INV-001_20250601.pdf", 2048)
+        mock__prepare_partial_invoice_context.return_value = {
+            "operator_name": self.operator.legal_name,
+            "operator_address_line1": "123 Main St",
+            "operator_address_line2": "City, BC  V1A 2B3",
+            "operation_name": self.report_operation.operation_name,
+            "invoice_number": self.obligation_invoice.invoice_number,
+            "invoice_due_date": self.obligation_invoice.due_date.strftime("%b %-d, %Y"),
+            "invoice_printed_date": timezone.now().strftime("%b %-d, %Y"),
+            "logo_base64": "data:image/png;base64,...",
+            "billing_items": [
+                {
+                    "date": "Aug 8, 2025",
+                    "description": "2024 GGIRCA Automatic Penalty for Obligation ID 1",
+                    "amount": "$1,263,512.40",
+                },
+                {
+                    "date": "Aug 8, 2025",
+                    "description": "Payment 185262395",
+                    "amount": "($1,000,000.00)",
+                },
+            ],
+            "total_amount_due": "$263,512.40",
+            "compliance_obligation_id": self.obligation.obligation_id,
+        }
+
+        result = ElicensingInvoiceService.generate_late_submission_penalty_invoice_pdf(
+            self.compliance_report_version.id
+        )
 
         assert isinstance(result, tuple)
         content, filename, size = result
@@ -408,10 +474,11 @@ class TestElicensingInvoiceService:
         )
         assert (
             result.count() == ElicensingInvoice.objects.count()
-        )  # cas users should see all invoices, 2 from setup (obligation + penalty invoices) + 2 from this test
+        )  # cas users should see all invoices, 3 from setup (obligation + 2 penalty invoices) + 2 from this test
 
         assert list(result.values_list("invoice_type", flat=True)) == [
             "Compliance obligation",
+            "Automatic overdue penalty",
             "Automatic overdue penalty",
             "Compliance obligation",
             "Compliance obligation",
@@ -470,7 +537,9 @@ class TestElicensingInvoiceService:
         make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=line_item_2, amount=25)
         make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=line_item_2, amount=25)
 
-        assert ElicensingInvoice.objects.count() == 3  # 2 from setup (obligation + penalty invoices) + 1 from this test
+        assert (
+            ElicensingInvoice.objects.count() == 4
+        )  # 3 from setup (obligation + 2 penalty invoices) + 1 from this test
 
         result = ElicensingInvoiceService.get_elicensing_invoice_for_dashboard(
             approved_user_operator.user.user_guid, sort_field="id", sort_order="asc", filters=_NoopFilters()

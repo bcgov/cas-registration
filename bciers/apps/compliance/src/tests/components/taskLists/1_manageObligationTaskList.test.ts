@@ -230,6 +230,7 @@ describe("generateManageObligationTaskList", () => {
         reportingYear: 2024,
         outstandingBalance: 0,
         penaltyStatus: penaltyStatus,
+        hasOverduePenalty: true,
       };
 
       // Generate task list

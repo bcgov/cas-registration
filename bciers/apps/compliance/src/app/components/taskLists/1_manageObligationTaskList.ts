@@ -53,6 +53,7 @@ export const generateManageObligationTaskList: (
     outstandingBalance,
     penaltyStatus,
     hasLateSubmissionPenalty,
+    hasOverduePenalty,
   } = tasklistData;
   const taskItems = [
     activePage === ActivePage.ApplyComplianceUnits
@@ -122,6 +123,7 @@ export const generateManageObligationTaskList: (
   let automaticPenaltySection: TaskListElement[] = [];
 
   if (
+    hasOverduePenalty &&
     isObligationFullyPaid &&
     [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].includes(
       penaltyStatus as PenaltyStatus,

@@ -15,13 +15,13 @@ export default async function ComplianceSummaryReviewPage({
 }: Readonly<HasComplianceReportVersion>) {
   const complianceSummaryReviewPageData: ComplianceSummaryReviewPageData =
     await fetchComplianceSummaryReviewPageData(complianceReportVersionId);
-
-  const penaltyStatus = complianceSummaryReviewPageData.penalty_status;
-  const reportingYear = complianceSummaryReviewPageData.reporting_year;
-  const outstandingBalance =
-    complianceSummaryReviewPageData.outstanding_balance_tco2e;
-  const hasLateSubmissionPenalty =
-    complianceSummaryReviewPageData.has_late_submission_penalty;
+  const {
+    penalty_status: penaltyStatus,
+    reporting_year: reportingYear,
+    outstanding_balance_tco2e: outstandingBalance,
+    has_late_submission_penalty: hasLateSubmissionPenalty,
+    has_overdue_penalty: hasOverduePenalty,
+  } = complianceSummaryReviewPageData;
 
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
@@ -30,6 +30,7 @@ export default async function ComplianceSummaryReviewPage({
       reportingYear,
       outstandingBalance,
       hasLateSubmissionPenalty,
+      hasOverduePenalty,
     },
     ActivePage.ReviewComplianceSummary,
   );

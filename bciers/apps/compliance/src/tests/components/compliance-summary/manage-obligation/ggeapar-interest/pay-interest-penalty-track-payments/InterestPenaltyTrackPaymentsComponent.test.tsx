@@ -99,7 +99,7 @@ describe("InterestPenaltyTrackPaymentsComponent", () => {
     );
 
     expect(
-      screen.getByText(/Please pay the outstanding interest/i),
+      screen.getByText(/Please pay the outstanding penalty/i),
     ).toBeVisible();
   });
 

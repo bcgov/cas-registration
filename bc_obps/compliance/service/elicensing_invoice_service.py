@@ -304,6 +304,70 @@ class ElicensingInvoiceService:
             # Otherwise wrap in ComplianceInvoiceError and raise
             raise ComplianceInvoiceError("unexpected_error", str(exc))
 
+    @classmethod
+    def generate_late_submission_penalty_invoice_pdf(
+        cls,
+        compliance_report_version_id: int,
+    ) -> Tuple[Generator[bytes, None, None], str, int] | Dict[str, Any]:
+        """Generates a PDF invoice for a compliance obligation's late submission penalty.
+
+        This mirrors generate_automatic_overdue_penalty_invoice_pdf but targets the
+        LATE_SUBMISSION_PENALTY invoice type and corresponding CompliancePenalty.
+        """
+        try:
+            penalty_refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+                compliance_report_version_id=compliance_report_version_id,
+                invoice_type=ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY,
+            )
+
+            last_refresh_metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(penalty_refresh_result)
+
+            penalty_invoice = penalty_refresh_result.invoice
+
+            compliance_obligation: ComplianceObligation = (
+                ComplianceReportVersionService.get_obligation_by_compliance_report_version(compliance_report_version_id)
+            )
+
+            partial_context = cls._prepare_partial_invoice_context(
+                compliance_report_version_id, penalty_invoice, compliance_obligation.obligation_id
+            )
+
+            compliance_penalty = CompliancePenalty.objects.get(
+                elicensing_invoice=penalty_invoice,
+                penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
+            )
+
+            invoice_date = compliance_penalty.fee_date.strftime("%b %-d, %Y") if compliance_penalty.fee_date else "—"
+
+            penalty_invoice_is_void = penalty_invoice.is_void and (
+                compliance_obligation.penalty_status == ComplianceObligation.PenaltyStatus.PAID
+                or compliance_obligation.penalty_status == ComplianceObligation.PenaltyStatus.NONE
+            )
+
+            context_obj = AutomaticOverduePenaltyInvoiceContext(
+                **partial_context,
+                invoice_is_void=penalty_invoice_is_void,
+                invoice_date=invoice_date,
+                penalty_amount=f"${compliance_penalty.penalty_amount:,.2f}",
+            )
+
+            context = context_obj.__dict__
+            context.update(last_refresh_metadata)
+
+            filename = f"invoice_{context['invoice_number']}_{timezone.now().strftime('%Y%m%d')}.pdf"
+
+            return PDFGeneratorService.generate_pdf(
+                template_name="automatic_overdue_penalty_invoice.html",
+                context=context,
+                filename=filename,
+            )
+
+        except Exception as exc:
+            if isinstance(exc, ComplianceInvoiceError):
+                raise
+
+            raise ComplianceInvoiceError("unexpected_error", str(exc))
+
     @staticmethod
     def format_operator_address(address: Optional[Address]) -> Tuple[str, str]:
         """

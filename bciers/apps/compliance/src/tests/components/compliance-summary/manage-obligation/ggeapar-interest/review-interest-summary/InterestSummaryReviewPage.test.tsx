@@ -19,9 +19,11 @@ vi.mock(
 // Mock the task list data fetching function
 vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
   getComplianceSummary: vi.fn().mockResolvedValue({
+    penalty_status: "NOT PAID",
     outstanding_balance_tco2e: 0,
     reporting_year: 2024,
     has_late_submission_penalty: true,
+    has_overdue_penalty: false,
   }),
 }));
 
@@ -71,9 +73,11 @@ describe("InterestSummaryReviewPage", () => {
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
       123,
       {
+        penaltyStatus: "NOT PAID",
         outstandingBalance: 0,
         reportingYear: 2024,
         hasLateSubmissionPenalty: true,
+        hasOverduePenalty: false,
       },
       ActivePage.ReviewInterestSummary,
     );
