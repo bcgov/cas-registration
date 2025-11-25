@@ -16,6 +16,7 @@ import {
 } from "@bciers/components";
 import { Main } from "@bciers/components/server";
 import SessionRoleContextProvider from "@bciers/utils/src/sessionRoleContext";
+import RaygunScript from "./RaygunScript";
 
 // Dynamically import SessionTimeoutHandler with SSR disabled
 const SessionTimeoutHandler = dynamic(
@@ -67,6 +68,7 @@ export default async function RootLayout({
       }
       <head>
         <PublicEnvScript />
+        <RaygunScript />
       </head>
       <body id="__next">
         <SessionProvider

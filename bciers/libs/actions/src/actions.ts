@@ -14,6 +14,7 @@ import getUUIDFromEndpoint, {
 } from "@bciers/utils/src/getUUIDFromEndpoint";
 import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
+import { sendServerErrorToRaygun } from "@bciers/sentryConfig/raygun";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
@@ -114,6 +115,13 @@ export async function actionHandler(
         return data;
       } catch (error: unknown) {
         Sentry.captureException(error as Error);
+        // Also send to Raygun (POC)
+        if (error instanceof Error) {
+          sendServerErrorToRaygun(error, "actions", ["server-action"], {
+            endpoint,
+            method,
+          });
+        }
         if (error instanceof Error) {
           // eslint-disable-next-line no-console
           console.error(

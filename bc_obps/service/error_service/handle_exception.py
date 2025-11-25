@@ -8,6 +8,7 @@ from django.db.utils import InternalError, ProgrammingError, DatabaseError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from ninja.responses import Response
 from sentry_sdk import set_tag, capture_exception
+from raygun4py import raygunprovider
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.utils import generate_useful_error
 from registration.constants import UNAUTHORIZED_MESSAGE
@@ -63,6 +64,24 @@ class ExceptionHandler:
             set_tag(tag, True)
         return capture_exception(exc)
 
+    @staticmethod
+    def capture_raygun_exception(exc: Any, request: Optional[HttpRequest] = None, tag: Optional[str] = None) -> None:
+        """Capture exception in Raygun with optional tag."""
+
+        ENABLE_RAYGUN = settings.ENABLE_RAYGUN
+        RAYGUN_API_KEY = settings.RAYGUN_API_KEY
+
+        if not ENABLE_RAYGUN:
+            return
+
+        client = raygunprovider.RaygunSender(RAYGUN_API_KEY)
+        tags = [tag] if tag else []
+
+        response = client.send_exception(exc, tags=tags)
+        print("*" * 100)
+        print(response)
+        print("*" * 100)
+
     @classmethod
     def get_response_body(cls, exc: BaseException, response_config: ExceptionResponse) -> dict:
         """Generate response body based on exception and config."""
@@ -92,10 +111,16 @@ class ExceptionHandler:
                         body["message"] += f" Reference ID: {event_id}"
                         logger.critical(body["message"], exc_info=True)
 
+                    # TODO: Check if we get the event id from Raygun
+                    cls.capture_raygun_exception(exc, request, response_config.sentry_tag)
+
                 return Response(body, status=response_config.status)
 
         # Default: unexpected error
         event_id = cls.capture_sentry_exception(exc, "unexpected_error")
+        # TODO: Check if we get the event id from Raygun
+        cls.capture_raygun_exception(exc, request, "unexpected_error")
+
         if event_id:
             logger.critical(f"Unexpected error. Sentry Reference ID: {event_id}", exc_info=True)
 

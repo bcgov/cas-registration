@@ -235,6 +235,17 @@ if ENABLE_SENTRY:
         environment=sentry_environment,
     )
 
+RAYGUN_API_KEY = os.environ.get("RAYGUN_API_KEY")
+RAYGUN_ENVIRONMENT = os.environ.get("RAYGUN_ENVIRONMENT")
+ENABLE_RAYGUN = RAYGUN_ENVIRONMENT in ["production", "test"] and RAYGUN_API_KEY
+
+if ENABLE_RAYGUN:
+    RAYGUN4PY_CONFIG = {
+        "api_key": RAYGUN_API_KEY,
+        "environment": RAYGUN_ENVIRONMENT,
+    }
+    MIDDLEWARE_CLASSES = ('bc_obps.raygun_middleware.RaygunMiddleware',)
+
 
 # DJANGO-NINJA SETTINGS
 NINJA_PAGINATION_PER_PAGE = 20
@@ -328,6 +339,15 @@ LOGGING = {
         # Add more specific loggers here
     },
 }
+
+# Add Raygun handler to logging if Raygun is enabled
+if ENABLE_RAYGUN:
+    LOGGING['handlers']['raygun'] = {  # type: ignore[index]
+        'class': 'raygun4py.raygunprovider.RaygunHandler',
+        'api_key': RAYGUN_API_KEY,
+        'level': 'ERROR',  # Only send ERROR and CRITICAL level logs
+    }
+    LOGGING['root']['handlers'].append('raygun')  # type: ignore[index]
 
 # Add Silk logger only when DEBUG is True (local development)
 if DEBUG:

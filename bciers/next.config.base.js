@@ -10,6 +10,22 @@ const baseConfig = {
       bodySizeLimit: "25mb",
     },
   },
+  webpack: (config, { isServer }) => {
+    // Exclude 'raygun' package from client-side bundles
+    // It's a Node.js-only package and should only be used server-side
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+      // Mark raygun as external for client bundles
+      config.externals = config.externals || [];
+      config.externals.push("raygun");
+    }
+    return config;
+  },
   modularizeImports: {
     "@mui/icons-material": {
       transform: "@mui/icons-material/{{member}}",
@@ -51,6 +67,9 @@ const baseConfig = {
         permanent: true,
       },
     ];
+  },
+  env: {
+    RAYGUN_API_KEY: process.env.NEXT_PUBLIC_RAYGUN_API_KEY,
   },
 };
 

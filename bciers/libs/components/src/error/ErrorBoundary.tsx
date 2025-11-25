@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import * as Sentry from "@sentry/nextjs";
+import { sendErrorToRaygun } from "@bciers/sentryConfig/raygun";
 
 import { Alert, AlertTitle } from "@mui/material";
 import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
@@ -19,6 +20,15 @@ export default function ErrorBoundary({ error }: Props) {
         // If there's an error logging to Sentry, log it to the console
         // eslint-disable-next-line no-console
         console.error("Error logging to Sentry:", sentryError);
+      }
+      // Also send to Raygun (POC)
+      try {
+        sendErrorToRaygun(error, ["error-boundary", "client-side"], {
+          digest: error.digest,
+        });
+      } catch (raygunError) {
+        // eslint-disable-next-line no-console
+        console.error("Error logging to Raygun:", raygunError);
       }
     }
   }, [error]);
