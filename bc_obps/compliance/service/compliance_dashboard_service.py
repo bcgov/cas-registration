@@ -56,8 +56,7 @@ class ComplianceDashboardService:
                 "obligation__elicensing_invoice__elicensing_line_items",
             )
             .exclude(
-                # Exclude supplementary versions with NO_OBLIGATION_OR_EARNED_CREDITS
-                # and manual handling record is null
+                # Exclude supplementary versions with NO_OBLIGATION_OR_EARNED_CREDITS and manual handling record is null
                 Q(
                     is_supplementary=True,
                     status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
@@ -267,13 +266,13 @@ class ComplianceDashboardService:
                 output_field=CharField(),
             ),            
             requires_manual_handling=Case(
-            When(
-                manual_handling_record__status=ComplianceReportVersionManualHandling.HandilingStatus.ACTION_REQUIRED,
-                then=Value(True),
+                When(
+                    manual_handling_record__director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
+                    then=Value(True),
+                ),
+                default=Value(False),
+                output_field=BooleanField(),
             ),
-            default=Value(False),
-            output_field=BooleanField(),
-        ),
         )
         return cast(QuerySet[ComplianceReportVersion], annotated)
 
@@ -282,18 +281,18 @@ class ComplianceDashboardService:
         qs: QuerySet[ComplianceReportVersion],
     ) -> QuerySet[ComplianceReportVersion]:
         annotated = qs.annotate(
-            display_status=Case( 
-                #Manual-handling overrides
+            display_status=Case(
+                # Manual-handling overrides
                 When(
-                    manual_handling_record__status=ComplianceReportVersionManualHandling.HandilingStatus.ACTION_REQUIRED,
+                    manual_handling_record__director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
                     then=Value(
-                        ComplianceReportVersionManualHandling.HandilingStatus.ACTION_REQUIRED.label
+                        "Supplementary report - action required"
                     ),
                 ),
                 When(
-                    manual_handling_record__status=ComplianceReportVersionManualHandling.HandilingStatus.ISSUE_RESOLVED,
+                    manual_handling_record__director_decision=ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED,
                     then=Value(
-                        ComplianceReportVersionManualHandling.HandilingStatus.ISSUE_RESOLVED.label
+                        "Supplementary report - resolved"
                     ),
                 ),
                 # Base CRV status / earned-credits mappings

@@ -157,9 +157,9 @@ export interface ComplianceSummary {
   outstanding_balance_equivalent_value?: number;
   emissions_attributable_for_compliance?: string;
   emissions_limit?: string;
-  requires_manual_handling?: boolean;
-  has_late_submission_penalty: boolean;
-  has_overdue_penalty: boolean;
+  has_late_submission_penalty?: boolean;
+  requires_manual_handling: boolean;
+  director_decision?: string;
 }
 
 export interface ComplianceAppliedUnitsData {
@@ -246,10 +246,7 @@ export type ElicensingInvoice = {
 };
 
 export type ManualHandlingData = {
-  // from model
   handling_type: "obligation" | "earned_credits";
-  status: "action_required" | "issue_resolved";
-  context: string;
 
   // analyst fields
   analyst_comment?: string | null;
@@ -257,7 +254,6 @@ export type ManualHandlingData = {
   analyst_submitted_by?: string | null;
 
   // director fields
-  director_comment?: string | null;
   director_decision?: "pending_manual_handling" | "issue_resolved";
   director_decision_date?: string | null;
   director_decision_by?: string | null;

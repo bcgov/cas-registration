@@ -44,7 +44,10 @@ class SupplementaryScenarioHandler(Protocol):
     ) -> Optional[ComplianceReportVersion]: ...
 
 
-# Concrete strategy for flagging compliance report versions as requiring manual handling and for assigning 0 excess and credited emissions when the previous version also required manual handling. (There are too many variables in how a version can be manually handled in ways that the app is not aware of, so we can't really safely and accurately predict how to handle any subsequent child versions once a version has been closed via actions outside of the app.)
+# Concrete strategy for:
+# - Detecting when a previous CRV is still under manual handling (pending), and
+# - Creating a new supplementary NO_OBLIG / earned-credits CRV
+#   with an associated manual-handling record to carry that flag forward.
 class ManualHandler:
     @staticmethod
     def can_handle(
@@ -52,14 +55,11 @@ class ManualHandler:
         previous_summary: ReportComplianceSummary,
     ) -> bool:
         """
-        This handler applies when the *previous* compliance report version
-        already has a manual-handling record, ComplianceReportVersionManualHandling.
+        This handler applies when the *previous* compliance report version has a manual-handling record
         """
-        previous_crv = ComplianceReportVersion.objects.get(
-            report_compliance_summary=previous_summary
-        )
-
-        # Use the existence of the one-to-one manual_handling_record instead of a boolean flag
+        previous_crv = ComplianceReportVersion.objects.get( report_compliance_summary=previous_summary )
+        
+        # Use the existence of the one-to-one manual_handling_record        
         return hasattr(previous_crv, "manual_handling_record")
 
     @staticmethod
@@ -71,16 +71,26 @@ class ManualHandler:
         version_count: int,
     ) -> Optional[ComplianceReportVersion]:
         """
-        Create a new supplementary NO_OBLIG / earned-credits version.
+        Create a new supplementary NO_OBLIGATION_OR_EARNED_CREDITS CRV and an
+        associated manual-handling record when the previous CRV has a manual-handling record
+
+        Assumptions:
+        - The previous CRV's manual_handling_record exists
+        - We carry forward handling_type/context to the new record, but do not
+          copy analyst or director comments/dates.
         """
 
+        # Get the previous compliance report version
         previous_compliance_version = (
             SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
                 compliance_report, previous_summary
             )
         )
 
-        # Create new version; no requires_manual_handling flag needed anymore
+        # Fetch its manual-handling record
+        previous_manual_handling = previous_compliance_version.manual_handling_record
+
+        # Create the new supplementary CRV
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
@@ -89,7 +99,15 @@ class ManualHandler:
             previous_version=previous_compliance_version,
         )
 
+        # Create a new manual-handling record for the new CRV.
+        ComplianceReportVersionManualHandling.objects.create(
+            compliance_report_version=compliance_report_version,
+            handling_type=previous_manual_handling.handling_type,
+            context=previous_manual_handling.context,
+        )
+
         return compliance_report_version
+
 
 
 

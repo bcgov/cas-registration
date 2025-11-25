@@ -194,10 +194,6 @@ class AdjustmentStrategy:
 class ManualHandlingUpdate:
     """
     Payload for manual handling updates.
-
-    All fields are optional – the service will decide which ones
-    are allowed to be updated based on the caller's role.
     """
     analyst_comment: Optional[str] = None
-    director_comment: Optional[str] = None
-    director_decision: Optional[str] = None
+    director_decision: Optional[Literal["action_required", "issue_resolved",]] = None

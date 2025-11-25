@@ -19,8 +19,8 @@ class ComplianceManualHandlingService:
 
     Responsibilities:
     - Ensuring there is a manual-handling record for a ComplianceReportVersion
-    - Letting CAS analysts add / update context comments for manual handling
-    - Letting CAS directors record a decision and comment
+    - CAS analysts add / update comments for manual handling
+    - CAS directors update decision for manual handling
     """
 
     @staticmethod
@@ -106,9 +106,7 @@ class ComplianceManualHandlingService:
         Business rules:
         - Director must provide a valid director_decision
         """
-        if update_payload.director_decision is None:
-            raise UserError("Director decision is required to update manual handling")
-
+        
         valid_decisions = ComplianceReportVersionManualHandling.DirectorDecision.values
         if update_payload.director_decision not in valid_decisions:
             raise UserError("Invalid director decision provided")

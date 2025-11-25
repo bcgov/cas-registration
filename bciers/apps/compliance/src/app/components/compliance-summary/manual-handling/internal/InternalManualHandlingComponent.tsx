@@ -47,6 +47,9 @@ const InternalManualHandlingComponent = ({
 
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`;
 
+  const isAnalystLockedByDirector =
+    isCasAnalyst && formData._initial_director_decision === "issue_resolved";
+
   const handleSubmit = async (
     e: IChangeEvent<ManualHandlingDataWithInitial>,
   ) => {
@@ -60,7 +63,9 @@ const InternalManualHandlingComponent = ({
     };
 
     const endpoint = `compliance/compliance-report-versions/${complianceReportVersionId}/manual-handling`;
-    const response = await actionHandler(endpoint, "PUT", "", {
+    const pathToRevalidate = `/compliance-administration/compliance-summaries`;
+
+    const response = await actionHandler(endpoint, "PUT", pathToRevalidate, {
       body: JSON.stringify(payload),
     });
 
@@ -69,11 +74,14 @@ const InternalManualHandlingComponent = ({
     } else {
       setErrors(undefined);
 
-      // Update both director_decision (field) and _initial_director_decision (notes)
+      // Update form data
       setFormState((prev) => ({
         ...prev,
-        director_decision: submittedData.director_decision, // update field value
-        _initial_director_decision: submittedData.director_decision, // update notes logic
+        // update field value
+        analyst_comment: submittedData.analyst_comment,
+        director_decision: submittedData.director_decision,
+        // update notes logic
+        _initial_director_decision: submittedData.director_decision,
       }));
 
       // force remount so notes widgets re-render
@@ -101,7 +109,9 @@ const InternalManualHandlingComponent = ({
         submitButtonDisabled={isSubmitting}
         className="mt-8"
       >
-        <SubmitButton isSubmitting={isSubmitting}>Submit</SubmitButton>
+        {!isAnalystLockedByDirector && (
+          <SubmitButton isSubmitting={isSubmitting}>Submit</SubmitButton>
+        )}
       </ComplianceStepButtons>
     </FormBase>
   );

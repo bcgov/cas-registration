@@ -23,11 +23,9 @@ class ComplianceReportVersionManualHandlingOut(ModelSchema):
         model = ComplianceReportVersionManualHandling
         fields = [
             "handling_type",
-            "status",
             "context",
             "analyst_comment",
             "analyst_submitted_date",
-            "director_comment",
             "director_decision",
             "director_decision_date",
         ]
@@ -40,11 +38,10 @@ class ComplianceReportVersionManualHandlingIn(Schema):
     - CAS Analyst:
         * Uses `analyst_comment`
     - CAS Director:
-        * Uses `director_comment` and `director_decision`
+        * Uses `director_decision`
     """
 
     analyst_comment: Optional[str] = None
-    director_comment: Optional[str] = None
     director_decision: Optional[
         Literal["pending_manual_handling", "issue_resolved"]
     ] = None
