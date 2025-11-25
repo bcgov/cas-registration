@@ -7,7 +7,7 @@ from django.http import HttpRequest
 from django.db.utils import InternalError, ProgrammingError, DatabaseError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from ninja.responses import Response
-from sentry_sdk import set_tag, capture_exception
+from sentry_sdk import set_tag, capture_exception, set_user
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.utils import generate_useful_error
 from registration.constants import UNAUTHORIZED_MESSAGE
@@ -55,6 +55,24 @@ class ExceptionHandler:
         print("-" * 48 + "ERROR END" + "-" * 48)
 
     @staticmethod
+    def set_user_context(request: HttpRequest) -> None:
+        """Set user context in Sentry from the request."""
+        if not settings.ENABLE_SENTRY:
+            return
+        # Check if current_user is set by middleware
+        if hasattr(request, "current_user") and request.current_user:
+            user = request.current_user
+            set_user(
+                {
+                    "id": str(user.user_guid),
+                    "email": user.email,
+                }
+            )
+        else:
+            # Clear user context if no user is available
+            set_user(None)
+
+    @staticmethod
     def capture_sentry_exception(exc: Any, tag: Optional[str] = None) -> Optional[str]:
         """Capture exception in Sentry with optional tag."""
         if not settings.ENABLE_SENTRY:
@@ -75,6 +93,9 @@ class ExceptionHandler:
     def handle(cls, request: HttpRequest, exc: Union[BaseException, type[BaseException]]) -> Response:
         """Handle exceptions and return appropriate API response."""
         cls.debug_log_exception()
+
+        # Set user context for Sentry before capturing exceptions
+        cls.set_user_context(request)
 
         # Handle unauthorized access
         if exc.args and exc.args[0] == UNAUTHORIZED_MESSAGE:

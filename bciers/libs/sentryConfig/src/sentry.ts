@@ -1,10 +1,12 @@
 import * as Sentry from "@sentry/nextjs";
 
-const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT;
+// const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT;
+const SENTRY_ENVIRONMENT = "local";
 const SENTRY_DSN =
-  SENTRY_ENVIRONMENT === "prod" || SENTRY_ENVIRONMENT === "test"
-    ? "https://c097ce7d51760bab348fa0608eea9870@o646776.ingest.sentry.io/4506621387407360"
-    : undefined;
+  "https://PMxJxuJckRJw1GxX7jTSgckw@eu-nbg-2.betterstackdata.com/1603661";
+// SENTRY_ENVIRONMENT === "prod" || SENTRY_ENVIRONMENT === "test" || SENTRY_ENVIRONMENT === "local"
+// ? "https://PMxJxuJckRJw1GxX7jTSgckw@eu-nbg-2.betterstackdata.com/1603661"
+// : undefined;
 const SENTRY_TRACE_SAMPLE_RATE = process.env.SENTRY_TRACE_SAMPLE_RATE ?? "0";
 
 export function initSentryClient(appName: string) {
