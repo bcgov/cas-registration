@@ -237,4 +237,48 @@ describe("Registration dashboard page", () => {
       ).not.toBeInTheDocument();
     },
   );
+  /**
+   * Verifies that the Reporting tile is always visible
+   */
+  it.each(roles)(
+    "always displays the Reporting tile for role: %s (Bug #3990 fix)",
+    async (role) => {
+      (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(role);
+
+      render(await DashboardPage());
+
+      // Verify Reporting tile heading is present
+      const allReportingHeadings = screen.getAllByRole("heading", {
+        name: /Reporting/i,
+      });
+      // Should find at least one Reporting heading (the tile)
+      expect(allReportingHeadings.length).toBeGreaterThanOrEqual(1);
+
+      const reportingTileHeading = allReportingHeadings.find(
+        (heading) => heading.textContent?.trim() === "Reporting",
+      );
+      expect(reportingTileHeading).toBeVisible();
+
+      // Verify Reporting tile main link is present
+      const reportingTitleLink = screen.getByRole("link", {
+        name: /Reporting Submit Annual Report for an operation/i,
+      });
+      expect(reportingTitleLink).toBeVisible();
+      expect(reportingTitleLink).toHaveAttribute(
+        "href",
+        "/reporting/dashboard",
+      );
+
+      // Verify the Reporting links are accessible
+      const viewAnnualReportsLink = screen.getByRole("link", {
+        name: /View Annual Reports/i,
+      });
+      expect(viewAnnualReportsLink).toBeVisible();
+
+      const viewPastSubmissionsLink = screen.getByRole("link", {
+        name: /View Past Submissions/i,
+      });
+      expect(viewPastSubmissionsLink).toBeVisible();
+    },
+  );
 });
