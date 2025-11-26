@@ -61,8 +61,8 @@ export const EmissionAllocationChangeView: React.FC<
             change_type: isNewProduct
               ? "added"
               : oldQuantity !== newQuantity
-              ? "modified"
-              : change.change_type,
+                ? "modified"
+                : change.change_type,
             isNewAddition: isNewProduct,
           });
         }

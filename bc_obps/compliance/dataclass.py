@@ -146,9 +146,9 @@ class ComplianceEarnedCreditsUpdate:
     """Data model for the BCCR earned credits update API payload"""
 
     bccr_trading_name: Optional[str] = None  # Only required for industry users - we enforce this in the service layer
-    bccr_holding_account_id: Optional[
-        str
-    ] = None  # Only required for industry users - we enforce this in the service layer
+    bccr_holding_account_id: Optional[str] = (
+        None  # Only required for industry users - we enforce this in the service layer
+    )
     analyst_suggestion: Optional[
         Literal["Ready to approve", "Requiring change of BCCR Holding Account ID", "Requiring supplementary report"]
     ] = None

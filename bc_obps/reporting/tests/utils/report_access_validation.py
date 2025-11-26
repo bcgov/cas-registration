@@ -6,6 +6,7 @@ from registration.utils import custom_reverse_lazy
 
 client = Client()
 
+
 #
 # Testing utility to verify that an endpoint validates its report version with our
 # auth=authorize(..., validators) method
@@ -24,11 +25,12 @@ def assert_report_version_ownership_is_validated(
     method="get",
     version_id_param_name: str = "version_id",
     role: str = "industry_user",
-    **kwargs
+    **kwargs,
 ):
-    with patch("common.permissions.check_permission_for_role") as mock_check_permissions, patch(
-        "reporting.api.permissions._validate_version_ownership_in_url"
-    ) as mock_validate_version_ownership:
+    with (
+        patch("common.permissions.check_permission_for_role") as mock_check_permissions,
+        patch("reporting.api.permissions._validate_version_ownership_in_url") as mock_validate_version_ownership,
+    ):
         mock_check_permissions.return_value = True
 
         endpoint = custom_reverse_lazy(api_function_name, kwargs={version_id_param_name: 1234, **kwargs})

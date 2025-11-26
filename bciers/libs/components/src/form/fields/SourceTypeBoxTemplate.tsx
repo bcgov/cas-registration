@@ -60,8 +60,8 @@ export function SourceTypeBoxTemplate({
           sourceTypeChange?.type === "deleted"
             ? BC_GOV_SEMANTICS_RED
             : sourceTypeChange?.type === "added"
-            ? BC_GOV_SEMANTICS_GREEN
-            : "warning.main",
+              ? BC_GOV_SEMANTICS_GREEN
+              : "warning.main",
       }}
     >
       ({sourceTypeChange.type.toUpperCase()})

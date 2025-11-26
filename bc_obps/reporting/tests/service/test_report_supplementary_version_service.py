@@ -525,11 +525,13 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         fake_emission.report_methodology = fake_methodology
 
         # Patch the queryset
-        with patch("reporting.models.ReportEmission.objects.filter") as mock_filter, patch(
-            "reporting.service.report_supplementary_version_service.EmissionCategoryMappingService.apply_emission_categories"
-        ) as mock_apply, patch(
-            "reporting.service.report_supplementary_version_service.model_to_dict"
-        ) as mock_model_to_dict:
+        with (
+            patch("reporting.models.ReportEmission.objects.filter") as mock_filter,
+            patch(
+                "reporting.service.report_supplementary_version_service.EmissionCategoryMappingService.apply_emission_categories"
+            ) as mock_apply,
+            patch("reporting.service.report_supplementary_version_service.model_to_dict") as mock_model_to_dict,
+        ):
 
             mock_filter.return_value.select_related.return_value = [fake_emission]
             mock_model_to_dict.return_value = {

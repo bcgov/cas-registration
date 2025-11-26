@@ -108,9 +108,9 @@ class ElicensingOperatorService:
         # existing_record = ElicensingClientOperator.managed_objects.get_one_or_none(operator_id=operator_id)
         try:
             existing_record = ElicensingClientOperator.objects.get(operator_id=operator_id)
-        except (ElicensingClientOperator.DoesNotExist):
+        except ElicensingClientOperator.DoesNotExist:
             existing_record = None
-        except (MultipleObjectsReturned):
+        except MultipleObjectsReturned:
             raise MultipleObjectsReturned
 
         if existing_record and existing_record.client_object_id is not None:

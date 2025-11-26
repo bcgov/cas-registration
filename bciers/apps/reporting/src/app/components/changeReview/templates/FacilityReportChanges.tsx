@@ -303,9 +303,9 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                             ? change.oldValue
                             : {}
                           : typeof change.newValue === "object" &&
-                            change.newValue !== null
-                          ? change.newValue
-                          : {};
+                              change.newValue !== null
+                            ? change.newValue
+                            : {};
                       return (
                         <Box key={index} mb={2}>
                           {change.change_type && (
@@ -315,8 +315,8 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                                 change.change_type === "removed"
                                   ? "deleted"
                                   : change.change_type === "added"
-                                  ? "added"
-                                  : "modified"
+                                    ? "added"
+                                    : "modified"
                               }
                             />
                           )}

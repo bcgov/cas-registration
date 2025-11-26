@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def validate_event_constraints(
-    instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent]
+    instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
 ) -> None:
     """
     Validates that the given event instance does not have both an operation and facilities set simultaneously.
@@ -62,7 +62,7 @@ def create_m2m_signal_handler(model: Union[ClosureEvent, RestartEvent, Temporary
 
 
 def create_pre_save_signal_handler(
-    model: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent]
+    model: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
 ) -> None:
     """
     Creates and registers a pre_save signal handler for the specified model to validate

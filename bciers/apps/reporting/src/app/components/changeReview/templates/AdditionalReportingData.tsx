@@ -55,8 +55,8 @@ const AdditionalReportingData: React.FC<AdditionalReportingDataProps> = ({
           item.oldValue === null && item.newValue !== null
             ? "added"
             : item.oldValue !== null && item.newValue === null
-            ? "deleted"
-            : item.change_type;
+              ? "deleted"
+              : item.change_type;
         return (
           <ChangeItemDisplay
             key={item.field + idx}
