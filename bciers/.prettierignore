@@ -2,7 +2,15 @@
 /dist
 /coverage
 /.nx/cache
+/.next
+/node_modules
+/build
+*.min.css
+*.min.js
 
 # Vite(st) temporary config files
 vite.config.**s.timestamp-*
 vitest.config.**s.timestamp-*
+
+# Helm charts (YAML files, not formatted by prettier)
+../helm/
