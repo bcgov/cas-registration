@@ -55,7 +55,8 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/registration-e2e",
-        "command": "happo --githubToken $GITHUB_TOKEN -- playwright test"
+        "command": "happo --githubToken $GITHUB_TOKEN -- playwright test",
+        "shell": true
       }
     },
     "e2e:ui": {
