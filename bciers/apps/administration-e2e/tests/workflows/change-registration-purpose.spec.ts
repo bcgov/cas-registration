@@ -274,7 +274,8 @@ test.describe("Test changing registration purpose", () => {
     );
 
     // Say cheese!
-    const component = "Changed registration purpose to OBPS Regulated Operation";
+    const component =
+      "Changed registration purpose to OBPS Regulated Operation";
     await takeStabilizedScreenshot(happoPlaywright, page, {
       component: component,
       variant: "default",
