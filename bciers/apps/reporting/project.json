@@ -46,7 +46,7 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/reporting-e2e",
-        "command": "happo --githubToken $GITHUB_TOKEN -- playwright test",
+        "command": "yarn happo -- -- yarn playwright test",
         "shell": true
       }
     },
