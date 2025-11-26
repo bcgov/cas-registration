@@ -372,6 +372,74 @@
                                     </td>
                                     <td><p>The invoice from elicensing that this penalty created</p></td>
                                 </tr>
+                                <tr>
+                                    <td><span id="accrual_final_date">accrual_final_date</span></td>
+                                    <td>date</td>
+                                    <td>13</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The date on which the penalty stopped accruing (typically the payment date or when obligation is paid to $0)</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="accrual_frequency">accrual_frequency</span></td>
+                                    <td>varchar</td>
+                                    <td>20</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Defines how often the penalty accrues (e.g., daily for Automatic Overdue, daily for Late Submission)</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="compounding_frequency">compounding_frequency</span></td>
+                                    <td>varchar</td>
+                                    <td>20</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Defines how often interest is compounded for this penalty (e.g., daily or monthly).</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="status">status</span></td>
+                                    <td>varchar</td>
+                                    <td>50</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The status of this penalty (e.g., NOT PAID, PAID)</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -463,11 +531,11 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="591,151,876,415">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,272,224,624">
-<area shape="rect" id="node3" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="268,353,547,588">
-<area shape="rect" id="node4" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="920,105,1308,556">
-<area shape="rect" id="node5" href="compliance_penalty_accrual.html" target="_top" title="compliance_penalty_accrual" alt="" coords="1352,281,1655,516">
+<area shape="rect" id="node1" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="591,147,876,411">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,282,224,634">
+<area shape="rect" id="node3" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="268,363,547,598">
+<area shape="rect" id="node4" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="920,67,1308,635">
+<area shape="rect" id="node5" href="compliance_penalty_accrual.html" target="_top" title="compliance_penalty_accrual" alt="" coords="1352,268,1655,503">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/compliance_penalty.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
@@ -483,13 +551,13 @@
 <area shape="rect" id="node30" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="369,1864,655,1952">
 <area shape="rect" id="node6" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="376,392,648,480">
 <area shape="rect" id="node7" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="2771,292,3059,380">
-<area shape="rect" id="node8" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2352,513,2647,601">
+<area shape="rect" id="node8" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2352,504,2647,592">
 <area shape="rect" id="node15" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="1571,559,1799,647">
 <area shape="rect" id="node17" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="1939,732,2249,820">
 <area shape="rect" id="node9" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="2786,3227,3045,3315">
 <area shape="rect" id="node10" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="1134,2995,1357,3083">
 <area shape="rect" id="node23" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="712,2687,1000,2775">
-<area shape="rect" id="node11" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="3141,3019,3529,3469">
+<area shape="rect" id="node11" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="3141,3019,3529,3587">
 <area shape="rect" id="node12" href="compliance_penalty_accrual.html" target="_top" title="compliance_penalty_accrual" alt="" coords="3573,3788,3876,3876">
 <area shape="rect" id="node13" href="compliance_penalty_rate.html" target="_top" title="compliance_penalty_rate" alt="" coords="717,973,995,1061">
 <area shape="rect" id="node14" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="397,701,627,789">
@@ -526,7 +594,7 @@
 <area shape="rect" id="node50" href="report_operation.html" target="_top" title="report_operation" alt="" coords="1986,3596,2202,3684">
 <area shape="rect" id="node51" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="1924,3701,2264,3789">
 <area shape="rect" id="node52" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="1949,3875,2239,3963">
-<area shape="rect" id="node53" href="report_product.html" target="_top" title="report_product" alt="" coords="2399,2033,2599,2121">
+<area shape="rect" id="node53" href="report_product.html" target="_top" title="report_product" alt="" coords="2399,2035,2599,2123">
 <area shape="rect" id="node54" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2733,2537,3097,2625">
 <area shape="rect" id="node55" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2361,4008,2638,4096">
 <area shape="rect" id="node56" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="1995,4184,2193,4272">
@@ -542,11 +610,11 @@
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="591,151,876,415">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,272,224,624">
-<area shape="rect" id="node3" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="268,353,547,588">
-<area shape="rect" id="node4" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="920,105,1308,556">
-<area shape="rect" id="node5" href="compliance_penalty_accrual.html" target="_top" title="compliance_penalty_accrual" alt="" coords="1352,281,1655,516">
+<area shape="rect" id="node1" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="591,147,876,411">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,282,224,634">
+<area shape="rect" id="node3" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="268,363,547,598">
+<area shape="rect" id="node4" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="920,67,1308,635">
+<area shape="rect" id="node5" href="compliance_penalty_accrual.html" target="_top" title="compliance_penalty_accrual" alt="" coords="1352,268,1655,503">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/compliance_penalty.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
@@ -569,7 +637,7 @@
 <area shape="rect" id="node9" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="2869,138,3127,226">
 <area shape="rect" id="node10" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="1217,590,1439,678">
 <area shape="rect" id="node24" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="795,656,1083,744">
-<area shape="rect" id="node11" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="3224,102,3612,553">
+<area shape="rect" id="node11" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="3224,102,3612,670">
 <area shape="rect" id="node12" href="compliance_penalty_accrual.html" target="_top" title="compliance_penalty_accrual" alt="" coords="3656,678,3959,766">
 <area shape="rect" id="node13" href="compliance_penalty_rate.html" target="_top" title="compliance_penalty_rate" alt="" coords="799,2221,1078,2309">
 <area shape="rect" id="node14" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="480,2017,709,2105">
@@ -607,7 +675,7 @@
 <area shape="rect" id="node52" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="2007,4541,2347,4629">
 <area shape="rect" id="node53" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="2031,4646,2322,4734">
 <area shape="rect" id="node54" href="report_product.html" target="_top" title="report_product" alt="" coords="2482,1829,2682,1917">
-<area shape="rect" id="node55" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2816,1796,3180,1884">
+<area shape="rect" id="node55" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2816,1794,3180,1882">
 <area shape="rect" id="node56" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2443,489,2721,577">
 <area shape="rect" id="node57" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="2077,1369,2276,1457">
 <area shape="rect" id="node58" href="report_verification.html" target="_top" title="report_verification" alt="" coords="2062,242,2291,330">

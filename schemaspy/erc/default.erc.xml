@@ -52,7 +52,7 @@
             <column ascending="true" name="valid_to_id"/>
          </index>
       </table>
-      <table name="activity_source_type_json_schema" numRows="138" remarks="Intersection table that assigns a json_schema as valid for a period of time given an activity-sourceType pair" schema="erc" type="TABLE">
+      <table name="activity_source_type_json_schema" numRows="139" remarks="Intersection table that assigns a json_schema as valid for a period of time given an activity-sourceType pair" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="activity_source_type_base_schema_id" foreignKey="report_source_type_activity_source_type_a5907d1b_fk_activity_" implied="false" onDeleteCascade="false" schema="erc" table="report_source_type"/>
          </column>
@@ -453,6 +453,10 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="elicensing_invoice_id" nullable="true" remarks="The invoice from elicensing that this penalty created" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="compliance_penalty_elicensing_invoice_i_1d5556d5_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_invoice"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="accrual_final_date" nullable="true" remarks="The date on which the penalty stopped accruing (typically the payment date or when obligation is paid to $0)" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="accrual_frequency" nullable="false" remarks="Defines how often the penalty accrues (e.g., daily for Automatic Overdue, daily for Late Submission)" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="compounding_frequency" nullable="false" remarks="Defines how often interest is compounded for this penalty (e.g., daily or monthly)." size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="status" nullable="false" remarks="The status of this penalty (e.g., NOT PAID, PAID)" size="50" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="compliance_penalty_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -495,6 +499,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="compliance_penalty_a_updated_by_id_c215c6ed_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="10" id="13" name="interest_rate" nullable="false" remarks="The interest rate used for this accrual period as per the Greenhouse Gas Emission Administrative Penalties and Appeals Regulation (https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/248_2015#section2)" size="10" type="numeric" typeCode="2"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="compliance_penalty_accrual_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -1074,8 +1079,8 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="invoice_number" nullable="false" remarks="The invoice number from elicensing." size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="due_date" nullable="false" remarks="The due date of the invoice. invoicePaymentDueDate in elicensing" size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="2" id="6" name="outstanding_balance" nullable="false" remarks="The outstanding balance for this invoice. invoiceOutstandingBalance in elicensing" size="20" type="numeric" typeCode="2"/>
-         <column autoUpdated="false" defaultValue="null" digits="2" id="7" name="invoice_fee_balance" nullable="true" remarks="The balance of fees for this invoice. invoiceFeeBalance in elicensing" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="6" name="outstanding_balance" nullable="false" remarks="The outstanding balance for this invoice. invoiceOutstandingBalance in elicensing. This value is the combination of invoice_fee_balance &amp; invoice_interest_balance." size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="7" name="invoice_fee_balance" nullable="true" remarks="The balance of fees for this invoice. invoiceFeeBalance in elicensing. This value does not include FAA interest (invoice_interest_balance)." size="20" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="2" id="8" name="invoice_interest_balance" nullable="true" remarks="The balance of interest for this invoice. invoiceInterestBalance in elicensing" size="20" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="is_void" nullable="false" remarks="Boolean field indicates whether this invoice has been voided" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="last_refreshed" nullable="false" remarks="The last time (UTC) that the invoice and its child data was successfully refreshed via the elicensing api" size="35" type="timestamptz" typeCode="93"/>
