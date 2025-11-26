@@ -32,6 +32,6 @@ BEGIN;
 
 COMMIT;
 """,
-            reverse_sql="drop function mocks.now();",
+            reverse_sql="drop function mocks.set_mocked_time_in_transaction(timestamptz);",
         ),
     ]
