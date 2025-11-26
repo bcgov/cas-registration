@@ -1,5 +1,0 @@
-.next/
-dist/
-*.min.css
-coverage
-helm/
