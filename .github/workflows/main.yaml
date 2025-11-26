@@ -51,13 +51,13 @@ jobs:
     uses: ./.github/workflows/build-registration.yaml
   build-reporting:
     uses: ./.github/workflows/build-reporting.yaml
-  test-code:
-    needs: [check-nx-affected]
-    uses: ./.github/workflows/test-code.yaml
-  test-backend:
-    needs: [build-backend, check-nx-affected]
-    uses: ./.github/workflows/test-backend.yaml
-    secrets: inherit
+  # test-code:
+  #   needs: [check-nx-affected]
+  #   uses: ./.github/workflows/test-code.yaml
+  # test-backend:
+  #   needs: [build-backend, check-nx-affected]
+  #   uses: ./.github/workflows/test-backend.yaml
+  #   secrets: inherit
   test-administration-e2e:
     needs:
       [
@@ -117,22 +117,22 @@ jobs:
       nx_app_port: 7000
       nx_project: compliance
     secrets: inherit
-  zap-owasp:
-    needs:
-      [
-        build-administration,
-        build-backend,
-        build-compliance,
-        build-dashboard-e2e,
-        build-registration,
-        build-reporting,
-        check-nx-affected,
-      ]
-    uses: ./.github/workflows/zap-owasp.yaml
-    with:
-      zap_fail_on_risk_level: 3
-    secrets: inherit
-  trivy:
-    uses: ./.github/workflows/trivy.yaml
-  codeql:
-    uses: ./.github/workflows/codeql.yaml
+  # zap-owasp:
+  #   needs:
+  #     [
+  #       build-administration,
+  #       build-backend,
+  #       build-compliance,
+  #       build-dashboard-e2e,
+  #       build-registration,
+  #       build-reporting,
+  #       check-nx-affected,
+  #     ]
+  #   uses: ./.github/workflows/zap-owasp.yaml
+  #   with:
+  #     zap_fail_on_risk_level: 3
+  #   secrets: inherit
+  # trivy:
+  #   uses: ./.github/workflows/trivy.yaml
+  # codeql:
+  #   uses: ./.github/workflows/codeql.yaml

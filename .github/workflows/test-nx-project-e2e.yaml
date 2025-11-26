@@ -171,3 +171,8 @@ jobs:
         run: |
           cd bciers
           node libs/e2e/src/utils/happo-skip.js
+      - name: happo happy
+        run: yarn run happo
+        env:
+          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
