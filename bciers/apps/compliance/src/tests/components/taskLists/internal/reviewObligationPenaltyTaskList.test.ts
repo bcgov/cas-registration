@@ -14,6 +14,7 @@ describe("generateReviewObligationPenaltyTaskList", () => {
         reportingYear: mockReportingYear,
         hasLateSubmissionPenalty: false,
         outstandingBalance: 0,
+        hasOverduePenalty: true,
         penaltyStatus: "NOT PAID",
       } as any,
     );
@@ -40,6 +41,7 @@ describe("generateReviewObligationPenaltyTaskList", () => {
       reportingYear: mockReportingYear,
       hasLateSubmissionPenalty: true,
       outstandingBalance: 0,
+      hasOverduePenalty: true,
       penaltyStatus: "NOT PAID",
     } as any;
 
@@ -103,6 +105,7 @@ describe("generateReviewObligationPenaltyTaskList", () => {
           reportingYear: mockReportingYear,
           hasLateSubmissionPenalty: false,
           outstandingBalance: 0,
+          hasOverduePenalty: true,
           penaltyStatus,
         } as any,
       );
