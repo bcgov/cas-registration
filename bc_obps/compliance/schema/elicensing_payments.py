@@ -4,9 +4,9 @@ from ninja import ModelSchema, Schema
 
 
 class ElicensingPaymentOut(ModelSchema):
-    formatted_received_date: Optional[
-        str
-    ] = None  # Pydantic doesn't like changing the type of a model field, so we create a synthetic field instead of trying to change received_date
+    formatted_received_date: Optional[str] = (
+        None  # Pydantic doesn't like changing the type of a model field, so we create a synthetic field instead of trying to change received_date
+    )
 
     @staticmethod
     def resolve_formatted_received_date(obj: ElicensingPayment) -> str | None:

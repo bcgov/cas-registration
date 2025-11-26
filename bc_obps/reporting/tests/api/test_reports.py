@@ -111,9 +111,10 @@ class TestReportsEndpoint(CommonTestSetup):
         mock_get_registration_purpose.assert_called_once_with(report_version.id)
 
     def test_create_report_validates_operation_ownership(self):
-        with patch("common.permissions.check_permission_for_role") as mock_check_permissions, patch(
-            "reporting.api.permissions._validate_operation_ownership"
-        ) as mock_validate_operation_ownership:
+        with (
+            patch("common.permissions.check_permission_for_role") as mock_check_permissions,
+            patch("reporting.api.permissions._validate_operation_ownership") as mock_validate_operation_ownership,
+        ):
             mock_check_permissions.return_value = True
 
             endpoint = custom_reverse_lazy("start_report", kwargs={})
@@ -155,9 +156,10 @@ class TestReportsEndpoint(CommonTestSetup):
         mock_delete_report_version.assert_called_once_with(version_id)
 
     def test_create_report_version_validates_operation_ownership(self):
-        with patch("common.permissions.check_permission_for_role") as mock_check_permissions, patch(
-            "reporting.api.permissions._validate_operation_ownership"
-        ) as mock_validate_operation_ownership:
+        with (
+            patch("common.permissions.check_permission_for_role") as mock_check_permissions,
+            patch("reporting.api.permissions._validate_operation_ownership") as mock_validate_operation_ownership,
+        ):
             mock_check_permissions.return_value = True
 
             endpoint = custom_reverse_lazy("create_report_version", kwargs={'report_id': 1})

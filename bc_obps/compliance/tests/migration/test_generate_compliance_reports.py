@@ -55,13 +55,16 @@ class TestGenerateComplianceReportsMigration(TestCase):
         from django.apps import apps
 
         # Force “not yet reached” → should end as PENDING_INVOICE_CREATION
-        with patch(
-            "compliance.service.elicensing.elicensing_obligation_service."
-            "ElicensingObligationService._is_invoice_generation_date_reached",
-            return_value=False,
-        ), patch(
-            "django.db.transaction.on_commit",
-            side_effect=lambda fn: fn(),
+        with (
+            patch(
+                "compliance.service.elicensing.elicensing_obligation_service."
+                "ElicensingObligationService._is_invoice_generation_date_reached",
+                return_value=False,
+            ),
+            patch(
+                "django.db.transaction.on_commit",
+                side_effect=lambda fn: fn(),
+            ),
         ):
             perform_migration(apps, None)
 
@@ -112,17 +115,21 @@ class TestGenerateComplianceReportsMigration(TestCase):
             crv.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
             crv.save(update_fields=["status"])
 
-        with patch(
-            "compliance.service.elicensing.elicensing_obligation_service."
-            "ElicensingObligationService._is_invoice_generation_date_reached",
-            return_value=True,
-        ), patch(
-            "compliance.service.elicensing.elicensing_obligation_service."
-            "ElicensingObligationService.handle_obligation_integration",
-            side_effect=_mark_not_met,
-        ), patch(
-            "django.db.transaction.on_commit",
-            side_effect=lambda fn: fn(),
+        with (
+            patch(
+                "compliance.service.elicensing.elicensing_obligation_service."
+                "ElicensingObligationService._is_invoice_generation_date_reached",
+                return_value=True,
+            ),
+            patch(
+                "compliance.service.elicensing.elicensing_obligation_service."
+                "ElicensingObligationService.handle_obligation_integration",
+                side_effect=_mark_not_met,
+            ),
+            patch(
+                "django.db.transaction.on_commit",
+                side_effect=lambda fn: fn(),
+            ),
         ):
             perform_migration(apps, None)
 

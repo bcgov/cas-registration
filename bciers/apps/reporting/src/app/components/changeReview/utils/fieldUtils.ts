@@ -90,8 +90,8 @@ export const compareAndRenderChanges = (
           oldObj[key] === undefined
             ? "added"
             : newObj[key] === undefined
-            ? "deleted"
-            : "modified",
+              ? "deleted"
+              : "modified",
       });
     }
   };

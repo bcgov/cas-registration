@@ -115,7 +115,7 @@ class TestInfrastructure:
             activity=self.activity,
             valid_from=self.configuration,
             valid_to=self.configuration,
-            **kwargs
+            **kwargs,
         )
 
     def make_report_activity(self, **kwargs):
@@ -126,5 +126,5 @@ class TestInfrastructure:
             facility_report=self.facility_report,
             report_version=self.facility_report.report_version,
             json_data={"test": "test"},
-            **kwargs
+            **kwargs,
         )

@@ -40,8 +40,8 @@ export function ObligationTrackPaymentsComponent({
   const continueUrl = hasInterestFlow
     ? `${baseSummaryUrl}/review-interest-summary`
     : hasAutomaticOverdueFlow
-    ? `${baseSummaryUrl}/review-penalty-summary`
-    : undefined;
+      ? `${baseSummaryUrl}/review-penalty-summary`
+      : undefined;
 
   return (
     <FormBase

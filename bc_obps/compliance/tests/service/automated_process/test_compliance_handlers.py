@@ -378,11 +378,11 @@ class TestComplianceHandlerManager:
         )
 
         # Mock the handle methods of all handlers
-        with patch.object(self.manager.handlers[0], 'handle') as mock_penalty_paid_handle, patch.object(
-            self.manager.handlers[1], 'handle'
-        ) as mock_penalty_accruing_handle, patch.object(
-            self.manager.handlers[2], 'handle'
-        ) as mock_obligation_paid_handle:
+        with (
+            patch.object(self.manager.handlers[0], 'handle') as mock_penalty_paid_handle,
+            patch.object(self.manager.handlers[1], 'handle') as mock_penalty_accruing_handle,
+            patch.object(self.manager.handlers[2], 'handle') as mock_obligation_paid_handle,
+        ):
 
             self.manager.process_compliance_updates(invoice)
 
@@ -401,13 +401,15 @@ class TestComplianceHandlerManager:
         )
 
         # Spy on all handlers to verify which ones are called
-        with patch.object(
-            self.manager.handlers[0], 'handle', wraps=self.manager.handlers[0].handle
-        ) as spy_penalty_paid, patch.object(
-            self.manager.handlers[1], 'handle', wraps=self.manager.handlers[1].handle
-        ) as spy_penalty_accruing, patch.object(
-            self.manager.handlers[2], 'handle', wraps=self.manager.handlers[2].handle
-        ) as spy_obligation_paid:
+        with (
+            patch.object(self.manager.handlers[0], 'handle', wraps=self.manager.handlers[0].handle) as spy_penalty_paid,
+            patch.object(
+                self.manager.handlers[1], 'handle', wraps=self.manager.handlers[1].handle
+            ) as spy_penalty_accruing,
+            patch.object(
+                self.manager.handlers[2], 'handle', wraps=self.manager.handlers[2].handle
+            ) as spy_obligation_paid,
+        ):
 
             self.manager.process_compliance_updates(invoice)
 
@@ -438,13 +440,15 @@ class TestComplianceHandlerManager:
         )
 
         # Spy on all handlers to verify which ones are called
-        with patch.object(
-            self.manager.handlers[0], 'handle', wraps=self.manager.handlers[0].handle
-        ) as spy_penalty_paid, patch.object(
-            self.manager.handlers[1], 'handle', wraps=self.manager.handlers[1].handle
-        ) as spy_penalty_accruing, patch.object(
-            self.manager.handlers[2], 'handle', wraps=self.manager.handlers[2].handle
-        ) as spy_obligation_paid:
+        with (
+            patch.object(self.manager.handlers[0], 'handle', wraps=self.manager.handlers[0].handle) as spy_penalty_paid,
+            patch.object(
+                self.manager.handlers[1], 'handle', wraps=self.manager.handlers[1].handle
+            ) as spy_penalty_accruing,
+            patch.object(
+                self.manager.handlers[2], 'handle', wraps=self.manager.handlers[2].handle
+            ) as spy_obligation_paid,
+        ):
 
             self.manager.process_compliance_updates(invoice)
 

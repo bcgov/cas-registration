@@ -104,11 +104,12 @@ class TestTaskService(TestCase):
         mock_function = MagicMock()
         mock_resolve.return_value = mock_function
 
-        with patch.object(self.scheduled_task, 'mark_attempt_started') as mock_started, patch.object(
-            self.scheduled_task, 'mark_attempt_success'
-        ) as mock_success, patch.object(self.scheduled_task, 'calculate_next_run_time') as mock_calc_next, patch.object(
-            self.scheduled_task, 'release_lock'
-        ) as mock_release:
+        with (
+            patch.object(self.scheduled_task, 'mark_attempt_started') as mock_started,
+            patch.object(self.scheduled_task, 'mark_attempt_success') as mock_success,
+            patch.object(self.scheduled_task, 'calculate_next_run_time') as mock_calc_next,
+            patch.object(self.scheduled_task, 'release_lock') as mock_release,
+        ):
 
             mock_calc_next.return_value = timezone.now() + timedelta(hours=1)
 
@@ -124,13 +125,13 @@ class TestTaskService(TestCase):
     def test_process_task_failure(self, mock_resolve):
         mock_resolve.side_effect = Exception("Task failed")
 
-        with patch.object(self.scheduled_task, 'mark_attempt_started') as mock_started, patch.object(
-            self.scheduled_task, 'mark_attempt_failed'
-        ) as mock_failed, patch.object(self.scheduled_task, 'calculate_next_run_time') as mock_calc_next, patch.object(
-            self.scheduled_task, 'release_lock'
-        ) as mock_release, patch.object(
-            self.scheduled_task, 'mark_attempt_success'
-        ) as mock_success:
+        with (
+            patch.object(self.scheduled_task, 'mark_attempt_started') as mock_started,
+            patch.object(self.scheduled_task, 'mark_attempt_failed') as mock_failed,
+            patch.object(self.scheduled_task, 'calculate_next_run_time') as mock_calc_next,
+            patch.object(self.scheduled_task, 'release_lock') as mock_release,
+            patch.object(self.scheduled_task, 'mark_attempt_success') as mock_success,
+        ):
 
             mock_calc_next.return_value = timezone.now() + timedelta(hours=1)
 
@@ -150,13 +151,13 @@ class TestTaskService(TestCase):
         self.assertFalse(result)
 
     def test_process_retry_task_success(self):
-        with patch.object(TaskService, 'execute_task_function', return_value=True), patch.object(
-            self.retry_task, 'mark_attempt_started'
-        ) as mock_started, patch.object(self.retry_task, 'mark_attempt_success') as mock_success, patch.object(
-            self.retry_task, 'calculate_next_run_time'
-        ) as mock_calc_next, patch.object(
-            self.retry_task, 'release_lock'
-        ) as mock_release:
+        with (
+            patch.object(TaskService, 'execute_task_function', return_value=True),
+            patch.object(self.retry_task, 'mark_attempt_started') as mock_started,
+            patch.object(self.retry_task, 'mark_attempt_success') as mock_success,
+            patch.object(self.retry_task, 'calculate_next_run_time') as mock_calc_next,
+            patch.object(self.retry_task, 'release_lock') as mock_release,
+        ):
 
             mock_calc_next.return_value = timezone.now() + timedelta(hours=1)
 
@@ -170,15 +171,14 @@ class TestTaskService(TestCase):
             mock_release.assert_called_once()
 
     def test_process_retry_task_failure(self):
-        with patch.object(TaskService, 'execute_task_function', side_effect=Exception("Task failed")), patch.object(
-            self.retry_task, 'mark_attempt_started'
-        ) as mock_started, patch.object(self.retry_task, 'mark_attempt_failed') as mock_failed, patch.object(
-            self.retry_task, 'calculate_next_run_time'
-        ) as mock_calc_next, patch.object(
-            self.retry_task, 'release_lock'
-        ) as mock_release, patch.object(
-            self.scheduled_task, 'mark_attempt_success'
-        ) as mock_success:
+        with (
+            patch.object(TaskService, 'execute_task_function', side_effect=Exception("Task failed")),
+            patch.object(self.retry_task, 'mark_attempt_started') as mock_started,
+            patch.object(self.retry_task, 'mark_attempt_failed') as mock_failed,
+            patch.object(self.retry_task, 'calculate_next_run_time') as mock_calc_next,
+            patch.object(self.retry_task, 'release_lock') as mock_release,
+            patch.object(self.scheduled_task, 'mark_attempt_success') as mock_success,
+        ):
 
             mock_calc_next.return_value = timezone.now() + timedelta(hours=1)
 

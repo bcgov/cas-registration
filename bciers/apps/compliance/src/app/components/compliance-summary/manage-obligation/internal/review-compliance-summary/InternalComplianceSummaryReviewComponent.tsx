@@ -36,8 +36,8 @@ export function InternalComplianceSummaryReviewComponent({
   const continueUrl = hasLateSubmissionPenalty
     ? `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-interest-summary`
     : showPenalty
-    ? `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`
-    : undefined;
+      ? `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`
+      : undefined;
 
   return (
     <FormBase

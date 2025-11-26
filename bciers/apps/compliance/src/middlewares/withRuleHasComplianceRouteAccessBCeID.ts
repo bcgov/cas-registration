@@ -286,8 +286,8 @@ const permissionRules: PermissionRule[] = [
       }
 
       // Penalty routes gate
-      const isPenaltyRoute = routesObligationPenalty.some(
-        (route) => request?.nextUrl.pathname.includes(route),
+      const isPenaltyRoute = routesObligationPenalty.some((route) =>
+        request?.nextUrl.pathname.includes(route),
       );
 
       if (isPenaltyRoute) {

@@ -30,8 +30,8 @@ export const detectSourceTypeChanges = (
       (!field.oldValue && field.newValue
         ? "added"
         : field.oldValue && !field.newValue
-        ? "deleted"
-        : "modified");
+          ? "deleted"
+          : "modified");
 
     return {
       changeType,

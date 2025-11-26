@@ -367,10 +367,10 @@ def build_schema(
                 "title": "Source Types",
                 "properties": {},
             }
-            rjsf_schema["properties"]["sourceTypes"]["properties"][
-                first_valid_config_elements.source_type.json_key
-            ] = build_source_type_schema(
-                config_id, activity, first_valid_config_elements.source_type_id, add_not_applicable_methodology
+            rjsf_schema["properties"]["sourceTypes"]["properties"][first_valid_config_elements.source_type.json_key] = (
+                build_source_type_schema(
+                    config_id, activity, first_valid_config_elements.source_type_id, add_not_applicable_methodology
+                )
             )
 
     # If there are multiple config elements for an activity, the user may choose which ones apply. The IDs of the selected source_types are passed as a list in the parameters & we add those schemas to the activity schema.
@@ -395,10 +395,10 @@ def build_schema(
         # For each selected source_type, add the related schema
         for source_type in source_types:
             valid_config_element = valid_config_elements.get(source_type__id=source_type)
-            rjsf_schema["properties"]["sourceTypes"]["properties"][
-                valid_config_element.source_type.json_key
-            ] = build_source_type_schema(
-                config_id, activity, valid_config_element.source_type_id, add_not_applicable_methodology
+            rjsf_schema["properties"]["sourceTypes"]["properties"][valid_config_element.source_type.json_key] = (
+                build_source_type_schema(
+                    config_id, activity, valid_config_element.source_type_id, add_not_applicable_methodology
+                )
             )
 
     return json.dumps({"schema": rjsf_schema})
