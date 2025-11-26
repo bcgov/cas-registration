@@ -19,6 +19,18 @@ runs:
           ~/.asdf
           ./bc_obps/.tool-versions
         key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}
+    - name: Extract versions from tool-versions files
+      id: versions
+      shell: bash
+      run: |
+        NODE_VERSION=$(grep "^nodejs" ./.tool-versions | cut -d' ' -f2)
+        PYTHON_VERSION=$(grep "^python" ./bc_obps/.tool-versions | cut -d' ' -f2)
+        echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
+        echo "python-version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
+    - name: Set up Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ steps.versions.outputs.node-version }}
     - name: yarn modern
       shell: bash
       run: |
@@ -29,7 +41,7 @@ runs:
       id: setup-python
       uses: actions/setup-python@v5
       with:
-        python-version: "3.12.11"
+        python-version: ${{ steps.versions.outputs.python-version }}
     - name: Install Poetry
       uses: snok/install-poetry@v1
     - name: Load cached venv
