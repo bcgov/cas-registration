@@ -46,7 +46,7 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/administration-e2e",
-        "command": "happo -- playwright test"
+        "command": "happo --githubToken $GITHUB_TOKEN -- playwright test"
       }
     },
     "e2e:ui": {
