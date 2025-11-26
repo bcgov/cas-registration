@@ -80,6 +80,11 @@ jobs:
         run: npx playwright install chromium
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
+      - name: 🐛 Setup SSH for debugging
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-this-workflow: false
+
       - name: 🎭 Run Playwright Tests
         env:
           NX_PROJECT: ${{ inputs.nx_project }}
@@ -112,7 +117,6 @@ jobs:
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
         run: DEBUG=pw:api yarn nx run "$NX_PROJECT":e2e:ci -- --project=chromium
         working-directory: ./bciers

@@ -41,7 +41,8 @@
     "report:e2e:ui": "nx run reporting:e2e:ui",
     "report:e2e:report": "nx run reporting:e2e:report",
     "report:test": "nx run reporting:test",
-    "dev-reporting": "nx run-many -t dev -p dashboard,reporting --maxParallel=5"
+    "dev-reporting": "nx run-many -t dev -p dashboard,reporting --maxParallel=5",
+    "happo": "happo"
   },
   "private": true,
   "dependencies": {
