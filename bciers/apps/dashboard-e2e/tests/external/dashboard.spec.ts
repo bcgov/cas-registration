@@ -64,9 +64,7 @@ userRoles.forEach((role) => {
         } else {
           if (
             linkToCheck === ExternalDashboardLinks.SELECT_OPERATOR ||
-            linkToCheck === ExternalDashboardLinks.REPORT_PROBLEM ||
-            linkToCheck === ExternalDashboardLinks.VIEW_ANNUAL_REPORTS ||
-            linkToCheck === ExternalDashboardLinks.VIEW_PAST_REPORTS
+            linkToCheck === ExternalDashboardLinks.REPORT_PROBLEM
           )
             await linkIsVisible(page, linkToCheck, true, true);
           else await linkIsVisible(page, linkToCheck, false, true);
@@ -77,7 +75,6 @@ userRoles.forEach((role) => {
         if (role === "INDUSTRY_USER") {
           if (
             tile === DashboardTiles.ADMINISTRATION ||
-            tile === DashboardTiles.REPORTING ||
             tile === DashboardTiles.REPORT_A_PROBLEM
           ) {
             await expect(tileText).toBeVisible();
