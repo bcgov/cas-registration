@@ -3,22 +3,33 @@ description: "Sets up asdf and configures the cache"
 runs:
   using: composite
   steps:
+    - uses: actions/cache@v4
+      id: asdf-cache-root
+      with:
+        path: ~/.asdf
+        key: ${{ runner.os }}-asdf-cache-root-${{ hashFiles('.tool-versions') }}
+    - uses: actions/cache@v4
+      id: asdf-cache-bc-obps
+      with:
+        path: ~/.asdf
+        key: ${{ runner.os }}-asdf-cache-bcobps-${{ hashFiles('bc_obps/.tool-versions') }}
+    - name: Install asdf
+      uses: asdf-vm/actions/install@v4
     - name: asdf setup
-      uses: asdf-vm/actions/setup@v3
-    - uses: actions/cache@v4
-      id: asdf-cache-bciers
-      with:
-        path: |
-          ~/.asdf
-          ./bciers/.tool-versions
-        key: ${{ runner.os }}-asdf-cache-bciers-${{ hashFiles('bciers/.tool-versions') }}
-    - uses: actions/cache@v4
-      id: asdf-cache-backend
-      with:
-        path: |
-          ~/.asdf
-          ./bc_obps/.tool-versions
-        key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}
+      uses: asdf-vm/actions/setup@v4
+    - name: Install tool versions via asdf
+      shell: bash
+      run: |
+        asdf plugin update --all || true
+        asdf install
+        asdf reshim
+    - name: Install bc_obps tool versions via asdf
+      working-directory: ./bc_obps
+      shell: bash
+      run: |
+        asdf plugin update --all || true
+        asdf install
+        asdf reshim
     - name: yarn modern
       shell: bash
       run: |

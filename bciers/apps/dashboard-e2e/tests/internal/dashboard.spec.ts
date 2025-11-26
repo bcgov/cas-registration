@@ -61,7 +61,8 @@ userRoles.forEach((role) => {
 
       for (const tile of InternalDashboardTiles) {
         const tileText = page.getByRole("heading", { name: tile, exact: true });
-        await expect(tileText).toBeVisible();
+        // TODO: Intentionally broken to test CI failure - expecting hidden instead of visible
+        await expect(tileText).toBeHidden();
       }
     });
   });

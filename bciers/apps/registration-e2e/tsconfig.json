@@ -8,7 +8,7 @@
   },
   "include": [
     "./**/*",
-    "happo.config.ts",
+    "happo.config.mts",
     "playwright.config.ts",
     "tests/**/*.spec.ts",
     "tests/**/*.spec.js",
