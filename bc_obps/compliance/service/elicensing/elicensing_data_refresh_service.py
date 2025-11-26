@@ -175,9 +175,9 @@ class ElicensingDataRefreshService:
                 "comment": adjustment.comment,
             }
             if supplementary_compliance_report_version_id:
-                adjustment_defaults[
-                    "supplementary_compliance_report_version_id"
-                ] = supplementary_compliance_report_version_id
+                adjustment_defaults["supplementary_compliance_report_version_id"] = (
+                    supplementary_compliance_report_version_id
+                )
 
             ElicensingAdjustment.objects.update_or_create(
                 elicensing_line_item=fee_record,

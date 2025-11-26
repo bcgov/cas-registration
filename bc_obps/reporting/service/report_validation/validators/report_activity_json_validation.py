@@ -61,11 +61,11 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             try:
                 validator.validate(data)
             except jsonschema.ValidationError as e:
-                errors[
-                    f"facility_{facility_report.facility_id}_{report_raw_activity.activity.slug}"
-                ] = ReportValidationError(
-                    severity=Severity.ERROR,
-                    message=f"Validation error: {e.message} at: {' > '.join(str(elt) for elt in e.path)}",
+                errors[f"facility_{facility_report.facility_id}_{report_raw_activity.activity.slug}"] = (
+                    ReportValidationError(
+                        severity=Severity.ERROR,
+                        message=f"Validation error: {e.message} at: {' > '.join(str(elt) for elt in e.path)}",
+                    )
                 )
 
     return errors

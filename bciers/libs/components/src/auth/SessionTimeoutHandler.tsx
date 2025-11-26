@@ -171,7 +171,8 @@ const SessionTimeoutHandler: React.FC = () => {
 
     let modalTimeoutId: NodeJS.Timeout | undefined;
 
-    if (sessionTimeout === null) return; // No timeout set, exit early
+    if (sessionTimeout === null)
+      return; // No timeout set, exit early
     else if (sessionTimeout <= 0)
       handleLogout()
         .then()

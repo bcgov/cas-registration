@@ -39,8 +39,8 @@ function cleanErrorString(error: unknown): string {
     typeof error === "string"
       ? error
       : error instanceof Error
-      ? error.message
-      : "";
+        ? error.message
+        : "";
 
   let trimmedError = errorStr.trim();
 

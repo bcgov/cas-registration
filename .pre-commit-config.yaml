@@ -1,13 +1,12 @@
 repos:
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.3 # Use the sha or tag you want to point at
+  - repo: local
     hooks:
       - id: prettier
         name: Prettier
-        stages: [commit]
-
-  - repo: local
-    hooks:
+        language: system
+        files: \.(j|t)sx?$|\.json$|\.md$|\.css$|\.scss$
+        exclude: (\.next/|node_modules/|dist/|build/|coverage/|\.nx/cache/)
+        entry: ./.bin/pre-commit-format.sh
       - id: eslint
         name: ESLint
         language: system
@@ -20,7 +19,7 @@ repos:
         entry: ./.bin/pre-commit-mypy.sh
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-case-conflict
@@ -34,35 +33,35 @@ repos:
       - id: debug-statements
 
   - repo: https://github.com/psf/black
-    rev: 22.10.0
+    rev: 25.11.0
     hooks:
       - id: black
         types: [python]
         args: ["--config", "bc_obps/pyproject.toml"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.2
+    rev: v0.14.6
     hooks:
       - id: ruff
         args: ["bc_obps/", "--fix"]
 
   - repo: https://github.com/python-poetry/poetry
-    rev: 1.6.1
+    rev: 2.2.1
     hooks:
       - id: poetry-check
         args: ["-C", "./bc_obps"]
       - id: poetry-lock
-        args: ["-C", "./bc_obps", "--check"] # --check to ensure lock file is up to date without updating it
+        args: ["-C", "./bc_obps"]
 
   - repo: https://github.com/PyCQA/bandit
-    rev: "1.7.5"
+    rev: "1.9.2"
     hooks:
       - id: bandit
         additional_dependencies: [pbr]
         args: ["-c", "bc_obps/bandit.yaml"]
 
   - repo: https://github.com/zricethezav/gitleaks
-    rev: v8.2.5
+    rev: v8.29.1
     hooks:
       - id: gitleaks
 
@@ -72,7 +71,7 @@ repos:
       - id: gitlint
 
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v9.16.0
+    rev: v9.23.0
     hooks:
       - id: commitlint
         stages: [commit-msg]

@@ -40,8 +40,8 @@ const MultiStepButtons: React.FunctionComponent<SubmitButtonProps> = ({
   let submitBtnText = submitButtonText
     ? submitButtonText
     : !isFinalStep
-    ? "Save and Continue"
-    : "Submit";
+      ? "Save and Continue"
+      : "Submit";
 
   return (
     <div className={`flex w-full mt-2 justify-between ${classNames}`}>

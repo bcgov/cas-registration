@@ -33,8 +33,8 @@ export async function transformNewEntrantFormData(versionId: number) {
               categoryType === "basic"
                 ? "Emission categories after new entrant period began"
                 : categoryType === "fuel_excluded"
-                ? "Emissions excluded by fuel type"
-                : "Other emissions",
+                  ? "Emissions excluded by fuel type"
+                  : "Other emissions",
             emissionData: [],
           };
         }

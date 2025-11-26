@@ -1,9 +1,12 @@
-[tool.poetry]
+[project]
 name = "bc_obps"
 version = "0.1.0"
 description = ""
-authors = ["Andrea Williams <andrea.williams@gov.bc.ca>"]
+authors = [{name = "Andrea Williams", email = "andrea.williams@gov.bc.ca"}]
+requires-python = "~=3.12.11"
+dynamic = ["dependencies"]
 
+[tool.poetry]
 [tool.poetry.dependencies]
 python = "~3.12.11"
 Django = "~5.1.14"

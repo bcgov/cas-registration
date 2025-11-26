@@ -114,9 +114,7 @@ def get_all_attachments(
     mapped_sort_field = (
         "report_version__report__operator__legal_name"
         if sort_field == "operator"
-        else "report_version__report__operation__name"
-        if sort_field == "operation"
-        else sort_field
+        else "report_version__report__operation__name" if sort_field == "operation" else sort_field
     )
 
     sort_direction = "-" if sort_order == "desc" else ""

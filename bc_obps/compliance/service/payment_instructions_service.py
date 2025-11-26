@@ -69,9 +69,9 @@ class PaymentInstructionsService:
         )
 
         context = {
-            'invoice_number': refreshResult.invoice.invoice_number
-            if refreshResult.invoice
-            else "Missing Invoice Number",
+            'invoice_number': (
+                refreshResult.invoice.invoice_number if refreshResult.invoice else "Missing Invoice Number"
+            ),
             'is_penalty': invoice_type
             in {
                 ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,

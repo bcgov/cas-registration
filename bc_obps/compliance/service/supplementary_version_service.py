@@ -32,8 +32,7 @@ EMISS = Decimal("0.0000")
 # Define the strategy interface
 class SupplementaryScenarioHandler(Protocol):
     @staticmethod
-    def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
-        ...
+    def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool: ...
 
     @staticmethod
     def handle(
@@ -41,8 +40,7 @@ class SupplementaryScenarioHandler(Protocol):
         new_summary: ReportComplianceSummary,
         previous_summary: ReportComplianceSummary,
         version_count: int,
-    ) -> Optional[ComplianceReportVersion]:
-        ...
+    ) -> Optional[ComplianceReportVersion]: ...
 
 
 # Concrete strategy for flagging compliance report versions as requiring manual handling and for assigning 0 excess and credited emissions when the previous version also required manual handling. (There are too many variables in how a version can be manually handled in ways that the app is not aware of, so we can't really safely and accurately predict how to handle any subsequent child versions once a version has been closed via actions outside of the app.)

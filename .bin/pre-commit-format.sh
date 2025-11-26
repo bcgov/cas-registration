@@ -7,4 +7,5 @@ files=("$@")
 files=("${files[@]/#/../}") # add ../ to each element
 
 # --ignore-unknown prevents prettier from complaining about file types it doesn't know about
-yarn run prettier --ignore-unknown --write "${files[@]}"
+# --log-level warn suppresses file list output and only shows warnings/errors
+yarn run prettier --ignore-unknown --write --log-level warn "${files[@]}"
