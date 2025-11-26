@@ -10,13 +10,13 @@ import { OperationRow } from "./types";
 
 const OperationDataGrid = ({
   initialData,
-  isReportingOpen,
+  isReportingOpen = true,
 }: {
   initialData: {
     rows: OperationRow[];
     row_count: number;
   };
-  isReportingOpen?: boolean;
+  isReportingOpen: boolean;
 }) => {
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
