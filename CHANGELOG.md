@@ -1,3 +1,22 @@
+# [4.5.0](https://github.com/bcgov/cas-registration/compare/v4.4.0...v4.5.0) (2025-11-26)
+
+### Bug Fixes
+
+- create manual handling handler ([5dcebb8](https://github.com/bcgov/cas-registration/commit/5dcebb8d5721fa7b26b845b26f0e32a646755763))
+- deleted registration documents stay on the storage to match history records ([6516d00](https://github.com/bcgov/cas-registration/commit/6516d00b3b56f6c086356b63327f8812cbbc7361))
+- ensure invoice is refreshed before processing compliance updates ([070b6e4](https://github.com/bcgov/cas-registration/commit/070b6e4b6596b99bacd5e3cea90e93c38c8c7df2))
+- file name can get too long when filing supplementary reports ([3d4a607](https://github.com/bcgov/cas-registration/commit/3d4a60788559e2ea4befcd9cfb3ea1454c49e44d))
+- handle no obligation or earned credits to earned credits ([3ad3419](https://github.com/bcgov/cas-registration/commit/3ad3419f722a2be5bfc7ece929cd143c5c123a3c))
+- Move status name update to backend before filtering as annotated field display_name to fix filtering and sorting ([d5d04db](https://github.com/bcgov/cas-registration/commit/d5d04dbf581748608e82ef67de0f3c0dbaf0d721))
+
+### Features
+
+- add late submission penalty calculation ([1e3e05e](https://github.com/bcgov/cas-registration/commit/1e3e05e5b26763b827f8feba10a35c3afa4223fe))
+- add penalty status tracking and refactor penalty creation workflow ([91adf84](https://github.com/bcgov/cas-registration/commit/91adf8402de74c627c30504f7a7b316619e4e0e2))
+- add search columns and sorting to the invoice grid ([1cfe42f](https://github.com/bcgov/cas-registration/commit/1cfe42f937407744091414002483e0fbe37b0d36))
+- change wording on download page and pdf depending on if it's from a penalty page ([a55bfdc](https://github.com/bcgov/cas-registration/commit/a55bfdce836858da02a3e6769f168914206b4bb6))
+- sent email when supp report creates new obligation past deadline ([e38cca8](https://github.com/bcgov/cas-registration/commit/e38cca82e5c465ab321dde765f61e5c7bf1e4f73))
+
 # [4.4.0](https://github.com/bcgov/cas-registration/compare/v4.3.0...v4.4.0) (2025-11-14)
 
 ### Bug Fixes
