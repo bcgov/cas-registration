@@ -1,7 +1,7 @@
 from decimal import Decimal
 from compliance.models import (
     ComplianceReportVersion,
-    ComplianceEarnedCredit,   
+    ComplianceEarnedCredit,
     ComplianceReportVersionManualHandling,
 )
 from reporting.models import ReportVersion
@@ -306,8 +306,8 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
             'compliance.tests.utils.compliance_report_version_manual_handling',
             compliance_report_version=self.compliance_report_version,
             # optional: make the intent explicit
-            handling_type='obligation',
-            context='Previous version still pending manual handling',
+            handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
+            context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
         )
 
         mock_result = MagicMock(spec=ComplianceReportVersion)
@@ -336,8 +336,6 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_decreased_credit_handler.assert_not_called()
         mock_capture_sentry_exception.assert_not_called()
 
-
-    
     def test_handle_increased_obligation_success(
         self,
         mock_increased_handler,
@@ -585,6 +583,7 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
 
     # THE FOLLOWING TWO TESTS WILL NEED REWRITING AFTER HANDLING SCENARIOS WHERE CREDITS HAVE BEEN ISSUED/REQUESTED
 
+
 class TestManualHandler(BaseSupplementaryVersionServiceTest):
     def test_can_handle_report_that_previously_required_manual_handling(self):
         # Arrange
@@ -619,7 +618,7 @@ class TestManualHandler(BaseSupplementaryVersionServiceTest):
             'compliance.tests.utils.compliance_report_version_manual_handling',
             compliance_report_version=previous_crv,
             handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
-            context='Previously required manual handling',
+            context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
         )
 
         # Act
@@ -702,7 +701,7 @@ class TestManualHandler(BaseSupplementaryVersionServiceTest):
             'compliance.tests.utils.compliance_report_version_manual_handling',
             compliance_report_version=previous_crv,
             handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
-            context='Some manual-handling context',
+            context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
         )
 
         # Act
@@ -719,15 +718,10 @@ class TestManualHandler(BaseSupplementaryVersionServiceTest):
         assert result.report_compliance_summary == new_summary
         assert result.is_supplementary is True
         assert result.previous_version == previous_crv
-        assert (
-            result.status
-            == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
-        )
+        assert result.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
 
         # And a new manual-handling record carrying forward handling_type/context
-        new_manual = ComplianceReportVersionManualHandling.objects.get(
-            compliance_report_version=result
-        )
+        new_manual = ComplianceReportVersionManualHandling.objects.get(compliance_report_version=result)
         assert new_manual.handling_type == previous_manual.handling_type
         assert new_manual.context == previous_manual.context
         # Comments/dates should *not* be copied over
@@ -739,6 +733,7 @@ class TestManualHandler(BaseSupplementaryVersionServiceTest):
         )
         assert new_manual.director_decision_date is None
         assert new_manual.director_decision_by is None
+
 
 class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
     def test_can_handle_increased_obligation(self):

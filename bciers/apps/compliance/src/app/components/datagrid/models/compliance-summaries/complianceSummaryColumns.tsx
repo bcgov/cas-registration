@@ -16,14 +16,22 @@ const ComplianceStatusCell = ({ row }: GridRenderCellParams) => {
 };
 
 const ExcessEmissionsCell = ({ row }: GridRenderCellParams) => {
-  if (row.requires_manual_handling || row.excess_emissions == null) {
+  if (
+    row.requires_manual_handling ||
+    row.director_decision != null ||
+    row.excess_emissions == null
+  ) {
     return "N/A";
   }
   return `${row.excess_emissions} tCO2e`;
 };
 
 const OutstandingBalanceCell = ({ row }: GridRenderCellParams) => {
-  if (row.requires_manual_handling || row.outstanding_balance_tco2e == null) {
+  if (
+    row.requires_manual_handling ||
+    row.director_decision != null ||
+    row.outstanding_balance_tco2e == null
+  ) {
     return "N/A";
   }
   return `${row.outstanding_balance_tco2e} tCO2e`;

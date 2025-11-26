@@ -29,6 +29,7 @@ ISSUANCE_STATUS_ALIAS = "compliance_earned_credit.issuance_status"
 # manual_handling_record aliases
 DIRECTOR_DECISION_ALIAS = "manual_handling_record.director_decision"
 
+
 class ComplianceReportVersionListOut(ModelSchema):
     operator_name: str = Field(..., alias=OPERATOR_NAME_ALIAS)
     operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
@@ -44,7 +45,6 @@ class ComplianceReportVersionListOut(ModelSchema):
     # derived flag: True only when manual_handling_record exists
     requires_manual_handling: Optional[bool] = None
     director_decision: Optional[str] = Field(None, alias=DIRECTOR_DECISION_ALIAS)
-
 
     class Meta:
         model = ComplianceReportVersion
@@ -62,11 +62,10 @@ class ComplianceReportVersionOut(ModelSchema):
     outstanding_balance_tco2e: Optional[Decimal] = None
     outstanding_balance_equivalent_value: Optional[Decimal] = None
     penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
-    has_late_submission_penalty: Optional[bool] = None  
-    # derived flag: True only when manual_handling_record exists
-    requires_manual_handling: Optional[bool] = None
     has_late_submission_penalty: bool
     has_overdue_penalty: bool
+    # derived flag: True only when manual_handling_record exists
+    requires_manual_handling: Optional[bool] = None
 
     @staticmethod
     def resolve_has_late_submission_penalty(obj: Any) -> bool:

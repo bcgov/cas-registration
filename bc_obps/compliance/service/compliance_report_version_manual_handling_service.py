@@ -28,8 +28,9 @@ class ComplianceManualHandlingService:
         compliance_report_version_id: int,
     ) -> Optional[ComplianceReportVersionManualHandling]:
         return (
-            ComplianceReportVersionManualHandling.objects
-            .filter(compliance_report_version_id=compliance_report_version_id)
+            ComplianceReportVersionManualHandling.objects.filter(
+                compliance_report_version_id=compliance_report_version_id
+            )
             .select_related("analyst_submitted_by", "director_decision_by")
             .first()
         )
@@ -51,9 +52,7 @@ class ComplianceManualHandlingService:
         Other users are not allowed to update manual handling data.
         """
         crv = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
-        record = ComplianceReportVersionManualHandling.objects.get(
-            compliance_report_version=crv
-        )
+        record = ComplianceReportVersionManualHandling.objects.get(compliance_report_version=crv)
         update_payload = ManualHandlingUpdate(**payload)
 
         if user.is_cas_analyst():
@@ -80,19 +79,13 @@ class ComplianceManualHandlingService:
         - Analysts cannot change the director_decision
         - If a director has already resolved the issue, analyst edits are blocked
         """
-        if (
-            record.director_decision
-            == ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
-        ):
-            raise UserError(
-                "Analyst updates are not allowed after the director has marked the issue as resolved"
-            )
+        if record.director_decision == ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED:
+            raise UserError("Analyst updates are not allowed after the director has marked the issue as resolved")
 
         # Update analyst comment if provided
         if update_payload.analyst_comment is not None:
             record.analyst_comment = update_payload.analyst_comment
             record.save(update_fields=["analyst_comment"])
-
 
     @classmethod
     def _handle_cas_director_update(
@@ -106,7 +99,7 @@ class ComplianceManualHandlingService:
         Business rules:
         - Director must provide a valid director_decision
         """
-        
+
         valid_decisions = ComplianceReportVersionManualHandling.DirectorDecision.values
         if update_payload.director_decision not in valid_decisions:
             raise UserError("Invalid director decision provided")

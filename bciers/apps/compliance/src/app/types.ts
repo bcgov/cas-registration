@@ -157,7 +157,8 @@ export interface ComplianceSummary {
   outstanding_balance_equivalent_value?: number;
   emissions_attributable_for_compliance?: string;
   emissions_limit?: string;
-  has_late_submission_penalty?: boolean;
+  has_late_submission_penalty: boolean;
+  has_overdue_penalty: boolean;
   requires_manual_handling: boolean;
   director_decision?: string;
 }

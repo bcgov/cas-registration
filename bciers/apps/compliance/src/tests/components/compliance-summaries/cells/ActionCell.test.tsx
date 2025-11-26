@@ -344,7 +344,6 @@ describe("ActionCell", () => {
   });
 
   // Test cases for manual handling flow
-  // Test cases for manual handling flow
   describe("Manual Handling (director_decision + requires_manual_handling)", () => {
     it("renders non-clickable 'Contact Us' when manual handling is pending for external users", () => {
       render(

@@ -219,9 +219,21 @@ class UserModelTest(BaseTestCase):
             ("compliancepenaltyrate_created", "compliance penalty rate", None, None),
             ("compliancepenaltyrate_updated", "compliance penalty rate", None, None),
             ("compliancepenaltyrate_archived", "compliance penalty rate", None, None),
-            ("compliancereportversionmanualhandling_created", "compliance report version_manual_handling", None, None),
-            ("compliancereportversionmanualhandling_updated", "compliance report version_manual_handling", None, None),
-            ("compliancereportversionmanualhandling_archived", "compliance report version_manual_handling", None, None),
+            ('compliancereportversionmanualhandling_created', 'compliance report version manual handling', None, None),
+            ('compliancereportversionmanualhandling_updated', 'compliance report version manual handling', None, None),
+            ('compliancereportversionmanualhandling_archived', 'compliance report version manual handling', None, None),
+            (
+                'compliance_manual_handling_analyst_submitted_by',
+                'compliance report version manual handling',
+                None,
+                None,
+            ),
+            (
+                'compliance_manual_handling_director_decision_by',
+                'compliance report version manual handling',
+                None,
+                None,
+            ),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):

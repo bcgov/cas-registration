@@ -190,10 +190,17 @@ class AdjustmentStrategy:
     def empty() -> "AdjustmentStrategy":
         return AdjustmentStrategy()
 
+
 @dataclass
 class ManualHandlingUpdate:
     """
     Payload for manual handling updates.
     """
+
     analyst_comment: Optional[str] = None
-    director_decision: Optional[Literal["action_required", "issue_resolved",]] = None
+    director_decision: Optional[
+        Literal[
+            "action_required",
+            "issue_resolved",
+        ]
+    ] = None

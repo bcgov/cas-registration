@@ -57,10 +57,10 @@ class ManualHandler:
         """
         This handler applies when the *previous* compliance report version has a manual-handling record
         """
-        previous_crv = ComplianceReportVersion.objects.get( report_compliance_summary=previous_summary )
-        
-        # Use the existence of the one-to-one manual_handling_record        
-        return hasattr(previous_crv, "manual_handling_record")
+        previous_crv = ComplianceReportVersion.objects.get(report_compliance_summary=previous_summary)
+
+        # Use the existence of the one-to-one manual_handling_record
+        return ComplianceReportVersionManualHandling.objects.filter(compliance_report_version=previous_crv).exists()
 
     @staticmethod
     @transaction.atomic()
@@ -107,8 +107,6 @@ class ManualHandler:
         )
 
         return compliance_report_version
-
-
 
 
 # Concrete strategy for superceding compliance report versions when no binding action has occurred (invoice generated / earned credits requested or issued)
@@ -739,8 +737,6 @@ class DecreasedObligationHandler:
             status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         )
 
-
-
     @staticmethod
     def _record_manual_handling(
         compliance_report_version_id: int,
@@ -748,17 +744,13 @@ class DecreasedObligationHandler:
         """
         Create a related ComplianceReportVersionManualHandling record.
         """
-        crv = ComplianceReportVersion.objects.get(
-            id=compliance_report_version_id
-        )
+        crv = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
 
         # Create manual-handling record for this supplementary report
         ComplianceReportVersionManualHandling.objects.create(
             compliance_report_version=crv,
             handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
-            context=(
-                "Obligation is fully paid and the refund pool contains refundable cash."
-            ),
+            context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
         )
 
 
@@ -931,9 +923,7 @@ class DecreasedCreditHandler:
             ComplianceReportVersionManualHandling.objects.create(
                 compliance_report_version=compliance_report_version,
                 handling_type=ComplianceReportVersionManualHandling.HandlingType.EARNED_CREDITS,
-                context=(
-                    "Earned credits have been previously approved."
-                ),
+                context=ComplianceReportVersionManualHandling.Context.EARNED_CREDITS_PREVIOUSLY_APPROVED,
             )
 
             return compliance_report_version

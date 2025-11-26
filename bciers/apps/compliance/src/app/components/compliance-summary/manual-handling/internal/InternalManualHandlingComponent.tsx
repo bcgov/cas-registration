@@ -35,7 +35,7 @@ const InternalManualHandlingComponent = ({
   const isCasDirector = userRole === FrontEndRoles.CAS_DIRECTOR;
 
   const [errors, setErrors] = useState<string[] | undefined>();
-  const [formData, setFormState] = useState<ManualHandlingDataWithInitial>({
+  const [formData, setFormData] = useState<ManualHandlingDataWithInitial>({
     ...initialFormData,
     _initial_director_decision: initialFormData.director_decision,
     is_cas_analyst: isCasAnalyst,
@@ -44,6 +44,8 @@ const InternalManualHandlingComponent = ({
 
   const [formKey, setFormKey] = useState(0); // remounts form to re-evaluate notes
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Success state for the Submit button
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`;
 
@@ -75,7 +77,7 @@ const InternalManualHandlingComponent = ({
       setErrors(undefined);
 
       // Update form data
-      setFormState((prev) => ({
+      setFormData((prev) => ({
         ...prev,
         // update field value
         analyst_comment: submittedData.analyst_comment,
@@ -83,6 +85,12 @@ const InternalManualHandlingComponent = ({
         // update notes logic
         _initial_director_decision: submittedData.director_decision,
       }));
+
+      setIsSuccess(true);
+      // 🕐 Wait for 3 second and then reset success state
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 3000);
 
       // force remount so notes widgets re-render
       setFormKey((prev) => prev + 1);
@@ -110,7 +118,9 @@ const InternalManualHandlingComponent = ({
         className="mt-8"
       >
         {!isAnalystLockedByDirector && (
-          <SubmitButton isSubmitting={isSubmitting}>Submit</SubmitButton>
+          <SubmitButton isSubmitting={isSubmitting}>
+            {isSuccess ? "✅ Success" : "Submit"}
+          </SubmitButton>
         )}
       </ComplianceStepButtons>
     </FormBase>

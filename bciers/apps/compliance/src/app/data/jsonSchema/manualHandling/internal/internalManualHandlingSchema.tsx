@@ -178,6 +178,40 @@ export const internalManualHandlingSchema: RJSFSchema = {
   ],
 };
 
+const getAnalystSubmissionInfoElement = (
+  analystSubmittedBy?: string,
+  analystSubmittedDate?: string,
+) => {
+  if (!analystSubmittedBy && !analystSubmittedDate) return null;
+
+  const formatDate = (dateString: string) => {
+    try {
+      // Parse the date string as local date to avoid timezone issues
+      const [year, month, day] = dateString.split("-").map(Number);
+      const date = new Date(year, month - 1, day); // month is 0-indexed
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch (error) {
+      // Fallback to original format if parsing fails
+      return dateString;
+    }
+  };
+
+  const formattedDate = analystSubmittedDate
+    ? formatDate(analystSubmittedDate)
+    : "";
+
+  return (
+    <small className="m-0">
+      Submitted{analystSubmittedBy ? ` by ${analystSubmittedBy}` : ""}
+      {formattedDate ? ` on ${formattedDate}` : ""}
+    </small>
+  );
+};
+
 export const internalManualHandlingUiSchema = (
   analystSubmittedDate?: string,
   analystSubmittedBy?: string,
@@ -218,6 +252,10 @@ export const internalManualHandlingUiSchema = (
   analyst_comment: {
     "ui:widget": "TextAreaWidget",
     "ui:classNames": "md:gap-16 [&>div:last-child]:w-full",
+    "ui:help": getAnalystSubmissionInfoElement(
+      analystSubmittedBy,
+      analystSubmittedDate,
+    ),
   },
 
   director_decision: {

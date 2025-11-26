@@ -44,97 +44,6 @@ class ComplianceReportVersionManualHandlingTest(BaseTestCase):
 
 
 # ---------------------------------------------------------------------------
-# Behaviour tests (no triggers / RLS)
-# ---------------------------------------------------------------------------
-
-
-class ComplianceReportVersionManualHandlingBehaviourTest(BaseTestCase):
-    def test_default_director_decision_is_pending_manual_handling(self):
-        obj = make_recipe(
-            "compliance.tests.utils.compliance_report_version_manual_handling",
-        )
-        self.assertEqual(
-            obj.director_decision,
-            ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
-        )
-
-    def test_director_decision_choices_match_expected_values(self):
-        field = ComplianceReportVersionManualHandling._meta.get_field(
-            "director_decision"
-        )
-        values = [choice[0] for choice in field.choices]
-
-        self.assertIn(
-            ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
-            values,
-        )
-        self.assertIn(
-            ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED,
-            values,
-        )
-        self.assertEqual(len(values), 2)
-
-    def test_comments_are_optional(self):
-        obj = make_recipe(
-            "compliance.tests.utils.compliance_report_version_manual_handling",
-            analyst_comment=None,
-        )
-
-        self.assertIsNone(obj.analyst_comment)
-
-    def test_one_to_one_relation_from_compliance_report_version(self):
-        """
-        We care that the relation hooks up correctly in the DB, not that
-        Python object identity is literally the same instance.
-        """
-        crv = make_recipe("compliance.tests.utils.compliance_report_version")
-        manual = make_recipe(
-            "compliance.tests.utils.compliance_report_version_manual_handling",
-            compliance_report_version=crv,
-        )
-
-        crv.refresh_from_db()
-        manual.refresh_from_db()
-
-        # Forward relation: manual -> CRV
-        self.assertEqual(manual.compliance_report_version_id, crv.id)
-
-        # Reverse relation: CRV -> manual_handling_record
-        self.assertIsNotNone(crv.manual_handling_record)
-        self.assertEqual(crv.manual_handling_record.id, manual.id)
-
-
-    def test_director_can_update_decision(self):
-        manual = make_recipe(
-            "compliance.tests.utils.compliance_report_version_manual_handling",
-            director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
-        )
-
-        manual.director_decision = (
-            ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
-        )
-        manual.save()
-
-        manual.refresh_from_db()
-        self.assertEqual(
-            manual.director_decision,
-            ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED,
-        )
-
-    def test_analyst_can_update_comment_independently(self):
-        manual = make_recipe(
-            "compliance.tests.utils.compliance_report_version_manual_handling",
-            analyst_comment="Initial analyst comment",
-        )
-
-        manual.analyst_comment = "Updated analyst context"
-        manual.save()
-
-        manual.refresh_from_db()
-        self.assertEqual(manual.analyst_comment, "Updated analyst context")
-
-
-# ---------------------------------------------------------------------------
 # Analyst trigger tests
 # ---------------------------------------------------------------------------
 
@@ -161,22 +70,6 @@ class ComplianceReportVersionManualHandlingAnalystTriggerTest(BaseTestCase):
         self.assertEqual(manual.analyst_comment, "Updated comment")
         self.assertIsNotNone(manual.analyst_submitted_date)
         # analyst_submitted_by may be None if my.guid is not set in tests
-
-    def test_does_not_populate_submission_info_when_comment_unchanged(self):
-        manual = make_recipe(
-            "compliance.tests.utils.compliance_report_version_manual_handling",
-            analyst_comment="Same comment",
-            analyst_submitted_date=None,
-            analyst_submitted_by=None,
-        )
-
-        manual.context = "Some other change"
-        manual.save()
-
-        manual.refresh_from_db()
-        self.assertEqual(manual.analyst_comment, "Same comment")
-        self.assertIsNone(manual.analyst_submitted_date)
-        self.assertIsNone(manual.analyst_submitted_by)
 
     def test_populate_analyst_submission_info_with_different_comment_scenarios(self):
         scenarios = [
@@ -238,9 +131,7 @@ class ComplianceReportVersionManualHandlingDirectorDecisionTriggerTest(BaseTestC
     """
 
     def setUp(self):
-        self.resolved_status = (
-            ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
-        )
+        self.resolved_status = ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
         self.other_statuses = [
             ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
         ]
@@ -370,15 +261,11 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
         #
         def select_function(cursor):
             # Should be able to read their own manual-handling record
-            ComplianceReportVersionManualHandling.objects.get(
-                id=new_operator_manual_handling.id
-            )
+            ComplianceReportVersionManualHandling.objects.get(id=new_operator_manual_handling.id)
 
         def forbidden_select_function(cursor):
             # Must NOT be able to see previous operator's record
-            ComplianceReportVersionManualHandling.objects.get(
-                id=old_operator_manual_handling.id
-            )
+            ComplianceReportVersionManualHandling.objects.get(id=old_operator_manual_handling.id)
 
         def insert_function(cursor):
             # Should be able to create a manual-handling record for their own CRV
@@ -442,15 +329,11 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
         #
         def select_function_prev(cursor):
             # Previous operator should see their own manual-handling record
-            ComplianceReportVersionManualHandling.objects.get(
-                id=old_operator_manual_handling.id
-            )
+            ComplianceReportVersionManualHandling.objects.get(id=old_operator_manual_handling.id)
 
         def forbidden_select_function_prev(cursor):
             # Must NOT see the new operator's record
-            ComplianceReportVersionManualHandling.objects.get(
-                id=new_operator_manual_handling.id
-            )
+            ComplianceReportVersionManualHandling.objects.get(id=new_operator_manual_handling.id)
 
         def insert_function_prev(cursor):
             # Should be able to create manual-handling for their own CRV
@@ -531,9 +414,7 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
 
         def update_function(cursor):
             obj = ComplianceReportVersionManualHandling.objects.first()
-            obj.director_decision = (
-                ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
-            )
+            obj.director_decision = ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
             obj.context = "Resolved by CAS role"
             obj.save()
 

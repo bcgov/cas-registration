@@ -214,6 +214,7 @@ class ReportVersionTest(BaseTestCase):
             'ElicensingAdjustment',  # Created elicensing_adjustment record should not be immutable after report submission
             'CompliancePenalty',  # Created compliance_penalty record should not be immutable after report submission
             'CompliancePenaltyAccrual',  # Created compliance_penalty_accrual record should not be immutable after report submission
+            'ComplianceReportVersionManualHandling',  # Manual handling should remain editable after submission
         ]
         for model_name in models_exempt_from_immutability:
             missing_triggers.remove(model_name)

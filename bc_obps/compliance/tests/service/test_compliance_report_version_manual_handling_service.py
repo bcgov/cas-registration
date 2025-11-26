@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 pytestmark = pytest.mark.django_db
 
+
 class TestComplianceManualHandlingServiceGet:
     def test_get_manual_handling_by_report_version_returns_record(self):
         # Arrange
@@ -91,8 +92,7 @@ class TestComplianceManualHandlingServiceAnalystUpdate:
         assert record.analyst_comment == "Updated comment"
         # Director decision should be unchanged
         assert (
-            record.director_decision
-            == ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING
+            record.director_decision == ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING
         )
 
     def test_analyst_cannot_change_director_decision(self):
@@ -117,8 +117,7 @@ class TestComplianceManualHandlingServiceAnalystUpdate:
         assert record.analyst_comment == "Updated comment"
         # Director decision must *not* change from its original value
         assert (
-            record.director_decision
-            == ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING
+            record.director_decision == ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING
         )
 
     def test_analyst_cannot_edit_after_director_resolved(self):
@@ -200,10 +199,8 @@ class TestComplianceManualHandlingServiceDirectorUpdate:
 
         # Assert
         record.refresh_from_db()
-        assert (
-            record.director_decision
-            == ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
-        )
+        assert record.director_decision == ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
+
 
 class TestComplianceManualHandlingServiceUnauthorized:
     def test_non_cas_user_cannot_update(self):

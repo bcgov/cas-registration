@@ -20,6 +20,15 @@ class ComplianceReportVersionManualHandling(TimeStampedModel):
         PENDING_MANUAL_HANDLING = "pending_manual_handling", "Pending manual handling"
         ISSUE_RESOLVED = "issue_resolved", "Issue has been resolved"
 
+    class Context(models.TextChoices):
+        OBLIGATION_REFUND_POOL_CASH = (
+            "obligation_refund_pool_cash",
+            "Obligation is fully paid and the refund pool contains refundable cash.",
+        )
+        EARNED_CREDITS_PREVIOUSLY_APPROVED = (
+            "earned_credits_previously_approved",
+            "Earned credits have been previously approved.",
+        )
 
     compliance_report_version = models.OneToOneField(
         ComplianceReportVersion,
@@ -34,7 +43,9 @@ class ComplianceReportVersionManualHandling(TimeStampedModel):
         db_comment="The type of manual handling.",
     )
 
-    context = models.TextField(
+    context = models.CharField(
+        max_length=100,
+        choices=Context.choices,
         db_comment="Reason for requiring manual handling.",
     )
 
@@ -84,9 +95,7 @@ class ComplianceReportVersionManualHandling(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
         db_table = 'erc"."compliance_report_version_manual_handling'
-        db_table_comment = (
-            "Tracks analyst and director manual handling resolution for compliance report versions"
-        )
+        db_table_comment = "Tracks analyst and director manual handling resolution for compliance report versions"
         triggers = [
             *TimeStampedModel.Meta.triggers,
             # Auto-populate analyst_submitted_date / analyst_submitted_by when analyst_comment changes

@@ -264,7 +264,7 @@ class ComplianceDashboardService:
                 When(obligation__obligation_id__isnull=True, then=Value("N/A")),
                 default=F("obligation__obligation_id"),
                 output_field=CharField(),
-            ),            
+            ),
             requires_manual_handling=Case(
                 When(
                     manual_handling_record__director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
@@ -285,15 +285,11 @@ class ComplianceDashboardService:
                 # Manual-handling overrides
                 When(
                     manual_handling_record__director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
-                    then=Value(
-                        "Supplementary report - action required"
-                    ),
+                    then=Value("Supplementary report - action required"),
                 ),
                 When(
                     manual_handling_record__director_decision=ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED,
-                    then=Value(
-                        "Supplementary report - resolved"
-                    ),
+                    then=Value("Supplementary report - resolved"),
                 ),
                 # Base CRV status / earned-credits mappings
                 When(status__isnull=True, then=Value("N/A")),

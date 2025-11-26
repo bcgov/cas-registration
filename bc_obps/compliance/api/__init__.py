@@ -12,7 +12,7 @@ from ._compliance_report_versions._compliance_report_version_id import (
     automatic_overdue_penalty,
     penalty,
     late_submission_penalty,
-    manual_handling
+    manual_handling,
 )
 from ._compliance_report_versions._compliance_report_version_id._automatic_overdue_penalty.invoice import (
     pdf as penalty_invoice,

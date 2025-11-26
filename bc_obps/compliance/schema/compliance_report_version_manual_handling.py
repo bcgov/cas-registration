@@ -12,12 +12,8 @@ class ComplianceReportVersionManualHandlingOut(ModelSchema):
     """
 
     # Project related users as full names instead of nested user objects
-    analyst_submitted_by: Optional[str] = Field(
-        None, alias="analyst_submitted_by.get_full_name"
-    )
-    director_decision_by: Optional[str] = Field(
-        None, alias="director_decision_by.get_full_name"
-    )
+    analyst_submitted_by: Optional[str] = Field(None, alias="analyst_submitted_by.get_full_name")
+    director_decision_by: Optional[str] = Field(None, alias="director_decision_by.get_full_name")
 
     class Meta:
         model = ComplianceReportVersionManualHandling
@@ -41,6 +37,4 @@ class ComplianceReportVersionManualHandlingIn(Schema):
     """
 
     analyst_comment: Optional[str] = None
-    director_decision: Optional[
-        Literal["pending_manual_handling", "issue_resolved"]
-    ] = None
+    director_decision: Optional[Literal["pending_manual_handling", "issue_resolved"]] = None

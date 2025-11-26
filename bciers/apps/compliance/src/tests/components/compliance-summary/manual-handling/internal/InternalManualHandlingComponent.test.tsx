@@ -63,7 +63,7 @@ describe("InternalManualHandlingComponent", () => {
     expect(screen.getByText("Director's Decision:")).toBeVisible();
 
     // Submit button visible for CAS analyst when director_decision is pending
-    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
   });
 
   it("hides the Submit button for CAS analysts when the director has resolved the issue", () => {
