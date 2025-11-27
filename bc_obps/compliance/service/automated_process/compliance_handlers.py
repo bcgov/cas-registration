@@ -73,11 +73,15 @@ class PenaltyAccruingHandler(ComplianceUpdateHandler):
         if has_penalty:
             return False
 
+        obligation = invoice.compliance_obligation
+        compliance_period = obligation.compliance_report_version.compliance_report.compliance_period
+        compliance_deadline = compliance_period.compliance_deadline
+
         return (
             invoice.compliance_obligation.compliance_report_version.status
             == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
             and invoice.outstanding_balance > Decimal('0.00')
-            and invoice.due_date < timezone.now().date()
+            and compliance_deadline < timezone.now().date()
         )
 
     def handle(self, invoice: ElicensingInvoice) -> None:
@@ -126,12 +130,20 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         compliance_deadline = compliance_period.compliance_deadline
         submission_date = obligation.created_at.date()  # type: ignore[union-attr]
         has_late_submission = submission_date > compliance_deadline
-        # Create a late submission penalty if obligation was submitted late
-        if has_late_submission:
+
+        # Effective deadline determines when the large automatic overdue penalty is applied
+        # It is equal to the compliance deadline except in the case of late supplementary reports, which are granted 30 days to pay the additional obligation
+        # For late supplementary reports the effective deadline becomes the due_date of the invoice (ie: 30 days after report submission/invoice creation)
+        # As per the Greenhouse Gas Emission Administrative Penalties and Appeals Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/248_2015#section2
+        effective_deadline = compliance_deadline
+        if obligation.compliance_report_version.is_supplementary and has_late_submission:
+            effective_deadline = invoice.due_date
+            # Create a late submission penalty if a supplementary obligation was submitted late
             PenaltyCalculationService.create_late_submission_penalty(obligation)
+
         # If we are past the deadline & the last transaction that brought the obligation to zero was also received past the deadline, create an automatic overdue penalty
-        if invoice.due_date < timezone.now().date() and final_transaction_date > invoice.due_date:  # type: ignore [operator]
-            PenaltyCalculationService.create_penalty(obligation)
+        if effective_deadline < timezone.now().date() and final_transaction_date > effective_deadline:  # type: ignore [operator]
+            PenaltyCalculationService.create_penalty(obligation, effective_deadline)
             logger.info(f"Created penalties for obligation {obligation.obligation_id}")
 
 

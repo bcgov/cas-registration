@@ -96,7 +96,7 @@ class TestPenaltyCalculationService:
             base_amount=Decimal("1000000.00"),
         )
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
-        result = PenaltyCalculationService.calculate_penalty(self.obligation)
+        result = PenaltyCalculationService.calculate_penalty(self.obligation, date(2025, 12, 1))
 
         assert result["days_late"] == 10
         assert result["accumulated_penalty"].quantize(Decimal('0.01')) == Decimal('38000.00')
@@ -173,11 +173,11 @@ class TestPenaltyCalculationService:
         self.obligation.save(update_fields=["created_at"])
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
         mock_get_penalty.return_value = None
-        PenaltyCalculationService.create_penalty(self.obligation)
+        PenaltyCalculationService.create_penalty(self.obligation, compliance_deadline)
         mock_calculate.assert_called_with(
             obligation=self.obligation,
             persist_penalty_data=True,
-            accrual_start_date=clean_invoice.due_date + timedelta(days=1),
+            accrual_start_date=compliance_deadline + timedelta(days=1),
             final_accrual_date=clean_payment.received_date,
         )
 
@@ -221,12 +221,12 @@ class TestPenaltyCalculationService:
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
         mock_get_penalty.return_value = None
 
-        PenaltyCalculationService.create_penalty(self.obligation)
+        PenaltyCalculationService.create_penalty(self.obligation, compliance_deadline)
 
         mock_calculate.assert_called_with(
             obligation=self.obligation,
             persist_penalty_data=True,
-            accrual_start_date=clean_invoice.due_date + timedelta(days=1),
+            accrual_start_date=compliance_deadline + timedelta(days=1),
             final_accrual_date=later_adjustment.adjustment_date,
         )
 
@@ -264,12 +264,12 @@ class TestPenaltyCalculationService:
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
         mock_get_penalty.return_value = None
 
-        PenaltyCalculationService.create_penalty(self.obligation)
+        PenaltyCalculationService.create_penalty(self.obligation, compliance_deadline)
 
         mock_calculate.assert_called_with(
             obligation=self.obligation,
             persist_penalty_data=True,
-            accrual_start_date=clean_invoice.due_date + timedelta(days=1),
+            accrual_start_date=compliance_deadline + timedelta(days=1),
             final_accrual_date=only_adjustment.adjustment_date,
         )
 
@@ -475,8 +475,8 @@ class TestPenaltyCalculationService:
         assert penalty_record.compounding_frequency == CompliancePenalty.Frequency.MONTHLY
         assert penalty_record.accrual_start_date == date(2024, 12, 1)
         assert penalty_record.accrual_final_date == date(2025, 4, 14)
-        assert penalty_record.penalty_amount == Decimal("29504.25")
-        assert penalty_record.compliance_penalty_accruals.count() == 134
+        assert penalty_record.penalty_amount == Decimal("29727.85")
+        assert penalty_record.compliance_penalty_accruals.count() == 135
         mock_create_invoice.assert_called_once()
 
     @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.TODAY", date(2025, 4, 15))
@@ -542,8 +542,8 @@ class TestPenaltyCalculationService:
         assert penalty_record.accrual_frequency == CompliancePenalty.Frequency.DAILY
         assert penalty_record.compounding_frequency == CompliancePenalty.Frequency.MONTHLY
         assert penalty_record.accrual_start_date == date(2024, 12, 1)
-        assert penalty_record.penalty_amount == Decimal("46704.72")
-        assert penalty_record.compliance_penalty_accruals.count() == (date(2025, 7, 14) - date(2024, 12, 1)).days
+        assert penalty_record.penalty_amount == Decimal("46940.61")
+        assert penalty_record.compliance_penalty_accruals.count() == (date(2025, 7, 14) - date(2024, 12, 1)).days + 1
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
@@ -590,7 +590,7 @@ class TestPenaltyCalculationService:
             compliance_obligation=self.obligation,
             penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
         )
-        assert penalty_record.penalty_amount == Decimal("12279.79")
+        assert penalty_record.penalty_amount == Decimal("12435.15")
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
@@ -643,7 +643,7 @@ class TestPenaltyCalculationService:
             compliance_obligation=self.obligation,
             penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
         )
-        assert penalty_record.penalty_amount == Decimal("13885.67")
+        assert penalty_record.penalty_amount == Decimal("14070.03")
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
