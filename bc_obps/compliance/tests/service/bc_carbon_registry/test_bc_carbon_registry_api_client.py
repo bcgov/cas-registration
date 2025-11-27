@@ -462,7 +462,62 @@ class TestBCCarbonRegistryAPIClient:
 
         # Assert
         assert result["totalEntities"] == 0
-        assert len(result["entities"]) == 0
+
+    def test_get_account_details_defaults_to_operator_of_regulated_operation_type(self, authenticated_client):
+        # Arrange - account with type 11 (Operator of Regulated Operation)
+        client, mock_request = authenticated_client
+        account_response = BASE_ACCOUNT_RESPONSE.copy()
+        account_response["entities"][0]["accountTypeId"] = 11
+        mock_request.return_value = Mock(status_code=200, json=lambda: account_response)
+
+        # Act
+        result = client.get_account_details(MOCK_FIFTEEN_DIGIT_STRING)
+
+        # Assert - should succeed with default account type (11)
+        assert result["totalEntities"] == 1
+        assert result["entities"][0]["accountTypeId"] == 11
+
+    def test_get_account_details_validates_account_type_mismatch(self, authenticated_client):
+        # Arrange - account with type 14 (Compliance) but expecting type 11 (Operator of Regulated Operation)
+        from common.exceptions import UserError
+
+        client, mock_request = authenticated_client
+        account_response = BASE_ACCOUNT_RESPONSE.copy()
+        account_response["entities"][0]["accountTypeId"] = 14  # Compliance account
+        mock_request.return_value = Mock(status_code=200, json=lambda: account_response)
+
+        # Act & Assert
+        with pytest.raises(UserError, match="Account exists but does not match the required account type"):
+            client.get_account_details(MOCK_FIFTEEN_DIGIT_STRING)
+
+    def test_get_account_details_validates_account_type_with_explicit_type(self, authenticated_client):
+        # Arrange - account with type 14 (Compliance) and explicitly requesting type 14
+        client, mock_request = authenticated_client
+        account_response = BASE_ACCOUNT_RESPONSE.copy()
+        account_response["entities"][0]["accountTypeId"] = 14  # Compliance account
+        mock_request.return_value = Mock(status_code=200, json=lambda: account_response)
+
+        # Act
+        result = client.get_account_details(MOCK_FIFTEEN_DIGIT_STRING, account_type_id=14)
+
+        # Assert - should succeed when account type matches requested type
+        assert result["totalEntities"] == 1
+        assert result["entities"][0]["accountTypeId"] == 14
+
+    def test_get_account_details_validates_account_type_with_none_explicitly_passed(self, authenticated_client):
+        # Arrange - account with type 11 (Operator of Regulated Operation)
+        client, mock_request = authenticated_client
+        account_response = BASE_ACCOUNT_RESPONSE.copy()
+        account_response["entities"][0]["accountTypeId"] = 11
+        mock_request.return_value = Mock(status_code=200, json=lambda: account_response)
+
+        # Act - explicitly pass None, should default to 11
+        result = client.get_account_details(MOCK_FIFTEEN_DIGIT_STRING, account_type_id=None)
+
+        # Assert - should succeed with default account type (11)
+        assert result["totalEntities"] == 1
+        assert len(result["entities"]) == 1
+        assert result["entities"][0]["accountTypeId"] == 11
         mock_request.assert_called_once()
 
     def test_list_all_accounts_empty_result(self, authenticated_client):

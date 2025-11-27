@@ -40,6 +40,7 @@ class BCCarbonRegistryAPIClient:
     client_secret: Optional[str]
     token_expiry: Optional[datetime] = None
     COMPLIANCE_ACCOUNT_TYPE_ID = 14
+    OPERATOR_OF_REGULATED_OPERATION_TYPE_ID = 11  # Only master accounts with this ID are allowed to request units
 
     # API Endpoints
     AUTH_ENDPOINT = "/user-api/okta/token"
@@ -194,11 +195,17 @@ class BCCarbonRegistryAPIClient:
             logger.error("Invalid pagination parameters: limit=%s, start=%s", limit, start)
             raise ValueError("limit must be positive and start non-negative")
 
-    def get_account_details(self, account_id: Union[str, int]) -> Dict:
+    def get_account_details(self, account_id: Union[str, int], account_type_id: Optional[int] = None) -> Dict:
         """
         Retrieves account details for the given account ID. This endpoint works for both compliance and holding accounts.
         :param account_id: The ID of the account to retrieve.
+        :param account_type_id: Account type ID to validate against. Defaults to 11 (Operator of Regulated Operation - master accounts allowed to request units).
+                                Use COMPLIANCE_ACCOUNT_TYPE_ID (14) for sub-account (Compliance). Validates that the account matches this type.
         """
+        # Default to 11 (Operator of Regulated Operation) if not provided or explicitly None
+        if account_type_id is None:
+            account_type_id = self.OPERATOR_OF_REGULATED_OPERATION_TYPE_ID
+
         if isinstance(account_id, str) and not account_id.isdigit():
             logger.error("Invalid account_id: %s", account_id)
             raise ValueError("account_id must be a numeric string")
@@ -210,9 +217,23 @@ class BCCarbonRegistryAPIClient:
                 ),
             )
         )
-        return self._make_request(
+        response = self._make_request(
             "POST", self.ACCOUNT_SEARCH_ENDPOINT, data=payload, response_model=AccountDetailsResponse
         )
+
+        # Validate the account type
+        entities = response.get("entities", [])
+        if entities and len(entities) > 0:
+            account_entity = entities[0]
+            account_type = account_entity.get("accountTypeId")
+            if account_type != account_type_id:
+                from common.exceptions import UserError
+
+                raise UserError(
+                    f"Account exists but does not match the required account type. Expected account type ID: {account_type_id}, found: {account_type}"
+                )
+
+        return response
 
     def list_all_accounts(self, limit: int = 20, start: int = 0) -> Dict:
         """

@@ -119,6 +119,34 @@ describe("BccrHoldingAccountWidget", () => {
     });
   });
 
+  it("shows error message for wrong account type", async () => {
+    const wrongAccountTypeError =
+      "Account exists but does not match the required account type. Expected account type ID: 11, found: 14";
+    mockValidateBccrAccount.mockRejectedValueOnce(
+      new Error(wrongAccountTypeError),
+    );
+
+    render(<BccrHoldingAccountWidget {...defaultProps} />);
+    const input = screen.getByRole("textbox");
+
+    fireEvent.change(input, { target: { value: "123456789012345" } });
+
+    await waitFor(() => {
+      expect(input).toHaveAttribute("aria-invalid", "true");
+      expect(
+        screen.getByText(
+          /please enter a bccr account id with the account type 'operator of regulated operation', or contact/i,
+        ),
+      ).toBeVisible();
+      expect(
+        screen.getByRole("link", {
+          name: /ghgregulator@gov\.bc\.ca/i,
+        }),
+      ).toHaveAttribute("href", "mailto:GHGRegulator@gov.bc.ca");
+      expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
+    });
+  });
+
   it("renders input with correct help text", () => {
     render(<BccrHoldingAccountWidget {...defaultProps} />);
     expect(screen.getByText(/no account\? in bccr\./i)).toBeVisible();
