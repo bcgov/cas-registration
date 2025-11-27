@@ -43,7 +43,7 @@ If you care about the data being accurate, then use this method. It takes a litt
 - Refresh the elicensing data in bciers
 - Note: If you want to test multiple payments over a period, update the received_date(s) of your payment records accordingly
 - Manually update elicensing_invoice.due_date to a date in the past (note that the refresh service will overwrite this change with data from elicensing after 15 minutes on the next refresh, so make sure to do the next step immediately after changing the date)
-- Call PenaltyCalculationService.create_penalty() with the related obligation
+- Call PenaltyCalculationService.create_penalty() with the related obligation & the effective deadline (the last date the obligation can be paid before it is considered overdue)
 
 #### Example shell call:
 
@@ -51,11 +51,11 @@ If you care about the data being accurate, then use this method. It takes a litt
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.models.compliance_obligation import ComplianceObligation
 from datetime import date
-PenaltyCalculationService.create_penalty(obligation=ComplianceObligation.objects.get(id=<related_obligation_id>))
+PenaltyCalculationService.create_penalty(obligation=ComplianceObligation.objects.get(id=<related_obligation_id>), effective_deadline=<date>)
 
 ```
 
-- This would calculate & persist a penalty to the database that is `<received_date of final payment - due_date of invoice>` days late
+- This would calculate & persist a penalty to the database that is `<received_date of final payment - effective deadline>` days late
 
 ### Notes:
 
