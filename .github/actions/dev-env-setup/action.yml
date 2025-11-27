@@ -35,7 +35,7 @@ runs:
 
     - name: Cache Poetry virtual environment
       id: poetry-cache
-      uses: actions/cache@v6
+      uses: actions/cache@v4
       with:
         path: ./bc_obps/.venv
         key: venv-${{ runner.os }}-python-${{ steps.python-version.outputs.version }}-${{ hashFiles('bc_obps/poetry.lock') }}
