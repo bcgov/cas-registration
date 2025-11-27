@@ -39,7 +39,7 @@ def reverse_populate_report_open_date(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0141_reportingyear_report_open_date'),
+        ('reporting', '0142_reportingyear_report_open_date'),
     ]
 
     operations = [
