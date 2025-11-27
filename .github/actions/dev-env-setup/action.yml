@@ -91,77 +91,41 @@ runs:
       shell: bash
       run: |
         make install_backend_asdf_tools
-    - name: Reshim asdf tools (needed even when cache hits)
+    - name: Reshim asdf tools
       working-directory: ./bc_obps
       shell: bash
       run: |
-        echo "Reshimming asdf to ensure tools are available..."
         asdf reshim
-        echo "Verifying Python is available:"
-        asdf which python || echo "Warning: Python not found via asdf"
-        python --version || echo "Warning: python command not found"
     - name: Start PostgreSQL and create database
       working-directory: ./bc_obps
       shell: bash
       run: |
         make start_pg
         make create_db
-    - name: Configure Poetry to use asdf Python
+    - name: Configure Poetry environment
       working-directory: ./bc_obps
       shell: bash
       run: |
-        # Get asdf Python path
-        ASDF_PYTHON=$(asdf which python)
-        if [ -z "$ASDF_PYTHON" ]; then
-          echo "ERROR: asdf Python not found"
-          echo "Checking asdf Python installation:"
-          asdf list python || echo "Python not installed via asdf"
-          exit 1
-        fi
-        echo "Configuring Poetry to use asdf Python: $ASDF_PYTHON"
-        echo "Python version: $($ASDF_PYTHON --version)"
-        # Ensure asdf Python is first in PATH
         export PATH="$(asdf where python)/bin:$PATH"
-        echo "After PATH update, python is: $(which python)"
-        echo "Python version in PATH: $(python --version)"
-        # Configure Poetry to use in-project virtualenvs (easier to control)
+        ASDF_PYTHON="$(asdf which python)"
+
         poetry config virtualenvs.in-project true
-        # Set POETRY_PYTHON to force Poetry to use the correct Python
-        export POETRY_PYTHON="$ASDF_PYTHON"
-        echo "Final PATH check - python is: $(which python)"
-        echo "Python version: $(python --version)"
-        # Get expected Python version from .tool-versions
+
+        # Verify cached .venv uses correct Python version, recreate if needed
         EXPECTED_VERSION=$(grep "^python" .tool-versions | awk '{print $2}')
-        # Check if .venv exists (from cache) and verify its Python version
         if [ -d ".venv" ]; then
-          echo ".venv exists, checking Python version..."
-          VENV_PYTHON_VERSION=$(.venv/bin/python --version 2>&1 | awk '{print $2}')
-          if [ "$VENV_PYTHON_VERSION" != "$EXPECTED_VERSION" ]; then
-            echo "WARNING: Cached .venv uses Python $VENV_PYTHON_VERSION, expected $EXPECTED_VERSION"
-            echo "Removing cached .venv and recreating with correct Python..."
+          VENV_VERSION=$(.venv/bin/python --version 2>&1 | awk '{print $2}')
+          if [ "$VENV_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "Removing .venv with incorrect Python version ($VENV_VERSION != $EXPECTED_VERSION)"
             rm -rf .venv
-          else
-            echo "✅ Cached .venv uses correct Python version: $VENV_PYTHON_VERSION"
           fi
         fi
-        # Create virtualenv manually using asdf Python if it doesn't exist or was removed
-        if [ ! -d ".venv" ]; then
-          echo "Creating virtualenv manually with asdf Python..."
-          "$ASDF_PYTHON" -m venv .venv
-          echo "Virtualenv created at: .venv"
-        fi
-        echo "Virtualenv Python version: $(.venv/bin/python --version)"
-        # Configure Poetry to use the virtualenv
-        poetry env use .venv/bin/python
-        # Verify the virtualenv uses the correct Python
-        poetry env info
+
+        poetry env use "$ASDF_PYTHON"
     - name: Install Poetry dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       working-directory: ./bc_obps
       shell: bash
       run: |
-        # Ensure asdf Python is in PATH when installing dependencies
         export PATH="$(asdf where python)/bin:$PATH"
-        export POETRY_PYTHON="$(asdf which python)"
-        echo "Using Python: $POETRY_PYTHON"
         poetry install --no-interaction --no-root

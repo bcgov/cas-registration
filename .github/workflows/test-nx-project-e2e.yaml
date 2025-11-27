@@ -73,11 +73,6 @@ jobs:
         run: npx playwright install chromium
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
-      - name: 🐛 Setup SSH for debugging
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-this-workflow: false
-
       - name: 🎭 Run Playwright Tests
         env:
           NX_PROJECT: ${{ inputs.nx_project }}
