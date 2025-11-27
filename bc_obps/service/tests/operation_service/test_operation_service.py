@@ -30,6 +30,7 @@ from registration.schema import (
 )
 from registration.enums.enums import EmailTemplateNames
 from service.data_access_service.operation_service import OperationDataAccessService
+from service.data_access_service.operator_service import OperatorDataAccessService
 from service.operation_service import OperationService
 from service.email.email_service import EmailService
 from registration.models.multiple_operator import MultipleOperator
@@ -1332,93 +1333,70 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
             is False
         )
 
-    @pytest.mark.parametrize(
-        "registration_purpose",
-        [
-            Operation.Purposes.OBPS_REGULATED_OPERATION,
-            Operation.Purposes.NEW_ENTRANT_OPERATION,
-            Operation.Purposes.OPTED_IN_OPERATION,
-        ],
-    )
-    def test_check_current_users_registered_regulated_operation_returns_true(self, registration_purpose):
-        # Create a user operator and a registered operation
+    def test_check_operator_has_compliance_reports_returns_true(self):
+        # Create a user operator
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
-        # Create an operation with status 'Registered'
-        baker.make_recipe(
+        # Create an operation
+        operation = baker.make_recipe(
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
-            status="Registered",
-            registration_purpose=registration_purpose,
         )
 
-        # Check that the method returns True when there is a registered and regulated operation
-        assert Operation.objects.count() == 1
+        # Create a compliance report version associated with the operator
+        report = baker.make_recipe(
+            'reporting.tests.utils.report', operator=approved_user_operator.operator, operation=operation
+        )
+        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
+        baker.make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=compliance_report)
+
+        # Check that the method returns True when there is a compliance report
         assert (
-            OperationDataAccessService.check_current_users_registered_regulated_operation(
-                approved_user_operator.operator.id
-            )
-            is True
+            OperatorDataAccessService.check_operator_has_compliance_reports(approved_user_operator.operator.id) is True
         )
 
-    @pytest.mark.parametrize(
-        "registration_purpose",
-        [
-            Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
-            Operation.Purposes.REPORTING_OPERATION,
-            Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
-        ],
-    )
-    def test_check_current_users_registered_regulated_operation_returns_false(self, registration_purpose):
-        # Create a user operator and a registered operation
+    def test_check_operator_has_compliance_reports_returns_false(self):
+        # Create a user operator with no compliance reports
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
-        # Create an operation with status 'Registered'
-        baker.make_recipe(
-            'registration.tests.utils.operation',
-            operator=approved_user_operator.operator,
-            created_by=approved_user_operator.user,
-            status="Registered",
-            registration_purpose=registration_purpose,
-        )
-
-        # Check that the method returns False when there is a registered but not regulated operation
-        assert Operation.objects.count() == 1
+        # Check that the method returns False when there are no compliance reports
         assert (
-            OperationDataAccessService.check_current_users_registered_regulated_operation(
-                approved_user_operator.operator.id
-            )
-            is False
+            OperatorDataAccessService.check_operator_has_compliance_reports(approved_user_operator.operator.id) is False
         )
 
-    def test_check_current_users_registered_regulated_operation_returns_true_with_a_mix_of_purposes(self):
-        # Create a user operator and a registered operation
+    def test_check_operator_has_compliance_reports_returns_true_with_multiple_reports(self):
+        # Create a user operator
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
-        baker.make_recipe(
+        # Create multiple operations
+        operation1 = baker.make_recipe(
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
-            status="Registered",
-            registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,  # regulated purpose
         )
-
-        baker.make_recipe(
+        operation2 = baker.make_recipe(
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
-            status="Registered",
-            registration_purpose=Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,  # non-regulated purpose
         )
 
-        # Check that the method returns True when there is at least one registered and regulated operation
-        assert Operation.objects.count() == 2
+        # Create multiple compliance report versions
+        report1 = baker.make_recipe(
+            'reporting.tests.utils.report', operator=approved_user_operator.operator, operation=operation1
+        )
+        compliance_report1 = baker.make_recipe('compliance.tests.utils.compliance_report', report=report1)
+        baker.make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=compliance_report1)
+
+        report2 = baker.make_recipe(
+            'reporting.tests.utils.report', operator=approved_user_operator.operator, operation=operation2
+        )
+        compliance_report2 = baker.make_recipe('compliance.tests.utils.compliance_report', report=report2)
+        baker.make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=compliance_report2)
+
+        # Check that the method returns True when there is at least one compliance report
         assert (
-            OperationDataAccessService.check_current_users_registered_regulated_operation(
-                approved_user_operator.operator.id
-            )
-            is True
+            OperatorDataAccessService.check_operator_has_compliance_reports(approved_user_operator.operator.id) is True
         )
 
     def test_returns_true_when_operation_is_registered_and_not_potential_reporting(self):

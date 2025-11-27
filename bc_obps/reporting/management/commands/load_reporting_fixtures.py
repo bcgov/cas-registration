@@ -71,30 +71,29 @@ class Command(BaseCommand):
                 )
                 report_version_ids.append(report_version_id)
 
-            for id in report_version_ids:
-                report_version = ReportVersion.objects.get(id=id)
+            for rv_id in report_version_ids:
+                report_version = ReportVersion.objects.get(id=rv_id)
                 ro = report_version.report_operation
                 ro.operator_legal_name = _strip_admin_suffix(ro.operator_legal_name)
                 ro.operation_name = _strip_admin_suffix(ro.operation_name)
                 ro.save()
 
-            if not workflow:
-                # submit reports
-                operation_ids_to_submit = [
-                    UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
-                    UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
-                ]
+            # submit reports
+            operation_ids_to_submit = [
+                UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
+                UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
+            ]
 
-                for operation_id in operation_ids_to_submit:
-                    # set up required data for submission
-                    # multiple report versions to submit if there are multiple years
-                    report_versions = ReportVersion.objects.filter(
-                        report__operation_id=operation_id,
-                    )
+            for operation_id in operation_ids_to_submit:
+                # set up required data for submission
+                # multiple report versions to submit if there are multiple years
+                report_versions = ReportVersion.objects.filter(
+                    report__operation_id=operation_id,
+                )
 
-                    for report_version in report_versions:
+                for report_version in report_versions:
 
-                        submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
-                # create supplementary report
-                for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
-                    ReportVersionService.create_report_version(report)
+                    submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
+            # create supplementary report
+            for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
+                ReportVersionService.create_report_version(report)
