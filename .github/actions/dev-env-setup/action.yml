@@ -80,6 +80,14 @@ runs:
       run: |
         make start_pg
         make create_db
+    - name: Configure Poetry to use asdf Python
+      working-directory: ./bc_obps
+      shell: bash
+      run: |
+        ASDF_PYTHON=$(asdf which python)
+        echo "Configuring Poetry to use asdf Python: $ASDF_PYTHON"
+        echo "Python version: $($ASDF_PYTHON --version)"
+        poetry env use "$ASDF_PYTHON"
     - name: Install Poetry dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       working-directory: ./bc_obps
