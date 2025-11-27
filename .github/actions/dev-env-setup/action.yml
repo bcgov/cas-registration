@@ -58,7 +58,9 @@ runs:
         sudo apt-get install -y libreadline-dev uuid-dev
         sudo apt-get update
         sudo apt-get install -y postgresql-${POSTGRES_MAJOR_VERSION}
+        sudo systemctl start postgresql
         echo "/usr/lib/postgresql/${POSTGRES_MAJOR_VERSION}/bin" >> $GITHUB_PATH
+        echo "PGDATA=/var/lib/postgresql/${POSTGRES_MAJOR_VERSION}/main" >> $GITHUB_ENV
     - name: Start PostgreSQL and create database
       working-directory: ./bc_obps
       shell: bash
