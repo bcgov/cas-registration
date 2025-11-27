@@ -1,21 +1,61 @@
 name: "Set up registration dev environment"
-description: "Sets up asdf and configures the cache"
+description: "Full asdf + Node + Yarn + Poetry + Postgres setup with proper caching"
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v4
 
-    - name: Install asdf (root)
+    - name: Install asdf CLI
       uses: asdf-vm/actions/install@v4
-      with:
-        node: true
-        cache: true
 
-    - name: Install asdf backend tools (bc_obps)
-      uses: asdf-vm/actions/install@v4
+    - name: Cache asdf tools (root)
+      id: asdf-cache-root
+      uses: actions/cache@v4
       with:
-        working_directory: bc_obps
-        cache: true
+        path: ~/.asdf
+        key: asdf-${{ runner.os }}-root-${{ hashFiles('.tool-versions') }}-${{ hashFiles('**/plugins/*.git') }}
+        restore-keys: |
+          asdf-${{ runner.os }}-root-
+
+    - name: Cache asdf tools
+      id: asdf-cache-backend
+      uses: actions/cache@v4
+      with:
+        path: ~/.asdf # Same dir, but different key for subdir
+        key: asdf-${{ runner.os }}-backend-${{ hashFiles('bc_obps/.tool-versions') }}-${{ hashFiles('**/plugins/*.git') }}
+        restore-keys: |
+          asdf-${{ runner.os }}-backend-
+
+    - name: Install root asdf tools + reshim
+      if: steps.asdf-cache-root.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        asdf install
+        asdf reshim
+
+    - name: Reshim root tools (always, for cache hits)
+      shell: bash
+      run: asdf reshim
+
+    - name: Install backend asdf tools + reshim
+      if: steps.asdf-cache-backend.outputs.cache-hit != 'true'
+      working-directory: ./bc_obps
+      shell: bash
+      run: |
+        asdf install
+        asdf reshim
+
+    - name: Reshim backend tools (always)
+      working-directory: ./bc_obps
+      shell: bash
+      run: asdf reshim
+
+    - name: Save asdf cache
+      if: always() # Save even on failure for debugging
+      uses: actions/cache@v4
+      with:
+        path: ~/.asdf
+        key: asdf-${{ runner.os }}-combined-${{ hashFiles('**/.tool-versions') }}-${{ hashFiles('**/plugins/*.git') }}
 
     - uses: ./.github/actions/yarn-cache
 
@@ -29,8 +69,9 @@ runs:
     - name: Get Python version from bc_obps/.tool-versions
       id: python-version
       shell: bash
+      working-directory: ./bc_obps
       run: |
-        VERSION=$(grep "^python" bc_obps/.tool-versions | awk '{print $2}')
+        VERSION=$(grep "^python" .tool-versions | awk '{print $2}')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Cache Poetry virtual environment
@@ -42,7 +83,7 @@ runs:
         restore-keys: |
           venv-${{ runner.os }}-python-${{ steps.python-version.outputs.version }}-
 
-    - name: Configure Poetry + install deps (only if venv cache miss)
+    - name: Configure Poetry + install deps (only on miss)
       if: steps.poetry-cache.outputs.cache-hit != 'true'
       working-directory: ./bc_obps
       shell: bash
@@ -50,12 +91,12 @@ runs:
         poetry config virtualenvs.in-project true
         poetry install --no-interaction --no-root
 
-    - name: Configure Poetry venv (always run – ensures correct Python)
+    - name: Configure Poetry venv (always – ensure correct Python)
       working-directory: ./bc_obps
       shell: bash
       run: |
         poetry config virtualenvs.in-project true
-        poetry env use $(asdf which python) || true  # safe if already correct
+        poetry env use $(asdf which python) || true
 
     - name: Start PostgreSQL and create database
       working-directory: ./bc_obps
@@ -65,8 +106,9 @@ runs:
         make create_db
 
     - name: Cache summary
+      if: always()
       shell: bash
       run: |
-        echo "asdf tools (Node, Python, Postgres) → automatically cached"
-        echo "Yarn cache → handled by your custom action"
-        echo "Poetry .venv → ${{ steps.poetry-cache.outputs.cache-hit == 'true' && 'HIT' || 'MISS' }}"
+        echo "asdf root cache: ${{ steps.asdf-cache-root.outputs.cache-hit == 'true' && 'HIT' || 'MISS' }}"
+        echo "asdf backend cache: ${{ steps.asdf-cache-backend.outputs.cache-hit == 'true' && 'HIT' || 'MISS' }}"
+        echo "Poetry .venv cache: ${{ steps.poetry-cache.outputs.cache-hit == 'true' && 'HIT' || 'MISS' }}"
