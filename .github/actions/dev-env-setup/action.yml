@@ -128,8 +128,6 @@ runs:
         poetry env remove python --all 2>/dev/null || true
         # Also remove virtualenv directory directly if it exists (Poetry might cache them)
         rm -rf ~/.cache/pypoetry/virtualenvs/bc-obps-* 2>/dev/null || true
-        # Configure Poetry to not prefer active Python (use the one we specify)
-        poetry config virtualenvs.prefer-active-python false
         # Set POETRY_PYTHON to force Poetry to use the correct Python
         export POETRY_PYTHON="$ASDF_PYTHON"
         echo "Final PATH check - python is: $(which python)"
@@ -143,4 +141,8 @@ runs:
       working-directory: ./bc_obps
       shell: bash
       run: |
+        # Ensure asdf Python is in PATH when installing dependencies
+        export PATH="$(asdf where python)/bin:$PATH"
+        export POETRY_PYTHON="$(asdf which python)"
+        echo "Using Python: $POETRY_PYTHON"
         poetry install --no-interaction --no-root
