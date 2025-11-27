@@ -91,6 +91,15 @@ runs:
       shell: bash
       run: |
         make install_backend_asdf_tools
+    - name: Reshim asdf tools (needed even when cache hits)
+      working-directory: ./bc_obps
+      shell: bash
+      run: |
+        echo "Reshimming asdf to ensure tools are available..."
+        asdf reshim
+        echo "Verifying Python is available:"
+        asdf which python || echo "Warning: Python not found via asdf"
+        python --version || echo "Warning: python command not found"
     - name: Start PostgreSQL and create database
       working-directory: ./bc_obps
       shell: bash
@@ -101,10 +110,28 @@ runs:
       working-directory: ./bc_obps
       shell: bash
       run: |
+        # Ensure asdf is properly initialized
+        . "$HOME/.asdf/asdf.sh" || true
+        # Get asdf Python path
         ASDF_PYTHON=$(asdf which python)
+        if [ -z "$ASDF_PYTHON" ]; then
+          echo "ERROR: asdf Python not found"
+          echo "Checking asdf Python installation:"
+          asdf list python || echo "Python not installed via asdf"
+          exit 1
+        fi
         echo "Configuring Poetry to use asdf Python: $ASDF_PYTHON"
         echo "Python version: $($ASDF_PYTHON --version)"
+        echo "Checking which python is in PATH: $(which python)"
+        # Ensure asdf Python is first in PATH
+        export PATH="$(asdf where python)/bin:$PATH"
+        echo "After PATH update, python is: $(which python)"
+        # Remove any existing virtualenvs that might use wrong Python version
+        poetry env remove python --all 2>/dev/null || true
+        # Configure Poetry to use asdf Python (use full path to be sure)
         poetry env use "$ASDF_PYTHON"
+        # Verify the virtualenv uses the correct Python
+        poetry env info
     - name: Install Poetry dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       working-directory: ./bc_obps
