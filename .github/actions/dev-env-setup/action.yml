@@ -30,18 +30,38 @@ runs:
         else
           echo "❌ asdf cache MISS - will install tools (this may take 5-7 minutes for Postgres compilation)"
         fi
+    - name: Get Python version from .tool-versions
+      id: python-version
+      shell: bash
+      run: |
+        PYTHON_VERSION=$(grep "^python" bc_obps/.tool-versions | awk '{print $2}')
+        echo "version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
     - name: Load cached venv
       id: cached-poetry-dependencies
       uses: actions/cache@v4
       with:
         path: ./bc_obps/.venv
-        key: venv-${{ runner.os }}-python-3.12.11-${{ hashFiles('bc_obps/poetry.lock') }}
+        key: venv-${{ runner.os }}-python-${{ steps.python-version.outputs.version }}-${{ hashFiles('bc_obps/poetry.lock') }}
+        restore-keys: |
+          venv-${{ runner.os }}-python-${{ steps.python-version.outputs.version }}-
+    - name: Check poetry cache status
+      shell: bash
+      run: |
+        if [ "${{ steps.cached-poetry-dependencies.outputs.cache-hit }}" == "true" ]; then
+          echo "✅ Poetry venv cache HIT - skipping dependency installation"
+        else
+          echo "❌ Poetry venv cache MISS - will install dependencies (this may take a few minutes)"
+        fi
     - name: yarn modern
       shell: bash
       run: |
         corepack enable
     - name: yarn cache
       uses: ./.github/actions/yarn-cache
+    - name: Install yarn dependencies
+      run: yarn install --immutable
+      working-directory: ./bciers
+      shell: bash
     - name: Install dependencies for PostgreSQL build
       working-directory: ./bc_obps
       shell: bash
@@ -66,8 +86,3 @@ runs:
       shell: bash
       run: |
         poetry install --no-interaction --no-root
-    - name: Install yarn dependencies
-      if: steps.yarn-cache.outputs.cache-hit != 'true'
-      run: yarn install --immutable
-      working-directory: ./bciers
-      shell: bash
