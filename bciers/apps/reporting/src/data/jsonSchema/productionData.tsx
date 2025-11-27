@@ -16,6 +16,7 @@ const buildProductionDataSchemaDefault = (
   compliance_period_end: string,
   product_selection: string[],
   facility_type: string,
+  isOptedOut: boolean,
 ) => {
   const productionMethodology = ["Small Aggregate", "Medium Facility"].includes(
     facility_type,
@@ -23,7 +24,7 @@ const buildProductionDataSchemaDefault = (
     ? ["Not Applicable", "OBPS Calculator", "other"]
     : ["OBPS Calculator", "other"];
 
-  return {
+  const schema: RJSFSchema = {
     type: "object",
     title: "Production Data",
     properties: {
@@ -72,6 +73,16 @@ const buildProductionDataSchemaDefault = (
             type: "number",
             minimum: 0,
           },
+          production_data_apr_dec: {
+            title: "Production data for Apr 1 - Dec 31, 2024",
+            type: "number",
+            minimum: 0,
+          },
+          production_data_jan_mar_2025: {
+            title: "Production data for Jan 1 - Mar 31, 2025",
+            type: "number",
+            minimum: 0,
+          },
           production_methodology: {
             title: "Production Quantification Methodology",
             type: "string",
@@ -99,6 +110,9 @@ const buildProductionDataSchemaDefault = (
             minimum: 0,
           },
         },
+        dependencies: {
+          isOptedOut: ["production_data_jan_mar_2025"]
+        },
         allOf: [
           {
             if: { properties: { production_methodology: { const: "other" } } },
@@ -115,7 +129,24 @@ const buildProductionDataSchemaDefault = (
         ],
       },
     },
-  } as RJSFSchema;
+  };
+
+  // // conditionally add Jan-Mar production data field for opted-out operations
+  // if (isOptedOut) {
+  //   schema.definitions!.productionDataItem.properties[
+  //     "production_data_jan_mar_2025"
+  //   ] = {
+  //     title: "Production data for Jan 1 - Mar 31, 2025",
+  //     type: "number",
+  //     minimum: 0,
+  //   };
+
+  //   schema.definitions!.productionDataItem.required!.push(
+  //     "production_data_jan_mar_2025",
+  //   )
+  // }
+
+  return schema;
 };
 
 export const buildProductionDataSchema = (
@@ -140,7 +171,9 @@ export const buildProductionDataSchema = (
   );
 };
 
-const productionDataUiSchemaDefault: UiSchema = {
+
+
+export const buildProductionDataUiSchema = (isOptedOut: boolean): UiSchema => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   product_selection_title: {
@@ -167,6 +200,8 @@ const productionDataUiSchemaDefault: UiSchema = {
         "product_name",
         "unit",
         "annual_production",
+        ...(isOptedOut ? ["production_data_jan_mar_2025"] : []),
+        "production_data_apr_dec",
         "production_methodology",
         "production_methodology_description",
         "*",
@@ -187,7 +222,6 @@ const productionDataUiSchemaDefault: UiSchema = {
       },
     },
   },
-};
 
 export const buildProductionDataUiSchema = (reporting_year: number) => {
   if (reporting_year === 2024) {

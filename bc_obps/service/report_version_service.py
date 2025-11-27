@@ -41,6 +41,7 @@ class ReportVersionService:
             ),
             report_version=report_version,
             registration_purpose=operation.registration_purpose or 'OBPS Regulated Operation',
+            operation_opted_out_detail=operation.opted_in_operation.opted_out_operation,
         )
 
         for contact in operation.contacts.all():

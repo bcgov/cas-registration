@@ -55,7 +55,7 @@ class ReportService:
         # Fetching report context
         operation = (
             Operation.objects.select_related("operator")
-            .prefetch_related("activities", "regulated_products")
+            .prefetch_related("activities", "regulated_products", "opted_in_operation")
             .get(id=operation_id)
         )
         operator = operation.operator
