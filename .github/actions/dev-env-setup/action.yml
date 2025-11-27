@@ -3,33 +3,23 @@ description: "Sets up asdf and configures the cache"
 runs:
   using: composite
   steps:
+    - name: Get Node.js version from .tool-versions
+      id: node-version
+      shell: bash
+      run: |
+        NODE_VERSION=$(grep "^nodejs" .tool-versions | awk '{print $2}')
+        echo "version=$NODE_VERSION" >> $GITHUB_OUTPUT
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ steps.node-version.outputs.version }}
     - name: asdf setup
       uses: asdf-vm/actions/setup@v4
     - uses: actions/cache@v4
       id: asdf-cache
       with:
         path: ~/.asdf
-        key: ${{ runner.os }}-asdf-cache-${{ hashFiles('.tool-versions', 'bc_obps/.tool-versions') }}
-    - name: Install root tool versions (Node.js, etc.)
-      if: steps.asdf-cache.outputs.cache-hit != 'true'
-      shell: bash
-      run: |
-        asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git || true
-        if [ -f ~/.asdf/plugins/nodejs/bin/import-release-team-keyring ]; then
-          bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
-        fi
-        asdf plugin update --all || true
-        asdf install
-        asdf reshim
-    - name: Verify Node.js version
-      shell: bash
-      run: |
-        echo "Node.js version: $(node --version)"
-        echo "Node.js path: $(which node)"
-        if ! node --version | grep -q "v24"; then
-          echo "Warning: Node.js version is not v24. Expected v24.11.1 from .tool-versions"
-          exit 1
-        fi
+        key: ${{ runner.os }}-asdf-cache-${{ hashFiles('bc_obps/.tool-versions') }}
     - name: Load cached venv
       id: cached-poetry-dependencies
       uses: actions/cache@v4
