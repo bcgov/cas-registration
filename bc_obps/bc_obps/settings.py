@@ -80,13 +80,14 @@ BCCR_API_URL = os.getenv("BCCR_API_URL")
 BCCR_CLIENT_ID = os.getenv("BCCR_CLIENT_ID")
 BCCR_CLIENT_SECRET = os.getenv("BCCR_CLIENT_SECRET")
 
-LOCAL_APPS = ["registration", "reporting", "common", "rls", "task_scheduler", "compliance"]
+NON_PROD_ENVIRONMENT = ENVIRONMENT in ["CI", "local", "dev", "test"] or CI == "true"
 
-NON_PROD_APPS: list[str] = []
+LOCAL_APPS = ["registration", "reporting", "common", "rls", "task_scheduler", "compliance"]
+NON_PROD_APPS: list[str] = ["mocks"]
 
 RLS_GRANT_APPS = ["registration", "reporting", "compliance"]
 
-if ENVIRONMENT in ["CI", "local", "dev", "test"] or CI == "true":
+if NON_PROD_ENVIRONMENT:
     LOCAL_APPS += NON_PROD_APPS
 
 # Apps that should not be included in production migrations
@@ -110,6 +111,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    *(["mocks.middleware.mock_time_middleware.MockTimeMiddleware"] if NON_PROD_ENVIRONMENT else []),
     "common.middleware.kubernetes_health_check.KubernetesHealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -158,13 +160,9 @@ WSGI_APPLICATION = "bc_obps.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DB_USER = os.environ.get("DB_USER", "postgres")
-CONNECTION_MAX_AGE = (
-    0 if ENVIRONMENT == "local" else 60
-)  # to prevent too many clients already issues in local environment
+
 default_db_url = f"postgres://{DB_USER}:{urllib.parse.quote(str(os.environ.get('DB_PASSWORD')))}@{os.environ.get('DB_HOST', '127.0.0.1')}:{os.environ.get('DB_PORT', '5432')}/{os.environ.get('DB_NAME', 'registration')}"
-DATABASES = {
-    'default': dj_database_url.config(default=default_db_url, conn_max_age=CONNECTION_MAX_AGE, conn_health_checks=True)
-}
+DATABASES = {'default': dj_database_url.config(default=default_db_url, conn_max_age=0, conn_health_checks=True)}
 
 
 # Password validation
