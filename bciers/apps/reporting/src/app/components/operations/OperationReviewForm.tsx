@@ -48,7 +48,6 @@ export default function OperationReviewForm({
   facilityId,
   isSyncAllowed,
 }: Props) {
-  console.log("isSyncAllowerd", isSyncAllowed);
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
