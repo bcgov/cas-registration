@@ -73,11 +73,15 @@ class PenaltyAccruingHandler(ComplianceUpdateHandler):
         if has_penalty:
             return False
 
+        obligation = invoice.compliance_obligation
+        compliance_period = obligation.compliance_report_version.compliance_report.compliance_period
+        compliance_deadline = compliance_period.compliance_deadline
+
         return (
             invoice.compliance_obligation.compliance_report_version.status
             == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
             and invoice.outstanding_balance > Decimal('0.00')
-            and invoice.due_date < timezone.now().date()
+            and compliance_deadline < timezone.now().date()
         )
 
     def handle(self, invoice: ElicensingInvoice) -> None:
