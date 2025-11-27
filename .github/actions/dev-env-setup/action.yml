@@ -1,5 +1,5 @@
 name: "Set up registration dev environment"
-description: "Sets up asdf and configures the cache"
+description: "Sets up development environment with Node.js, Python, Poetry, and PostgreSQL"
 runs:
   using: composite
   steps:
@@ -11,7 +11,7 @@ runs:
         path: |
           ~/.asdf
           ./.tool-versions
-        key: ${{ runner.os }}-asdf-cache-${{ hashFiles('.tool-versions') }}
+        key: ${{ runner.os }}-asdf-cache-bciers-${{ hashFiles('./.tool-versions') }}
     - uses: actions/cache@v4
       id: asdf-cache-backend
       with:
@@ -19,204 +19,68 @@ runs:
           ~/.asdf
           ./bc_obps/.tool-versions
         key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}
+    - name: Extract versions from tool-versions files
+      id: versions
+      shell: bash
+      run: |
+        NODE_VERSION=$(grep "^nodejs" ./.tool-versions | cut -d' ' -f2)
+        PYTHON_VERSION=$(grep "^python" ./bc_obps/.tool-versions | cut -d' ' -f2)
+        POETRY_VERSION=$(grep "^poetry" ./bc_obps/.tool-versions | cut -d' ' -f2)
+        POSTGRES_VERSION=$(grep "^postgres" ./bc_obps/.tool-versions | cut -d' ' -f2)
+        echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
+        echo "python-version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
+        echo "poetry-version=$POETRY_VERSION" >> $GITHUB_OUTPUT
+        echo "postgres-version=$POSTGRES_VERSION" >> $GITHUB_OUTPUT
+    - name: Set up Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ steps.versions.outputs.node-version }}
     - name: yarn modern
       shell: bash
       run: |
         corepack enable
     - name: yarn cache
-      id: yarn-cache
       uses: ./.github/actions/yarn-cache
-    - name: Debug - Cache status
-      shell: bash
-      run: |
-        echo "=== CACHE STATUS ==="
-        echo "asdf-cache-bciers hit: ${{ steps.asdf-cache-bciers.outputs.cache-hit }}"
-        echo "asdf-cache-backend hit: ${{ steps.asdf-cache-backend.outputs.cache-hit }}"
-        echo "yarn-cache hit: ${{ steps.yarn-cache.outputs.cache-hit }}"
-        echo ""
-        echo "=== TOOL-VERSIONS FILES ==="
-        echo "Root .tool-versions:"
-        cat .tool-versions || echo "File not found"
-        echo ""
-        echo "bc_obps/.tool-versions:"
-        cat bc_obps/.tool-versions || echo "File not found"
-    - name: Install root asdf tools
-      shell: bash
-      run: |
-        cat .tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin add || true
-        asdf plugin update --all
-        asdf install
-        asdf reshim
-        echo ""
-        echo "=== DEBUG - Root tool versions after installation ==="
-        echo "Expected Node.js version from .tool-versions:"
-        grep nodejs .tool-versions || echo "Not found"
-        echo "Actual Node.js version:"
-        node --version || echo "Node.js not found in PATH"
-        echo "Node.js path:"
-        which node || echo "Node.js not found in PATH"
-        echo ""
-        echo "Expected Python version from .tool-versions:"
-        grep python .tool-versions || echo "Not found"
-        echo "Actual Python version:"
-        python --version || echo "Python not found in PATH"
-        echo "Python path:"
-        which python || echo "Python not found in PATH"
-    - name: Install backend asdf tools
-      working-directory: ./bc_obps
-      shell: bash
-      run: |
-        cat .tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin add || true
-        asdf plugin update --all
-        MAKELEVEL=0 POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' asdf install
-        asdf reshim
-        echo ""
-        echo "=== DEBUG - Backend tool versions after installation ==="
-        echo "Expected Python version from bc_obps/.tool-versions:"
-        grep python .tool-versions || echo "Not found"
-        echo "Actual Python version:"
-        python --version || echo "Python not found in PATH"
-        echo "Python path:"
-        which python || echo "Python not found in PATH"
-        echo ""
-        echo "Expected Poetry version from bc_obps/.tool-versions:"
-        grep poetry .tool-versions || echo "Not found"
-        echo "Actual Poetry version:"
-        poetry --version || echo "Poetry not found in PATH"
-        echo "Poetry path:"
-        which poetry || echo "Poetry not found in PATH"
-        echo ""
-        echo "asdf current versions:"
-        asdf current || echo "asdf current failed"
-        echo ""
-        echo "=== Configure Poetry to use asdf Python ==="
-        poetry config virtualenvs.create true
-        poetry config virtualenvs.in-project true
-    - name: Load cached venv
-      id: cached-poetry-dependencies
-      uses: actions/cache@v4
+    - name: Set up Python
+      id: setup-python
+      uses: actions/setup-python@v6
       with:
-        path: ./bc_obps/.venv
-        key: venv-${{ runner.os }}-${{ hashFiles('bc_obps/.tool-versions') }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Debug - Poetry venv cache status
+        python-version: ${{ steps.versions.outputs.python-version }}
+    - name: Set up Poetry
+      uses: Gr1N/setup-poetry@v9
+      with:
+        poetry-version: ${{ steps.versions.outputs.poetry-version }}
+    - name: Set up PostgreSQL
       shell: bash
       run: |
-        echo "=== POETRY VENV CACHE STATUS ==="
-        echo "venv cache hit: ${{ steps.cached-poetry-dependencies.outputs.cache-hit }}"
-        echo "venv cache key: venv-${{ runner.os }}-${{ hashFiles('bc_obps/.tool-versions') }}-${{ hashFiles('**/poetry.lock') }}"
-        if [ -d "./bc_obps/.venv" ]; then
-          echo "venv directory exists"
-          echo "venv Python version:"
-          ./bc_obps/.venv/bin/python --version || echo "Could not get venv Python version"
-          echo ""
-          echo "Expected Python version from bc_obps/.tool-versions:"
-          grep python ./bc_obps/.tool-versions || echo "Not found"
-          echo ""
-          echo "Checking if venv Python matches expected version..."
-          VENV_PYTHON_VERSION=$(./bc_obps/.venv/bin/python --version 2>&1 | cut -d' ' -f2)
-          EXPECTED_PYTHON_VERSION=$(grep python ./bc_obps/.tool-versions | cut -d' ' -f2)
-          if [ "$VENV_PYTHON_VERSION" != "$EXPECTED_PYTHON_VERSION" ]; then
-            echo "WARNING: venv Python version ($VENV_PYTHON_VERSION) does not match expected ($EXPECTED_PYTHON_VERSION)"
-            echo "Removing venv to force recreation with correct Python version..."
-            rm -rf ./bc_obps/.venv
-          else
-            echo "✓ venv Python version matches expected version"
-          fi
-        else
-          echo "venv directory does not exist"
-        fi
-    #----------------------------------------------
-    # Ensure Poetry uses correct Python version
-    #----------------------------------------------
-    - name: Configure Poetry to use asdf Python
-      working-directory: ./bc_obps
-      shell: bash
-      run: |
-        echo "=== Ensuring Poetry uses correct asdf Python ==="
-        PYTHON_PATH=$(which python)
-        EXPECTED_PYTHON_VERSION=$(grep python .tool-versions | cut -d' ' -f2)
-
-        echo "Python path: $PYTHON_PATH"
-        echo "Python version:"
-        python --version
-        echo "Expected Python version from .tool-versions: $EXPECTED_PYTHON_VERSION"
-        echo ""
-
-        # Check if venv exists and has wrong Python version
-        if [ -d ".venv" ]; then
-          VENV_PYTHON_VERSION=$(.venv/bin/python --version 2>&1 | cut -d' ' -f2)
-          echo "Existing venv Python version: $VENV_PYTHON_VERSION"
-          if [ "$VENV_PYTHON_VERSION" != "$EXPECTED_PYTHON_VERSION" ]; then
-            echo "WARNING: venv Python version ($VENV_PYTHON_VERSION) does not match expected ($EXPECTED_PYTHON_VERSION)"
-            echo "Removing venv to force recreation with correct Python version..."
-            rm -rf .venv
-            # Also remove Poetry's env cache
-            poetry env remove python 2>/dev/null || true
-          fi
-        fi
-
-        echo ""
-        echo "Setting Poetry to use asdf Python explicitly..."
-        poetry env use "$PYTHON_PATH"
-        echo ""
-        echo "Verifying Poetry env Python version:"
-        poetry env info
-    #----------------------------------------------
-    # install dependencies if cache does not exist
-    #----------------------------------------------
-    - name: Install dependencies
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      working-directory: ./bc_obps
-      shell: bash
-      run: |
-        echo "=== Installing dependencies with Poetry ==="
-        PYTHON_PATH=$(which python)
-        echo "Using Python: $PYTHON_PATH"
-        poetry env use "$PYTHON_PATH"
-        poetry install --no-interaction --no-root
-    - name: Install dependencies for PostgreSQL build
-      working-directory: ./bc_obps
-      shell: bash
-      run: |
+        POSTGRES_MAJOR_VERSION=$(echo "${{ steps.versions.outputs.postgres-version }}" | cut -d'.' -f1)
         sudo apt-get update
         sudo apt-get install -y libreadline-dev uuid-dev
-    - name: Install server dev tools
+        sudo apt-get update
+        sudo apt-get install -y postgresql-${POSTGRES_MAJOR_VERSION}
+        echo "/usr/lib/postgresql/${POSTGRES_MAJOR_VERSION}/bin" >> $GITHUB_PATH
+    - name: Start PostgreSQL and create database
       working-directory: ./bc_obps
       shell: bash
       run: |
         make start_pg
         make create_db
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v4
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+    #----------------------------------------------
+    # install dependencies if cache does not exist
+    #----------------------------------------------
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+      working-directory: ./bc_obps
+      shell: bash
     - name: Install yarn dependencies
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install --immutable
       working-directory: ./bciers
       shell: bash
-    - name: Debug - Final tool versions verification
-      shell: bash
-      run: |
-        echo "=== FINAL VERIFICATION ==="
-        echo "Node.js version:"
-        node --version || echo "Node.js not found"
-        echo "Node.js path:"
-        which node || echo "Node.js not found"
-        echo ""
-        echo "Python version (from root):"
-        python --version || echo "Python not found"
-        echo "Python path:"
-        which python || echo "Python not found"
-        echo ""
-        echo "Python version (from bc_obps context):"
-        (cd bc_obps && python --version) || echo "Python not found"
-        echo "Python path:"
-        (cd bc_obps && which python) || echo "Python not found"
-        echo ""
-        echo "Poetry version:"
-        (cd bc_obps && poetry --version) || echo "Poetry not found"
-        echo "Poetry path:"
-        (cd bc_obps && which poetry) || echo "Poetry not found"
-        echo ""
-        echo "Poetry env info:"
-        (cd bc_obps && poetry env info) || echo "Poetry env info failed"
-        echo ""
-        echo "All asdf installed versions:"
-        asdf list || echo "asdf list failed"
