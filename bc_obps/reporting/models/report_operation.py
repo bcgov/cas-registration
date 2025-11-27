@@ -39,7 +39,7 @@ class ReportOperation(TimeStampedModel):
     )
     operation_bcghgid = models.CharField(
         max_length=1000,
-        db_comment="The BCGHGH ID of the operation",
+        db_comment="The BCGHG ID of the operation",
         blank=True,
         null=True,
     )
@@ -52,9 +52,9 @@ class ReportOperation(TimeStampedModel):
     registration_purpose = models.CharField(
         max_length=1000, db_comment="The Registration purpose of the operation", default='OBPS Regulated Operation'
     )
-    operation_opted_out_detail = models.CharField(
+    operation_opted_out_effective_date = models.CharField(
         max_length=1000,
-        db_comment="The effective date for the operation's opting out of BCIERS, if applicable",
+        db_comment="The effective date for the operation's opt-out of BCIERS, if applicable",
         blank=True,
         null=True
     )
