@@ -279,7 +279,7 @@ class PenaltyCalculationService:
         base = obligation.fee_amount_dollars or Decimal('0.00')
         accumulated_penalty = Decimal('0.00')
         accumulated_compounding = Decimal('0.00')
-        days_late = max(0, (last_calculation_day - accrual_start_date).days - 1)
+        days_late = max(0, (last_calculation_day - accrual_start_date).days + 1)
         current_date = accrual_start_date
         total_penalty = Decimal('0.00')
 
@@ -474,7 +474,7 @@ class PenaltyCalculationService:
         uncompounded_penalty = Decimal('0.00')
         total_penalty = Decimal('0.00')
         invoice = refresh_result.invoice
-        days_late = max(0, (final_accrual_date - accrual_start_date).days)
+        days_late = max(0, (final_accrual_date - accrual_start_date).days + 1)
         current_date = accrual_start_date
 
         # Daily accrual with monthly compounding on the 1st of each month
