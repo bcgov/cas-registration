@@ -385,7 +385,10 @@ class TestBCCarbonRegistryAPIClient:
     def test_get_account_details_success(self, authenticated_client):
         # Arrange
         client, mock_request = authenticated_client
-        mock_request.return_value = Mock(status_code=200, json=lambda: BASE_ACCOUNT_RESPONSE)
+        # Update account type to 11 (Operator of Regulated Operation) to match default validation
+        account_response = BASE_ACCOUNT_RESPONSE.copy()
+        account_response["entities"][0]["accountTypeId"] = 11
+        mock_request.return_value = Mock(status_code=200, json=lambda: account_response)
         # Act
         result = client.get_account_details(MOCK_FIFTEEN_DIGIT_STRING)
         # Assert
