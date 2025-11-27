@@ -42,6 +42,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
       - name: 🎁 setup local app
         uses: ./.github/actions/run-docker-compose
         with:
@@ -52,15 +54,6 @@ jobs:
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
           nx_app_port: ${{ inputs.nx_app_port }}
-      - name: yarn modern
-        shell: bash
-        run: |
-          corepack enable
-      - name: Install yarn dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install --immutable
-        working-directory: ./bciers
-        shell: bash
       - name: Get Playwright version
         id: playwright-version
         run: |

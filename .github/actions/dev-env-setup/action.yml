@@ -20,6 +20,16 @@ runs:
       with:
         path: ~/.asdf
         key: ${{ runner.os }}-asdf-cache-${{ hashFiles('bc_obps/.tool-versions') }}
+        restore-keys: |
+          ${{ runner.os }}-asdf-cache-
+    - name: Check asdf cache status
+      shell: bash
+      run: |
+        if [ "${{ steps.asdf-cache.outputs.cache-hit }}" == "true" ]; then
+          echo "✅ asdf cache HIT - skipping tool installation"
+        else
+          echo "❌ asdf cache MISS - will install tools (this may take 5-7 minutes for Postgres compilation)"
+        fi
     - name: Load cached venv
       id: cached-poetry-dependencies
       uses: actions/cache@v4
@@ -36,8 +46,8 @@ runs:
       working-directory: ./bc_obps
       shell: bash
       run: |
-        sudo apt-get update
-        sudo apt-get install -y libreadline-dev uuid-dev
+        sudo apt-get update -qq
+        sudo apt-get install -y --no-install-recommends libreadline-dev uuid-dev
     - name: Install backend tool versions (Python, Poetry, Postgres)
       if: steps.asdf-cache.outputs.cache-hit != 'true'
       working-directory: ./bc_obps
