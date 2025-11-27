@@ -126,6 +126,42 @@ runs:
           echo "venv directory does not exist"
         fi
     #----------------------------------------------
+    # Ensure Poetry uses correct Python version
+    #----------------------------------------------
+    - name: Configure Poetry to use asdf Python
+      working-directory: ./bc_obps
+      shell: bash
+      run: |
+        echo "=== Ensuring Poetry uses correct asdf Python ==="
+        PYTHON_PATH=$(which python)
+        EXPECTED_PYTHON_VERSION=$(grep python .tool-versions | cut -d' ' -f2)
+
+        echo "Python path: $PYTHON_PATH"
+        echo "Python version:"
+        python --version
+        echo "Expected Python version from .tool-versions: $EXPECTED_PYTHON_VERSION"
+        echo ""
+
+        # Check if venv exists and has wrong Python version
+        if [ -d ".venv" ]; then
+          VENV_PYTHON_VERSION=$(.venv/bin/python --version 2>&1 | cut -d' ' -f2)
+          echo "Existing venv Python version: $VENV_PYTHON_VERSION"
+          if [ "$VENV_PYTHON_VERSION" != "$EXPECTED_PYTHON_VERSION" ]; then
+            echo "WARNING: venv Python version ($VENV_PYTHON_VERSION) does not match expected ($EXPECTED_PYTHON_VERSION)"
+            echo "Removing venv to force recreation with correct Python version..."
+            rm -rf .venv
+            # Also remove Poetry's env cache
+            poetry env remove python 2>/dev/null || true
+          fi
+        fi
+
+        echo ""
+        echo "Setting Poetry to use asdf Python explicitly..."
+        poetry env use "$PYTHON_PATH"
+        echo ""
+        echo "Verifying Poetry env Python version:"
+        poetry env info
+    #----------------------------------------------
     # install dependencies if cache does not exist
     #----------------------------------------------
     - name: Install dependencies
@@ -133,14 +169,10 @@ runs:
       working-directory: ./bc_obps
       shell: bash
       run: |
-        echo "=== Verifying Python version before Poetry install ==="
-        echo "Python version:"
-        python --version
-        echo "Python path:"
-        which python
-        echo ""
-        echo "Installing dependencies with Poetry..."
-        poetry env use python
+        echo "=== Installing dependencies with Poetry ==="
+        PYTHON_PATH=$(which python)
+        echo "Using Python: $PYTHON_PATH"
+        poetry env use "$PYTHON_PATH"
         poetry install --no-interaction --no-root
     - name: Install dependencies for PostgreSQL build
       working-directory: ./bc_obps
