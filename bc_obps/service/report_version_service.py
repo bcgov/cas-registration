@@ -43,6 +43,7 @@ class ReportVersionService:
             ),
             report_version=report_version,
             registration_purpose=operation.registration_purpose or 'OBPS Regulated Operation',
+            operation_opted_out_detail=operation.opted_in_operation.opted_out_operation,
         )
         # Special handling for report where the operation has been transferred
         if use_transferred_operation_handling:
