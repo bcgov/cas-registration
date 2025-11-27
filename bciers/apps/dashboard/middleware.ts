@@ -4,6 +4,7 @@ import { withAuthorizationDashboard } from "./middlewares/withAuthorizationDashb
 import {
   isCIEnvironment,
   isVitestEnvironment,
+  isPlaywrightEnvironment,
 } from "@bciers/utils/src/environmentDetection";
 
 /* 📌
@@ -35,8 +36,8 @@ export const config = {
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
 export default stackMiddlewares([
   withAuthorizationDashboard,
-  // Bypass if running in CI or Vitest environments
-  ...(isCIEnvironment() || isVitestEnvironment()
+  // Bypass if running in CI, Vitest, or Playwright e2e test environments
+  ...(isCIEnvironment() || isVitestEnvironment() || isPlaywrightEnvironment()
     ? []
     : [withTokenRefreshMiddleware]),
 ]);

@@ -13,7 +13,6 @@ import {
 } from "@bciers/e2e/utils/helpers";
 import { FrontendMessages } from "@bciers/utils/src/enums";
 
-const happoPlaywright = require("happo-playwright");
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER);
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
@@ -22,6 +21,7 @@ test.describe("Test select operator paths", () => {
   // 👤 run test using the storageState for this role
   test("Select by legal name existing operator with existing admin", async ({
     page,
+    happoScreenshot,
   }) => {
     // setup pageContent for happo
     let pageContent = page.locator("html");
@@ -36,7 +36,7 @@ test.describe("Test select operator paths", () => {
       "Bravo Technologies - has parTNER operator",
     );
 
-    await happoPlaywright.screenshot(page, pageContent, {
+    await happoScreenshot(pageContent, {
       component: "Select operator form",
       variant: "default",
     });
@@ -52,7 +52,7 @@ test.describe("Test select operator paths", () => {
     await selectOperatorPage.msgRequestAccessConfirmedIsVisible();
     // 📷 Cheese!
 
-    await happoPlaywright.screenshot(page, pageContent, {
+    await happoScreenshot(pageContent, {
       component: "Select operator access request confirmation",
       variant: "default",
     });
@@ -61,6 +61,7 @@ test.describe("Test select operator paths", () => {
   });
   test("Select by CRA number existing operator with no admin", async ({
     page,
+    happoScreenshot,
   }) => {
     // setup pageContent for happo
     let pageContent = page.locator("html");
@@ -81,21 +82,21 @@ test.describe("Test select operator paths", () => {
     await selectOperatorPage.msgRequestAccessAdminConfirmedIsVisible();
     // 📷 Cheese!
 
-    await happoPlaywright.screenshot(page, pageContent, {
+    await happoScreenshot(pageContent, {
       component: "Select operator admin access request confirmation",
       variant: "default",
     });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
-  test("Add new operator", async ({ page }) => {
+  test("Add new operator", async ({ page, happoScreenshot }) => {
     // 🛸 Navigates to add operator
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_ADD);
     // 👉 Action fill all operator form fields
     await selectOperatorPage.fillRequiredInformation();
     let pageContent = page.locator("html");
-    await happoPlaywright.screenshot(page, pageContent, {
+    await happoScreenshot(pageContent, {
       component: "Add operator form",
       variant: "filled",
     });

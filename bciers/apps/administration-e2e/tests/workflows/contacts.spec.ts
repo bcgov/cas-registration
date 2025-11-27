@@ -11,13 +11,12 @@ import {
 import { FrontendMessages } from "@bciers/utils/src/enums";
 import { ContactsPOM } from "@/administration-e2e/poms/contacts";
 
-const happoPlaywright = require("happo-playwright");
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
 test.describe("Test add/edit contact", () => {
-  test("Manually add a contact", async ({ page }) => {
+  test("Manually add a contact", async ({ page, happoScreenshot }) => {
     // 🛸 Navigate to contacts page
     const contactsPage = new ContactsPOM(page);
     await contactsPage.route();
@@ -27,7 +26,7 @@ test.describe("Test add/edit contact", () => {
 
     // Fill contact information
     await contactsPage.contactInformation("fill");
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "Add Contact form",
       variant: "filled",
     });
@@ -42,7 +41,7 @@ test.describe("Test add/edit contact", () => {
     await contactsPage.assertFootnoteIsVisible(false);
   });
 
-  test("Edit a contact", async ({ page }) => {
+  test("Edit a contact", async ({ page, happoScreenshot }) => {
     // 🛸 Navigate to contacts page
     const contactsPage = new ContactsPOM(page);
     await contactsPage.route();
@@ -60,7 +59,7 @@ test.describe("Test add/edit contact", () => {
       .first();
     await stabilizeGrid(page, 1);
     await page.waitForTimeout(500);
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "Contacts grid",
       variant: "filled",
     });
@@ -83,7 +82,7 @@ test.describe("Test add/edit contact", () => {
     // Verify that fields were updated
     await contactsPage.contactInformation("read");
     await contactsPage.assertBreadcrumbIsCorrect();
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "Contact form",
       variant: "filled",
     });

@@ -6,12 +6,7 @@
 import { Page, expect } from "@playwright/test";
 // ☰ Enums
 import { AppRoute } from "@/administration-e2e/utils/enums";
-
-// ℹ️ Environment variables
-import * as dotenv from "dotenv";
 import { linkIsVisible } from "@bciers/e2e/utils/helpers";
-
-dotenv.config({ path: "./e2e/.env.local" });
 
 export class DashboardPOM {
   readonly page: Page;

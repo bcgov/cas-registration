@@ -364,7 +364,7 @@ export class OperatorPOM {
     await this.fieldSelectLegalName.click();
     await this.fieldSelectLegalName.fill(name);
     await this.page.getByRole("option", { name: legalName }).click();
-    this.buttonSelectOperator.click();
+    await this.buttonSelectOperator.click();
   }
 
   async triggerErrorsFieldFormat() {

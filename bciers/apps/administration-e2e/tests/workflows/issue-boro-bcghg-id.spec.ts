@@ -15,7 +15,6 @@ import {
   urlIsCorrect,
 } from "@bciers/e2e/utils/helpers";
 
-const happoPlaywright = require("happo-playwright");
 const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR);
 
 // https://github.com/bcgov/cas-registration/issues/3445
@@ -23,7 +22,7 @@ const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR);
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
 test.describe("Issue BCGHG and BORO ID", () => {
-  test("Issue BCGHG and BORO ID", async ({ page }) => {
+  test("Issue BCGHG and BORO ID", async ({ page, happoScreenshot }) => {
     // 🛸 Navigate to administration/operations
     const operationPage = new OperationPOM(page);
     await operationPage.route();
@@ -38,7 +37,7 @@ test.describe("Issue BCGHG and BORO ID", () => {
     await operationPage.goToOperation(row);
     await expect(page.getByText(IDE2EValue.OPERATION_NAME)).toBeVisible();
 
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "BORO ID and BCGHG ID not issued",
       variant: "default",
     });
@@ -53,7 +52,7 @@ test.describe("Issue BCGHG and BORO ID", () => {
     await expect(page.getByText(IDE2EValue.EXPECTED_BORO_ID)).toBeVisible();
     await assertSuccessfulSnackbar(page, SnackbarMessages.ISSUED_BORO_ID);
 
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "BORO ID and BCGHG ID issued",
       variant: "default",
     });

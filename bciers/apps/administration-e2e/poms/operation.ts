@@ -20,9 +20,6 @@ import {
   RegulatedOperationFields,
   ReportingOperationFields,
 } from "@/administration-e2e/utils/enums";
-// ℹ️ Environment variables
-import * as dotenv from "dotenv";
-dotenv.config({ path: "./e2e/.env.local" });
 
 export class OperationPOM {
   readonly page: Page;

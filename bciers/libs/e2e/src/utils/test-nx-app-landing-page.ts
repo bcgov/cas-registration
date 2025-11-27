@@ -1,14 +1,27 @@
-import { test } from "@playwright/test";
+import { test as baseTest, mergeTests } from "@playwright/test";
+import { test as happoTest } from "happo/playwright";
 // ☰ Enums
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import { setupTestEnvironment } from "@bciers/e2e/utils/helpers";
-// ℹ️ Environment variables
-import * as dotenv from "dotenv";
 
-dotenv.config({ path: "./e2e/.env.local" });
+// Only merge Happo if we're in CI or if API keys are present
+const isHappoEnabled =
+  process.env.CI === "true" ||
+  (process.env.HAPPO_API_KEY && process.env.HAPPO_API_SECRET);
 
-const happoPlaywright = require("happo-playwright");
+const test = isHappoEnabled
+  ? mergeTests(baseTest, happoTest)
+  : baseTest.extend<{
+      happoScreenshot: (locator: any, options: any) => Promise<void>;
+    }>({
+      // Provide a no-op happoScreenshot fixture when Happo is disabled
+      // eslint-disable-next-line no-empty-pattern
+      happoScreenshot: async ({}, use) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        await use(() => Promise.resolve());
+      },
+    });
 
 // NOTE:: This is just a quick basic test setup to ensure that the database and auth are working in CI
 // Feel free to delete this or modify it as needed
@@ -19,14 +32,6 @@ const testNxProjectLandingPage = async (zones: string[]) => {
     // So, ensure this runs only once by using only 1 worker
     // Setup fixtures for admin-industry_user
     await setupTestEnvironment();
-  });
-
-  test.beforeEach(async ({ context }) => {
-    await happoPlaywright.init(context);
-  });
-
-  test.afterEach(async () => {
-    await happoPlaywright.finish();
   });
 
   // 🏷 Annotate test suite as serial
@@ -45,7 +50,7 @@ const testNxProjectLandingPage = async (zones: string[]) => {
 
       test.use({ storageState: storageState });
 
-      test("Test Selfie", async ({ page }) => {
+      test("Test Selfie", async ({ page, happoScreenshot }) => {
         // 🛸 Navigate to landing page
         await page.goto(url);
 
@@ -54,7 +59,7 @@ const testNxProjectLandingPage = async (zones: string[]) => {
 
         // 📷 Cheese!
         const pageContent = page.locator("html");
-        await happoPlaywright.screenshot(page, pageContent, {
+        await happoScreenshot(pageContent, {
           component: `Authenticated ${zone} page - ${user}`,
           variant: "default",
         });

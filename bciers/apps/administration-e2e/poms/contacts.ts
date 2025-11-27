@@ -17,9 +17,6 @@ import {
   clickWithRetry,
   checkBreadcrumbText,
 } from "@bciers/e2e/utils/helpers";
-// ℹ️ Environment variables
-import * as dotenv from "dotenv";
-dotenv.config({ path: "./e2e/.env.local" });
 
 export class ContactsPOM {
   readonly page: Page;
