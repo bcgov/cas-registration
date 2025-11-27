@@ -3,129 +3,70 @@ description: "Sets up asdf and configures the cache"
 runs:
   using: composite
   steps:
-    - name: Get Node.js version from .tool-versions
-      id: node-version
+    - uses: actions/checkout@v6
+
+    - name: Install asdf (root)
+      uses: asdf-vm/actions/install@v6
+      with:
+        node: true
+        cache: true
+
+    - name: Install asdf backend tools (bc_obps)
+      uses: asdf-vm/actions/install@v6
+      with:
+        working_directory: bc_obps
+        cache: true
+
+    - uses: ./.github/actions/yarn-cache
+
+    - name: Install Yarn dependencies (bciers)
+      working-directory: ./bciers
       shell: bash
       run: |
-        NODE_VERSION=$(grep "^nodejs" .tool-versions | awk '{print $2}')
-        echo "version=$NODE_VERSION" >> $GITHUB_OUTPUT
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: ${{ steps.node-version.outputs.version }}
-    - name: asdf setup
-      uses: asdf-vm/actions/setup@v4
-    - uses: actions/cache@v4
-      id: asdf-cache
-      with:
-        path: ~/.asdf
-        key: ${{ runner.os }}-asdf-cache-${{ hashFiles('bc_obps/.tool-versions') }}
-        restore-keys: |
-          ${{ runner.os }}-asdf-cache-
-    - name: Check asdf cache status
-      shell: bash
-      run: |
-        if [ "${{ steps.asdf-cache.outputs.cache-hit }}" == "true" ]; then
-          echo "✅ asdf cache HIT - skipping tool installation"
-        else
-          echo "❌ asdf cache MISS - will install tools (this may take 5-7 minutes for Postgres compilation)"
-        fi
-    - name: Get Python version from .tool-versions
+        corepack enable
+        yarn install --immutable --frozen-lockfile
+
+    - name: Get Python version from bc_obps/.tool-versions
       id: python-version
       shell: bash
       run: |
-        PYTHON_VERSION=$(grep "^python" bc_obps/.tool-versions | awk '{print $2}')
-        echo "version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
-    - name: Load cached venv
-      id: cached-poetry-dependencies
-      uses: actions/cache@v4
+        VERSION=$(grep "^python" bc_obps/.tool-versions | awk '{print $2}')
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Cache Poetry virtual environment
+      id: poetry-cache
+      uses: actions/cache@v6
       with:
         path: ./bc_obps/.venv
         key: venv-${{ runner.os }}-python-${{ steps.python-version.outputs.version }}-${{ hashFiles('bc_obps/poetry.lock') }}
         restore-keys: |
           venv-${{ runner.os }}-python-${{ steps.python-version.outputs.version }}-
-    - name: Check poetry cache status
-      shell: bash
-      run: |
-        if [ "${{ steps.cached-poetry-dependencies.outputs.cache-hit }}" == "true" ]; then
-          echo "✅ Poetry venv cache HIT - skipping dependency installation"
-        else
-          echo "❌ Poetry venv cache MISS - will install dependencies (this may take a few minutes)"
-        fi
-    - name: yarn modern
-      shell: bash
-      run: |
-        corepack enable
-    - name: yarn cache
-      uses: ./.github/actions/yarn-cache
-    - name: Install yarn dependencies
-      shell: bash
-      working-directory: ./bciers
-      run: |
-        echo "Installing yarn dependencies (this will create state files even if cache hit)..."
-        # Always run yarn install to ensure state files are created
-        # Even when cache hits, yarn needs to set up its internal state
-        yarn install --immutable || {
-          echo "yarn install failed, retrying..."
-          yarn install --immutable
-        }
-        echo "Verifying yarn installation..."
-        yarn --version
-        echo "Verifying yarn can find packages..."
-        yarn happo --version || {
-          echo "ERROR: Happo not found after yarn install"
-          echo "Checking if node_modules exists..."
-          ls -la node_modules/.bin/happo || echo "Happo binary not found in node_modules"
-          exit 1
-        }
-        echo "✅ Yarn installation verified successfully"
-    - name: Install dependencies for PostgreSQL build
+
+    - name: Configure Poetry + install deps (only if venv cache miss)
+      if: steps.poetry-cache.outputs.cache-hit != 'true'
       working-directory: ./bc_obps
       shell: bash
       run: |
-        sudo apt-get update -qq
-        sudo apt-get install -y --no-install-recommends libreadline-dev uuid-dev
-    - name: Install backend tool versions (Python, Poetry, Postgres)
-      if: steps.asdf-cache.outputs.cache-hit != 'true'
+        poetry config virtualenvs.in-project true
+        poetry install --no-interaction --no-root
+
+    - name: Configure Poetry venv (always run – ensures correct Python)
       working-directory: ./bc_obps
       shell: bash
       run: |
-        make install_backend_asdf_tools
-    - name: Reshim asdf tools
-      working-directory: ./bc_obps
-      shell: bash
-      run: |
-        asdf reshim
+        poetry config virtualenvs.in-project true
+        poetry env use $(asdf which python) || true  # safe if already correct
+
     - name: Start PostgreSQL and create database
       working-directory: ./bc_obps
       shell: bash
       run: |
         make start_pg
         make create_db
-    - name: Configure Poetry environment
-      working-directory: ./bc_obps
+
+    - name: Cache summary
       shell: bash
       run: |
-        export PATH="$(asdf where python)/bin:$PATH"
-        ASDF_PYTHON="$(asdf which python)"
-
-        poetry config virtualenvs.in-project true
-
-        # Verify cached .venv uses correct Python version, recreate if needed
-        EXPECTED_VERSION=$(grep "^python" .tool-versions | awk '{print $2}')
-        if [ -d ".venv" ]; then
-          VENV_VERSION=$(.venv/bin/python --version 2>&1 | awk '{print $2}')
-          if [ "$VENV_VERSION" != "$EXPECTED_VERSION" ]; then
-            echo "Removing .venv with incorrect Python version ($VENV_VERSION != $EXPECTED_VERSION)"
-            rm -rf .venv
-          fi
-        fi
-
-        poetry env use "$ASDF_PYTHON"
-    - name: Install Poetry dependencies
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      working-directory: ./bc_obps
-      shell: bash
-      run: |
-        export PATH="$(asdf where python)/bin:$PATH"
-        poetry install --no-interaction --no-root
+        echo "asdf tools (Node, Python, Postgres) → automatically cached"
+        echo "Yarn cache → handled by your custom action"
+        echo "Poetry .venv → ${{ steps.poetry-cache.outputs.cache-hit == 'true' && 'HIT' || 'MISS' }}"
