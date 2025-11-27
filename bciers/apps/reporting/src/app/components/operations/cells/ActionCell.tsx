@@ -15,16 +15,14 @@ interface ActionCellProps extends GridRenderCellParams {
   isReportingOpen: boolean;
 }
 
-const ActionCell: React.FC<ActionCellProps> = (params) => {
-  const reportId = params?.row?.report_id;
-  let reportVersionId = params?.row?.report_version_id;
-  const reportStatus = params?.row?.report_status;
+const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
+  const reportId = row?.report_id;
+  let reportVersionId = row?.report_version_id;
+  const reportStatus = row?.report_status;
   const router = useRouter();
-  const operationId = params.row.operation_id;
+  const operationId = row.operation_id;
   const [responseError, setResponseError] = React.useState<string | null>(null);
   const [hasClicked, setHasClicked] = React.useState<boolean>(false);
-
-  const isReportingOpen = params.isReportingOpen;
 
   // Create a new report
   const handleStartReport = async (reportingYear: number): Promise<string> => {
