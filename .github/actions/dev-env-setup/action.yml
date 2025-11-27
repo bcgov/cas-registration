@@ -6,13 +6,13 @@ runs:
     - uses: actions/checkout@v6
 
     - name: Install asdf (root)
-      uses: asdf-vm/actions/install@v6
+      uses: asdf-vm/actions/install@v4
       with:
         node: true
         cache: true
 
     - name: Install asdf backend tools (bc_obps)
-      uses: asdf-vm/actions/install@v6
+      uses: asdf-vm/actions/install@v4
       with:
         working_directory: bc_obps
         cache: true
