@@ -124,16 +124,35 @@ runs:
         export PATH="$(asdf where python)/bin:$PATH"
         echo "After PATH update, python is: $(which python)"
         echo "Python version in PATH: $(python --version)"
-        # Remove any existing virtualenvs completely
-        poetry env remove python --all 2>/dev/null || true
-        # Also remove virtualenv directory directly if it exists (Poetry might cache them)
-        rm -rf ~/.cache/pypoetry/virtualenvs/bc-obps-* 2>/dev/null || true
+        # Configure Poetry to use in-project virtualenvs (easier to control)
+        poetry config virtualenvs.in-project true
         # Set POETRY_PYTHON to force Poetry to use the correct Python
         export POETRY_PYTHON="$ASDF_PYTHON"
         echo "Final PATH check - python is: $(which python)"
         echo "Python version: $(python --version)"
-        # Configure Poetry to use asdf Python (use full path to be sure)
-        poetry env use "$ASDF_PYTHON"
+        # Get expected Python version from .tool-versions
+        EXPECTED_VERSION=$(grep "^python" .tool-versions | awk '{print $2}')
+        # Check if .venv exists (from cache) and verify its Python version
+        if [ -d ".venv" ]; then
+          echo ".venv exists, checking Python version..."
+          VENV_PYTHON_VERSION=$(.venv/bin/python --version 2>&1 | awk '{print $2}')
+          if [ "$VENV_PYTHON_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "WARNING: Cached .venv uses Python $VENV_PYTHON_VERSION, expected $EXPECTED_VERSION"
+            echo "Removing cached .venv and recreating with correct Python..."
+            rm -rf .venv
+          else
+            echo "✅ Cached .venv uses correct Python version: $VENV_PYTHON_VERSION"
+          fi
+        fi
+        # Create virtualenv manually using asdf Python if it doesn't exist or was removed
+        if [ ! -d ".venv" ]; then
+          echo "Creating virtualenv manually with asdf Python..."
+          "$ASDF_PYTHON" -m venv .venv
+          echo "Virtualenv created at: .venv"
+        fi
+        echo "Virtualenv Python version: $(.venv/bin/python --version)"
+        # Configure Poetry to use the virtualenv
+        poetry env use .venv/bin/python
         # Verify the virtualenv uses the correct Python
         poetry env info
     - name: Install Poetry dependencies
