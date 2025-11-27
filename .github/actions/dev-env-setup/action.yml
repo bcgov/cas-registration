@@ -59,9 +59,26 @@ runs:
     - name: yarn cache
       uses: ./.github/actions/yarn-cache
     - name: Install yarn dependencies
-      run: yarn install --immutable
-      working-directory: ./bciers
       shell: bash
+      working-directory: ./bciers
+      run: |
+        echo "Installing yarn dependencies (this will create state files even if cache hit)..."
+        # Always run yarn install to ensure state files are created
+        # Even when cache hits, yarn needs to set up its internal state
+        yarn install --immutable || {
+          echo "yarn install failed, retrying..."
+          yarn install --immutable
+        }
+        echo "Verifying yarn installation..."
+        yarn --version
+        echo "Verifying yarn can find packages..."
+        yarn happo --version || {
+          echo "ERROR: Happo not found after yarn install"
+          echo "Checking if node_modules exists..."
+          ls -la node_modules/.bin/happo || echo "Happo binary not found in node_modules"
+          exit 1
+        }
+        echo "✅ Yarn installation verified successfully"
     - name: Install dependencies for PostgreSQL build
       working-directory: ./bc_obps
       shell: bash
