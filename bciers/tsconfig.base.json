@@ -19,6 +19,7 @@
       "@/administration-e2e/*": ["apps/administration-e2e/*"],
       "@/administration/*": ["apps/administration/*"],
       "@/compliance/*": ["apps/compliance/*"],
+      "@/compliance-e2e/*": ["apps/compliance-e2e/*"],
       "@/dashboard/*": ["apps/dashboard/*"],
       "@/dashboard-e2e/*": ["apps/dashboard-e2e/*"],
       "@/registration/*": ["apps/registration/*"],
