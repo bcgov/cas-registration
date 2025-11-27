@@ -51,8 +51,14 @@ describe("The Production Data component", () => {
       getReportInformationTasklist as ReturnType<typeof vi.fn>
     ).mockResolvedValueOnce(mockReportTaskList);
     getProductionDataMock.mockReturnValue({
-      allowed_products: [],
-      report_products: [],
+      report_data: {
+        reporting_year: 2020,
+      },
+      facility_data: { facility_type: "SFO" },
+      payload: {
+        allowed_products: [],
+        report_products: [],
+      },
     });
 
     render(await ProductionDataPage(props));
@@ -61,11 +67,17 @@ describe("The Production Data component", () => {
 
   it("renders the form with the right checkboxes", async () => {
     getProductionDataMock.mockReturnValue({
-      allowed_products: [
-        { id: 123, name: "testProduct" },
-        { id: 345, name: "otherProduct" },
-      ],
-      report_products: [],
+      report_data: {
+        reporting_year: 2020,
+      },
+      facility_data: { facility_type: "SFO" },
+      payload: {
+        allowed_products: [
+          { id: 123, name: "testProduct" },
+          { id: 345, name: "otherProduct" },
+        ],
+        report_products: [],
+      },
     });
     render(await ProductionDataPage(props));
 
@@ -77,15 +89,21 @@ describe("The Production Data component", () => {
     expect(screen.getByText(/testProduct/)).toBeInTheDocument();
     expect(screen.getByText(/otherProduct/)).toBeInTheDocument();
   });
-  it("renders the form with the right form elements", async () => {
+  it("renders the form with the right form elements except apr-dec production", async () => {
     getProductionDataMock.mockReturnValue({
-      allowed_products: [],
-      report_products: [
-        {
-          product_name: "testProduct",
-          unit: "tonnes of tests",
-        },
-      ],
+      report_data: {
+        reporting_year: 2020,
+      },
+      facility_data: { facility_type: "SFO" },
+      payload: {
+        allowed_products: [],
+        report_products: [
+          {
+            product_name: "testProduct",
+            unit: "tonnes of tests",
+          },
+        ],
+      },
     });
 
     render(await ProductionDataPage(props));
@@ -93,8 +111,8 @@ describe("The Production Data component", () => {
     expect(screen.getByText("Unit")).toBeInTheDocument();
     expect(screen.getByText("tonnes of tests")).toBeInTheDocument();
     expect(
-      screen.getByLabelText("Production data for Apr 1 - Dec 31, 2024*"),
-    ).toHaveRole("textbox");
+      screen.queryByLabelText("Production data for Apr 1 - Dec 31, 2024*"),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByLabelText("Production Quantification Methodology*"),
     ).toHaveRole("textbox");
@@ -117,6 +135,29 @@ describe("The Production Data component", () => {
       screen.getByLabelText(
         "Quantity of throughput at point of sale during compliance period [Jan 1 - Dec 31], if applicable",
       ),
+    ).toHaveRole("textbox");
+  });
+
+  it("displays the apr-dec field if the year is 2024", async () => {
+    getProductionDataMock.mockReturnValue({
+      report_data: {
+        reporting_year: 2024,
+      },
+      facility_data: { facility_type: "SFO" },
+      payload: {
+        allowed_products: [],
+        report_products: [
+          {
+            product_name: "testProduct",
+            unit: "tonnes of tests",
+          },
+        ],
+      },
+    });
+
+    render(await ProductionDataPage(props));
+    expect(
+      screen.getByLabelText("Production data for Apr 1 - Dec 31, 2024*"),
     ).toHaveRole("textbox");
   });
 });

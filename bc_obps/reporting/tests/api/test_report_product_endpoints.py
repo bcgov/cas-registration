@@ -41,6 +41,7 @@ class TestReportProductEndpoints(CommonTestSetup):
             storage_quantity_end_of_period=234,
             quantity_sold_during_period=345,
             quantity_throughput_during_period=456,
+            production_data_apr_dec=100000,
         )
 
         # ❌ Report product with a different report version (should NOT be in the response)
@@ -70,8 +71,8 @@ class TestReportProductEndpoints(CommonTestSetup):
                     "unit": rp1.product.unit,
                     "is_regulated": rp1.product.is_regulated,
                     "annual_production": rp1.annual_production,
-                    "production_data_apr_dec": rp1.production_data_apr_dec,
-                    "production_methodology": rp1.production_methodology,
+                    # Production data apr-dec is only serialized when present
+                    "production_methodology": rp1.production_methodology.value,
                 },
                 {
                     "product_id": rp2.product.id,
@@ -80,7 +81,7 @@ class TestReportProductEndpoints(CommonTestSetup):
                     "is_regulated": rp2.product.is_regulated,
                     "annual_production": rp2.annual_production,
                     "production_data_apr_dec": rp2.production_data_apr_dec,
-                    "production_methodology": rp2.production_methodology,
+                    "production_methodology": rp2.production_methodology.value,
                     "storage_quantity_start_of_period": rp2.storage_quantity_start_of_period,
                     "storage_quantity_end_of_period": rp2.storage_quantity_end_of_period,
                     "quantity_sold_during_period": rp2.quantity_sold_during_period,

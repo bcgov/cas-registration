@@ -6,12 +6,8 @@ import {
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
-import {
-  buildProductionDataSchema2024,
-  productionDataUiSchema2024,
-} from "./2024/productionData";
 
-const buildProductionDataSchemaDefault = (
+export const buildProductionDataSchema2024 = (
   compliance_period_start: string,
   compliance_period_end: string,
   product_selection: string[],
@@ -50,7 +46,11 @@ const buildProductionDataSchemaDefault = (
     definitions: {
       productionDataItem: {
         type: "object",
-        required: ["annual_production", "production_methodology"],
+        required: [
+          "annual_production",
+          "production_data_apr_dec",
+          "production_methodology",
+        ],
         properties: {
           product_id: {
             type: "number",
@@ -68,6 +68,11 @@ const buildProductionDataSchemaDefault = (
           },
           annual_production: {
             title: "Annual Production",
+            type: "number",
+            minimum: 0,
+          },
+          production_data_apr_dec: {
+            title: "Production data for Apr 1 - Dec 31, 2024",
             type: "number",
             minimum: 0,
           },
@@ -117,29 +122,7 @@ const buildProductionDataSchemaDefault = (
   } as RJSFSchema;
 };
 
-export const buildProductionDataSchema = (
-  reporting_year: number,
-  compliance_period_start: string,
-  compliance_period_end: string,
-  product_selection: string[],
-  facility_type: string,
-) => {
-  if (reporting_year === 2024)
-    return buildProductionDataSchema2024(
-      compliance_period_start,
-      compliance_period_end,
-      product_selection,
-      facility_type,
-    );
-  return buildProductionDataSchemaDefault(
-    compliance_period_start,
-    compliance_period_end,
-    product_selection,
-    facility_type,
-  );
-};
-
-const productionDataUiSchemaDefault: UiSchema = {
+export const productionDataUiSchema2024: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   product_selection_title: {
@@ -166,6 +149,7 @@ const productionDataUiSchemaDefault: UiSchema = {
         "product_name",
         "unit",
         "annual_production",
+        "production_data_apr_dec",
         "production_methodology",
         "production_methodology_description",
         "*",
@@ -186,11 +170,4 @@ const productionDataUiSchemaDefault: UiSchema = {
       },
     },
   },
-};
-
-export const buildProductionDataUiSchema = (reporting_year: number) => {
-  if (reporting_year === 2024) {
-    return productionDataUiSchema2024;
-  }
-  return productionDataUiSchemaDefault;
 };
