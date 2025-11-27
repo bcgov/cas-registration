@@ -231,8 +231,8 @@ class PenaltyCalculationService:
     def calculate_penalty(
         cls,
         obligation: ComplianceObligation,
+        accrual_start_date: date,
         persist_penalty_data: bool = False,
-        accrual_start_date: date | None = None,
         final_accrual_date: date | None = None,
     ) -> Dict[str, Any]:
         """
@@ -265,7 +265,7 @@ class PenaltyCalculationService:
             compliance_penalty_record = CompliancePenalty.objects.create(
                 compliance_obligation=obligation,
                 fee_date=date.today(),
-                accrual_start_date=accrual_start_date.strftime("%Y-%m-%d"),  # type: ignore[union-attr]
+                accrual_start_date=accrual_start_date.strftime("%Y-%m-%d"),
                 accrual_final_date=final_accrual_date,
                 accrual_frequency=CompliancePenalty.Frequency.DAILY,
                 compounding_frequency=CompliancePenalty.Frequency.DAILY,
@@ -279,8 +279,8 @@ class PenaltyCalculationService:
         base = obligation.fee_amount_dollars or Decimal('0.00')
         accumulated_penalty = Decimal('0.00')
         accumulated_compounding = Decimal('0.00')
-        days_late = max(0, (last_calculation_day - invoice.due_date).days)
-        current_date = invoice.due_date + timedelta(days=1)
+        days_late = max(0, (last_calculation_day - accrual_start_date).days - 1)
+        current_date = accrual_start_date
         total_penalty = Decimal('0.00')
 
         for _ in range(1, days_late + 1):
@@ -371,7 +371,7 @@ class PenaltyCalculationService:
         return max(filter(None, [last_payment_received_date, last_adjustment_date]), default=None)
 
     @classmethod
-    def create_penalty(cls, obligation: ComplianceObligation) -> CompliancePenalty:
+    def create_penalty(cls, obligation: ComplianceObligation, effective_deadline: date) -> CompliancePenalty:
         """
         Calculate the penalty, persist the penalty data to the database & generate an invoice in elicensing.
 
@@ -387,7 +387,7 @@ class PenaltyCalculationService:
             compliance_report_version_id=obligation.compliance_report_version_id
         )
 
-        penalty_accrual_start_date = obligation.elicensing_invoice.due_date + timedelta(days=1)  # type: ignore[union-attr]
+        penalty_accrual_start_date = effective_deadline + timedelta(days=1)
 
         final_transaction_date = PenaltyCalculationService.determine_last_transaction_date(obligation)
 
