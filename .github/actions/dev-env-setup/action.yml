@@ -34,11 +34,6 @@ runs:
     #----------------------------------------------
     # install dependencies if cache does not exist
     #----------------------------------------------
-    - name: Install dependencies
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
-      working-directory: ./bc_obps
-      shell: bash
     - name: Install dependencies for PostgreSQL build
       working-directory: ./bc_obps
       shell: bash
@@ -52,6 +47,10 @@ runs:
         make install_backend_asdf_tools
         make start_pg
         make create_db
+    - name: Install dependencies
+      run: poetry install --no-interaction --no-root
+      working-directory: ./bc_obps
+      shell: bash
     - name: Install yarn dependencies
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install --immutable
