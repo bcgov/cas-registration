@@ -11,7 +11,6 @@ interface Props {
   report_version_id: number;
   facility_id: string;
   facilityType: string;
-  reportingYear: number;
   allowedProducts: { product_id: number; product_name: string }[];
   initialData: ProductData[];
   schema: RJSFSchema;
@@ -26,6 +25,7 @@ const ProductionDataForm: React.FC<Props> = ({
   facilityType,
   reportingYear,
   schema,
+  uiSchema,
   allowedProducts,
   initialData,
   navigationInformation,

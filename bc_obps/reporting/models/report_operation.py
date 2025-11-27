@@ -52,6 +52,12 @@ class ReportOperation(TimeStampedModel):
     registration_purpose = models.CharField(
         max_length=1000, db_comment="The Registration purpose of the operation", default='OBPS Regulated Operation'
     )
+    operation_opted_out_detail = models.CharField(
+        max_length=1000,
+        db_comment="The effective date for the operation's opting out of BCIERS, if applicable",
+        blank=True,
+        null=True
+    )
 
     # We don't create a backwards relation since this is a registration model
     activities = models.ManyToManyField(Activity, related_name="+")
