@@ -93,7 +93,6 @@ class ReportFacilitiesService:
         current_facilities: list = []
         past_facilities: list = []
         is_sync_allowed = SyncValidationService.is_sync_allowed(version_id)
-        print('is sync allowed', is_sync_allowed)
 
         # Determine if all current facilities should be considered selected
         all_selected_for_current = not selected_facilities

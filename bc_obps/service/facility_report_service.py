@@ -35,7 +35,7 @@ class FacilityReportService:
             report_version_id=report_version_id, facility_id=facility_id
         )
 
-        facility_report.is_sync_allowed = SyncValidationService.is_sync_allowed(report_version_id)  # type: ignore[attr-defined]
+        facility_report.is_sync_allowed = SyncValidationService.is_facility_sync_allowed(report_version_id, facility_id)  # type: ignore[attr-defined]
         return facility_report
 
     @classmethod
