@@ -3,52 +3,34 @@ description: "Sets up asdf and configures the cache"
 runs:
   using: composite
   steps:
-    # - uses: actions/cache@v4
-    #   id: asdf-cache-root
-    #   with:
-    #     path: ~/.asdf
-    #     key: ${{ runner.os }}-asdf-cache-root-${{ hashFiles('.tool-versions') }}
-    # - uses: actions/cache@v4
-    #   id: asdf-cache-bc-obps
-    #   with:
-    #     path: ~/.asdf
-    #     key: ${{ runner.os }}-asdf-cache-bcobps-${{ hashFiles('bc_obps/.tool-versions') }}
-    # - name: Install asdf
-    #   uses: asdf-vm/actions/install@v4
-    # - name: asdf setup
-    #   uses: asdf-vm/actions/setup@v4
-    # - name: Install tool versions via asdf
-    #   shell: bash
-    #   run: |
-    #     asdf plugin update --all || true
-    #     asdf install
-    #     asdf reshim
-    # - name: Install bc_obps tool versions via asdf
-    #   working-directory: ./bc_obps
-    #   shell: bash
-    #   run: |
-    #     asdf plugin update --all || true
-    #     asdf install
-    #     asdf reshim
+    - name: asdf setup
+      uses: asdf-vm/actions/setup@v4
+    - uses: actions/cache@v4
+      id: asdf-cache-backend
+      with:
+        path: |
+          ~/.asdf
+          ./bc_obps/.tool-versions
+        key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}
     - name: yarn modern
       shell: bash
       run: |
         corepack enable
     - name: yarn cache
       uses: ./.github/actions/yarn-cache
-    - name: Set up python
-      id: setup-python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12.11"
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
-    - name: Load cached venv
-      id: cached-poetry-dependencies
-      uses: actions/cache@v4
-      with:
-        path: .venv
-        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+    # - name: Set up python
+    #   id: setup-python
+    #   uses: actions/setup-python@v5
+    #   with:
+    #     python-version: "3.12.11"
+    # - name: Install Poetry
+    #   uses: snok/install-poetry@v1
+    # - name: Load cached venv
+    #   id: cached-poetry-dependencies
+    #   uses: actions/cache@v4
+    #   with:
+    #     path: .venv
+    #     key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
     #----------------------------------------------
     # install dependencies if cache does not exist
     #----------------------------------------------
