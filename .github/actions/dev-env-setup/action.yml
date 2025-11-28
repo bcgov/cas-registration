@@ -53,17 +53,17 @@ runs:
     - name: Set up PostgreSQL
       shell: bash
       run: |
-        POSTGRES_MAJOR_VERSION=$(echo "${{ steps.versions.outputs.postgres-version }}" | cut -d'.' -f1)
         sudo apt-get update
         sudo apt-get install -y libreadline-dev uuid-dev
-        sudo apt-get update
-        sudo apt-get install -y postgresql-${POSTGRES_MAJOR_VERSION}
-        sudo systemctl start postgresql
-        echo "/usr/lib/postgresql/${POSTGRES_MAJOR_VERSION}/bin" >> $GITHUB_PATH
-    - name: Create database
+        asdf plugin add postgres || true
+        asdf plugin update postgres
+        MAKELEVEL=0 POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' asdf install postgres ${{ steps.versions.outputs.postgres-version }}
+        asdf reshim
+    - name: Start PostgreSQL and create database
       working-directory: ./bc_obps
       shell: bash
       run: |
+        make start_pg
         make create_db
     - name: Load cached venv
       id: cached-poetry-dependencies
