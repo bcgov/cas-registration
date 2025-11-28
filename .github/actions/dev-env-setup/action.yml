@@ -1,5 +1,5 @@
 name: "Set up registration dev environment"
-description: "Sets up development environment with Node.js, Python, Poetry, and PostgreSQL"
+description: "Sets up asdf and configures the cache"
 runs:
   using: composite
   steps:
@@ -10,8 +10,8 @@ runs:
       with:
         path: |
           ~/.asdf
-          ./.tool-versions
-        key: ${{ runner.os }}-asdf-cache-bciers-${{ hashFiles('./.tool-versions') }}
+          ./bciers/.tool-versions
+        key: ${{ runner.os }}-asdf-cache-bciers-${{ hashFiles('bciers/.tool-versions') }}
     - uses: actions/cache@v4
       id: asdf-cache-backend
       with:
@@ -25,12 +25,8 @@ runs:
       run: |
         NODE_VERSION=$(grep "^nodejs" ./.tool-versions | cut -d' ' -f2)
         PYTHON_VERSION=$(grep "^python" ./bc_obps/.tool-versions | cut -d' ' -f2)
-        POETRY_VERSION=$(grep "^poetry" ./bc_obps/.tool-versions | cut -d' ' -f2)
-        POSTGRES_VERSION=$(grep "^postgres" ./bc_obps/.tool-versions | cut -d' ' -f2)
         echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
         echo "python-version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
-        echo "poetry-version=$POETRY_VERSION" >> $GITHUB_OUTPUT
-        echo "postgres-version=$POSTGRES_VERSION" >> $GITHUB_OUTPUT
     - name: Set up Node.js
       uses: actions/setup-node@v6
       with:
@@ -41,34 +37,13 @@ runs:
         corepack enable
     - name: yarn cache
       uses: ./.github/actions/yarn-cache
-    - name: Install yarn dependencies
-      run: yarn install --immutable
-      working-directory: ./bciers
-      shell: bash
-    - name: Set up Python
+    - name: Set up python
       id: setup-python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ steps.versions.outputs.python-version }}
-    - name: Set up Poetry
-      uses: Gr1N/setup-poetry@v9
-      with:
-        poetry-version: ${{ steps.versions.outputs.poetry-version }}
-    - name: Set up PostgreSQL
-      shell: bash
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libreadline-dev uuid-dev
-        asdf plugin add postgres || true
-        asdf plugin update postgres
-        MAKELEVEL=0 POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' asdf install postgres ${{ steps.versions.outputs.postgres-version }}
-        asdf reshim
-    - name: Start PostgreSQL and create database
-      working-directory: ./bc_obps
-      shell: bash
-      run: |
-        make start_pg
-        make create_db
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
     - name: Load cached venv
       id: cached-poetry-dependencies
       uses: actions/cache@v4
@@ -82,4 +57,22 @@ runs:
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
       working-directory: ./bc_obps
+      shell: bash
+    - name: Install dependencies for PostgreSQL build
+      working-directory: ./bc_obps
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libreadline-dev uuid-dev
+    - name: Install server dev tools
+      working-directory: ./bc_obps
+      shell: bash
+      run: |
+        make install_backend_asdf_tools
+        make start_pg
+        make create_db
+    - name: Install yarn dependencies
+      if: steps.yarn-cache.outputs.cache-hit != 'true'
+      run: yarn install --immutable
+      working-directory: ./bciers
       shell: bash
