@@ -41,6 +41,10 @@ runs:
         corepack enable
     - name: yarn cache
       uses: ./.github/actions/yarn-cache
+    - name: Install yarn dependencies
+      run: yarn install --immutable
+      working-directory: ./bciers
+      shell: bash
     - name: Set up Python
       id: setup-python
       uses: actions/setup-python@v6
@@ -78,8 +82,4 @@ runs:
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
       working-directory: ./bc_obps
-      shell: bash
-    - name: Install yarn dependencies
-      run: yarn install --immutable
-      working-directory: ./bciers
       shell: bash

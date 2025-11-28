@@ -10,7 +10,5 @@ runs:
     - uses: actions/cache@v4
       id: yarn-cache
       with:
-        path: |
-          ~/.cache/yarn
-          ./bciers/node_modules
+        path: ~/.cache/yarn
         key: ${{ runner.os }}-yarn-cache-${{ hashFiles('bciers/yarn.lock') }}-v2
