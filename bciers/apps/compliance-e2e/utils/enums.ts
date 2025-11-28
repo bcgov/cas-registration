@@ -1,17 +1,21 @@
-// 🚀  App routes
-export enum AppRoute {
-  GRID_COMPLIANCE_SUMMARIES = "compliance",
-  GRID_REPORTING_CURRENT_REPORTS = "reporting/reports",
+// App routes
+export enum AppRoutes {
+  GRID_COMPLIANCE_SUMMARIES = "compliance/compliance-administration",
+}
+export enum ComplianceOperations {
+  NO_OBLIGATION = "Compliance SFO - No obligation or earned credits",
+  EARNED_CREDITS = "Compliance SFO - Earned credits",
+  OBLIGATION_NOT_MET = "Compliance SFO - Obligation not met",
 }
 
-export enum Breadcrumbs {
-  GRID_REPORTING_CURRENT_REPORTS = "Current Reports",
+export enum ComplianceActionLinkText {
+  OBLIGATION_NOT_MET = "Manage Obligation",
 }
 
-export enum ReportingCurrentReportsGridHeaders {
-  BC_GHG_ID = "BC GHG ID",
+export enum ComplianceSummariesGridHeaders {
+  STATUS = "status",
 }
 
-export enum ReportingCurrentReportsGridValues {
-  BC_GHG_ID = "13219990046",
+export enum ComplianceButtons {
+  GENERATE_INVOICE = "Generate Compliance Invoice",
 }
