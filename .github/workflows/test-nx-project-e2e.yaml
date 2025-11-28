@@ -44,6 +44,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
+      - name: Verify yarn installation
+        shell: bash
+        run: |
+          corepack enable
+          cd bciers && yarn install --immutable
       - name: 🎁 setup local app
         uses: ./.github/actions/run-docker-compose
         with:
