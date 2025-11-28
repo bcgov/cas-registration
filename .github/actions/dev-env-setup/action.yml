@@ -35,14 +35,17 @@ runs:
       uses: actions/setup-node@v6
       with:
         node-version: ${{ steps.versions.outputs.node-version }}
-    - name: Install dependencies
+    - name: yarn modern
       shell: bash
       run: |
         corepack enable
-        yarn install --immutable
-        cd bciers && yarn install --immutable
     - name: yarn cache
       uses: ./.github/actions/yarn-cache
+    - name: Install yarn dependencies
+      shell: bash
+      run: |
+        yarn install --immutable
+        cd bciers && yarn install --immutable
     - name: Set up Python
       id: setup-python
       uses: actions/setup-python@v6
