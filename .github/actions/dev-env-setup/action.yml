@@ -19,6 +19,22 @@ runs:
           ~/.asdf
           ./bc_obps/.tool-versions
         key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}
+    - name: Extract versions from tool-versions files
+      id: versions
+      shell: bash
+      run: |
+        NODE_VERSION=$(grep "^nodejs" ./.tool-versions | cut -d' ' -f2)
+        PYTHON_VERSION=$(grep "^python" ./bc_obps/.tool-versions | cut -d' ' -f2)
+        POETRY_VERSION=$(grep "^poetry" ./bc_obps/.tool-versions | cut -d' ' -f2)
+        POSTGRES_VERSION=$(grep "^postgres" ./bc_obps/.tool-versions | cut -d' ' -f2)
+        echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
+        echo "python-version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
+        echo "poetry-version=$POETRY_VERSION" >> $GITHUB_OUTPUT
+        echo "postgres-version=$POSTGRES_VERSION" >> $GITHUB_OUTPUT
+    - name: Set up Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ steps.versions.outputs.node-version }}
     - name: yarn modern
       shell: bash
       run: |
