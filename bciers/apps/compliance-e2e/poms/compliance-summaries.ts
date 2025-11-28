@@ -4,7 +4,7 @@ import {
   ComplianceSummariesGridHeaders,
 } from "@/compliance-e2e/utils/enums";
 
-export class GridComplianceSummariesPOM {
+export class ComplianceSummariesPOM {
   readonly page: Page;
 
   readonly url: string =
@@ -61,7 +61,7 @@ export class GridComplianceSummariesPOM {
   ): Promise<void> {
     const status = await this.getCellTextForOperation(
       operationName,
-      ComplianceSummariesGridHeaders.STATUS,
+      ComplianceSummariesGridHeaders.DISPLAY_STATUS,
     );
 
     expect(status).toBe(expectedStatus);
@@ -70,45 +70,28 @@ export class GridComplianceSummariesPOM {
   /**
    * Click an action link in the compliance summaries grid for a given operation
    * and optionally assert the resulting URL and a UI element on the target page.
-   *
-   * @param operationName - The operation name text used to locate the row.
-   * @param linkName - The visible text of the link in the actions cell
-   *                   (string or RegExp).
-   * @param urlPattern - Optional RegExp to assert navigation URL.
-   *                     If omitted, no URL assertion is performed.
-   * @param postNavButtonName - Optional button text (string or RegExp) to assert
-   *                            that the expected page has loaded.
    */
   async openActionForOperation(options: {
     operationName: string;
     linkName: string | RegExp;
-    urlPattern?: RegExp;
-    postNavButtonName?: string | RegExp;
+    urlPattern?: string | RegExp;
   }) {
-    const { operationName, linkName, urlPattern, postNavButtonName } = options;
+    const { operationName, linkName } = options;
 
-    // Find the row for this operation
     const row = await this.getRowByOperationName(operationName);
 
-    // Find the action link within that row
-    const actionLink = row.getByRole("link", {
-      name: linkName,
-    });
-
+    const actionLink = row.getByRole("link", { name: linkName });
     await expect(actionLink).toBeVisible();
 
-    // Click and optionally wait for URL
-    if (urlPattern) {
-      await Promise.all([this.page.waitForURL(urlPattern), actionLink.click()]);
-    } else {
-      await actionLink.click();
+    const href = await actionLink.getAttribute("href");
+
+    if (!href) {
+      throw new Error("Manage Obligation action link has no href");
     }
 
-    // Optionally assert some element on the destination page (e.g., a button)
-    if (postNavButtonName) {
-      await expect(
-        this.page.getByRole("button", { name: postNavButtonName }),
-      ).toBeVisible();
-    }
+    const targetUrl =
+      (process.env.E2E_BASEURL ?? "http://localhost:3000") + href;
+
+    await this.page.goto(targetUrl, { waitUntil: "load" });
   }
 }

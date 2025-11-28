@@ -12,7 +12,7 @@ import {
   SUBMISSION_SUCCESS_TEXT,
 } from "@/reporting-e2e/utils/constants";
 
-export class GridReportingCurrentReportsPOM {
+export class CurrentReportsPOM {
   readonly page: Page;
 
   readonly url: string =
