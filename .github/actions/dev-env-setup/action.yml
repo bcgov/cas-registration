@@ -80,7 +80,6 @@ runs:
       working-directory: ./bc_obps
       shell: bash
     - name: Install yarn dependencies
-      if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install --immutable
       working-directory: ./bciers
       shell: bash
