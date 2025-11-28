@@ -39,9 +39,8 @@ runs:
       shell: bash
       run: |
         corepack enable
-    # Temporarily disabled to debug yarn state file issue
-    # - name: yarn cache
-    #   uses: ./.github/actions/yarn-cache
+    - name: yarn cache
+      uses: ./.github/actions/yarn-cache
     - name: Install yarn dependencies
       shell: bash
       run: |
