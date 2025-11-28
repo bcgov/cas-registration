@@ -21,6 +21,7 @@ const elicensingInvoiceColumns = (isInternalUser: boolean): GridColDef[] => {
     {
       field: "operation_name",
       headerName: "Operation Name",
+      minWidth: 160,
       flex: 1,
     },
     {
