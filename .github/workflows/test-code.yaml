@@ -20,7 +20,7 @@ jobs:
         working-directory: ./bciers
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: dev env setup
@@ -34,7 +34,7 @@ jobs:
   yarn-audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: yarn npm audit --exclude eslint
@@ -43,7 +43,7 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: set pre-commit cache directory
@@ -69,7 +69,7 @@ jobs:
   check-migrations:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: poetry run python manage.py makemigrations --check --dry-run
@@ -78,7 +78,7 @@ jobs:
   check-immutable-migrations:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: dev env setup
@@ -89,7 +89,7 @@ jobs:
   check-test-data:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: Run Migrations
