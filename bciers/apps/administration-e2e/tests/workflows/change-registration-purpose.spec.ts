@@ -26,13 +26,13 @@ import {
   searchGridByUniqueValue,
 } from "@bciers/e2e/utils/helpers";
 
-const happoPlaywright = require("happo-playwright");
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
 
 test.describe.configure({ mode: "serial" });
 test.describe("Test changing registration purpose", () => {
   test("Changes registration purpose from OBPS Regulated Operation to Reporting Operation", async ({
     page,
+    happoScreenshot,
   }) => {
     // 🛸 Navigate to operation page
     const operationPage = new OperationPOM(page);
@@ -84,7 +84,7 @@ test.describe("Test changing registration purpose", () => {
     let component = "";
     // Say cheese!
     component = "Confirmation to change registration purpose";
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: component,
       variant: "default",
     });
@@ -111,7 +111,7 @@ test.describe("Test changing registration purpose", () => {
 
     // Say cheese!
     component = "Changed registration purpose to Reporting Operation";
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: component,
       variant: "default",
     });
@@ -119,6 +119,7 @@ test.describe("Test changing registration purpose", () => {
 
   test("Attempts to change registration purpose from OBPS Regulated Operation to EIO", async ({
     page,
+    happoScreenshot,
   }) => {
     // 🛸 Navigate to operation page
     const operationPage = new OperationPOM(page);
@@ -131,7 +132,6 @@ test.describe("Test changing registration purpose", () => {
     const row = await operationPage.findRowByBcghgId(
       ChangeRegistrationPurposeE2EValues.REGULATED_BCGHG_ID_FIELD_VALUE,
     );
-    await stabilizeGrid(page, 1);
 
     // Go to operation details page
     await operationPage.goToOperation(row);
@@ -193,7 +193,7 @@ test.describe("Test changing registration purpose", () => {
     // Say cheese!
     const component =
       "Change registration purpose of existing operation to EIO";
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: component,
       variant: "default",
     });
@@ -201,6 +201,7 @@ test.describe("Test changing registration purpose", () => {
 
   test("Changes registration purpose from Reporting Operation to OBPS Regulated Operation", async ({
     page,
+    happoScreenshot,
   }) => {
     // 🛸 Navigate to operation page
     const operationPage = new OperationPOM(page);
@@ -276,7 +277,7 @@ test.describe("Test changing registration purpose", () => {
     // Say cheese!
     const component =
       "Changed registration purpose to OBPS Regulated Operation";
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: component,
       variant: "default",
     });
@@ -284,6 +285,7 @@ test.describe("Test changing registration purpose", () => {
 
   test("Attempts to change registration purpose from EIO to Regulated Operation", async ({
     page,
+    happoScreenshot,
   }) => {
     // 🛸 Navigate to operation page
     const operationPage = new OperationPOM(page);
@@ -360,7 +362,7 @@ test.describe("Test changing registration purpose", () => {
 
     // Say cheese!
     const component = "Change registration purpose of existing EIO";
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: component,
       variant: "default",
     });

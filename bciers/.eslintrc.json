@@ -29,7 +29,8 @@
           "**/playwright.config.{ts,js}",
           "**/tailwind.config.{ts,js}",
           "**/next.config.{ts,js}",
-          "**/.happo.{ts,js}"
+          "**/.happo.{ts,js}",
+          "**/happo.config.{ts,js}"
         ]
       }
     ],
@@ -66,6 +67,13 @@
     {
       "files": ["*.js", "*.jsx"],
       "rules": {}
+    },
+    {
+      "files": ["**/happo.config.ts", "**/happo-base.config.js"],
+      "rules": {
+        "import/extensions": "off",
+        "import/no-extraneous-dependencies": "off"
+      }
     }
   ]
 }

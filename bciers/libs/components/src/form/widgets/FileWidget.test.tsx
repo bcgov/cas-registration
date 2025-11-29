@@ -21,10 +21,6 @@ const mockFileUnaccepted = new File(["test"], "test.txt", {
   type: "text/plain",
 });
 
-const mock21MBFile = new File(["test".repeat(20000000)], "test.pdf", {
-  type: "application/pdf",
-});
-
 const alertMock = vi.spyOn(window, "alert");
 
 export const fileFieldSchema = {
@@ -51,6 +47,17 @@ describe("RJSF FileWidget", () => {
     vi.resetAllMocks();
     useSessionRole.mockReturnValue("industry_user_admin");
   });
+
+  const createMock21MBFile = () => {
+    const file = new File(["test"], "test.pdf", {
+      type: "application/pdf",
+    });
+    Object.defineProperty(file, "size", {
+      value: 21000000,
+      writable: false,
+    });
+    return file;
+  };
 
   it("should render a file field", async () => {
     render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
@@ -207,7 +214,7 @@ describe("RJSF FileWidget", () => {
     render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
 
     const input = screen.getByLabelText(fileLabelRequired);
-    await userEvent.upload(input, mock21MBFile);
+    await userEvent.upload(input, createMock21MBFile());
 
     expect(screen.getByText("No attachment was uploaded")).toBeVisible();
   });
@@ -216,7 +223,7 @@ describe("RJSF FileWidget", () => {
     render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
 
     const input = screen.getByLabelText(fileLabelRequired);
-    await userEvent.upload(input, mock21MBFile);
+    await userEvent.upload(input, createMock21MBFile());
 
     expect(alertMock).toHaveBeenCalledWith("File size must be less than 20MB");
   });

@@ -13,10 +13,7 @@ import {
   fillComboxboxWidget,
   fillDropdownByLabel,
 } from "@bciers/e2e/utils/helpers";
-// ℹ️ Environment variables
-import * as dotenv from "dotenv";
 import { uploadFile } from "@bciers/e2e/utils/helpers";
-dotenv.config({ path: "./e2e/.env.local" });
 
 export class RegistrationPOM {
   readonly page: Page;
@@ -159,7 +156,6 @@ export class RegistrationPOM {
     await this.page
       .getByLabel(/postal code+/i)
       .fill(ContactE2EValue.POSTAL_CODE);
-    await clickButton(this.page, /save operation representative/i);
   }
 
   async fillExistingOperationRepresentative() {

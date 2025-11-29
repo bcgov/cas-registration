@@ -24,7 +24,6 @@ import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 import { SecondaryUserOperatorFixtureFields } from "@/administration-e2e/utils/enums";
 import { OperatorPOM } from "@/administration-e2e/poms/operator";
 
-const happoPlaywright = require("happo-playwright");
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 test.beforeEach(async () => {
   /**
@@ -42,7 +41,7 @@ test.beforeEach(async () => {
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
 test.describe("External User", () => {
-  test("Approve a reporter", async ({ page }) => {
+  test("Approve a reporter", async ({ page, happoScreenshot }) => {
     // 🤣🛸 Navigate to Users and Access Requests from dashboard
     const accessRequestPage = new UsersAccessRequestPOM(page);
     await accessRequestPage.goToUserAccessRequestPage();
@@ -66,7 +65,7 @@ test.describe("External User", () => {
     );
     await assertSuccessfulSnackbar(page, /is now approved/i);
 
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "EXTERNAL: Approve a reporter",
       variant: "filled",
     });
@@ -82,7 +81,7 @@ test.describe("External User", () => {
     ).toBeHidden();
   });
 
-  test("Approve an administrator", async ({ page }) => {
+  test("Approve an administrator", async ({ page, happoScreenshot }) => {
     // 🛸 Navigate to Users and Access Requests from dashboard
     const accessRequestPage = new UsersAccessRequestPOM(page);
     await accessRequestPage.goToUserAccessRequestPage();
@@ -105,7 +104,7 @@ test.describe("External User", () => {
     );
     await assertSuccessfulSnackbar(page, /is now approved/i);
 
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "EXTERNAL: Approve an administrator",
       variant: "default",
     });
@@ -121,7 +120,7 @@ test.describe("External User", () => {
     ).toBeVisible();
   });
 
-  test("Reject a request", async ({ page }) => {
+  test("Reject a request", async ({ page, happoScreenshot }) => {
     // 🛸 Navigate to Users and Access Requests from dashboard
     const accessRequestPage = new UsersAccessRequestPOM(page);
     await accessRequestPage.goToUserAccessRequestPage();
@@ -147,15 +146,12 @@ test.describe("External User", () => {
     const currentStatus = await accessRequestPage.getCurrentStatus(row);
     await accessRequestPage.assertActionVisibility(row, currentStatus);
 
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "EXTERNAL: Decline a user operator request",
       variant: "default",
     });
 
-    const newPage = await openNewBrowserContextAs(
-      UserRole.INDUSTRY_USER,
-      happoPlaywright,
-    );
+    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
 
     // Verify Select an operator is visible
     const selectOperatorPage = new OperatorPOM(newPage);
@@ -174,11 +170,11 @@ test.describe("External User", () => {
       MessageTextOperatorSelect.SELECT_ANOTHER_OPERATOR,
       true,
     );
-    let selector = await selectOperatorPage.page.locator("html");
-    await happoPlaywright.screenshot(newPage, selector, {
-      component: "Decline a user operator request",
-      variant: "default",
-    });
+    // TODO:To be handled in ticket #457
+    // await takeStabilizedScreenshot(happoScreenshot, newPage, {
+    //   component: "Decline a user operator request",
+    //   variant: "default",
+    // });
   });
 
   test("Edit a request", async ({ page }) => {
