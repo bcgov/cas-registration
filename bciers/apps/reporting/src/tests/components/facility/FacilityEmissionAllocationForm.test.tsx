@@ -317,4 +317,56 @@ describe("FacilityEmissionAllocationForm component", () => {
       /Only products selected on the production data page appear here. To allocate emissions to a product that isn't shown below, return to the production data page and select it first./i,
     );
   });
+
+  it("clears products when methodology is changed to 'Not Applicable' and restores them when changed back", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <FacilityEmissionAllocationForm
+        version_id={config.mockVersionId}
+        facility_id={config.mockFacilityId}
+        orderedActivities={[]}
+        initialData={mockInitialData}
+        facilityType=""
+        navigationInformation={{
+          taskList: [],
+          continueUrl: "",
+          backUrl: "",
+          headerSteps: [],
+          headerStepIndex: 0,
+        }}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+      />,
+    );
+
+    // Initially, products should be visible
+    expect(screen.getAllByText(/Product 1/i)).toHaveLength(2);
+    expect(screen.getAllByText(/Product 2/i)).toHaveLength(2);
+
+    // Change methodology to "Not Applicable"
+    const methodologySelect = screen.getByRole("combobox", {
+      name: /root_allocation_methodology/i,
+    });
+    await user.click(methodologySelect);
+    const notApplicableOption = screen.getAllByText(/Not Applicable/i)[0];
+    await user.click(notApplicableOption);
+
+    // Wait for products to be cleared - they should not be in the document anymore
+    await waitFor(() => {
+      expect(screen.queryByText(/Product 1/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Product 2/i)).not.toBeInTheDocument();
+    });
+
+    // Change methodology back to "Other"
+    await user.click(methodologySelect);
+    const otherOption = screen.getAllByText(/Other/i)[0];
+    await user.click(otherOption);
+
+    // Products should be restored
+    await waitFor(() => {
+      expect(screen.getAllByText(/Product 1/i)).toHaveLength(2);
+      expect(screen.getAllByText(/Product 2/i)).toHaveLength(2);
+    });
+  });
 });
