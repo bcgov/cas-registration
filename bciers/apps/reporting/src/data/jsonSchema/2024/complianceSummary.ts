@@ -1,12 +1,8 @@
-import { RJSFSchema, UiSchema } from "@rjsf/utils";
+import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
-import {
-  complianceSummarySchema2024,
-  complianceSummaryUiSchema2024,
-} from "./2024/complianceSummary";
 
-const complianceSummarySchemaDefault: RJSFSchema = {
+export const complianceSummarySchema2024: RJSFSchema = {
   type: "object",
   title: "Compliance Summary",
   properties: {
@@ -63,6 +59,10 @@ const complianceSummarySchemaDefault: RJSFSchema = {
             type: "number",
             title: "Annual production",
           },
+          apr_dec_production: {
+            type: "number",
+            title: "Production data for Apr 1 - Dec 31 2024",
+          },
           emission_intensity: {
             type: "number",
             title: "Production-weighted average emission intensity",
@@ -81,7 +81,7 @@ const complianceSummarySchemaDefault: RJSFSchema = {
   },
 };
 
-const complianceSummaryUiSchemaDefault: UiSchema = {
+export const complianceSummaryUiSchema2024 = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:disabled": true,
@@ -139,6 +139,11 @@ const complianceSummaryUiSchemaDefault: UiSchema = {
           displayUnit: "production unit",
         },
       },
+      apr_dec_production: {
+        "ui:options": {
+          displayUnit: "production unit",
+        },
+      },
       emission_intensity: {
         "ui:options": {
           displayUnit: "tCO2e/production unit",
@@ -156,20 +161,4 @@ const complianceSummaryUiSchemaDefault: UiSchema = {
       },
     },
   },
-};
-
-export const createComplianceSummarySchema = (
-  reportingYear: number,
-): RJSFSchema => {
-  if (reportingYear === 2024) {
-    return complianceSummarySchema2024;
-  }
-  return complianceSummarySchemaDefault;
-};
-
-export const createComplianceSummaryUiSchema = (reportingYear: number) => {
-  if (reportingYear === 2024) {
-    return complianceSummaryUiSchema2024;
-  }
-  return complianceSummaryUiSchemaDefault;
 };
