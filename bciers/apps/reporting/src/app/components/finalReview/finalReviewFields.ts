@@ -209,12 +209,7 @@ export const reportNewEntrantFields = (
   ];
 };
 
-export const complianceSummaryFields = (
-  products: any[] = [],
-  compliancePeriod?: number,
-) => {
-  const isYear2024 = compliancePeriod === 2024;
-
+export const complianceSummaryFields = (products: any[] = []) => {
   return [
     {
       label: "Emissions attributable for reporting",
@@ -257,17 +252,11 @@ export const complianceSummaryFields = (
           key: `products.${index}.annual_production`,
           unit: "production unit",
         },
-      ];
-
-      // Only include apr_dec_production for 2024
-      if (isYear2024) {
-        fields.push({
+        {
           label: "Production data for Apr 1 - Dec 31 2024",
           key: `products.${index}.apr_dec_production`,
-        });
-      }
-
-      fields.push(
+          reporting_years: [2024],
+        },
         {
           label: "Production-weighted average emission intensity",
           key: `products.${index}.emission_intensity`,
@@ -283,7 +272,7 @@ export const complianceSummaryFields = (
           key: `products.${index}.allocated_compliance_emissions`,
           unit: "tCO2e",
         },
-      );
+      ];
 
       return fields;
     }) || []),

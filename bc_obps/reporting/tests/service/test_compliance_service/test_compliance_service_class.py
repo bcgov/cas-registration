@@ -4,7 +4,6 @@ from reporting.models import (
     ReportComplianceSummaryProduct,
     ReportEmission,
     ReportProduct,
-    EmissionCategory,
 )
 from reporting.service.compliance_service import ComplianceService
 from reporting.tests.service.test_compliance_service.infrastructure import ComplianceTestInfrastructure
@@ -84,37 +83,25 @@ class TestComplianceSummaryServiceClass(TestCase):
         build_2025 = ComplianceTestInfrastructure.reporting_year_2025()
         result_2025 = ComplianceService.get_calculated_compliance_data(build_2025.report_version_1.id)
 
-        report_version_id = build_2024.report_version_1.id
-        basic_category_ids = list(EmissionCategory.objects.filter(category_type="basic").values_list("id", flat=True))
-
-        for prod_2024 in result_2024.products:
-            prod_2025 = next((p for p in result_2025.products if p.product_id == prod_2024.product_id), None)
-            self.assertIsNotNone(prod_2025, f"Product {prod_2024.product_id} missing in 2025 result")
-
-            # compute full-year allocated (basic - reporting-only)
-            basic_allocated = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
-                report_version_id, prod_2024.product_id, basic_category_ids
+        for idx, prod_2024 in enumerate(result_2024.products):
+            prod_2025 = result_2025.products[idx]
+            self.assertEqual(
+                prod_2024.product_id,
+                prod_2025.product_id,
+                f"Product ID mismatch at index {idx}: {prod_2024.product_id} != {prod_2025.product_id}",
             )
-            reporting_only = ComplianceService.get_reporting_only_allocated(report_version_id, prod_2024.product_id)
-            allocated_full = Decimal(basic_allocated) - Decimal(reporting_only)
+            apr_dec = Decimal(prod_2025.apr_dec_production)
+            annual = Decimal(prod_2025.annual_production)
+            allocated_2024 = Decimal(prod_2024.allocated_compliance_emissions)
+            allocated_2025 = Decimal(prod_2025.allocated_compliance_emissions)
 
-            # production totals
-            totals = ComplianceService.get_report_product_aggregated_totals(report_version_id, prod_2024.product_id)
-            annual_amount = Decimal(totals.get("annual_amount") or 0)
-            apr_dec_amount = Decimal(totals.get("apr_dec") or 0)
-
-            # expected values for 2024 (Apr-Dec scaling if annual_amount > 0)
-            if annual_amount == 0:
-                expected_2024 = Decimal("0.0000")
+            if annual == 0:
+                # If there's no annual production, both allocations should be zero
+                self.assertEqual(allocated_2024, Decimal("0.0000"))
+                self.assertEqual(allocated_2025, Decimal("0.0000"))
             else:
-                expected_2024 = (allocated_full / annual_amount) * apr_dec_amount
-                expected_2024 = expected_2024.quantize(Decimal("0.0001"))
-
-            # expected for 2025 is full-year allocated
-            expected_2025 = allocated_full.quantize(Decimal("0.0001"))
-
-            self.assertEqual(Decimal(prod_2024.allocated_compliance_emissions), expected_2024)
-            self.assertEqual(Decimal(prod_2025.allocated_compliance_emissions), expected_2025)
+                prorated = (allocated_2025 * (apr_dec / annual)).quantize(Decimal("0.0001"))
+                self.assertEqual(allocated_2024, prorated)
 
     def test_compliance_summary_2025_period(self):
         # Assertion values from compliance_class_manual_calcs.xlsx sheet 4

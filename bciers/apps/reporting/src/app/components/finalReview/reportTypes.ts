@@ -186,4 +186,5 @@ export interface ReportData {
   is_supplementary_report: boolean;
   report_new_entrant: ReportNewEntrant[];
   report_electricity_import_data: ReportElectricityImportData[];
+  reporting_year: number;
 }

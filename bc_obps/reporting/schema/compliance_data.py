@@ -28,3 +28,4 @@ class ComplianceDataSchemaOut(Schema):
     credited_emissions: float
     regulatory_values: RegulatoryValueSchema
     products: List[ReportProductComplianceSchema]
+    reporting_year: int

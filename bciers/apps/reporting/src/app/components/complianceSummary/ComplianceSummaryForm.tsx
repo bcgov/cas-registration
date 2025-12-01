@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React from "react";
 import { Box } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import FormBase from "@bciers/components/form/FormBase";
@@ -29,11 +29,12 @@ interface Props {
       name: string;
       customUnit: string;
       annual_production: string;
-      apr_dec_production: string;
+      apr_dec_production?: string;
       emission_intensity: string;
       allocated_industrial_process_emissions: string;
       allocated_compliance_emissions: string;
     }[];
+    reporting_year: number;
   };
   navigationInformation: NavigationInformation;
 }
@@ -42,20 +43,13 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   summaryFormData,
   navigationInformation,
 }) => {
-  // Extract reporting year from compliance_period
-  const reportingYear = useMemo(() => {
-    return parseInt(summaryFormData.regulatory_values.compliance_period, 10);
-  }, [summaryFormData.regulatory_values.compliance_period]);
-
   // Generate schemas based on reporting year
-  const complianceSummarySchema = useMemo(
-    () => createComplianceSummarySchema(reportingYear),
-    [reportingYear],
+  const complianceSummarySchema = createComplianceSummarySchema(
+    summaryFormData.reporting_year,
   );
 
-  const complianceSummaryUiSchema = useMemo(
-    () => createComplianceSummaryUiSchema(reportingYear),
-    [reportingYear],
+  const complianceSummaryUiSchema = createComplianceSummaryUiSchema(
+    summaryFormData.reporting_year,
   );
 
   return (
