@@ -124,24 +124,24 @@ export const buildProductionDataSchema2025 = (
     },
   } as RJSFSchema;
 
-    // conditionally add Jan-Mar production data field for opted-out operations
-    if (is_opted_out) {
-      schema.definitions!.productionDataItem.properties[
-        "production_data_jan_mar_2025"
-      ] = {
-        title: "Production data for Jan 1 - Mar 31, 2025",
-        type: "number",
-        minimum: 0,
-      };    
-      schema.definitions!.productionDataItem.required!.push(
-        "production_data_jan_mar_2025",
-      )
-    }
+    // // conditionally add Jan-Mar production data field for opted-out operations
+    // if (is_opted_out) {
+    //   schema.definitions!.productionDataItem.properties[
+    //     "production_data_jan_mar_2025"
+    //   ] = {
+    //     title: "Production data for Jan 1 - Mar 31, 2025",
+    //     type: "number",
+    //     minimum: 0,
+    //   };    
+    //   schema.definitions!.productionDataItem.required!.push(
+    //     "production_data_jan_mar_2025",
+    //   )
+    // }
 
     return schema;
 };
 
-export const productionDataUiSchema2025 = (isOptedOut: boolean): UiSchema => {(
+export const productionDataUiSchema2025 = (isOptedOut: boolean) => {(
   return {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "form-heading-label",
