@@ -29,6 +29,11 @@ class ReportVersionService:
         # Pre-populating data to the draft version
         operation = report.operation
         operator = report.operator
+        if (op_in := operation.opted_in_operation) and (op_out := op_in.opted_out_operation):
+            operation_opted_out_effective_date = op_out.effective_date
+        else:
+            operation_opted_out_effective_date = None
+   
 
         report_operation = ReportOperation.objects.create(
             operator_legal_name=operator.legal_name,
@@ -41,7 +46,7 @@ class ReportVersionService:
             ),
             report_version=report_version,
             registration_purpose=operation.registration_purpose or 'OBPS Regulated Operation',
-            operation_opted_out_detail=operation.opted_in_operation.opted_out_operation,
+            operation_opted_out_effective_date=operation_opted_out_effective_date,
         )
 
         for contact in operation.contacts.all():
