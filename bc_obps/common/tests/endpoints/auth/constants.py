@@ -619,6 +619,11 @@ ENDPOINTS = {
                 "compliance_report_version_id": MOCK_INT,
             },
         },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_reporting_year",
+            "kwargs": {"report_id": MOCK_INT},
+        },
     ],
     "authorized_irc_user_and_industry_admin_user": [],
     "cas_director_analyst_and_approved_industry_user": [

@@ -74,6 +74,7 @@ class TestReportOperationService:
         assert result["show_regulated_products"] is True
         assert result["show_boro_id"] is True
         assert result["show_activities"] is True
+        assert result["reporting_year"] == self.report_version.report.reporting_year.reporting_year
 
     def test_update_report_service(self):
         self.operation.name = "New Operation Name"
