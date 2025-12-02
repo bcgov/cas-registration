@@ -31,4 +31,4 @@ dependencies:
     condition: run-reset-data-dag-on-upgrade.enabled
   - name: cas-logging-sidecar
     repository: https://bcgov.github.io/cas-pipeline/
-    version: 0.4.9
+    version: 0.5.0
