@@ -74,13 +74,15 @@ class TestComplianceEarnedCreditsService:
         mock_send_email.execute.assert_not_called()
 
     @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
-    def test_update_earned_credit_industry_user_success(self, mock_send_email):
+    @patch('compliance.service.earned_credits_service.BCCarbonRegistryAccountService')
+    def test_update_earned_credit_industry_user_success(self, mock_bccr_account_service, mock_send_email):
         # Arrange
         earned_credit = self.earned_credit_no_bccr_fields
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
         earned_credit.save()
 
         payload = {"bccr_trading_name": self.bccr_trading_name, "bccr_holding_account_id": self.bccr_holding_account_id}
+        mock_account_service_instance = mock_bccr_account_service.return_value
 
         # Act
         result = ComplianceEarnedCreditsService.update_earned_credit(
@@ -93,6 +95,8 @@ class TestComplianceEarnedCreditsService:
         assert earned_credit.bccr_holding_account_id == self.bccr_holding_account_id
         assert earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
         assert result == earned_credit
+        # Verify get_account_details was called with the correct account_id
+        mock_account_service_instance.get_account_details.assert_called_once_with(self.bccr_holding_account_id)
         # Email should be sent when industry user successfully updates
         mock_send_email.execute.assert_called_once_with(result.pk)
 
@@ -503,7 +507,8 @@ class TestComplianceEarnedCreditsService:
             )
 
     @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
-    def test_update_earned_credit_preserves_other_fields(self, mock_send_email):
+    @patch('compliance.service.earned_credits_service.BCCarbonRegistryAccountService')
+    def test_update_earned_credit_preserves_other_fields(self, mock_bccr_account_service, mock_send_email):
         # Arrange
         original_earned_credits_amount = 150
         original_issued_date = "2024-01-15"
@@ -515,6 +520,7 @@ class TestComplianceEarnedCreditsService:
         earned_credit.save()
 
         payload = {"bccr_trading_name": self.bccr_trading_name, "bccr_holding_account_id": self.bccr_holding_account_id}
+        mock_account_service_instance = mock_bccr_account_service.return_value
 
         # Act
         result = ComplianceEarnedCreditsService.update_earned_credit(
@@ -528,6 +534,8 @@ class TestComplianceEarnedCreditsService:
         assert earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
         assert earned_credit.earned_credits_amount == original_earned_credits_amount
         assert str(earned_credit.issued_date) == original_issued_date
+        # Verify get_account_details was called with the correct account_id
+        mock_account_service_instance.get_account_details.assert_called_once_with(self.bccr_holding_account_id)
         # Email should be sent when industry user successfully updates
         mock_send_email.execute.assert_called_once_with(result.pk)
 
