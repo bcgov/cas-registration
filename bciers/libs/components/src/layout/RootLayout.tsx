@@ -23,6 +23,12 @@ const SessionTimeoutHandler = dynamic(
   { ssr: false },
 );
 
+// Dynamically import SentryUserContext with SSR disabled (client component)
+const SentryUserContext = dynamic(
+  () => import("@bciers/sentryConfig/SentryUserContext"),
+  { ssr: false },
+);
+
 const rootMetadata: Metadata = {
   title: "CAS OBPS",
   description:
@@ -90,6 +96,7 @@ export default async function RootLayout({
                   zone={zone}
                 />
                 <Main>
+                  <SentryUserContext />
                   <SessionTimeoutHandler />
                   {children}
                 </Main>

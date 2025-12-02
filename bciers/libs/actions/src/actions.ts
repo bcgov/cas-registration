@@ -66,6 +66,14 @@ export async function actionHandler(
         // 🔒 Get the encrypted JWT
         const token = await getToken();
 
+        // Set Sentry user context from token if available
+        if (token?.user_guid) {
+          Sentry.setUser({
+            id: token.user_guid,
+            email: token.email || undefined,
+          });
+        }
+
         // get the user_guid from the JWT
         const userGuid =
           token?.user_guid || getUUIDFromEndpoint(endpoint) || "";

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import * as Sentry from "@sentry/nextjs";
+import { useSession } from "next-auth/react";
 
 import { Alert, AlertTitle } from "@mui/material";
 import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
@@ -9,9 +10,21 @@ interface Props {
 }
 export default function ErrorBoundary({ error }: Props) {
   const [eventId, setEventId] = useState<string | null>(null);
+  const { data: session } = useSession();
+
   useEffect(() => {
     if (error) {
       try {
+        // Set user context before capturing error
+        if (session?.user) {
+          Sentry.setUser({
+            id: session.user.user_guid || undefined,
+            email: session.user.email || undefined,
+          });
+        } else {
+          Sentry.setUser(null);
+        }
+
         // Attempt to log the error to Sentry
         const id = Sentry.captureException(error);
         setEventId(id); // Store Sentry event ID
@@ -21,7 +34,7 @@ export default function ErrorBoundary({ error }: Props) {
         console.error("Error logging to Sentry:", sentryError);
       }
     }
-  }, [error]);
+  }, [error, session]);
 
   return (
     <div className="flex flex-col items-center text-bc-gov-links-color">
