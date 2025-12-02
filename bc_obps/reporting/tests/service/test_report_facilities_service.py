@@ -1,24 +1,29 @@
+import datetime
 from django.test import TestCase
 
-from reporting.models import FacilityReport
+from reporting.models import FacilityReport, ReportingYear
 from reporting.models.report_operation import ReportOperation
-from reporting.tests.utils.bakers import report_version_baker
+from reporting.tests.utils.bakers import report_baker, report_version_baker
 from reporting.service.report_facilities_service import ReportFacilitiesService
 from model_bakery import baker
 
 
 class TestReportFacilitiesService(TestCase):
     def setUp(self):
-        self.report_version = report_version_baker()
+        reporting_year = ReportingYear.objects.get(reporting_year=2024)
+        self.report = report_baker(reporting_year=reporting_year)
+        self.report_version = report_version_baker(report=self.report)
         self.operation = self.report_version.report.operation
         self.facilities = baker.make_recipe(
             'registration.tests.utils.facility_designated_operation_timeline',
             operation_id=self.operation.id,
+            start_date=datetime.date(2023, 1, 1),
             end_date=None,
             _quantity=1,
         )
 
     def test_get_report_facility_list_by_version_id(self):
+        baker.make
         facilities = ReportFacilitiesService.get_report_facility_list_by_version_id(self.report_version.id)
 
         self.assertEqual(len(facilities["facilities"]), len(self.facilities))
@@ -30,6 +35,19 @@ class TestReportFacilitiesService(TestCase):
         self.assertIn("past_facilities", result)
         self.assertEqual(len(result["current_facilities"]), len(self.facilities))
         self.assertEqual(len(result["past_facilities"]), 0)
+
+    def test_get_omits_facilities_added_after_reporting_year(self):
+        future_facility = baker.make_recipe(
+            'registration.tests.utils.facility_designated_operation_timeline',
+            operation_id=self.operation.id,
+            start_date=datetime.date(2025, 1, 1),
+            end_date=None,
+        )
+
+        result = ReportFacilitiesService.get_all_facilities_for_review(self.report_version.id)
+        self.assertEqual(len(result["current_facilities"]), len(self.facilities))
+        self.assertEqual(len(result["past_facilities"]), 0)
+        self.assertNotIn(future_facility.id, [facility['facility_id'] for facility in result["current_facilities"]])
 
     def test_save_selected_facilities(self):
         facility1 = baker.make_recipe(
