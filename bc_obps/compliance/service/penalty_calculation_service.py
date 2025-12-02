@@ -59,7 +59,6 @@ class PenaltyCalculationService:
         penalty = CompliancePenalty.objects.get(
             compliance_obligation=obligation, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
         )
-        last_accrual_record = penalty.compliance_penalty_accruals.all().last()
         faa_interest = refresh_result.invoice.invoice_interest_balance if refresh_result.invoice else Decimal('0.00')
         total_amount = penalty.penalty_amount + faa_interest if faa_interest else penalty.penalty_amount
 
@@ -67,9 +66,6 @@ class PenaltyCalculationService:
             "penalty_status": penalty.status,
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             "penalty_charge_rate": (cls.DAILY_PENALTY_RATE * 100).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-            "days_late": penalty.compliance_penalty_accruals.count(),
-            "accumulated_penalty": last_accrual_record.accumulated_penalty,  # type: ignore [union-attr]
-            "accumulated_compounding": last_accrual_record.accumulated_compounded,  # type: ignore [union-attr]
             "total_penalty": penalty.penalty_amount,
             "faa_interest": faa_interest,
             "total_amount": total_amount,

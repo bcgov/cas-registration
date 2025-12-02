@@ -27,10 +27,7 @@ class AutomaticOverduePenaltyOut(_PenaltyStatusBase):
     """
 
     penalty_type: str
-    days_late: int
     penalty_charge_rate: Decimal
-    accumulated_penalty: Decimal
-    accumulated_compounding: Decimal
     total_penalty: Decimal
     faa_interest: Decimal
     total_amount: Decimal

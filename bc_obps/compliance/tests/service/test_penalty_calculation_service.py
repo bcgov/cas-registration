@@ -289,21 +289,11 @@ class TestPenaltyCalculationService:
             compliance_obligation=self.obligation,
             penalty_amount=Decimal("1000000.00"),
         )
-        # accrual
-        baker.make_recipe(
-            "compliance.tests.utils.compliance_penalty_accrual",
-            compliance_penalty=compliance_penalty,
-            accumulated_penalty=5,
-            accumulated_compounded=5,
-        )
         result = PenaltyCalculationService.get_automatic_overdue_penalty_data(self.compliance_report_version.id)
         assert result == {
             "penalty_status": compliance_penalty.status,
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             "penalty_charge_rate": PenaltyCalculationService.DAILY_PENALTY_RATE * 100,
-            "days_late": 1,
-            "accumulated_penalty": Decimal('5'),
-            "accumulated_compounding": Decimal('5'),
             "total_penalty": Decimal("1000000.00"),
             "faa_interest": Decimal("0"),
             "total_amount": Decimal("1000000.00"),
