@@ -22,7 +22,9 @@ export const generateReviewObligationPenaltyTaskList: (
     hasLateSubmissionPenalty,
     outstandingBalance,
     penaltyStatus,
+    hasOverduePenalty,
   } = tasklistData;
+  const isObligationFullyPaid = Number(outstandingBalance) === 0;
   const elements: TaskListElement[] = [
     {
       type: "Page" as const,
@@ -32,7 +34,7 @@ export const generateReviewObligationPenaltyTaskList: (
     },
   ];
 
-  if (hasLateSubmissionPenalty) {
+  if (isObligationFullyPaid && hasLateSubmissionPenalty) {
     elements.push({
       type: "Page" as const,
       title: "Review Interest Summary",
@@ -40,9 +42,9 @@ export const generateReviewObligationPenaltyTaskList: (
       isActive: activePage === ActivePage.ReviewInterestSummary,
     });
   }
-
   const showPenalty =
-    Number(outstandingBalance) === 0 &&
+    hasOverduePenalty &&
+    isObligationFullyPaid &&
     [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].includes(
       penaltyStatus as PenaltyStatus,
     );

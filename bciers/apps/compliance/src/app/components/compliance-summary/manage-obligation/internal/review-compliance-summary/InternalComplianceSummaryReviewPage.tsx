@@ -19,6 +19,7 @@ export default async function InternalComplianceSummaryReviewPage({
   const {
     reporting_year: reportingYear,
     has_late_submission_penalty: hasLateSubmissionPenalty,
+    has_overdue_penalty: hasOverduePenalty,
     penalty_status: penaltyStatus,
     outstanding_balance_tco2e: outstandingBalance,
   } = complianceSummaryReviewPageData;
@@ -30,6 +31,7 @@ export default async function InternalComplianceSummaryReviewPage({
       penaltyStatus,
       outstandingBalance,
       hasLateSubmissionPenalty,
+      hasOverduePenalty,
     },
     ActivePage.ReviewComplianceObligationReport,
   );

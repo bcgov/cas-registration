@@ -73,7 +73,10 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
         cellText: "Pending Invoice Creation",
         basePath: "#",
       };
-    } else if (status === ComplianceSummaryStatus.OBLIGATION_NOT_MET) {
+    } else if (
+      status === ComplianceSummaryStatus.OBLIGATION_NOT_MET ||
+      status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET
+    ) {
       return {
         cellText: "View Details",
         basePath: `${basePath}/review-compliance-obligation-report`,

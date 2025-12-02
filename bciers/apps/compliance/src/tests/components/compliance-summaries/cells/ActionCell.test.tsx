@@ -120,6 +120,19 @@ describe("ActionCell", () => {
         );
       });
 
+      it("displays 'View Details' with review-compliance-obligation-report path when obligation is fully met", () => {
+        render(
+          ActionCell(
+            createMockParams(123, true, "24-0001-1-1", "Obligation fully met"),
+          ),
+        );
+
+        expectLink(
+          "View Details",
+          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+        );
+      });
+
       it("displays 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
         render(
           ActionCell(

@@ -22,6 +22,7 @@ export default async function InternalPenaltySummaryReviewPage({
     penalty_status: penaltyStatus,
     outstanding_balance_tco2e: outstandingBalance,
     has_late_submission_penalty: hasLateSubmissionPenalty,
+    has_overdue_penalty: hasOverduePenalty,
   } = await getComplianceSummary(complianceReportVersionId);
 
   const taskListElements = generateReviewObligationPenaltyTaskList(
@@ -31,6 +32,7 @@ export default async function InternalPenaltySummaryReviewPage({
       penaltyStatus,
       outstandingBalance,
       hasLateSubmissionPenalty,
+      hasOverduePenalty,
     },
     ActivePage.ReviewPenaltySummary,
   );
