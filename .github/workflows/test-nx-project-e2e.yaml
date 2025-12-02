@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: 🎁 setup local app
@@ -159,7 +159,7 @@ jobs:
     if: ${{ !inputs.is_nx_affected && github.ref_name != 'develop' && github.ref_name != 'main' && github.head_ref != 'develop' && github.head_ref != 'main' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: run happo skip node script
