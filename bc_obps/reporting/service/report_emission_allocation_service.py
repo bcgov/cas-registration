@@ -175,6 +175,14 @@ class ReportEmissionAllocationService:
             },
         )
 
+        # If methodology is "Not Applicable", delete all existing product emission allocations
+        if allocation_methodology == "Not Applicable":
+            ReportProductEmissionAllocation.objects.filter(
+                report_version_id=report_version_id,
+                report_emission_allocation=report_emission_allocation.id,
+            ).delete()
+            return
+
         # Update the emission product allocations from the data as children of report_emission_allocation created
         for allocations in report_emission_allocations:
             for product in allocations.products:

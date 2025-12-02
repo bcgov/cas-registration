@@ -432,3 +432,48 @@ class TestReportEmissionAllocationService(TestCase):
         )
 
         assert not retrieved_emission_allocations_data.has_missing_products
+
+    def test_save_emission_allocation_not_applicable_deletes_existing_allocations(self):
+        # save some allocations with "Other" methodology
+        ReportEmissionAllocationService.save_emission_allocation_data(
+            self.test_infrastructure.report_version.pk,
+            self.test_infrastructure.facility_report.facility_id,
+            self.post_payload,
+            self.test_infrastructure.user.user_guid,
+        )
+        # Verify that 2 allocations have been saved
+        self.assertEqual(
+            ReportProductEmissionAllocation.objects.count(), 2, "Expected two allocations to be saved initially"
+        )
+
+        # Change methodology to "Not Applicable"
+        not_applicable_payload = ReportEmissionAllocationsSchemaIn(
+            report_product_emission_allocations=[],
+            allocation_methodology="Not Applicable",
+            allocation_other_methodology_description=None,
+        )
+
+        ReportEmissionAllocationService.save_emission_allocation_data(
+            self.test_infrastructure.report_version.pk,
+            self.test_infrastructure.facility_report.facility_id,
+            not_applicable_payload,
+            self.test_infrastructure.user.user_guid,
+        )
+
+        # Verify that all allocations have been deleted
+        self.assertEqual(
+            ReportProductEmissionAllocation.objects.count(),
+            0,
+            "Expected all allocations to be deleted when methodology is Not Applicable",
+        )
+
+        # Verify that the methodology was updated
+        report_emission_allocation = ReportEmissionAllocation.objects.filter(
+            facility_report=self.test_infrastructure.facility_report
+        ).first()
+        self.assertIsNotNone(report_emission_allocation)
+        self.assertEqual(
+            report_emission_allocation.allocation_methodology,
+            "Not Applicable",
+            "Expected methodology to be updated to Not Applicable",
+        )
