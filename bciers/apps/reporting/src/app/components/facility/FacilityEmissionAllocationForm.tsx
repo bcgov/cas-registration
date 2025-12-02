@@ -82,12 +82,20 @@ const validateMethodologyOther = (formData: FormData): boolean => {
 
 // Function to remove products if methodology is not applicable, preventing validation problems
 const removeProducts = (formData: FormData) => {
-  formData.basic_emission_allocation_data.forEach((el) => {
-    el.products = [];
-  });
-  formData.fuel_excluded_emission_allocation_data.forEach((el) => {
-    el.products = [];
-  });
+  return {
+    ...formData,
+    basic_emission_allocation_data: formData.basic_emission_allocation_data.map(
+      (el) => ({
+        ...el,
+        products: [],
+      }),
+    ),
+    fuel_excluded_emission_allocation_data:
+      formData.fuel_excluded_emission_allocation_data.map((el) => ({
+        ...el,
+        products: [],
+      })),
+  };
 };
 
 const validateFormData = (
@@ -198,7 +206,7 @@ export default function FacilityEmissionAllocationForm({
   useEffect(() => {
     // If methodology is not applicable the products are removed, reset them here
     if (formData.allocation_methodology !== "Not Applicable" && shouldReset) {
-      setFormData({
+      const restoredFormData = {
         ...formData,
         basic_emission_allocation_data:
           initialData.report_product_emission_allocations
@@ -216,12 +224,26 @@ export default function FacilityEmissionAllocationForm({
           ),
           products: initialData.report_product_emission_allocation_totals,
         },
-      });
+      };
+      setFormData(restoredFormData);
       setShouldReset(false);
+      return;
     }
+
     if (formData.allocation_methodology === "Not Applicable") {
-      removeProducts(formData);
-      setShouldReset(true);
+      // Check if products exist before clearing to avoid unnecessary updates
+      const hasProducts =
+        formData.basic_emission_allocation_data.some(
+          (el: EmissionAllocationData) => el.products.length > 0,
+        ) ||
+        formData.fuel_excluded_emission_allocation_data.some(
+          (el: EmissionAllocationData) => el.products.length > 0,
+        );
+
+      if (hasProducts) {
+        setFormData(removeProducts(formData));
+        setShouldReset(true);
+      }
     }
 
     const newErrors = validateFormData(
@@ -231,7 +253,7 @@ export default function FacilityEmissionAllocationForm({
     );
     setErrors(newErrors);
     setSubmitButtonDisabled(newErrors.length > 0);
-  }, [formData]);
+  }, [formData, shouldReset]);
 
   // 🛠️ Handle changes to the form data, validates emissions, and updates the error state and submit button state.
   const handleChange = useCallback((e: IChangeEvent) => {
