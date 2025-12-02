@@ -169,7 +169,7 @@ export const buildProductionDataSchema = (
 
 
 
-export const buildProductionDataUiSchema = (isOptedOut: boolean): UiSchema => ({
+const productionDataUiSchemaDefault = (): UiSchema => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   product_selection_title: {
@@ -196,8 +196,6 @@ export const buildProductionDataUiSchema = (isOptedOut: boolean): UiSchema => ({
         "product_name",
         "unit",
         "annual_production",
-        ...(isOptedOut ? ["production_data_jan_mar_2025"] : []),
-        "production_data_apr_dec",
         "production_methodology",
         "production_methodology_description",
         "*",
@@ -218,14 +216,15 @@ export const buildProductionDataUiSchema = (isOptedOut: boolean): UiSchema => ({
       },
     },
   },
+})
 
-export const buildProductionDataUiSchema = (reporting_year: number) => {
+export const buildProductionDataUiSchema = (reporting_year: number, is_opted_out: boolean) => {
   switch (reporting_year) {
     case 2024:
       return productionDataUiSchema2024;
     case 2025:
-      return productionDataUiSchema2025;
+      return productionDataUiSchema2025(is_opted_out);
     default:
-      return buildProductionDataUiSchemaDefault;
+      return productionDataUiSchemaDefault;
   }
 };

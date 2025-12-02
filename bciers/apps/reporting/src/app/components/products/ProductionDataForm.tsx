@@ -11,12 +11,14 @@ interface Props {
   report_version_id: number;
   facility_id: string;
   facilityType: string;
+  reportingYear: number;
   allowedProducts: { product_id: number; product_name: string }[];
   initialData: ProductData[];
   schema: RJSFSchema;
   navigationInformation: NavigationInformation;
   isPulpAndPaper: boolean;
   overlappingIndustrialProcessEmissions: number;
+  isOptedOut: boolean;
 }
 
 const ProductionDataForm: React.FC<Props> = ({
@@ -25,12 +27,12 @@ const ProductionDataForm: React.FC<Props> = ({
   facilityType,
   reportingYear,
   schema,
-  uiSchema,
   allowedProducts,
   initialData,
   navigationInformation,
   isPulpAndPaper,
   overlappingIndustrialProcessEmissions,
+  isOptedOut = false,
 }) => {
   const initialFormData = {
     product_selection: initialData.map((i) => i.product_name),
@@ -99,7 +101,7 @@ const ProductionDataForm: React.FC<Props> = ({
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
       schema={schema}
-      uiSchema={buildProductionDataUiSchema(reportingYear)}
+      uiSchema={buildProductionDataUiSchema(reportingYear, isOptedOut)}
       formData={formData}
       baseUrl={"#"}
       cancelUrl={"#"}
