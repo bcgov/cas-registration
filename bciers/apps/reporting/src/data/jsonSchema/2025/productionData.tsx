@@ -141,54 +141,53 @@ export const buildProductionDataSchema2025 = (
     return schema;
 };
 
-export const productionDataUiSchema2025 = (isOptedOut: boolean) => {(
-  return {
+export const productionDataUiSchema2025 = (isOptedOut: boolean): UiSchema => ({
+  "ui:FieldTemplate": FieldTemplate,
+  "ui:classNames": "form-heading-label",
+  product_selection_title: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:classNames": "mt-2 mb-5 emission-array-header",
+  },
+  product_selection: {
+    "ui:widget": "checkboxes",
+    "ui:options": {
+      label: false,
+    },
+  },
+  production_data: {
     "ui:FieldTemplate": FieldTemplate,
-    "ui:classNames": "form-heading-label",
-    product_selection_title: {
-      "ui:FieldTemplate": TitleOnlyFieldTemplate,
-      "ui:classNames": "mt-2 mb-5 emission-array-header",
+    "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:options": {
+      addable: false,
+      removable: false,
+      label: false,
     },
-    product_selection: {
-      "ui:widget": "checkboxes",
-      "ui:options": {
-        label: false,
+    items: {
+      "ui:order": [
+        "product_id",
+        "product_name",
+        "unit",
+        "annual_production",
+        ...(isOptedOut ? ["production_data_jan_mar_2025"] : []),
+        "production_methodology",
+        "production_methodology_description",
+        "*",
+      ],
+      product_id: {
+        "ui:widget": "hidden",
+      },
+      product_name: {
+        "ui:FieldTemplate": FieldTemplate,
+        "ui:widget": ProductionDataTitleWidget,
+        "ui:classNames": "emission-array-header",
+        "ui:options": {
+          label: false,
+        },
+      },
+      unit: {
+        "ui:widget": ReadOnlyWidget,
       },
     },
-    production_data: {
-      "ui:FieldTemplate": FieldTemplate,
-      "ui:ArrayFieldTemplate": ArrayFieldTemplate,
-      "ui:options": {
-        addable: false,
-        removable: false,
-        label: false,
-      },
-      items: {
-        "ui:order": [
-          "product_id",
-          "product_name",
-          "unit",
-          "annual_production",
-          ...(isOptedOut ? ["production_data_jan_mar_2025"] : []),
-          "production_methodology",
-          "production_methodology_description",
-          "*",
-        ],
-        product_id: {
-          "ui:widget": "hidden",
-        },
-        product_name: {
-          "ui:FieldTemplate": FieldTemplate,
-          "ui:widget": ProductionDataTitleWidget,
-          "ui:classNames": "emission-array-header",
-          "ui:options": {
-            label: false,
-          },
-        },
-        unit: {
-          "ui:widget": ReadOnlyWidget,
-        },
-      },
-    }
-  } as UiSchema
-)};
+  },
+});
+

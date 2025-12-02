@@ -73,21 +73,23 @@ export default async function ProductionDataPage({
     },
   );
 
+  const reportingYear = response.report_data.reporting_year
+
   return (
     <ProductionDataForm
       report_version_id={version_id}
       facility_id={facility_id}
       facilityType={facilityType}
-      reportingYear={response.report_data.reporting_year}
+      reportingYear={reportingYear}
       allowedProducts={allowedProducts}
       initialData={response.payload.report_products}
       schema={schema}
-      uiSchema={buildProductionDataUiSchema(isOptedOut)}
       navigationInformation={navInfo}
       isPulpAndPaper={isPulpAndPaper}
       overlappingIndustrialProcessEmissions={
         overlappingIndustrialProcessEmissions
       }
+      isOptedOut={isOptedOut}
     />
   );
 }
