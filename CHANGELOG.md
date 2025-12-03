@@ -1,3 +1,23 @@
+# [4.6.0](https://github.com/bcgov/cas-registration/compare/v4.5.0...v4.6.0) (2025-12-03)
+
+### Bug Fixes
+
+- add account type validation to BCCR integration ([ff669cd](https://github.com/bcgov/cas-registration/commit/ff669cd4d28fc51b04d55f1e010f9ebf9046e47a))
+- add minwidth to invoice column to fix the dancing issue ([16b1d77](https://github.com/bcgov/cas-registration/commit/16b1d770a49761107e381ecc2b9c0790ae3e30a8))
+- align internal obligation routing and internal obligation/penalty/interest tasklist ([1d2a42b](https://github.com/bcgov/cas-registration/commit/1d2a42b341984fcc6c8ce9c6c76b5101ddbdb394))
+- calculate an effective_deadline to determine when to apply large penalty ([a73be06](https://github.com/bcgov/cas-registration/commit/a73be0636f344143abd62e3594b49fa728b15998))
+
+### Features
+
+- access to the compliance dashboard if the operation been transferred ([aab662e](https://github.com/bcgov/cas-registration/commit/aab662ebf32f036e996f5b8fa9166c3a1706f3a5))
+- adding database time mocking capability ([9b7bcec](https://github.com/bcgov/cas-registration/commit/9b7bcec6cba71f7c68dd1e4995c4e17a1ccb2b69))
+- new reporting api v2 structure ([59e3ef8](https://github.com/bcgov/cas-registration/commit/59e3ef811979bfee8a6f8e01b0655d6b14f7f97a))
+
+### Reverts
+
+- Revert "chore: temp comment to force taking screenshots" ([2486264](https://github.com/bcgov/cas-registration/commit/2486264cf78ed27cf2a3fefcfad840ce9a3f2de8))
+- Revert "chore: temp code to force taking screenshots" ([4379709](https://github.com/bcgov/cas-registration/commit/4379709bef71a43e1d19fa14a47f28ea98ef405f))
+
 # [4.5.0](https://github.com/bcgov/cas-registration/compare/v4.4.0...v4.5.0) (2025-11-26)
 
 ### Bug Fixes
