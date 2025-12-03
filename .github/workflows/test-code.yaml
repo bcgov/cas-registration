@@ -41,7 +41,7 @@ jobs:
             .tool-versions
             bc_obps/.tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-frontend
       - name: Run Nx Affected Tests with Remote Caching
         id: nx-tests
         run: |
@@ -59,7 +59,7 @@ jobs:
             .tool-versions
             bc_obps/.tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-frontend
       - run: yarn npm audit --exclude eslint
         working-directory: ./bciers
 
@@ -67,8 +67,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+      - name: dev env setup frontend
+        uses: ./.github/actions/dev-env-setup-frontend
+      - name: dev env setup backend
+        uses: ./.github/actions/dev-env-setup-backend
       - name: set pre-commit cache directory
         run: |
           echo "PRE_COMMIT_HOME=$GITHUB_WORKSPACE/.pre-commit-cache" >> $GITHUB_ENV
@@ -100,7 +102,7 @@ jobs:
             .github/
             .tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-backend
       - run: poetry run python manage.py makemigrations --check --dry-run
         working-directory: ./bc_obps
 
@@ -117,7 +119,7 @@ jobs:
             .github/
             .tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-backend
       - name: Run check
         run: ./.bin/check-immutable-migration-files.sh
 
@@ -132,7 +134,7 @@ jobs:
             .github/
             .tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-backend
       - name: Run Migrations
         run: make migrate
         working-directory: ./bc_obps

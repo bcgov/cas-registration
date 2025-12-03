@@ -42,8 +42,10 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+      - name: dev env setup frontend
+        uses: ./.github/actions/dev-env-setup-frontend
+      - name: dev env setup backend
+        uses: ./.github/actions/dev-env-setup-backend
       - name: 🎁 setup local app
         uses: ./.github/actions/run-docker-compose
         with:
@@ -161,7 +163,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-frontend
       - name: run happo skip node script
         shell: bash
         env:
