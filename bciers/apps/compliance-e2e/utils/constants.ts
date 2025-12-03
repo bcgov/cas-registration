@@ -17,6 +17,8 @@ export const COMPLIANCE_SUMMARIES_BASE_PATH =
 export const REVIEW_OBLIGATION_URL_PATTERN = new RegExp(
   `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/review-compliance-obligation-report$`,
 );
+export const NO_OBLIGATION_URL_PATTERN = `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/review-compliance-no-obligation-report$`;
+
 export const DOWNLOAD_PAYMENT_INSTRUCTIONS_URL_PATTERN = new RegExp(
   `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/download-payment-instructions$`,
 );
