@@ -37,6 +37,7 @@ testem.log
 # e2e
 playwright-report
 test-results
+blob-report
 
 # System Files
 .DS_Store

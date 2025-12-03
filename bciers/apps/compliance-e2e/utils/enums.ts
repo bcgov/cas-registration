@@ -18,6 +18,7 @@ export enum ComplianceDisplayStatus {
 
 export enum ComplianceTaskTitles {
   DOWNLOAD_PAYMENT_INSTRUCTIONS = "Download Payment Instructions",
+  REQUEST_ISSUANCE = "Request Issuance of Earned Credits",
 }
 
 // Grid Columns
@@ -27,6 +28,7 @@ export enum ComplianceSummariesGridHeaders {
 
 // Grid Action Text
 export enum GridActionText {
+  REQUEST_ISSUANCE_CREDITS = "Request Issuance of Credits",
   MANAGE_OBLIGATION = "Manage Obligation",
   VIEW_DETAILS = "View Details",
   CONTACT_US = "Contact Us",

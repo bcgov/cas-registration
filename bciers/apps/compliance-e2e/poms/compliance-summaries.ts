@@ -69,29 +69,34 @@ export class ComplianceSummariesPOM {
 
   /**
    * Click an action link in the compliance summaries grid for a given operation
-   * and optionally assert the resulting URL and a UI element on the target page.
+   * and optionally assert the resulting URL.
    */
   async openActionForOperation(options: {
     operationName: string;
     linkName: string | RegExp;
     urlPattern?: string | RegExp;
   }) {
-    const { operationName, linkName } = options;
+    const { operationName, linkName, urlPattern } = options;
 
+    // Find the row for this operation
     const row = await this.getRowByOperationName(operationName);
 
+    // Find the action link within that row
     const actionLink = row.getByRole("link", { name: linkName });
     await expect(actionLink).toBeVisible();
 
+    // Get the href from the link
     const href = await actionLink.getAttribute("href");
 
-    if (!href) {
-      throw new Error("Manage Obligation action link has no href");
-    }
+    // Build absolute URL
+    const targetUrl = new URL(href, this.url).toString();
 
-    const targetUrl =
-      (process.env.E2E_BASEURL ?? "http://localhost:3000") + href;
-
+    // Navigate explicitly instead of relying on client-side routing
     await this.page.goto(targetUrl, { waitUntil: "load" });
+
+    // Optionally assert URL
+    if (urlPattern) {
+      await expect(this.page).toHaveURL(urlPattern);
+    }
   }
 }
