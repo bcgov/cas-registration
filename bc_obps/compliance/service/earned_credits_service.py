@@ -4,6 +4,7 @@ from compliance.models import ComplianceEarnedCredit, ComplianceReportVersion
 from typing import Dict, Optional
 from django.db.models import Subquery, UUIDField, OuterRef
 from common.exceptions import UserError
+from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
 from compliance.service.bc_carbon_registry.project_service import BCCarbonRegistryProjectService
 from compliance.service.bc_carbon_registry.credit_issuance_service import BCCarbonRegistryCreditIssuanceService
 from compliance.tasks import (
@@ -105,8 +106,12 @@ class ComplianceEarnedCreditsService:
                 "Credits can only be updated by industry users when the user has requested issuance or changes are required"
             )
 
+        payload_bccr_holding_account_id = update_payload.bccr_holding_account_id
+        # We don't care about the response from this call, we just want to make sure the account is a valid master account type
+        BCCarbonRegistryAccountService().get_account_details(payload_bccr_holding_account_id)
+
         earned_credit.bccr_trading_name = update_payload.bccr_trading_name
-        earned_credit.bccr_holding_account_id = update_payload.bccr_holding_account_id
+        earned_credit.bccr_holding_account_id = payload_bccr_holding_account_id
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
         earned_credit.save(update_fields=["issuance_status", "bccr_trading_name", "bccr_holding_account_id"])
         retryable_send_notice_of_credits_requested_email.execute(earned_credit.id)

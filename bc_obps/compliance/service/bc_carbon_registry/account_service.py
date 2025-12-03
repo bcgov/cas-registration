@@ -25,16 +25,23 @@ class BCCarbonRegistryAccountService:
             return cast(T, entities[0])
         return None
 
-    def get_account_details(self, account_id: str) -> Optional[BCCRAccountResponseDetails]:
+    def get_account_details(
+        self, account_id: str, account_type_id: Optional[int] = None
+    ) -> Optional[BCCRAccountResponseDetails]:
         """Retrieve account details from BCCR.
 
         Args:
             account_id: The BCCR account identifier
+            account_type_id: Optional account type ID to validate against. Defaults to OPERATOR_OF_REGULATED_OPERATION_TYPE_ID (11).
+                           Use COMPLIANCE_ACCOUNT_TYPE_ID (14) for sub-account (Compliance). If provided, validates that the account matches this type.
 
         Returns:
             Account details including trading name and classification, or None if not found
+
+        Raises:
+            UserError: If account exists but does not match the required account type
         """
-        account_details = self.client.get_account_details(account_id=account_id)
+        account_details = self.client.get_account_details(account_id=account_id, account_type_id=account_type_id)
         account_details_dict = self._get_first_entity(account_details)
 
         if not account_details_dict:
@@ -181,7 +188,9 @@ class BCCarbonRegistryAccountService:
 
         # If we already have a bccr_subaccount_id, check if it belongs to this holding account
         if compliance_report.bccr_subaccount_id:
-            subaccount_details = self.client.get_account_details(account_id=compliance_report.bccr_subaccount_id)
+            subaccount_details = self.client.get_account_details(
+                account_id=compliance_report.bccr_subaccount_id, account_type_id=self.client.COMPLIANCE_ACCOUNT_TYPE_ID
+            )
             subaccount_entity = self._get_first_entity(subaccount_details)
 
             if not subaccount_entity:

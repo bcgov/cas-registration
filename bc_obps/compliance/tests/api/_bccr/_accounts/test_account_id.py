@@ -3,6 +3,7 @@ from django.test import SimpleTestCase, override_settings, Client
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.utils import custom_reverse_lazy
 from compliance.dataclass import BCCRAccountResponseDetails
+from common.exceptions import UserError
 
 # Constants
 VALID_ACCOUNT_ID = "123456789012345"
@@ -102,3 +103,22 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         assert response.json() == {
             "bccr_trading_name": "Test Account Inc."
         }  # Should still work with null type_of_account_holder
+
+    @patch(BCCR_SERVICE_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
+    def test_account_type_validation_error_wrong_type(self, mock_permission, mock_service):
+        # Arrange - Account exists but has wrong account type (not Operator of Regulated Operation)
+        mock_permission.return_value = True
+        mock_service.side_effect = UserError(
+            "Account exists but does not match the required account type. Expected account type ID: 11, found: 14"
+        )
+
+        # Act
+        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
+
+        # Assert
+        assert response.status_code == 400
+        assert (
+            "Account exists but does not match the required account type. Expected account type ID: 11, found: 14"
+            in response.json().get("message")
+        )

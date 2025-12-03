@@ -24,6 +24,17 @@ const INVALID_ACCOUNT_MESSAGE = (
   </span>
 );
 
+const WRONG_ACCOUNT_TYPE_MESSAGE = (
+  <span className="text-bc-error-red">
+    Please enter a BCCR Account ID with the account type &apos;Operator of
+    Regulated Operation&apos;, or contact{" "}
+    <a href={ghgRegulatorEmail} className="text-bc-link-blue hover:underline">
+      GHGRegulator@gov.bc.ca
+    </a>{" "}
+    if you have any questions.
+  </span>
+);
+
 const BccrHoldingAccountWidget = (props: WidgetProps) => {
   const { id, value, disabled, readonly, onChange, formContext } = props;
   const {
@@ -36,6 +47,9 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<React.ReactNode>(
+    INVALID_ACCOUNT_MESSAGE,
+  );
 
   const isReadOnly = disabled || readonly || isLoading;
 
@@ -54,6 +68,7 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
       if (response?.bccr_trading_name === null) {
         setIsValid(false);
         setShowError(true);
+        setErrorMessage(INVALID_ACCOUNT_MESSAGE);
         onValidAccountResolved?.(undefined);
       } else {
         setIsValid(true);
@@ -63,9 +78,20 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
       }
     } catch (error) {
       setIsValid(false);
-      setShowError(false);
+      const errorMessageText = (error as Error).message;
+      // Check if this is the wrong account type error
+      if (
+        errorMessageText.includes(
+          "Account exists but does not match the required account type",
+        )
+      ) {
+        setShowError(true);
+        setErrorMessage(WRONG_ACCOUNT_TYPE_MESSAGE);
+      } else {
+        setShowError(false);
+        onError?.([errorMessageText]);
+      }
       onValidAccountResolved?.(undefined);
-      onError?.([(error as Error).message]);
     } finally {
       setIsLoading(false);
     }
@@ -80,6 +106,7 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
     } else {
       setIsValid(null);
       setShowError(false);
+      setErrorMessage(INVALID_ACCOUNT_MESSAGE);
       onValidAccountResolved?.(undefined);
       onError?.(undefined);
     }
@@ -89,7 +116,7 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
     <div className="w-full">
       <TextField
         id={id}
-        helperText={showError && INVALID_ACCOUNT_MESSAGE}
+        helperText={showError && errorMessage}
         size="small"
         disabled={isReadOnly}
         name={id}
