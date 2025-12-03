@@ -35,6 +35,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          sparse-checkout: |
+            bciers/
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: Run Nx Affected Tests with Remote Caching
@@ -47,6 +49,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            bciers/
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: yarn npm audit --exclude eslint
@@ -83,6 +88,9 @@ jobs:
     if: inputs.backend_has_changes == 'true'
     steps:
       - uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            bc_obps/
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: poetry run python manage.py makemigrations --check --dry-run
@@ -95,6 +103,9 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          sparse-checkout: |
+            bc_obps/
+            .bin/
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: Run check
@@ -105,6 +116,9 @@ jobs:
     if: inputs.backend_has_changes == 'true'
     steps:
       - uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            bc_obps/
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: Run Migrations

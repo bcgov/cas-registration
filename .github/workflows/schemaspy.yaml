@@ -29,6 +29,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         name: checkout code
+        with:
+          sparse-checkout: |
+            bc_obps/
       - name: vars
         id: vars
         shell: bash
