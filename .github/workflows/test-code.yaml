@@ -38,6 +38,7 @@ jobs:
           sparse-checkout: |
             bciers/
             .github/
+            .tool-versions
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: Run Nx Affected Tests with Remote Caching
@@ -54,6 +55,7 @@ jobs:
           sparse-checkout: |
             bciers/
             .github/
+            .tool-versions
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: yarn npm audit --exclude eslint
@@ -94,6 +96,7 @@ jobs:
           sparse-checkout: |
             bc_obps/
             .github/
+            .tool-versions
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: poetry run python manage.py makemigrations --check --dry-run
@@ -110,6 +113,7 @@ jobs:
             bc_obps/
             .bin/
             .github/
+            .tool-versions
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: Run check
@@ -124,6 +128,7 @@ jobs:
           sparse-checkout: |
             bc_obps/
             .github/
+            .tool-versions
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: Run Migrations
