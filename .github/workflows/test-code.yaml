@@ -74,6 +74,7 @@ jobs:
 
   check-migrations:
     runs-on: ubuntu-latest
+    if: inputs.backend_has_changes == 'true'
     steps:
       - uses: actions/checkout@v6
       - name: dev env setup
