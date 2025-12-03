@@ -35,6 +35,8 @@ jobs:
           echo "NX_AFFECTED_E2E="$NX_AFFECTED_E2E"" >> "$GITHUB_OUTPUT"
         working-directory: ./bciers
         shell: bash
+  check-backend-changes:
+    uses: ./.github/workflows/check-backend-changes.yaml
   build-administration:
     uses: ./.github/workflows/build-administration.yaml
   build-backend:
@@ -55,7 +57,8 @@ jobs:
     needs: [check-nx-affected]
     uses: ./.github/workflows/test-code.yaml
   test-backend:
-    needs: [build-backend, check-nx-affected]
+    needs: [build-backend, check-backend-changes]
+    if: needs.check-backend-changes.outputs.has_changes == 'true'
     uses: ./.github/workflows/test-backend.yaml
     secrets: inherit
   test-administration-e2e:
