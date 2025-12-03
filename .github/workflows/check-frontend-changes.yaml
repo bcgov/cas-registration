@@ -1,0 +1,40 @@
+name: Check frontend changes
+
+on:
+  workflow_call:
+    outputs:
+      has_changes:
+        description: "Whether any files in bciers directory have changed"
+        value: ${{ jobs.check.outputs.has_changes }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.check-frontend-changes.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          sparse-checkout: |
+            bciers/
+            .tool-versions
+      - name: Check for frontend changes
+        id: check-frontend-changes
+        run: |
+          # For PRs, compare against base branch. For pushes to develop/main, always report changes
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_REF="origin/${{ github.base_ref }}"
+
+            # Check if any files in bciers directory changed, or if .tool-versions changed (affects Node.js version)
+            if git diff --name-only $BASE_REF...HEAD | grep -qE "^(bciers/|\.tool-versions)"; then
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "changed=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            # For pushes to develop/main, always report changes
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash

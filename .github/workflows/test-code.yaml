@@ -4,6 +4,17 @@ name: Test BCIERS code
 
 on:
   workflow_call:
+    inputs:
+      backend_has_changes:
+        description: "Whether any files in bc_obps directory have changed"
+        required: false
+        type: string
+        default: "true"
+      frontend_has_changes:
+        description: "Whether any files in bciers directory have changed"
+        required: false
+        type: string
+        default: "true"
 
 env:
   PGUSER: postgres
@@ -15,6 +26,7 @@ env:
 jobs:
   nx-tests:
     runs-on: ubuntu-latest
+    if: inputs.frontend_has_changes == 'true'
     defaults:
       run:
         working-directory: ./bciers
@@ -23,8 +35,13 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          sparse-checkout: |
+            bciers/
+            .github/
+            .tool-versions
+            bc_obps/.tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-frontend
       - name: Run Nx Affected Tests with Remote Caching
         id: nx-tests
         run: |
@@ -35,8 +52,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            bciers/
+            .github/
+            .tool-versions
+            bc_obps/.tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-frontend
       - run: yarn npm audit --exclude eslint
         working-directory: ./bciers
 
@@ -44,8 +67,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+      - name: dev env setup frontend
+        uses: ./.github/actions/dev-env-setup-frontend
+      - name: dev env setup backend
+        uses: ./.github/actions/dev-env-setup-backend
       - name: set pre-commit cache directory
         run: |
           echo "PRE_COMMIT_HOME=$GITHUB_WORKSPACE/.pre-commit-cache" >> $GITHUB_ENV
@@ -68,30 +93,48 @@ jobs:
 
   check-migrations:
     runs-on: ubuntu-latest
+    if: inputs.backend_has_changes == 'true'
     steps:
       - uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            bc_obps/
+            .github/
+            .tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-backend
       - run: poetry run python manage.py makemigrations --check --dry-run
         working-directory: ./bc_obps
 
   check-immutable-migrations:
     runs-on: ubuntu-latest
+    if: inputs.backend_has_changes == 'true'
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          sparse-checkout: |
+            bc_obps/
+            .bin/
+            .github/
+            .tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-backend
       - name: Run check
         run: ./.bin/check-immutable-migration-files.sh
 
   check-test-data:
     runs-on: ubuntu-latest
+    if: inputs.backend_has_changes == 'true'
     steps:
       - uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            bc_obps/
+            .github/
+            .tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-backend
       - name: Run Migrations
         run: make migrate
         working-directory: ./bc_obps

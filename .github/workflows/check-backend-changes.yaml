@@ -1,0 +1,39 @@
+name: Check backend changes
+
+on:
+  workflow_call:
+    outputs:
+      has_changes:
+        description: "Whether any files in bc_obps directory have changed"
+        value: ${{ jobs.check.outputs.has_changes }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.check-backend-changes.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          sparse-checkout: |
+            bc_obps/
+      - name: Check for backend changes
+        id: check-backend-changes
+        run: |
+          # For PRs, compare against base branch. For pushes to develop/main, always report changes
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_REF="origin/${{ github.base_ref }}"
+
+            # Check if any files in bc_obps directory changed
+            if git diff --name-only $BASE_REF...HEAD | grep -q "^bc_obps/"; then
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "changed=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            # For pushes to develop/main, always report changes
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
