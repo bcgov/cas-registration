@@ -16,7 +16,6 @@ export default async function ProductionDataPage({
 }: HasFacilityId) {
   const response = await getProductionData(version_id, facility_id);
   const reportOperation = await getReviewOperationInformationPageData(version_id);
-  console.log("reportOperation ", reportOperation)
   const isOptedOut = reportOperation.operation_opted_out_detail !== null
   console.log("isOptedOut ", isOptedOut)
   

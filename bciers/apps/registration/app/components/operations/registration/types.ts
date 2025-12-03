@@ -22,7 +22,7 @@ export interface OptedInOperationFormData {
 }
 
 export interface OptedOutOperationFormData {
-  effective_date: string;
+  final_reporting_year: number;
 }
 
 export interface OperationInformationFormData {}

@@ -15,7 +15,6 @@ from registration.models import (
     Activity,
     BcObpsRegulatedOperation,
     UserOperator,
-    OptedInOperationDetail,
 )
 
 from registration.models.business_role import BusinessRole
@@ -136,7 +135,7 @@ class Operation(TimeStampedModel):
         related_name='%(class)ss',
     )
     opted_in_operation = models.OneToOneField(
-        OptedInOperationDetail,
+        "OptedInOperationDetail",
         blank=True,
         null=True,
         on_delete=models.SET_NULL,

@@ -7,16 +7,11 @@ from registration.models.rls_configs.opted_out_operation_detail import Rls as Op
 
 
 class OptedOutOperationDetail(TimeStampedModel):
-    class OptedOutEffectiveDateChoices(models.TextChoices):
-        START_2026 = "Start of 2026"
-        END_2026 = "End of 2026"
 
-    effective_date = models.CharField(
-        max_length=1000,
-        choices=OptedOutEffectiveDateChoices,
-        blank=True,
-        null=True,
-        db_comment="Operation is opted out as of this date",
+    final_reporting_year = models.ForeignKey(
+        "reporting.ReportingYear",
+        on_delete=models.PROTECT,
+        db_comment="The final reporting year an opted-out operation is expected to report for"
     )
 
     history = HistoricalRecords(

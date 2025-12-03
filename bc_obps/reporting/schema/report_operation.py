@@ -32,7 +32,7 @@ class ReportOperationOut(ModelSchema):
             'registration_purpose',
             'operation_type',
             'operation_bcghgid',
-            'operation_opted_out_effective_date',
+            'operation_opted_out_final_reporting_year',
             'bc_obps_regulated_operation_id',
             'activities',
             'regulated_products',

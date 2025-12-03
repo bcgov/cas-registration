@@ -28,9 +28,9 @@ def opted_out_operation_detail_mock():
 def opted_out_operation_detail_data():
     """Fixture for input schema data."""
     mock_data = MagicMock()
-    mock_data.effective_date = "Start of 2026"
+    mock_data.final_reporting_year = 2026
     mock_data.dict.return_value = {
-        "effective_date": "Start of 2026",
+        "final_reporting_year": 2026,
     }
     return mock_data
 
@@ -61,7 +61,7 @@ def test_create_opted_out_operation_detail(
 
     # Assert
     mock_opted_in_model.objects.get.assert_called_once_with(id=1)
-    mock_opted_out_model.objects.create.assert_called_once_with(effective_date="Start of 2026")
+    mock_opted_out_model.objects.create.assert_called_once_with(final_reporting_year=2026)
 
     opted_in_operation_detail_mock.save.assert_called_once()
     assert result == opted_out_operation_detail_mock
