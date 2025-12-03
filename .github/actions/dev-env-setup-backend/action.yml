@@ -60,4 +60,3 @@ runs:
       run: poetry install --no-interaction --no-root
       working-directory: ./bc_obps
       shell: bash
-
