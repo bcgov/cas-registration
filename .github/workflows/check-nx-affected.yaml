@@ -5,7 +5,7 @@ on:
     outputs:
       nx_affected_e2e:
         description: "Comma-separated list of Nx projects affected for e2e:ci target"
-        value: ${{ jobs.check.outputs.nx_affected_e2e }}
+        value: ${{ jobs.check.outputs.nx_affected_e2e || '' }}
 
 jobs:
   check:
@@ -27,7 +27,8 @@ jobs:
       - name: check nx affected target e2e:ci projects and save output
         id: check-nx-affected
         run: |
-          NX_AFFECTED_E2E=$(yarn nx show projects --affected --with-target e2e:ci --base=origin/develop 2>/dev/null || true)
-          echo "NX_AFFECTED_E2E=${NX_AFFECTED_E2E:-}" >> "$GITHUB_OUTPUT"
+          NX_AFFECTED_E2E=$(yarn nx show projects --affected --with-target e2e:ci --base=origin/develop 2>/dev/null || echo "")
+          # Always set output, use empty string if no projects affected
+          echo "NX_AFFECTED_E2E=${NX_AFFECTED_E2E}" >> "$GITHUB_OUTPUT"
         working-directory: ./bciers
         shell: bash
