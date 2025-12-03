@@ -22,6 +22,9 @@ jobs:
     if: inputs.backend_has_changes == 'true'
     steps:
       - uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            bc_obps/
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: Run pytest
