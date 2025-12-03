@@ -28,7 +28,7 @@ jobs:
             .github/
             .tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-backend
       - name: Run pytest
         working-directory: ./bc_obps
         run: make pythontests_parallel

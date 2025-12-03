@@ -1,0 +1,36 @@
+name: "Set up frontend dev environment"
+description: "Sets up frontend development environment with Node.js and yarn"
+runs:
+  using: composite
+  steps:
+    - name: asdf setup
+      uses: asdf-vm/actions/setup@v3
+    - uses: actions/cache@v4
+      id: asdf-cache-bciers
+      with:
+        path: |
+          ~/.asdf
+          ./.tool-versions
+        key: ${{ runner.os }}-asdf-cache-bciers-${{ hashFiles('./.tool-versions') }}
+    - name: Extract Node.js version from tool-versions file
+      id: versions
+      shell: bash
+      run: |
+        NODE_VERSION=$(grep "^nodejs" ./.tool-versions | cut -d' ' -f2)
+        echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
+    - name: Set up Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ steps.versions.outputs.node-version }}
+    - name: yarn modern
+      shell: bash
+      run: |
+        corepack enable
+    - name: yarn cache
+      uses: ./.github/actions/yarn-cache
+    - name: Install yarn dependencies
+      shell: bash
+      run: |
+        yarn install --immutable
+        cd bciers && yarn install --immutable
+
