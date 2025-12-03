@@ -87,9 +87,5 @@ describe("environmentDetection", () => {
       process.env.CI = "true";
       expect(environmentDetection.shouldUseSecureCookies()).toBe(false);
     });
-
-    it("CI test: intentional failing test to verify Nx test detection", () => {
-      expect(true).toBe(false);
-    });
   });
 });
