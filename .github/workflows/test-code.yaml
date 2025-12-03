@@ -4,6 +4,12 @@ name: Test BCIERS code
 
 on:
   workflow_call:
+    inputs:
+      backend_has_changes:
+        description: "Whether any files in bc_obps directory have changed"
+        required: false
+        type: string
+        default: "true"
 
 env:
   PGUSER: postgres
@@ -77,6 +83,7 @@ jobs:
 
   check-immutable-migrations:
     runs-on: ubuntu-latest
+    if: inputs.backend_has_changes == 'true'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -88,6 +95,7 @@ jobs:
 
   check-test-data:
     runs-on: ubuntu-latest
+    if: inputs.backend_has_changes == 'true'
     steps:
       - uses: actions/checkout@v6
       - name: dev env setup
