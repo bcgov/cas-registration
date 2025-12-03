@@ -5,7 +5,7 @@ on:
     outputs:
       nx_affected_e2e:
         description: "Comma-separated list of Nx projects affected for e2e:ci target"
-        value: ${{ jobs.check.outputs.nx_affected_e2e || '' }}
+        value: ${{ jobs.check.outputs.nx_affected_e2e }}
 
 jobs:
   check:
