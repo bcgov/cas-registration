@@ -5,6 +5,7 @@ from django.db.models.functions import Concat, Coalesce
 from ninja import Query
 from registration.models.operation import Operation
 from registration.models.user_operator import UserOperator
+from registration.models.opted_out_operation_detail import OptedOutOperationDetail
 from reporting.models import ReportOperation
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
@@ -103,6 +104,8 @@ class ReportingDashboardService:
         operations_for_reporting_year = Operation.objects.filter(
             id__in=timeline.values_list('operation_id', flat=True),
         )
+
+        # TODO - filter operations by opted out effective date
 
         queryset = (
             operations_for_reporting_year.filter(
