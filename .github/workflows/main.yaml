@@ -18,25 +18,7 @@ env:
 
 jobs:
   check-nx-affected:
-    runs-on: ubuntu-latest
-    outputs:
-      NX_AFFECTED_E2E: ${{steps.check-nx-affected.outputs.NX_AFFECTED_E2E}}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          sparse-checkout: |
-            bciers/
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: check nx affected target e2e:ci projects and save output
-        id: check-nx-affected
-        run: |
-          NX_AFFECTED_E2E=$(yarn nx show projects --affected --with-target e2e:ci --base=origin/develop)
-          echo "NX_AFFECTED_E2E="$NX_AFFECTED_E2E"" >> "$GITHUB_OUTPUT"
-        working-directory: ./bciers
-        shell: bash
+    uses: ./.github/workflows/check-nx-affected.yaml
   check-backend-changes:
     uses: ./.github/workflows/check-backend-changes.yaml
   check-frontend-changes:
@@ -80,7 +62,7 @@ jobs:
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       image_url: "ghcr.io/bcgov/cas-admin-frontend"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'administration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
       nx_app_port: 4001
       nx_project: administration
     secrets: inherit
@@ -95,7 +77,7 @@ jobs:
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       image_url: "ghcr.io/bcgov/cas-reg-frontend"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
       nx_app_port: 4000
       nx_project: registration
     secrets: inherit
@@ -114,7 +96,7 @@ jobs:
     with:
       docker_compose_file: "docker-compose-bciers-apps.yaml"
       image_url: "ghcr.io/bcgov/cas-dash-frontend"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
       nx_project: dashboard
     secrets: inherit
   test-compliance-e2e:
@@ -124,7 +106,7 @@ jobs:
     with:
       docker_compose_file: "docker-compose-bciers-apps.yaml"
       image_url: "ghcr.io/bcgov/cas-compliance-frontend"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'compliance') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
       nx_app_port: 7000
       nx_project: compliance
     secrets: inherit
