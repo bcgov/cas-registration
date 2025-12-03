@@ -52,7 +52,7 @@
             <column ascending="true" name="valid_to_id"/>
          </index>
       </table>
-      <table name="activity_source_type_json_schema" numRows="139" remarks="Intersection table that assigns a json_schema as valid for a period of time given an activity-sourceType pair" schema="erc" type="TABLE">
+      <table name="activity_source_type_json_schema" numRows="138" remarks="Intersection table that assigns a json_schema as valid for a period of time given an activity-sourceType pair" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="activity_source_type_base_schema_id" foreignKey="report_source_type_activity_source_type_a5907d1b_fk_activity_" implied="false" onDeleteCascade="false" schema="erc" table="report_source_type"/>
          </column>
@@ -723,7 +723,7 @@
          </index>
          <index name="exclude_overlapping_configuration_records_by_date_range" unique="false"/>
       </table>
-      <table name="configuration_element" numRows="1180" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
+      <table name="configuration_element" numRows="1142" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="configurationelement_id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -774,7 +774,7 @@
             <column ascending="true" name="valid_to_id"/>
          </index>
       </table>
-      <table name="configuration_element_reporting_fields" numRows="1039" remarks="" schema="erc" type="TABLE">
+      <table name="configuration_element_reporting_fields" numRows="1010" remarks="" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="configurationelement_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
@@ -2104,7 +2104,7 @@
             <column ascending="true" name="product_id"/>
          </index>
       </table>
-      <table name="regulated_product" numRows="40" remarks="Table containing regulated and unregulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015. Unregulated products have been added to the dataset to assist in grouping some unregulated emissions for further analysis." schema="erc" type="TABLE">
+      <table name="regulated_product" numRows="41" remarks="Table containing regulated and unregulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015. Unregulated products have been added to the dataset to assist in grouping some unregulated emissions for further analysis." schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="regulatedproduct_id" foreignKey="operation_regulated__regulatedproduct_id_5e0156ca_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="operation_regulated_products"/>
             <child column="product_id" foreignKey="product_emission_int_product_id_05c2d355_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="product_emission_intensity"/>
@@ -3138,7 +3138,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="17" id="4" name="annual_production" nullable="false" remarks="The total annual production for the product, expressed in the unit of this same model." size="17" type="float8" typeCode="8"/>
-         <column autoUpdated="false" defaultValue="null" digits="17" id="5" name="production_data_apr_dec" nullable="false" remarks="The total production amount for April to December period, expressed in the unit of this same model." size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="5" name="production_data_apr_dec" nullable="true" remarks="The total production amount for April to December period, expressed in the unit of this same model." size="17" type="float8" typeCode="8"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="production_methodology" nullable="false" remarks="The production methodoogy used to make this product" size="10000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="17" id="7" name="storage_quantity_start_of_period" nullable="true" remarks="The quantity of product in storage at the beginning of the compliance period, if applicable" size="17" type="float8" typeCode="8"/>
          <column autoUpdated="false" defaultValue="null" digits="17" id="8" name="storage_quantity_end_of_period" nullable="true" remarks="The quantity of product in storage at the end of the compliance period, if applicable" size="17" type="float8" typeCode="8"/>
@@ -3618,6 +3618,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="reporting_window_end" nullable="false" remarks="End of the reporting period for that reporting year, UTC-based" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="report_due_date" nullable="false" remarks="Due date for the annual report for that reporting year, UTC-based" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="description" nullable="false" remarks="Description for the reporting year" size="10000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="report_open_date" nullable="true" remarks="Date when reporting opens for that reporting year, defaults to March 1 of the year after the reporting year, UTC-based" size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="reporting_year" sequenceNumberInPK="1"/>
          <index name="reporting_year_pkey" unique="true">
             <column ascending="true" name="reporting_year"/>
