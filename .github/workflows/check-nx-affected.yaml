@@ -20,6 +20,7 @@ jobs:
           sparse-checkout: |
             bciers/
             .github/
+            .tool-versions
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: check nx affected target e2e:ci projects and save output
