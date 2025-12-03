@@ -23,10 +23,9 @@ class ReportingYearService:
     @classmethod
     def get_report_reporting_year(cls, report_id: int) -> ReportingYear:
         report = Report.objects.get(id=report_id)
-        reporting_year = report.reporting_year
-        return reporting_year
+        return report.reporting_year
 
     @classmethod
     def get_reporting_year_by_version_id(cls, version_id: int) -> ReportingYear:
         report_version = ReportVersion.objects.get(id=version_id)
-        return cls.get_report_reporting_year(report_version.report.id)
+        return report_version.report.reporting_year

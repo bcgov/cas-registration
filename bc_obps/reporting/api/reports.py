@@ -64,7 +64,7 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
 
 
 @router.get(
-    "/reporting-year/{report_id}",
+    "report/{report_id}/reporting-year",
     response={200: ReportingYearOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns json object with reporting year and due date for the report version id.""",
