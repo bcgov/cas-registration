@@ -3,6 +3,8 @@
  *
  * These utilities help detect different runtime environments
  * to conditionally execute code based on the current context.
+ *
+ * CI test: verifying frontend change detection
  */
 
 /**
