@@ -10,6 +10,11 @@ on:
         required: false
         type: string
         default: "true"
+      frontend_has_changes:
+        description: "Whether any files in bciers directory have changed"
+        required: false
+        type: string
+        default: "true"
 
 env:
   PGUSER: postgres
@@ -21,6 +26,7 @@ env:
 jobs:
   nx-tests:
     runs-on: ubuntu-latest
+    if: inputs.frontend_has_changes == 'true'
     defaults:
       run:
         working-directory: ./bciers
