@@ -25,6 +25,7 @@ jobs:
         with:
           sparse-checkout: |
             bc_obps/
+            .github/
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: Run pytest
