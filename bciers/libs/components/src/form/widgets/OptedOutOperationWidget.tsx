@@ -26,10 +26,10 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
 }) => {
   const [status, setStatus] = useState<string>(formContext?.isOptedOut ? "Opted-out" : "Opted-in");
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  // savedEffectiveDate reflects the value stored in the database
-  const [savedEffectiveDate, setSavedEffectiveDate] = useState<string | undefined>(value?.effective_date);
-  // pendingEffectiveDate reflects the value that is rendered in the UI
-  const [pendingEffectiveDate, setPendingEffectiveDate] = useState<string | undefined>(value?.effective_date);
+  // savedFinalReportingYear reflects the value stored in the database
+  const [savedFinalReportingYear, setSavedFinalReportingYear] = useState<number | undefined>(value?.final_reporting_year);
+  // pendingFinalReportingYear reflects the value that is rendered in the UI
+  const [pendingFinalReportingYear, setPendingFinalReportingYear] = useState<number | undefined>(value?.final_reporting_year);
   const [error, setError] = useState<string | undefined>(undefined);
 
   const isCasDirector = Boolean(formContext?.isCasDirector);
@@ -46,7 +46,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   ) {
     const endpoint = `registration/operations/${operationId}/registration/opted-out-operation-detail`;
 
-    const payload = JSON.stringify({ effective_date: pendingEffectiveDate})
+    const payload = JSON.stringify({ final_reporting_year: pendingFinalReportingYear})
 
     return actionHandler(endpoint, "POST", "", {
       body: payload
@@ -56,7 +56,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   // ---------- Handlers ------------------
   const handleRadioSelect = (val) => {
     if (!isEditing || isDisabled) return;
-    setPendingEffectiveDate(val);
+    setPendingFinalReportingYear(val);
   }
 
   const handleToggle = () => {
@@ -77,14 +77,14 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
       setError(response?.error)
       return;
     }
-    setSavedEffectiveDate(response.effective_date)
-    setPendingEffectiveDate(response.effective_date)
+    setSavedFinalReportingYear(response.final_reporting_year)
+    setPendingFinalReportingYear(response.final_reporting_year)
     setIsEditing(false);
     setError(undefined);
   }
 
   const handleCancel = () => {
-    setPendingEffectiveDate(savedEffectiveDate)
+    setPendingFinalReportingYear(savedFinalReportingYear)
     setIsEditing(false);
     setError(undefined);
   }
@@ -103,7 +103,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
         <div className="flex flex-col gap-2">
           {optOutDateOptions.map((opt) => (
             <label key={opt.value} className="flex items-center gap-2">
-              <input type="radio" checked={pendingEffectiveDate === opt.value} onChange={() => handleRadioSelect(opt.value)} disabled={!isEditing || isDisabled} />
+              <input type="radio" checked={pendingFinalReportingYear === opt.value} onChange={() => handleRadioSelect(opt.value)} disabled={!isEditing || isDisabled} />
                 <span>{opt.label}</span>
             </label>
           ))}

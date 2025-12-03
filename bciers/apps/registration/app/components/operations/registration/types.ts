@@ -23,7 +23,7 @@ export interface OptedInOperationFormData {
 
 export type OperationInformationFormData = Dict;
 export interface OptedOutOperationFormData {
-  effective_date: string;
+  final_reporting_year: number;
 }
 
 

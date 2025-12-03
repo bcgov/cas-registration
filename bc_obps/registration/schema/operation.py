@@ -120,12 +120,12 @@ class OperationInformationInUpdate(OperationInformationIn):
 class OptedOutOperationDetailOut(ModelSchema):
     class Meta:
         model = OptedOutOperationDetail
-        fields = ["effective_date"]
+        fields = ["final_reporting_year"]
         from_attributes = True
 
 
 class OptedOutOperationDetailIn(OptedOutOperationDetailOut):
-    effective_date: str = Field(...)
+    final_reporting_year: int = Field(...)
 
 class OptedInOperationDetailOut(ModelSchema):
     class Meta:
