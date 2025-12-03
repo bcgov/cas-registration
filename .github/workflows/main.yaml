@@ -28,8 +28,11 @@ jobs:
           fetch-depth: 0
           sparse-checkout: |
             bciers/
+            .github/
+            .tool-versions
+            bc_obps/.tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-frontend
       - name: check nx affected target e2e:ci projects and save output
         id: check-nx-affected
         run: |
