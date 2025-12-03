@@ -78,10 +78,6 @@ class TestPenaltyCalculationService:
             '20000.00'
         )
 
-    def test_ci_intentional_failure(self):
-        """CI test: intentional failing test to verify Python test detection"""
-        assert False, "This test intentionally fails to verify CI Python test detection"
-
     @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.TODAY", date(2025, 12, 10))
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
