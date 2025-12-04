@@ -479,7 +479,7 @@ class TestElicensingInvoiceService:
         assert list(result.values_list("invoice_type", flat=True)) == [
             "Compliance obligation",
             "Automatic overdue penalty",
-            "Automatic overdue penalty",
+            "Late Submission Penalty",
             "Compliance obligation",
             "Compliance obligation",
         ]
