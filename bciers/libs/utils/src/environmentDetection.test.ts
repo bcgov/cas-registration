@@ -49,19 +49,13 @@ describe("environmentDetection", () => {
   });
 
   describe("isProductionEnvironment", () => {
-    it("should return true when NODE_ENV is 'production'", () => {
-      Object.defineProperty(process.env, "NODE_ENV", {
-        value: "production",
-        writable: true,
-      });
+    it("should return true when ENVIRONMENT is 'production'", () => {
+      process.env.ENVIRONMENT = "production";
       expect(environmentDetection.isProductionEnvironment()).toBe(true);
     });
 
-    it("should return false when NODE_ENV is not 'production'", () => {
-      Object.defineProperty(process.env, "NODE_ENV", {
-        value: "development",
-        writable: true,
-      });
+    it("should return false when ENVIRONMENT is not 'production'", () => {
+      process.env.ENVIRONMENT = "development";
       expect(environmentDetection.isProductionEnvironment()).toBe(false);
     });
   });
@@ -78,27 +72,18 @@ describe("environmentDetection", () => {
     });
 
     it("should return false when not in production", () => {
-      Object.defineProperty(process.env, "NODE_ENV", {
-        value: "development",
-        writable: true,
-      });
+      process.env.ENVIRONMENT = "development";
       expect(environmentDetection.shouldUseSecureCookies()).toBe(false);
     });
 
     it("should return false when in production but in Vitest", () => {
-      Object.defineProperty(process.env, "NODE_ENV", {
-        value: "production",
-        writable: true,
-      });
+      process.env.ENVIRONMENT = "production";
       // Still in Vitest environment due to VITEST_POOL_ID
       expect(environmentDetection.shouldUseSecureCookies()).toBe(false);
     });
 
     it("should return false when in production but in CI", () => {
-      Object.defineProperty(process.env, "NODE_ENV", {
-        value: "production",
-        writable: true,
-      });
+      process.env.ENVIRONMENT = "production";
       process.env.CI = "true";
       expect(environmentDetection.shouldUseSecureCookies()).toBe(false);
     });
