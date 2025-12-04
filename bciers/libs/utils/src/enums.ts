@@ -139,3 +139,20 @@ export enum ComplianceInvoiceTypes {
   AUTOMATIC_OVERDUE_PENALTY = "automatic overdue penalty",
   LATE_SUBMISSION_PENALTY = "late submission penalty",
 }
+
+export enum ManualHandlingDecison {
+  PENDING_MANUAL_HANDLING = "pending_manual_handling",
+  ISSUE_RESOLVED = "issue_resolved",
+}
+export const MANUAL_HANDLING_DECISION_LABELS: Record<
+  ManualHandlingDecison,
+  string
+> = {
+  [ManualHandlingDecison.PENDING_MANUAL_HANDLING]: "Pending manual handling",
+  [ManualHandlingDecison.ISSUE_RESOLVED]: "Issue has been resolved",
+};
+
+export enum ManualHandlingTypes {
+  OBLIGATION = "obligation",
+  EARNED_CREDITS = "earned_credits",
+}

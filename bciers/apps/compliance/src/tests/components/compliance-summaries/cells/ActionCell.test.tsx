@@ -2,7 +2,11 @@ import { render, screen } from "@testing-library/react";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import ActionCell from "@/compliance/src/app/components/compliance-summaries/cells/ActionCell";
 import { ComplianceSummary } from "@/compliance/src/app/types";
-import { IssuanceStatus, PenaltyStatus } from "@bciers/utils/src/enums";
+import {
+  ComplianceSummaryStatus,
+  IssuanceStatus,
+  PenaltyStatus,
+} from "@bciers/utils/src/enums";
 
 describe("ActionCell", () => {
   interface ActionCellParams extends GridRenderCellParams {
@@ -12,6 +16,7 @@ describe("ActionCell", () => {
     status?: string;
     issuance_status?: string;
     requires_manual_handling?: boolean;
+    director_decision?: "pending_manual_handling" | "issue_resolved";
   }
 
   const createMockParams = (
@@ -22,6 +27,7 @@ describe("ActionCell", () => {
     issuance_status?: string,
     penalty_status?: PenaltyStatus,
     requires_manual_handling?: boolean,
+    director_decision?: "pending_manual_handling" | "issue_resolved",
   ): ActionCellParams =>
     ({
       id: id,
@@ -32,6 +38,7 @@ describe("ActionCell", () => {
         issuance_status,
         penalty_status,
         requires_manual_handling,
+        director_decision,
       } as ComplianceSummary,
       isAllowedCas: isAllowedCas,
     }) as ActionCellParams;
@@ -336,18 +343,20 @@ describe("ActionCell", () => {
     });
   });
 
-  describe("Contact Us (requires_manual_handling)", () => {
-    it("renders non-clickable 'Contact Us' when requires_manual_handling is true", () => {
+  // Test cases for manual handling flow
+  describe("Manual Handling (director_decision + requires_manual_handling)", () => {
+    it("renders non-clickable 'Contact Us' when manual handling is pending for external users", () => {
       render(
         ActionCell(
           createMockParams(
             123,
-            false, // external or internal doesn't matter
+            false, // external user
             undefined, // obligation_id
             "Other status", // status
             undefined, // issuance_status
             undefined, // penalty_status
-            true, // requires_manual_handling ✅
+            true, // requires_manual_handling
+            "pending_manual_handling", // director_decision
           ),
         ),
       );
@@ -356,26 +365,89 @@ describe("ActionCell", () => {
       expect(screen.getByText("Contact Us")).toBeVisible();
       // …but not a link
       expect(screen.queryByRole("link", { name: "Contact Us" })).toBeNull();
+      // And no Resolve Issue link either
+      expect(screen.queryByRole("link", { name: "Resolve Issue" })).toBeNull();
     });
 
-    it("ignores other routing logic (e.g., obligation present) when requires_manual_handling is true", () => {
+    it("renders 'Resolve Issue' link to resolve-issue for CAS users when manual handling is pending", () => {
       render(
         ActionCell(
           createMockParams(
             456,
-            true, // internal
-            "24-0001-1-1", // obligation exists
-            "Obligation not met", // would normally create a link
+            true, // internal CAS user
+            "24-0001-1-1", // obligation exists (ignored in favour of manual handling)
+            ComplianceSummaryStatus.OBLIGATION_NOT_MET,
             undefined,
             undefined,
-            true, // requires_manual_handling ✅
+            true, // requires_manual_handling
+            "pending_manual_handling", // director_decision
           ),
         ),
       );
 
-      // Still just plain text — no link
-      expect(screen.getByText("Contact Us")).toBeVisible();
+      // Should show a clickable Resolve Issue link
+      const link = screen.getByRole("link", { name: "Resolve Issue" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute(
+        "href",
+        "/compliance-administration/compliance-summaries/456/resolve-issue",
+      );
+
+      // And not show the Contact Us non-link label in this case
+      expect(screen.queryByText("Contact Us")).toBeNull();
+    });
+
+    it("renders non-clickable 'Issue Resolved' for external users when director_decision is issue_resolved", () => {
+      render(
+        ActionCell(
+          createMockParams(
+            789,
+            false, // external user
+            undefined,
+            "Other status",
+            undefined,
+            undefined,
+            false, // requires_manual_handling
+            "issue_resolved",
+          ),
+        ),
+      );
+
+      // Shows Issue Resolved as plain text
+      expect(screen.getByText("Issue Resolved")).toBeVisible();
+      // No link for Issue Resolved
+      expect(screen.queryByRole("link", { name: "Issue Resolved" })).toBeNull();
+      // No Contact Us / Resolve Issue links either
       expect(screen.queryByRole("link", { name: "Contact Us" })).toBeNull();
+      expect(screen.queryByRole("link", { name: "Resolve Issue" })).toBeNull();
+    });
+
+    it("renders 'View Detail' link to resolve-issue for CAS users when director_decision is issue_resolved", () => {
+      render(
+        ActionCell(
+          createMockParams(
+            999,
+            true, // CAS user
+            "24-0001-1-1",
+            ComplianceSummaryStatus.OBLIGATION_NOT_MET,
+            undefined,
+            undefined,
+            false, // requires_manual_handling (ignored when director_decision is issue_resolved)
+            "issue_resolved",
+          ),
+        ),
+      );
+
+      const link = screen.getByRole("link", { name: "View Detail" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute(
+        "href",
+        "/compliance-administration/compliance-summaries/999/resolve-issue",
+      );
+
+      // Should not show Contact Us or Resolve Issue in this state
+      expect(screen.queryByText("Contact Us")).toBeNull();
+      expect(screen.queryByText("Resolve Issue")).toBeNull();
     });
   });
 

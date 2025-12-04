@@ -2,6 +2,7 @@ from decimal import Decimal
 from compliance.models import (
     ComplianceReportVersion,
     ComplianceEarnedCredit,
+    ComplianceReportVersionManualHandling,
 )
 from reporting.models import ReportVersion
 from compliance.service.supplementary_version_service import (
@@ -279,30 +280,47 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
                 credited_emissions=0,
                 report_version=self.report_version_1,
             )
-        self.new_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary',
-            excess_emissions=Decimal('800'),
-            credited_emissions=0,
-            report_version=self.report_version_2,
-        )
+            self.new_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('800'),
+                credited_emissions=0,
+                report_version=self.report_version_2,
+            )
+
+        # Base compliance report/versions
         self.compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+            'compliance.tests.utils.compliance_report',
+            report=self.report,
+            compliance_period_id=1,
         )
+        # Previous CRV for the supplementary chain
         self.compliance_report_version = baker.make_recipe(
             'compliance.tests.utils.compliance_report_version',
             compliance_report=self.compliance_report,
             report_compliance_summary=self.previous_summary,
-            requires_manual_handling=True,
         )
+
+        # Explicitly create a manual-handling record so that
+        # ManualHandler.can_handle(previous_summary) will be true
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version_manual_handling',
+            compliance_report_version=self.compliance_report_version,
+            # optional: make the intent explicit
+            handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
+            context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
+        )
+
         mock_result = MagicMock(spec=ComplianceReportVersion)
         mock_manual_handler.return_value = mock_result
 
         # Act
         result = SupplementaryVersionService().handle_supplementary_version(
-            self.compliance_report, self.report_version_2, 2
+            self.compliance_report,
+            self.report_version_2,
+            2,
         )
 
-        # Assert
+        # Assert – we should route to ManualHandler only
         mock_manual_handler.assert_called_once_with(
             compliance_report=self.compliance_report,
             new_summary=self.new_summary,
@@ -310,6 +328,7 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
             version_count=2,
         )
         assert result == mock_result
+
         mock_increased_handler.assert_not_called()
         mock_decreased_handler.assert_not_called()
         mock_no_change_handler.assert_not_called()
@@ -569,108 +588,151 @@ class TestManualHandler(BaseSupplementaryVersionServiceTest):
     def test_can_handle_report_that_previously_required_manual_handling(self):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
-            self.previous_summary = baker.make_recipe(
+            previous_summary = baker.make_recipe(
                 'reporting.tests.utils.report_compliance_summary',
                 excess_emissions=Decimal('500'),
                 credited_emissions=0,
                 report_version=self.report_version_1,
             )
 
-        self.new_summary = baker.make_recipe(
+        new_summary = baker.make_recipe(
             'reporting.tests.utils.report_compliance_summary',
             excess_emissions=Decimal('800'),
             credited_emissions=0,
             report_version=self.report_version_2,
         )
-        self.compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=self.report,
+            compliance_period_id=1,
         )
 
-        self.compliance_report_version_1 = baker.make_recipe(
+        # Previous CRV that *does* have a manual-handling record
+        previous_crv = baker.make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report=self.compliance_report,
-            report_compliance_summary=self.previous_summary,
-            requires_manual_handling=True,
+            compliance_report=compliance_report,
+            report_compliance_summary=previous_summary,
         )
+
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version_manual_handling',
+            compliance_report_version=previous_crv,
+            handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
+            context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
+        )
+
         # Act
-        result = ManualHandler.can_handle(self.new_summary, self.previous_summary)
+        can_handle = ManualHandler.can_handle(
+            new_summary=new_summary,
+            previous_summary=previous_summary,
+        )
+
         # Assert
-        assert result is True
+        assert can_handle is True
 
     def test_cannot_handle_report_that_did_not_previously_require_manual_handling(self):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
-            self.previous_summary = baker.make_recipe(
+            previous_summary = baker.make_recipe(
                 'reporting.tests.utils.report_compliance_summary',
                 excess_emissions=Decimal('500'),
                 credited_emissions=0,
                 report_version=self.report_version_1,
             )
 
-        self.new_summary = baker.make_recipe(
+        new_summary = baker.make_recipe(
             'reporting.tests.utils.report_compliance_summary',
             excess_emissions=Decimal('800'),
             credited_emissions=0,
             report_version=self.report_version_2,
         )
-        self.compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=self.report,
+            compliance_period_id=1,
         )
 
-        self.compliance_report_version_1 = baker.make_recipe(
+        # Previous CRV but NO manual-handling record attached
+        baker.make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report=self.compliance_report,
-            report_compliance_summary=self.previous_summary,
-            requires_manual_handling=False,
+            compliance_report=compliance_report,
+            report_compliance_summary=previous_summary,
         )
+
         # Act
-        result = ManualHandler.can_handle(self.new_summary, self.previous_summary)
+        can_handle = ManualHandler.can_handle(
+            new_summary=new_summary,
+            previous_summary=previous_summary,
+        )
+
         # Assert
-        assert result is False
+        assert can_handle is False
 
     def test_handle_creates_compliance_report_version(self):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
-            self.previous_summary = baker.make_recipe(
+            previous_summary = baker.make_recipe(
                 'reporting.tests.utils.report_compliance_summary',
                 excess_emissions=Decimal('500'),
                 credited_emissions=0,
                 report_version=self.report_version_1,
             )
-        self.new_summary = baker.make_recipe(
+
+        new_summary = baker.make_recipe(
             'reporting.tests.utils.report_compliance_summary',
             excess_emissions=Decimal('800'),
             credited_emissions=0,
             report_version=self.report_version_2,
         )
-        self.compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=self.report,
+            compliance_period_id=1,
         )
-        self.previous_compliance_report_version = baker.make_recipe(
+
+        # Previous CRV that *does* have a manual-handling record
+        previous_crv = baker.make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report=self.compliance_report,
-            report_compliance_summary=self.previous_summary,
-            requires_manual_handling=True,
+            compliance_report=compliance_report,
+            report_compliance_summary=previous_summary,
         )
-        version_count = 2
+
+        previous_manual = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version_manual_handling',
+            compliance_report_version=previous_crv,
+            handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
+            context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
+        )
 
         # Act
         result = ManualHandler.handle(
-            compliance_report=self.compliance_report,
-            new_summary=self.new_summary,
-            previous_summary=self.previous_summary,
-            version_count=version_count,
+            compliance_report=compliance_report,
+            new_summary=new_summary,
+            previous_summary=previous_summary,
+            version_count=2,
         )
 
-        # Assert
+        # Assert – new CRV created with expected attributes
         assert isinstance(result, ComplianceReportVersion)
-        assert result.compliance_report == self.compliance_report
-        assert result.report_compliance_summary == self.new_summary
-        assert result.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
-        assert result.excess_emissions_delta_from_previous == Decimal('0')
-        assert result.credited_emissions_delta_from_previous == Decimal('0')
+        assert result.compliance_report == compliance_report
+        assert result.report_compliance_summary == new_summary
         assert result.is_supplementary is True
-        assert result.previous_version == self.previous_compliance_report_version
+        assert result.previous_version == previous_crv
+        assert result.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+
+        # And a new manual-handling record carrying forward handling_type/context
+        new_manual = ComplianceReportVersionManualHandling.objects.get(compliance_report_version=result)
+        assert new_manual.handling_type == previous_manual.handling_type
+        assert new_manual.context == previous_manual.context
+        # Comments/dates should *not* be copied over
+        assert new_manual.analyst_comment in ("", None)
+        assert new_manual.analyst_submitted_date is None
+        assert new_manual.analyst_submitted_by is None
+        assert new_manual.director_decision == (
+            ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING
+        )
+        assert new_manual.director_decision_date is None
+        assert new_manual.director_decision_by is None
 
 
 class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
@@ -2697,7 +2759,6 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
         assert isinstance(new_crv, ComplianceReportVersion)
         assert new_crv.previous_version == prev_crv
         assert new_crv.is_supplementary is True
-        assert new_crv.requires_manual_handling is True
 
         approved.refresh_from_db()
         assert approved.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED

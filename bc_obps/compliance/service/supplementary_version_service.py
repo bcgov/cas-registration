@@ -10,6 +10,7 @@ from compliance.service.earned_credits_service import ComplianceEarnedCreditsSer
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from service.error_service.handle_exception import ExceptionHandler
 from compliance.models.elicensing_line_item import ElicensingLineItem
+from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 
 from compliance.dataclass import InvoiceAdjustment, AdjustmentStrategy
 
@@ -43,16 +44,23 @@ class SupplementaryScenarioHandler(Protocol):
     ) -> Optional[ComplianceReportVersion]: ...
 
 
-# Concrete strategy for flagging compliance report versions as requiring manual handling and for assigning 0 excess and credited emissions when the previous version also required manual handling. (There are too many variables in how a version can be manually handled in ways that the app is not aware of, so we can't really safely and accurately predict how to handle any subsequent child versions once a version has been closed via actions outside of the app.)
+# Concrete strategy for:
+# - Detecting when a previous CRV is still under manual handling (pending), and
+# - Creating a new supplementary NO_OBLIG / earned-credits CRV
+#   with an associated manual-handling record to carry that flag forward.
 class ManualHandler:
     @staticmethod
-    def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
-        previous_compliance_report_version = ComplianceReportVersion.objects.get(
-            report_compliance_summary=previous_summary
-        )
-        if previous_compliance_report_version.requires_manual_handling:
-            return True
-        return False
+    def can_handle(
+        new_summary: ReportComplianceSummary,
+        previous_summary: ReportComplianceSummary,
+    ) -> bool:
+        """
+        This handler applies when the *previous* compliance report version has a manual-handling record
+        """
+        previous_crv = ComplianceReportVersion.objects.get(report_compliance_summary=previous_summary)
+
+        # Use the existence of the one-to-one manual_handling_record
+        return ComplianceReportVersionManualHandling.objects.filter(compliance_report_version=previous_crv).exists()
 
     @staticmethod
     @transaction.atomic()
@@ -62,21 +70,40 @@ class ManualHandler:
         previous_summary: ReportComplianceSummary,
         version_count: int,
     ) -> Optional[ComplianceReportVersion]:
+        """
+        Create a new supplementary NO_OBLIGATION_OR_EARNED_CREDITS CRV and an
+        associated manual-handling record when the previous CRV has a manual-handling record
 
+        Assumptions:
+        - The previous CRV's manual_handling_record exists
+        - We carry forward handling_type/context to the new record, but do not
+          copy analyst or director comments/dates.
+        """
+
+        # Get the previous compliance report version
         previous_compliance_version = (
             SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
                 compliance_report, previous_summary
             )
         )
 
-        # Create new version with the manual handling flag set to true
+        # Fetch its manual-handling record
+        previous_manual_handling = previous_compliance_version.manual_handling_record
+
+        # Create the new supplementary CRV
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
             status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
             is_supplementary=True,
             previous_version=previous_compliance_version,
-            requires_manual_handling=True,
+        )
+
+        # Create a new manual-handling record for the new CRV.
+        ComplianceReportVersionManualHandling.objects.create(
+            compliance_report_version=compliance_report_version,
+            handling_type=previous_manual_handling.handling_type,
+            context=previous_manual_handling.context,
         )
 
         return compliance_report_version
@@ -453,7 +480,7 @@ class DecreasedObligationHandler:
         )
 
         should_record_manual_handling = False
-        has_cash = False  # keep for logging if you print later
+        has_cash = False
         if fully_paid_obligation and refund_pool > ZERO_DECIMAL:
             # Prefer using precomputed per-invoice 'paid' when available.
             has_cash = any((inv.get("paid") or ZERO_DECIMAL) > ZERO_DECIMAL for inv in invoices)
@@ -715,10 +742,15 @@ class DecreasedObligationHandler:
         compliance_report_version_id: int,
     ) -> None:
         """
-        Set requires_manual_handling refundable dollars
+        Create a related ComplianceReportVersionManualHandling record.
         """
-        ComplianceReportVersion.objects.filter(id=compliance_report_version_id).update(
-            requires_manual_handling=True,
+        crv = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
+
+        # Create manual-handling record for this supplementary report
+        ComplianceReportVersionManualHandling.objects.create(
+            compliance_report_version=crv,
+            handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
+            context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
         )
 
 
@@ -887,8 +919,13 @@ class DecreasedCreditHandler:
 
         # Previously approved → flag manual handling, do not mutate/move prior credit
         if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
-            compliance_report_version.requires_manual_handling = True
-            compliance_report_version.save(update_fields=["requires_manual_handling"])
+            # Create manual-handling record for this supplementary report
+            ComplianceReportVersionManualHandling.objects.create(
+                compliance_report_version=compliance_report_version,
+                handling_type=ComplianceReportVersionManualHandling.HandlingType.EARNED_CREDITS,
+                context=ComplianceReportVersionManualHandling.Context.EARNED_CREDITS_PREVIOUSLY_APPROVED,
+            )
+
             return compliance_report_version
 
         # if credits weren't requested, update the previous earned credit record

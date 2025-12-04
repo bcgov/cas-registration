@@ -64,11 +64,6 @@ class ComplianceReportVersion(TimeStampedModel):
         db_comment="Reference to the previous version of this compliance report version.",
     )
 
-    requires_manual_handling = models.BooleanField(
-        default=False,
-        db_comment="Boolean value identifies whether this record requires manual handling outside of the app",
-    )
-
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
         db_table_comment = "The compliance_report_version table records are generated from the compliance summary data when an emission report is submitted"

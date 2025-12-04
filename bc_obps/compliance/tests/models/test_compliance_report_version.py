@@ -23,7 +23,7 @@ class ComplianceReportVersionTest(BaseTestCase):
             ("elicensing_adjustments", "elicensing adjustment", None, None),
             ("previous_version", "previous version", None, None),
             ("subsequent_versions", "compliance report version", None, None),
-            ("requires_manual_handling", "requires manual handling", None, None),
+            ("manual_handling_record", "compliance report version manual handling", None, None),
         ]
 
 

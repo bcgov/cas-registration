@@ -15,6 +15,28 @@ const ComplianceStatusCell = ({ row }: GridRenderCellParams) => {
   return row.display_status ? row.display_status : "N/A";
 };
 
+const ExcessEmissionsCell = ({ row }: GridRenderCellParams) => {
+  if (
+    row.requires_manual_handling ||
+    row.director_decision != null ||
+    row.excess_emissions == null
+  ) {
+    return "N/A";
+  }
+  return `${row.excess_emissions} tCO2e`;
+};
+
+const OutstandingBalanceCell = ({ row }: GridRenderCellParams) => {
+  if (
+    row.requires_manual_handling ||
+    row.director_decision != null ||
+    row.outstanding_balance_tco2e == null
+  ) {
+    return "N/A";
+  }
+  return `${row.outstanding_balance_tco2e} tCO2e`;
+};
+
 const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
   // Adjust widths based on whether we have the extra operator column
   const getColumnWidth = (baseWidth: number, casWidth: number) =>
@@ -35,13 +57,13 @@ const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
       field: "excess_emissions",
       headerName: "Excess Emission as of Invoice Date",
       width: getColumnWidth(180, 150),
-      valueFormatter: (params) => `${params.value} tCO2e`,
+      renderCell: ExcessEmissionsCell,
     },
     {
       field: "outstanding_balance_tco2e",
       headerName: "Outstanding Balance",
       width: getColumnWidth(200, 170),
-      valueFormatter: (params) => `${params.value} tCO2e`,
+      renderCell: OutstandingBalanceCell,
       sortable: false,
     },
     {

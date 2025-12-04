@@ -12,8 +12,9 @@ from compliance.service.compliance_charge_rate_service import ComplianceChargeRa
 from compliance.enums import ComplianceInvoiceTypes
 from ninja import Query
 from compliance.schema.compliance_report_version import ComplianceReportVersionFilterSchema
+from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 
-from django.db.models import Case, When, CharField
+from django.db.models import Case, When, CharField, BooleanField
 from typing import cast
 
 
@@ -49,17 +50,17 @@ class ComplianceDashboardService:
                 "report_compliance_summary__report_version__report__operator",
                 "report_compliance_summary__report_version__report__operation",
                 "report_compliance_summary__report_version__report__reporting_year",
+                "manual_handling_record",
             )
             .prefetch_related(
                 "obligation__elicensing_invoice__elicensing_line_items",
             )
             .exclude(
-                # Exclude supplementary versions with NO_OBLIGATION_OR_EARNED_CREDITS
-                # **unless** they require manual handling
+                # Exclude supplementary versions with NO_OBLIGATION_OR_EARNED_CREDITS and manual handling record is null
                 Q(
                     is_supplementary=True,
                     status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-                    requires_manual_handling=False,  # <── only exclude if manual handling is False
+                    manual_handling_record__isnull=True,
                 )
                 | Q(status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED)
             )
@@ -264,6 +265,14 @@ class ComplianceDashboardService:
                 default=F("obligation__obligation_id"),
                 output_field=CharField(),
             ),
+            requires_manual_handling=Case(
+                When(
+                    manual_handling_record__director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
+                    then=Value(True),
+                ),
+                default=Value(False),
+                output_field=BooleanField(),
+            ),
         )
         return cast(QuerySet[ComplianceReportVersion], annotated)
 
@@ -273,6 +282,16 @@ class ComplianceDashboardService:
     ) -> QuerySet[ComplianceReportVersion]:
         annotated = qs.annotate(
             display_status=Case(
+                # Manual-handling overrides
+                When(
+                    manual_handling_record__director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
+                    then=Value("Supplementary report - action required"),
+                ),
+                When(
+                    manual_handling_record__director_decision=ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED,
+                    then=Value("Supplementary report - resolved"),
+                ),
+                # Base CRV status / earned-credits mappings
                 When(status__isnull=True, then=Value("N/A")),
                 When(
                     status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET.value,

@@ -19,18 +19,46 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
     penalty_status: penaltyStatus,
     id,
     requires_manual_handling: requiresManualHandling,
+    director_decision: directorDecision,
   } = row;
-
-  // Check if "Contact Us"
-  if (requiresManualHandling) {
-    return {
-      cellText: "Contact Us",
-      // NOTE: no basePath means "not clickable"
-    };
-  }
 
   const basePath = `/compliance-administration/compliance-summaries/${id}`;
 
+  // Manual Handling case via directorDecision
+  const resolveIssuePath = `${basePath}/resolve-issue`;
+
+  if (directorDecision === "issue_resolved") {
+    // Resolved manual-handling
+    if (isAllowedCas) {
+      return {
+        cellText: "View Detail",
+        basePath: resolveIssuePath,
+      };
+    }
+
+    return {
+      cellText: "Issue Resolved",
+      // no basePath = not clickable
+    };
+  }
+
+  if (
+    directorDecision === "pending_manual_handling" ||
+    requiresManualHandling
+  ) {
+    //  Pending manual-handling
+    if (isAllowedCas) {
+      return {
+        cellText: "Resolve Issue",
+        basePath: resolveIssuePath,
+      };
+    }
+
+    return {
+      cellText: "Contact Us",
+      // no basePath = not clickable
+    };
+  }
   const isPenaltyAccruingOrNotPaid = [
     PenaltyStatus.ACCRUING,
     PenaltyStatus.NOT_PAID,
