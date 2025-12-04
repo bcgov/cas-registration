@@ -84,7 +84,6 @@ class TestUserComplianceAccessService:
         user_guid,
         mock_user_data_access,
         mock_operation_data_access,
-        mock_dashboard_service,
     ):
         # Arrange: registered op, OWNED version exists with id=123
         mock_operation_data_access.return_value = True
