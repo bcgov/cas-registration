@@ -85,7 +85,7 @@ export async function actionHandler(
         // Except in production
         const clientCookies = cookies();
         if (
-          process.env.ENVIRONMENT !== "production" &&
+          process.env.ENVIRONMENT !== "prod" &&
           clientCookies.has("mock-time")
         ) {
           requestHeaders.append(
