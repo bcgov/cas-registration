@@ -46,13 +46,16 @@ class ElicensingInvoiceListOut(ModelSchema):
         None,
         description="Operator legal name via the linked eLicensing client operator.",
     )
-    invoice_type: Optional[Literal["Compliance obligation", "Automatic overdue penalty"]] = Field(
-        None,
-        description=(
-            "Classified by association: "
-            "‘Automatic overdue penalty’ when a penalty link exists; "
-            "otherwise ‘Compliance obligation’."
-        ),
+    invoice_type: Optional[Literal["Compliance obligation", "Automatic overdue penalty", "Late Submission Penalty"]] = (
+        Field(
+            None,
+            description=(
+                "Classified by association: "
+                "‘Late Submission Penalty’ when a late submission penalty link exists; "
+                "‘Automatic overdue penalty’ when a penalty link exists; "
+                "otherwise ‘Compliance obligation’."
+            ),
+        )
     )
     invoice_total: Optional[Decimal] = Field(
         None,

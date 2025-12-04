@@ -555,6 +555,11 @@ class ElicensingInvoiceService:
                 ),
             ),
             invoice_type=Case(
+                When(
+                    Q(compliance_penalty__isnull=False)
+                    & Q(compliance_penalty__penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION),
+                    then=Value("Late Submission Penalty"),
+                ),
                 When(compliance_penalty__isnull=False, then=Value("Automatic overdue penalty")),
                 default=Value("Compliance obligation"),
             ),
@@ -585,7 +590,6 @@ class ElicensingInvoiceService:
                     compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__operator=operator
                 )
             )
-
         # Build a Django order_by key from the requested sort inputs.
         order = (sort_order or "asc").lower()
         sort_direction = "-" if order == "desc" else ""
