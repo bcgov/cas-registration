@@ -8,6 +8,7 @@ import {
   GridActionText,
 } from "@/compliance-e2e/utils/enums";
 import { NO_OBLIGATION_URL_PATTERN } from "@/compliance-e2e/utils/constants";
+import { checkAlertMessage } from "@bciers/e2e/utils/helpers";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
@@ -36,7 +37,8 @@ test.describe("Test compliance report version no obligation or earned credits", 
       linkName: GridActionText.VIEW_DETAILS,
       urlPattern: NO_OBLIGATION_URL_PATTERN,
     });
-    await gridComplianceSummaries.assertAlertMessageExists(
+    await checkAlertMessage(
+      page,
       /No compliance obligation or earned credits for this operation over the \d{4} compliance period\./i,
     );
   });

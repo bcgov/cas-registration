@@ -67,12 +67,6 @@ export class ComplianceSummariesPOM {
     expect(status).toBe(expectedStatus);
   }
 
-  async assertAlertMessageExists(expectedText: RegExp): Promise<void> {
-    const row = this.page.getByRole("alert").filter({ hasText: expectedText });
-
-    await expect(row).toBeVisible();
-  }
-
   /**
    * Click an action link in the compliance summaries grid for a given operation
    * and optionally assert the resulting URL.
