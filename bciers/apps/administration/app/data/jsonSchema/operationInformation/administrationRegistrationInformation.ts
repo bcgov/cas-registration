@@ -6,6 +6,7 @@ import {
   getContacts,
   getRegistrationPurposes,
   getReportingActivities,
+  getReportingYears,
 } from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
 
@@ -32,6 +33,15 @@ export const createAdministrationRegistrationInformationSchema =
     }[] = await getReportingActivities();
     if (reportingActivities && "error" in reportingActivities)
       throw new Error("Failed to retrieve reporting activities information");
+    // fetch valid reporting years for OptedOutOperation dropdown
+    const validReportingYears: {id: number }[] = await getReportingYears(true);
+    if (validReportingYears && "error" in validReportingYears)
+      throw new Error("Failed to retrieve reporting years");
+
+    const reportingYearsDropdownOptions = validReportingYears.map((year) => ({
+      const: year.id,
+      title: `${String(year.id)} reporting year`
+    }))
 
     const reportingActivitiesSchema: RJSFSchema = {
       type: "array",
@@ -189,6 +199,16 @@ export const createAdministrationRegistrationInformationSchema =
                 activities: {
                   ...reportingActivitiesSchema,
                 },
+                opted_out_operation: {
+                  title: "Opt-in status:",
+                  type: "object",
+                  properties: {
+                    final_reporting_year: {
+                      type: "number",
+                      anyOf: reportingYearsDropdownOptions
+                    }
+                  }
+                },
                 opted_in_preface: {
                   // Not an actual field, just used to display a message
                   type: "object",
@@ -307,6 +327,15 @@ export const registrationInformationUiSchema: UiSchema = {
   },
   date_of_first_shipment: {
     "ui:widget": "RadioWidget",
+  },
+  opted_out_operation: {
+    final_reporting_year: {
+      "ui:widget": "OptedOutOperationWidget",
+      "ui:options": {
+        wide: true
+      }
+    }
+
   },
   new_entrant_application: {
     "ui:widget": "FileWidget",

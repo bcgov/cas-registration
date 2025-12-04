@@ -6,6 +6,7 @@ from registration.schema import OperatorForOperationOut, MultipleOperatorIn, Mul
 from ninja import Field, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
+from registration.models.opted_out_operation_detail import OptedOutOperationDetail
 from pydantic import field_validator
 from django.core.files.base import ContentFile
 from registration.utils import data_url_to_file
@@ -117,6 +118,15 @@ class OperationInformationIn(ModelSchema):
 class OperationInformationInUpdate(OperationInformationIn):
     operation_representatives: List[int]
 
+class OptedOutOperationDetailOut(ModelSchema):
+    class Meta:
+        model = OptedOutOperationDetail
+        fields = ["final_reporting_year"]
+        from_attributes = True
+
+
+class OptedOutOperationDetailIn(OptedOutOperationDetailOut):
+    final_reporting_year: int = Field(...)
 
 class OptedInOperationDetailOut(ModelSchema):
     class Meta:
@@ -144,6 +154,7 @@ class OptedInOperationDetailIn(OptedInOperationDetailOut):
     meets_notification_to_director_on_criteria_change: bool = Field(...)
 
 
+
 class OperationOut(ModelSchema):
     naics_code_id: Optional[int] = Field(None, alias="naics_code.id")
     secondary_naics_code_id: Optional[int] = Field(None, alias="secondary_naics_code.id")
@@ -160,6 +171,7 @@ class OperationOut(ModelSchema):
     new_entrant_application: Optional[str] = None
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
     operation_representatives: Optional[List[int]] = []
+    opted_out_operation: Optional[OptedOutOperationDetailOut] = None
 
     @staticmethod
     def resolve_operation_representatives(obj: Operation) -> List[int]:
@@ -172,6 +184,12 @@ class OperationOut(ModelSchema):
     @staticmethod
     def resolve_operation_has_multiple_operators(obj: Operation) -> bool:
         return obj.multiple_operators.exists()
+    
+    @staticmethod
+    def resolve_opted_out_operation(obj: Operation):
+        if not obj.opted_in_operation:
+            return None
+        return obj.opted_in_operation.opted_out_operation
 
     @staticmethod
     def resolve_operator(obj: Operation, context: DictStrAny) -> Optional[Operator]:
