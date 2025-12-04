@@ -1,4 +1,4 @@
-from typing import Literal, Tuple, List
+from typing import Literal, Optional, Tuple, List
 
 from django.db.models import QuerySet
 
@@ -61,6 +61,16 @@ def change_report_version_type(
 )
 def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYear]:
     return 200, ReportingYearService.get_current_reporting_year()
+
+@router.get(
+    "/reporting-years",
+    response={200: List[ReportingYearOut], custom_codes_4xx: Message},
+    tags=None,
+    description="""Returns json object with list of all reporting year objects in database.
+    Optionally, filter out reporting years that are in the past using ?exclude_past=true."""        
+)
+def get_all_reporting_years(request: HttpRequest, exclude_past: Optional[bool] = None) -> Tuple[Literal[200], List[ReportingYear]]:
+    return 200, ReportingYearService.get_all_reporting_years(exclude_past)
 
 
 @router.get(

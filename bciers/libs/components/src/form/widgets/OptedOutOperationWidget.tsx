@@ -1,9 +1,7 @@
 "use client";
 
 import { WidgetProps } from "@rjsf/utils/lib/types";
-import RadioWidget from "./RadioWidget";
-import ToggleWidget from "./ToggleWidget";
-import { Button } from "@mui/material";
+import ComboBox from "./ComboBox";
 import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
 import { DARK_GREY_BG_COLOR } from "@bciers/styles";
@@ -22,41 +20,45 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   id,
   value,
   formContext,
-  name,
+  schema,
+  uiSchema
 }) => {
   const [status, setStatus] = useState<string>(formContext?.isOptedOut ? "Opted-out" : "Opted-in");
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  // savedFinalReportingYear reflects the value stored in the database
-  const [savedFinalReportingYear, setSavedFinalReportingYear] = useState<number | undefined>(value?.final_reporting_year);
   // pendingFinalReportingYear reflects the value that is rendered in the UI
   const [pendingFinalReportingYear, setPendingFinalReportingYear] = useState<number | undefined>(value?.final_reporting_year);
   const [error, setError] = useState<string | undefined>(undefined);
 
   const isCasDirector = Boolean(formContext?.isCasDirector);
 
-  const optOutDateOptions = [
-    { label: "Start of 2026", value: "Start of 2026" },
-    { label: "End of 2026", value: "End of 2026" },
-  ];
+  const isDisabled = !isCasDirector;
 
-  const isDisabled = !isCasDirector || !isEditing;
+  const finalReportingYearSchema = schema?.properties?.final_reporting_year;
+  if (!finalReportingYearSchema || !("anyOf" in finalReportingYearSchema) || !finalReportingYearSchema.anyOf?.length)
+    return <div>No reporting years available</div>
 
   function saveOptedOutDetail(
     operationId: string,
   ) {
     const endpoint = `registration/operations/${operationId}/registration/opted-out-operation-detail`;
 
-    const payload = JSON.stringify({ final_reporting_year: pendingFinalReportingYear})
+    const payload = { final_reporting_year: pendingFinalReportingYear}
 
     return actionHandler(endpoint, "POST", "", {
-      body: payload
+      body: JSON.stringify(payload)
     })
   }
 
   // ---------- Handlers ------------------
-  const handleRadioSelect = (val) => {
-    if (!isEditing || isDisabled) return;
+  const handleComboChange = async (val: number | undefined) => {
+    if (isDisabled) return;
     setPendingFinalReportingYear(val);
+    const response = await saveOptedOutDetail(formContext?.operationId)
+    
+    if (response?.error) {
+      setError(response?.error)
+      return;
+    }
+    setError(undefined);
   }
 
   const handleToggle = () => {
@@ -64,30 +66,10 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
     setStatus(newStatus);
 
     if (newStatus === "Opted-in") {
-      setIsEditing(false);
-    } else {
-      setIsEditing(true);
-    }
+      setPendingFinalReportingYear(undefined)
+    } 
   }
 
-  const handleSave = async () => {
-    const response = await saveOptedOutDetail(formContext?.operationId)
-    
-    if (response?.error) {
-      setError(response?.error)
-      return;
-    }
-    setSavedFinalReportingYear(response.final_reporting_year)
-    setPendingFinalReportingYear(response.final_reporting_year)
-    setIsEditing(false);
-    setError(undefined);
-  }
-
-  const handleCancel = () => {
-    setPendingFinalReportingYear(savedFinalReportingYear)
-    setIsEditing(false);
-    setError(undefined);
-  }
   // ---------------------------------------
 
   return (
@@ -99,32 +81,20 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
       </div>
       {status === "Opted-out" ? (
       <>
-        <div className="text-sm font-semibold">Operation is opted out as of:</div>
+        <div className="text-sm font-semibold">Year that final report is expected</div>
         <div className="flex flex-col gap-2">
-          {optOutDateOptions.map((opt) => (
-            <label key={opt.value} className="flex items-center gap-2">
-              <input type="radio" checked={pendingFinalReportingYear === opt.value} onChange={() => handleRadioSelect(opt.value)} disabled={!isEditing || isDisabled} />
-                <span>{opt.label}</span>
-            </label>
-          ))}
+          <ComboBox
+            id={`${id}-final-reporting-year`}
+            schema={finalReportingYearSchema as any}
+            value={pendingFinalReportingYear}
+            onChange={handleComboChange}
+            disabled={isDisabled}
+            uiSchema={uiSchema?.final_reporting_year}
+            rawErrors={error ? [error] : undefined}
+          />
         </div>
-
-          <div className="flex gap-2 pt-2">
-            {isEditing ? (
-              <>
-                <Button onClick={handleCancel}>Cancel</Button>
-                <Button onClick={handleSave}>Save</Button>
-              </>
-            ) : (
-              <Button onClick={() => setIsEditing(true)}>Edit</Button>
-            )}
-          </div>
       </>
-      ) : (
-        <div className="text-muted-foreground text-sm italic">
-          (Opt-out details appear here when the operation is opted-out.)
-        </div>
-      )}
+      ) : null}
     {error && (
       <div
         className="flex items-center w-full text-red-600 ml-0"
