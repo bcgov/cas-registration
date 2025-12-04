@@ -37,7 +37,7 @@ export function isPlaywrightEnvironment(): boolean {
  * @returns true if running in production, false otherwise
  */
 export function isProductionEnvironment(): boolean {
-  return process.env.NODE_ENV === "production";
+  return process.env.ENVIRONMENT === "production";
 }
 
 /**

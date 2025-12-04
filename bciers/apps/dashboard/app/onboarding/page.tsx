@@ -34,7 +34,7 @@ export default function Page() {
   const handleBceidSignupClick = async () => {
     // We don't have a build solution for the env variables in the frontend yet,
     // so we need to get the env value from the backend
-    const env = await getEnvValue("NODE_ENV");
+    const env = await getEnvValue("ENVIRONMENT");
     if (env === "production") {
       window.open(
         "https://www.bceid.ca/register/business/",

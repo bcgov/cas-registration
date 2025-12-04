@@ -94,7 +94,7 @@ export default async function RootLayout({
                   {children}
                 </Main>
                 <Footer
-                  showMockTimePicker={process.env.NODE_ENV !== "production"}
+                  showMockTimePicker={process.env.ENVIRONMENT !== "production"}
                 />
               </ThemeProvider>
             </NextAppDirEmotionCacheProvider>
