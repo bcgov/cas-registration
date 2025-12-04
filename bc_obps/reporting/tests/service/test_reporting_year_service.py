@@ -8,7 +8,6 @@ from model_bakery.baker import make_recipe
 pytestmark = pytest.mark.django_db
 
 
-@patch('service.reporting_year_service.timezone')
 class TestReportingYearService:
     def setup_method(self):
         self.reporting_year = ReportingYear.objects.create(
@@ -19,6 +18,7 @@ class TestReportingYearService:
             description='Test reporting year',
         )
 
+    @patch('service.reporting_year_service.timezone')
     def test_get_current_reporting_year(self, mock_timezone):
         expected_reporting_year = 2000
         fake_now = datetime(2001, 1, 1, tzinfo=timezone.utc)
