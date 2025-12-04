@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import dataclasses
 from typing import Self
 import uuid
+from reporting.api_v2.response_builder import ResponseBuilder
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_version import ReportVersion
 
@@ -26,7 +27,7 @@ class FacilityData:
     facility_type: str
 
 
-class FormResponseBuilder:
+class FormResponseBuilder(ResponseBuilder):
     """
     Builder to make API responses for reporting form GET requests.
 
@@ -51,10 +52,3 @@ class FormResponseBuilder:
 
         self.response["facility_data"] = dataclasses.asdict(facility_data)
         return self
-
-    def payload(self, payload: dict) -> Self:
-        self.response["payload"] = payload
-        return self
-
-    def build(self) -> dict:
-        return self.response
