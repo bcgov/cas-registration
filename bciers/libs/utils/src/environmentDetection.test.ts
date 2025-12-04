@@ -49,13 +49,13 @@ describe("environmentDetection", () => {
   });
 
   describe("isProductionEnvironment", () => {
-    it("should return true when ENVIRONMENT is 'production'", () => {
-      process.env.ENVIRONMENT = "production";
+    it("should return true when ENVIRONMENT is 'prod'", () => {
+      process.env.ENVIRONMENT = "prod";
       expect(environmentDetection.isProductionEnvironment()).toBe(true);
     });
 
     it("should return false when ENVIRONMENT is not 'production'", () => {
-      process.env.ENVIRONMENT = "development";
+      process.env.ENVIRONMENT = "dev";
       expect(environmentDetection.isProductionEnvironment()).toBe(false);
     });
   });
@@ -72,18 +72,18 @@ describe("environmentDetection", () => {
     });
 
     it("should return false when not in production", () => {
-      process.env.ENVIRONMENT = "development";
+      process.env.ENVIRONMENT = "dev";
       expect(environmentDetection.shouldUseSecureCookies()).toBe(false);
     });
 
     it("should return false when in production but in Vitest", () => {
-      process.env.ENVIRONMENT = "production";
+      process.env.ENVIRONMENT = "prod";
       // Still in Vitest environment due to VITEST_POOL_ID
       expect(environmentDetection.shouldUseSecureCookies()).toBe(false);
     });
 
     it("should return false when in production but in CI", () => {
-      process.env.ENVIRONMENT = "production";
+      process.env.ENVIRONMENT = "prod";
       process.env.CI = "true";
       expect(environmentDetection.shouldUseSecureCookies()).toBe(false);
     });
