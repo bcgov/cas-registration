@@ -46,20 +46,12 @@ def mock_operation_data_access():
         yield mock
 
 
-@pytest.fixture
-def mock_dashboard_service():
-    with patch(GET_REPORT_VERSION_BY_ID_PATH) as mock:
-        mock.return_value = None
-        yield mock
-
-
 class TestUserComplianceAccessService:
     def test_no_registered_operation_returns_invalid(
         self,
         user_guid,
         mock_user_data_access,
         mock_operation_data_access,
-        mock_dashboard_service,
     ):
         mock_operation_data_access.return_value = False
 
@@ -70,14 +62,12 @@ class TestUserComplianceAccessService:
         assert result == UserStatusEnum.INVALID.value
         mock_user_data_access.assert_called_once_with(user_guid)
         mock_operation_data_access.assert_called_once_with(OPERATOR_GUID)
-        mock_dashboard_service.assert_not_called()
 
     def test_registered_no_version_id_returns_registered(
         self,
         user_guid,
         mock_user_data_access,
         mock_operation_data_access,
-        mock_dashboard_service,
     ):
         mock_operation_data_access.return_value = True
 
@@ -88,7 +78,6 @@ class TestUserComplianceAccessService:
         assert result == UserStatusEnum.REGISTERED.value
         mock_user_data_access.assert_called_once_with(user_guid)
         mock_operation_data_access.assert_called_once_with(OPERATOR_GUID)
-        mock_dashboard_service.assert_not_called()
 
     def test_registered_with_version_found_returns_version_status(
         self,
@@ -109,8 +98,6 @@ class TestUserComplianceAccessService:
             compliance_report=compliance_report,
         )
 
-        mock_dashboard_service.return_value = type("CRV", (), {"status": "Obligation not met"})
-
         # Act
         result = UserComplianceAccessService.determine_user_compliance_status(
             user_guid, compliance_report_version_id=123
@@ -120,14 +107,12 @@ class TestUserComplianceAccessService:
         assert result == "Obligation not met"
         mock_user_data_access.assert_called_once_with(user_guid)
         mock_operation_data_access.assert_called_once_with(OPERATOR_GUID)
-        mock_dashboard_service.assert_called_once_with(user_guid, 123)
 
     def test_registered_with_version_missing_returns_invalid(
         self,
         user_guid,
         mock_user_data_access,
         mock_operation_data_access,
-        mock_dashboard_service,
     ):
         # Arrange: registered op, but NO owned CRV with id=999
         mock_operation_data_access.return_value = True
@@ -141,5 +126,3 @@ class TestUserComplianceAccessService:
         assert result == UserStatusEnum.INVALID.value
         mock_user_data_access.assert_called_once_with(user_guid)
         mock_operation_data_access.assert_called_once_with(OPERATOR_GUID)
-        # Since ownership failed, dashboard should NOT be called
-        mock_dashboard_service.assert_not_called()
