@@ -10,8 +10,8 @@ class ResponseBuilder:
 
     def __init__(
         self,
-    ):
-        self.response = {}
+    ) -> None:
+        self.response: dict = {}
 
     def payload(self, payload: dict) -> Self:
         self.response["payload"] = payload
@@ -22,8 +22,9 @@ class ResponseBuilder:
 
 
 class PaginatedResponseBuilder:
-    def __init__(self, request: HttpRequest, page_size: int = PAGE_SIZE, page: int = 1):
-        self.response = {}
+
+    def __init__(self, request: HttpRequest, page_size: int = PAGE_SIZE, page: int = 1) -> None:
+        self.response: dict = {}
         self.pagination = PageNumberPagination.Input(page=page, page_size=page_size, **request.GET.dict())
 
     def payload(self, payload: QuerySet) -> Self:
