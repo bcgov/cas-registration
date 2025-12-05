@@ -244,9 +244,6 @@ class PenaltyCalculationService:
                 - penalty_status: Status of the penalty from the obligation
                 - penalty_type: Type of penalty ("Automatic Overdue")
                 - penalty_charge_rate: Daily penalty rate (0.38%)
-                - days_late: Number of days past the deadline
-                - accumulated_penalty: Total accumulated penalty from eLicensing
-                - accumulated_compounding: The accumulated compound interest on previous penalties
                 - total_penalty: Total penalty from eLicensing
                 - faa_interest: FAA interest from eLicensing
                 - total_amount: Total penalty including FAA interest

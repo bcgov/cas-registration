@@ -22,10 +22,7 @@ class TestAutomaticOverduePenaltyEndpoint(CommonTestSetup):
         penalty_data = {
             "penalty_status": ComplianceObligation.PenaltyStatus.ACCRUING,
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            "days_late": 3,
             "penalty_charge_rate": Decimal("0.38"),
-            "accumulated_penalty": Decimal('38000.00'),
-            "accumulated_compounding": Decimal('656.43'),
             "total_penalty": Decimal("38656.43"),
             "faa_interest": Decimal("0.00"),
             "total_amount": Decimal("38656.43"),
@@ -56,10 +53,7 @@ class TestAutomaticOverduePenaltyEndpoint(CommonTestSetup):
         # Verify the response structure and data matches AutomaticOverduePenaltyOut schema
         assert response_data["penalty_status"] == "Accruing"  # resolver makes this title case
         assert response_data["penalty_type"] == "Automatic Overdue"
-        assert response_data["days_late"] == 3
         assert response_data["penalty_charge_rate"] == "0.38"
-        assert response_data["accumulated_penalty"] == "38000.00"
-        assert response_data["accumulated_compounding"] == "656.43"
         assert response_data["total_penalty"] == "38656.43"
         assert response_data["faa_interest"] == "0.00"
         assert response_data["total_amount"] == "38656.43"

@@ -98,11 +98,12 @@ class TestPenaltyCalculationService:
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
         result = PenaltyCalculationService.calculate_penalty(self.obligation, date(2025, 12, 1))
 
-        assert result["days_late"] == 10
-        assert result["accumulated_penalty"].quantize(Decimal('0.01')) == Decimal('38000.00')
-        assert result["accumulated_compounding"] == Decimal('656.43')
+        assert result["penalty_status"] == CompliancePenalty.Status.NOT_PAID
+        assert result["penalty_type"] == CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
+        assert result["penalty_charge_rate"] == PenaltyCalculationService.DAILY_PENALTY_RATE * 100
+        assert result["total_penalty"] == Decimal('38656.43')
         assert result["faa_interest"] == Decimal('0.00')
-        assert result["total_penalty"] == result["accumulated_penalty"] + result["accumulated_compounding"]
+        assert result["total_amount"] == result["total_penalty"]
 
     @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.TODAY", date(2025, 12, 10))
     @patch(
