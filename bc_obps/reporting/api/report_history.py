@@ -1,6 +1,4 @@
 from typing import Tuple
-
-
 from common.permissions import authorize
 from registration.models import Operation
 from reporting.constants import EMISSIONS_REPORT_TAGS
