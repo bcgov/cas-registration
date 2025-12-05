@@ -1,4 +1,3 @@
-import { getReportReportingYear } from "@reporting/src/app/utils/getReportReportingYear";
 import { fetchReportHistoryPageData } from "@reporting/src/app/components/reportHistory/fetchReportHistoryPageData";
 import { getOperationName } from "@reporting/src/app/utils/getOperationName";
 import React from "react";
@@ -16,7 +15,6 @@ export default async function ReportHistoryPage({
   const operationName = isNaN(report_id)
     ? ""
     : (await getOperationName(report_id)).name;
-  const reportingYearObj = await getReportReportingYear(report_id);
 
   // Fetch history data with report_id and searchParams
   const response = await fetchReportHistoryPageData({
