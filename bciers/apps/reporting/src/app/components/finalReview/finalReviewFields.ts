@@ -209,68 +209,75 @@ export const reportNewEntrantFields = (
   ];
 };
 
-export const complianceSummaryFields = (products: any[] = []) => [
-  {
-    label: "Emissions attributable for reporting",
-    key: "emissions_attributable_for_reporting",
-    unit: "tCO2e",
-  },
-  {
-    label: "Reporting-only emissions",
-    key: "reporting_only_emissions",
-    unit: "tCO2e",
-  },
-  {
-    label: "Emissions attributable for compliance",
-    key: "emissions_attributable_for_compliance",
-    unit: "tCO2e",
-  },
-  { label: "Emissions limit", key: "emissions_limit", unit: "tCO2e" },
-  { label: "Excess emissions", key: "excess_emissions", unit: "tCO2e" },
-  { label: "Credited emissions", key: "credited_emissions", unit: "tCO2e" },
-
-  { heading: "Regulatory values" },
-  { label: "Reduction factor", key: "regulatory_values.reduction_factor" },
-  { label: "Tightening rate", key: "regulatory_values.tightening_rate" },
-  {
-    label: "Initial compliance period",
-    key: "regulatory_values.initial_compliance_period",
-    isYear: true,
-  },
-  {
-    label: "Compliance period",
-    key: "regulatory_values.compliance_period",
-    isYear: true,
-  },
-
-  ...(products.flatMap((product, index) => [
-    { heading: product.name || `Product ${index + 1}` },
+export const complianceSummaryFields = (products: any[] = []) => {
+  return [
     {
-      label: "Annual production",
-      key: `products.${index}.annual_production`,
-      unit: "production unit",
-    },
-    {
-      label: "Production data for Apr 1 - Dec 31 2024",
-      key: `products.${index}.apr_dec_production`,
-    },
-    {
-      label: "Production-weighted average emission intensity",
-      key: `products.${index}.emission_intensity`,
-      unit: "tCO2e/production unit",
-    },
-    {
-      label: "Allocated industrial process emissions",
-      key: `products.${index}.allocated_industrial_process_emissions`,
+      label: "Emissions attributable for reporting",
+      key: "emissions_attributable_for_reporting",
       unit: "tCO2e",
     },
     {
-      label: "Allocated Emissions attributable to compliance",
-      key: `products.${index}.allocated_compliance_emissions`,
+      label: "Reporting-only emissions",
+      key: "reporting_only_emissions",
       unit: "tCO2e",
     },
-  ]) || []),
-];
+    {
+      label: "Emissions attributable for compliance",
+      key: "emissions_attributable_for_compliance",
+      unit: "tCO2e",
+    },
+    { label: "Emissions limit", key: "emissions_limit", unit: "tCO2e" },
+    { label: "Excess emissions", key: "excess_emissions", unit: "tCO2e" },
+    { label: "Credited emissions", key: "credited_emissions", unit: "tCO2e" },
+
+    { heading: "Regulatory values" },
+    { label: "Reduction factor", key: "regulatory_values.reduction_factor" },
+    { label: "Tightening rate", key: "regulatory_values.tightening_rate" },
+    {
+      label: "Initial compliance period",
+      key: "regulatory_values.initial_compliance_period",
+      isYear: true,
+    },
+    {
+      label: "Compliance period",
+      key: "regulatory_values.compliance_period",
+      isYear: true,
+    },
+
+    ...(products.flatMap((product, index) => {
+      const fields: any[] = [
+        { heading: product.name || `Product ${index + 1}` },
+        {
+          label: "Annual production",
+          key: `products.${index}.annual_production`,
+          unit: "production unit",
+        },
+        {
+          label: "Production data for Apr 1 - Dec 31 2024",
+          key: `products.${index}.apr_dec_production`,
+          reporting_years: [2024],
+        },
+        {
+          label: "Production-weighted average emission intensity",
+          key: `products.${index}.emission_intensity`,
+          unit: "tCO2e/production unit",
+        },
+        {
+          label: "Allocated industrial process emissions",
+          key: `products.${index}.allocated_industrial_process_emissions`,
+          unit: "tCO2e",
+        },
+        {
+          label: "Allocated Emissions attributable to compliance",
+          key: `products.${index}.allocated_compliance_emissions`,
+          unit: "tCO2e",
+        },
+      ];
+
+      return fields;
+    }) || []),
+  ];
+};
 
 export const emissionsSummaryFields = [
   {

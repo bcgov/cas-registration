@@ -5,8 +5,8 @@ import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader"
 import FormBase from "@bciers/components/form/FormBase";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import {
-  complianceSummaryUiSchema,
-  complianceSummarySchema,
+  createComplianceSummaryUiSchema,
+  createComplianceSummarySchema,
 } from "@reporting/src/data/jsonSchema/complianceSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { NavigationInformation } from "../taskList/types";
@@ -29,11 +29,12 @@ interface Props {
       name: string;
       customUnit: string;
       annual_production: string;
-      apr_dec_production: string;
+      apr_dec_production?: string;
       emission_intensity: string;
       allocated_industrial_process_emissions: string;
       allocated_compliance_emissions: string;
     }[];
+    reporting_year: number;
   };
   navigationInformation: NavigationInformation;
 }
@@ -42,6 +43,15 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   summaryFormData,
   navigationInformation,
 }) => {
+  // Generate schemas based on reporting year
+  const complianceSummarySchema = createComplianceSummarySchema(
+    summaryFormData.reporting_year,
+  );
+
+  const complianceSummaryUiSchema = createComplianceSummaryUiSchema(
+    summaryFormData.reporting_year,
+  );
+
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="compliance-summary">

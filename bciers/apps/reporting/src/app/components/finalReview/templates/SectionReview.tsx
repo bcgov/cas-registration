@@ -10,6 +10,7 @@ interface Field {
   showSeparator?: boolean;
   isDate?: boolean;
   isYear?: boolean;
+  reporting_years?: number[];
 }
 
 interface SectionProps {
@@ -20,6 +21,7 @@ interface SectionProps {
   isAdded?: boolean;
   isDeleted?: boolean;
   showModifiedValues?: boolean;
+  reportingYear?: number;
 }
 
 /**
@@ -44,6 +46,7 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
   isAdded = false,
   isDeleted = false,
   showModifiedValues = false,
+  reportingYear,
   children,
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -80,7 +83,14 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
       {(!expandable || isExpanded) && (
         <>
           {fields
-            .filter(({ key, heading }) => {
+            .filter(({ key, heading, reporting_years }) => {
+              // Filter by reporting_years if specified
+              if (reporting_years && reportingYear) {
+                if (!reporting_years.includes(reportingYear)) {
+                  return false;
+                }
+              }
+
               if (heading) return true;
               if (!showModifiedValues) return true;
               const value = key ? getNestedValue(data, key) : undefined;
