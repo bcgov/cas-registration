@@ -16,6 +16,10 @@ import {
 } from "@bciers/components";
 import { Main } from "@bciers/components/server";
 import SessionRoleContextProvider from "@bciers/utils/src/sessionRoleContext";
+import {
+  isCIEnvironment,
+  isVitestEnvironment,
+} from "@bciers/utils/src/environmentDetection";
 
 // Dynamically import SessionTimeoutHandler with SSR disabled
 const SessionTimeoutHandler = dynamic(
@@ -60,6 +64,11 @@ export default async function RootLayout({
 
   const session = await auth();
 
+  const showMockTimePicker =
+    !isCIEnvironment() &&
+    !isVitestEnvironment() &&
+    ["local", "dev", "test"].includes(process.env.ENVIRONMENT as any);
+
   return (
     <html lang="en">
       {
@@ -93,9 +102,7 @@ export default async function RootLayout({
                   <SessionTimeoutHandler />
                   {children}
                 </Main>
-                <Footer
-                  showMockTimePicker={process.env.NODE_ENV !== "production"}
-                />
+                <Footer showMockTimePicker={showMockTimePicker} />
               </ThemeProvider>
             </NextAppDirEmotionCacheProvider>
           </SessionRoleContextProvider>

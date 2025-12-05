@@ -6,9 +6,10 @@ vi.stubEnv("SITEMINDER_KEYCLOAK_LOGOUT_URL", "https://example.com");
 vi.unmock("@bciers/actions");
 
 describe("getEnvValue", () => {
-  it("should return the value of the NODE_ENV environment variable", async () => {
-    const result = await getEnvValue("NODE_ENV");
-    expect(result).toBe("test");
+  it("should return the value of the ENVIRONMENT environment variable", async () => {
+    process.env.ENVIRONMENT = "testtest";
+    const result = await getEnvValue("ENVIRONMENT");
+    expect(result).toBe("testtest");
   });
 
   it("should return the value of the SITEMINDER_KEYCLOAK_LOGOUT_URL environment variable", async () => {

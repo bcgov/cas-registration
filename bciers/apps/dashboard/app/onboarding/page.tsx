@@ -34,20 +34,18 @@ export default function Page() {
   const handleBceidSignupClick = async () => {
     // We don't have a build solution for the env variables in the frontend yet,
     // so we need to get the env value from the backend
-    const env = await getEnvValue("NODE_ENV");
-    if (env === "production") {
-      window.open(
-        "https://www.bceid.ca/register/business/",
-        "_blank",
-        "noopener,noreferrer",
-      );
+    const env = await getEnvValue("ENVIRONMENT");
+
+    let bceidUrl;
+    if (env === "prod") {
+      bceidUrl = "https://www.bceid.ca/register/business/";
+    } else if (env === "test") {
+      bceidUrl = "https://www.test.bceid.ca/register/business/";
     } else {
-      window.open(
-        `https://www.${env}.bceid.ca/register/business/`,
-        "_blank",
-        "noopener,noreferrer",
-      );
+      bceidUrl = "https://www.development.bceid.ca/register/business/";
     }
+
+    window.open(bceidUrl, "_blank", "noopener,noreferrer");
   };
 
   // 💻📲

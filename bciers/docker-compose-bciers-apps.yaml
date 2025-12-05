@@ -47,6 +47,7 @@ services:
       KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      ENVIRONMENT: dev
     depends_on:
       - backend
     network_mode: host
@@ -69,6 +70,7 @@ services:
       KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      ENVIRONMENT: dev
     depends_on:
       - backend
     network_mode: host
@@ -91,6 +93,7 @@ services:
       KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      ENVIRONMENT: dev
     depends_on:
       - backend
     network_mode: host
@@ -113,6 +116,7 @@ services:
       KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      ENVIRONMENT: dev
     depends_on:
       - backend
     network_mode: host
@@ -135,6 +139,7 @@ services:
       KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      ENVIRONMENT: dev
     depends_on:
       - backend
     network_mode: host
