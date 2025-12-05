@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import Optional
 from uuid import UUID
-from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
 from compliance.models import ComplianceReportVersion
@@ -50,11 +49,7 @@ class UserComplianceAccessService:
                 return UserStatusEnum.INVALID.value
 
             # Only fetch the crv object when we actually need its status
-            compliance_report_version = ComplianceDashboardService.get_compliance_report_version_by_id(
-                user_guid, compliance_report_version_id
-            )
-            if compliance_report_version is None:
-                return UserStatusEnum.INVALID.value
+            compliance_report_version = ComplianceReportVersion.objects.get(pk=compliance_report_version_id)
             return compliance_report_version.status
 
         return UserStatusEnum.REGISTERED.value
