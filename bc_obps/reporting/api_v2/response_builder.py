@@ -1,7 +1,10 @@
 from django.db.models import QuerySet
 from typing import Self
 
+from django.http import HttpRequest
 from ninja.pagination import PageNumberPagination
+from reporting.constants import PAGE_SIZE
+
 
 class ResponseBuilder:
 
@@ -19,19 +22,15 @@ class ResponseBuilder:
 
 
 class PaginatedResponseBuilder:
-    def __init__(self, page_size:int, **kwargs,):
+    def __init__(self, request: HttpRequest, page_size: int = PAGE_SIZE, page: int = 1):
         self.response = {}
-        self.input = PageNumberPagination.Input(page_size=page_size, **kwargs)
+        self.pagination = PageNumberPagination.Input(page=page, page_size=page_size, **request.GET.dict())
 
     def payload(self, payload: QuerySet) -> Self:
-        self.response["payload"] = payload
-        paginator = PageNumberPagination(page_size=self.page_size)
-        self.response['payload'] = paginator.paginate_queryset(
-            payload, self.input
-        )
-        self.response['payload']['items'] = list(self.response['payload']['items'])
-        print('*********** payload:', self.response['payload'])
+        self.response['payload'] = PageNumberPagination().paginate_queryset(payload, self.pagination)
         return self
 
     def build(self) -> dict:
+        # Evaluate the queryset on build
+        self.response['payload']['items'] = list(self.response['payload']['items'])
         return self.response

@@ -1,5 +1,5 @@
 from ninja import Schema
-from reporting.api_v2.schema import ReportingResponseSchema
+from reporting.api_v2.schema import PaginatedReportingResponseSchema
 
 
 class ReportData(Schema):
@@ -7,5 +7,5 @@ class ReportData(Schema):
     operation_name: str
 
 
-class ReportingReportResponseSchema(ReportingResponseSchema):
+class ReportingReportResponseSchema(PaginatedReportingResponseSchema):
     report_data: ReportData
