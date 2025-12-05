@@ -61,10 +61,7 @@ vi.mock(
 const mockData = {
   penalty_status: "Overdue",
   penalty_type: "Automatic",
-  days_late: 30,
   penalty_charge_rate: "10%",
-  accumulated_penalty: "1000.00",
-  accumulated_compounding: "100.00",
   total_penalty: "1100.00",
   faa_interest: "50.00",
   total_amount: "1000.00",

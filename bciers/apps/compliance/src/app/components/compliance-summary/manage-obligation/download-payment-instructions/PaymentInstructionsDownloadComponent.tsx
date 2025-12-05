@@ -118,8 +118,10 @@ export default function PaymentInstructionsDownloadComponent({
       formData={instructionFormData}
       className="w-full"
       formContext={{
-        isPenalty:
-          invoiceType === ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
+        isPenalty: [
+          ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
+          ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY,
+        ].includes(invoiceType as ComplianceInvoiceTypes),
       }}
     >
       <ComplianceStepButtons
