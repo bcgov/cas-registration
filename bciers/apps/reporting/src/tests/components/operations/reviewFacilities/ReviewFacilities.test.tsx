@@ -56,6 +56,7 @@ const mockFacilitiesInitialData = {
       is_selected: false,
     },
   ],
+  is_sync_allowed: true,
 };
 
 const mockFacilitiesInitialDataWithoutPastFacility = {
@@ -72,6 +73,7 @@ const mockFacilitiesInitialDataWithoutPastFacility = {
     },
   ],
   past_facilities: [],
+  is_sync_allowed: true,
 };
 
 describe("LFOFacilitiesForm", () => {
@@ -284,5 +286,30 @@ describe("LFOFacilitiesForm", () => {
     // Ensure that current facilities are still rendered
     expect(screen.getByText("Facility 1")).toBeInTheDocument();
     expect(screen.getByText("Facility 2")).toBeInTheDocument();
+  });
+
+  it("should hide sync button when is_sync_allowed is false", async () => {
+    const mockDataWithSyncDisabled = {
+      ...mockFacilitiesInitialData,
+      is_sync_allowed: false,
+    };
+
+    render(
+      <LFOFacilitiesForm
+        initialData={mockDataWithSyncDisabled}
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        isSyncAllowed={false}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Review Facilities")).toBeInTheDocument();
+    });
+
+    // Sync button should not be present
+    expect(
+      screen.queryByText("Sync latest data from Administration"),
+    ).not.toBeInTheDocument();
   });
 });

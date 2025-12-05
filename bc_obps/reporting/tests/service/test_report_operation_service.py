@@ -74,6 +74,8 @@ class TestReportOperationService:
         assert result["show_regulated_products"] is True
         assert result["show_boro_id"] is True
         assert result["show_activities"] is True
+        assert "is_sync_allowed" in result
+        assert isinstance(result["is_sync_allowed"], bool)
 
     def test_update_report_service(self):
         self.operation.name = "New Operation Name"

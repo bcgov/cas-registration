@@ -30,6 +30,7 @@ class FacilityReportOut(ModelSchema):
         fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'facility']
 
     operation_id: Optional[UUID] = None
+    is_sync_allowed: bool = True
 
 
 class FacilityReportIn(ModelSchema):

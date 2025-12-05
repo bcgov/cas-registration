@@ -60,6 +60,7 @@ class TestReportOperationDataApi(CommonTestSetup):
             "show_boro_id": True,
             "show_activities": True,
             "reporting_year": self.reporting_year.reporting_year,
+            "is_sync_allowed": True,
         }
         expected_purpose = self.report_operation["registration_purpose"]
 
@@ -105,18 +106,34 @@ class TestReportOperationDataApi(CommonTestSetup):
 
         assert response_json["all_representatives"] == self.report_operation["report_operation_representatives"]
 
+    @patch("reporting.service.report_facilities_service.ReportFacilitiesService.get_all_facilities_for_review")
+    @patch("reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed")
     @patch("reporting.service.report_operation_service.ReportOperationService.update_report_operation")
-    def test_update_report_operation(self, mock_update: MagicMock):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version")
-        report_operation = baker.make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
-        updated_report_operation = baker.prepare(
-            'reporting.ReportOperation', id=report_operation.id, operation_name="UPDATED"
-        )
+    def test_patch_report_operation_updates_successfully(
+        self, mock_update: MagicMock, mock_is_sync_allowed: MagicMock, mock_get_all_facilities: MagicMock
+    ):
+        """Test that PATCH endpoint successfully updates when sync is allowed"""
+        mock_is_sync_allowed.return_value = True
 
-        mock_update.return_value = updated_report_operation
+        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        baker.make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
+
+        mock_update.return_value = {
+            "report_operation": self.report_operation,
+            "facility_id": self.facility_report["facility_id"],
+            "all_activities": self.activities,
+            "all_regulated_products": self.products,
+            "all_representatives": self.report_operation["report_operation_representatives"],
+            "report_type": self.report_operation["operation_report_type"],
+            "show_regulated_products": True,
+            "show_boro_id": True,
+            "show_activities": True,
+            "reporting_year": self.reporting_year.reporting_year,
+            "is_sync_allowed": True,
+        }
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
-        TestUtils.mock_patch_with_auth_role(
+        response = TestUtils.mock_patch_with_auth_role(
             self,
             "industry_user",
             self.content_type,
@@ -126,7 +143,10 @@ class TestReportOperationDataApi(CommonTestSetup):
                 kwargs={"version_id": report_version.id},
             ),
         )
-        mock_update.assert_called_once_with(report_operation.report_version_id)
+
+        assert response.status_code == 200
+        mock_is_sync_allowed.assert_called_once_with(report_version.id)
+        mock_update.assert_called_once_with(report_version.id)
 
     # POST report-operation
     def test_authorized_users_can_post_updates_to_report_version(self):
@@ -135,7 +155,6 @@ class TestReportOperationDataApi(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
 
         endpoint_under_test = f"/api/reporting/report-version/{report_version.id}/report-operation"
-
         data = {
             "operator_legal_name": "new legal name",
             "operator_trade_name": "new trade name",
@@ -167,3 +186,32 @@ class TestReportOperationDataApi(CommonTestSetup):
         assert response_json["operation_name"] == data["operation_name"]
         assert response_json["operation_bcghgid"] == data["operation_bcghgid"]
         assert response_json["bc_obps_regulated_operation_id"] == data["bc_obps_regulated_operation_id"]
+
+    @patch("reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed")
+    @patch("reporting.service.report_operation_service.ReportOperationService.update_report_operation")
+    def test_patch_report_operation_returns_403_when_sync_not_allowed(
+        self, mock_update: MagicMock, mock_is_sync_allowed: MagicMock
+    ):
+        """Test that PATCH endpoint returns 403 when sync is not allowed"""
+        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        baker.make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
+
+        mock_is_sync_allowed.return_value = False
+
+        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+
+        response = TestUtils.mock_patch_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            {},
+            custom_reverse_lazy(
+                "get_update_report",
+                kwargs={"version_id": report_version.id},
+            ),
+        )
+
+        assert response.status_code == 403
+        assert "Sync is not allowed" in response.json()["message"]
+        mock_is_sync_allowed.assert_called_once_with(report_version.id)
+        mock_update.assert_not_called()

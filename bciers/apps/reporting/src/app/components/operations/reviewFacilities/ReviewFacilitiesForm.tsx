@@ -15,6 +15,7 @@ interface Props {
   initialData: any;
   version_id: number;
   navigationInformation: NavigationInformation;
+  isSyncAllowed?: boolean;
 }
 
 interface SubmissionData {
@@ -36,6 +37,7 @@ export default function LFOFacilitiesForm({
   initialData,
   version_id,
   navigationInformation,
+  isSyncAllowed = true,
 }: Props) {
   const [formData, setFormData] = useState(() => ({ ...initialData }));
   const [facilitiesData, setFacilitiesData] = useState(() => ({
@@ -55,6 +57,7 @@ export default function LFOFacilitiesForm({
     buildReviewFacilitiesSchema(
       initialData.current_facilities,
       initialData.past_facilities,
+      isSyncAllowed,
     ),
   );
 
@@ -200,6 +203,7 @@ export default function LFOFacilitiesForm({
       buildReviewFacilitiesSchema(
         newData.current_facilities,
         newData.past_facilities,
+        isSyncAllowed,
       ),
     );
     setFacilitiesData(newData);
@@ -236,12 +240,14 @@ export default function LFOFacilitiesForm({
         schema={schema}
         uiSchema={{
           ...uiSchema,
-          sync_button: {
-            ...uiSchema.sync_button,
-            "ui:options": {
-              onSync: handleSync,
+          ...(isSyncAllowed && {
+            sync_button: {
+              ...uiSchema.sync_button,
+              "ui:options": {
+                onSync: handleSync,
+              },
             },
-          },
+          }),
         }}
         taskListElements={navigationInformation.taskList}
         steps={navigationInformation.headerSteps}

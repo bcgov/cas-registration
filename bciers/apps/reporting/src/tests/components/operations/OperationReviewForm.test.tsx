@@ -83,6 +83,7 @@ const schema = buildOperationReviewSchema(
   true,
   true,
   true,
+  false, // isSyncAllowed
 );
 
 describe("OperationReviewForm Component", () => {
@@ -104,6 +105,7 @@ describe("OperationReviewForm Component", () => {
         reportingYear={2024}
         facilityId={`1234`}
         allRepresentatives={allRepresentatives}
+        isSyncAllowed={false}
       />,
     );
   };
@@ -236,6 +238,7 @@ describe("OperationReviewForm Component", () => {
         reportingYear={2024}
         facilityId={`1234`}
         allRepresentatives={[]}
+        isSyncAllowed={false}
       />,
     );
 
@@ -268,6 +271,56 @@ describe("OperationReviewForm Component", () => {
     });
     mockGetNavigationInformation.mockResolvedValue(dummyNavigationInformation);
 
+    // Create schema with isSyncAllowed=true to enable sync button
+    const schemaWithSync = buildOperationReviewSchema(
+      formData,
+      2024,
+      activities,
+      regulatedProducts,
+      allRepresentatives,
+      reportType,
+      true,
+      true,
+      true,
+      true,
+    );
+
+    render(
+      <OperationReviewForm
+        formData={formData}
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        schema={schemaWithSync}
+        allActivities={[]}
+        allRegulatedProducts={[]}
+        reportType={reportType}
+        reportingYear={2024}
+        facilityId={`1234`}
+        allRepresentatives={[]}
+        isSyncAllowed={true}
+      />,
+    );
+
+    expect(
+      screen.getByText(/Before you can continue,/, { exact: false }),
+    ).toBeInTheDocument();
+
+    const syncButton = screen.getByRole("button", {
+      name: /Sync latest data from Administration/i,
+    });
+    fireEvent.click(syncButton);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/Before you can continue,/, { exact: false }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText(/Changes synced successfully/i),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("does not show sync button and info note when isSyncAllowed is false", async () => {
     render(
       <OperationReviewForm
         formData={formData}
@@ -279,24 +332,78 @@ describe("OperationReviewForm Component", () => {
         reportType={reportType}
         reportingYear={2024}
         facilityId={`1234`}
-        allRepresentatives={[]} // Start with no representatives
+        allRepresentatives={allRepresentatives}
+        isSyncAllowed={false}
       />,
     );
 
-    expect(
-      screen.getByText(/Before you can continue,/, { exact: false }),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText("Review Operation Information"),
+      ).toBeInTheDocument();
+    });
 
-    const syncButton = screen.getByRole("button", { name: /sync/i });
-    fireEvent.click(syncButton);
+    // Verify sync button is not present
+    const syncButton = screen.queryByRole("button", {
+      name: /Sync latest data from Administration/i,
+    });
+    expect(syncButton).not.toBeInTheDocument();
+
+    // Verify purpose note (info box) is not present
+    expect(
+      screen.queryByText(
+        /Any edits to operation information made here will only apply to this report/i,
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows sync button and info note when isSyncAllowed is true", async () => {
+    const schemaWithSync = buildOperationReviewSchema(
+      formData,
+      2024,
+      activities,
+      regulatedProducts,
+      allRepresentatives,
+      reportType,
+      true,
+      true,
+      true,
+      true,
+    );
+
+    render(
+      <OperationReviewForm
+        formData={formData}
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        schema={schemaWithSync}
+        allActivities={[]}
+        allRegulatedProducts={[]}
+        reportType={reportType}
+        reportingYear={2024}
+        facilityId={`1234`}
+        allRepresentatives={allRepresentatives}
+        isSyncAllowed={true}
+      />,
+    );
 
     await waitFor(() => {
       expect(
-        screen.queryByText(/Before you can continue,/, { exact: false }),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.getByText(/Changes synced successfully/i),
+        screen.getByText("Review Operation Information"),
       ).toBeInTheDocument();
     });
+
+    // Verify sync button is present
+    const syncButton = screen.queryByRole("button", {
+      name: /Sync latest data from Administration/i,
+    });
+    expect(syncButton).toBeInTheDocument();
+
+    // Verify purpose note (info box) is present
+    expect(
+      screen.getByText(
+        /Any edits to operation information made here will only apply to this report/i,
+      ),
+    ).toBeInTheDocument();
   });
 });

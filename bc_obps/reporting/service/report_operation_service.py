@@ -10,6 +10,7 @@ from service.data_access_service.regulated_product_service import RegulatedProdu
 from service.facility_report_service import FacilityReportService
 
 from service.reporting_year_service import ReportingYearService
+from reporting.service.sync_validation_service import SyncValidationService
 
 
 class ReportOperationService:
@@ -21,7 +22,7 @@ class ReportOperationService:
         reporting_year = ReportingYearService.get_current_reporting_year()
         purpose = report_operation["registration_purpose"]
         facility_id = FacilityReportService.get_facility_report_by_version_id(version_id)
-
+        is_sync_allowed = SyncValidationService.is_sync_allowed(version_id)
         return {
             "report_operation": report_operation,
             "facility_id": facility_id,
@@ -46,6 +47,7 @@ class ReportOperationService:
                 Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
             ],
             "reporting_year": reporting_year.reporting_year,
+            "is_sync_allowed": is_sync_allowed,
         }
 
     @classmethod
