@@ -1,7 +1,6 @@
-from typing import Generic, Optional, TypeVar
+from typing import Optional
 from ninja import Schema
-
-TPayload = TypeVar('TPayload', bound='Schema')
+from reporting.api_v2.schema import ReportingResponseSchema
 
 
 class CommonProgramDataSchema(Schema):
@@ -13,7 +12,6 @@ class CommonFacilityDataSchema(Schema):
     facility_type: Optional[str]
 
 
-class ReportingFormSchema(Schema, Generic[TPayload]):
-    payload: TPayload
+class ReportingFormSchema(ReportingResponseSchema):
     report_data: Optional[CommonProgramDataSchema] = None
     facility_data: Optional[CommonFacilityDataSchema] = None
