@@ -7,5 +7,5 @@ class ReportData(Schema):
     operation_name: str
 
 
-class ReportingReportSchema(ReportingResponseSchema):
+class ReportingReportResponseSchema(ReportingResponseSchema):
     report_data: ReportData
