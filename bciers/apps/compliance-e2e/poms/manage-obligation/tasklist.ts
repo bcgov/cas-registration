@@ -19,7 +19,6 @@ export class ManageObligationTaskListPOM {
       "i",
     );
 
-    // Task list items are MUI ListItemButton → role="button"
     const button = this.page.getByRole("button", { name: labelRegex });
 
     await expect(button).toBeVisible();

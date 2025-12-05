@@ -28,12 +28,7 @@ test.describe("Test compliance report version manage obligation flow", () => {
     const gridComplianceSummaries = new ComplianceSummariesPOM(page);
     await gridComplianceSummaries.route();
 
-    // Assert the compliance report version record exists with the expected Operation Name
-    await gridComplianceSummaries.getRowByOperationName(
-      ComplianceOperations.OBLIGATION_NOT_MET,
-    );
-
-    // Assert the record has expected status
+    // Assert the compliance report version record exists and has expected status
     await gridComplianceSummaries.assertStatusForOperation(
       ComplianceOperations.OBLIGATION_NOT_MET,
       ComplianceDisplayStatus.OBLIGATION_NOT_MET,
