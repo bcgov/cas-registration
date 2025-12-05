@@ -1,8 +1,11 @@
-from typing import Literal, Tuple, List
+from typing import Literal, Optional, Tuple, List
 
 from common.permissions import authorize
 from django.http import HttpRequest
-from reporting.api_v2._reports._report_id.report_reponse_builder import ReportResponseBuilder
+from registration.models.operation import QuerySet
+from reporting.api_v2._reports._report_id.report_history_response_builder import ReportHistoryResponseBuilder
+from reporting.api_v2._reports._report_id.report_reponse_builder import PaginatedReportResponseBuilder
+from reporting.api_v2._reports._report_id.report_schema import ReportingReportResponseSchema
 from reporting.api_v2.schema import ReportingResponseSchema
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from ...router import router
@@ -16,15 +19,16 @@ from reporting.service.report_history_dashboard_service import ReportingHistoryD
 
 @router.get(
     "/report/{report_id}/history",
-    response={200: ReportingResponseSchema[List[ReportHistoryResponse]], custom_codes_4xx: Message},
+    response={200: ReportingReportResponseSchema, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns json object with current reporting year and due date.""",
     auth=authorize("approved_authorized_roles"),
 )
-@paginate(PageNumberPagination, page_size=PAGE_SIZE)
-def get_report_history(request: HttpRequest, report_id: int) -> Tuple[Literal[200], dict]:
+def get_report_history(request: HttpRequest, report_id: int, **kwargs ) -> Tuple[Literal[200], dict]:
     report_versions = ReportingHistoryDashboardService.get_report_versions_for_report_history_dashboard(report_id)
-    payload = {"report_versions": report_versions}
-    response = ReportResponseBuilder(report_id).payload(payload).build()
-    print('************* response in api:', response)
+    # response = PaginatedReportResponseBuilder(report_id, page, PAGE_SIZE).payload(report_versions).build()
+    builder = ReportHistoryResponseBuilder(PAGE_SIZE, **kwargs)
+    builder.report(report_id)
+    response = builder.payload(report_versions).build()
+    print('*********** response in history:', response)
     return 200, response

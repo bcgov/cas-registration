@@ -10,7 +10,7 @@ class ReportHistoryResponse(ModelSchema):
         model = ReportVersion
         fields = ["id", "updated_at", "status", "report_type", "is_latest_submitted"]
 
-    report_id: int
+    #report_id: int
     submitted_by: Optional[str] = None
     version: Optional[str] = None
 
