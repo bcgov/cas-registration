@@ -31,7 +31,7 @@ spec:
         - secret:
             name: {{ $secretName }}
             items:
-              - key: credentials
+              - key: credentials.json
                 path: gcs-key.json
       repo:
         name: repo1
