@@ -3,7 +3,7 @@ from typing import Literal, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
 
-from reporting.api_v2._reports._report_id.report_reponse_builder import ReportInformationMixin
+from reporting.api_v2._reports._report_id.report_information_mixin import ReportInformationMixin
 from reporting.api_v2._reports._report_id.report_schema import ReportingReportResponseSchema
 from reporting.api_v2.response_builder import PaginatedResponseBuilder
 from reporting.api_v2.router import router
@@ -31,6 +31,4 @@ def get_report_history(request: HttpRequest, report_id: int) -> Tuple[Literal[20
 
     builder = ReportHistoryResponseBuilder(request)
     response = builder.report(report_id).payload(report_versions).build()
-
-    print('*********** response in history:', response)
     return 200, response

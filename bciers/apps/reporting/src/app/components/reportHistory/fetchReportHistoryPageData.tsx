@@ -10,13 +10,12 @@ export const fetchReportHistoryPageData = async (params: {
   const queryParams = buildQueryParams(params.searchParams);
   const url = `reporting/v2/report/${params.report_id}/history${queryParams}`;
   const pageData = await actionHandler(url, "GET", url);
-  console.log("*********** pageData:", pageData);
   return {
     rowData: {
       rows: pageData.payload.items,
       row_count: pageData.payload.count,
     },
-    reporting_year: pageData.report_data.reporting_year,
-    operation_name: pageData.report_data.operation_name,
+    reportingYear: pageData.report_data.reporting_year,
+    operationName: pageData.report_data.operation_name,
   };
 };
