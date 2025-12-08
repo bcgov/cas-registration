@@ -43,6 +43,9 @@ export const createAdministrationRegistrationInformationSchema =
       title: `${String(year.reporting_year)} reporting year`
     }))
 
+    // andrea this works fine
+    console.log("dropdown options ", reportingYearsDropdownOptions)
+
     const reportingActivitiesSchema: RJSFSchema = {
       type: "array",
       minItems: 1,
