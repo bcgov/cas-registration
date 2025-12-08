@@ -191,12 +191,12 @@ class ComplianceService:
     @staticmethod
     def get_calculated_compliance_data(report_version_id: int) -> ComplianceData:
         # Fetch the ReportVersion once (bring in reporting_year and operation) to avoid extra queries
-        report_version_record = ReportVersion.objects.select_related("report__reporting_year", "report__operation").get(
+        report_version_record = ReportVersion.objects.select_related("report__reporting_year", "report_operation").get(
             pk=report_version_id
         )
 
         naics_data = ComplianceService.get_regulatory_values_by_naics_code(report_version_id)
-        registration_purpose = report_version_record.report.operation.registration_purpose
+        registration_purpose = report_version_record.report_operation.registration_purpose
         ##### Don't use schemas, use classes or dicts
         compliance_product_list: List[ReportProductComplianceData] = []
         total_allocated_reporting_only = Decimal(0)
@@ -206,7 +206,7 @@ class ComplianceService:
 
         # Determine whether this report's compliance calculations should use the Apr-Dec (2024) window
         # Use the report's reporting year (from the ReportVersion) rather than the NAICS regulatory value.
-        use_apr_dec = report_version_record.report.reporting_year.reporting_year == 2024
+        use_apr_dec = report_version_record.report.reporting_year_id == 2024
 
         report_products = (
             ReportProduct.objects.order_by("product_id")
@@ -323,7 +323,7 @@ class ComplianceService:
             credited_emissions=round(credited_emissions, 4),
             regulatory_values=naics_data,
             products=compliance_product_list,
-            reporting_year=report_version_record.report.reporting_year.reporting_year,
+            reporting_year=report_version_record.report.reporting_year_id,
         )
 
         return return_object

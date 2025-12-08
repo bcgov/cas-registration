@@ -372,11 +372,11 @@ class BaseReportVersionSchema(ModelSchema):
     report_new_entrant: List[ReportNewEntrantSchema] = []
     operation_emission_summary: Optional[EmissionSummarySchemaOut] = None
     is_supplementary_report: Optional[bool] = None
-    reporting_year: Optional[int] = None
+    reporting_year: int
 
     @staticmethod
-    def resolve_reporting_year(obj: ReportVersion) -> Optional[int]:
-        return obj.report.reporting_year.reporting_year if obj.report and obj.report.reporting_year else None
+    def resolve_reporting_year(obj: ReportVersion) -> int:
+        return obj.report.reporting_year_id
 
     @staticmethod
     def resolve_report_compliance_summary(obj: ReportVersion) -> Optional[ComplianceDataSchemaOut]:

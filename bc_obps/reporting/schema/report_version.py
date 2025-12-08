@@ -10,10 +10,15 @@ class ReportingVersionOut(ModelSchema):
     """
 
     reason_for_change: Optional[str] = None
+    reporting_year: int
 
     class Meta:
         model = ReportVersion
         fields = ["updated_at", "report_type", "report", "status", "reason_for_change"]
+
+    @staticmethod
+    def resolve_reporting_year(obj: ReportVersion) -> int:
+        return obj.report.reporting_year.reporting_year
 
 
 class ReportVersionTypeIn(Schema):

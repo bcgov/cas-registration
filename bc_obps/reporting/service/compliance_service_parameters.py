@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Dict, Tuple
+from typing import Dict, Tuple, cast
 
 
 def _round4(value: Decimal) -> Decimal:
@@ -17,7 +17,7 @@ def resolve_compliance_parameters(
     - allocated_for_compliance_2024: Decimal the prorated allocated emissions for Apr-Dec (0 if not using Apr-Dec)
     - allocated_compliance_emissions_value: Decimal rounded to 4 dp used for product-level reporting
     """
-    annual = Decimal(production_totals.get("annual_amount") or 0)
+    annual = Decimal(cast(Decimal, production_totals.get("annual_amount")))
     apr_dec = Decimal(production_totals.get("apr_dec") or 0)
 
     if use_apr_dec:
