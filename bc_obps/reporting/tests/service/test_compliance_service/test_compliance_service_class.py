@@ -95,13 +95,18 @@ class TestComplianceSummaryServiceClass(TestCase):
             allocated_2024 = Decimal(prod_2024.allocated_compliance_emissions)
             allocated_2025 = Decimal(prod_2025.allocated_compliance_emissions)
 
-            if annual == 0:
-                # If there's no annual production, both allocations should be zero
-                self.assertEqual(allocated_2024, Decimal("0.0000"))
-                self.assertEqual(allocated_2025, Decimal("0.0000"))
-            else:
-                prorated = (allocated_2025 * (apr_dec / annual)).quantize(Decimal("0.0001"))
-                self.assertEqual(allocated_2024, prorated)
+            prorated = (allocated_2025 * (apr_dec / annual)).quantize(Decimal("0.0001"), rounding="ROUND_HALF_UP")
+            self.assertEqual(allocated_2024, prorated)
+
+    def test_apr_dec_product_level_behavior_zero_production(self):
+        """Test Apr–Dec allocation behavior when annual production is zero."""
+        # Build 2024 data with zero production
+        build_2024 = ComplianceTestInfrastructure.zero_production_single_product()
+        result_2024 = ComplianceService.get_calculated_compliance_data(build_2024.report_version_1.id)
+
+        # The product should have zero allocated compliance emissions when production is zero
+        for product in result_2024.products:
+            self.assertEqual(product.allocated_compliance_emissions, Decimal("0.0000"))
 
     def test_compliance_summary_2025_period(self):
         # Assertion values from compliance_class_manual_calcs.xlsx sheet 4

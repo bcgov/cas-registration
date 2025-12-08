@@ -6,6 +6,7 @@ from reporting.models.report_product_emission_allocation import ReportProductEmi
 from reporting.models.report_emission import ReportEmission
 from registration.models.operation import Operation
 from reporting.models.report_version import ReportVersion
+from reporting.models.report_operation import ReportOperation
 from registration.models.naics_code import NaicsCode
 from reporting.models.reporting_year import ReportingYear
 from reporting.models.emission_category import EmissionCategory
@@ -59,6 +60,8 @@ class ComplianceTestInfrastructure:
             "reporting.tests.utils.report", operation=t.operation_1, reporting_year=ReportingYear.objects.get(pk=2024)
         )
         t.report_version_1 = make_recipe("reporting.tests.utils.report_version", report=t.report_1)
+        # Create ReportOperation for the report_version
+        t.report_operation_1 = make_recipe("reporting.tests.utils.report_operation", report_version=t.report_version_1)
         t.report_emission_1 = make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=t.report_version_1,
@@ -212,7 +215,9 @@ class ComplianceTestInfrastructure:
     @classmethod
     def new_entrant(cls):
         t = cls.build()
-        Operation.objects.filter(pk=t.operation_1.id).update(registration_purpose='New Entrant Operation')
+        ReportOperation.objects.filter(report_version=t.report_version_1).update(
+            registration_purpose='New Entrant Operation'
+        )
         return t
 
     @classmethod
@@ -256,6 +261,8 @@ class ComplianceTestInfrastructure:
             "reporting.tests.utils.report", operation=t.operation_1, reporting_year=ReportingYear.objects.get(pk=2024)
         )
         t.report_version_1 = make_recipe("reporting.tests.utils.report_version", report=t.report_1)
+        # Create ReportOperation for the report_version
+        t.report_operation_1 = make_recipe("reporting.tests.utils.report_operation", report_version=t.report_version_1)
         t.report_emission_1 = make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=t.report_version_1,
