@@ -29,7 +29,7 @@ class FacilityData:
 
 class FormResponseBuilder(ResponseBuilder):
     """
-    Builder to make API responses for reporting form GET requests.
+    Builder that extends the base ResponseBuilder. For Reporting form GET requests.
 
     It's meant to be a configurable
     """
