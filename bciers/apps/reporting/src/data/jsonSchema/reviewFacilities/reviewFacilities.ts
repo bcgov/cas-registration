@@ -21,14 +21,17 @@ export const buildReviewFacilitiesSchema = (
     facility__name: string;
     is_selected: boolean;
   }[],
+  isSyncAllowed: boolean = true,
 ): RJSFSchema => ({
   type: "object",
   title: "Review Facilities",
   properties: {
-    facilities_note: {
-      type: "object",
-      readOnly: true,
-    },
+    ...(isSyncAllowed && {
+      facilities_note: {
+        type: "object",
+        readOnly: true,
+      },
+    }),
     select_info: {
       type: "object",
       readOnly: true,
@@ -71,13 +74,15 @@ export const buildReviewFacilitiesSchema = (
       },
     }),
 
-    sync_button: {
-      type: "object",
-      properties: {
-        label: { type: "string", default: "Sync Facilities" },
-        disabled: { type: "boolean", default: false },
+    ...(isSyncAllowed && {
+      sync_button: {
+        type: "object",
+        properties: {
+          label: { type: "string", default: "Sync Facilities" },
+          disabled: { type: "boolean", default: false },
+        },
       },
-    },
+    }),
   },
 });
 

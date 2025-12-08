@@ -11,12 +11,17 @@ export interface ActivityData {
   applicable_to: string;
 }
 
-export const buildFacilitySchema = (activities: ActivityData[]) =>
+export const buildFacilitySchema = (
+  activities: ActivityData[],
+  isSyncAllowed: boolean = true,
+) =>
   ({
     type: "object",
     title: "Review Facility Information",
     properties: {
-      info_note: { type: "object", readOnly: true },
+      ...(isSyncAllowed && {
+        info_note: { type: "object", readOnly: true },
+      }),
       facility_name: { type: "string", title: "Facility name" },
       facility_type: {
         type: "string",
@@ -41,13 +46,15 @@ export const buildFacilitySchema = (activities: ActivityData[]) =>
         },
         uniqueItems: true,
       },
-      sync_button: {
-        type: "object",
-        properties: {
-          label: { type: "string", default: "Sync Facilities" },
-          disabled: { type: "boolean", default: false },
+      ...(isSyncAllowed && {
+        sync_button: {
+          type: "object",
+          properties: {
+            label: { type: "string", default: "Sync Facilities" },
+            disabled: { type: "boolean", default: false },
+          },
         },
-      },
+      }),
     },
   }) as RJSFSchema;
 
