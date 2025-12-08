@@ -20,7 +20,9 @@ class ReportingYearService:
         """
         if exclude_past == True:
             current_year = cls.get_current_reporting_year()
-            return list(ReportingYear.objects.filter(reporting_year__gte=current_year.reporting_year))
+            resp = list(ReportingYear.objects.filter(reporting_year__gte=current_year.reporting_year))
+            print(f"\n\n\n\n{resp}")
+            return resp
         return list(ReportingYear.objects.all())
 
     @classmethod

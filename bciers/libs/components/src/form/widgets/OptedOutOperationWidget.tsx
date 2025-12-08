@@ -23,6 +23,9 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   schema,
   uiSchema
 }) => {
+  console.log("OptedOutWidget formContext ", formContext)
+
+
   const [status, setStatus] = useState<string>(formContext?.isOptedOut ? "Opted-out" : "Opted-in");
   // pendingFinalReportingYear reflects the value that is rendered in the UI
   const [pendingFinalReportingYear, setPendingFinalReportingYear] = useState<number | undefined>(value?.final_reporting_year);
@@ -32,9 +35,9 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
 
   const isDisabled = !isCasDirector;
 
-  const finalReportingYearSchema = schema?.properties?.final_reporting_year;
-  if (!finalReportingYearSchema || !("anyOf" in finalReportingYearSchema) || !finalReportingYearSchema.anyOf?.length)
-    return <div>No reporting years available</div>
+  console.log(status)
+  console.log(isCasDirector)
+  console.log(isDisabled)
 
   function saveOptedOutDetail(
     operationId: string,
@@ -79,13 +82,13 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
           {status}
         </button>
       </div>
-      {status === "Opted-out" ? (
+      {/* {status === "Opted-out" ? (
       <>
         <div className="text-sm font-semibold">Year that final report is expected</div>
         <div className="flex flex-col gap-2">
           <ComboBox
             id={`${id}-final-reporting-year`}
-            schema={finalReportingYearSchema as any}
+            // schema={finalReportingYearSchema as any}
             value={pendingFinalReportingYear}
             onChange={handleComboChange}
             disabled={isDisabled}
@@ -94,7 +97,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
           />
         </div>
       </>
-      ) : null}
+      ) : null} */}
     {error && (
       <div
         className="flex items-center w-full text-red-600 ml-0"
