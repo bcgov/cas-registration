@@ -22,7 +22,7 @@ class Rls:
         )
     """
     role_grants_mapping = {
-        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT],
+        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.UPDATE],
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
