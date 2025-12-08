@@ -7,6 +7,11 @@ from reporting.constants import PAGE_SIZE
 
 
 class ResponseBuilder:
+    """
+    Builder to make API responses for GET requests.
+
+    It's meant to be a configurable
+    """
 
     def __init__(
         self,
@@ -22,10 +27,15 @@ class ResponseBuilder:
 
 
 class PaginatedResponseBuilder:
+    """
+    Response builder for when the payload is paginated
+    """
 
     def __init__(self, request: HttpRequest, page_size: int = PAGE_SIZE, page: int = 1) -> None:
-        self.response: dict = {}
-        self.pagination = PageNumberPagination.Input(page=page, page_size=page_size, **request.GET.dict())
+        self.response: dict = {'payload': {"items": []}}
+        page = int(request.GET.get("page", page))
+        page_size = int(request.GET.get("page_size", page_size))
+        self.pagination = PageNumberPagination.Input(page=page, page_size=page_size)
 
     def payload(self, payload: QuerySet) -> Self:
         self.response['payload'] = PageNumberPagination().paginate_queryset(payload, self.pagination)
