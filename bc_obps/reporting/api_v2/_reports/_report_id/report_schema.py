@@ -1,5 +1,8 @@
+from typing import TypeVar, Generic
 from ninja import Schema
 from reporting.api_v2.schema import PaginatedReportingResponseSchema
+
+TPayload = TypeVar('TPayload', bound=Schema)
 
 
 class ReportData(Schema):
@@ -7,5 +10,5 @@ class ReportData(Schema):
     operation_name: str
 
 
-class ReportingReportResponseSchema(PaginatedReportingResponseSchema):
+class ReportingReportResponseSchema(PaginatedReportingResponseSchema[TPayload], Generic[TPayload]):
     report_data: ReportData
