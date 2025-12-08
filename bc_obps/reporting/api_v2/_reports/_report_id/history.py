@@ -28,7 +28,7 @@ class ReportHistoryResponseBuilder(PaginatedResponseBuilder, ReportInformationMi
 )
 def get_report_history(request: HttpRequest, report_id: int) -> Tuple[Literal[200], dict]:
     report_versions = ReportingHistoryDashboardService.get_report_versions_for_report_history_dashboard(report_id)
-
+    print("********** request: ", request)
     builder = ReportHistoryResponseBuilder(request)
     response = builder.report(report_id).payload(report_versions).build()
     return 200, response
