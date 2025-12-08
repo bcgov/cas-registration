@@ -77,6 +77,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
 
   return (
     <div className="space-y-3 p-4">
+      <h1>ANDREAAAAAA</h1>
       <div className="flex items-center justify-between">
         <button type="button" className={`px-3 py-1 rounded-full text-sm ${status === "Opted-in" ? "bg-blue-500 text-white" : "bg-gray-200"}`} onClick={isCasDirector ? handleToggle : undefined}>
           {status}

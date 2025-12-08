@@ -27,7 +27,6 @@ import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import ConfirmChangeOfFieldModal from "@/registration/app/components/operations/registration/ConfirmChangeOfFieldModal";
-import { OptedOutOperationWidget } from "@bciers/components/form/widgets";
 
 const OperationInformationForm = ({
   formData,
