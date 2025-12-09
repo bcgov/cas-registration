@@ -11,10 +11,7 @@
     "tsConfigRootDir": "./"
   },
   "rules": {
-    "@next/next/no-html-link-for-pages": [
-      "error",
-      "apps/administration/src/app"
-    ]
+    "@next/next/no-html-link-for-pages": ["error", "apps/administration/app"]
   },
   "overrides": [
     {

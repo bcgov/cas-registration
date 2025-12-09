@@ -2,11 +2,27 @@ import { describe, expect } from "vitest";
 import { actionHandler } from "@bciers/actions";
 import { getToken } from "@bciers/actions";
 import { fetch } from "@bciers/testConfig/mocks";
-import * as Sentry from "@sentry/nextjs";
 
 // disable the global mock since we are testing actions here
 vi.unmock("@bciers/actions");
-vi.unmock("@sentry/nextjs");
+
+// Mock Sentry before importing it - use vi.hoisted() to create mocks that can be referenced in the factory
+const { captureExceptionMock, withServerActionInstrumentationMock } =
+  vi.hoisted(() => {
+    return {
+      captureExceptionMock: vi.fn(),
+      withServerActionInstrumentationMock: vi.fn((_, __, callback) => {
+        return callback();
+      }),
+    };
+  });
+
+vi.mock("@sentry/nextjs", () => ({
+  default: {},
+  captureException: captureExceptionMock,
+  withServerActionInstrumentation: withServerActionInstrumentationMock,
+  init: vi.fn(),
+}));
 
 vi.mock("next/headers", () => ({
   cookies: vi.fn(() => ({
@@ -19,10 +35,6 @@ vi.mock("next/headers", () => ({
 const consoleMock = vi
   .spyOn(console, "error")
   .mockImplementation(() => undefined);
-
-const sentryMock = vi
-  .spyOn(Sentry, "captureException")
-  .mockImplementation(() => "Sentry captureException called");
 
 const responseToken = {
   name: "User, Test",
@@ -207,7 +219,7 @@ describe("actionHandler function", () => {
 
     await actionHandler("/endpoint", "GET");
 
-    expect(sentryMock).toHaveBeenCalledOnce();
-    expect(sentryMock).toHaveBeenCalledWith(expect.any(Error));
+    expect(captureExceptionMock).toHaveBeenCalledOnce();
+    expect(captureExceptionMock).toHaveBeenCalledWith(expect.any(Error));
   });
 });
