@@ -38,7 +38,7 @@ class OptedOutOperationDataAccessService:
         else:
             print("\n\n\n\nCREATING")
             opted_out_operation_detail = OptedOutOperationDetail.objects.create(
-                final_reporting_year=opted_out_operation_detail_data.final_reporting_year
+                final_reporting_year_id=opted_out_operation_detail_data.final_reporting_year
             )
             opted_in_operation_detail.opted_out_operation = opted_out_operation_detail
             opted_in_operation_detail.save(update_fields=["opted_out_operation"])

@@ -70,9 +70,6 @@ const SingleStepTaskListForm = ({
   const formSections = schema.properties as RJSFSchema;
   const formSectionList = Object.keys(formSections);
 
-  console.log("formContext ", formContext)
-  console.log("formData ", formData)
-
   // Create the task list items from form sections
   const taskListItems = formSectionList.map((section) => ({
     section,

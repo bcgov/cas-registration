@@ -43,9 +43,6 @@ export const createAdministrationRegistrationInformationSchema =
       title: `${String(year.reporting_year)} reporting year`
     }))
 
-    // andrea this works fine
-    console.log("dropdown options ", reportingYearsDropdownOptions)
-
     const reportingActivitiesSchema: RJSFSchema = {
       type: "array",
       minItems: 1,
@@ -196,13 +193,14 @@ export const createAdministrationRegistrationInformationSchema =
                   ...reportingActivitiesSchema,
                 },
                 opted_out_operation: {
-                  type: "object",
-                  // properties: {
-                  //   final_reporting_year: {
-                  //     type: ["number", "null"],
-                  //     anyOf: reportingYearsDropdownOptions
-                  //   }
-                  // }
+                  type: "string",
+                  properties: {
+                    final_reporting_year: {
+                      title: "Year that final report is expected",
+                      type: ["number", "null"],
+                      anyOf: reportingYearsDropdownOptions
+                    }
+                  }
                 },
                 opted_in_preface: {
                   // Not an actual field, just used to display a message
