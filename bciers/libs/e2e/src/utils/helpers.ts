@@ -385,7 +385,7 @@ export async function selectItemFromMuiSelect(
 ) {
   let roleCell;
   if (xPath) roleCell = page.locator(xPath);
-  else roleCell = page.locator(".MuiFormControl-root");
+  else roleCell = page.locator(".MuiSelect-select");
   await expect(roleCell).toBeVisible();
   await roleCell.click();
   const optionsContainer = page.locator(".MuiList-root");
