@@ -31,11 +31,11 @@ class PaginatedResponseBuilder:
     Response builder for when the payload is paginated
     """
 
-    def __init__(self, request: HttpRequest, page_size: int = PAGE_SIZE, page: int = 1) -> None:
+    def __init__(self, request: HttpRequest | None = None, page_size: int = PAGE_SIZE, page: int = 1) -> None:
         self.response: dict = {'payload': {"items": []}}
-        page = int(request.GET.get("page", page))
-        page_size = int(request.GET.get("page_size", page_size))
-        self.pagination = PageNumberPagination.Input(page=page, page_size=page_size)
+        pagination_page = int(request.GET.get("page", page)) if request else page
+        pagination_page_size = int(request.GET.get("page_size", page_size)) if request else page_size
+        self.pagination = PageNumberPagination.Input(page=pagination_page, page_size=pagination_page_size)
 
     def payload(self, payload: QuerySet) -> Self:
         self.response['payload'] = PageNumberPagination().paginate_queryset(payload, self.pagination)
