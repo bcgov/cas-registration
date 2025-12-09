@@ -551,11 +551,6 @@ ENDPOINTS = {
             "kwargs": {"report_id": MOCK_INT},
         },
         {
-            "method": "get",
-            "endpoint_name": "get_report_operation",
-            "kwargs": {"report_id": MOCK_INT},
-        },
-        {
             "method": "put",
             "endpoint_name": "update_facility_report",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
@@ -618,11 +613,6 @@ ENDPOINTS = {
             "kwargs": {
                 "compliance_report_version_id": MOCK_INT,
             },
-        },
-        {
-            "method": "get",
-            "endpoint_name": "get_report_reporting_year",
-            "kwargs": {"report_id": MOCK_INT},
         },
     ],
     "authorized_irc_user_and_industry_admin_user": [],
