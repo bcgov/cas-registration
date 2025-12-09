@@ -22,7 +22,6 @@ const OperationInformationPage = async ({
     operation.registration_purpose,
     operation.status,
   );
-  console.log("formSchema ", formSchema)
   console.log("operation ", operation)
   const eioSchema = await createAdministrationOperationInformationSchema(
     RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,

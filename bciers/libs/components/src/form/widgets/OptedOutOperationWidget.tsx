@@ -19,13 +19,12 @@ const styles = {
 const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   id,
   value,
+  onChange,
   formContext,
   schema,
-  uiSchema
+  uiSchema,
+  registry
 }) => {
-  console.log("OptedOutWidget formContext ", formContext)
-
-
   const [status, setStatus] = useState<string>(formContext?.isOptedOut ? "Opted-out" : "Opted-in");
   // pendingFinalReportingYear reflects the value that is rendered in the UI
   const [pendingFinalReportingYear, setPendingFinalReportingYear] = useState<number | undefined>(value?.final_reporting_year);
@@ -35,16 +34,16 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
 
   const isDisabled = !isCasDirector;
 
-  console.log(status)
-  console.log(isCasDirector)
-  console.log(isDisabled)
+  const finalReportingYearSchema = schema?.properties?.final_reporting_year;
 
   function saveOptedOutDetail(
-    operationId: string,
+    operationId: string, val: number | undefined
   ) {
     const endpoint = `registration/operations/${operationId}/registration/opted-out-operation-detail`;
 
-    const payload = { final_reporting_year: pendingFinalReportingYear}
+    const payload = { final_reporting_year: val}
+
+    console.log(payload)
 
     return actionHandler(endpoint, "POST", "", {
       body: JSON.stringify(payload)
@@ -55,7 +54,15 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   const handleComboChange = async (val: number | undefined) => {
     if (isDisabled) return;
     setPendingFinalReportingYear(val);
-    const response = await saveOptedOutDetail(formContext?.operationId)
+
+    // for RJSF validation
+    onChange({
+      ...(value ?? {}),
+      final_reporting_year: val ?? null,
+    });
+
+    // persist the change to the database
+    const response = await saveOptedOutDetail(formContext?.operationId, val)
     
     if (response?.error) {
       setError(response?.error)
@@ -77,28 +84,29 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
 
   return (
     <div className="space-y-3 p-4">
-      <h1>ANDREAAAAAA</h1>
       <div className="flex items-center justify-between">
         <button type="button" className={`px-3 py-1 rounded-full text-sm ${status === "Opted-in" ? "bg-blue-500 text-white" : "bg-gray-200"}`} onClick={isCasDirector ? handleToggle : undefined}>
           {status}
         </button>
       </div>
-      {/* {status === "Opted-out" ? (
+      {status === "Opted-out" ? (
       <>
         <div className="text-sm font-semibold">Year that final report is expected</div>
         <div className="flex flex-col gap-2">
           <ComboBox
             id={`${id}-final-reporting-year`}
-            // schema={finalReportingYearSchema as any}
+            schema={finalReportingYearSchema}
             value={pendingFinalReportingYear}
+            registry={registry}
             onChange={handleComboChange}
             disabled={isDisabled}
+            readonly={isDisabled}
             uiSchema={uiSchema?.final_reporting_year}
             rawErrors={error ? [error] : undefined}
           />
         </div>
       </>
-      ) : null} */}
+      ) : null}
     {error && (
       <div
         className="flex items-center w-full text-red-600 ml-0"
