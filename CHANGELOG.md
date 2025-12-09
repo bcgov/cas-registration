@@ -1,3 +1,9 @@
+## [4.6.1](https://github.com/bcgov/cas-registration/compare/v4.6.0...v4.6.1) (2025-12-09)
+
+### Bug Fixes
+
+- Add display logic for late submission penalty on invoices grid ([cba99ec](https://github.com/bcgov/cas-registration/commit/cba99eca29d506a951a1d10c4c9a70cc8991f3fd))
+
 # [4.6.0](https://github.com/bcgov/cas-registration/compare/v4.5.0...v4.6.0) (2025-12-03)
 
 ### Bug Fixes
