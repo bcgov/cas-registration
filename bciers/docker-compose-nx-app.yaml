@@ -55,6 +55,7 @@ services:
   nx-app:
     image: ${IMAGE_URL}:${GITHUB_SHA}
     environment:
+      CI: true
       PORT: ${NX_APP_PORT}
       HOSTNAME: localhost
       NEXTAUTH_URL_INTERNAL: http://localhost:3000
