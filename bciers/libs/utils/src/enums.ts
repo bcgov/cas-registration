@@ -107,6 +107,7 @@ export enum FormMode {
 }
 
 export enum IssuanceStatus {
+  ISSUANCE_NOT_REQUESTED = "Issuance not requested",
   CREDITS_NOT_ISSUED = "Credits Not Issued in BCCR",
   ISSUANCE_REQUESTED = "Issuance Requested",
   CHANGES_REQUIRED = "Changes Required",

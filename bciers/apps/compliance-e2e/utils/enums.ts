@@ -12,13 +12,16 @@ export enum ComplianceOperations {
 
 export enum ComplianceDisplayStatus {
   NO_OBLIGATION = "No obligation or earned credits",
-  EARNED_CREDITS = "Earned credits - not requested",
   OBLIGATION_NOT_MET = "Obligation - not met",
+  EARNED_CREDITS_NOT_REQUESTED = "Earned credits - not requested",
+  EARNED_CREDITS_REQUESTED = "Earned credits - issuance requested",
 }
 
 export enum ComplianceTaskTitles {
   DOWNLOAD_PAYMENT_INSTRUCTIONS = "Download Payment Instructions",
   REQUEST_ISSUANCE = "Request Issuance of Earned Credits",
+  REVIEW_REQUEST_ISSUANCE = "Review Credits Issuance Request",
+  REVIEW_BY_DIRECTOR = "Review by Director",
 }
 
 // Grid Columns
@@ -29,6 +32,7 @@ export enum ComplianceSummariesGridHeaders {
 // Grid Action Text
 export enum GridActionText {
   REQUEST_ISSUANCE_CREDITS = "Request Issuance of Credits",
+  REVIEW_REQUEST_ISSUANCE = "Review Credits Issuance Request",
   MANAGE_OBLIGATION = "Manage Obligation",
   VIEW_DETAILS = "View Details",
   CONTACT_US = "Contact Us",

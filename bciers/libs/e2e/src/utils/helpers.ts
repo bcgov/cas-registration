@@ -7,6 +7,7 @@ import {
   firefox,
   webkit,
   Browser,
+  BrowserContext,
 } from "@playwright/test";
 import { baseUrlSetup } from "@bciers/e2e/utils/constants";
 import { DataTestID, MessageTextResponse } from "@bciers/e2e/utils/enums";
@@ -23,6 +24,7 @@ export async function analyzeAccessibility(
   }).analyze();
 
   if (accessibilityScanResults.violations.length > 0) {
+    // eslint-disable-next-line no-console
     console.log(
       `[Accessibility Violation: ${description}]`,
       accessibilityScanResults.violations,
@@ -353,6 +355,7 @@ export async function clickWithRetry(
       await clickButton(page, buttonName);
       return;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn(`Click failed. Retrying... Attempt ${i}/${retries}`);
     }
   }
@@ -464,4 +467,15 @@ export async function assertFieldVisibility(
       visible: visible,
     });
   }
+}
+
+export async function newContextForRole(
+  browser: Browser,
+  baseURL: string,
+  role: string,
+): Promise<BrowserContext> {
+  return browser.newContext({
+    storageState: getStorageStateForRole(role),
+    baseURL,
+  });
 }

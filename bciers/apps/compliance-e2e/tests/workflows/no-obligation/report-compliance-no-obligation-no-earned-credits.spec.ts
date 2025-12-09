@@ -7,14 +7,17 @@ import {
   ComplianceOperations,
   GridActionText,
 } from "@/compliance-e2e/utils/enums";
-import { NO_OBLIGATION_URL_PATTERN } from "@/compliance-e2e/utils/constants";
+import {
+  NO_OBLIGATION_OR_CREDITS_ALERT_REGEX,
+  NO_OBLIGATION_URL_PATTERN,
+} from "@/compliance-e2e/utils/constants";
 import { checkAlertMessage } from "@bciers/e2e/utils/helpers";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
 test.describe.configure({ mode: "serial" });
-test.describe("Test compliance report version no obligation or earned credits", () => {
-  test("Submits a No Obligation or Earned Credits report and verifies status in Compliance Summary Grid", async ({
+test.describe("Test compliance report version no obligation or earned credits flow", () => {
+  test("Submits a No Obligation or Earned Credits report and verifies status in Compliance Summary grid", async ({
     page,
   }) => {
     // Submit No Obligation or Earned Credits report
@@ -37,9 +40,6 @@ test.describe("Test compliance report version no obligation or earned credits", 
       linkName: GridActionText.VIEW_DETAILS,
       urlPattern: NO_OBLIGATION_URL_PATTERN,
     });
-    await checkAlertMessage(
-      page,
-      /No compliance obligation or earned credits for this operation over the \d{4} compliance period\./i,
-    );
+    await checkAlertMessage(page, NO_OBLIGATION_OR_CREDITS_ALERT_REGEX);
   });
 });

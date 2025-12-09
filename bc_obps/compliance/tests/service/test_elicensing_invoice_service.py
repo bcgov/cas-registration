@@ -70,7 +70,7 @@ class TestElicensingInvoiceService:
         make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=self.line_item, amount=25)
 
         # Add automatic overdue penalty
-        self.penalty_invoice = make_recipe("compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1))
+        self.penalty_invoice = make_recipe("compliance.tests.utils.elicensing_invoice", date(2025, 8, 1))
         make_recipe(
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.obligation,

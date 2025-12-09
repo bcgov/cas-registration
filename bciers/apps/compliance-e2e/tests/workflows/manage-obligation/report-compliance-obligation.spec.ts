@@ -15,13 +15,20 @@ import { PaymentInstructionsPOM } from "@/compliance-e2e/poms/manage-obligation/
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
 test.describe.configure({ mode: "serial" });
-
 test.describe("Test compliance report version manage obligation flow", () => {
-  test.skip("creates a compliance report version for an obligation-not-met report", async ({
+  test("Submits an Obligation report and verifies status in Compliance Summary grid", async ({
     page,
+    request,
+    baseURL,
   }) => {
-    // Submit the report for "Obligation not met"
     const gridReportingReports = new CurrentReportsPOM(page);
+
+    // 🔌 wire the stub before submitting the report
+    await gridReportingReports.attachSubmitReportStub(
+      request,
+      baseURL as string,
+    );
+
     await gridReportingReports.submitReportObligation();
 
     // Navigate to the compliance summaries grid

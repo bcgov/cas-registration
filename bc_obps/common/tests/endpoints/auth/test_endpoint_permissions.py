@@ -46,6 +46,7 @@ class TestEndpointPermissions(TestCase):
             "openapi-json",
             "openapi-view",
             "setup",
+            "run_e2e_integration_stub",
             # Below are endpoints that are accessible to all users so new users can be created
             "create_user_profile",
             "get_user_profile",

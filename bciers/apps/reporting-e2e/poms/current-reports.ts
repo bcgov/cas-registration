@@ -1,4 +1,10 @@
-import { Locator, Page, expect } from "@playwright/test";
+import {
+  APIRequestContext,
+  Locator,
+  Page,
+  Route,
+  expect,
+} from "@playwright/test";
 import {
   AppRoutes,
   ReportIDs,
@@ -10,6 +16,10 @@ import {
   SIGN_OFF_SIGNATURE_LABEL,
   TEST_SIGNATURE_NAME,
   SUBMISSION_SUCCESS_TEXT,
+  SUBMIT_REPORT_ROUTE_PATTERN,
+  E2E_INTEGRATION_STUB_PATH,
+  SUBMIT_REPORT_SCENARIO,
+  DJANGO_API_BASE_URL,
 } from "@/reporting-e2e/utils/constants";
 
 export class CurrentReportsPOM {
@@ -85,6 +95,58 @@ export class CurrentReportsPOM {
 
     // Submit should now be enabled
     await expect(this.submitButton).toBeEnabled();
+  }
+
+  /**
+   * Intercepts POST /reporting/reports/:id/sign-off
+   * and delegates to the Django /e2e-integration-stub endpoint.
+   */
+  async attachSubmitReportStub(api: APIRequestContext): Promise<void> {
+    await this.page.route(SUBMIT_REPORT_ROUTE_PATTERN, async (route: Route) => {
+      const req = route.request();
+      const url = req.url();
+      const method = req.method();
+
+      if (method !== "POST") {
+        return route.continue();
+      }
+
+      const match = url.match(/reports\/(\d+)\/sign-off/);
+      const reportId = match?.[1];
+      if (!reportId) {
+        throw new Error(`Could not extract reportId from URL: ${url}`);
+      }
+
+      const body = (req.postDataJSON?.() ?? {}) as Record<string, unknown>;
+      const stubResponse = await api.post(
+        `${DJANGO_API_BASE_URL}${E2E_INTEGRATION_STUB_PATH}`,
+        {
+          data: {
+            scenario: SUBMIT_REPORT_SCENARIO,
+            payload: {
+              report_version_id: Number(reportId),
+              ...body,
+            },
+          },
+        },
+      );
+
+      if (!stubResponse.ok()) {
+        const text = await stubResponse.text();
+        throw new Error(
+          `Submit stub endpoint failed: ${stubResponse.status()} – ${text}`,
+        );
+      }
+
+      // Pretend the sign-off succeeded and redirect to submission page
+      await route.fulfill({
+        status: 303,
+        headers: {
+          location: `/reporting/reports/${reportId}/${ReportRoutes.SUBMISSION}`,
+        },
+        body: "",
+      });
+    });
   }
 
   /**
