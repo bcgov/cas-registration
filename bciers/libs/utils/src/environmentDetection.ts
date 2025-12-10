@@ -33,11 +33,11 @@ export function isPlaywrightEnvironment(): boolean {
 }
 
 /**
- * Detects if the code is running in a production environment
- * @returns true if running in production, false otherwise
+ * Detects if the code is running in a local environment
+ * @returns true if running locally, false otherwise
  */
-export function isProductionEnvironment(): boolean {
-  return process.env.ENVIRONMENT === "prod";
+export function isLocalEnvironment(): boolean {
+  return process.env.ENVIRONMENT === "local";
 }
 
 /**
@@ -46,7 +46,5 @@ export function isProductionEnvironment(): boolean {
  * @returns true if secure cookies should be used, false otherwise
  */
 export function shouldUseSecureCookies(): boolean {
-  return (
-    isProductionEnvironment() && !isCIEnvironment() && !isVitestEnvironment()
-  );
+  return !isLocalEnvironment() && !isCIEnvironment() && !isVitestEnvironment();
 }
