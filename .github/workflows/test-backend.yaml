@@ -5,6 +5,12 @@ name: Test BCIERS backend container
 
 on:
   workflow_call:
+    inputs:
+      backend_has_changes:
+        description: "Whether any files in bc_obps directory have changed"
+        required: false
+        type: string
+        default: "true"
 
 env:
   PGUSER: postgres
@@ -13,10 +19,16 @@ env:
 jobs:
   pythontests:
     runs-on: ubuntu-latest
+    if: inputs.backend_has_changes == 'true'
     steps:
       - uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            bc_obps/
+            .github/
+            .tool-versions
       - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+        uses: ./.github/actions/dev-env-setup-backend
       - name: Run pytest
         working-directory: ./bc_obps
         run: make pythontests_parallel

@@ -1,0 +1,62 @@
+name: "Set up backend dev environment"
+description: "Sets up backend development environment with Python, Poetry, and PostgreSQL"
+runs:
+  using: composite
+  steps:
+    - name: asdf setup
+      uses: asdf-vm/actions/setup@v3
+    - uses: actions/cache@v4
+      id: asdf-cache-backend
+      with:
+        path: |
+          ~/.asdf
+          ./bc_obps/.tool-versions
+        key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}
+    - name: Extract versions from tool-versions file
+      id: versions
+      shell: bash
+      run: |
+        PYTHON_VERSION=$(grep "^python" ./bc_obps/.tool-versions | cut -d' ' -f2)
+        POETRY_VERSION=$(grep "^poetry" ./bc_obps/.tool-versions | cut -d' ' -f2)
+        POSTGRES_VERSION=$(grep "^postgres" ./bc_obps/.tool-versions | cut -d' ' -f2)
+        echo "python-version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
+        echo "poetry-version=$POETRY_VERSION" >> $GITHUB_OUTPUT
+        echo "postgres-version=$POSTGRES_VERSION" >> $GITHUB_OUTPUT
+    - name: Set up Python
+      id: setup-python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ steps.versions.outputs.python-version }}
+    - name: Set up Poetry
+      uses: Gr1N/setup-poetry@v9
+      with:
+        poetry-version: ${{ steps.versions.outputs.poetry-version }}
+    - name: Set up PostgreSQL
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libreadline-dev uuid-dev
+        asdf plugin add postgres || true
+        asdf plugin update postgres
+        MAKELEVEL=0 POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' asdf install postgres ${{ steps.versions.outputs.postgres-version }}
+        asdf reshim
+    - name: Start PostgreSQL and create database
+      working-directory: ./bc_obps
+      shell: bash
+      run: |
+        make start_pg
+        make create_db
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v4
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+    #----------------------------------------------
+    # install dependencies if cache does not exist
+    #----------------------------------------------
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+      working-directory: ./bc_obps
+      shell: bash
