@@ -122,6 +122,9 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
             rawErrors={error ? [error] : undefined}
             sx={{ width: 300 }}
           />
+          {pendingFinalReportingYear !== undefined ? (
+            <div>Operation will not report for {pendingFinalReportingYear + 1} reporting year and subsequent years</div>
+          ) : null}
         </div>
       ) : null}
     {error && (
