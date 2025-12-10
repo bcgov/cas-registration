@@ -85,7 +85,7 @@ export async function actionHandler(
         // Except in production
         const clientCookies = cookies();
         if (
-          process.env.NODE_ENV !== "production" &&
+          process.env.ENVIRONMENT !== "prod" &&
           clientCookies.has("mock-time")
         ) {
           requestHeaders.append(
@@ -158,7 +158,7 @@ export async function actionHandler(
 
 // 🛠️ Function to get .env vars from server-side
 export async function getEnvValue(key: string) {
-  const publicEnvAllowList = ["NODE_ENV", "SITEMINDER_KEYCLOAK_LOGOUT_URL"];
+  const publicEnvAllowList = ["ENVIRONMENT", "SITEMINDER_KEYCLOAK_LOGOUT_URL"];
   // Check if the key is in the allow list so that we don't expose sensitive env vars
   if (!publicEnvAllowList.includes(key)) throw new Error("Invalid env key");
 

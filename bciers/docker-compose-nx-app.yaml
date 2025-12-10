@@ -47,6 +47,7 @@ services:
       KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      ENVIRONMENT: dev
     depends_on:
       - backend
     network_mode: host
@@ -54,6 +55,7 @@ services:
   nx-app:
     image: ${IMAGE_URL}:${GITHUB_SHA}
     environment:
+      CI: true
       PORT: ${NX_APP_PORT}
       HOSTNAME: localhost
       NEXTAUTH_URL_INTERNAL: http://localhost:3000
@@ -63,6 +65,7 @@ services:
       KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      ENVIRONMENT: dev
     depends_on:
       - backend
     network_mode: host

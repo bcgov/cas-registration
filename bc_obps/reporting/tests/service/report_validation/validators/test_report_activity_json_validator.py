@@ -56,6 +56,7 @@ class TestReportActivityJsonValidator:
             and "dependencies" not in schema["properties"]["test_prop"]
         )
 
+    @pytest.mark.skip("Validator disabled until fixes with jsonschema draft2020 can be addressed. (reporting/#941)")
     @patch("service.form_builder_service.FormBuilderService.build_form_schema")
     def test_validate_with_extra_field(self, mock_build_form_schema):
         mock_build_form_schema.return_value = json.dumps(

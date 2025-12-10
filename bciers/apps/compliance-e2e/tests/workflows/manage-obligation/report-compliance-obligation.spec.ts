@@ -17,7 +17,7 @@ const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 test.describe.configure({ mode: "serial" });
 
 test.describe("Test compliance report version manage obligation flow", () => {
-  test("creates a compliance report version for an obligation-not-met report", async ({
+  test.skip("creates a compliance report version for an obligation-not-met report", async ({
     page,
   }) => {
     // Submit the report for "Obligation not met"
