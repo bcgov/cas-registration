@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import Any
 import jsonschema
 from reporting.models.report_version import ReportVersion
@@ -8,6 +9,8 @@ from reporting.service.report_validation.report_validation_error import (
     Severity,
 )
 from service.form_builder_service import FormBuilderService
+
+logger = logging.getLogger(__name__)
 
 
 def enable_jsonschema_draft_2020_validation(schema: Any) -> None:
@@ -34,6 +37,11 @@ def enable_jsonschema_draft_2020_validation(schema: Any) -> None:
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
+    logger.warning(
+        "Report activity json validation has been suspended until the jsonschema draft2020 can be fully implemented."
+    )
+    return {}
+
     errors = {}
 
     for facility_report in report_version.facility_reports.all():
