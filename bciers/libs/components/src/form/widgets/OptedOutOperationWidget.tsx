@@ -108,9 +108,8 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
         </button>
       </div>
       {status === "Opted-out" ? (
-      <>
-        <div className="text-sm font-semibold">Year that final report is expected</div>
         <div className="flex flex-col gap-2">
+          <label className="text-sm font-semibold w-60">Year that final report is expected</label>
           <ComboBox
             id={`${id}-final-reporting-year`}
             schema={finalReportingYearSchema}
@@ -121,9 +120,9 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
             readonly={isDisabled}
             uiSchema={uiSchema?.final_reporting_year}
             rawErrors={error ? [error] : undefined}
+            sx={{ width: 300 }}
           />
         </div>
-      </>
       ) : null}
     {error && (
       <div
