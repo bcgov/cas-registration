@@ -6,4 +6,4 @@ pushd bciers || exit 1
 files=("$@")
 files=("${files[@]/#/../}") # add ../ to each element
 
-yarn run eslint "${files[@]}"
+NODE_OPTIONS="--max-old-space-size=8192" yarn run eslint "${files[@]}"
