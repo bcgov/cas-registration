@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "@bciers/actions";
-import * as Sentry from "@sentry/nextjs";
+import { captureException } from "@bciers/sentryConfig/sentry";
 
 /**
  * API route handler for downloading payment instructions
@@ -75,7 +75,13 @@ export async function GET(
 
     return pdfResponse;
   } catch (error) {
-    Sentry.captureException(error);
+    // Get user_guid from token for error reporting
+    const token = await getToken();
+    const userGuid = token?.user_guid ?? "";
+    captureException(
+      error instanceof Error ? error : new Error(String(error)),
+      userGuid,
+    );
     console.error("Error downloading invoice:", error);
 
     return NextResponse.json(

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import * as Sentry from "@sentry/nextjs";
-
+import { captureException } from "@bciers/sentryConfig/sentry";
 import { Alert, AlertTitle } from "@mui/material";
 import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
 
@@ -13,8 +12,8 @@ export default function ErrorBoundary({ error }: Props) {
     if (error) {
       try {
         // Attempt to log the error to Sentry
-        const id = Sentry.captureException(error);
-        setEventId(id); // Store Sentry event ID
+        const id = captureException(error);
+        setEventId(id ?? null); // Store Sentry event ID
       } catch (sentryError) {
         // If there's an error logging to Sentry, log it to the console
         // eslint-disable-next-line no-console

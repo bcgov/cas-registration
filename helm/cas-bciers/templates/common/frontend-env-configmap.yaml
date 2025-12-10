@@ -18,6 +18,7 @@ data:
   SITEMINDER_LOGOUT_URL: {{ .Values.dashboardFrontend.auth.siteminderAuthUrl }}/clp-cgi/logoff.cgi
   SITEMINDER_KEYCLOAK_LOGOUT_URL: {{ .Values.dashboardFrontend.auth.siteminderAuthUrl }}/clp-cgi/logoff.cgi?retnow=1&returl={{ .Values.dashboardFrontend.auth.keycloakAuthUrl}}{{ .Values.dashboardFrontend.auth.keycloakRealms }}{{ .Values.dashboardFrontend.auth.keycloakOidc}}/logout
   ENVIRONMENT: {{ .Values.environment }}
+  NEXT_PUBLIC_ENVIRONMENT: {{ .Values.environment }}
   {{- if or (hasSuffix "-prod" .Release.Namespace) (hasSuffix "-test" .Release.Namespace) }}
   SENTRY_ENVIRONMENT: {{ include "cas-bciers.namespaceSuffix" . }}
   NEXT_PUBLIC_SENTRY_ENVIRONMENT: {{ include "cas-bciers.namespaceSuffix" . }}
