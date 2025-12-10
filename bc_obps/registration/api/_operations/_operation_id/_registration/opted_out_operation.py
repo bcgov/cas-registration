@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Dict, Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from registration.models.opted_out_operation_detail import OptedOutOperationDetail
@@ -24,7 +24,17 @@ from registration.api.router import router
 def operation_registration_create_opted_out_operation_detail(
     request: HttpRequest, operation_id: UUID, payload: OptedOutOperationDetailIn
 ) -> Tuple[Literal[200, 400], OptedOutOperationDetailOut]:
-    print(f"\n\n\n\n\nPAYLOAD: {payload}\n\n\n")
     return 200, OperationService.create_or_update_opted_out_operation_detail(
         get_current_user_guid(request), operation_id, payload
     )
+
+# ******* DELETE *********
+@router.delete(
+    "/operations/{uuid:operation_id}/registration/opted-out-operation-detail",
+    response={200: Dict[str,bool], custom_codes_4xx: Message},
+    tags=OPERATION_TAGS,
+    description="""Deletes the OptedOutOperationDetail record associated with an opted-in operation."""
+)
+def delete_opted_out_operation_detail(request, operation_id: str):
+    OperationService.delete_opted_out_operation_detail(get_current_user_guid(request), operation_id)
+    return 200, { "success": True }

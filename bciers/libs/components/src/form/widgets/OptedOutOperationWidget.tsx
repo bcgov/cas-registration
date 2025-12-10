@@ -43,11 +43,14 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
 
     const payload = { final_reporting_year: val}
 
-    console.log(payload)
-
     return actionHandler(endpoint, "POST", "", {
       body: JSON.stringify(payload)
     })
+  }
+
+  function deleteOptedOutDetail( operationId: string) {
+    const endpoint = `registration/operations/${operationId}/registration/opted-out-operation-detail`;
+    return actionHandler(endpoint, "DELETE", "")
   }
 
   // ---------- Handlers ------------------
@@ -71,12 +74,27 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
     setError(undefined);
   }
 
-  const handleToggle = () => {
+  const handleToggle = async () => {
+    if (!isCasDirector) return;
+
     const newStatus = status === "Opted-in" ? "Opted-out" : "Opted-in";
     setStatus(newStatus);
 
     if (newStatus === "Opted-in") {
+      // clear UI state
       setPendingFinalReportingYear(undefined)
+      // tell RJSF the value no longer exists
+      onChange(undefined);
+      // delete the opted-out operation detail record in the database
+      const response = await deleteOptedOutDetail(formContext?.operationId);
+
+      if (response?.error) {
+        setError(response.error);
+        return;
+      }
+
+      setError(undefined);
+      return;
     } 
   }
 
