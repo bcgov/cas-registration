@@ -155,6 +155,18 @@ class OperationService:
         return OptedOutOperationDataAccessService.upsert_opted_out_operation_detail(
             operation.opted_in_operation.id, payload
         )
+    
+    @classmethod
+    @transaction.atomic()
+    def delete_opted_out_operation_detail(
+        cls, user_guid: UUID, operation_id: UUID
+    ):
+        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        if not operation.opted_in_operation.opted_out_operation:
+            raise UserError("There is no opted-out operation record to delete")
+        return OptedOutOperationDataAccessService.delete_opted_out_operation_detail(
+            operation.opted_in_operation.opted_out_operation.id
+        )
 
     @classmethod
     def create_or_replace_new_entrant_application(
