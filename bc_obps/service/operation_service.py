@@ -1,4 +1,6 @@
+from datetime import datetime
 from typing import List, Optional, Tuple, Callable, Generator, Union
+from zoneinfo import ZoneInfo
 from django.db.models import QuerySet
 from common.exceptions import UserError
 from registration.emails import send_registration_and_boro_id_email
@@ -52,6 +54,9 @@ from django.conf import settings
 
 
 class OperationService:
+
+    OPERATION_DEFAULT_START_DATE = datetime(2024, 1, 1, tzinfo=ZoneInfo("America/Vancouver"))
+
     @classmethod
     def get_if_authorized(
         cls,
@@ -249,7 +254,7 @@ class OperationService:
             {
                 'operator': user_operator.operator,
                 'operation': operation,
-                'start_date': timezone.now(),
+                'start_date': cls.OPERATION_DEFAULT_START_DATE,
             },
         )
 
