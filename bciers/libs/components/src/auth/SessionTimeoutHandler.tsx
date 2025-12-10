@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import LogoutWarningModal from "@bciers/components/auth/LogoutWarningModal";
 import { Session } from "next-auth";
-import * as Sentry from "@sentry/nextjs";
+import { captureException } from "@bciers/sentryConfig/sentry";
 import { getSession, signOut, useSession } from "next-auth/react";
 import { BroadcastChannel } from "broadcast-channel";
 import createThrottledEventHandler from "./throttleEventsEffect";
@@ -57,7 +57,9 @@ const SessionTimeoutHandler: React.FC = () => {
       }
       setSessionTimeout(getExpirationTimeInSeconds(newSession.expires));
     } catch (error) {
-      Sentry.captureException(error);
+      captureException(
+        error instanceof Error ? error : new Error(String(error)),
+      );
       console.error("Session refresh error:", error);
       await handleLogout();
     } finally {

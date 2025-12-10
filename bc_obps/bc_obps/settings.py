@@ -214,24 +214,42 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 20000000
 
 
 # Only enable sentry in production and test environments
+# Temporarily enable for 'local' environment for testing both Sentry and BetterStack
 SENTRY_ENVIRONMENT = os.environ.get('SENTRY_ENVIRONMENT')
 SENTRY_TRACE_SAMPLE_RATE = os.environ.get('SENTRY_TRACE_SAMPLE_RATE')
-ENABLE_SENTRY = SENTRY_ENVIRONMENT in ['prod', 'test']
+ENABLE_SENTRY = SENTRY_ENVIRONMENT in ['prod', 'test', 'local']
 if ENABLE_SENTRY:
     # Map environment values to maintain backward compatibility with existing Sentry issues
-    environment_mapping = {'prod': 'production', 'test': 'test'}
+    environment_mapping = {'prod': 'production', 'test': 'test', 'local': 'local'}
     sentry_environment = environment_mapping.get(SENTRY_ENVIRONMENT, SENTRY_ENVIRONMENT)  # type: ignore[arg-type]
 
-    sentry_sdk.init(
-        dsn="https://cf402cd8318aab5c911728a16cbf8fcc@o646776.ingest.sentry.io/4506624068026368",
-        integrations=[DjangoIntegration()],
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for performance monitoring.
-        # We recommend adjusting this value in production.
-        traces_sample_rate=float(SENTRY_TRACE_SAMPLE_RATE) if SENTRY_TRACE_SAMPLE_RATE is not None else 0,
-        # Specify environment (production, test, etc.)
-        environment=sentry_environment,
-    )
+    SENTRY_DSN = "https://cf402cd8318aab5c911728a16cbf8fcc@o646776.ingest.sentry.io/4506624068026368"
+    BETTERSTACK_DSN = "https://FfxnuN4kg57ov7B3UpV6HanU@eu-nbg-2.betterstackdata.com/1594614"
+
+    # Configure DSNs for multiplexed transport (test and local environments send to both Sentry and BetterStack)
+    dsn_list = [SENTRY_DSN]
+    if SENTRY_ENVIRONMENT in ['test', 'local']:
+        dsn_list.append(BETTERSTACK_DSN)
+
+    # Import custom transport for multiple DSNs
+    from .sentry_transport import MultiplexedTransport
+
+    # Prepare init options for sentry_sdk.init (without dsn_list - that's only for transport)
+    init_options = {
+        "dsn": SENTRY_DSN,
+        "integrations": [DjangoIntegration()],
+        "traces_sample_rate": float(SENTRY_TRACE_SAMPLE_RATE) if SENTRY_TRACE_SAMPLE_RATE is not None else 0,
+        "environment": sentry_environment,
+    }
+
+    # Use multiplexed transport if we have multiple DSNs
+    # Pass all init options plus dsn_list to the transport
+    if len(dsn_list) > 1:
+        transport_options = init_options.copy()
+        transport_options["dsn_list"] = dsn_list
+        init_options["transport"] = MultiplexedTransport(transport_options)
+
+    sentry_sdk.init(**init_options)
 
 
 # DJANGO-NINJA SETTINGS

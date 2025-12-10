@@ -14,6 +14,7 @@ import getUUIDFromEndpoint, {
 } from "@bciers/utils/src/getUUIDFromEndpoint";
 import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
+import { captureException } from "@bciers/sentryConfig/sentry";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
@@ -113,7 +114,7 @@ export async function actionHandler(
 
           // if we have an error message, we want to capture it in Sentry otherwise we want to capture the status code
           const error = res.message || `HTTP error! Status: ${response.status}`;
-          Sentry.captureException(new Error(error));
+          captureException(new Error(error), userGuid);
 
           // Handle API errors, if any
           if ("message" in res) return { error: res.message };
@@ -128,7 +129,10 @@ export async function actionHandler(
 
         return data;
       } catch (error: unknown) {
-        Sentry.captureException(error as Error);
+        // Get user_guid from token for error reporting
+        const token = await getToken();
+        const userGuid = token?.user_guid || "";
+        captureException(error as Error, userGuid);
         if (error instanceof Error) {
           // eslint-disable-next-line no-console
           console.error(
