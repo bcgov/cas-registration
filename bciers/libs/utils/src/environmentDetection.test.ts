@@ -48,15 +48,17 @@ describe("environmentDetection", () => {
     });
   });
 
-  describe("isProductionEnvironment", () => {
-    it("should return true when ENVIRONMENT is 'prod'", () => {
-      process.env.ENVIRONMENT = "prod";
-      expect(environmentDetection.isProductionEnvironment()).toBe(true);
+  describe("isLocalEnvironment", () => {
+    it("should return true when ENVIRONMENT is 'local'", () => {
+      process.env.ENVIRONMENT = "local";
+      expect(environmentDetection.isLocalEnvironment()).toBe(true);
     });
 
-    it("should return false when ENVIRONMENT is not 'production'", () => {
-      process.env.ENVIRONMENT = "dev";
-      expect(environmentDetection.isProductionEnvironment()).toBe(false);
+    it("should return false when ENVIRONMENT is not 'local'", () => {
+      ["dev", "prod", "test"].forEach((environment) => {
+        process.env.ENVIRONMENT = environment;
+        expect(environmentDetection.isLocalEnvironment()).toBe(false);
+      });
     });
   });
 
@@ -71,8 +73,8 @@ describe("environmentDetection", () => {
       expect(environmentDetection.shouldUseSecureCookies()).toBe(false);
     });
 
-    it("should return false when not in production", () => {
-      process.env.ENVIRONMENT = "dev";
+    it("should return false when in local environment", () => {
+      process.env.ENVIRONMENT = "local";
       expect(environmentDetection.shouldUseSecureCookies()).toBe(false);
     });
 
