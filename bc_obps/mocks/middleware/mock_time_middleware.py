@@ -28,10 +28,12 @@ class MockTimeMiddleware:
 
             # Mocking time before processing
             if settings.ENVIRONMENT in ["local", "dev", "test"] and 'mock-time' in request.COOKIES:
-                datetime_iso_str = request.COOKIES['mock-time']
-                self.set_database_time_for_session(datetime_iso_str)
 
-                time_traveller = time_machine.travel(datetime.fromisoformat(datetime_iso_str))
+                time_travel_date = self.parse_timestamp(request.COOKIES['mock-time'])
+
+                self.set_database_time_for_session(time_travel_date)
+                time_traveller = time_machine.travel(time_travel_date)
+
                 request.time_traveller = time_traveller
                 request.time_traveller.start()
             else:
@@ -47,6 +49,14 @@ class MockTimeMiddleware:
 
         return response
 
-    def set_database_time_for_session(self, datetime_iso_str: str) -> None:
+    def set_database_time_for_session(self, database_time: datetime | None) -> None:
+        database_value = database_time.isoformat() if database_time is not None else None
+
         with connection.cursor() as cursor:
-            cursor.execute("select mocks.set_mocked_time_in_transaction(%s::timestamptz);", [datetime_iso_str])
+            cursor.execute("select mocks.set_mocked_time_in_transaction(%s::timestamptz);", [database_value])
+
+    def parse_timestamp(self, str: str) -> datetime | None:
+        try:
+            return datetime.fromisoformat(str)
+        except ValueError:
+            return None

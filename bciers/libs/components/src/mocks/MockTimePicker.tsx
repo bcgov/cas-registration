@@ -3,23 +3,21 @@
 import { Button } from "@mui/material";
 import { DateWidget } from "../form/widgets";
 import { CookiesProvider, useCookies } from "react-cookie";
-import { useRouter } from "next/navigation";
 
 const MockTimePicker: React.FC = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["mock-time"]);
-  const router = useRouter();
 
   const dateWidgetProps: any = {
     value: cookies["mock-time"],
     onChange: (d: string) => {
       setCookie("mock-time", d);
-      router.refresh();
+      window.location.reload();
     },
   };
 
   const onClear = () => {
     removeCookie("mock-time");
-    router.refresh();
+    window.location.reload();
   };
 
   return (
