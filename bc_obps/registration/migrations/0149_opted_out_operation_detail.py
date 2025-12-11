@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0148_V4_6_1'),
-        ('reporting', '0146_reportoperation_operation_opted_out_final_reporting_year_and_more'),
+        ('reporting', '0146_report_operation_final_reporting_year'),
     ]
 
     operations = [
