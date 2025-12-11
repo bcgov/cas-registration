@@ -62,9 +62,12 @@ class MultiplexedTransport(Transport):
 
     def flush(self, timeout: Optional[float] = None, callback: Optional[Any] = None) -> None:
         """Flush all transports."""
+        # BaseHttpTransport.flush expects float, not Optional[float]
+        # Use default timeout of 2.0 seconds (same as shutdown_timeout) when None is provided
+        flush_timeout = timeout if timeout is not None else 2.0
         for transport in self.transports:
             try:
-                transport.flush(timeout, callback)
+                transport.flush(flush_timeout, callback)
             except Exception:
                 # Continue flushing other transports even if one fails
                 pass

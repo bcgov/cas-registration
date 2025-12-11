@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+from typing import Any
 from google.oauth2 import service_account
 from pathlib import Path
 import dj_database_url
@@ -235,7 +236,7 @@ if ENABLE_SENTRY:
     from .sentry_transport import MultiplexedTransport
 
     # Prepare init options for sentry_sdk.init (without dsn_list - that's only for transport)
-    init_options = {
+    init_options: dict[str, Any] = {
         "dsn": SENTRY_DSN,
         "integrations": [DjangoIntegration()],
         "traces_sample_rate": float(SENTRY_TRACE_SAMPLE_RATE) if SENTRY_TRACE_SAMPLE_RATE is not None else 0,
@@ -245,7 +246,7 @@ if ENABLE_SENTRY:
     # Use multiplexed transport if we have multiple DSNs
     # Pass all init options plus dsn_list to the transport
     if len(dsn_list) > 1:
-        transport_options = init_options.copy()
+        transport_options: dict[str, Any] = init_options.copy()
         transport_options["dsn_list"] = dsn_list
         init_options["transport"] = MultiplexedTransport(transport_options)
 

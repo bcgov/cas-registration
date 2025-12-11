@@ -60,7 +60,6 @@ function getBaseSentryOptions(appName: string) {
   };
 }
 
-
 export function initSentryClient(appName: string) {
   Sentry.init(getBaseSentryOptions(appName));
 }
