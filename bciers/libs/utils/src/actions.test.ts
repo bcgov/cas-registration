@@ -65,6 +65,24 @@ const mockTokenResponse200 = () => {
   });
 };
 
+// Helper function to setup fetch mocks for error scenarios where actionHandler fetch throws
+// Sets up: initial getToken (success), actionHandler fetch (reject), then getToken in catch block (success)
+const setupFetchMocksForErrorScenario = (error: Error) => {
+  fetch.mockResponseOnce(JSON.stringify(responseToken), { status: 200 });
+  fetch.mockRejectOnce(error);
+  fetch.mockResponseOnce(JSON.stringify(responseToken), { status: 200 });
+};
+
+// Helper function to assert error was logged once
+const expectErrorLoggedOnce = (endpoint: string) => {
+  expect(consoleMock).toHaveBeenCalledOnce();
+  expect(consoleMock).toHaveBeenLastCalledWith(
+    "An error occurred while fetching %s:",
+    endpoint,
+    expect.any(Error),
+  );
+};
+
 describe("getToken function", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -123,49 +141,18 @@ describe("actionHandler function", () => {
   });
 
   it("should return an error if the fetch throws an error", async () => {
-    // getToken fetch (initial call)
-    fetch.mockResponseOnce(JSON.stringify(responseToken), { status: 200 });
-    // actionHandler fetch (will reject)
-    fetch.mockRejectOnce(new Error("Fetch failed"));
-    // getToken fetch (in catch block)
-    fetch.mockResponseOnce(JSON.stringify(responseToken), { status: 200 });
+    const error = new Error("Fetch failed");
+    setupFetchMocksForErrorScenario(error);
 
     const result = await actionHandler("/endpoint", "GET");
 
-    expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenLastCalledWith(
-      "An error occurred while fetching %s:",
-      "/endpoint",
-      expect.any(Error),
-    );
-
+    expectErrorLoggedOnce("/endpoint");
     expect(result).toEqual({
       error: "An error occurred while fetching /endpoint: Fetch failed",
     });
   });
 
-  it("can still return data from an allowed v1 endpoint if fetching token fails", async () => {
-    // Note: this would still likely fail in a real-world scenario if no uuid was in the endpoint url which is grabbed by the getUUIDFromEndpoint function since our API requires a user_guid in the Authorization header
-    fetch.mockResponses(
-      // getToken fetch
-      [JSON.stringify({ message: "Error message" }), { status: 400 }],
-      // actionHandler fetch
-      [JSON.stringify({ test_data: "test" }), { status: 200 }],
-    );
-
-    const result = await actionHandler(
-      "registration/user/user-app-role/ba2ba62a121842e0942aab9e92ce8822",
-      "GET",
-    );
-
-    expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenCalledWith(
-      "Failed to fetch token. Status: 400",
-    );
-
-    expect(result).toEqual({ test_data: "test" });
-  });
-  it("can still return data from an allowed v2 endpoint if fetching token fails", async () => {
+  it("can still return data from an allowed endpoint if fetching token fails", async () => {
     // Note: this would still likely fail in a real-world scenario if no uuid was in the endpoint url which is grabbed by the getUUIDFromEndpoint function since our API requires a user_guid in the Authorization header
     fetch.mockResponses(
       // getToken fetch
@@ -222,22 +209,12 @@ describe("actionHandler function", () => {
   });
 
   it("should return an error if the fetch response is not ok", async () => {
-    // getToken fetch (initial call)
-    fetch.mockResponseOnce(JSON.stringify(responseToken), { status: 200 });
-    // actionHandler fetch (will reject)
-    fetch.mockRejectOnce(new Error("Fetch failed"));
-    // getToken fetch (in catch block)
-    fetch.mockResponseOnce(JSON.stringify(responseToken), { status: 200 });
+    const error = new Error("Fetch failed");
+    setupFetchMocksForErrorScenario(error);
 
     const result = await actionHandler("/endpoint", "GET");
 
-    expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenLastCalledWith(
-      "An error occurred while fetching %s:",
-      "/endpoint",
-      expect.any(Error),
-    );
-
+    expectErrorLoggedOnce("/endpoint");
     expect(result).toEqual({
       error: "An error occurred while fetching /endpoint: Fetch failed",
     });
