@@ -71,11 +71,11 @@ export const buildProductionDataSchema2025 = (
             type: "number",
             minimum: 0,
           },
-          production_data_jan_mar: {
-            title: "Production data for Jan 1 - Mar 31, 2025",
-            type: "number",
-            minimum: 0,
-          },
+          // production_data_jan_mar: {
+          //   title: "Production data for Jan 1 - Mar 31, 2025",
+          //   type: "number",
+          //   minimum: 0,
+          // },
           production_methodology: {
             title: "Production Quantification Methodology",
             type: "string",
@@ -124,19 +124,19 @@ export const buildProductionDataSchema2025 = (
     },
   } as RJSFSchema;
 
-    // // conditionally add Jan-Mar production data field for opted-out operations
-    // if (is_opted_out) {
-    //   schema.definitions!.productionDataItem.properties[
-    //     "production_data_jan_mar_2025"
-    //   ] = {
-    //     title: "Production data for Jan 1 - Mar 31, 2025",
-    //     type: "number",
-    //     minimum: 0,
-    //   };    
-    //   schema.definitions!.productionDataItem.required!.push(
-    //     "production_data_jan_mar_2025",
-    //   )
-    // }
+    // conditionally add Jan-Mar production data field for opted-out operations
+    if (is_opted_out) {
+      schema.definitions!.productionDataItem.properties[
+        "production_data_jan_mar_2025"
+      ] = {
+        title: "Production data for Jan 1 - Mar 31, 2025",
+        type: "number",
+        minimum: 0,
+      };    
+      schema.definitions!.productionDataItem.required!.push(
+        "production_data_jan_mar_2025",
+      )
+    }
 
     return schema;
 };
