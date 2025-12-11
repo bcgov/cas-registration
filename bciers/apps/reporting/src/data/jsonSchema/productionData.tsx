@@ -76,16 +76,6 @@ const buildProductionDataSchemaDefault = (
             type: "number",
             minimum: 0,
           },
-          production_data_apr_dec: {
-            title: "Production data for Apr 1 - Dec 31, 2024",
-            type: "number",
-            minimum: 0,
-          },
-          production_data_jan_mar_2025: {
-            title: "Production data for Jan 1 - Mar 31, 2025",
-            type: "number",
-            minimum: 0,
-          },
           production_methodology: {
             title: "Production Quantification Methodology",
             type: "string",
@@ -140,7 +130,7 @@ export const buildProductionDataSchema = (
   compliance_period_end: string,
   product_selection: string[],
   facility_type: string,
-  is_opted_out: boolean = false
+  is_2025_last_reporting_year: boolean = false
 ) => {
   switch (reporting_year) {
     case 2024:
@@ -156,10 +146,10 @@ export const buildProductionDataSchema = (
         compliance_period_end,
         product_selection,
         facility_type,
-        is_opted_out
+        is_2025_last_reporting_year
       );
     default:
-      buildProductionDataSchemaDefault(
+      return buildProductionDataSchemaDefault(
         compliance_period_start,
         compliance_period_end,
         product_selection,
@@ -226,6 +216,6 @@ export const buildProductionDataUiSchema = (reporting_year: number, is_opted_out
     case 2025:
       return productionDataUiSchema2025(is_opted_out);
     default:
-      return productionDataUiSchemaDefault;
+      return productionDataUiSchemaDefault();
   }
 };
