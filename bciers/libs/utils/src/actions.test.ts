@@ -7,20 +7,29 @@ import { fetch } from "@bciers/testConfig/mocks";
 vi.unmock("@bciers/actions");
 
 // Mock Sentry before importing it - use vi.hoisted() to create mocks that can be referenced in the factory
-const { captureExceptionMock, withServerActionInstrumentationMock } =
-  vi.hoisted(() => {
-    return {
-      captureExceptionMock: vi.fn(),
-      withServerActionInstrumentationMock: vi.fn((_, __, callback) => {
-        return callback();
-      }),
-    };
-  });
+const {
+  captureExceptionMock,
+  withServerActionInstrumentationMock,
+  withScopeMock,
+} = vi.hoisted(() => {
+  return {
+    captureExceptionMock: vi.fn(),
+    withServerActionInstrumentationMock: vi.fn((_, __, callback) => {
+      return callback();
+    }),
+    withScopeMock: vi.fn((callback) => {
+      return callback({
+        setUser: vi.fn(),
+      });
+    }),
+  };
+});
 
 vi.mock("@sentry/nextjs", () => ({
   default: {},
   captureException: captureExceptionMock,
   withServerActionInstrumentation: withServerActionInstrumentationMock,
+  withScope: withScopeMock,
   init: vi.fn(),
 }));
 
@@ -114,8 +123,13 @@ describe("actionHandler function", () => {
   });
 
   it("should return an error if the fetch throws an error", async () => {
-    mockTokenResponse200();
-    fetch.mockReject(new Error("Fetch failed"));
+    // getToken fetch (initial call)
+    fetch.mockResponseOnce(JSON.stringify(responseToken), { status: 200 });
+    // actionHandler fetch (will reject)
+    fetch.mockRejectOnce(new Error("Fetch failed"));
+    // getToken fetch (in catch block)
+    fetch.mockResponseOnce(JSON.stringify(responseToken), { status: 200 });
+
     const result = await actionHandler("/endpoint", "GET");
 
     expect(consoleMock).toHaveBeenCalledOnce();
@@ -174,16 +188,31 @@ describe("actionHandler function", () => {
   });
 
   it("should return an error if fetching token fails and the endpoint is not allowed", async () => {
-    // getToken fetch
+    // getToken fetch (initial call)
+    fetch.mockResponseOnce(JSON.stringify({ message: "Error message" }), {
+      status: 400,
+    });
+    // getToken fetch (in catch block)
     fetch.mockResponseOnce(JSON.stringify({ message: "Error message" }), {
       status: 400,
     });
 
     const result = await actionHandler("/endpoint", "GET");
 
-    expect(consoleMock).toHaveBeenCalledTimes(2);
-    expect(consoleMock).toHaveBeenCalledWith(
+    expect(consoleMock).toHaveBeenCalledTimes(3);
+    expect(consoleMock).toHaveBeenNthCalledWith(
+      1,
       "Failed to fetch token. Status: 400",
+    );
+    expect(consoleMock).toHaveBeenNthCalledWith(
+      2,
+      "Failed to fetch token. Status: 400",
+    );
+    expect(consoleMock).toHaveBeenNthCalledWith(
+      3,
+      "An error occurred while fetching %s:",
+      "/endpoint",
+      expect.any(Error),
     );
 
     expect(result).toEqual({
@@ -193,8 +222,13 @@ describe("actionHandler function", () => {
   });
 
   it("should return an error if the fetch response is not ok", async () => {
-    mockTokenResponse200();
-    fetch.mockReject(new Error("Fetch failed"));
+    // getToken fetch (initial call)
+    fetch.mockResponseOnce(JSON.stringify(responseToken), { status: 200 });
+    // actionHandler fetch (will reject)
+    fetch.mockRejectOnce(new Error("Fetch failed"));
+    // getToken fetch (in catch block)
+    fetch.mockResponseOnce(JSON.stringify(responseToken), { status: 200 });
+
     const result = await actionHandler("/endpoint", "GET");
 
     expect(consoleMock).toHaveBeenCalledOnce();
