@@ -1,7 +1,7 @@
 "use client";
 
 import { TextField } from "@mui/material";
-import { NumberField } from "@base-ui-components/react/number-field";
+import { NumberField } from "@base-ui/react/number-field";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import {
   DARK_GREY_BG_COLOR,
