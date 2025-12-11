@@ -53,6 +53,7 @@ const OperationInformationForm = ({
     useState<boolean>(false);
   const [key, setKey] = useState(Math.random());
   const searchParams = useSearchParams();
+  const [cancelUrl, setCancelUrl] = useState("/administration/operations");
   const isOperationReadOnly =
     searchParams.get("continueRegistration") === "true";
   const [currentUiSchema, setCurrentUiSchema] = useState({
@@ -139,6 +140,10 @@ const OperationInformationForm = ({
     }
     return errors;
   }
+
+  useEffect(() => {
+    if (typeof document !== "undefined") setCancelUrl(document.referrer);
+  });
 
   const handleSubmit = async (data: { formData?: any }) => {
     const isCreating = !data.formData?.section1?.operation;
@@ -318,7 +323,7 @@ const OperationInformationForm = ({
       />
       <MultiStepBase
         key={key}
-        cancelUrl="/"
+        cancelUrl={cancelUrl}
         formData={confirmedFormState}
         onSubmit={handleSubmit}
         schema={schema}

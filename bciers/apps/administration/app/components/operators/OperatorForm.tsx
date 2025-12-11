@@ -6,6 +6,10 @@ import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
 import { operatorUiSchema } from "../../data/jsonSchema/operator";
 import { FormMode } from "@bciers/utils/src/enums";
+import {
+  getPrevBasePathOrHome,
+  isSameBasePath,
+} from "@bciers/utils/src/environmentDetection";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
@@ -79,7 +83,12 @@ export default function OperatorForm({
         }
       }}
       onCancel={() =>
-        isCreatingState || isInternalUser ? router.back() : router.push("/")
+        // if navigated cross app (dashboard to admin), go to direct link
+        !isSameBasePath()
+          ? window.location.assign(getPrevBasePathOrHome())
+          : isCreatingState || isInternalUser
+            ? router.back()
+            : router.push("/")
       }
     />
   );

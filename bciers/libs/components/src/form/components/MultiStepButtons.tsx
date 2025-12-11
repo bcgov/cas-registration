@@ -3,6 +3,7 @@
 import { Button } from "@mui/material";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 import Link from "next/link";
+import MuiLink from "@mui/material/Link";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 interface SubmitButtonProps {
@@ -16,6 +17,7 @@ interface SubmitButtonProps {
   allowBackNavigation?: boolean;
   baseUrl?: string;
   submitButtonDisabled?: boolean;
+  pathname?: string;
 }
 
 const MultiStepButtons: React.FunctionComponent<SubmitButtonProps> = ({
@@ -46,9 +48,9 @@ const MultiStepButtons: React.FunctionComponent<SubmitButtonProps> = ({
   return (
     <div className={`flex w-full mt-2 justify-between ${classNames}`}>
       {cancelUrl && (
-        <Link href={cancelUrl}>
+        <MuiLink href={cancelUrl}>
           <Button variant="outlined">Cancel</Button>
-        </Link>
+        </MuiLink>
       )}
       <div>
         {allowBackNavigation &&
