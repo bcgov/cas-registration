@@ -6,6 +6,7 @@ import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
 import { DARK_GREY_BG_COLOR } from "@bciers/styles";
 import { AlertIcon } from "@bciers/components/icons";
+import ToggleWidget from "./ToggleWidget";
 
 const styles = {
   "& .MuiOutlinedInput-root": {
@@ -74,13 +75,12 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
     setError(undefined);
   }
 
-  const handleToggle = async () => {
+  const handleToggle = async (checked: boolean) => {
     if (!isCasDirector) return;
 
-    const newStatus = status === "Opted-in" ? "Opted-out" : "Opted-in";
-    setStatus(newStatus);
+    setStatus(checked ? "Opted-in" : "Opted-out");
 
-    if (newStatus === "Opted-in") {
+    if (checked) {
       // clear UI state
       setPendingFinalReportingYear(undefined)
       // tell RJSF the value no longer exists
@@ -103,9 +103,17 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   return (
     <div className="space-y-3 p-4">
       <div className="flex items-center justify-between">
-        <button type="button" className={`px-3 py-1 rounded-full text-sm ${status === "Opted-in" ? "bg-blue-500 text-white" : "bg-gray-200"}`} onClick={isCasDirector ? handleToggle : undefined}>
-          {status}
-        </button>
+        <ToggleWidget
+          id={`${id}-opt-in-status`} 
+          value={status === "Opted-in"}
+          onChange={(checked: boolean) => {
+            if (!isCasDirector) return;
+            handleToggle(checked);
+          }}
+          disabled={!isCasDirector}
+          trueLabel="Opted-in"
+          falseLabel="Opted-out"
+        />
       </div>
       {status === "Opted-out" ? (
         <div className="flex flex-col gap-2">
