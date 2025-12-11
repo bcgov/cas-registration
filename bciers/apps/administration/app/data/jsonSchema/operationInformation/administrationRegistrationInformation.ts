@@ -34,14 +34,15 @@ export const createAdministrationRegistrationInformationSchema =
     if (reportingActivities && "error" in reportingActivities)
       throw new Error("Failed to retrieve reporting activities information");
     // fetch valid reporting years for OptedOutOperation dropdown
-    const validReportingYears: { reporting_year: number }[] = await getReportingYears(true);
+    const validReportingYears: { reporting_year: number }[] =
+      await getReportingYears(true);
     if (validReportingYears && "error" in validReportingYears)
       throw new Error("Failed to retrieve reporting years");
 
     const reportingYearsDropdownOptions = validReportingYears.map((year) => ({
       const: year.reporting_year,
-      title: `${String(year.reporting_year)} reporting year`
-    }))
+      title: `${String(year.reporting_year)} reporting year`,
+    }));
 
     const reportingActivitiesSchema: RJSFSchema = {
       type: "array",
@@ -198,9 +199,9 @@ export const createAdministrationRegistrationInformationSchema =
                     final_reporting_year: {
                       title: "Year that final report is expected",
                       type: ["number", "null"],
-                      anyOf: reportingYearsDropdownOptions
-                    }
-                  }
+                      anyOf: reportingYearsDropdownOptions,
+                    },
+                  },
                 },
                 opted_in_preface: {
                   // Not an actual field, just used to display a message
@@ -305,10 +306,9 @@ export const registrationInformationUiSchema: UiSchema = {
   },
   opted_out_operation: {
     "ui:widget": "OptedOutOperationWidget",
-    "ui:title": "Opt-in status:"
-    // final_reporting_year: {
-    //   "ui:placeholder": "Select reporting year",
-    // }
+    "ui:options": {
+      label: false,
+    },
   },
   opted_in_preface: {
     "ui:classNames": "text-bc-bg-blue text-lg",
