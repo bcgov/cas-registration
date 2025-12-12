@@ -2,7 +2,7 @@
 import React from "react";
 import { BC_GOV_COMPONENTS_GREY, LIGHT_GREY_BG_COLOR } from "@bciers/styles";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
-import { NumberField } from "@base-ui-components/react/number-field";
+import { NumberField } from "@base-ui/react/number-field";
 import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
 import { numberStyles } from "../formCustomization/FinalReviewStringField";
 

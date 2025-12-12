@@ -6,7 +6,7 @@ import {
   WHITE,
 } from "@bciers/styles";
 import StatusLabel from "@bciers/components/form/fields/StatusLabel";
-import { NumberField } from "@base-ui-components/react/number-field";
+import { NumberField } from "@base-ui/react/number-field";
 import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
 import { numberStyles } from "../formCustomization/FinalReviewStringField";
 
