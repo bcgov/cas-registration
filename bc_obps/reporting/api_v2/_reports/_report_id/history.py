@@ -23,7 +23,7 @@ class ReportHistoryResponseBuilder(PaginatedResponseBuilder, ReportInformationMi
     "/report/{report_id}/history",
     response={200: ReportingReportResponseSchema[ReportHistoryResponse], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Returns json object with current reporting year and due date.""",
+    description="""Returns object with report_data and payload. Payload is a paginated list of report versions for the specified report.""",
     auth=authorize("approved_authorized_roles"),
 )
 def get_report_history(request: HttpRequest, report_id: int) -> Tuple[Literal[200], dict]:
