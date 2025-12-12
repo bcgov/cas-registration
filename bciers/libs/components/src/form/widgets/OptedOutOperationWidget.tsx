@@ -123,7 +123,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
             Year that final report is expected
           </label>
           <div className="flex flex-col gap-2">
-            <div style={{ width: "fit-content", minWidth: "12rem" }}>
+            <div style={{ width: 300, minWidth: "12rem" }}>
               <ComboBox
                 id={`${id}-final-reporting-year`}
                 schema={(finalReportingYearSchema || {}) as any}
