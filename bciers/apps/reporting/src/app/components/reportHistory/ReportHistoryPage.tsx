@@ -11,17 +11,15 @@ export default async function ReportHistoryPage({
   searchParams: ReportHistorySearchParams;
 }) {
   // Fetch history data with report_id and searchParams
-  const response = await fetchReportHistoryPageData({
-    report_id,
-    searchParams,
-  });
-  const history = response.rowData;
-  const operationName = response.operationName;
-  const reportingYear = response.reportingYear;
+  const { rowData, operationName, reportingYear } =
+    await fetchReportHistoryPageData({
+      report_id,
+      searchParams,
+    });
   return (
     <ReportHistoryDataGrid
       report_id={report_id}
-      initialData={history}
+      initialData={rowData}
       operationName={operationName}
       reportingYear={reportingYear}
     />
