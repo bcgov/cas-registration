@@ -724,6 +724,14 @@ describe("OperatorForm component", () => {
         isInternalUser={false}
       />,
     );
+
+    // simulate same base path for back to work properly
+    window.history.pushState({}, "", "/administration/my-operator");
+    Object.defineProperty(document, "referrer", {
+      configurable: true,
+      get: () => "https://app.gov.bc.ca/administration",
+    });
+
     await userEvent.click(screen.getByRole("button", { name: /back/i }));
     expect(mockRouterBack).toHaveBeenCalledTimes(1);
   });
@@ -749,5 +757,31 @@ describe("OperatorForm component", () => {
     );
     await userEvent.click(screen.getByRole("button", { name: /back/i }));
     expect(mockRouterPush).toHaveBeenCalledTimes(1);
+  });
+  it("calls the window.location.assign on cancel if previous route was different basepath", async () => {
+    render(
+      <OperatorForm
+        schema={await createOperatorSchema()}
+        formData={operatorFormData}
+        isCreating={true}
+        isInternalUser={false}
+      />,
+    );
+
+    // simulate different base path for cancel button
+    Object.defineProperty(document, "referrer", {
+      configurable: true,
+      get: () => "https://app.gov.bc.ca/dashboard",
+    });
+    Object.defineProperty(window, "location", {
+      value: {
+        assign: vi.fn(),
+        pathname: "/administration/my-operator",
+      },
+      writable: true,
+    });
+
+    await userEvent.click(screen.getByRole("button", { name: /back/i }));
+    expect(window.location.assign).toHaveBeenCalledTimes(1);
   });
 });
