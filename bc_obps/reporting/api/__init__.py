@@ -1,8 +1,6 @@
 # ruff: noqa: F401
 from .router import router
 from .reports import start_report
-from .report_history import get_report_history
-from .report_history import get_report_operation
 from .build_form_schema import build_form_schema
 from .reporting_dashboard import get_dashboard_operations_list
 from .activity_data import get_initial_activity_data
@@ -42,6 +40,4 @@ from .reports import save_report_version
 from .report_electricity_import_data import save_electricity_import_data, get_electricity_import_data
 from .report_operation import get_update_report, get_report_operation_data
 from .report_final_review import get_report_final_review_data
-
-
 from .report_review_changes import get_report_version_diff_data

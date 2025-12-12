@@ -76,6 +76,7 @@ class TestReportOperationService:
         assert result["show_activities"] is True
         assert "is_sync_allowed" in result
         assert isinstance(result["is_sync_allowed"], bool)
+        assert result["reporting_year"] == self.report_version.report.reporting_year.reporting_year
 
     def test_update_report_service(self):
         self.operation.name = "New Operation Name"

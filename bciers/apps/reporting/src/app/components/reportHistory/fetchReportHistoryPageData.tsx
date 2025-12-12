@@ -8,10 +8,14 @@ export const fetchReportHistoryPageData = async (params: {
   searchParams: ReportHistorySearchParams;
 }) => {
   const queryParams = buildQueryParams(params.searchParams);
-  const url = `reporting/report-history/${params.report_id}${queryParams}`;
+  const url = `reporting/v2/report/${params.report_id}/history${queryParams}`;
   const pageData = await actionHandler(url, "GET", url);
   return {
-    rows: pageData.items,
-    row_count: pageData.count,
+    rowData: {
+      rows: pageData.payload.items,
+      row_count: pageData.payload.count,
+    },
+    reportingYear: pageData.report_data.reporting_year,
+    operationName: pageData.report_data.operation_name,
   };
 };

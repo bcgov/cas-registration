@@ -19,7 +19,7 @@ class ReportOperationService:
         report_operation = cls.get_report_operation_by_version_id(version_id)
         all_activities = ActivityService.get_all_activities()
         regulated_products = RegulatedProductDataAccessService.get_regulated_products()
-        reporting_year = ReportingYearService.get_current_reporting_year()
+        reporting_year = ReportingYearService.get_reporting_year_by_version_id(version_id)
         purpose = report_operation["registration_purpose"]
         facility_id = FacilityReportService.get_facility_report_by_version_id(version_id)
         is_sync_allowed = SyncValidationService.is_sync_allowed(version_id)
