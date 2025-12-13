@@ -2,68 +2,37 @@ from unittest.mock import patch
 from decimal import Decimal
 from datetime import date
 from compliance.service.compliance_obligation_service import ComplianceObligationService
-import pytest
-from compliance.models import ComplianceObligation
+from compliance.models import ComplianceObligation, ComplianceReportVersion
 from compliance.dataclass import ObligationData
-from reporting.models import Report
-from registration.models import Operation
 from django.core.exceptions import ValidationError
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
+import pytest
 from model_bakery import baker
 
 pytestmark = pytest.mark.django_db
 
 
-@pytest.fixture
-def report_version():
-    """Create a report version with a regulated operation"""
-    operation = baker.make_recipe(
-        "registration.tests.utils.operation",
-        bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id"),
-        status=Operation.Statuses.REGISTERED,
-    )
-
-    # Use a unique year for this fixture to avoid conflicts - use a far future year
-    reporting_year = baker.make_recipe("reporting.tests.utils.reporting_year", reporting_year=2050)
-
-    return baker.make_recipe(
-        "reporting.tests.utils.report_version", report__operation=operation, report__reporting_year=reporting_year
-    )
-
-
-@pytest.fixture
-def report_version_unregulated():
-    """Create a report version with an unregulated operation (bc_obps_regulated_operation is None)"""
-    operation = baker.make_recipe(
-        "registration.tests.utils.operation",
-        bc_obps_regulated_operation=None,
-        status=Operation.Statuses.REGISTERED,
-    )
-
-    # Use a different year to avoid conflicts with the other fixture
-    reporting_year = baker.make_recipe("reporting.tests.utils.reporting_year", reporting_year=2051)
-
-    return baker.make_recipe(
-        "reporting.tests.utils.report_version", report__operation=operation, report__reporting_year=reporting_year
-    )
-
-
 class TestComplianceObligationService:
     """Tests for the ComplianceObligationService class"""
 
-    def test_get_obligation_id_success(self, report_version):
+    def test_get_obligation_id_success(self):
         """Test successful generation of obligation ID"""
+        test_data = ComplianceTestHelper.build_initial_compliance_report()
         # Call the method
-        obligation_id = ComplianceObligationService._get_obligation_id(report_version)
+        obligation_id = ComplianceObligationService._get_obligation_id(test_data.initial_report_version)
 
         # Verify results - format should be YY-OOOO-R-V (year-operation-report-version)
         assert isinstance(obligation_id, str)
         assert len(obligation_id.split('-')) == 4  # Should have 4 parts separated by dashes
 
-    def test_get_obligation_id_unregulated_operation(self, report_version_unregulated):
+    def test_get_obligation_id_unregulated_operation(self):
         """Test ValidationError is raised when operation is not regulated by BC OBPS"""
+        test_data = ComplianceTestHelper.build_initial_compliance_report()
+        test_data.operation.bc_obps_regulated_operation = None
+        test_data.operation.save()
         # Call the method and expect ValidationError
         with pytest.raises(ValidationError) as excinfo:
-            ComplianceObligationService._get_obligation_id(report_version_unregulated)
+            ComplianceObligationService._get_obligation_id(test_data.initial_report_version)
 
         # Verify error message
         error_msg = str(excinfo.value)
@@ -79,39 +48,22 @@ class TestComplianceObligationService:
     ):
         """Test successful creation of a compliance obligation"""
         # Set up mocks
-        report_compliance_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', excess_emissions=Decimal('10'), credited_emissions=0
-        )
-        compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report_id=report_compliance_summary.report_version.report_id
-        )
-
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            report_compliance_summary_id=report_compliance_summary.id,
-            compliance_report_id=compliance_report.id,
-        )
+        test_data = ComplianceTestHelper.build_initial_compliance_report()
+        test_data.initial_report_compliance_summary.excess_emissions = Decimal('100')
+        test_data.initial_report_compliance_summary.save()
         mock_get_rate.return_value = Decimal('50.00')
 
-        Report.objects.filter(id=compliance_report.report.id).update(reporting_year=2025)
-        Operation.objects.filter(id=compliance_report.report.operation_id).update(
-            bc_obps_regulated_operation=baker.make_recipe('registration.tests.utils.boro_id'),
-            status=Operation.Statuses.REGISTERED,
-        )
-
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_report_version_id=compliance_report_version.id, emissions_amount=Decimal('100.0')
+            compliance_report_version_id=test_data.initial_compliance_report_version.id,
+            emissions_amount=Decimal('100.0'),
         )
-
         # Verify results
         assert result.fee_amount_dollars == (Decimal('100.0') * Decimal('50.00')).quantize(Decimal('0.01'))
-        assert result.compliance_report_version_id == compliance_report_version.id
+        assert result.compliance_report_version_id == test_data.initial_compliance_report_version.id
         assert result.penalty_status == ComplianceObligation.PenaltyStatus.NONE
         assert result.fee_date == date.today()
-        mock_get_rate.assert_called_once_with(
-            compliance_report_version.report_compliance_summary.report_version.report.reporting_year
-        )
-        mock_send_email.execute.assert_called_once_with(compliance_report_version.id)
+        mock_get_rate.assert_called_once_with(test_data.reporting_year)
+        mock_send_email.execute.assert_called_once_with(test_data.initial_compliance_report_version.id)
 
     @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
@@ -122,26 +74,19 @@ class TestComplianceObligationService:
     ):
         """Test compliance obligation creation fails when operation is not regulated by BC OBPS"""
         # Set up mocks
-        report_compliance_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', excess_emissions=Decimal('10'), credited_emissions=0
-        )
-        compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report_id=report_compliance_summary.report_version.report_id
-        )
-        compliance_report.report.reporting_year.reporting_year = 2024
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            report_compliance_summary_id=report_compliance_summary.id,
-            compliance_report_id=compliance_report.id,
-        )
-        mock_get_rate.return_value = Decimal('50.00')
+        test_data = ComplianceTestHelper.build_initial_compliance_report()
+        test_data.operation.bc_obps_regulated_operation = None
+        test_data.operation.save()
+        test_data.initial_report_compliance_summary.excess_emissions = Decimal('100')
+        test_data.initial_report_compliance_summary.save()
 
-        Report.objects.filter(id=compliance_report.report.id).update(reporting_year=2025)
+        mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method and expect ValidationError
         with pytest.raises(ValidationError) as excinfo:
             ComplianceObligationService.create_compliance_obligation(
-                compliance_report_version_id=compliance_report_version.id, emissions_amount=Decimal('100.0')
+                compliance_report_version_id=test_data.initial_compliance_report_version.id,
+                emissions_amount=Decimal('100.0'),
             )
 
         # Verify error message
@@ -150,9 +95,7 @@ class TestComplianceObligationService:
 
         # Verify ComplianceObligation.objects.create was not called
         mock_create.assert_not_called()
-        mock_get_rate.assert_called_once_with(
-            compliance_report_version.report_compliance_summary.report_version.report.reporting_year
-        )
+        mock_get_rate.assert_called_once_with(test_data.report.reporting_year)
 
     def test_get_obligation_deadline(self):
         """Test get_obligation_deadline returns the correct date"""
@@ -220,16 +163,8 @@ class TestComplianceObligationService:
         mock_calculate_outstanding_balance_tco2e.return_value = Decimal('50.00')
 
         # Create test data
-        report_compliance_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', excess_emissions=Decimal('10'), credited_emissions=0
-        )
-        compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report_id=report_compliance_summary.report_version.report_id
-        )
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            report_compliance_summary_id=report_compliance_summary.id,
-            compliance_report_id=compliance_report.id,
+        test_data = ComplianceTestHelper.build_initial_compliance_report(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
         )
 
         # Create elicensing invoice with outstanding balance
@@ -237,62 +172,44 @@ class TestComplianceObligationService:
             'compliance.tests.utils.elicensing_invoice', invoice_fee_balance=Decimal('2000.00')
         )
 
-        baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version,
-            obligation_id="23-0001-1-1",
-            elicensing_invoice=elicensing_invoice,
-        )
+        test_data.initial_compliance_obligation.obligation_id = "23-0001-1-1"
+        test_data.initial_compliance_obligation.elicensing_invoice = elicensing_invoice
+        test_data.initial_compliance_obligation.save()
 
         # Set up the refresh mock to return the created invoice
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=elicensing_invoice)
 
         # Call method
-        result = ComplianceObligationService.get_obligation_data_by_report_version(compliance_report_version.id)
+        result = ComplianceObligationService.get_obligation_data_by_report_version(
+            test_data.initial_compliance_report_version.id
+        )
 
         # Verify results
         assert isinstance(result, ObligationData)
-        assert (
-            result.reporting_year
-            == compliance_report_version.report_compliance_summary.report_version.report.reporting_year.reporting_year
-        )
+        assert result.reporting_year == test_data.reporting_year.reporting_year
         assert result.equivalent_value == Decimal('2000.00')  # This is the outstanding balance in dollars
         assert result.obligation_id == "23-0001-1-1"
 
         # Verify refresh was called
-        mock_refresh_data.assert_called_once_with(compliance_report_version_id=compliance_report_version.id)
+        mock_refresh_data.assert_called_once_with(
+            compliance_report_version_id=test_data.initial_compliance_report_version.id
+        )
 
         # Verify calculate outstanding balance service was called
-        mock_calculate_outstanding_balance_tco2e.assert_called_once_with(compliance_report_version)
+        mock_calculate_outstanding_balance_tco2e.assert_called_once_with(test_data.initial_compliance_report_version)
 
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_calculates_correct_fee(self, mock_get_rate):
         """Test that create_compliance_obligation calculates fee correctly with rounding"""
         # Setup
         mock_get_rate.return_value = Decimal('45.33')  # Odd rate to test rounding
-
-        report_compliance_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', excess_emissions=Decimal('10'), credited_emissions=0
-        )
-        compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report_id=report_compliance_summary.report_version.report_id
-        )
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            report_compliance_summary_id=report_compliance_summary.id,
-            compliance_report_id=compliance_report.id,
-        )
-
-        Report.objects.filter(id=compliance_report.report.id).update(reporting_year=2025)
-        Operation.objects.filter(id=compliance_report.report.operation_id).update(
-            bc_obps_regulated_operation=baker.make_recipe('registration.tests.utils.boro_id'),
-            status=Operation.Statuses.REGISTERED,
-        )
+        test_data = ComplianceTestHelper.build_initial_compliance_report()
 
         # Call method with emissions that will require rounding
         emissions_amount = Decimal('123.456')
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_report_version_id=compliance_report_version.id, emissions_amount=emissions_amount
+            compliance_report_version_id=test_data.initial_compliance_report_version.id,
+            emissions_amount=emissions_amount,
         )
 
         assert result.fee_amount_dollars == Decimal('5596.26')
@@ -302,28 +219,11 @@ class TestComplianceObligationService:
         """Test that create_compliance_obligation sets the correct obligation deadline"""
         # Setup
         mock_get_rate.return_value = Decimal('40.00')
-
-        report_compliance_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', excess_emissions=Decimal('10'), credited_emissions=0
-        )
-        compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report_id=report_compliance_summary.report_version.report_id
-        )
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            report_compliance_summary_id=report_compliance_summary.id,
-            compliance_report_id=compliance_report.id,
-        )
-
-        # Set reporting year to 2023
-        Report.objects.filter(id=compliance_report.report.id).update(reporting_year=2023)
-        Operation.objects.filter(id=compliance_report.report.operation_id).update(
-            bc_obps_regulated_operation=baker.make_recipe('registration.tests.utils.boro_id'),
-            status=Operation.Statuses.REGISTERED,
-        )
+        test_data = ComplianceTestHelper.build_initial_compliance_report(reporting_year=2023)
 
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_report_version_id=compliance_report_version.id, emissions_amount=Decimal('100.0')
+            compliance_report_version_id=test_data.initial_compliance_report_version.id,
+            emissions_amount=Decimal('100.0'),
         )
 
         # Verify deadline is November 30 of the following year (2024)

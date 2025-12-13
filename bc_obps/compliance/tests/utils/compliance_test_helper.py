@@ -1,3 +1,5 @@
+from decimal import Decimal
+from registration.models import Operation
 from reporting.models import ReportingYear
 from compliance.models import CompliancePeriod, ComplianceReportVersion
 
@@ -24,7 +26,11 @@ class BaseComplianceTestInfrastructure:
                 invoice_generation_date=f'{reporting_year + 1}-11-01',
             )
         ## OPERATION
-        self.operation = make_recipe('registration.tests.utils.operation')
+        self.operation = make_recipe(
+            'registration.tests.utils.operation',
+            bc_obps_regulated_operation=make_recipe('registration.tests.utils.boro_id'),
+            status=Operation.Statuses.REGISTERED,
+        )
         ## EMISSION REPORT
         self.report = make_recipe(
             'reporting.tests.utils.report',
@@ -65,6 +71,7 @@ class InitialComplianceObligation(BaseComplianceTestInfrastructure):
             'compliance.tests.utils.compliance_obligation',
             compliance_report_version=self.initial_compliance_report_version,
         )
+        self.initial_report_compliance_summary.excess_emissions = Decimal('100')
 
 
 class InitialComplianceEarnedCredit(BaseComplianceTestInfrastructure):
@@ -74,6 +81,7 @@ class InitialComplianceEarnedCredit(BaseComplianceTestInfrastructure):
             'compliance.tests.utils.compliance_earned_credit',
             compliance_report_version=self.initial_compliance_report_version,
         )
+        self.initial_report_compliance_summary.credited_emissions = Decimal('100')
 
 
 class ComplianceTestHelper:
@@ -82,7 +90,7 @@ class ComplianceTestHelper:
         cls,
         reporting_year: int = 2025,
         crv_status: ComplianceReportVersion.ComplianceStatus = ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-    ) -> BaseComplianceTestInfrastructure | InitialComplianceObligation | InitialComplianceEarnedCredit:
+    ):
         """
         Generates all the initial base data objects for testing the compliance module.
 
