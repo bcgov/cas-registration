@@ -19,6 +19,8 @@ When you're ready to make a release to test and/or prod, apply the following ste
 1. on `develop`, check migrations against prod data. Ideally, do this using the dag:
 
    1. go to the cas-airflow-test frontend and trigger the `cas_bciers_test_migrations` dag. You will need the source (where the database backup originates from, likely `abc123-prod`) and target (where to deploy the tests, (`abc123-test`)) namespaces, as well as the git hash of the commit with a backend image built that you want to test (used by `BACKEND_CHART_TAG`).
+      > [!NOTE]
+      > This dag can take 15-25 minutes to complete. There are two tasks that specifically wait 8 minutes and 150 seconds, respectively, to give the pods time to start up before checking for migrations.
    1. Ensure the dag completes successfully. If any steps fail, the helm charts remain deployed in the target namespace for later inspection. If there are any problems with the migrations, create a branch, fix, and merge the fix before continuing.
 
 1. If the dag is not available, this can be done manually:
