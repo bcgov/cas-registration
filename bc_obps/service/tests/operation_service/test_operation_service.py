@@ -684,7 +684,7 @@ class TestOperationServiceV2CreateOperation:
         timeline_record = OperationDesignatedOperatorTimeline.objects.first()
         assert timeline_record.operation == operation
         assert timeline_record.operator == approved_user_operator.operator
-        assert timeline_record.start_date is not None
+        assert timeline_record.start_date == OperationService.OPERATION_DEFAULT_START_DATE
 
     @staticmethod
     def test_create_operation_with_multiple_operators():
