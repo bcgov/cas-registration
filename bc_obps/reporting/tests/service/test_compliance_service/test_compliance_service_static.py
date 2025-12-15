@@ -389,7 +389,7 @@ class TestComplianceSummaryService(TestCase):
     def test_get_emission_limit(self):
         emission_limit_for_test = ComplianceService.calculate_product_emission_limit(
             pwaei=Decimal("0.5"),
-            apr_dec_production=Decimal("20000"),
+            production_for_emission_limit=Decimal("20000"),
             allocated_industrial_process=Decimal("5000"),
             allocated_for_compliance=Decimal("20000"),
             tightening_rate=Decimal("0.1"),
@@ -417,7 +417,7 @@ class TestComplianceSummaryService(TestCase):
     def test_get_emission_limit_handles_divide_by_zero(self):
         emission_limit_for_test = ComplianceService.calculate_product_emission_limit(
             pwaei=Decimal("0.5"),
-            apr_dec_production=Decimal("20000"),
+            production_for_emission_limit=Decimal("20000"),
             allocated_industrial_process=Decimal("5000"),
             allocated_for_compliance=Decimal("0"),
             tightening_rate=Decimal("0.1"),

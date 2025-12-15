@@ -189,6 +189,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
             title={section.title}
             data={sectionData}
             fields={sectionFields}
+            reportingYear={data.reporting_year}
           />
         );
       })}

@@ -6,6 +6,7 @@ import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 import { dummyNavigationInformation } from "../taskList/utils";
+import { createComplianceSummarySchema } from "@reporting/src/data/jsonSchema/complianceSummary";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -39,6 +40,7 @@ const mockSummaryData = {
       allocated_compliance_emissions: "15000.9",
     },
   ],
+  reporting_year: 2024,
 };
 
 describe("ComplianceSummaryForm", () => {
@@ -148,7 +150,7 @@ describe("ComplianceSummaryForm", () => {
     expect(mockPush).toHaveBeenCalledWith("continue");
   });
 
-  it("should render a continue button that navigates to the final review page", async () => {
+  it("should show apr_dec_production field for year 2024", async () => {
     render(
       <ComplianceSummaryForm
         summaryFormData={mockSummaryData}
@@ -156,14 +158,66 @@ describe("ComplianceSummaryForm", () => {
       />,
     );
 
-    const button = screen.getByRole("button", {
-      name: /Continue/i,
-    });
+    expect(screen.getByLabelText("apr_dec_production")).toBeInTheDocument();
+  });
 
-    expect(button).toBeVisible();
+  it("should not show apr_dec_production field for years other than 2024", async () => {
+    const mock2025Data = {
+      emissions_attributable_for_reporting: "1000.5",
+      reporting_only_emissions: "2000.75",
+      emissions_attributable_for_compliance: "3000.25",
+      emissions_limit: "4000",
+      excess_emissions: "5000.5",
+      credited_emissions: "6000.75",
+      regulatory_values: {
+        reduction_factor: "7000.1",
+        tightening_rate: "8000.2",
+        initial_compliance_period: "2025",
+        compliance_period: "2025",
+      },
+      products: [
+        {
+          name: "Pucks",
+          customUnit: "Goals",
+          annual_production: "11000.5",
+          // apr_dec_production should not exist for non-2024 years
+          emission_intensity: "13000.7",
+          allocated_industrial_process_emissions: "14000.8",
+          allocated_compliance_emissions: "15000.9",
+        },
+      ],
+      reporting_year: 2025,
+    };
 
-    fireEvent.click(button);
+    render(
+      <ComplianceSummaryForm
+        summaryFormData={mock2025Data}
+        navigationInformation={dummyNavigationInformation}
+      />,
+    );
 
-    expect(mockPush).toHaveBeenCalledWith("continue");
+    expect(
+      screen.queryByLabelText("apr_dec_production"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("should generate schema without apr_dec_production for non-2024 years", () => {
+    const schema2025 = createComplianceSummarySchema(2025);
+    const productsSchema = schema2025.properties?.products as any;
+    const productProperties = productsSchema?.items?.properties;
+
+    expect(productProperties).toBeDefined();
+    expect(productProperties?.apr_dec_production).toBeUndefined();
+    expect(productProperties?.annual_production).toBeDefined();
+  });
+
+  it("should generate schema with apr_dec_production for 2024", () => {
+    const schema2024 = createComplianceSummarySchema(2024);
+    const productsSchema = schema2024.properties?.products as any;
+    const productProperties = productsSchema?.items?.properties;
+
+    expect(productProperties).toBeDefined();
+    expect(productProperties?.apr_dec_production).toBeDefined();
+    expect(productProperties?.annual_production).toBeDefined();
   });
 });
