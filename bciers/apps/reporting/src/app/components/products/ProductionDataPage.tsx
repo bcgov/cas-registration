@@ -1,5 +1,5 @@
 import ProductionDataForm from "@reporting/src/app/components/products/ProductionDataForm";
-import { buildProductionDataSchema, buildProductionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
+import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { getProductionData } from "@bciers/actions/api";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
@@ -14,7 +14,8 @@ export default async function ProductionDataPage({
   facility_id,
 }: HasFacilityId) {
   const response = await getProductionData(version_id, facility_id);
-  const reportOperation = await getReviewOperationInformationPageData(version_id);  
+  const reportOperation =
+    await getReviewOperationInformationPageData(version_id);
 
   const allowedProductNames = response.payload.allowed_products.map(
     (p) => p.name,
@@ -27,8 +28,10 @@ export default async function ProductionDataPage({
 
   const facilityType = response.facility_data.facility_type;
 
-  const reportingYear = response.report_data.reporting_year
-  const isOptedOut = reportOperation.report_operation.operation_opted_out_final_reporting_year <= reportingYear
+  const reportingYear = response.report_data.reporting_year;
+  const isOptedOut =
+    reportOperation.report_operation.operation_opted_out_final_reporting_year <=
+    reportingYear;
 
   const schema: any = buildProductionDataSchema(
     response.report_data.reporting_year,
@@ -36,7 +39,7 @@ export default async function ProductionDataPage({
     "Dec 31",
     allowedProductNames,
     facilityType,
-    isOptedOut
+    isOptedOut,
   );
 
   const tasklistData = await getReportInformationTasklist(
@@ -70,7 +73,6 @@ export default async function ProductionDataPage({
       facilityName: tasklistData?.facilityName,
     },
   );
-
 
   return (
     <ProductionDataForm

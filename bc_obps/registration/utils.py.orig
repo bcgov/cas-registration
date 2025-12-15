@@ -1,10 +1,19 @@
 import base64
 import logging
 import os
+<<<<<<< HEAD
+=======
 from django.db.models import QuerySet, ForeignKey
 from typing import Any, TypeVar, Union, Iterable, Dict, Optional
 from django.core.exceptions import ValidationError
-		import re
+from ninja.errors import ValidationError as NinjaValidationError
+from django.db import IntegrityError, models
+from registration.constants import DEFAULT_API_NAMESPACE
+from registration.models.operation import Operation
+import requests
+import base64
+>>>>>>> 7d9728eb7 (chore: got dropdown selected for final reporting year working. Cleanup required)
+import re
 from typing import Any, Dict, Iterable, Optional, TypeVar, Union
 
 import requests
@@ -45,13 +54,13 @@ def update_model_instance(
     Returns:
         instance (models.Model): The updated instance.
     """
-
-    def assign_value(field_name: str, value: Any) -> None:
+    
+    def assign_value(field_name: str, value):
         try:
             model_field = instance._meta.get_field(field_name)
         except Exception:
             return
-
+        
         if isinstance(model_field, ForeignKey):
             setattr(instance, f"{field_name}_id", value)
         else:

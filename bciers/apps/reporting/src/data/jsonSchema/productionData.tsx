@@ -130,7 +130,7 @@ export const buildProductionDataSchema = (
   compliance_period_end: string,
   product_selection: string[],
   facility_type: string,
-  is_2025_last_reporting_year: boolean = false
+  is_2025_last_reporting_year: boolean = false,
 ) => {
   switch (reporting_year) {
     case 2024:
@@ -138,7 +138,7 @@ export const buildProductionDataSchema = (
         compliance_period_start,
         compliance_period_end,
         product_selection,
-        facility_type
+        facility_type,
       );
     case 2025:
       return buildProductionDataSchema2025(
@@ -146,19 +146,17 @@ export const buildProductionDataSchema = (
         compliance_period_end,
         product_selection,
         facility_type,
-        is_2025_last_reporting_year
+        is_2025_last_reporting_year,
       );
     default:
       return buildProductionDataSchemaDefault(
         compliance_period_start,
         compliance_period_end,
         product_selection,
-        facility_type
-      )
+        facility_type,
+      );
   }
 };
-
-
 
 const productionDataUiSchemaDefault = (): UiSchema => ({
   "ui:FieldTemplate": FieldTemplate,
@@ -207,9 +205,12 @@ const productionDataUiSchemaDefault = (): UiSchema => ({
       },
     },
   },
-})
+});
 
-export const buildProductionDataUiSchema = (reporting_year: number, is_opted_out: boolean) => {
+export const buildProductionDataUiSchema = (
+  reporting_year: number,
+  is_opted_out: boolean,
+) => {
   switch (reporting_year) {
     case 2024:
       return productionDataUiSchema2024;

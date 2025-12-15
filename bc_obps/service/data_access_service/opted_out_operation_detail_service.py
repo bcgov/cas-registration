@@ -22,7 +22,7 @@ class OptedOutOperationDataAccessService:
             opted_out_operation_detail = update_model_instance(
                 opted_in_operation_detail.opted_out_operation,
                 opted_out_operation_detail_data.dict().keys(),
-                opted_out_operation_detail_data.dict()
+                opted_out_operation_detail_data.dict(),
             )
             opted_out_operation_detail.save()
 
@@ -35,12 +35,9 @@ class OptedOutOperationDataAccessService:
             opted_in_operation_detail.opted_out_operation = opted_out_operation_detail
             opted_in_operation_detail.save(update_fields=["opted_out_operation"])
         return opted_out_operation_detail
-    
+
     @classmethod
-    def delete_opted_out_operation_detail(
-        cls,
-        opted_out_operation_detail_id: int
-    ):
+    def delete_opted_out_operation_detail(cls, opted_out_operation_detail_id: int) -> None:
         """
         Deletes the specified OptedOutOperationDetail instance - this implies that the opted-out operation has opted back in.
         This method is idempotent (if no OptedOutOperationDetail record exists, no exception will be raised.)
@@ -50,13 +47,9 @@ class OptedOutOperationDataAccessService:
         except OptedOutOperationDetail.DoesNotExist:
             # idempotent delete - do nothing
             return
-        
+
         # find the related OptedInOperationDetail record
-        opted_in_detail_qs = OptedInOperationDetail.objects.filter(
-            opted_out_operation=opted_out_detail
-        )
+        opted_in_detail_qs = OptedInOperationDetail.objects.filter(opted_out_operation=opted_out_detail)
         # detach the opted-out record from the opted-in record via FK
         opted_in_detail_qs.update(opted_out_operation=None)
         opted_out_detail.delete()
-        
-    
