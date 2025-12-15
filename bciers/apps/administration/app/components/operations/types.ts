@@ -1,4 +1,7 @@
-import { OptedInOperationFormData, OptedOutOperationFormData } from "@/registration/app/components/operations/registration/types";
+import {
+  OptedInOperationFormData,
+  OptedOutOperationFormData,
+} from "@/registration/app/components/operations/registration/types";
 import { UUID } from "crypto";
 
 export interface OperationRow {

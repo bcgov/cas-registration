@@ -20,8 +20,13 @@ interface StyledSwitchProps extends SwitchProps {
 
 const StyledSwitch = styled(
   ({ trueLabel, falseLabel, ...props }: StyledSwitchProps) => (
-    <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-  ))(({ theme, trueLabel = "Yes", falseLabel = "No" }) => ({
+    <Switch
+      focusVisibleClassName=".Mui-focusVisible"
+      disableRipple
+      {...props}
+    />
+  ),
+)(({ theme, trueLabel = "Yes", falseLabel = "No" }) => ({
   width: 64,
   height: 32,
   padding: 0,
@@ -39,10 +44,10 @@ const StyledSwitch = styled(
         "&::after": {
           backgroundImage: textSvg(trueLabel),
           left: 6,
-          width: 'auto',
+          width: "auto",
           height: 16,
-          backgroundSize: 'contain',
-          backgroundRepeat: 'no-repeat'
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
         },
       },
       "&.Mui-disabled + .MuiSwitch-track": {
@@ -77,16 +82,16 @@ const StyledSwitch = styled(
       position: "absolute",
       top: "50%",
       transform: "translateY(-50%)",
-      width: 'auto',
-      display: 'flex',
+      width: "auto",
+      display: "flex",
       height: 16,
-      alignItems: 'center',
+      alignItems: "center",
     },
     "&::after": {
       backgroundImage: textSvg(falseLabel),
       left: 6,
-      backgroundSize: 'contain',
-      backgroundRepeat: 'no-repeat',
+      backgroundSize: "contain",
+      backgroundRepeat: "no-repeat",
     },
   },
 }));
@@ -138,7 +143,7 @@ const ToggleWidget: React.FC<
       <SwitchLabel
         style={{
           left: 8,
-          opacity: value ? 1 : 0,      // hide when OFF
+          opacity: value ? 1 : 0, // hide when OFF
           transition: "opacity 200ms",
         }}
       >
@@ -149,7 +154,7 @@ const ToggleWidget: React.FC<
       <SwitchLabel
         style={{
           right: 8,
-          opacity: value ? 0 : 1,      // hide when ON
+          opacity: value ? 0 : 1, // hide when ON
           transition: "opacity 200ms",
         }}
       >
@@ -171,9 +176,6 @@ const ToggleWidget: React.FC<
     </SwitchContainer>
   );
 };
-
-
-
 
 // const ToggleWidget: React.FC<WidgetProps> = ({
 //   disabled,
