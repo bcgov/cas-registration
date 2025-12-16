@@ -7,11 +7,15 @@ export const TEST_SIGNATURE_NAME = "Test Signer";
 
 export const SUBMISSION_SUCCESS_TEXT = "Successful Submission";
 
-// sign-off form
-export const SUBMIT_REPORT_ROUTE_PATTERN = "**/reporting/reports/*/sign-off";
+// Route pattern for sign-off form
+export const SIGN_OFF_REPORT_ROUTE_PATTERN = "**/reporting/reports/*/sign-off";
+// Regex to extract id from the endpoint request
+export const SIGN_OFF_REPORT_VERSION_ID_REGEX = /reports\/(\d+)\/sign-off/;
+// Scenario name used by the Django stub to call to external API
+export const SIGN_OFF_REPORT_SCENARIO = "submit_report";
 
-export const DJANGO_API_BASE_URL = (
-  process.env.API_URL ?? "http://127.0.0.1:8000/api/"
-).replace(/\/+$/, "");
-export const E2E_INTEGRATION_STUB_PATH = "/compliance/e2e-integration-stub";
-export const SUBMIT_REPORT_SCENARIO = "submit_report";
+export const REPORTING_REPORTS_BASE_PATH = "/reporting/reports";
+
+export const SIGN_OFF_SUBMIT_URL_PATTERN = new RegExp(
+  `${REPORTING_REPORTS_BASE_PATH}/\\d+/submission$`,
+);

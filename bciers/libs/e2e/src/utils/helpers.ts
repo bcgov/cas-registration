@@ -34,12 +34,27 @@ export async function analyzeAccessibility(
   expect(accessibilityScanResults.violations).toEqual([]);
 }
 
-export async function clickButton(page: Page, buttonName: string | RegExp) {
-  await page
-    .getByRole("button", {
-      name: buttonName,
-    })
-    .click();
+export async function clickButton(
+  page: Page,
+  buttonText: string | RegExp,
+  opts?: {
+    inForm?: boolean; // default false
+    waitForUrl?: RegExp;
+  },
+) {
+  const { inForm = false, waitForUrl } = opts ?? {};
+
+  const name =
+    buttonText instanceof RegExp ? buttonText : new RegExp(buttonText, "i");
+
+  const root = inForm ? page.locator("form") : page;
+  const button = root.getByRole("button", { name });
+
+  if (waitForUrl) {
+    await Promise.all([page.waitForURL(waitForUrl), button.click()]);
+  } else {
+    await button.click();
+  }
 }
 
 export async function fillComboxboxWidget(

@@ -19,15 +19,11 @@ test.describe("Test compliance report version manage obligation flow", () => {
   test("Submits an Obligation report and verifies status in Compliance Summary grid", async ({
     page,
     request,
-    baseURL,
   }) => {
     const gridReportingReports = new CurrentReportsPOM(page);
 
     // 🔌 wire the stub before submitting the report
-    await gridReportingReports.attachSubmitReportStub(
-      request,
-      baseURL as string,
-    );
+    await gridReportingReports.attachSubmitReportStub(request);
 
     await gridReportingReports.submitReportObligation();
 
