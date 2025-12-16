@@ -53,8 +53,7 @@ const OperationInformationForm = ({
     useState<boolean>(false);
   const [key, setKey] = useState(Math.random());
   const searchParams = useSearchParams();
-  const [cancelUrl, setCancelUrl] = useState("/administration/operations");
-  const isOperationReadOnly =
+  const continueRegistration =
     searchParams.get("continueRegistration") === "true";
   const [currentUiSchema, setCurrentUiSchema] = useState({
     ...registrationOperationInformationUiSchema,
@@ -63,7 +62,8 @@ const OperationInformationForm = ({
 
       operation: {
         ...registrationOperationInformationUiSchema.section1.operation,
-        ...(isOperationReadOnly && {
+        // Operation field is read-only if the user is continuing a registration from the Admin
+        ...(continueRegistration && {
           "ui:widget": "ReadOnlyComboBoxWidget",
         }),
       },
@@ -141,9 +141,8 @@ const OperationInformationForm = ({
     return errors;
   }
 
-  useEffect(() => {
-    if (typeof document !== "undefined") setCancelUrl(document.referrer);
-  });
+  const shouldRedirectToOperationsPage =
+    continueRegistration || !selectedOperation;
 
   const handleSubmit = async (data: { formData?: any }) => {
     const isCreating = !data.formData?.section1?.operation;
@@ -323,7 +322,9 @@ const OperationInformationForm = ({
       />
       <MultiStepBase
         key={key}
-        cancelUrl={cancelUrl}
+        cancelUrl={
+          shouldRedirectToOperationsPage ? "/administration/operations" : "/"
+        }
         formData={confirmedFormState}
         onSubmit={handleSubmit}
         schema={schema}
