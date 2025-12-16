@@ -120,7 +120,6 @@ describe("The MultiStepBase component", () => {
     });
     expect(screen.getByLabelText(/field1*/i)).toHaveValue("test field1");
     expect(screen.getByRole("button", { name: /Back/i })).toBeDisabled();
-    expect(screen.getByRole("button", { name: /Cancel/i })).not.toBeDisabled();
     expect(screen.getByRole("link", { name: /Cancel/i })).toHaveAttribute(
       "href",
       "cancelurl.com",
@@ -156,7 +155,6 @@ describe("The MultiStepBase component", () => {
       "href",
       "baseurl.com/1",
     );
-    expect(screen.getByRole("button", { name: /Cancel/i })).not.toBeDisabled();
     expect(screen.getByRole("link", { name: /Cancel/i })).toHaveAttribute(
       "href",
       "cancelurl.com",
@@ -195,7 +193,6 @@ describe("The MultiStepBase component", () => {
       "href",
       "baseurl.com/2",
     );
-    expect(screen.getByRole("button", { name: /Cancel/i })).not.toBeDisabled();
     expect(screen.getByRole("link", { name: /Cancel/i })).toHaveAttribute(
       "href",
       "cancelurl.com",
