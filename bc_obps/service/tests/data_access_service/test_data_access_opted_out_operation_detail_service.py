@@ -1,101 +1,96 @@
 import pytest
-from unittest.mock import patch, MagicMock
-from service.data_access_service.opted_out_operation_detail_service import OptedOutOperationDataAccessService
+from unittest.mock import patch
 
+from registration.schema import OptedOutOperationDetailIn
+from registration.models.opted_in_operation_detail import OptedInOperationDetail
+from registration.models.opted_out_operation_detail import OptedOutOperationDetail
+from service.data_access_service.opted_out_operation_detail_service import OptedOutOperationDataAccessService
+from model_bakery import baker
+
+
+pytestmark = pytest.mark.django_db
 
 # Disclosure: this file was largely written by ChatGPT.
 
 
 @pytest.fixture
-def opted_in_operation_detail_mock():
-    """Fixture for a mocked OptedInOperationDetail instance."""
-    mock_instance = MagicMock()
-    mock_instance.id = 1
-    mock_instance.save = MagicMock()
-    return mock_instance
+def opted_in_operation_detail():
+    return baker.make(OptedInOperationDetail)
 
 
 @pytest.fixture
-def opted_out_operation_detail_mock():
-    """Fixture for a mocked OptedOutOperationDetail instance."""
-    mock_instance = MagicMock()
-    mock_instance.id = 100
-    mock_instance.save = MagicMock()
-    return mock_instance
-
-
-@pytest.fixture
-def opted_out_operation_detail_data():
-    """Fixture for input schema data."""
-    mock_data = MagicMock()
-    mock_data.final_reporting_year = 2026
-    mock_data.dict.return_value = {
-        "final_reporting_year": 2026,
-    }
-    return mock_data
-
-
-# ---------------------------------------------------------------------
-# Tests for create_opted_out_operation_detail
-# ---------------------------------------------------------------------
-
-
-@patch("service.data_access_service.opted_out_operation_detail_service.OptedOutOperationDetail")
-@patch("service.data_access_service.opted_out_operation_detail_service.OptedInOperationDetail")
-def test_create_opted_out_operation_detail(
-    mock_opted_in_model,
-    mock_opted_out_model,
-    opted_in_operation_detail_mock,
-    opted_out_operation_detail_mock,
-    opted_out_operation_detail_data,
-):
-    # Arrange
-    mock_opted_in_model.objects.get.return_value = opted_in_operation_detail_mock
-    mock_opted_out_model.objects.create.return_value = opted_out_operation_detail_mock
-
-    # Act
-    result = OptedOutOperationDataAccessService.create_opted_out_operation_detail(
-        opted_in_operation_detail_id=1,
-        opted_out_operation_detail_data=opted_out_operation_detail_data,
+def opted_out_schema():
+    return OptedOutOperationDetailIn(
+        final_reporting_year=2025,
     )
 
-    # Assert
-    mock_opted_in_model.objects.get.assert_called_once_with(id=1)
-    mock_opted_out_model.objects.create.assert_called_once_with(final_reporting_year=2026)
 
-    opted_in_operation_detail_mock.save.assert_called_once()
-    assert result == opted_out_operation_detail_mock
+class TestUpsertOptedOutOperationDetail:
+    def test_creates_opted_out_operation_when_none_exists(
+        self,
+        opted_in_operation_detail,
+        opted_out_schema,
+    ):
+        # precondition
+        assert opted_in_operation_detail.opted_out_operation is None
+
+        result = OptedOutOperationDataAccessService.upsert_opted_out_operation_detail(
+            opted_in_operation_detail_id=opted_in_operation_detail.id,
+            opted_out_operation_detail_data=opted_out_schema,
+        )
+
+        opted_in_operation_detail.refresh_from_db()
+
+        assert isinstance(result, OptedOutOperationDetail)
+        assert result.final_reporting_year_id == opted_out_schema.final_reporting_year
+        assert opted_in_operation_detail.opted_out_operation == result
+
+    @patch("service.data_access_service.opted_out_operation_detail_service.update_model_instance")
+    def test_updates_existing_opted_out_operation(
+        self,
+        mock_update_model_instance,
+        opted_in_operation_detail,
+        opted_out_schema,
+    ):
+        existing_opted_out = OptedOutOperationDetail.objects.create(
+            final_reporting_year_id=2024,
+        )
+        opted_in_operation_detail.opted_out_operation = existing_opted_out
+        opted_in_operation_detail.save()
+
+        # mock update_model_instance to return the same instance
+        mock_update_model_instance.return_value = existing_opted_out
+
+        result = OptedOutOperationDataAccessService.upsert_opted_out_operation_detail(
+            opted_in_operation_detail_id=opted_in_operation_detail.id,
+            opted_out_operation_detail_data=opted_out_schema,
+        )
+
+        mock_update_model_instance.assert_called_once_with(
+            existing_opted_out,
+            opted_out_schema.dict().keys(),
+            opted_out_schema.dict(),
+        )
+
+        assert result == existing_opted_out
 
 
-# ---------------------------------------------------------------------
-# Tests for update_opted_out_operation_detail
-# ---------------------------------------------------------------------
+class TestDeleteOptedOutOperationDetail:
+    def test_deletes_opted_out_operation_and_detaches_from_opted_in(self):
+        opted_out = OptedOutOperationDetail.objects.create(
+            final_reporting_year_id=2025,
+        )
+        opted_in = OptedInOperationDetail.objects.create(
+            opted_out_operation=opted_out,
+        )
 
+        OptedOutOperationDataAccessService.delete_opted_out_operation_detail(opted_out_operation_detail_id=opted_out.id)
 
-@patch("service.data_access_service.opted_out_operation_detail_service.update_model_instance")
-@patch("service.data_access_service.opted_out_operation_detail_service.OptedOutOperationDetail")
-def test_update_opted_out_operation_detail(
-    mock_opted_out_model,
-    mock_update_model_instance,
-    opted_out_operation_detail_mock,
-    opted_out_operation_detail_data,
-):
-    # Arrange
-    mock_opted_out_model.objects.get.return_value = opted_out_operation_detail_mock
-    mock_update_model_instance.return_value = opted_out_operation_detail_mock
+        opted_in.refresh_from_db()
 
-    # Act
-    result = OptedOutOperationDataAccessService.update_opted_out_operation_detail(
-        opted_out_operation_detail_id=100,
-        opted_out_operation_detail_data=opted_out_operation_detail_data,
-    )
+        assert opted_in.opted_out_operation is None
+        assert not OptedOutOperationDetail.objects.filter(id=opted_out.id).exists()
 
-    # Assert
-    mock_opted_out_model.objects.get.assert_called_once_with(id=100)
-    mock_update_model_instance.assert_called_once_with(
-        opted_out_operation_detail_mock,
-        opted_out_operation_detail_data.dict().keys(),
-        opted_out_operation_detail_data.dict(),
-    )
-    opted_out_operation_detail_mock.save.assert_called_once()
-    assert result == opted_out_operation_detail_mock
+    def test_delete_is_idempotent_when_record_does_not_exist(self):
+        # should not raise
+        OptedOutOperationDataAccessService.delete_opted_out_operation_detail(opted_out_operation_detail_id=999999)
