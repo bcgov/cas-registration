@@ -48,20 +48,3 @@ export function isLocalEnvironment(): boolean {
 export function shouldUseSecureCookies(): boolean {
   return !isLocalEnvironment() && !isCIEnvironment() && !isVitestEnvironment();
 }
-
-/*
- * This is to get around the ChunkLoadError
- * Checks if the previous page's base path matches the current page's base path
- * @returns true if the base paths match, false otherwise
- */
-export const isSameBasePath = () => {
-  const prevBasePath = getPrevBasePathOrHome();
-  const currBasePath = window.location.pathname.split("/").filter(Boolean)[0];
-  return prevBasePath.includes(currBasePath);
-};
-
-export const getPrevBasePathOrHome = () => {
-  const doc = typeof document !== "undefined" ? document.referrer : "";
-  if (!doc) return "/";
-  return new URL(doc).pathname;
-};

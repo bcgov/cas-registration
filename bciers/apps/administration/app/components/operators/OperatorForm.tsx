@@ -6,10 +6,6 @@ import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
 import { operatorUiSchema } from "../../data/jsonSchema/operator";
 import { FormMode } from "@bciers/utils/src/enums";
-import {
-  getPrevBasePathOrHome,
-  isSameBasePath,
-} from "@bciers/utils/src/environmentDetection";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 

@@ -52,7 +52,7 @@ describe("the FacilitySfoForm component", () => {
       "Facility Information",
     );
     expect(
-      screen.getByRole("button", {
+      screen.getByRole("link", {
         name: "Cancel",
       }),
     ).toBeVisible();

@@ -29,7 +29,7 @@ describe("the OperationRepresentativeForm component", () => {
     );
     // button is disabled when there are no existing operation representatives
     expect(screen.getByRole("button", { name: /continue/i })).toBeDisabled();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeVisible();
+    expect(screen.getByRole("link", { name: /cancel/i })).toBeVisible();
     expect(screen.getByRole("button", { name: /back/i })).toBeVisible();
   });
 
@@ -59,7 +59,7 @@ describe("the OperationRepresentativeForm component", () => {
 
     // button is disabled when there are no existing operation representatives
     expect(screen.getByRole("button", { name: /continue/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeVisible();
+    expect(screen.getByRole("link", { name: /cancel/i })).toBeVisible();
     expect(screen.getByRole("button", { name: /back/i })).toBeVisible();
   });
 });
