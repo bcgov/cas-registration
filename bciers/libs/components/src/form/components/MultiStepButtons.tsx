@@ -16,6 +16,7 @@ interface SubmitButtonProps {
   allowBackNavigation?: boolean;
   baseUrl?: string;
   submitButtonDisabled?: boolean;
+  pathname?: string;
 }
 
 const MultiStepButtons: React.FunctionComponent<SubmitButtonProps> = ({
@@ -46,9 +47,9 @@ const MultiStepButtons: React.FunctionComponent<SubmitButtonProps> = ({
   return (
     <div className={`flex w-full mt-2 justify-between ${classNames}`}>
       {cancelUrl && (
-        <Link href={cancelUrl}>
-          <Button variant="outlined">Cancel</Button>
-        </Link>
+        <Button variant="outlined" href={cancelUrl}>
+          Cancel
+        </Button>
       )}
       <div>
         {allowBackNavigation &&

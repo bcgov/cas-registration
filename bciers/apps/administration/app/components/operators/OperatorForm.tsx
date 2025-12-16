@@ -78,9 +78,9 @@ export default function OperatorForm({
           );
         }
       }}
-      onCancel={() =>
-        isCreatingState || isInternalUser ? router.back() : router.push("/")
-      }
+      onCancel={() => {
+        router.back();
+      }}
     />
   );
 }

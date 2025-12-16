@@ -715,7 +715,7 @@ describe("OperatorForm component", () => {
       screen.queryByRole("button", { name: "Edit" }),
     ).not.toBeInTheDocument();
   });
-  it("calls the router.back function if is creating", async () => {
+  it("calls the router.back function if back button is clicked on same base path", async () => {
     render(
       <OperatorForm
         schema={await createOperatorSchema()}
@@ -724,30 +724,41 @@ describe("OperatorForm component", () => {
         isInternalUser={false}
       />,
     );
+
+    // simulate same base path
+    window.history.pushState({}, "", "/administration/my-operator");
+    Object.defineProperty(document, "referrer", {
+      configurable: true,
+      get: () => "https://app.gov.bc.ca/administration",
+    });
+
     await userEvent.click(screen.getByRole("button", { name: /back/i }));
     expect(mockRouterBack).toHaveBeenCalledTimes(1);
   });
-  it("calls the router.back function if user is internal", async () => {
+  it("calls the router.back function if previous route was different basepath", async () => {
     render(
       <OperatorForm
         schema={await createOperatorSchema()}
         formData={operatorFormData}
-        isInternalUser={true}
-      />,
-    );
-    await userEvent.click(screen.getByRole("button", { name: /back/i }));
-    expect(mockRouterBack).toHaveBeenCalledTimes(1);
-  });
-  it("calls the router.push function if user is not internal and is not creating", async () => {
-    render(
-      <OperatorForm
-        schema={await createOperatorSchema()}
-        formData={operatorFormData}
-        isCreating={false}
+        isCreating={true}
         isInternalUser={false}
       />,
     );
+
+    // simulate different base path for cancel button
+    Object.defineProperty(document, "referrer", {
+      configurable: true,
+      get: () => "https://app.gov.bc.ca/dashboard",
+    });
+    Object.defineProperty(window, "location", {
+      value: {
+        assign: vi.fn(),
+        pathname: "/administration/my-operator",
+      },
+      writable: true,
+    });
+
     await userEvent.click(screen.getByRole("button", { name: /back/i }));
-    expect(mockRouterPush).toHaveBeenCalledTimes(1);
+    expect(mockRouterBack).toHaveBeenCalledTimes(1);
   });
 });

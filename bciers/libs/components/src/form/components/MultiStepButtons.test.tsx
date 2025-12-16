@@ -22,7 +22,7 @@ describe("The MultiStepButtons component", () => {
 
   it("renders correct buttons for industry users on first step when view-only", () => {
     render(<MultiStepButtons {...defaultProps} />);
-    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
+    expect(screen.getByRole("link", { name: "Cancel" })).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Next" })).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Back" })).toBeDisabled();
     expect(
@@ -34,7 +34,7 @@ describe("The MultiStepButtons component", () => {
     render(<MultiStepButtons {...defaultProps} stepIndex={1} />);
     expect(screen.getByRole("button", { name: "Next" })).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Back" })).not.toBeDisabled();
-    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
+    expect(screen.getByRole("link", { name: "Cancel" })).not.toBeDisabled();
     expect(
       screen.queryByRole("button", { name: "Save and Continue" }),
     ).not.toBeInTheDocument();
@@ -44,7 +44,7 @@ describe("The MultiStepButtons component", () => {
     render(<MultiStepButtons {...defaultProps} stepIndex={2} />);
     expect(screen.getByRole("button", { name: "Submit" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Back" })).not.toBeDisabled();
-    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
+    expect(screen.getByRole("link", { name: "Cancel" })).not.toBeDisabled();
     expect(
       screen.queryByRole("button", { name: "Next" }),
     ).not.toBeInTheDocument();
@@ -52,7 +52,7 @@ describe("The MultiStepButtons component", () => {
 
   it("renders correct buttons for industry users on first step when editable", () => {
     render(<MultiStepButtons {...defaultProps} disabled={false} />);
-    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
+    expect(screen.getByRole("link", { name: "Cancel" })).not.toBeDisabled();
     expect(
       screen.getByRole("button", { name: "Save and Continue" }),
     ).not.toBeDisabled();
@@ -70,7 +70,7 @@ describe("The MultiStepButtons component", () => {
       screen.getByRole("button", { name: "Save and Continue" }),
     ).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Back" })).not.toBeDisabled();
-    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
+    expect(screen.getByRole("link", { name: "Cancel" })).not.toBeDisabled();
     expect(
       screen.queryByRole("button", { name: "Next" }),
     ).not.toBeInTheDocument();
@@ -82,7 +82,7 @@ describe("The MultiStepButtons component", () => {
     );
     expect(screen.getByRole("button", { name: "Submit" })).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Back" })).not.toBeDisabled();
-    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
+    expect(screen.getByRole("link", { name: "Cancel" })).not.toBeDisabled();
     expect(
       screen.queryByRole("button", { name: "Next" }),
     ).not.toBeInTheDocument();
@@ -103,7 +103,7 @@ describe("The MultiStepButtons component", () => {
       screen.getByRole("button", { name: "I like a new name" }),
     ).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Back" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
+    expect(screen.getByRole("link", { name: "Cancel" })).not.toBeDisabled();
     expect(
       screen.queryByRole("button", { name: "Next" }),
     ).not.toBeInTheDocument();
@@ -117,7 +117,7 @@ describe("The MultiStepButtons component", () => {
     useSessionRole.mockReturnValue("cas_admin");
     render(<MultiStepButtons {...defaultProps} />);
     expect(screen.getByRole("button", { name: "Back" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
+    expect(screen.getByRole("link", { name: "Cancel" })).not.toBeDisabled();
     expect(screen.queryByRole("button", { name: "Next" })).not.toBeDisabled();
     expect(
       screen.queryByRole("button", { name: "Save and Continue" }),
@@ -129,7 +129,7 @@ describe("The MultiStepButtons component", () => {
     useSessionRole.mockReturnValue("cas_admin");
     render(<MultiStepButtons {...defaultProps} stepIndex={1} />);
     expect(screen.getByRole("button", { name: "Back" })).not.toBeDisabled();
-    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
+    expect(screen.getByRole("link", { name: "Cancel" })).not.toBeDisabled();
     expect(screen.queryByRole("button", { name: "Next" })).not.toBeDisabled();
     expect(
       screen.queryByRole("button", { name: "Save and Continue" }),
@@ -141,7 +141,7 @@ describe("The MultiStepButtons component", () => {
     useSessionRole.mockReturnValue("cas_admin");
     render(<MultiStepButtons {...defaultProps} stepIndex={2} />);
     expect(screen.getByRole("button", { name: "Back" })).not.toBeDisabled();
-    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
+    expect(screen.getByRole("link", { name: "Cancel" })).not.toBeDisabled();
     expect(
       screen.queryByRole("button", { name: "Save and Continue" }),
     ).not.toBeInTheDocument();

@@ -97,7 +97,7 @@ describe("the FacilityLfoForm component", () => {
     ).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Actions" })).toBeVisible();
     expect(
-      screen.getByRole("button", {
+      screen.getByRole("link", {
         name: "Cancel",
       }),
     ).toBeVisible();
