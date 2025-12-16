@@ -82,14 +82,9 @@ export default function OperatorForm({
           );
         }
       }}
-      onCancel={() =>
-        // if navigated cross app (dashboard to admin), go to direct link
-        !isSameBasePath()
-          ? window.location.assign(getPrevBasePathOrHome())
-          : isCreatingState || isInternalUser
-            ? router.back()
-            : router.push("/")
-      }
+      onCancel={() => {
+        router.back();
+      }}
     />
   );
 }
