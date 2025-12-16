@@ -41,6 +41,7 @@ class ReportOperationModelTest(BaseTestCase):
             ("activities", "activities", None, 1),
             ("regulated_products", "regulated products", None, 1),
             ("registration_purpose", "registration purpose", 1000, None),
+            ("operation_opted_out_final_reporting_year", "operation opted out final reporting year", None, None),
         ]
 
     def test_immutable_after_report_version_submitted(self):

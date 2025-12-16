@@ -50,7 +50,6 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
             "meets_producing_gger_schedule_a1_regulated_product": False,
             "meets_reporting_and_regulated_obligations": False,
             "meets_notification_to_director_on_criteria_change": False,
-            "opted_out_operation": None,
         }
 
     # PUT

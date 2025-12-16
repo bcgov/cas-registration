@@ -27,4 +27,5 @@ class ReportingYearModelTest(BaseTestCase):
             ("report_due_date", "report due date", None, None),
             ("report_open_date", "report open date", None, None),
             ("description", "description", 10000, None),
+            ("opted_out_operation_detail", "opted out operation detail", None, None),
         ]
