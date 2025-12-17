@@ -1,4 +1,4 @@
-{{- if hasSuffix "-prod" .Release.Namespace }}
+{{- if not hasSuffix "-prod" .Release.Namespace }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -21,7 +21,7 @@ spec:
           restartPolicy: Never
           serviceAccountName: deployer
           containers:
-          - name: process-tasks
+          - name: reset-attachment-storage
             image: "gcr.io/google.com/cloudsdktool/google-cloud-cli:stable"
             imagePullPolicy: "Always"
             env:
