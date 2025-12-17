@@ -1,10 +1,13 @@
-{{- if not hasSuffix "-prod" .Release.Namespace }}
+{{- if not (hasSuffix "-prod" .Release.Namespace) }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: reset-attachment-storage
   labels: {{- include "cas-bciers.labels" . | nindent 4 }}
   namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-weight": "-10"
 spec:
   suspend: true # triggered manually via Airflow
   schedule: "0 * * * *"
@@ -21,37 +24,37 @@ spec:
           restartPolicy: Never
           serviceAccountName: deployer
           containers:
-          - name: reset-attachment-storage
-            image: "gcr.io/google.com/cloudsdktool/google-cloud-cli:stable"
-            imagePullPolicy: "Always"
-            env:
-              - name: GOOGLE_APPLICATION_CREDENTIALS
-                value: "/attachment-credentials/attachment-credentials.json"
-              - name: GS_CLEAN_BUCKET_NAME
-                value: {{ .Release.Namespace }}-bciers-attach-clean
-            command:
-              - /usr/bin/env
-              - bash
-              - -c
-              - |
-                set -euo pipefail;
-                gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS;
-                gcloud storage rm --recursive "gs://$GS_CLEAN_BUCKET_NAME/report_attachments/";
-                gcloud storage rm --recursive "gs://$GS_CLEAN_BUCKET_NAME/documents/";
-            volumeMounts:
-              - mountPath: "/attachment-credentials"
-                name: gcs-attachment-credentials
-                readOnly: true
-              - mountPath: "/.config"
-                name: config-volume
-      volumes:
-        - name: gcs-attachment-credentials
-          secret:
-            secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
-            items:
-            - key: credentials.json
-              path: attachment-credentials.json
-        - name: config-volume
-          emptyDir:
-            sizeLimit: 100Mi
+            - name: reset-attachment-storage
+              image: "gcr.io/google.com/cloudsdktool/google-cloud-cli:stable"
+              imagePullPolicy: "Always"
+              env:
+                - name: GOOGLE_APPLICATION_CREDENTIALS
+                  value: "/attachment-credentials/attachment-credentials.json"
+                - name: GS_CLEAN_BUCKET_NAME
+                  value: {{ .Release.Namespace }}-bciers-attach-clean
+              command:
+                - /usr/bin/env
+                - bash
+                - -c
+                - |
+                  set -euo pipefail;
+                  gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS;
+                  gcloud storage rm --recursive "gs://$GS_CLEAN_BUCKET_NAME/report_attachments/";
+                  gcloud storage rm --recursive "gs://$GS_CLEAN_BUCKET_NAME/documents/";
+              volumeMounts:
+                - mountPath: "/attachment-credentials"
+                  name: gcs-attachment-credentials
+                  readOnly: true
+                - mountPath: "/.config"
+                  name: config-volume
+          volumes:
+            - name: gcs-attachment-credentials
+              secret:
+                secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
+                items:
+                - key: credentials.json
+                  path: attachment-credentials.json
+            - name: config-volume
+              emptyDir:
+                sizeLimit: 50Mi
 {{- end}}
