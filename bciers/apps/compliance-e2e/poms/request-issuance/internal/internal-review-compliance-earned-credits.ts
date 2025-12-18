@@ -1,24 +1,17 @@
 import { APIRequestContext, expect, Locator, Page } from "@playwright/test";
 import {
   CONTINUE_BUTTON_TEXT,
-  APPROVE_BUTTON_TEXT,
-  DECLINE_BUTTON_TEXT,
   ANALYST_SUGGESTION_INPUT,
   DIRECTOR_REVIEW_CRV_ID,
   EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO,
   REVIEW_BY_DIRECTOR_URL_PATTERN,
+  DECISION_TO_BUTTON,
+  DirectorDecision,
 } from "@/compliance-e2e/utils/constants";
 
 import { clickButton } from "@bciers/e2e/utils/helpers";
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
-import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
-
-type DirectorDecision = IssuanceStatus.APPROVED | IssuanceStatus.DECLINED;
-
-const DECISION_TO_BUTTON: Record<DirectorDecision, string> = {
-  [IssuanceStatus.APPROVED]: APPROVE_BUTTON_TEXT,
-  [IssuanceStatus.DECLINED]: DECLINE_BUTTON_TEXT,
-};
+import { AnalystSuggestion } from "@bciers/utils/src/enums";
 
 export class InternalReviewComplianceEarnedCreditsPOM {
   private readonly page: Page;
@@ -31,14 +24,6 @@ export class InternalReviewComplianceEarnedCreditsPOM {
     this.analystSuggestionInput = this.page.locator(ANALYST_SUGGESTION_INPUT);
   }
 
-  /**
-   * Attach a route so to intercept the action handler submit call
-   * and delegate to the Django /e2e-integration-stub endpoint.
-   */
-  /**
-   * Attach a route so to intercept the action handler submit call
-   * and delegate to the Django /e2e-integration-stub endpoint.
-   */
   /**
    * Attach a route so to intercept the action handler submit call
    * and delegate to the Django /e2e-integration-stub endpoint.

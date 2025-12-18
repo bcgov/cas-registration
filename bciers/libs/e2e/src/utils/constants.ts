@@ -96,7 +96,5 @@ export const appRouteRoles: Record<AppRoute, UserRole[]> = {
   [AppRoute.USERS]: [UserRole.CAS_ADMIN, UserRole.INDUSTRY_USER_ADMIN],
 };
 
-export const DJANGO_API_BASE_URL = "http://127.0.0.1:8000/api";
-
 export const COMPLIANCE_E2E_INTEGRATION_STUB_PATH =
-  "/compliance/e2e-integration-stub";
+  "compliance/e2e-integration-stub";

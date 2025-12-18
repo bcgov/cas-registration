@@ -8,7 +8,10 @@ import {
   GridActionText,
 } from "@/compliance-e2e/utils/enums";
 
-import { BCCR_HOLDING_ACCOUNT_INPUT_VALUE } from "@/compliance-e2e/utils/constants";
+import {
+  BCCR_HOLDING_ACCOUNT_INPUT_VALUE,
+  DirectorDecision,
+} from "@/compliance-e2e/utils/constants";
 
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summaries";
@@ -17,13 +20,14 @@ import { RequestIssuanceTaskListPOM } from "@/compliance-e2e/poms/request-issuan
 import { InternalRequestIssuanceTaskListPOM } from "@/compliance-e2e/poms/request-issuance/internal/tasklist";
 import { InternalReviewComplianceEarnedCreditsPOM } from "@/compliance-e2e/poms/request-issuance/internal/internal-review-compliance-earned-credits";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
+
 // Seed environment
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
 
 test.describe.configure({ mode: "serial" });
 
 const CASES: Array<{
-  decision: IssuanceStatus;
+  decision: DirectorDecision;
   expectedStatus: ComplianceDisplayStatus;
 }> = [
   {
@@ -32,7 +36,7 @@ const CASES: Array<{
   },
   {
     decision: IssuanceStatus.DECLINED,
-    expectedStatus: ComplianceDisplayStatus.EARNED_CREDITS_DEClINED,
+    expectedStatus: ComplianceDisplayStatus.EARNED_CREDITS_DECLINED,
   },
 ];
 
@@ -47,8 +51,7 @@ test.describe("Test earned credits request issuance flow", () => {
       const createContextForRole = (role: UserRole) =>
         newContextForRole(browser, baseURL, role);
 
-      // 1. Industry user context
-      // Submit report for earned credits then request issuance of earned credits
+      // 1. Industry user context: Submit report for earned credits then request issuance of earned credits
 
       // Create role context
       const industryContext = await createContextForRole(
@@ -90,8 +93,7 @@ test.describe("Test earned credits request issuance flow", () => {
       await industryEarnedCredits.submitRequestIssuance();
       await industryContext.close();
 
-      // 2. CAS_ANALYST context
-      // Review request issuance of earned credits and set as "Ready to Approve"
+      // 2. CAS_ANALYST context: Review request issuance of earned credits and set as "Ready to Approve"
 
       // Create role context
       const analystContext = await createContextForRole(UserRole.CAS_ANALYST);
@@ -124,8 +126,7 @@ test.describe("Test earned credits request issuance flow", () => {
       await analystEarnedCredits.submitAnalystReviewRequestIssuance();
       await analystContext.close();
 
-      // 3. CAS_DIRECTOR context
-      // Review "Ready to Approve" request issuance of earned credits and set as "Approved"
+      // 3. CAS_DIRECTOR context: Review "Ready to Approve" request issuance of earned credits and set as "Approved"
 
       // Create role context
       const directorContext = await createContextForRole(UserRole.CAS_DIRECTOR);

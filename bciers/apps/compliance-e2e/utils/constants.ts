@@ -1,3 +1,5 @@
+import { IssuanceStatus } from "@bciers/utils/src/enums";
+
 // MUI grid
 export const GRID_ROOT = ".MuiDataGrid-root";
 
@@ -25,6 +27,15 @@ export const CONTINUE_BUTTON_TEXT = "Continue";
 // --- Approve/Decline Director Review Request Issuance form ---
 export const APPROVE_BUTTON_TEXT = "Approve";
 export const DECLINE_BUTTON_TEXT = "Decline";
+
+export type DirectorDecision =
+  | IssuanceStatus.APPROVED
+  | IssuanceStatus.DECLINED;
+
+export const DECISION_TO_BUTTON: Record<DirectorDecision, string> = {
+  [IssuanceStatus.APPROVED]: APPROVE_BUTTON_TEXT,
+  [IssuanceStatus.DECLINED]: DECLINE_BUTTON_TEXT,
+};
 
 // --- URL patterns / base paths ---
 

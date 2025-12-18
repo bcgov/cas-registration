@@ -9,6 +9,7 @@ import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summaries";
 import { ReviewComplianceEarnedCreditsPOM } from "@/compliance-e2e/poms/request-issuance/review-compliance-earned-credits";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
+import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 
 // 👤 run test using the storageState for role UserRole.INDUSTRY_USER_ADMIN
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
@@ -18,6 +19,7 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test compliance report version request issuance of earned credits flow", () => {
   test("Submits an Earned Credits report and verifies status in Compliance Summary grid", async ({
     page,
+    happoScreenshot,
   }) => {
     // Submit the report for "Earned credits"
     const gridReportingReports = new CurrentReportsPOM(page);
@@ -44,5 +46,11 @@ test.describe("Test compliance report version request issuance of earned credits
     await earnedCredits.assertIssuanceStatusValue(
       IssuanceStatus.ISSUANCE_NOT_REQUESTED,
     );
+
+    // happo screenshot
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "Compliance earned credits",
+      variant: "default",
+    });
   });
 });

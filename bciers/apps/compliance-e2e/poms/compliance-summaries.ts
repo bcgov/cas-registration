@@ -92,7 +92,7 @@ export class ComplianceSummariesPOM {
     // Build absolute URL
     const targetUrl = new URL(href, this.url).toString();
 
-    // Navigate explicitly instead of relying on client-side routing
+    // Navigate to url route
     await this.page.goto(targetUrl, { waitUntil: "load" });
 
     // Optionally assert URL

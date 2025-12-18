@@ -1,10 +1,14 @@
 import type { APIRequestContext, Page, Route } from "@playwright/test";
 import { getUserGuidFromPage } from "@bciers/e2e/utils/authToken";
-import {
-  COMPLIANCE_E2E_INTEGRATION_STUB_PATH,
-  DJANGO_API_BASE_URL,
-} from "@bciers/e2e/utils/constants";
+import { COMPLIANCE_E2E_INTEGRATION_STUB_PATH } from "@bciers/e2e/utils/constants";
 
+/**
+ * Args used to construct the payload sent to the Django E2E integration stub endpoint.
+ *
+ * Notes:
+ * - `body` is the parsed request body from the intercepted request from RSC action payload.
+ * - `userGuid` is resolved from the current Playwright page/session and is forwarded to Django
+ */
 type BuildStubDataArgs = {
   url: string;
   method: string;
@@ -12,6 +16,14 @@ type BuildStubDataArgs = {
   userGuid: string;
 };
 
+/**
+ * Args passed to the fulfill handler after the Django stub endpoint responds successfully.
+ *
+ * Notes:
+ * - `stubResponse` is the raw Playwright APIResponse returned by the Django stub call.
+ * - `json` is the parsed JSON body of `stubResponse`.
+ * - `route` is the intercepted route that must be fulfilled/continued by the caller.
+ */
 type FulfillArgs = {
   route: Route;
   stubResponse: any; // APIResponse
@@ -25,6 +37,26 @@ type Options = {
   parseRscBody?: (raw: string) => any; // optional override
 };
 
+/**
+ * Attach a Playwright route handler that:
+ * 1) Intercepts requests matching `routePattern` (and `options.method`),
+ * 2) Extracts the request body (default: RSC action payload extraction),
+ * 3) Calls the Django E2E integration stub endpoint to mutate server-side DB state,
+ * 4) Delegates fulfillment of the original intercepted request to `fulfill(...)`.
+ *
+ * Why this exists:
+ * - In E2E, we often need to force the backend into a specific state (e.g., create earned credits,
+ *   request issuance, mark director approval) without triggering real external integrations.
+ * - This helper centralizes the "intercept → call stub endpoint → fulfill route" pattern.
+ *
+ * Error handling:
+ * - If the stub endpoint returns a non-2xx response, this throws with `errorPrefix`
+ *
+ * Usage pattern:
+ * - `buildStubData(...)` should construct the ScenarioPayload your Django stub expects.
+ * - `fulfill(...)` should respond to the intercepted route, usually using `route.fulfill(...)`
+ *   or `route.continue()` depending on test design.
+ */
 export async function attachE2EStubEndpoint(
   page: Page,
   api: APIRequestContext,
@@ -48,6 +80,7 @@ export async function attachE2EStubEndpoint(
     const url = req.url();
     const method = req.method();
 
+    // Only intercept the method we expect; otherwise allow the request to proceed untouched.
     if (method !== expectedMethod) {
       return route.continue();
     }
@@ -58,7 +91,7 @@ export async function attachE2EStubEndpoint(
     const body = parseRscBody(raw);
 
     const stubResponse = await api.post(
-      `${DJANGO_API_BASE_URL}${COMPLIANCE_E2E_INTEGRATION_STUB_PATH}`,
+      `${process.env.API_URL}${COMPLIANCE_E2E_INTEGRATION_STUB_PATH}`,
       {
         headers: {
           Authorization: JSON.stringify({ user_guid: userGuid }),

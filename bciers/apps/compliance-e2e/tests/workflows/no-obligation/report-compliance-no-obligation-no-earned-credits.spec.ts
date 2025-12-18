@@ -11,7 +11,10 @@ import {
   NO_OBLIGATION_OR_CREDITS_ALERT_REGEX,
   NO_OBLIGATION_URL_PATTERN,
 } from "@/compliance-e2e/utils/constants";
-import { checkAlertMessage } from "@bciers/e2e/utils/helpers";
+import {
+  checkAlertMessage,
+  takeStabilizedScreenshot,
+} from "@bciers/e2e/utils/helpers";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
@@ -19,6 +22,7 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test compliance report version no obligation or earned credits flow", () => {
   test("Submits a No Obligation or Earned Credits report and verifies status in Compliance Summary grid", async ({
     page,
+    happoScreenshot,
   }) => {
     // Submit No Obligation or Earned Credits report
     const gridReportingReports = new CurrentReportsPOM(page);
@@ -41,5 +45,11 @@ test.describe("Test compliance report version no obligation or earned credits fl
       urlPattern: NO_OBLIGATION_URL_PATTERN,
     });
     await checkAlertMessage(page, NO_OBLIGATION_OR_CREDITS_ALERT_REGEX);
+
+    // happo screenshot
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "Compliance no obligation no earned credits",
+      variant: "default",
+    });
   });
 });

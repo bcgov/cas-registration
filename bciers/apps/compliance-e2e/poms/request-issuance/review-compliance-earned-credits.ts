@@ -79,26 +79,16 @@ export class ReviewComplianceEarnedCreditsPOM {
     );
   }
 
-  private async readIssuanceStatusText(): Promise<string> {
-    await this.issuanceStatusField.waitFor();
-    const text = (await this.issuanceStatusField.textContent()) ?? "";
-    return text.trim();
-  }
-
   async assertIssuanceStatusValue(expected: string): Promise<void> {
     await expect(this.issuanceStatusField).toBeVisible();
-    const text = await this.readIssuanceStatusText();
-    await expect(text).toBe(expected);
-  }
-
-  private async waitForTradingName(): Promise<void> {
-    await expect(this.tradingNameField).toBeVisible();
+    const text = ((await this.issuanceStatusField.textContent()) ?? "").trim();
+    expect(text).toBe(expected);
   }
 
   async fillRequestIssuanceForm(holdingAccountId: string): Promise<void> {
     await expect(this.holdingAccountInput).toBeVisible();
     await this.holdingAccountInput.fill(holdingAccountId);
-    await this.waitForTradingName();
+    await expect(this.tradingNameField).toBeVisible();
   }
 
   async submitRequestIssuance(): Promise<void> {

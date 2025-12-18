@@ -16,7 +16,7 @@ export enum ComplianceDisplayStatus {
   EARNED_CREDITS_NOT_REQUESTED = "Earned credits - not requested",
   EARNED_CREDITS_REQUESTED = "Earned credits - issuance requested",
   EARNED_CREDITS_APPROVED = "Earned credits - approved",
-  EARNED_CREDITS_DEClINED = "Earned credits - declined",
+  EARNED_CREDITS_DECLINED = "Earned credits - declined",
 }
 
 export enum ComplianceTaskTitles {
