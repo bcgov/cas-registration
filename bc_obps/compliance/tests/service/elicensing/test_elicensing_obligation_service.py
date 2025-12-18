@@ -183,7 +183,6 @@ def mock_obligation() -> MagicMock:
     obligation.id = 1
     obligation.fee_amount_dollars = Decimal('1000.00')
     obligation.fee_date = date(2024, 1, 1)
-    obligation.obligation_deadline = date(2024, 12, 31)
 
     # Mock compliance report_version
     mock_compliance_report_version = MagicMock(spec=ComplianceReportVersion)
@@ -204,15 +203,14 @@ def mock_obligation() -> MagicMock:
     return obligation
 
 
-def _make_obligation_for_period_with_deadline(
+def _make_obligation_for_period(
     cp: CompliancePeriod,
     *,
-    obligation_deadline: date,
     status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
     outstanding=Decimal("10.00"),
     is_void: bool = False,
 ) -> ComplianceObligation:
-    """Create an obligation tied to cp that satisfies the reminders base and has its own obligation_deadline."""
+    """Create an obligation tied to cp that satisfies the reminders base."""
     cr = make_recipe("compliance.tests.utils.compliance_report", compliance_period=cp)
     crv = make_recipe(
         "compliance.tests.utils.compliance_report_version",
@@ -228,7 +226,6 @@ def _make_obligation_for_period_with_deadline(
         "compliance.tests.utils.compliance_obligation",
         compliance_report_version=crv,
         elicensing_invoice=inv,  # has invoice (base needs it)
-        obligation_deadline=obligation_deadline,  # <- field used by service filter
     )
 
 
@@ -912,10 +909,11 @@ class TestElicensingObligationService:
     ):
         """
         CP exists; base queryset returns three obligations:
-          - 2025-11-15 (<= deadline) -> send
+          - 2024-11-30 (<= deadline) -> send
           - 2025-11-30 (== deadline) -> send
-          - 2025-12-01 (>  deadline) -> filtered out
+          - 2026-11-30 (>  deadline) -> filtered out
         """
+        # current compliance period
         ry = ReportingYear.objects.get(reporting_year=2024)
         cp, _ = CompliancePeriod.objects.get_or_create(
             reporting_year=ry,
@@ -924,10 +922,32 @@ class TestElicensingObligationService:
                 "compliance_deadline": date(2025, 11, 30),
             },
         )
+        # previous compliance period
+        pry = ReportingYear.objects.get(reporting_year=2023)
+        pcp, _ = CompliancePeriod.objects.get_or_create(
+            reporting_year=pry,
+            defaults={
+                "invoice_generation_date": date(2023, 11, 1),
+                "compliance_deadline": date(2024, 11, 30),
+                "start_date": date(2023, 1, 1),
+                "end_date": date(2023, 12, 31),
+            },
+        )
+        # next compliance period
+        nry = ReportingYear.objects.get(reporting_year=2025)
+        ncp, _ = CompliancePeriod.objects.get_or_create(
+            reporting_year=nry,
+            defaults={
+                "invoice_generation_date": date(2025, 11, 1),
+                "compliance_deadline": date(2026, 11, 30),
+                "start_date": date(2025, 1, 1),
+                "end_date": date(2025, 12, 31),
+            },
+        )
 
-        will_send_1 = _make_obligation_for_period_with_deadline(cp, obligation_deadline=date(2025, 11, 15))
-        will_send_2 = _make_obligation_for_period_with_deadline(cp, obligation_deadline=date(2025, 11, 30))
-        filtered_out = _make_obligation_for_period_with_deadline(cp, obligation_deadline=date(2025, 12, 1))
+        will_send_1 = _make_obligation_for_period(pcp)
+        will_send_2 = _make_obligation_for_period(cp)
+        filtered_out = _make_obligation_for_period(ncp)
 
         # Return a real QuerySet so the service's .filter(...) runs in DB
         base_qs = ComplianceObligation.objects.filter(pk__in=[will_send_1.pk, will_send_2.pk, filtered_out.pk])
@@ -977,12 +997,31 @@ class TestElicensingObligationService:
             reporting_year=ry,
             defaults={
                 "invoice_generation_date": date(2024, 11, 1),
-                "compliance_deadline": date(2025, 11, 30),
+            },
+        )
+        ry1 = ReportingYear.objects.get(reporting_year=2025)
+        cp1, _ = CompliancePeriod.objects.get_or_create(
+            reporting_year=ry1,
+            defaults={
+                "invoice_generation_date": date(2025, 11, 1),
+                "compliance_deadline": date(2026, 11, 30),
+                "start_date": date(2025, 1, 1),
+                "end_date": date(2025, 12, 31),
+            },
+        )
+        ry2 = ReportingYear.objects.get(reporting_year=2026)
+        cp2, _ = CompliancePeriod.objects.get_or_create(
+            reporting_year=ry2,
+            defaults={
+                "invoice_generation_date": date(2026, 11, 1),
+                "compliance_deadline": date(2027, 11, 30),
+                "start_date": date(2026, 1, 1),
+                "end_date": date(2026, 12, 31),
             },
         )
 
-        o1 = _make_obligation_for_period_with_deadline(cp, obligation_deadline=date(2025, 12, 1))
-        o2 = _make_obligation_for_period_with_deadline(cp, obligation_deadline=date(2026, 1, 5))
+        o1 = _make_obligation_for_period(cp1)
+        o2 = _make_obligation_for_period(cp2)
 
         base_qs = ComplianceObligation.objects.filter(pk__in=[o1.pk, o2.pk])
         mock_get_current_reporting_year.return_value = ry
@@ -1006,7 +1045,6 @@ class TestElicensingObligationService:
             reporting_year=ry,
             defaults={
                 "invoice_generation_date": date(2024, 11, 1),
-                "compliance_deadline": date(2025, 11, 30),
             },
         )
 

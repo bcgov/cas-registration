@@ -42,12 +42,6 @@ class ComplianceObligation(TimeStampedModel):
         db_comment="A human-readable identifier for the obligation in format YY-OOOO-R-V",
     )
 
-    obligation_deadline = models.DateField(
-        blank=False,
-        null=False,
-        db_comment="Deadline date for meeting excess emissions obligations (November 30 of the following year), UTC-based",
-    )
-
     fee_amount_dollars = models.DecimalField(
         max_digits=20,
         decimal_places=2,

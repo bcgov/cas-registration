@@ -46,13 +46,6 @@ class ComplianceObligationService:
             'report_compliance_summary__report_version__report'
         ).get(id=compliance_report_version_id)
 
-        # Calculate obligation deadline (November 30 of the following year)
-        obligation_deadline = date(
-            compliance_report_version.report_compliance_summary.report_version.report.reporting_year.reporting_year + 1,
-            11,
-            30,
-        )
-
         # Get the compliance charge rate for the reporting year
         fee_rate_dollars = ComplianceChargeRateService.get_rate_for_year(
             compliance_report_version.report_compliance_summary.report_version.report.reporting_year
@@ -65,7 +58,6 @@ class ComplianceObligationService:
         obligation = ComplianceObligation.objects.create(
             compliance_report_version=compliance_report_version,
             obligation_id=cls._get_obligation_id(compliance_report_version.report_compliance_summary.report_version),
-            obligation_deadline=obligation_deadline,
             fee_amount_dollars=fee_amount_dollars,
             fee_date=date.today(),
             penalty_status=ComplianceObligation.PenaltyStatus.NONE,
@@ -109,20 +101,6 @@ class ComplianceObligationService:
 
         # Format the complete obligation ID
         return f"{operation_part}-{report_id}-{version_id}"
-
-    @classmethod
-    def get_obligation_deadline(cls, year: int) -> date:
-        """
-        Gets the excess emissions obligation deadline for a year (November 30 of following year)
-
-        Args:
-            year (int): The compliance period year
-
-        Returns:
-            date: The excess emissions obligation deadline (November 30 of following year)
-        """
-        # Per section 19(1)(b) of BCGGE Reporting Regulation
-        return date(year + 1, 11, 30)
 
     @classmethod
     def update_penalty_status(cls, obligation_id: int, new_status: str) -> ComplianceObligation:

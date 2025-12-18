@@ -59,7 +59,6 @@ compliance_obligation = Recipe(
     ComplianceObligation,
     compliance_report_version=foreign_key(compliance_report_version),
     penalty_status=ComplianceObligation.PenaltyStatus.NONE,
-    obligation_deadline="2025-11-30",
     obligation_id="21-0001-1-1",  # Default test obligation ID in format YY-OOOO-R-V
 )
 

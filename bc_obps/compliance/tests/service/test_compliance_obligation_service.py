@@ -97,16 +97,6 @@ class TestComplianceObligationService:
         mock_create.assert_not_called()
         mock_get_rate.assert_called_once_with(test_data.report.reporting_year)
 
-    def test_get_obligation_deadline(self):
-        """Test get_obligation_deadline returns the correct date"""
-        # Test for year 2023
-        deadline = ComplianceObligationService.get_obligation_deadline(2023)
-        assert deadline == date(2024, 11, 30)
-
-        # Test for year 2022
-        deadline = ComplianceObligationService.get_obligation_deadline(2022)
-        assert deadline == date(2023, 11, 30)
-
     def test_get_outstanding_balance_with_elicensing_invoice(self):
         """Test _get_outstanding_balance_dollars returns elicensing invoice balance when available"""
         # Create obligation with elicensing invoice
