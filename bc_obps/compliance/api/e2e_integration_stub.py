@@ -211,9 +211,9 @@ def mock_external_http_for_e2e() -> Iterator[None]:
     def _dispatch(method: str, url: str, **kwargs: Any) -> Optional[Response]:
         method_u = method.upper()
 
-        # Hard block: never allow outbound http(s) to non-local hosts during E2E
+        # Hard block: never allow outbound HTTP(S) to non-local hosts during E2E
         if url.startswith(("http://", "https://")) and not _is_local_url(url):
-            raise UnmockedExternalCall(f"[E2E] Outbound HTTP blocked: {method_u} {url}")
+            raise UnmockedExternalCall(f"[E2E] Outbound HTTP(S) blocked: {method_u} {url}")
 
         # Mock known external integrations when base URLs are configured
         if _is_external_url(url, elicensing_base):

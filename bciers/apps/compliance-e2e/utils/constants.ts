@@ -24,6 +24,7 @@ export const CONTINUE_BUTTON_TEXT = "Continue";
 
 // --- Approve/Decline Director Review Request Issuance form ---
 export const APPROVE_BUTTON_TEXT = "Approve";
+export const DECLINE_BUTTON_TEXT = "Decline";
 
 // --- URL patterns / base paths ---
 

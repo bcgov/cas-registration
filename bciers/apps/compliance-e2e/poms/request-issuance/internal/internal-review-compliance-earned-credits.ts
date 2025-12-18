@@ -2,6 +2,7 @@ import { APIRequestContext, expect, Locator, Page } from "@playwright/test";
 import {
   CONTINUE_BUTTON_TEXT,
   APPROVE_BUTTON_TEXT,
+  DECLINE_BUTTON_TEXT,
   ANALYST_SUGGESTION_INPUT,
   DIRECTOR_REVIEW_CRV_ID,
   EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO,
@@ -10,7 +11,14 @@ import {
 
 import { clickButton } from "@bciers/e2e/utils/helpers";
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
-import { AnalystSuggestion } from "@bciers/utils/src/enums";
+import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
+
+type DirectorDecision = IssuanceStatus.APPROVED | IssuanceStatus.DECLINED;
+
+const DECISION_TO_BUTTON: Record<DirectorDecision, string> = {
+  [IssuanceStatus.APPROVED]: APPROVE_BUTTON_TEXT,
+  [IssuanceStatus.DECLINED]: DECLINE_BUTTON_TEXT,
+};
 
 export class InternalReviewComplianceEarnedCreditsPOM {
   private readonly page: Page;
@@ -89,10 +97,11 @@ export class InternalReviewComplianceEarnedCreditsPOM {
   }
 
   /**
-   * Director flow: submits the director review
+   * Director flow: submits the director decision
    */
-  async submitDirectorReviewIssuance(): Promise<void> {
-    // Click submit and wait for navigation
-    await clickButton(this.page, APPROVE_BUTTON_TEXT);
+  async submitDirectorReviewIssuance(
+    decision: DirectorDecision,
+  ): Promise<void> {
+    await clickButton(this.page, DECISION_TO_BUTTON[decision]);
   }
 }
