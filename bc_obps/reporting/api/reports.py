@@ -70,6 +70,7 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
     tags=None,
     description="""Returns json object with list of all reporting year objects in database.
     Optionally, filter out reporting years that are in the past using ?exclude_past=true.""",
+    auth=authorize("all_roles"),
 )
 def get_all_reporting_years(
     request: HttpRequest, exclude_past: Optional[bool] = None

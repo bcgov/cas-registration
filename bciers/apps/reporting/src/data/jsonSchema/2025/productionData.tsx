@@ -6,6 +6,7 @@ import {
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
+import type { JSONSchema7 } from "json-schema";
 
 export const buildProductionDataSchema2025 = (
   compliance_period_start: string,
@@ -68,11 +69,6 @@ export const buildProductionDataSchema2025 = (
             type: "number",
             minimum: 0,
           },
-          // production_data_jan_mar: {
-          //   title: "Production data for Jan 1 - Mar 31, 2025",
-          //   type: "number",
-          //   minimum: 0,
-          // },
           production_methodology: {
             title: "Production Quantification Methodology",
             type: "string",
@@ -123,15 +119,19 @@ export const buildProductionDataSchema2025 = (
 
   // conditionally add Jan-Mar production data field for opted-out operations
   if (is_opted_out) {
-    schema.definitions!.productionDataItem.properties.production_data_jan_mar_2025 =
-      {
-        title: "Production data for Jan 1 - Mar 31, 2025",
-        type: "number",
-        minimum: 0,
-      };
-    schema.definitions!.productionDataItem.required!.push(
-      "production_data_jan_mar_2025",
-    );
+    const productionDataItem = schema.definitions
+      ?.productionDataItem as JSONSchema7;
+
+    // protection in case productionDataItem is undefined
+    productionDataItem.properties ??= {};
+    productionDataItem.required ??= [];
+
+    productionDataItem.properties.production_data_jan_mar_2025 = {
+      title: "Production data for Jan 1 - Mar 31, 2025",
+      type: "number",
+      minimum: 0,
+    };
+    productionDataItem.required!.push("production_data_jan_mar_2025");
   }
 
   return schema;
