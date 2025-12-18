@@ -1,7 +1,7 @@
 import base64
 import logging
 import os
-from django.db.models import QuerySet, ForeignKey
+from django.db.models import QuerySet
 from typing import Any, TypeVar, Union, Iterable, Dict, Optional
 from django.core.exceptions import ValidationError
 		import re
@@ -45,26 +45,14 @@ def update_model_instance(
     Returns:
         instance (models.Model): The updated instance.
     """
-
-    def assign_value(field_name: str, value: Any) -> None:
-        try:
-            model_field = instance._meta.get_field(field_name)
-        except Exception:
-            return
-
-        if isinstance(model_field, ForeignKey):
-            setattr(instance, f"{field_name}_id", value)
-        else:
-            setattr(instance, field_name, value)
-
     if isinstance(fields_to_update, dict):
         for data_key, instance_key in fields_to_update.items():
             if data_key in data_dict and hasattr(instance, instance_key):
-                assign_value(instance_key, data_dict[data_key])
+                setattr(instance, instance_key, data_dict[data_key])
     else:
         for field in fields_to_update:
             if field in data_dict and hasattr(instance, field):
-                assign_value(field, data_dict[field])
+                setattr(instance, field, data_dict[field])
     try:
         # Perform full validation of the instance based on the model's field constraints.
         instance.full_clean()
