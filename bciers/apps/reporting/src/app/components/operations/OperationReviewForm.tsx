@@ -28,7 +28,7 @@ interface Props {
   navigationInformation: NavigationInformation;
   reportType: string;
   reportingYear: number;
-  allActivities: any[];
+  applicableActivities: any[];
   allRegulatedProducts: any[];
   allRepresentatives: any[];
   facilityId: string;
@@ -42,7 +42,7 @@ export default function OperationReviewForm({
   navigationInformation,
   reportType,
   reportingYear,
-  allActivities,
+  applicableActivities,
   allRegulatedProducts,
   allRepresentatives,
   facilityId,
@@ -106,7 +106,7 @@ export default function OperationReviewForm({
       buildOperationReviewSchema(
         newData,
         reportingYear,
-        allActivities,
+        applicableActivities,
         allRegulatedProducts,
         newData.all_representatives,
         reportType,

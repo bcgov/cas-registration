@@ -84,7 +84,7 @@ class ActivitySchema(Schema):
 class ReportOperationDataSchema(Schema):
     report_operation: ReportOperationSchemaOut
     facility_id: Optional[UUID]
-    all_activities: List[ActivitySchema]
+    applicable_activities: List[ActivitySchema]
     all_regulated_products: List[RegulatedProductSchema]
     all_representatives: List[ReportOperationRepresentativeSchema]
     report_type: str

@@ -16,7 +16,7 @@ const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 export const buildOperationReviewSchema = (
   formDataState: any,
   reportingYear: number,
-  allActivities: any[],
+  applicableActivities: any[],
   allRegulatedProducts: any[],
   allRepresentatives: any[],
   reportType: string,
@@ -118,8 +118,10 @@ export const buildOperationReviewSchema = (
                   minItems: 1,
                   items: {
                     type: "number",
-                    enum: allActivities.map((activity) => activity.id),
-                    enumNames: allActivities.map((activity) => activity.name),
+                    enum: applicableActivities.map((activity) => activity.id),
+                    enumNames: applicableActivities.map(
+                      (activity) => activity.name,
+                    ),
                   },
                 },
               }),

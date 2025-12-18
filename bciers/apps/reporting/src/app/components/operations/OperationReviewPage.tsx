@@ -25,7 +25,7 @@ export default async function OperationReviewPage({
   const schema = buildOperationReviewSchema(
     data.report_operation,
     data.reporting_year,
-    data.all_activities,
+    data.applicable_activities,
     data.all_regulated_products,
     data.all_representatives,
     data.report_type,
@@ -43,7 +43,7 @@ export default async function OperationReviewPage({
       navigationInformation={navigationInformation}
       reportType={data.report_type}
       reportingYear={data.reporting_year}
-      allActivities={data.all_activities}
+      applicableActivities={data.applicable_activities}
       allRegulatedProducts={data.all_regulated_products}
       allRepresentatives={data.all_representatives}
       facilityId={data.facility_id}
