@@ -151,16 +151,18 @@ class ElicensingDataRefreshService:
     @classmethod
     def _process_fee_payments(cls, fee_record: ElicensingLineItem, payments: list) -> None:
         for payment in payments:
-            ElicensingPayment.objects.update_or_create(
-                elicensing_line_item=fee_record,
-                payment_object_id=payment.paymentObjectId,
-                defaults={
-                    "received_date": date.fromisoformat(payment.receivedDate),
-                    "amount": Decimal(payment.amount).quantize(Decimal("0.00")),
-                    "method": payment.method,
-                    "receipt_number": payment.receiptNumber,
-                },
-            )
+            # Quarantine incorrectly applied receipt number in elicensing. This is a temporary fix & should be removed during the work in ticket 468 when the more permanent fix for distributions is applied.
+            if payment.receiptNumber != 'R998167':
+                ElicensingPayment.objects.update_or_create(
+                    elicensing_line_item=fee_record,
+                    payment_object_id=payment.paymentObjectId,
+                    defaults={
+                        "received_date": date.fromisoformat(payment.receivedDate),
+                        "amount": Decimal(payment.amount).quantize(Decimal("0.00")),
+                        "method": payment.method,
+                        "receipt_number": payment.receiptNumber,
+                    },
+                )
 
     @classmethod
     def _process_fee_adjustments(
