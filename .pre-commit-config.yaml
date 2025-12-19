@@ -11,6 +11,7 @@ repos:
         name: ESLint
         language: system
         files: \.(j|t)sx?$
+        exclude: (\.next/|node_modules/|dist/|build/|coverage/|\.nx/cache/|tests/performance/)
         entry: ./.bin/pre-commit-lint.sh
       - id: mypy
         name: Mypy
