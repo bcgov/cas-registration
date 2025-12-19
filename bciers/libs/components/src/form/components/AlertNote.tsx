@@ -1,4 +1,4 @@
-import { ReactNode, FC, PropsWithChildren } from "react";
+import type { ReactNode, FC, PropsWithChildren } from "react";
 import { AlertIcon } from "@bciers/components/icons";
 import { Alert, SvgIconProps } from "@mui/material";
 import { BC_GOV_TEXT } from "@bciers/styles";

@@ -1,7 +1,6 @@
 import { IssuanceStatusAwaitingNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusAwaitingNote";
 import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
 import { vi } from "vitest";
-import React from "react";
 import { render, screen } from "@testing-library/react";
 
 vi.mock("@bciers/components/icons", () => ({

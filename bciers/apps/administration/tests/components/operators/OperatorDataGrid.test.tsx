@@ -2,7 +2,6 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import OperatorDataGrid from "apps/administration/app/components/operators/OperatorDataGrid";
-import React from "react";
 import { UUID } from "crypto";
 
 useRouter.mockReturnValue({

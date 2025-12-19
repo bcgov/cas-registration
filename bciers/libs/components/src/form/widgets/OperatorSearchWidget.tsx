@@ -1,6 +1,7 @@
 "use client";
 
-import { SyntheticEvent, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import type { SyntheticEvent } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import debounce from "lodash.debounce";

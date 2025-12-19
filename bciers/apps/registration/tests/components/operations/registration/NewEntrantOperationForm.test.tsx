@@ -7,7 +7,6 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
-import React from "react";
 import { newEntrantOperationSchema } from "@/registration/app/data/jsonSchema/operationRegistration/newEntrantOperation";
 import NewEntrantOperationForm from "@/registration/app/components/operations/registration/NewEntrantOperationForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";

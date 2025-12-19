@@ -1,7 +1,6 @@
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import Check from "@bciers/components/icons/Check";
 import { Link } from "@mui/material";
-import React from "react";
 import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
 
 export const IssuanceStatusApprovedNote = () => {

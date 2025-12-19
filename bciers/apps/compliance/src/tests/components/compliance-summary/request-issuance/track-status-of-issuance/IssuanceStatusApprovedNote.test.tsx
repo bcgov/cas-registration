@@ -1,6 +1,5 @@
 import { IssuanceStatusApprovedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusApprovedNote";
 import { vi } from "vitest";
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
 

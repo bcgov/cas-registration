@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { getContacts } from "@bciers/actions/api";
 import { getContact } from "@bciers/actions/api";

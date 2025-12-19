@@ -1,6 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import React from "react";
 import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacilityFinalReviewData";
 import { useRouter, usePathname } from "next/navigation";
 import FacilityReportFinalReview, {

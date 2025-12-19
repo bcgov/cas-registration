@@ -2,7 +2,6 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import OperationDataGrid from "apps/administration/app/components/operations/OperationDataGrid";
-import React from "react";
 import { OperationStatus, OperationTypes } from "@bciers/utils/src/enums";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 import { expect } from "vitest";

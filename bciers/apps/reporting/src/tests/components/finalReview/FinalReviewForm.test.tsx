@@ -1,6 +1,5 @@
 import { useRouter } from "@bciers/testConfig/mocks";
 import { render, screen, waitFor } from "@testing-library/react";
-import React from "react";
 import { FinalReviewForm } from "@reporting/src/app/components/finalReview/FinalReviewForm";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
 import {

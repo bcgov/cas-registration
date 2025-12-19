@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import React from "react";
 import { useSessionRole } from "@bciers/testConfig/mocks";
 import OperationRepresentativeForm from "apps/registration/app/components/operations/registration/OperationRepresentativeForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";

@@ -1,4 +1,3 @@
-import React from "react";
 import OperationEmissionSummaryForm from "./OperationEmissionSummaryForm";
 import { getOperationEmissionSummaryData } from "@bciers/actions/api/getOperationEmissionSummaryData";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";

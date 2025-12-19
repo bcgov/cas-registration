@@ -1,5 +1,4 @@
 import { fetchReportHistoryPageData } from "@reporting/src/app/components/reportHistory/fetchReportHistoryPageData";
-import React from "react";
 import ReportHistoryDataGrid from "@reporting/src/app/components/reportHistory/ReportHistoryDataGrid";
 import { ReportHistorySearchParams } from "@reporting/src/app/components/reportHistory/types";
 

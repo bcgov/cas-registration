@@ -1,7 +1,6 @@
 import { useRouter } from "@bciers/testConfig/mocks";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import React from "react";
 import ReportForm from "@reporting/src/app/components/submitted/ReportForm";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
 import { vi } from "vitest";

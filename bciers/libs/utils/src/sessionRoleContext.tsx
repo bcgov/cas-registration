@@ -1,21 +1,15 @@
 "use client";
-import {
-  AwaitedReactNode,
-  createContext,
-  JSXElementConstructor,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-} from "react";
+import { createContext } from "react";
+import type { ReactNode, FC } from "react";
 
 export const SessionRoleContext = createContext<string | undefined>(undefined);
 
 interface SessionRoleContextProviderProps {
   value: string | undefined;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const SessionRoleContextProvider: React.FC<SessionRoleContextProviderProps> = (
+const SessionRoleContextProvider: FC<SessionRoleContextProviderProps> = (
   props,
 ) => {
   return (

@@ -1,5 +1,4 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import React from "react";
 import ChangeReviewPage from "@reporting/src/app/components/changeReview/ChangeReviewPage";
 import { getReportVersionDetails } from "@reporting/src/app/utils/getReportVersionDetails";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";

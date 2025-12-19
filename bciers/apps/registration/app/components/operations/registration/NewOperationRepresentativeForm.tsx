@@ -6,7 +6,8 @@ import {
 } from "apps/registration/app/data/jsonSchema/operationRegistration/operationRepresentative";
 import { OperationRepresentative } from "apps/registration/app/components/operations/registration/types";
 import { IChangeEvent } from "@rjsf/core";
-import { useState, FC } from "react";
+import { useState } from "react";
+import type { FC } from "react";
 import { Button, Alert } from "@mui/material";
 import { getContact } from "@bciers/actions/api";
 import {

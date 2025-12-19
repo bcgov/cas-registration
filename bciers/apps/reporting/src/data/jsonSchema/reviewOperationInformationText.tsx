@@ -6,7 +6,6 @@ import {
   BC_GOV_TEXT,
   LIGHT_BLUE_BG_COLOR,
 } from "@bciers/styles";
-import React from "react";
 export const purposeNote = (
   operationId: string = "",
   operationName: string = "",

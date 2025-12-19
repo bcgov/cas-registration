@@ -1,5 +1,4 @@
 import { Box, Link, Typography } from "@mui/material";
-import React from "react";
 export const infoNote = () => (
   <Box sx={{ display: "flex", alignItems: "center" }}>
     <Typography variant="body2">

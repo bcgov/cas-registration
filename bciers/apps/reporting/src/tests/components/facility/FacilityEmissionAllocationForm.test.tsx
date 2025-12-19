@@ -1,4 +1,3 @@
-import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import FacilityEmissionAllocationForm from "@reporting/src/app/components/facility/FacilityEmissionAllocationForm";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
