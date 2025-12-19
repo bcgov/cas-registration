@@ -29,3 +29,12 @@ def get_initial_activity_data(
 )
 def get_activities(request: HttpRequest) -> Tuple[int, list]:
     return 200, ActivityService.get_all_activities()
+
+
+@router.get(
+    "/report-version/{version_id}/applicable-activities",
+    response={200: list, custom_codes_4xx: Message},
+    auth=authorize("approved_authorized_roles"),
+)
+def get_applicable_activities(request: HttpRequest, version_id: int) -> Tuple[int, list]:
+    return 200, ActivityService.get_applicable_activities(version_id)
