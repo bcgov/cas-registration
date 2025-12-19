@@ -31,7 +31,8 @@ def setup_signal() -> None:
 
         logger.critical(f"Post-save: uploading file with {type(default_storage).__name__}")
         default_storage.save(
-            instance.attachment.name, content=ContentFile(f"Attachment Fixture {instance.attachment.name}")
+            instance.attachment.name,
+            content=ContentFile(f"Attachment Fixture {instance.attachment.name}".encode('utf-8')),
         )
 
 

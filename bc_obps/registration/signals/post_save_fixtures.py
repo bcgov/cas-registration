@@ -31,7 +31,9 @@ def setup_signal() -> None:
             return
 
         logger.critical(f"Post-save: uploading file with {type(default_storage).__name__}")
-        default_storage.save(instance.file.name, content=ContentFile(f"Document Fixture {instance.file.name}"))
+        default_storage.save(
+            instance.file.name, content=ContentFile(f"Document Fixture {instance.file.name}".encode('utf-8'))
+        )
 
 
 logger.critical(f"Setting up post-save signal: Checking Environment {settings.ENVIRONMENT}")

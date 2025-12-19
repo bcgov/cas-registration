@@ -37,10 +37,11 @@ spec:
                 - bash
                 - -c
                 - |
-                  set -euo pipefail;
+                  set -euxo pipefail;
                   gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS;
-                  gcloud storage rm --recursive "gs://$GS_CLEAN_BUCKET_NAME/report_attachments/";
-                  gcloud storage rm --recursive "gs://$GS_CLEAN_BUCKET_NAME/documents/";
+                  gcloud storage rm --recursive "gs://$GS_CLEAN_BUCKET_NAME/report_attachments/**";
+                  gcloud storage rm --recursive "gs://$GS_CLEAN_BUCKET_NAME/documents/**";
+
               volumeMounts:
                 - mountPath: "/attachment-credentials"
                   name: gcs-attachment-credentials
