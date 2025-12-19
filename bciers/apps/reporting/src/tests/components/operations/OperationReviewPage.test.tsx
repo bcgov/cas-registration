@@ -43,7 +43,7 @@ describe("OperationReviewPage", () => {
     const fakeParams = {
       report_operation: { op: "op" },
       reporting_year: "2024",
-      all_activities: [{ id: 1, name: "Activity 1" }],
+      applicable_activities: [{ id: 1, name: "Activity 1" }],
       all_regulated_products: [{ id: 10, name: "Product 1" }],
       all_representatives: [{ id: 100, representative_name: "Rep 1" }],
       report_type: { report_type: "Simple Report" },
@@ -93,7 +93,7 @@ describe("OperationReviewPage", () => {
     expect(buildOperationReviewSchema).toHaveBeenCalledWith(
       fakeParams.report_operation,
       fakeParams.reporting_year,
-      fakeParams.all_activities,
+      fakeParams.applicable_activities,
       fakeParams.all_regulated_products,
       fakeParams.all_representatives,
       fakeParams.report_type,

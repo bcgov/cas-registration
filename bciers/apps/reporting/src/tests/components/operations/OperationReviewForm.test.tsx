@@ -53,8 +53,8 @@ const formData = {
 };
 
 const activities = [
-  { id: 1, name: "Activity 1", applicable_to: "sfo" },
-  { id: 2, name: "Activity 2", applicable_to: "sfo" },
+  { id: 1, name: "Activity 1", applicable_to: "all" },
+  { id: 2, name: "Activity 2", applicable_to: "all" },
 ];
 
 const regulatedProducts = [
@@ -99,7 +99,7 @@ describe("OperationReviewForm Component", () => {
         version_id={1}
         navigationInformation={dummyNavigationInformation}
         schema={schema}
-        allActivities={[]}
+        applicableActivities={[]}
         allRegulatedProducts={[]}
         reportType={reportType}
         reportingYear={2024}
@@ -232,7 +232,7 @@ describe("OperationReviewForm Component", () => {
         version_id={1}
         navigationInformation={dummyNavigationInformation}
         schema={schema}
-        allActivities={[]}
+        applicableActivities={[]}
         allRegulatedProducts={[]}
         reportType={reportType}
         reportingYear={2024}
@@ -291,7 +291,7 @@ describe("OperationReviewForm Component", () => {
         version_id={1}
         navigationInformation={dummyNavigationInformation}
         schema={schemaWithSync}
-        allActivities={[]}
+        applicableActivities={[]}
         allRegulatedProducts={[]}
         reportType={reportType}
         reportingYear={2024}
@@ -327,7 +327,7 @@ describe("OperationReviewForm Component", () => {
         version_id={1}
         navigationInformation={dummyNavigationInformation}
         schema={schema}
-        allActivities={[]}
+        applicableActivities={[]}
         allRegulatedProducts={[]}
         reportType={reportType}
         reportingYear={2024}
@@ -377,7 +377,7 @@ describe("OperationReviewForm Component", () => {
         version_id={1}
         navigationInformation={dummyNavigationInformation}
         schema={schemaWithSync}
-        allActivities={[]}
+        applicableActivities={[]}
         allRegulatedProducts={[]}
         reportType={reportType}
         reportingYear={2024}
