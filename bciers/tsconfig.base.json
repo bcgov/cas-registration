@@ -34,7 +34,7 @@
       "@bciers/img/*": ["libs/img/*"],
       "@bciers/middlewares": ["libs/middlewares/src/index.ts"],
       "@bciers/sentryConfig/*": ["libs/sentryConfig/src/*"],
-      "@bciers/styles": ["libs/styles/src/index.ts"],
+      "@bciers/styles": ["libs/styles/src/index.js"],
       "@bciers/styles/*": ["libs/styles/src/*"],
       "@bciers/testConfig/*": ["libs/testConfig/src/*"],
       "@bciers/testConfig/helpers/*": ["libs/testConfig/src/helpers/*"],
