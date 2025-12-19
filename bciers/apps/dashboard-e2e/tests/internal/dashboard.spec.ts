@@ -34,7 +34,7 @@ const getLinkVisibility = (
 
 userRoles.forEach((role) => {
   const test = setupBeforeEachTest(role);
-  test.describe(" Internal user dashboard", () => {
+  test.describe("Internal user dashboard", () => {
     test.describe.configure({ mode: "serial" });
 
     test(`Dashboard for role: ${role.toUpperCase()}`, async ({
