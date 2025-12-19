@@ -1,7 +1,7 @@
 "use client";
 import { FieldTemplateProps } from "@rjsf/utils";
 import AlertNote, { AlertNoteProps, AlertType } from "../components/AlertNote";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 type AlertFieldTemplateProps = FieldTemplateProps & AlertNoteProps;
 

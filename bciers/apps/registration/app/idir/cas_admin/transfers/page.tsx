@@ -4,11 +4,10 @@ import TransfersDataGridPage from "@/registration/app/components/transfers/Trans
 import { Suspense } from "react";
 import { TransfersSearchParams } from "@/registration/app/components/transfers/types";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: TransfersSearchParams;
+export default async function Page(props: {
+  searchParams: Promise<TransfersSearchParams>;
 }) {
+  const searchParams = await props.searchParams;
   return (
     <Suspense fallback={<Loading />}>
       <TransfersDataGridPage searchParams={searchParams} />

@@ -5,7 +5,7 @@ import {
 } from "@bciers/utils/src/enums";
 import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
 import { ButtonOwnProps } from "@mui/material/Button";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { UUID } from "crypto";
 
 export interface Operator {

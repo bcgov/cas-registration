@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
-import { appName } from "../middleware";
+import { appName } from "../proxy";
 
 /*
 Middleware to route to request app router path if pathname is in the allowed list;

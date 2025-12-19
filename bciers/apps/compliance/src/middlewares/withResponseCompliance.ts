@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
-import { appName } from "../middleware";
+import { appName } from "../proxy";
 
 export const withResponseCompliance: MiddlewareFactory = () => {
   return async (request: NextRequest) => {

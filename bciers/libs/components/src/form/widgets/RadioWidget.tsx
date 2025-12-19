@@ -1,4 +1,4 @@
-import { FocusEvent } from "react";
+import type { FocusEvent } from "react";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";

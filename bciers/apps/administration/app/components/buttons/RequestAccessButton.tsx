@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
+import type { ReactNode } from "react";
 import Button from "@mui/material/Button";
 import { actionHandler } from "@bciers/actions";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert } from "@mui/material";
 import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
@@ -30,7 +31,7 @@ export default function RequestAccessButton({
     isAdminRequest ? "request-admin-access" : "request-access"
   }`;
 
-  const errorMessageJSX: JSX.Element = (
+  const errorMessageJSX: ReactNode = (
     <>
       {error}
       {error?.includes(

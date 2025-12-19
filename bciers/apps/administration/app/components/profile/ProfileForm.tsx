@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { Alert } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import FormBase from "@bciers/components/form/FormBase";
@@ -63,7 +64,7 @@ export default function ProfileForm({
     </div>
   );
 
-  let emailHelpText: JSX.Element | null = null;
+  let emailHelpText: ReactNode | null = null;
 
   if (!isCreate && idp === IDP.BCEIDBUSINESS) {
     if (contactId !== null && contactId !== undefined) {

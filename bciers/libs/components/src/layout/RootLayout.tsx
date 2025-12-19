@@ -21,10 +21,8 @@ import {
   isVitestEnvironment,
 } from "@bciers/utils/src/environmentDetection";
 
-// Dynamically import SessionTimeoutHandler with SSR disabled
 const SessionTimeoutHandler = dynamic(
   () => import("@bciers/components/auth/SessionTimeoutHandler"),
-  { ssr: false },
 );
 
 // Dynamically import SentryUserContext with SSR disabled

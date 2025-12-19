@@ -5,13 +5,12 @@ import { UUID } from "crypto";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonForm";
 
-export default async function Page({
-  params,
-  searchParams,
-}: {
-  params: Readonly<{ operation: UUID; step: string }>;
-  searchParams: any;
+export default async function Page(props: {
+  params: Promise<Readonly<{ operation: UUID; step: string }>>;
+  searchParams: Promise<any>;
 }) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   return (
     <Suspense fallback={<Loading />}>
       <OperationRegistrationPage

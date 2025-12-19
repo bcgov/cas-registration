@@ -5,11 +5,10 @@ import { InternalOperatorDataGridLayout } from "@/administration/app/components/
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { Suspense } from "react";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: OperatorsSearchParams;
+export default async function Page(props: {
+  searchParams: Promise<OperatorsSearchParams>;
 }) {
+  const searchParams = await props.searchParams;
   return (
     <InternalOperatorDataGridLayout>
       <Suspense fallback={<Loading />}>

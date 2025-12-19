@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  ChangeEvent,
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { ChangeEvent } from "react";
 import {
   dataURItoBlob,
   FormContextType,
@@ -215,10 +209,10 @@ const FileWidget = ({
   const role = useSessionRole();
   const isCasInternal = role?.includes("cas") && !role?.includes("pending");
 
-  const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
+  const hiddenFileInput = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
-    hiddenFileInput.current.click();
+    hiddenFileInput.current?.click();
   };
 
   const handleChange = useCallback(

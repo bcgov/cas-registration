@@ -1,5 +1,6 @@
 import AlertIcon from "@bciers/components/icons/AlertIcon";
-import { ChangeEvent, MutableRefObject, useRef } from "react";
+import { useRef } from "react";
+import type { ChangeEvent } from "react";
 import { CircularProgress } from "@mui/material";
 import downloadAttachment from "./download";
 
@@ -30,10 +31,10 @@ const AttachmentElement: React.FC<Props> = ({
   required,
   isUploading,
 }) => {
-  const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
+  const hiddenFileInput = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
-    hiddenFileInput.current.click();
+    hiddenFileInput.current?.click();
   };
 
   const handleDownload = async (e: React.MouseEvent<HTMLAnchorElement>) => {

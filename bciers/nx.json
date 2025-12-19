@@ -68,7 +68,10 @@
       }
     },
     {
-      "plugin": "@nx/vite/plugin",
+      "plugin": "@nx/vite/plugin"
+    },
+    {
+      "plugin": "@nx/vitest",
       "options": {
         "testTargetName": "test"
       }
@@ -88,6 +91,5 @@
       "library": {}
     }
   },
-  "neverConnectToCloud": true,
-  "useLegacyCache": true
+  "neverConnectToCloud": true
 }

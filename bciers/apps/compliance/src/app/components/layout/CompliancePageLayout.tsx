@@ -1,6 +1,6 @@
+import type { ReactNode } from "react";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import ComplianceSummaryTaskList from "@bciers/components/navigation/complianceSummaryTaskList/ComplianceSummaryTaskList";
-import { ReactNode } from "react";
 import CompliancePageHeading from "@/compliance/src/app/components/layout/CompliancePageHeading";
 
 interface Props {
@@ -13,7 +13,7 @@ const CompliancePageLayout: ({
   complianceReportVersionId,
   taskListElements,
   children,
-}: Readonly<Props>) => JSX.Element = ({
+}: Readonly<Props>) => ReactNode = ({
   complianceReportVersionId,
   taskListElements,
   children,

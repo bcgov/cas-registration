@@ -2,10 +2,9 @@
 import { OperationsSearchParams } from "@/administration/app/components/operations/types";
 import OperationPage from "@/administration/app/components/operations/OperationPage";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: OperationsSearchParams;
+export default async function Page(props: {
+  searchParams: Promise<OperationsSearchParams>;
 }) {
+  const searchParams = await props.searchParams;
   return <OperationPage searchParams={searchParams} />;
 }

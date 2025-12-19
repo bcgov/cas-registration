@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   GridColumnGroupHeaderParams,
   GridColumnGroupingModel,
@@ -6,7 +7,7 @@ import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
 import createColumnGroup from "@bciers/components/datagrid/createColumnGrid";
 
 const complianceSummaryGroupColumns = (
-  SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
+  SearchCell: (params: GridColumnGroupHeaderParams) => ReactNode,
   isAllowedCas: boolean,
 ): GridColumnGroupingModel => {
   const groups: GridColumnGroupingModel = [

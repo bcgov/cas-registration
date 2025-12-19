@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import debounce from "lodash.debounce";
 import {
@@ -30,7 +30,7 @@ interface Props {
   getRowId?: GridRowIdGetter<any> | undefined;
   pageSize?: number;
   rowSelection?: boolean;
-  noDataMessage?: JSX.Element | string;
+  noDataMessage?: ReactNode | string;
   hideFooter?: boolean;
   getRowClassName?: (params: GridRowParams) => string;
 }

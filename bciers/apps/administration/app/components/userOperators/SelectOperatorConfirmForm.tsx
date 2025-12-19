@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import type { ReactNode } from "react";
 import {
   Box,
   Paper,
@@ -9,7 +11,6 @@ import {
   TableContainer,
   TableRow,
 } from "@mui/material";
-import { useState } from "react";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import RequestAccessButton from "../buttons/RequestAccessButton";
 import Link from "next/link";
@@ -28,7 +29,7 @@ export default function SelectOperatorConfirmForm({
 }: Readonly<ConfirmSelectedOperatorFormProps>) {
   const [hasConfirmedOperator, setHasConfirmedOperator] = useState(false);
 
-  const operatorHasAdminJSX: JSX.Element = (
+  const operatorHasAdminJSX: ReactNode = (
     <div data-testid="has-admin-message">
       <p>
         You do not currently have access to <b>{operator.legal_name}</b>.
@@ -44,7 +45,7 @@ export default function SelectOperatorConfirmForm({
     </div>
   );
 
-  const operatorHasNoAdmin: JSX.Element = (
+  const operatorHasNoAdmin: ReactNode = (
     <div data-testid="has-no-admin-message">
       <p>
         The operator <b>{operator.legal_name}</b> does not have an administrator

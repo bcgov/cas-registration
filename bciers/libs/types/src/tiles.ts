@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 // Type representing a condition that must be evaluated to show/hide a ContentItem or LinkItem
 export type Condition = {
   api: string; // The API endpoint to call
@@ -29,11 +31,11 @@ export type ContentItem = {
 };
 
 export type IconMap = {
-  File: JSX.Element;
-  Inbox: JSX.Element;
-  Entrance: JSX.Element;
-  Layers: JSX.Element;
-  Pulse: JSX.Element;
-  Wrench: JSX.Element;
-  Users: JSX.Element;
+  File: ReactNode;
+  Inbox: ReactNode;
+  Entrance: ReactNode;
+  Layers: ReactNode;
+  Pulse: ReactNode;
+  Wrench: ReactNode;
+  Users: ReactNode;
 };

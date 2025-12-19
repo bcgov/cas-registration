@@ -1,7 +1,7 @@
 import { NextURL } from "next/dist/server/web/next-url";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { instance, mock, reset, when } from "ts-mockito";
-import middleware from "../middleware";
+import proxy from "../proxy";
 import { fetch, getToken } from "@bciers/testConfig/mocks";
 import { mockIndustryUserToken } from "@bciers/testConfig/data/tokens";
 
@@ -30,10 +30,7 @@ describe("withRulesAppliedAdmin middleware", () => {
 
     fetch.mockResponseOnce(JSON.stringify({}));
 
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
+    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
       new URL("/administration", domain),
@@ -54,10 +51,7 @@ describe("withRulesAppliedAdmin middleware", () => {
       }),
     );
 
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
+    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
       new URL("/administration", domain),
@@ -81,10 +75,7 @@ describe("withRulesAppliedAdmin middleware", () => {
       }),
     );
 
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
+    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
     expect(result?.status).toBe(200);
   });
 
@@ -103,10 +94,7 @@ describe("withRulesAppliedAdmin middleware", () => {
       }),
     );
 
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
+    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
       new URL(`my-operator`, domain),
@@ -128,10 +116,7 @@ describe("withRulesAppliedAdmin middleware", () => {
       }),
     );
 
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
+    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
       new URL(
@@ -150,10 +135,7 @@ describe("withRulesAppliedAdmin middleware", () => {
 
     fetch.mockResponseOnce(JSON.stringify({}));
 
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
+    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
     expect(result?.status).toBe(200);
   });
 
@@ -166,10 +148,7 @@ describe("withRulesAppliedAdmin middleware", () => {
 
     fetch.mockResponseOnce(JSON.stringify({}));
 
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
+    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
       new URL("/administration", domain),
@@ -191,10 +170,7 @@ describe("withRulesAppliedAdmin middleware", () => {
       }),
     );
 
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
+    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
       new URL("/administration", domain),
@@ -218,10 +194,7 @@ describe("withRulesAppliedAdmin middleware", () => {
       }),
     );
 
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
+    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
     expect(result?.status).toBe(200);
   });
 });

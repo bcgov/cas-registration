@@ -12,7 +12,7 @@ import {
   UserOperatorStatus,
 } from "@bciers/utils/src/enums";
 import { fetchApi } from "@bciers/actions/api/fetchApi";
-import { appName } from "../middleware";
+import { appName } from "../proxy";
 
 /**
  * 📏 Handles routing for industry users based on:

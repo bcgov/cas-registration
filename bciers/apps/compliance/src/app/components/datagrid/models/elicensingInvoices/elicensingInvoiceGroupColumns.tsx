@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   GridColumnGroupHeaderParams,
   GridColumnGroupingModel,
@@ -12,7 +13,7 @@ import createColumnGroup from "@bciers/components/datagrid/createColumnGrid";
  * @param isInternalUser - determines whether "Operator Name" is shown
  */
 const elicensingInvoiceGroupColumns = (
-  SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
+  SearchCell: (params: GridColumnGroupHeaderParams) => ReactNode,
   isInternalUser: boolean,
 ): GridColumnGroupingModel => {
   const groups: GridColumnGroupingModel = [

@@ -20,7 +20,7 @@ export const ExternalUserOperationDataGridLayout = ({
   operationsWithoutContacts,
   children,
 }: {
-  operationsWithoutContacts?: String[];
+  operationsWithoutContacts?: string[];
   children: React.ReactNode;
 }) => (
   <>

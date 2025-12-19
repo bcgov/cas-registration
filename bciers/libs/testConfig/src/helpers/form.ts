@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies*/
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { act, render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 

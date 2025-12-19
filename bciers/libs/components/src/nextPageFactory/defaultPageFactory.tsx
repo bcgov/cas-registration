@@ -28,12 +28,14 @@ export default function defaultPageFactory<TPageParams extends {}>(
     params,
     searchParams,
   }: {
-    params: TPageParams;
-    searchParams?: Record<string, string | number | undefined>;
+    params: Promise<TPageParams>;
+    searchParams?: Promise<Record<string, string | number | undefined>>;
   }) {
+    const resolvedParams = await params;
+    const resolvedSearchParams = searchParams ? await searchParams : undefined;
     return (
       <Suspense fallback={<Loading />}>
-        <Component {...params} searchParams={searchParams} />
+        <Component {...resolvedParams} searchParams={resolvedSearchParams} />
       </Suspense>
     );
   };

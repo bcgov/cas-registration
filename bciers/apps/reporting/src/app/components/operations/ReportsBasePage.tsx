@@ -1,7 +1,7 @@
 import { Tabs } from "@bciers/components/tabs/Tabs";
 import ReportingYearHeader from "@bciers/components/reporting/ReportingYearHeader";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { getReportingYear } from "../../utils/getReportingYear";
 
 interface ReportsBasePageProps {

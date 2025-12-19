@@ -3,13 +3,17 @@ import { FacilitiesSearchParams } from "@/administration/app/components/faciliti
 import FacilitiesPage from "@/administration/app/components/facilities/FacilitiesPage";
 import { UUID } from "crypto";
 
-export default async function Page({
-  params: { operationId },
-  searchParams,
-}: Readonly<{
-  params: { operationId: UUID };
-  searchParams: FacilitiesSearchParams;
-}>) {
+export default async function Page(
+  props: Readonly<{
+    params: Promise<{ operationId: UUID }>;
+    searchParams: Promise<FacilitiesSearchParams>;
+  }>,
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
+
+  const { operationId } = params;
+
   return (
     <FacilitiesPage
       operationId={operationId}

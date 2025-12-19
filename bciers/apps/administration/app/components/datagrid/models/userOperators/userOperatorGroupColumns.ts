@@ -1,8 +1,9 @@
+import type { ReactNode } from "react";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
 import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
 
 const userOperatorGroupColumns = (
-  SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
+  SearchCell: (params: GridColumnGroupHeaderParams) => ReactNode,
 ) => {
   return [
     {

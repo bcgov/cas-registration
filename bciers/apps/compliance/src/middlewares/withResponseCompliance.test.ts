@@ -36,7 +36,7 @@ describe("withResponseCompliance middleware", () => {
 
     fetch.mockResponseOnce(JSON.stringify({ status: "Registered" }));
 
-    const result = await middleware(
+    const result = await proxy(
       instance(mockedRequest),
       instance(mockNextFetchEvent),
     );
@@ -59,7 +59,7 @@ describe("withResponseCompliance middleware", () => {
 
     fetch.mockResponseOnce(JSON.stringify({ status: "Registered" }));
 
-    const result = await middleware(
+    const result = await proxy(
       instance(mockedRequest),
       instance(mockNextFetchEvent),
     );

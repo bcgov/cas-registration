@@ -2,9 +2,13 @@ import SelectOperatorConfirmPage from "@/administration/app/components/userOpera
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonForm";
 import { UUID } from "crypto";
-export default function Page({
-  params: { id },
-}: Readonly<{ params: { id: UUID } }>) {
+export default async function Page(
+  props: Readonly<{ params: Promise<{ id: UUID }> }>,
+) {
+  const params = await props.params;
+
+  const { id } = params;
+
   return (
     <Suspense fallback={<Loading />}>
       <SelectOperatorConfirmPage id={id} />
