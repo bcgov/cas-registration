@@ -1,0 +1,117 @@
+# This workflow builds and tests nightly on the `develop` branch. Scheduled jobs always run on the default branch, which is `develop` in our case.
+
+name: nightly
+
+on:
+  schedule:
+    - cron: "17 2 * * 1-5"
+
+concurrency:
+  group: nightly
+  cancel-in-progress: true
+
+env:
+  PGUSER: postgres
+
+jobs:
+  build-administration:
+    uses: ./.github/workflows/build-administration.yaml
+  build-backend:
+    uses: ./.github/workflows/build-backend.yaml
+  build-compliance:
+    uses: ./.github/workflows/build-compliance.yaml
+  build-compliance-e2e:
+    uses: ./.github/workflows/build-compliance-e2e.yaml
+  build-dashboard:
+    uses: ./.github/workflows/build-dashboard.yaml
+  build-dashboard-e2e:
+    uses: ./.github/workflows/build-dashboard-e2e.yaml
+  build-registration:
+    uses: ./.github/workflows/build-registration.yaml
+  build-reporting:
+    uses: ./.github/workflows/build-reporting.yaml
+  test-code:
+    uses: ./.github/workflows/test-code.yaml
+    with:
+      backend_has_changes: true
+      frontend_has_changes: true
+  test-backend:
+    needs: [build-backend]
+    uses: ./.github/workflows/test-backend.yaml
+    with:
+      backend_has_changes: true
+    secrets: inherit
+  test-administration-e2e:
+    needs:
+      [
+        build-backend,
+        build-dashboard-e2e,
+        build-administration,
+      ]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      image_url: "ghcr.io/bcgov/cas-admin-frontend"
+      is_nx_affected: true
+      nx_app_port: 4001
+      nx_project: administration
+    secrets: inherit
+  test-registration-e2e:
+    needs:
+      [
+        build-backend,
+        build-dashboard-e2e,
+        build-registration,
+      ]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      image_url: "ghcr.io/bcgov/cas-reg-frontend"
+      is_nx_affected: true
+      nx_app_port: 4000
+      nx_project: registration
+    secrets: inherit
+  test-dashboard-e2e:
+    needs:
+      [
+        build-administration,
+        build-backend,
+        build-compliance,
+        build-dashboard-e2e,
+        build-registration,
+        build-reporting,
+      ]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      docker_compose_file: "docker-compose-bciers-apps.yaml"
+      image_url: "ghcr.io/bcgov/cas-dash-frontend"
+      is_nx_affected: true
+      nx_project: dashboard
+    secrets: inherit
+  test-compliance-e2e:
+    needs:
+      [build-backend, build-dashboard-e2e, build-compliance]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      docker_compose_file: "docker-compose-bciers-apps.yaml"
+      image_url: "ghcr.io/bcgov/cas-compliance-frontend"
+      is_nx_affected: true
+      nx_app_port: 7000
+      nx_project: compliance
+    secrets: inherit
+  zap-owasp:
+    needs:
+      [
+        build-administration,
+        build-backend,
+        build-compliance,
+        build-dashboard-e2e,
+        build-registration,
+        build-reporting,
+      ]
+    uses: ./.github/workflows/zap-owasp.yaml
+    with:
+      zap_fail_on_risk_level: 3
+    secrets: inherit
+  trivy:
+    uses: ./.github/workflows/trivy.yaml
+  codeql:
+    uses: ./.github/workflows/codeql.yaml
