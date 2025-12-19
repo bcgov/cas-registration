@@ -31,9 +31,14 @@ DAG to reset the data in the BCIERS database to a freshly deployed state.
     doc_md=RESET_DAG_DOC,
 )
 def reset_data():
+
+    @task
+    def reset_attachment_storage_task():
+        trigger_k8s_cronjob("reset-attachment-storage", BCIERS_NAMESPACE)
+
     @task
     def reset_data_task():
-        trigger_k8s_cronjob('reset-database', BCIERS_NAMESPACE)
+        trigger_k8s_cronjob("reset-database", BCIERS_NAMESPACE)
 
     cycle_backend_pod_task = KubernetesJobOperator(
         task_id="cycle_backend_pod",
@@ -52,7 +57,7 @@ def reset_data():
         trigger_dag_id=WAIT_FOR_BACKEND_ROLLOUT_DAG_NAME,
     )
 
-    reset_data_task >> cycle_backend_pod_task >> trigger_wait_for_backend_rollout
+    ([reset_attachment_storage_task(), reset_data_task()] >> cycle_backend_pod_task >> trigger_wait_for_backend_rollout)
 
 
 ROLLOUT_DAG_DOC = """

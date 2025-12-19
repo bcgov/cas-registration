@@ -1,0 +1,64 @@
+{{- if not (hasSuffix "-prod" .Release.Namespace) }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: reset-attachment-storage
+  labels: {{- include "cas-bciers.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-weight": "-10"
+spec:
+  suspend: true # triggered manually via Airflow
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels: {{ include "cas-bciers.labels" . | nindent 12 }}
+            component: job-with-database-access
+        spec:
+          activeDeadlineSeconds: 600
+          restartPolicy: Never
+          serviceAccountName: deployer
+          containers:
+            - name: reset-attachment-storage
+              image: "gcr.io/google.com/cloudsdktool/google-cloud-cli:stable"
+              imagePullPolicy: "Always"
+              env:
+                - name: GOOGLE_APPLICATION_CREDENTIALS
+                  value: "/attachment-credentials/attachment-credentials.json"
+                - name: GS_CLEAN_BUCKET_NAME
+                  value: {{ .Release.Namespace }}-bciers-attach-clean
+              command:
+                - /usr/bin/env
+                - bash
+                - -c
+                - |
+                  set -x;
+
+                  gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS;
+                  gcloud storage rm --recursive "gs://$GS_CLEAN_BUCKET_NAME/report_attachments/**";
+                  gcloud storage rm --recursive "gs://$GS_CLEAN_BUCKET_NAME/documents/**";
+
+                  exit 0;
+
+              volumeMounts:
+                - mountPath: "/attachment-credentials"
+                  name: gcs-attachment-credentials
+                  readOnly: true
+                - mountPath: "/.config"
+                  name: config-volume
+          volumes:
+            - name: gcs-attachment-credentials
+              secret:
+                secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
+                items:
+                - key: credentials.json
+                  path: attachment-credentials.json
+            - name: config-volume
+              emptyDir:
+                sizeLimit: 50Mi
+{{- end}}
