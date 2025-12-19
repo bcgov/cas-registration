@@ -134,6 +134,20 @@ class SupplementaryComplianceEarnedCredit(SupplementaryComplianceTestInfrastruct
 
 
 class ComplianceTestHelper:
+    @staticmethod
+    def generate_invoice_data(data):
+        data.invoice = make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=data.compliance_report_version.compliance_report.compliance_period.compliance_deadline,
+            outstanding_balance=Decimal("1000.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        data.fee = make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=data.invoice,
+            base_amount=Decimal("1000.00"),
+        )
+
     @classmethod
     def build_test_data(
         cls,
@@ -165,8 +179,8 @@ class ComplianceTestHelper:
                 t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
                 t.report_compliance_summary.excess_emissions = Decimal('100')
                 if create_invoice_data:
-                    pass
-                    ## CREATE INVOICE
+                    cls.generate_invoice_data(t)
+
             case ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET:
                 if previous_data:
                     t = SupplementaryComplianceObligation(previous_data)
@@ -175,8 +189,9 @@ class ComplianceTestHelper:
                 t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
                 t.report_compliance_summary.excess_emissions = Decimal('100')
                 if create_invoice_data:
-                    pass
-                    ## CREATE INVOICE
+                    cls.generate_invoice_data(t)
+                    t.invoice.outstanding_balance = Decimal('0')
+
             case ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION:
                 if previous_data:
                     t = SupplementaryComplianceObligation(previous_data)
@@ -186,17 +201,20 @@ class ComplianceTestHelper:
                     ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
                 )
                 t.report_compliance_summary.excess_emissions = Decimal('100')
+
             case ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS:
                 if previous_data:
                     t = SupplementaryComplianceEarnedCredit(previous_data)
                 else:
                     t = InitialComplianceEarnedCredit(reporting_year)
                 t.report_compliance_summary.credited_emissions = Decimal('100')
+
             case ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS:
                 if previous_data:
                     t = SupplementaryComplianceTestInfrastructure(previous_data)
                 else:
                     t = BaseComplianceTestInfrastructure(reporting_year)
+
             case ComplianceReportVersion.ComplianceStatus.SUPERCEDED:
                 if previous_data:
                     t = SupplementaryComplianceTestInfrastructure(previous_data)
