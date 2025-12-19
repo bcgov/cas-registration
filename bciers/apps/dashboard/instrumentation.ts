@@ -9,3 +9,6 @@ export async function register() {
     initSentryEdge("dashboard");
   }
 }
+
+// Export onRequestError hook for Next.js 16 error handling
+export { onRequestError } from "@bciers/sentryConfig/sentry";
