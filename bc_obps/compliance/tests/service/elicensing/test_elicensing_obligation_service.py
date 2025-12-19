@@ -190,6 +190,7 @@ def mock_obligation() -> MagicMock:
     mock_year = MagicMock(spec=ReportingYear)
     mock_year.reporting_year = 2024
     mock_period.reporting_year = mock_year
+    mock_period.compliance_deadline = date(2024, 11, 30)
     mock_compliance_report_version.compliance_report.compliance_period = mock_period
 
     # Mock operation and operator
@@ -258,7 +259,7 @@ class TestElicensingObligationService:
         fee_id = "test-fee-id"
         result = ElicensingObligationService._map_obligation_to_invoice_data(mock_obligation, fee_id)
 
-        assert result["paymentDueDate"] == "2024-12-31"
+        assert result["paymentDueDate"] == "2024-11-30"
         assert result["businessAreaCode"] == "OBPS"
         assert result["fees"] == [fee_id]
 
