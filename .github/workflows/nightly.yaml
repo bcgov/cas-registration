@@ -16,20 +16,36 @@ env:
 jobs:
   build-administration:
     uses: ./.github/workflows/build-administration.yaml
+    with:
+      special_build_tag: nightly
   build-backend:
     uses: ./.github/workflows/build-backend.yaml
+    with:
+      special_build_tag: nightly
   build-compliance:
     uses: ./.github/workflows/build-compliance.yaml
+    with:
+      special_build_tag: nightly
   build-compliance-e2e:
     uses: ./.github/workflows/build-compliance-e2e.yaml
+    with:
+      special_build_tag: nightly
   build-dashboard:
     uses: ./.github/workflows/build-dashboard.yaml
+    with:
+      special_build_tag: nightly
   build-dashboard-e2e:
     uses: ./.github/workflows/build-dashboard-e2e.yaml
+    with:
+      special_build_tag: nightly
   build-registration:
     uses: ./.github/workflows/build-registration.yaml
+    with:
+      special_build_tag: nightly
   build-reporting:
     uses: ./.github/workflows/build-reporting.yaml
+    with:
+      special_build_tag: nightly
   test-code:
     uses: ./.github/workflows/test-code.yaml
     with:

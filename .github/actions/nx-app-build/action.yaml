@@ -23,6 +23,10 @@ inputs:
   host_reporting:
     description: "Host for reporting - only used for e2e CI builds"
     required: false
+  special_build_tag:
+    description: "Extra tag to use for the image (e.g. nightly, latest)"
+    required: false
+    default: latest
 
 runs:
   using: composite
@@ -36,8 +40,9 @@ runs:
         images: ${{ inputs.image_url }}
         tags: |
           type=sha,format=long,prefix=
-          latest
           type=ref,event=pr
+          ${{ inputs.special_build_tag == 'nightly' && 'type=schedule,pattern=nightly' || '' }}
+          ${{ inputs.special_build_tag == 'latest' && 'latest' || '' }}
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:

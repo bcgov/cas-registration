@@ -2,6 +2,12 @@ name: Build Registration Docker container
 
 on:
   workflow_call:
+    inputs:
+      special_build_tag:
+        description: "Extra tag to use for the image (e.g. nightly, latest)"
+        required: false
+        type: string
+        default: latest
 
 jobs:
   docker-build:
@@ -15,3 +21,4 @@ jobs:
           project: registration
           image_url: ghcr.io/bcgov/cas-reg-frontend
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          special_build_tag: ${{ inputs.special_build_tag }}
