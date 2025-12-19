@@ -90,7 +90,7 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
 
-        # Act
+        # Act - Test without date_of_first_shipment (now valid for 2025+)
         payload_with_no_date_of_first_shipment = {
             "new_entrant_application": MOCK_DATA_URL,
         }
@@ -101,49 +101,29 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
             payload_with_no_date_of_first_shipment,
             custom_reverse_lazy("create_or_replace_new_entrant_application", kwargs={'operation_id': operation.id}),
         )
-        # Assert
-        assert response_1.status_code == 422
-        assert response_1.json()['detail'][0]['msg'] == "Field required"
+        # Assert - Should succeed without date_of_first_shipment
+        operation.refresh_from_db()
+        assert response_1.status_code == 200
+        assert response_1.json()['id'] == str(operation.id)
+        operation_new_entrant_application = operation.documents.first()
+        assert operation_new_entrant_application.file.name.find("mock") != -1
+        assert operation_new_entrant_application.type.name == "new_entrant_application"
+        # date_of_first_shipment should remain None since it wasn't provided
+        assert operation.date_of_first_shipment is None
 
-        # Act
-        # we have specific date_of_first_shipment choices, so we can't just send a random date
-        payload_with_random_date_of_first_shipment = {
-            "date_of_first_shipment": "random",
+        # Act - Test with date_of_first_shipment for historical 2024 applications
+        valid_payload_with_date = {
+            "date_of_first_shipment": "On or after April 1, 2024",
             "new_entrant_application": MOCK_DATA_URL,
         }
-
         response_2 = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
             self.content_type,
-            payload_with_random_date_of_first_shipment,
+            valid_payload_with_date,
             custom_reverse_lazy("create_or_replace_new_entrant_application", kwargs={'operation_id': operation.id}),
         )
-        # Assert
-        assert response_2.status_code == 422
-        assert (
-            response_2.json()['detail'][0]['msg']
-            == "Input should be Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024 or Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024"
-        )
-
-        # Act
-        valid_payload = {
-            "date_of_first_shipment": "On or after April 1, 2024",
-            "new_entrant_application": MOCK_DATA_URL,
-        }
-        response_3 = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            valid_payload,
-            custom_reverse_lazy("create_or_replace_new_entrant_application", kwargs={'operation_id': operation.id}),
-        )
-        # Assert
+        # Assert - Should also succeed with date_of_first_shipment for backwards compatibility
         operation.refresh_from_db()
-        assert response_3.status_code == 200
-        assert response_3.json()['id'] == str(operation.id)
-        assert response_3.json()['name'] == operation.name
-        operation_new_entrant_application = operation.documents.first()
-        assert operation_new_entrant_application.file.name.find("mock") != -1
-        assert operation_new_entrant_application.type.name == "new_entrant_application"
+        assert response_2.status_code == 200
         assert operation.date_of_first_shipment == Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024

@@ -77,7 +77,7 @@ describe("the NewEntrantOperationForm component", () => {
     expect(screen.getByText("testpdf.pdf")).toBeVisible();
   });
 
-  it("should display the correct url and message for the default date choice", () => {
+  it("should display the correct url and message for new entrant operations", () => {
     const { container } = render(
       <NewEntrantOperationForm
         formData={{}}
@@ -87,11 +87,12 @@ describe("the NewEntrantOperationForm component", () => {
         steps={allOperationRegistrationSteps}
       />,
     );
+    // The new schema no longer has date selection, just a single section with instructions
     expect(
-      container.querySelector("#root_on_or_after_april_1_section")?.children[0]
-        .children[1],
+      container.querySelector("#root_new_entrant_operation_section")
+        ?.children[0].children[1],
     ).toHaveTextContent(
-      "Please download and complete the following application form template to receive designation as a New Entrant in the B.C. OBPS. This application form is for operations with a date of First Shipment on or after April 1, 2024.",
+      "Please download and complete the following application form template to receive designation as a New Entrant in the B.C. OBPS.",
     );
 
     expect(
@@ -99,38 +100,6 @@ describe("the NewEntrantOperationForm component", () => {
     ).toHaveAttribute(
       "href",
       "https://www2.gov.bc.ca/assets/download/751CDDAE4C9A411E974EEA9737CD42C6",
-    );
-  });
-
-  it("should display the correct url and message for the before March 31 date choice", async () => {
-    const { container } = render(
-      <NewEntrantOperationForm
-        formData={{}}
-        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
-        schema={newEntrantOperationSchema}
-        step={4}
-        steps={allOperationRegistrationSteps}
-      />,
-    );
-
-    const beforeMarch31Radio = screen.getByLabelText(
-      "On or before March 31, 2024",
-    );
-
-    await userEvent.click(beforeMarch31Radio);
-
-    expect(
-      container.querySelector("#root_on_or_before_march_31_section")
-        ?.children[0].children[1],
-    ).toHaveTextContent(
-      "Please download and complete the following application form template to receive designation as a New Entrant in the B.C. OBPS. This application form is for operations with a date of First Shipment on or before March 31, 2024.",
-    );
-
-    expect(
-      screen.getByRole("link", { name: /application form template/i }),
-    ).toHaveAttribute(
-      "href",
-      "https://www2.gov.bc.ca/assets/download/F5375D72BE1C450AB52C2E3E6A618959",
     );
   });
 
@@ -169,12 +138,7 @@ describe("the NewEntrantOperationForm component", () => {
       />,
     );
 
-    const beforeMarch31Radio = screen.getByLabelText(
-      "On or before March 31, 2024",
-    );
-
-    await userEvent.click(beforeMarch31Radio);
-
+    // No longer selecting date_of_first_shipment radio button as it's not required for 2025+
     const input = screen.getByTestId("root_new_entrant_application");
     await userEvent.upload(input, mockFile);
 
@@ -198,12 +162,13 @@ describe("the NewEntrantOperationForm component", () => {
 
     expect(actionHandler).toHaveBeenCalledTimes(1);
 
+    // date_of_first_shipment is no longer sent in the request body for 2025+ registrations
     expect(actionHandler).toHaveBeenCalledWith(
       "registration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/new-entrant-application",
       "PUT",
       "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d",
       {
-        body: '{"new_entrant_application":"data:application/pdf;name=test.pdf;base64,dGVzdA==","date_of_first_shipment":"On or before March 31, 2024"}',
+        body: '{"new_entrant_application":"data:application/pdf;name=test.pdf;base64,dGVzdA=="}',
       },
     );
     await waitFor(() => {

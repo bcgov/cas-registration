@@ -629,6 +629,7 @@ class TestRegisterOperationInformation:
 
     @staticmethod
     def test_is_operation_new_entrant_information_complete_no_date():
+        # Date of first shipment is no longer required for 2025+ registrations
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = baker.make_recipe(
             'registration.tests.utils.operation',
@@ -640,7 +641,8 @@ class TestRegisterOperationInformation:
         )
         users_operation.documents.add(new_entrant_application)
 
-        assert not OperationService.is_operation_new_entrant_information_complete(users_operation)
+        # Should now return True since date_of_first_shipment is no longer required
+        assert OperationService.is_operation_new_entrant_information_complete(users_operation)
 
     @staticmethod
     def test_is_operation_new_entrant_information_complete_no_application():

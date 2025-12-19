@@ -158,8 +158,10 @@ class OperationService:
         )
         if new_entrant_application_document_created:
             operation.documents.add(new_entrant_application_document)
-        operation.date_of_first_shipment = payload.date_of_first_shipment
-        operation.save(update_fields=['date_of_first_shipment'])
+        # Only update date_of_first_shipment if provided (for historical 2024 applications)
+        if payload.date_of_first_shipment is not None:
+            operation.date_of_first_shipment = payload.date_of_first_shipment
+            operation.save(update_fields=['date_of_first_shipment'])
         return operation
 
     @classmethod
@@ -527,11 +529,9 @@ class OperationService:
     def is_operation_new_entrant_information_complete(cls, operation: Operation) -> bool:
         """
         This function checks whether the expected data for new-entrant operations has been saved.
+        Date of first shipment is no longer required for 2025+ registrations.
         """
-        if (
-            operation.date_of_first_shipment is None
-            or not operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).exists()
-        ):
+        if not operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).exists():
             return False
         return True
 
