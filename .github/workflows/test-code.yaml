@@ -60,7 +60,7 @@ jobs:
             bc_obps/.tool-versions
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup-frontend
-      - run: yarn npm audit --exclude eslint
+      - run: yarn npm audit
         working-directory: ./bciers
 
   pre-commit:
