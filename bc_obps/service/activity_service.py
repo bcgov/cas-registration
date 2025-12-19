@@ -35,7 +35,7 @@ class ActivityService:
         operation_type = (
             ReportVersion.objects.select_related('report__operation').get(id=version_id).report.operation.type
         )
-        applicable_to = ['both', operation_type]
+        applicable_to = ['all', operation_type]
         activities = (
             Activity.objects.filter(applicable_to__in=applicable_to)
             .order_by('weight', 'name')

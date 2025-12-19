@@ -39,7 +39,7 @@ class TestActivityService:
         lfo_activities = Activity.objects.filter(applicable_to="Linear Facilities Operation").values_list(
             'name', flat=True
         )
-        both_activities = Activity.objects.filter(applicable_to="both").values_list('name', flat=True)
+        both_activities = Activity.objects.filter(applicable_to="all").values_list('name', flat=True)
         expected_activity_names = set(both_activities).union(set(lfo_activities))
 
         activities_from_service = ActivityService.get_applicable_activities(report_version.id)
