@@ -17,7 +17,7 @@ class TestComplianceObligationService:
 
     def test_get_obligation_id_success(self):
         """Test successful generation of obligation ID"""
-        test_data = ComplianceTestHelper.build_initial_compliance_report()
+        test_data = ComplianceTestHelper.build_test_data()
         # Call the method
         obligation_id = ComplianceObligationService._get_obligation_id(test_data.initial_report_version)
 
@@ -27,7 +27,7 @@ class TestComplianceObligationService:
 
     def test_get_obligation_id_unregulated_operation(self):
         """Test ValidationError is raised when operation is not regulated by BC OBPS"""
-        test_data = ComplianceTestHelper.build_initial_compliance_report()
+        test_data = ComplianceTestHelper.build_test_data()
         test_data.operation.bc_obps_regulated_operation = None
         test_data.operation.save()
         # Call the method and expect ValidationError
@@ -48,7 +48,7 @@ class TestComplianceObligationService:
     ):
         """Test successful creation of a compliance obligation"""
         # Set up mocks
-        test_data = ComplianceTestHelper.build_initial_compliance_report()
+        test_data = ComplianceTestHelper.build_test_data()
         test_data.initial_report_compliance_summary.excess_emissions = Decimal('100')
         test_data.initial_report_compliance_summary.save()
         mock_get_rate.return_value = Decimal('50.00')
@@ -74,7 +74,7 @@ class TestComplianceObligationService:
     ):
         """Test compliance obligation creation fails when operation is not regulated by BC OBPS"""
         # Set up mocks
-        test_data = ComplianceTestHelper.build_initial_compliance_report()
+        test_data = ComplianceTestHelper.build_test_data()
         test_data.operation.bc_obps_regulated_operation = None
         test_data.operation.save()
         test_data.initial_report_compliance_summary.excess_emissions = Decimal('100')
@@ -163,7 +163,7 @@ class TestComplianceObligationService:
         mock_calculate_outstanding_balance_tco2e.return_value = Decimal('50.00')
 
         # Create test data
-        test_data = ComplianceTestHelper.build_initial_compliance_report(
+        test_data = ComplianceTestHelper.build_test_data(
             crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
         )
 
@@ -203,7 +203,7 @@ class TestComplianceObligationService:
         """Test that create_compliance_obligation calculates fee correctly with rounding"""
         # Setup
         mock_get_rate.return_value = Decimal('45.33')  # Odd rate to test rounding
-        test_data = ComplianceTestHelper.build_initial_compliance_report()
+        test_data = ComplianceTestHelper.build_test_data()
 
         # Call method with emissions that will require rounding
         emissions_amount = Decimal('123.456')
@@ -219,7 +219,7 @@ class TestComplianceObligationService:
         """Test that create_compliance_obligation sets the correct obligation deadline"""
         # Setup
         mock_get_rate.return_value = Decimal('40.00')
-        test_data = ComplianceTestHelper.build_initial_compliance_report(reporting_year=2023)
+        test_data = ComplianceTestHelper.build_test_data(reporting_year=2023)
 
         result = ComplianceObligationService.create_compliance_obligation(
             compliance_report_version_id=test_data.initial_compliance_report_version.id,

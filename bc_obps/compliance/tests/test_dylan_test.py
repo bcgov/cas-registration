@@ -31,6 +31,9 @@ class TestDylan:
         print(f'REPORTING YEAR = {onm.reporting_year.reporting_year}')
         print(f'COMPLIANCE STATUS = {onm.compliance_report_version.status}')
         print(f'INVOICE AMOUNT = {onm.invoice.outstanding_balance}')
+        print(
+            f'INVOICE AMOUNT VIA OBLIGATION RELATION = {onm.compliance_obligation.elicensing_invoice.outstanding_balance}'
+        )
 
         # WITH REPORTING_YEAR ARG
         ry = ComplianceTestHelper.build_test_data(reporting_year=2666)

@@ -147,6 +147,7 @@ class ComplianceTestHelper:
             elicensing_invoice=data.invoice,
             base_amount=Decimal("1000.00"),
         )
+        data.compliance_obligation.elicensing_invoice = data.invoice
 
     @classmethod
     def build_test_data(
