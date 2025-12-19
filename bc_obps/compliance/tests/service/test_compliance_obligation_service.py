@@ -19,7 +19,7 @@ class TestComplianceObligationService:
         """Test successful generation of obligation ID"""
         test_data = ComplianceTestHelper.build_test_data()
         # Call the method
-        obligation_id = ComplianceObligationService._get_obligation_id(test_data.initial_report_version)
+        obligation_id = ComplianceObligationService._get_obligation_id(test_data.report_version)
 
         # Verify results - format should be YY-OOOO-R-V (year-operation-report-version)
         assert isinstance(obligation_id, str)
@@ -32,7 +32,7 @@ class TestComplianceObligationService:
         test_data.operation.save()
         # Call the method and expect ValidationError
         with pytest.raises(ValidationError) as excinfo:
-            ComplianceObligationService._get_obligation_id(test_data.initial_report_version)
+            ComplianceObligationService._get_obligation_id(test_data.report_version)
 
         # Verify error message
         error_msg = str(excinfo.value)
@@ -49,21 +49,21 @@ class TestComplianceObligationService:
         """Test successful creation of a compliance obligation"""
         # Set up mocks
         test_data = ComplianceTestHelper.build_test_data()
-        test_data.initial_report_compliance_summary.excess_emissions = Decimal('100')
-        test_data.initial_report_compliance_summary.save()
+        test_data.report_compliance_summary.excess_emissions = Decimal('100')
+        test_data.report_compliance_summary.save()
         mock_get_rate.return_value = Decimal('50.00')
 
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_report_version_id=test_data.initial_compliance_report_version.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
             emissions_amount=Decimal('100.0'),
         )
         # Verify results
         assert result.fee_amount_dollars == (Decimal('100.0') * Decimal('50.00')).quantize(Decimal('0.01'))
-        assert result.compliance_report_version_id == test_data.initial_compliance_report_version.id
+        assert result.compliance_report_version_id == test_data.compliance_report_version.id
         assert result.penalty_status == ComplianceObligation.PenaltyStatus.NONE
         assert result.fee_date == date.today()
         mock_get_rate.assert_called_once_with(test_data.reporting_year)
-        mock_send_email.execute.assert_called_once_with(test_data.initial_compliance_report_version.id)
+        mock_send_email.execute.assert_called_once_with(test_data.compliance_report_version.id)
 
     @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
@@ -77,15 +77,15 @@ class TestComplianceObligationService:
         test_data = ComplianceTestHelper.build_test_data()
         test_data.operation.bc_obps_regulated_operation = None
         test_data.operation.save()
-        test_data.initial_report_compliance_summary.excess_emissions = Decimal('100')
-        test_data.initial_report_compliance_summary.save()
+        test_data.report_compliance_summary.excess_emissions = Decimal('100')
+        test_data.report_compliance_summary.save()
 
         mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method and expect ValidationError
         with pytest.raises(ValidationError) as excinfo:
             ComplianceObligationService.create_compliance_obligation(
-                compliance_report_version_id=test_data.initial_compliance_report_version.id,
+                compliance_report_version_id=test_data.compliance_report_version.id,
                 emissions_amount=Decimal('100.0'),
             )
 
@@ -172,16 +172,16 @@ class TestComplianceObligationService:
             'compliance.tests.utils.elicensing_invoice', invoice_fee_balance=Decimal('2000.00')
         )
 
-        test_data.initial_compliance_obligation.obligation_id = "23-0001-1-1"
-        test_data.initial_compliance_obligation.elicensing_invoice = elicensing_invoice
-        test_data.initial_compliance_obligation.save()
+        test_data.compliance_obligation.obligation_id = "23-0001-1-1"
+        test_data.compliance_obligation.elicensing_invoice = elicensing_invoice
+        test_data.compliance_obligation.save()
 
         # Set up the refresh mock to return the created invoice
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=elicensing_invoice)
 
         # Call method
         result = ComplianceObligationService.get_obligation_data_by_report_version(
-            test_data.initial_compliance_report_version.id
+            test_data.compliance_report_version.id
         )
 
         # Verify results
@@ -191,12 +191,10 @@ class TestComplianceObligationService:
         assert result.obligation_id == "23-0001-1-1"
 
         # Verify refresh was called
-        mock_refresh_data.assert_called_once_with(
-            compliance_report_version_id=test_data.initial_compliance_report_version.id
-        )
+        mock_refresh_data.assert_called_once_with(compliance_report_version_id=test_data.compliance_report_version.id)
 
         # Verify calculate outstanding balance service was called
-        mock_calculate_outstanding_balance_tco2e.assert_called_once_with(test_data.initial_compliance_report_version)
+        mock_calculate_outstanding_balance_tco2e.assert_called_once_with(test_data.compliance_report_version)
 
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_calculates_correct_fee(self, mock_get_rate):
@@ -208,7 +206,7 @@ class TestComplianceObligationService:
         # Call method with emissions that will require rounding
         emissions_amount = Decimal('123.456')
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_report_version_id=test_data.initial_compliance_report_version.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
             emissions_amount=emissions_amount,
         )
 
@@ -222,7 +220,7 @@ class TestComplianceObligationService:
         test_data = ComplianceTestHelper.build_test_data(reporting_year=2023)
 
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_report_version_id=test_data.initial_compliance_report_version.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
             emissions_amount=Decimal('100.0'),
         )
 
