@@ -41,7 +41,7 @@ export class OperationPOM {
 
   async route() {
     await this.page.goto(this.url);
-    const operationsLink = await this.page.getByRole("link", {
+    const operationsLink = this.page.getByRole("link", {
       name: "Operations",
       exact: true,
     });

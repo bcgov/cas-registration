@@ -162,7 +162,7 @@ export default function LFOFacilitiesForm({
         router.push(navigationInformation.continueUrl);
       }
       return true;
-    } catch (err) {
+    } catch (_err) {
       setErrors(["An unexpected error occurred."]);
       return false;
     }

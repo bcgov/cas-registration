@@ -30,7 +30,7 @@ export class DashboardPOM {
       expectedPath = process.env.E2E_BASEURL + expectedPath;
     }
     const currentUrl = this.page.url();
-    await expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
+    expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
   }
 
   async goToPage(url: string) {

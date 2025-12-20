@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
 import dynamic from "next/dynamic";
 import type { Metadata, Viewport } from "next";

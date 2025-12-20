@@ -148,7 +148,7 @@ export default {
                 } else {
                   // Default app_role (industry_user) if the API call fails
                 }
-              } catch (error) {
+              } catch (_error) {
                 // Default app_role (industry_user) if there's an error in the API call
               }
             }
@@ -156,7 +156,7 @@ export default {
             // 🛸 Routing: no app_role user found; so, user will be routed to dashboard\profile
           }
         }
-      } catch (error) {
+      } catch (_error) {
         token.error = Errors.ACCESS_TOKEN;
       }
       // 🔒 return encrypted nextauth JWT

@@ -38,7 +38,7 @@ const MultiStepButtons: React.FunctionComponent<SubmitButtonProps> = ({
   const isIndustryUser = role?.includes("industry");
 
   // If the submit button text is not provided, default to "Save and Continue" for all steps except the final step
-  let submitBtnText = submitButtonText
+  const submitBtnText = submitButtonText
     ? submitButtonText
     : !isFinalStep
       ? "Save and Continue"

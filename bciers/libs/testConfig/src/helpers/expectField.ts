@@ -6,7 +6,7 @@ function expectField(fields: string[], expectedValue: string | null = "") {
     let element;
     try {
       element = screen.getByLabelText(new RegExp(fieldLabel, "i"));
-    } catch (error) {
+    } catch (_error) {
       // If getByLabelText fails, try to find the element by text
       element = screen.getByText(new RegExp(fieldLabel, "i"));
     }

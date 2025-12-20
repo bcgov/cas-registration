@@ -228,7 +228,7 @@ export class OperatorPOM {
   async fillFields(fieldLabels: string[], values: { [key: string]: string }) {
     for (const labelText of fieldLabels) {
       // Get all matching input fields for the current field label
-      const inputFields = await this.page.getByLabel(labelText);
+      const inputFields = this.page.getByLabel(labelText);
       const inputField = inputFields.nth((await inputFields.count()) - 1);
 
       // Fill the field with the corresponding value from the values object
@@ -404,7 +404,7 @@ export class OperatorPOM {
   }
 
   async formIsNotVisible() {
-    await expect(this.form).not.toBeVisible();
+    await expect(this.form).toBeHidden();
   }
 
   async formHasHeaders() {
@@ -456,7 +456,7 @@ export class OperatorPOM {
   }
 
   async urlIsCorrect(expectedPath: string) {
-    const currentUrl = await this.page.url();
-    await expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
+    const currentUrl = this.page.url();
+    expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
   }
 }

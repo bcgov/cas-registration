@@ -27,7 +27,7 @@ export default async function FacilityEmissionAllocationPage({
   let overlappingIndustrialProcessEmissions = 0; // emissions that are categorized as both industrial_process and excluded (ie: woody biomass)
   if (
     orderedActivities.find(
-      (activity: { id: Number; name: String; slug: String }) =>
+      (activity: { id: number; name: string; slug: string }) =>
         (activity.slug = "pulp_and_paper"),
     )
   ) {

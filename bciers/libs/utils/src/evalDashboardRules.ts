@@ -97,7 +97,7 @@ const evaluateCondition = async (condition: any): Promise<boolean> => {
       default:
         return false;
     }
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 };

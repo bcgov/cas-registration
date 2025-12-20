@@ -62,7 +62,7 @@ export async function fillComboxboxWidget(
   labelText: string | RegExp,
   value: string,
 ) {
-  const input = await page.getByRole("combobox", {
+  const input = page.getByRole("combobox", {
     name: labelText,
   });
   await expect(input).toBeVisible();
@@ -300,7 +300,7 @@ export async function setupTestEnvironment(
       ? `${baseUrlSetup}?truncate_only=true`
       : baseUrlSetup;
 
-  let response: APIResponse = await context.request.get(url);
+  const response: APIResponse = await context.request.get(url);
 
   // Wait for the response and check for success status text and code (e.g., 200)
   expect(await response.text()).toBe(MessageTextResponse.SETUP_SUCCESS);
@@ -369,7 +369,7 @@ export async function clickWithRetry(
     try {
       await clickButton(page, buttonName);
       return;
-    } catch (error) {
+    } catch (_error) {
       // eslint-disable-next-line no-console
       console.warn(`Click failed. Retrying... Attempt ${i}/${retries}`);
     }

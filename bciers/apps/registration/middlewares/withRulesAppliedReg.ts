@@ -43,7 +43,7 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
       // 🛸 Redirect to BCIERS dashboard
       return NextResponse.redirect(new URL(`/onboarding`, request.url));
     }
-  } catch (error) {
+  } catch (_error) {
     // 🛸 Redirect to BCIERS dashboard
     return NextResponse.redirect(new URL(`/onboarding`, request.url));
   }
@@ -70,7 +70,7 @@ export const withRulesAppliedReg: MiddlewareFactory = (
         if (response) {
           return response;
         }
-      } catch (error) {
+      } catch (_error) {
         // 🛸 Redirect to BCIERS dashboard
         return NextResponse.redirect(new URL(`/onboarding`, request.url));
       }

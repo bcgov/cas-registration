@@ -68,6 +68,7 @@ const OperationInformationForm = ({
 
   useEffect(() => {
     if (selectedPurpose) {
+      // eslint-disable-next-line react-hooks/immutability
       formData.registration_purpose = selectedPurpose;
     }
     if (selectedPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION) {
@@ -181,7 +182,7 @@ const OperationInformationForm = ({
         formData={formData ?? {}}
         onSubmit={handleSubmit}
         onChange={(e: IChangeEvent) => {
-          let newSelectedPurpose = e.formData?.section3?.registration_purpose;
+          const newSelectedPurpose = e.formData?.section3?.registration_purpose;
           if (newSelectedPurpose !== selectedPurpose) {
             handleSelectedPurposeChange(newSelectedPurpose);
           }

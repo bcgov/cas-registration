@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { randomUUID, UUID } from "crypto";
 import { render, screen } from "@testing-library/react";
 import { getTransferEvent } from "@/registration/tests/components/transfers/mocks";
 import { fetchOperatorsPageData } from "@/administration/tests/components/operators/mocks";
@@ -40,8 +40,7 @@ describe("Transfer page", () => {
   it("throws an error when transferId is not a valid UUID", async () => {
     await expect(async () => {
       const transferId = "invalid-uuid";
-      // @ts-ignore
-      render(await TransferPage({ transferId }));
+      render(await TransferPage({ transferId: transferId as UUID }));
     }).rejects.toThrow("Invalid transfer id: invalid-uuid");
   });
   it("throws an error when there's a problem fetching transfer information", async () => {

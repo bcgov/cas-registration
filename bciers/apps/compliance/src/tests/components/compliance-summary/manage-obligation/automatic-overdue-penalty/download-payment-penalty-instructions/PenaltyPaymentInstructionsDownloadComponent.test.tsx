@@ -34,7 +34,7 @@ describe("PenaltyPaymentInstructionsDownloadComponent", () => {
     mockWindowOpen.mockClear();
 
     if (!("createObjectURL" in URL)) {
-      // @ts-ignore
+      // @ts-expect-error - URL.createObjectURL is not defined in the type system
       URL.createObjectURL = vi.fn();
     }
 

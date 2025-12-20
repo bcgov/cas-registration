@@ -49,7 +49,7 @@ const getAssociatedEmissionName = (
 
     const emissionData = emissionCategory.emissionData?.[emissionDataIndex];
     return emissionData?.name || null;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 };

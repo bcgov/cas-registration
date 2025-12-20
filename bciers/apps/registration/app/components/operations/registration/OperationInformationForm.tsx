@@ -126,7 +126,7 @@ const OperationInformationForm = ({
     formData: { [key: string]: any },
     errors: { [key: string]: any },
   ) {
-    // @ts-ignore
+    // @ts-expect-error - we know that schema.properties.section2.required exists because we set it in the useEffect above
     const requiredOperationProperties = schema?.properties?.section2.required;
 
     const isOperationInformationComplete = requiredOperationProperties.every(
@@ -332,9 +332,9 @@ const OperationInformationForm = ({
         steps={steps}
         error={error}
         onChange={(e: IChangeEvent) => {
-          let newSelectedOperation = e.formData?.section1?.operation;
-          let newSelectedPurpose = e.formData?.section1?.registration_purpose;
-          let newSelectedType = e.formData?.section2?.type;
+          const newSelectedOperation = e.formData?.section1?.operation;
+          const newSelectedPurpose = e.formData?.section1?.registration_purpose;
+          const newSelectedType = e.formData?.section2?.type;
           if (
             newSelectedOperation &&
             newSelectedOperation !== selectedOperation

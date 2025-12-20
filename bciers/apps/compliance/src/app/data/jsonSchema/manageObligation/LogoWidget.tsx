@@ -1,5 +1,5 @@
 import Image from "next/image";
-// eslint-disable-next-line import/extensions
+
 import logo from "@bciers/img/src/BCID_CleanBC_rev_tagline_colour.svg";
 
 export const LogoWidget = () => {

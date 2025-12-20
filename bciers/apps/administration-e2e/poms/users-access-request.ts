@@ -73,7 +73,7 @@ export class UsersAccessRequestPOM {
   }
 
   async clickActionOnRow(row: Locator, action: string) {
-    const button = await row.getByRole("button", { name: action });
+    const button = row.getByRole("button", { name: action });
     await button.click();
     await waitForSpinner(row);
     await this.assertCorrectStatus(row, action);
@@ -131,7 +131,7 @@ export class UsersAccessRequestPOM {
 
   async assertCorrectRole(row: Locator, role: string) {
     const currentRole = await this.getCurrentRole(row);
-    await expect(role).toMatch(currentRole);
+    expect(role).toMatch(currentRole);
   }
 
   async assertCorrectStatus(row: Locator, role: string) {

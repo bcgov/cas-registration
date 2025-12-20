@@ -369,7 +369,7 @@ const checkHasPathAccess = async (request: NextRequest) => {
         }
       }
     }
-  } catch (error) {
+  } catch (_error) {
     // Fallback: Redirect to the onboarding/dashboard page on error
     return NextResponse.redirect(new URL(AppRoutes.ONBOARDING, request.url));
   }
@@ -390,7 +390,7 @@ export const withRuleHasReportRouteAccess: MiddlewareFactory = (
         if (response) {
           return response;
         }
-      } catch (error) {
+      } catch (_error) {
         return NextResponse.redirect(
           new URL(`${REPORT_APP_BASE}`, request.url),
         );

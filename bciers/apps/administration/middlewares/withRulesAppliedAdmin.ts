@@ -73,7 +73,7 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
           ),
         );
       }
-    } catch (error) {
+    } catch (_error) {
       // Proceed to next middleware in case of error
       return null;
     }
@@ -112,7 +112,7 @@ export const withRulesAppliedAdmin: MiddlewareFactory = (
           // 🛸 Redirect if a response is returned from the route handler
           return response;
         }
-      } catch (error) {
+      } catch (_error) {
         // 🛸 Redirect to BCIERS dashboard
         return NextResponse.redirect(new URL(`/onboarding`, request.url));
       }

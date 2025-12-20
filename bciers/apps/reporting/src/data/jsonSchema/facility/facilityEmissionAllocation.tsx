@@ -102,7 +102,7 @@ const getAssociatedProductName = (
 
     // If no match found
     return null;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 };

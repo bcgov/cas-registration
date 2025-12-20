@@ -89,7 +89,7 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
 
   let buttonText = "Start";
   let buttonAction: () => Promise<void> = async () => handleStartClick();
-  let buttonDisabled = hasClicked;
+  const buttonDisabled = hasClicked;
 
   if (reportVersionId) {
     if (

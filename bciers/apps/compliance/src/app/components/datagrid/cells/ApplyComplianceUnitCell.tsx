@@ -1,6 +1,6 @@
 import { NumberField } from "@base-ui/react/number-field";
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import { ChangeEvent } from "react";
+import type { ChangeEvent } from "react";
 
 interface ApplyComplianceUnitCellProps extends GridRenderCellParams {
   readonly?: boolean;
@@ -11,7 +11,6 @@ export const ApplyComplianceUnitCell = (
   props: ApplyComplianceUnitCellProps,
 ) => {
   const {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     row: { quantity_to_be_applied },
     onUpdate,
     readonly,

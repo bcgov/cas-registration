@@ -20,9 +20,6 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
     value,
   } = props;
   const placeholder = uiSchema?.["ui:placeholder"];
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   const options = schema.enum as Array<string>;
 
   const handleChange = (e: React.SyntheticEvent, option: string | null) => {
