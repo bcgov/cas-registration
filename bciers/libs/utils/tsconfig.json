@@ -5,7 +5,7 @@
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "types": ["vitest/globals"],
+
     "strict": true
   },
   "files": [],

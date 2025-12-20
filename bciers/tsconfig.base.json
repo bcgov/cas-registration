@@ -14,7 +14,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "es2015",
-    "types": ["vitest/globals"],
+    "types": ["vitest/globals", "node"],
     "paths": {
       "@/administration-e2e/*": ["apps/administration-e2e/*"],
       "@/administration/*": ["apps/administration/*"],
