@@ -48,8 +48,9 @@ const dashboardColumns = (isReportingOpen: boolean): GridColDef[] => {
     {
       field: "report_id",
       headerName: "Actions",
-      renderCell: (params: GridRenderCellParams) =>
-        ActionCell({ ...params, isReportingOpen }),
+      renderCell: (params: GridRenderCellParams) => (
+        <ActionCell {...params} isReportingOpen={isReportingOpen} />
+      ),
       sortable: false,
       width: 200,
     },
