@@ -10,7 +10,7 @@ vi.mock(
   }),
 );
 
-vi.mock("libs/actions/src/api/getContact", () => ({
+vi.mock("@bciers/actions/api/getContact", () => ({
   default: getContact,
 }));
 
@@ -21,7 +21,7 @@ vi.mock(
   }),
 );
 
-vi.mock("libs/actions/src/api/getContacts", () => ({
+vi.mock("@bciers/actions/api/getContacts", () => ({
   default: getContacts,
 }));
 

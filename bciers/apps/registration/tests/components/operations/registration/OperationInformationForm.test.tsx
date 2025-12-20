@@ -10,6 +10,7 @@ import {
   getBusinessStructures,
   fetchOperationsPageData,
   useSearchParams,
+  actionHandler,
 } from "@bciers/testConfig/mocks";
 import OperationInformationForm from "apps/registration/app/components/operations/registration/OperationInformationForm";
 import {
@@ -17,7 +18,6 @@ import {
   RegistrationPurposeHelpText,
 } from "@/registration/app/components/operations/registration/enums";
 import userEvent from "@testing-library/user-event";
-import { actionHandler } from "@bciers/testConfig/mocks";
 import { createRegistrationOperationInformationSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
 import { mockDataUri } from "./NewEntrantOperationForm.test";
 import { fillComboboxWidgetField } from "@bciers/testConfig/helpers/helpers";

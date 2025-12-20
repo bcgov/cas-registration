@@ -33,6 +33,7 @@ import {
   signIn,
   archiveContact,
   getElicensingInvoices,
+  getContact,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
 
@@ -92,40 +93,44 @@ vi.mock("@bciers/actions", () => ({
   getToken,
 }));
 
-vi.mock("libs/actions/src/api/archiveContact", () => ({
+vi.mock("@bciers/actions/api/archiveContact", () => ({
   default: archiveContact,
 }));
 
-vi.mock("libs/actions/src/api/getOperation", () => ({
+vi.mock("@bciers/actions/api/getOperation", () => ({
   default: getOperation,
 }));
 
-vi.mock("libs/actions/src/api/getOperationWithDocuments", () => ({
+vi.mock("@bciers/actions/api/getOperationWithDocuments", () => ({
   default: getOperationWithDocuments,
 }));
 
-vi.mock("libs/actions/src/api/getNaicsCodes", () => ({
+vi.mock("@bciers/actions/api/getNaicsCodes", () => ({
   default: getNaicsCodes,
 }));
 
-vi.mock("libs/actions/src/api/getReportingActivities", () => ({
+vi.mock("@bciers/actions/api/getReportingActivities", () => ({
   default: getReportingActivities,
 }));
 
-vi.mock("libs/actions/src/api/getRegulatedProducts", () => ({
+vi.mock("@bciers/actions/api/getRegulatedProducts", () => ({
   default: getRegulatedProducts,
 }));
 
-vi.mock("libs/actions/src/api/getRegistrationPurposes", () => ({
+vi.mock("@bciers/actions/api/getRegistrationPurposes", () => ({
   default: getRegistrationPurposes,
 }));
 
-vi.mock("libs/actions/src/api/getBusinessStructures", () => ({
+vi.mock("@bciers/actions/api/getBusinessStructures", () => ({
   default: getBusinessStructures,
 }));
 
-vi.mock("libs/actions/src/api/fetchOperationsPageData", () => ({
+vi.mock("@bciers/actions/api/fetchOperationsPageData", () => ({
   default: fetchOperationsPageData,
+}));
+
+vi.mock("@bciers/actions/api/getContact", () => ({
+  default: getContact,
 }));
 
 vi.mock(
@@ -138,11 +143,11 @@ vi.mock(
 vi.mock("apps/administration/app/components/facilities/getFacility", () => ({
   default: getFacility,
 }));
-vi.mock("libs/actions/src/api/getCurrentUsersOperations", () => ({
+vi.mock("@bciers/actions/api/getCurrentUsersOperations", () => ({
   default: getCurrentUsersOperations,
 }));
 
-vi.mock("libs/actions/src/api/handleInternalAccessRequest", () => ({
+vi.mock("@bciers/actions/api/handleInternalAccessRequest", () => ({
   default: handleInternalAccessRequest,
 }));
 

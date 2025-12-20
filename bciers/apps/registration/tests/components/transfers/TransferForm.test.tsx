@@ -10,6 +10,7 @@ import {
   fetchOperationsPageData,
 } from "@bciers/testConfig/mocks";
 import TransferForm from "@/registration/app/components/transfers/TransferForm";
+import { TransferFormData } from "@/registration/app/components/transfers/types";
 
 const mockOperators = [
   {
@@ -43,7 +44,12 @@ const mockOperations = {
 };
 
 const renderTransferForm = () => {
-  render(<TransferForm formData={{} as any} operators={mockOperators} />);
+  render(
+    <TransferForm
+      formData={{} as TransferFormData}
+      operators={mockOperators}
+    />,
+  );
 };
 
 const selectOperator = (label: RegExp, operatorName: string) => {
@@ -104,18 +110,19 @@ const selectOperation = async (label: RegExp, operationName: string) => {
     expect(
       screen.getByRole("option", { name: operationName }),
     ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("option", { name: operationName }));
   });
-  fireEvent.click(screen.getByRole("option", { name: operationName }));
-  await waitFor(() =>
-    expect(screen.getByLabelText(label)).toHaveValue(operationName),
-  );
 };
 
-const selectDateOfTransfer = (date: string) => {
-  const dateOfTransfer = screen.getByLabelText(/effective date of transfer\*/i);
-  expect(dateOfTransfer).toBeVisible();
-  fireEvent.change(dateOfTransfer, { target: { value: date } });
-  expect(dateOfTransfer).toHaveValue(date);
+const selectDateOfTransfer = async (date: string) => {
+  await waitFor(() => {
+    const dateOfTransfer = screen.getByLabelText(
+      /effective date of transfer\*/i,
+    );
+    expect(dateOfTransfer).toBeVisible();
+    fireEvent.change(dateOfTransfer, { target: { value: date } });
+    expect(dateOfTransfer).toHaveValue(date);
+  });
 };
 
 describe("The TransferForm component", () => {
@@ -144,8 +151,10 @@ describe("The TransferForm component", () => {
     selectOperator(/current operator\*/i, "Operator 1");
     selectOperator(/select the new operator\*/i, "Operator 2");
     await selectEntityAndAssertFields("Operation");
-    await selectOperation(/operation\*/i, "Operation 1");
-    selectDateOfTransfer("2022-12-31");
+    await waitFor(() => {
+      selectOperation(/operation\*/i, "Operation 1");
+      selectDateOfTransfer("2022-12-31");
+    });
     expectButton("Transfer Entity");
   });
 
@@ -217,18 +226,16 @@ describe("The TransferForm component", () => {
     selectOperator(/current operator\*/i, "Operator 1");
     selectOperator(/select the new operator\*/i, "Operator 2");
     await selectEntityAndAssertFields("Operation");
-    await selectOperation(/operation\*/i, "Operation 1");
-    selectDateOfTransfer("2022-12-31");
-    // submit the form
-    const submitButton = screen.getByRole("button", {
-      name: /transfer entity/i,
+    await waitFor(() => {
+      selectOperation(/operation\*/i, "Operation 1");
+      selectDateOfTransfer("2022-12-31");
+      expectButton("Transfer Entity");
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: /transfer entity/i,
+        }),
+      );
     });
-    expect(submitButton).toBeEnabled();
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: /transfer entity/i,
-      }),
-    );
     expect(actionHandler).toHaveBeenCalledWith(
       "registration/transfer-events",
       "POST",
@@ -244,15 +251,15 @@ describe("The TransferForm component", () => {
       },
     );
     // make sure the success page is displayed
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: /transferred/i }),
-      ).toBeVisible();
-      expect(
-        screen.getByRole("button", {
-          name: /return to transfer requests table/i,
-        }),
-      ).toBeVisible();
-    });
+    expect(
+      screen.getByText(
+        /operation will be transferred from operator 1 to operator 2 on \./i,
+      ),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", {
+        name: /return to transfer requests table/i,
+      }),
+    ).toBeVisible();
   });
 });

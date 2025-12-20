@@ -53,6 +53,9 @@ const handleInternalAccessRequest = vi.fn();
 const captureException = vi.fn();
 const archiveContact = vi.fn();
 const getElicensingInvoices = vi.fn();
+const getContact = vi.fn();
+const getContacts = vi.fn();
+const getOperationRepresentatives = vi.fn();
 
 export {
   actionHandler,
@@ -87,4 +90,7 @@ export {
   signIn,
   archiveContact,
   getElicensingInvoices,
+  getContact,
+  getContacts,
+  getOperationRepresentatives,
 };
