@@ -12,7 +12,7 @@ import {
 import { baseUrlSetup } from "@bciers/e2e/utils/constants";
 import { DataTestID, MessageTextResponse } from "@bciers/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
-import path from "path";
+import path from "node:path";
 
 // 🛠️ Function: analyze the accessibility of the page. Use the description argument to indicate what screen/form/etc. is being tested.
 export async function analyzeAccessibility(
