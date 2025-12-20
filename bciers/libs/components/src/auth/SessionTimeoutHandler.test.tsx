@@ -41,23 +41,30 @@ vi.mock("@bciers/components/auth/LogoutWarningModal", () => ({
     ) : null,
 }));
 
-let onmessageHandler: ((event: any) => void) | undefined;
+const mockBroadcastChannelState = {
+  onmessageHandler: undefined as ((event: any) => void) | undefined,
+  postMessage: vi.fn(),
+  close: vi.fn(),
+};
 
-export const postMessage = vi.fn();
-export const close = vi.fn();
+export const { postMessage, close } = mockBroadcastChannelState;
 
-vi.mock("broadcast-channel", () => ({
-  BroadcastChannel: vi.fn(() => ({
-    postMessage,
-    close,
-    set onmessage(cb: typeof onmessageHandler) {
-      onmessageHandler = cb;
+vi.mock("broadcast-channel", () => {
+  return {
+    BroadcastChannel: class MockBroadcastChannel {
+      postMessage = mockBroadcastChannelState.postMessage;
+      close = mockBroadcastChannelState.close;
+
+      set onmessage(cb: ((event: any) => void) | undefined) {
+        mockBroadcastChannelState.onmessageHandler = cb;
+      }
+
+      get onmessage() {
+        return mockBroadcastChannelState.onmessageHandler;
+      }
     },
-    get onmessage() {
-      return onmessageHandler;
-    },
-  })),
-}));
+  };
+});
 
 describe("SessionTimeoutHandler", () => {
   const mockUpdate = vi.fn();

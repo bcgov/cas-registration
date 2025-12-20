@@ -51,7 +51,7 @@ describe("ComplianceSummaryPage", () => {
         summaryFormData: complianceData,
         navigationInformation: { nav: true },
       },
-      {},
+      undefined,
     );
     expect(mockGetNavigationInformation).toHaveBeenCalledWith(
       HeaderStep.ComplianceSummary,

@@ -83,7 +83,7 @@ describe("The attachments form", () => {
         error: undefined,
         versionId: 1,
       },
-      {},
+      undefined,
     );
     expect(mockAttachmentElement).toHaveBeenNthCalledWith(
       2,
@@ -95,7 +95,7 @@ describe("The attachments form", () => {
         title: "WCI.352 and WCI.362",
         versionId: 1,
       },
-      {},
+      undefined,
     );
     expect(mockAttachmentElement).toHaveBeenNthCalledWith(
       3,
@@ -107,7 +107,7 @@ describe("The attachments form", () => {
         title: "Additional reportable information",
         versionId: 1,
       },
-      {},
+      undefined,
     );
     expect(mockAttachmentElement).toHaveBeenNthCalledWith(
       4,
@@ -120,7 +120,7 @@ describe("The attachments form", () => {
           "Confidentiality request, if you are requesting confidentiality of this report under the B.C. Reg. 249/2015 Reporting Regulation",
         versionId: 1,
       },
-      {},
+      undefined,
     );
   });
 
@@ -158,7 +158,7 @@ describe("The attachments form", () => {
         title: "Verification Statement",
         versionId: 1346,
       },
-      {},
+      undefined,
     );
   });
 
@@ -278,7 +278,7 @@ describe("The attachments form", () => {
         title: "Verification Statement",
         versionId: 1,
       },
-      {},
+      undefined,
     );
   });
 

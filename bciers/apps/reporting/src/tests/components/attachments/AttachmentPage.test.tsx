@@ -85,7 +85,7 @@ describe("AttachmentsPage", () => {
           confirm_supplementary_existing_attachments_relevant: true,
         },
       },
-      {},
+      undefined,
     );
   });
 });

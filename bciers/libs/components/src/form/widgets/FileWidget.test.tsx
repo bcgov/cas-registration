@@ -1,5 +1,5 @@
 import { userEvent } from "@testing-library/user-event";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import { useSessionRole } from "@bciers/testConfig/mocks";
@@ -134,11 +134,13 @@ describe("RJSF FileWidget", () => {
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(input, mockFile);
 
-    expect(
-      screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for security.",
-      ),
-    ).toBeVisible();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Uploading. You may continue to the next page while the file is being scanned for security.",
+        ),
+      ).toBeVisible();
+    });
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test.pdf",
@@ -163,9 +165,11 @@ describe("RJSF FileWidget", () => {
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(input, mockFile);
 
-    expect(
-      screen.getByRole("button", { name: "Reupload attachment" }),
-    ).toBeVisible();
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Reupload attachment" }),
+      ).toBeVisible();
+    });
   });
 
   it("supports file formats such as .kml and .kmz", async () => {
@@ -188,22 +192,26 @@ describe("RJSF FileWidget", () => {
     });
 
     await userEvent.upload(input, mockKmlFile);
-    expect(
-      screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for security.",
-      ),
-    ).toBeVisible();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Uploading. You may continue to the next page while the file is being scanned for security.",
+        ),
+      ).toBeVisible();
+    });
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test.kml",
     );
 
     await userEvent.upload(input, mockKmzFile);
-    expect(
-      screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for security.",
-      ),
-    ).toBeVisible();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Uploading. You may continue to the next page while the file is being scanned for security.",
+        ),
+      ).toBeVisible();
+    });
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test.kmz",
@@ -234,11 +242,13 @@ describe("RJSF FileWidget", () => {
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(input, mockFile);
 
-    expect(
-      screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for security.",
-      ),
-    ).toBeVisible();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Uploading. You may continue to the next page while the file is being scanned for security.",
+        ),
+      ).toBeVisible();
+    });
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test.pdf",
@@ -246,11 +256,13 @@ describe("RJSF FileWidget", () => {
 
     await userEvent.upload(input, mockFile2);
 
-    expect(
-      screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for security.",
-      ),
-    ).toBeVisible();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Uploading. You may continue to the next page while the file is being scanned for security.",
+        ),
+      ).toBeVisible();
+    });
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test2.pdf",
@@ -274,11 +286,13 @@ describe("RJSF FileWidget", () => {
 
     await userEvent.upload(input, mockFile2);
 
-    expect(
-      screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for security.",
-      ),
-    ).toBeVisible();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Uploading. You may continue to the next page while the file is being scanned for security.",
+        ),
+      ).toBeVisible();
+    });
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test2.pdf",
@@ -294,7 +308,9 @@ describe("RJSF FileWidget", () => {
     ).not.toBeInTheDocument();
 
     await userEvent.upload(input, mockFile);
-    expect(screen.getByRole("link", { name: "Preview" })).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByRole("link", { name: "Preview" })).toBeVisible();
+    });
   });
 
   it("should have the correct href for the preview link", async () => {

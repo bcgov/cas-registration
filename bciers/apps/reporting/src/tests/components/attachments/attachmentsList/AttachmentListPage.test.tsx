@@ -40,7 +40,7 @@ describe("the AttachmentsListPage", () => {
     expect(mockGetAttachmentsList).toHaveBeenCalledWith(mockSearchParams);
     expect(mockAttachmentsForm).toHaveBeenCalledWith(
       { initialData: mockInitialData },
-      {},
+      undefined,
     );
   });
 });

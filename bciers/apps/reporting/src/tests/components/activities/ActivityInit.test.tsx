@@ -392,7 +392,7 @@ describe("ActivityInit Component", () => {
           initialSelectedSourceTypeIds: ["1"],
           gasTypes: mockGasTypes,
         }),
-        {},
+        undefined,
       );
     });
   });
