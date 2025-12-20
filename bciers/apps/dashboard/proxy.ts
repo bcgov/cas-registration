@@ -1,6 +1,6 @@
-import { stackMiddlewares } from "@bciers/middlewares";
-import { withTokenRefreshMiddleware } from "./middlewares/withTokenRefresh";
-import { withAuthorizationDashboard } from "./middlewares/withAuthorizationDashboard";
+import { stackProxies } from "@bciers/proxies";
+import { withTokenRefreshProxy } from "@/dashboard/proxies/withTokenRefresh";
+import { withAuthorizationDashboard } from "@/dashboard/proxies/withAuthorizationDashboard";
 import {
   isCIEnvironment,
   isVitestEnvironment,
@@ -37,10 +37,10 @@ export const config = {
 };
 
 // ⛓️ Chaining proxy functions for maintainability, and scalability by apply a series of task specific functions to a request
-export default stackMiddlewares([
+export default stackProxies([
   withAuthorizationDashboard,
   // Bypass if running in CI, Vitest, or Playwright e2e test environments
   ...(isCIEnvironment() || isVitestEnvironment() || isPlaywrightEnvironment()
     ? []
-    : [withTokenRefreshMiddleware]),
+    : [withTokenRefreshProxy]),
 ]);

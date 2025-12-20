@@ -1,6 +1,6 @@
-import { stackMiddlewares, withAuthorization } from "@bciers/middlewares";
-import { withRulesAppliedReg } from "./middlewares/withRulesAppliedReg";
-import { withResponseReg } from "./middlewares/withResponseReg";
+import { stackProxies, withAuthorization } from "@bciers/proxies";
+import { withRulesAppliedReg } from "@/registration/proxies/withRulesAppliedReg";
+import { withResponseReg } from "@/registration/proxies/withResponseReg";
 export const appName = "registration";
 /* 📌
 Proxy (formerly Middleware) allows you to run code before a request is completed so you can modify the response by
@@ -14,7 +14,7 @@ export const config = {
   matcher: ["/", "/((?!api|_next|sw.js|favicon.ico).*)"],
 };
 // ⛓️ Chaining proxy functions for maintainability, and scalability by apply a series of task specific functions to a request
-export default stackMiddlewares([
+export default stackProxies([
   withAuthorization,
   withRulesAppliedReg,
   withResponseReg,

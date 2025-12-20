@@ -56,7 +56,7 @@ declare module "next-auth" {
 }
 
 /*
-📌 Make one central auth config that can be imported to auth.ts or middleware when required
+📌 Make one central auth config that can be imported to auth.ts or proxy when required
 */
 export const AUTH_BASE_PATH = "/api/auth";
 export const OAUTH_TOKEN_ROTATION_INTERVAL_SECONDS = 60;

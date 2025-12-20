@@ -1,6 +1,6 @@
-import { stackMiddlewares, withAuthorization } from "@bciers/middlewares";
-import { withRulesAppliedAdmin } from "./middlewares/withRulesAppliedAdmin";
-import { withResponseAdmin } from "./middlewares/withResponseAdmin";
+import { stackProxies, withAuthorization } from "@bciers/proxies";
+import { withRulesAppliedAdmin } from "@/administration/proxies/withRulesAppliedAdmin";
+import { withResponseAdmin } from "@/administration/proxies/withResponseAdmin";
 export const appName = "administration";
 /* 📌
 Proxy (formerly Middleware) allows you to run code before a request is completed so you can modify the response by
@@ -29,7 +29,7 @@ Conditional statements
 export const config = { matcher: ["/((?!api|_next|sw.js|favicon.ico).*)"] };
 
 // ⛓️ Chaining proxy functions for maintainability, and scalability by apply a series of task specific functions to a request
-export default stackMiddlewares([
+export default stackProxies([
   withAuthorization,
   withRulesAppliedAdmin,
   withResponseAdmin,

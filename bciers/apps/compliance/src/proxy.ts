@@ -1,7 +1,7 @@
-import { stackMiddlewares, withAuthorization } from "@bciers/middlewares";
-import { withResponseCompliance } from "./middlewares/withResponseCompliance";
-import { withRuleHasComplianceRouteAccessBCeID } from "./middlewares/withRuleHasComplianceRouteAccessBCeID";
-import { withRuleHasComplianceRouteAccessIDIR } from "./middlewares/withRuleHasComplianceRouteAccessIDIR";
+import { stackProxies, withAuthorization } from "@bciers/proxies";
+import { withResponseCompliance } from "@/compliance/src/proxies/withResponseCompliance";
+import { withRuleHasComplianceRouteAccessBCeID } from "@/compliance/src/proxies/withRuleHasComplianceRouteAccessBCeID";
+import { withRuleHasComplianceRouteAccessIDIR } from "@/compliance/src/proxies/withRuleHasComplianceRouteAccessIDIR";
 
 export const appName = "compliance";
 
@@ -34,7 +34,7 @@ export const config = {
 };
 
 // ⛓️ Chaining proxy functions for maintainability, and scalability by apply a series of task specific functions to a request
-export default stackMiddlewares([
+export default stackProxies([
   withAuthorization,
   withRuleHasComplianceRouteAccessBCeID,
   withRuleHasComplianceRouteAccessIDIR,

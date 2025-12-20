@@ -32,7 +32,7 @@
       "@bciers/data/*": ["libs/data/*"],
       "@bciers/e2e/*": ["libs/e2e/src/*"],
       "@bciers/img/*": ["libs/img/*"],
-      "@bciers/middlewares": ["libs/middlewares/src/index.ts"],
+      "@bciers/proxies": ["libs/proxies/src/index.ts"],
       "@bciers/sentryConfig/*": ["libs/sentryConfig/src/*"],
       "@bciers/styles": ["libs/styles/src/index.js"],
       "@bciers/styles/*": ["libs/styles/src/*"],

@@ -287,15 +287,15 @@ The frontend is organized as a monorepo using Nx, containing multiple applicatio
 
 Located in `/bciers/libs/shared/`:
 
-| Library       | Path                 | Purpose                                |
-| ------------- | -------------------- | -------------------------------------- |
-| `actions`     | `shared/actions`     | Shared actions and state management    |
-| `components`  | `shared/components`  | Reusable UI components                 |
-| `img`         | `shared/img`         | Shared images and assets               |
-| `middlewares` | `shared/middlewares` | Common middleware functions            |
-| `styles`      | `shared/styles`      | Shared styling and themes              |
-| `testConfig`  | `shared/testConfig`  | Testing configurations and utilities   |
-| `types`       | `shared/types`       | Shared TypeScript types and interfaces |
+| Library      | Path                | Purpose                                |
+| ------------ | ------------------- | -------------------------------------- |
+| `actions`    | `shared/actions`    | Shared actions and state management    |
+| `components` | `shared/components` | Reusable UI components                 |
+| `img`        | `shared/img`        | Shared images and assets               |
+| `proxies`    | `shared/proxies`    | Common proxy functions                 |
+| `styles`     | `shared/styles`     | Shared styling and themes              |
+| `testConfig` | `shared/testConfig` | Testing configurations and utilities   |
+| `types`      | `shared/types`      | Shared TypeScript types and interfaces |
 
 ### Running Specific Applications
 
