@@ -11,9 +11,8 @@ const PlacesAssignedFieldTemplate = ({
   return (
     <div className="flex min-w-full flex-col">
       {items?.map((item) => {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        const { role_name, operation_name, operation_id } =
-          item.children.props.formData;
+        const formData = (item.children.props as any)?.formData;
+        const { role_name, operation_name, operation_id } = formData || {};
         if (!role_name || !operation_name || !operation_id) {
           throw new Error(`Invalid places assigned data`);
         }
