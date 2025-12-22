@@ -488,15 +488,12 @@ class TestOperationService:
         )
         payload = OperationNewEntrantApplicationIn(
             new_entrant_application=MOCK_DATA_URL,
-            date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
         )
         operation = OperationService.create_or_replace_new_entrant_application(
             approved_user_operator.user.user_guid, users_operation.id, payload
         )
         operation.refresh_from_db()
         assert operation.id == users_operation.id
-        assert operation.updated_at is not None
-        assert operation.date_of_first_shipment == Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024
         assert operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).count() == 1
 
 
@@ -869,7 +866,6 @@ class TestOperationServiceV2UpdateOperation:
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
-            date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
             status=Operation.Statuses.REGISTERED,
         )
         payload = OperationInformationInUpdate(
@@ -882,7 +878,6 @@ class TestOperationServiceV2UpdateOperation:
             activities=[3],
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
-            date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
             new_entrant_application=MOCK_DATA_URL,
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
@@ -893,7 +888,6 @@ class TestOperationServiceV2UpdateOperation:
         assert Operation.objects.count() == 1
         assert operation.activities.count() == 1
         assert operation.documents.count() == 3
-        assert operation.date_of_first_shipment == Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024
         assert operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).count() == 1
         assert operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
 
@@ -1662,7 +1656,6 @@ class TestHandleChangeOfRegistrationPurpose:
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose=Operation.Purposes.NEW_ENTRANT_OPERATION,
-            date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
         )
         boundary_map = baker.make_recipe(
             'registration.tests.utils.document', type=DocumentType.objects.get(name='boundary_map')
@@ -1688,7 +1681,6 @@ class TestHandleChangeOfRegistrationPurpose:
             approved_user_operator.user.user_guid, operation, submitted_payload
         )
 
-        assert returned_payload.date_of_first_shipment is None
         assert Document.objects.count() == 2
         assert operation.documents.count() == 2
 

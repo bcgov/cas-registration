@@ -113,7 +113,6 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
 
         # Act - Test with date_of_first_shipment for historical 2024 applications
         valid_payload_with_date = {
-            "date_of_first_shipment": "On or after April 1, 2024",
             "new_entrant_application": MOCK_DATA_URL,
         }
         response_2 = TestUtils.mock_put_with_auth_role(
@@ -126,4 +125,3 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
         # Assert - Should also succeed with date_of_first_shipment for backwards compatibility
         operation.refresh_from_db()
         assert response_2.status_code == 200
-        assert operation.date_of_first_shipment == Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024

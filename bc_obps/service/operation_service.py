@@ -158,10 +158,6 @@ class OperationService:
         )
         if new_entrant_application_document_created:
             operation.documents.add(new_entrant_application_document)
-        # Only update date_of_first_shipment if provided (for historical 2024 applications)
-        if payload.date_of_first_shipment is not None:
-            operation.date_of_first_shipment = payload.date_of_first_shipment
-            operation.save(update_fields=['date_of_first_shipment'])
         return operation
 
     @classmethod

@@ -251,8 +251,6 @@ class OperationRegistrationSubmissionIn(Schema):
 
 class OperationNewEntrantApplicationIn(Schema):
     new_entrant_application: str
-    # date_of_first_shipment is optional and only used for historical 2024 applications
-    date_of_first_shipment: Optional[str] = None
 
     @field_validator("new_entrant_application")
     @classmethod
