@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import type { SyntheticEvent } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
@@ -33,33 +33,36 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
     setIsSearchAttempted(false);
   };
 
-  const changeHandler = async (_event: React.ChangeEvent<{}>, val: string) => {
-    if (!val) {
-      setIsSearchAttempted(false);
-      setOptions([]);
-      return;
-    }
-    const response = await actionHandler(
-      `${formContext.endpoint}?legal_name=${val}`,
-      "GET",
-    );
+  const changeHandler = useCallback(
+    async (_event: React.ChangeEvent<object>, val: string) => {
+      if (!val) {
+        setIsSearchAttempted(false);
+        setOptions([]);
+        return;
+      }
+      const response = await actionHandler(
+        `${formContext.endpoint}?legal_name=${val}`,
+        "GET",
+      );
 
-    if (!response || response?.error) {
-      return;
-    }
+      if (!response || response?.error) {
+        return;
+      }
 
-    const results = response.map(
-      (item: { legal_name: any }) => item.legal_name,
-    );
+      const results = response.map(
+        (item: { legal_name: string }) => item.legal_name,
+      );
 
-    setOptions(results);
-    setIsSearchAttempted(true);
-  };
+      setOptions(results);
+      setIsSearchAttempted(true);
+    },
+    [formContext],
+  );
 
   // 200ms debounce to prevent excessive API calls
-  const debouncedChangeHandler = useMemo(
+  const debouncedChangeHandler = useCallback(
     () => debounce(changeHandler, 200),
-    [],
+    [changeHandler],
   );
 
   // Clear options when the field loses focus as the dropdown will remain open otherwise

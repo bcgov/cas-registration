@@ -1,4 +1,6 @@
-const transformToNumberOrUndefined = (value: any): number | undefined => {
+const transformToNumberOrUndefined = (
+  value: number | string,
+): number | undefined => {
   if (typeof value === "number" && !isNaN(value)) return value;
   if (
     typeof value === "string" &&

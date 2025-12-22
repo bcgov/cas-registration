@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { actionHandler } from "@bciers/actions";
 import { FuelFields } from "./customFields/FuelFieldComponent";
-import { FieldProps, RJSFSchema } from "@rjsf/utils";
+import { CustomValidator, FieldProps, RJSFSchema } from "@rjsf/utils";
 import { getUiSchema } from "./uiSchemas/schemaMaps";
 import { UUID } from "crypto";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
@@ -76,9 +76,14 @@ export default function ActivityForm({
     setJsonSchema(initialJsonSchema);
     setFormState(activityFormData);
     setSelectedSourceTypeIds(initialSelectedSourceTypeIds);
-  }, [currentActivity]);
+  }, [
+    currentActivity,
+    initialJsonSchema,
+    activityFormData,
+    initialSelectedSourceTypeIds,
+  ]);
 
-  const customValidate = (formData: { [key: string]: any }, errors: any) => {
+  const customValidate: CustomValidator = (formData, errors) => {
     // Negative numbers
     const results = findPathsWithNegativeNumbers(formData);
     results.forEach((result) => {

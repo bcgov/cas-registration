@@ -19,7 +19,7 @@ import Loading from "../loading/SkeletonForm";
  * const nextJsPage = defaultPageFactory(SomePage)
  */
 
-export default function defaultPageFactory<TPageParams extends {}>(
+export default function defaultPageFactory<TPageParams extends object>(
   Component: React.FC<
     TPageParams & { searchParams?: Record<string, string | number | undefined> }
   >,
