@@ -75,7 +75,7 @@ const AttachmentsForm: React.FC<Props> = ({
     if (file) {
       setPendingUploadFiles({ ...pendingUploadFiles, [fileType]: file });
     } else {
-      const { [fileType]: removed, ...prunedFiles } = pendingUploadFiles;
+      const { [fileType]: _, ...prunedFiles } = pendingUploadFiles;
       setPendingUploadFiles(prunedFiles);
     }
   };
@@ -249,6 +249,7 @@ const AttachmentsForm: React.FC<Props> = ({
             </p>
             <div className="flex items-start mt-3">
               <Checkbox
+                id="confirm-relevant-attachment-check"
                 checked={confirmExistingAttachmentsRelevant}
                 onChange={(e) =>
                   setConfirmExistingAttachmentsRelevant(e.target.checked)
@@ -261,6 +262,7 @@ const AttachmentsForm: React.FC<Props> = ({
               <label
                 id="confirm-existing-attachments-relevant-label"
                 className="ml-2"
+                htmlFor="confirm-relevant-attachment-check"
               >
                 I confirm that I have uploaded any attachments that are required
                 to be updated for the new submission of this report.
@@ -268,6 +270,7 @@ const AttachmentsForm: React.FC<Props> = ({
             </div>
             <div className="flex items-start mt-3">
               <Checkbox
+                id="confirm-required-attachment-check"
                 checked={confirmRequiredAttachmentsUploaded}
                 onChange={(e) =>
                   setConfirmRequiredAttachmentsUploaded(e.target.checked)
@@ -280,6 +283,7 @@ const AttachmentsForm: React.FC<Props> = ({
               <label
                 id="confirm-required-attachments-uploaded-label"
                 className="ml-2"
+                htmlFor="confirm-required-attachment-check"
               >
                 I confirm that any previously uploaded attachments that have not
                 been updated are still relevant to the new submission of this

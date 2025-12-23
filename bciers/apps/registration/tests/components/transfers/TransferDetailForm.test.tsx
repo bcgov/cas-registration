@@ -330,12 +330,12 @@ describe("The TransferDetailForm component", () => {
       // make sure existing facilities are displayed and included when editing the form
       expect(
         screen.getByRole("button", {
-          name: /name 1 \- \(11, 22\)/i,
+          name: /name 1 - \(11, 22\)/i,
         }),
       ).toBeVisible();
       expect(
         screen.getByRole("button", {
-          name: /name 2 \- \(33, 44\)/i,
+          name: /name 2 - \(33, 44\)/i,
         }),
       ).toBeVisible();
 

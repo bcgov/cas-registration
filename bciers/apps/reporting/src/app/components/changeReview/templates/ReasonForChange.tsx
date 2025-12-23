@@ -38,13 +38,14 @@ const ReasonForChangeForm: React.FC<ReasonForChangeProps> = ({
       {/* Reason for Change */}
       <div className="form-group">
         <div className="flex items-start gap-4">
-          <label className="w-1/3 font-medium">
+          <label className="w-1/3 font-medium" htmlFor="reason-for-change">
             Please explain the reason for submitting this supplementary report.
             Include an explanation for why each inaccuracy or omission in the
             previous report occurred.
             <span className="text-red-500">*</span>
           </label>
           <TextareaAutosize
+            id="reason-for-change"
             aria-label="Reason for change"
             value={reasonForChange}
             onChange={(e) =>

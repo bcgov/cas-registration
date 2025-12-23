@@ -38,7 +38,7 @@ const AdditionalReportingData: React.FC<AdditionalReportingDataProps> = ({
       {changes.map((item, idx) => {
         // Extract all keys from the field path
         const keyMatches = item.field.match(/\['([^']+)'\]/g);
-        const keys = keyMatches?.map((k: string) => k.replace(/[\['\]]/g, ""));
+        const keys = keyMatches?.map((k: string) => k.replace(/[['\]]/g, ""));
 
         // Use the second key as the field under 'report_additional_data'
         const key = keys?.[1];

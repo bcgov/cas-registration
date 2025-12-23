@@ -250,7 +250,7 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                             : {
                                 // extract field name from `change.field`
                                 [change.field
-                                  .split(/[\[\]']+/)
+                                  .split(/[[\]']+/)
                                   .filter(Boolean)
                                   .pop() || "value"]: change.oldValue,
                               };
@@ -260,7 +260,7 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                             ? change.newValue
                             : {
                                 [change.field
-                                  .split(/[\[\]']+/)
+                                  .split(/[[\]']+/)
                                   .filter(Boolean)
                                   .pop() || "value"]: change.newValue,
                               };

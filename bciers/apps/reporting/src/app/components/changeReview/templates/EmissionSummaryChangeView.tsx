@@ -126,7 +126,7 @@ export const EmissionSummaryChangeView: React.FC<
 
         if (fieldKey) {
           // Clean up the field key
-          fieldKey = fieldKey.replace(/['\[\]]/g, "");
+          fieldKey = fieldKey.replace(/['[\]]/g, "");
 
           // Only process fields that are actually defined in our emission summary structure
           if (structureSection.fields.includes(fieldKey)) {

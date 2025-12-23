@@ -22,7 +22,7 @@ export function parseFacilityReportField(field: string): {
     facilityMatch.index! + facilityMatch[0].length,
   );
 
-  const pathSegments = remainingPath.match(/\[[^\[\]]*\]/g) || [];
+  const pathSegments = remainingPath.match(/\[[^[\]]*\]/g) || [];
   // This regex extracts the value inside square brackets, optionally surrounded by single or double quotes.
   // For example, it matches ["section"], ['activity'], or [index] and returns section, activity, or index respectively.
   const cleanSegments = pathSegments.map((segment) => {

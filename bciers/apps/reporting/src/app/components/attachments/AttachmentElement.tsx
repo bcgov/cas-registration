@@ -37,7 +37,7 @@ const AttachmentElement: React.FC<Props> = ({
     hiddenFileInput.current?.click();
   };
 
-  const handleDownload = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -86,14 +86,9 @@ const AttachmentElement: React.FC<Props> = ({
         <ul className="m-0 py-0 flex flex-col justify-start">
           <li>
             {fileId && (
-              <a
-                download={fileName}
-                href={"#"}
-                className="file-download"
-                onClick={handleDownload}
-              >
+              <button className="file-download" onClick={handleDownload}>
                 {fileName}
-              </a>
+              </button>
             )}
             {!fileId && (
               <>
@@ -105,7 +100,7 @@ const AttachmentElement: React.FC<Props> = ({
                       uploading
                       <CircularProgress
                         data-testid="progressbar"
-                        role="progressContinuing"
+                        role="progressbar"
                         size={18}
                         className="ml-3"
                       />

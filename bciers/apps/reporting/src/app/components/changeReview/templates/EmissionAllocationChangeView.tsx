@@ -10,6 +10,19 @@ import {
   ProductAllocationTotal,
 } from "../constants/types";
 
+// Render section for totals
+const TotalsSection = ({ changes }: { changes: DisplayChangeItem[] }) => (
+  <>
+    <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-4">
+      Totals in tCO2e
+    </Typography>
+    <Divider sx={{ mb: 2 }} />
+    {changes.map((change, idx) => (
+      <ChangeItemDisplay key={`${change.field}-${idx}`} item={change} />
+    ))}
+  </>
+);
+
 export const EmissionAllocationChangeView: React.FC<
   EmissionAllocationChangeViewProps
 > = ({ data }) => {
@@ -321,19 +334,6 @@ export const EmissionAllocationChangeView: React.FC<
         {category.categoryName}
       </Typography>
       {category.changes.map((change, idx) => (
-        <ChangeItemDisplay key={`${change.field}-${idx}`} item={change} />
-      ))}
-    </>
-  );
-
-  // Render section for totals
-  const TotalsSection = ({ changes }: { changes: DisplayChangeItem[] }) => (
-    <>
-      <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-4">
-        Totals in tCO2e
-      </Typography>
-      <Divider sx={{ mb: 2 }} />
-      {changes.map((change, idx) => (
         <ChangeItemDisplay key={`${change.field}-${idx}`} item={change} />
       ))}
     </>
