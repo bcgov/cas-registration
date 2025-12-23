@@ -1,6 +1,6 @@
 import defaultTheme from "./theme/defaultTheme";
 import readOnlyTheme from "./theme/readOnlyTheme";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
 import customTransformErrors from "@bciers/utils/src/customTransformErrors";
@@ -48,8 +48,12 @@ export interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
   setErrorReset?: (error: undefined) => void;
 }
 
-// formbase with forwardRef
+// For efficiency, we pre-compute the themed form components
+// instead of doing it at render time with a memo
+const DefaultForm = withTheme(defaultTheme);
+const ReadOnlyForm = withTheme(readOnlyTheme);
 
+// formbase with forwardRef
 const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   const {
     disabled,
@@ -62,8 +66,13 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     setErrorReset,
     theme,
   } = props;
-  const formTheme = disabled || readonly ? readOnlyTheme : defaultTheme;
-  const Form = useMemo(() => withTheme(theme ?? formTheme), [theme, formTheme]);
+  if (theme && theme !== defaultTheme && theme !== readOnlyTheme) {
+    throw new Error("Unsupported form theme");
+  }
+  const Form =
+    disabled || readonly || theme === readOnlyTheme
+      ? ReadOnlyForm
+      : DefaultForm;
   const [formState, setFormState] = useState(formData ?? {});
   const [isSubmitting, setIsSubmitting] = useState(false);
 

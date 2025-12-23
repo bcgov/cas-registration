@@ -1,31 +1,32 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import FormBase, { FormPropsWithTheme } from "./FormBase";
 import Form from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import ReportingStepButtons from "./components/ReportingStepButtons";
 import FormAlerts from "@bciers/components/form/FormAlerts";
 import { useRouter } from "next/navigation";
+import { Dict } from "@bciers/types/dictionary";
 
 export interface NavigationFormProps
-  extends Omit<FormPropsWithTheme<any>, "onSubmit"> {
+  extends Omit<FormPropsWithTheme<unknown>, "onSubmit"> {
   schema: RJSFSchema;
   uiSchema?: UiSchema;
-  formData: any;
+  formData: object;
   baseUrl?: string;
   cancelUrl?: string;
   backUrl?: string;
   continueUrl: string;
-  onSubmit?: (data: any, navigateAfterSubmit: boolean) => Promise<boolean>;
+  onSubmit?: (data: object, navigateAfterSubmit: boolean) => Promise<boolean>;
   buttonText?: string;
-  onChange?: (data: any) => void;
+  onChange?: (data: object) => void;
   errors?: (string | React.ReactNode)[];
   saveButtonDisabled?: boolean;
   submitButtonDisabled?: boolean;
   noSaveButton?: boolean;
   backButtonText?: string;
-  formContext?: { [key: string]: any }; // used in RJSF schema for access to form data in custom templates
+  formContext?: Dict; // used in RJSF schema for access to form data in custom templates
 }
 
 const useKey: () => [number, () => void] = () => {
@@ -58,6 +59,10 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [key, resetKey] = useKey();
+  const [navTargets, setNavTargets] = useState({
+    backUrl: backUrl,
+    continueUrl: continueUrl,
+  });
   const formRef = useRef<Form>(null);
   const shouldNavigateRef = useRef(false);
   const router = useRouter();
@@ -89,14 +94,18 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
     }
   };
 
-  useEffect(() => {
-    /** Effect triggers when navigation to another page is finished and this component reloads
-     *  Otherwise the spinner stops spinning before the page changes. */
+  if (backUrl != navTargets.backUrl || continueUrl != navTargets.continueUrl) {
+    /** Triggered when navigation to another page is finished and this component reloads
+     *  Otherwise the spinner stops spinning before the page changes.
+     *  Replaces old effect with recommended strategy: https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+     * */
+
+    setNavTargets({ backUrl: backUrl, continueUrl: continueUrl });
     setIsRedirecting(false);
     setIsSaving(false);
     // Invalidate next router caching again
     router.refresh();
-  }, [backUrl, continueUrl]);
+  }
 
   // Essentially a manual call to `submit()` with a context
   const onSaveAndContinue = async () => {
