@@ -17,7 +17,9 @@ interface ActionCellProps extends GridRenderCellParams {
 
 const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
   const reportId = row?.report_id;
-  let reportVersionId = row?.report_version_id;
+  const [reportVersionId, setReportVersionId] = React.useState<
+    string | undefined
+  >(row?.report_version_id);
   const reportStatus = row?.report_status;
   const router = useRouter();
   const operationId = row.operation_id;
@@ -26,16 +28,12 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
 
   // Create a new report
   const handleStartReport = async (reportingYear: number): Promise<string> => {
-    try {
-      const response = await createReport(operationId, reportingYear);
-      if (response?.error)
-        setResponseError(
-          `We couldn't create a report for operation ID '${operationId}' and reporting year '${reportingYear}': ${response?.error}.`,
-        );
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await createReport(operationId, reportingYear);
+    if (response?.error)
+      setResponseError(
+        `We couldn't create a report for operation ID '${operationId}' and reporting year '${reportingYear}': ${response?.error}.`,
+      );
+    return response;
   };
 
   if (responseError) {
@@ -44,29 +42,27 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
 
   // Create a new report version
   const handleNewDraftVersion = async (): Promise<string> => {
-    try {
-      const response = await createReportVersion(operationId, reportId);
-      if (response?.error) {
-        setResponseError(
-          `We couldn't create a draft report version for report ID '${reportId}': ${response?.error}.`,
-        );
-      }
-      return response;
-    } catch (error) {
-      throw error;
+    const response = await createReportVersion(operationId, reportId);
+    if (response?.error) {
+      setResponseError(
+        `We couldn't create a draft report version for report ID '${reportId}': ${response?.error}.`,
+      );
     }
+    return response;
   };
 
   const handleStartClick = async () => {
     if (reportId) {
       // create a new report version
-      reportVersionId = await handleNewDraftVersion();
+      const newReportVersionId = await handleNewDraftVersion();
+      setReportVersionId(newReportVersionId);
     } else {
       // create a new report
       const reportingYearObj = await getReportingYear();
-      reportVersionId = await handleStartReport(
+      const newReportVersionId = await handleStartReport(
         reportingYearObj.reporting_year,
       );
+      setReportVersionId(newReportVersionId);
     }
     if (typeof reportVersionId === "number")
       router.push(`${reportVersionId}/review-operation-information`);
