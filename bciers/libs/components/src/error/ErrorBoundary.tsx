@@ -8,18 +8,33 @@ interface Props {
 }
 export default function ErrorBoundary({ error }: Props) {
   const [eventId, setEventId] = useState<string | null>(null);
+
   useEffect(() => {
+    let ignore = false;
+
+    const sendErrorToSentry = () => {
+      const id = captureException(error);
+      if (!ignore) setEventId(id ?? null);
+    };
+
     if (error) {
       try {
-        // Attempt to log the error to Sentry
-        const id = captureException(error);
-        setEventId(id ?? null); // Store Sentry event ID
+        sendErrorToSentry();
       } catch (sentryError) {
         // If there's an error logging to Sentry, log it to the console
         // eslint-disable-next-line no-console
-        console.error("Error logging to Sentry:", sentryError);
+        console.error(
+          "Error logging to Sentry:",
+          sentryError,
+          "Original error",
+          error,
+        );
       }
     }
+
+    return () => {
+      ignore = true;
+    };
   }, [error]);
 
   return (

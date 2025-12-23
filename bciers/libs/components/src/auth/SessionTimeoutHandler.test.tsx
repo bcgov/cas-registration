@@ -94,6 +94,8 @@ describe("SessionTimeoutHandler", () => {
     mockSignOut.mockResolvedValue(undefined);
     mockGetEnvValue.mockResolvedValue("http://logout.url"); // NOSONAR
     mockCreateThrottledEventHandler.mockReturnValue(vi.fn());
+
+    // eslint-disable-next-line no-global-assign
     window = Object.create(window);
     Object.defineProperty(window, "location", {
       value: {
