@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { actionHandler } from "@bciers/actions";
 import { FuelFields } from "./customFields/FuelFieldComponent";
 import { CustomValidator, FieldProps, RJSFSchema } from "@rjsf/utils";
@@ -15,6 +15,7 @@ import { calculateMobileAnnualAmount } from "@bciers/utils/src/customReportingAc
 import { IChangeEvent } from "@rjsf/core";
 import { NavigationInformation } from "../taskList/types";
 import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
+import { Dict } from "@bciers/types/dictionary";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -25,7 +26,7 @@ interface Props {
     activityId: number;
     sourceTypeMap: { [key: number]: string };
   };
-  activityFormData: any;
+  activityFormData: Dict;
   currentActivity: { id: number; name: string; slug: string };
   navigationInformation: NavigationInformation;
   reportVersionId: number;
@@ -53,7 +54,7 @@ export default function ActivityForm({
   gasTypes,
 }: Readonly<Props>) {
   // 🐜 To display errors
-  const [errorList, setErrorList] = useState([] as any[]);
+  const [errorList, setErrorList] = useState([] as string[]);
   const [formState, setFormState] = useState(activityFormData);
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
   const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(
@@ -71,17 +72,6 @@ export default function ActivityForm({
       x.every((val, index) => val === y[index])
     );
   };
-
-  useEffect(() => {
-    setJsonSchema(initialJsonSchema);
-    setFormState(activityFormData);
-    setSelectedSourceTypeIds(initialSelectedSourceTypeIds);
-  }, [
-    currentActivity,
-    initialJsonSchema,
-    activityFormData,
-    initialSelectedSourceTypeIds,
-  ]);
 
   const customValidate: CustomValidator = (formData, errors) => {
     // Negative numbers
@@ -105,7 +95,7 @@ export default function ActivityForm({
     return schema;
   };
 
-  const handleFormChange = async (c: any) => {
+  const handleFormChange = async (c: { formData: Dict }) => {
     const selectedSourceTypes = [];
     // Checks for a change in source type selection & fetches the updated schema if they have changed.
     for (const [k, v] of Object.entries(sourceTypeMap)) {
