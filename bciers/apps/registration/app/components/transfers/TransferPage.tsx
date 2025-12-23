@@ -55,7 +55,7 @@ export default async function TransferPage({
 
   return (
     <Suspense fallback={<Loading />}>
-      {!!transferId ? (
+      {transferId ? (
         <TransferDetailForm
           formData={transferFormData as TransferDetailFormData}
           transferId={transferId}

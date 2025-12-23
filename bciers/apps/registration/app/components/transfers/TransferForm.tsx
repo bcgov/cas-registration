@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FormBase from "@bciers/components/form/FormBase";
 import { Alert, Button } from "@mui/material";
 import SubmitButton from "@bciers/components/button/SubmitButton";
@@ -19,6 +19,7 @@ import { actionHandler } from "@bciers/actions";
 import TransferSuccess from "@/registration/app/components/transfers/TransferSuccess";
 import { OperationRow } from "@/administration/app/components/operations/types";
 import { fetchOperationsPageData } from "@bciers/actions/api";
+import useKey from "@bciers/utils/src/useKey";
 
 interface TransferFormProps {
   formData: TransferFormData;
@@ -32,7 +33,7 @@ export default function TransferForm({
   const router = useRouter();
 
   const [formState, setFormState] = useState(formData);
-  const [key, setKey] = useState(Math.random()); // NOSONAR
+  const [key, resetKey] = useKey();
   const [error, setError] = useState(undefined);
   const [schema, setSchema] = useState(createTransferSchema(operators));
   const [uiSchema, setUiSchema] = useState(transferUISchema);
@@ -113,7 +114,7 @@ export default function TransferForm({
     return response.rows;
   };
 
-  const handleOperatorChange = async () => {
+  const handleOperatorChange = async (transferFormData: TransferFormData) => {
     // Reset error state
     setError(undefined);
     // Handle the error when the same operator is selected for both from and to operators when transferring an operation
@@ -121,11 +122,11 @@ export default function TransferForm({
     else resetUiSchema();
 
     const getFromOperatorOperations = await fetchOperatorOperations(
-      formState?.from_operator,
+      transferFormData?.from_operator,
     );
 
     const getByOperatorOperations = await fetchOperatorOperations(
-      formState?.to_operator,
+      transferFormData?.to_operator,
     );
 
     if (!error) {
@@ -142,7 +143,7 @@ export default function TransferForm({
       // reset selected operation, from_operation, to_operation and facilities when changing the operator
       // Not doing this will cause the form to keep the old values when changing the operator
       setFormState({
-        ...formState,
+        ...transferFormData,
         operation: "",
         from_operation: "",
         to_operation: "",
@@ -168,18 +169,20 @@ export default function TransferForm({
     return response.rows;
   };
 
-  const handleFromOperationChange = async () => {
+  const handleFromOperationChange = async (
+    transferFormData: TransferFormData,
+  ) => {
     // Reset error state
     setError(undefined);
     const facilitiesByOperation = await fetchFacilities(
-      formState?.from_operation,
+      transferFormData?.from_operation,
     );
 
     if (!error) {
       // Filter out the current from_operation from toOperatorOperations(we can't transfer facilities to the same operation)
       const filteredToOperatorOperations = toOperatorOperations.filter(
         (operation: OperationRow) =>
-          operation.operation__id !== formState?.from_operation,
+          operation.operation__id !== transferFormData?.from_operation,
       );
 
       setSchema(
@@ -192,28 +195,25 @@ export default function TransferForm({
       );
       // reset selected facilities when changing the from_operation
       setFormState({
-        ...formState,
+        ...transferFormData,
         facilities: [],
       });
       // force re-render
-      setKey(Math.random()); // NOSONAR
+      resetKey();
     }
   };
 
-  /*
-  Using multiple useEffects to listen to changes in the form state and update the schema accordingly
-  */
-  useEffect(() => {
-    handleOperatorChange();
-  }, [
-    formState?.from_operator,
-    formState?.to_operator,
-    formState?.transfer_entity,
-  ]);
+  const handleFormStateUpdate = async (newFormState: TransferFormData) => {
+    if (newFormState?.from_operation !== formState?.from_operation)
+      await handleFromOperationChange(newFormState);
 
-  useEffect(() => {
-    handleFromOperationChange();
-  }, [formState?.from_operation]);
+    if (
+      newFormState?.from_operator != formState?.from_operator ||
+      newFormState?.to_operator != formState?.to_operator ||
+      newFormState?.transfer_entity != formState?.transfer_entity
+    )
+      await handleOperatorChange(newFormState);
+  };
 
   const submitHandler = async (e: IChangeEvent) => {
     const updatedFormData = e.formData;
@@ -229,7 +229,7 @@ export default function TransferForm({
 
     setIsSubmitting(true);
     // Update the form state with the new data so we don't use stale data on edit
-    setFormState(updatedFormData);
+    handleFormStateUpdate(updatedFormData);
     const endpoint = "registration/transfer-events";
     const response = await actionHandler(endpoint, "POST", "", {
       body: JSON.stringify({
@@ -273,7 +273,7 @@ export default function TransferForm({
               formData={formState}
               onChange={(e: IChangeEvent) => {
                 const updatedFormData = e.formData;
-                setFormState(updatedFormData);
+                handleFormStateUpdate(updatedFormData);
                 setDisabled(!formIsValid(updatedFormData));
               }}
               onSubmit={submitHandler}

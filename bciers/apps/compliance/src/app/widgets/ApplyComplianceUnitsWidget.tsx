@@ -40,11 +40,9 @@ const ApplyComplianceUnitsWidget = ({
   const [localUnits, setLocalUnits] = useState<BccrUnit[]>(value || []);
 
   // Update localUnits when value prop changes
-  useEffect(() => {
-    if (value && Array.isArray(value)) {
-      setLocalUnits(value);
-    }
-  }, [value]);
+  if (value && Array.isArray(value)) {
+    setLocalUnits(value);
+  }
 
   const handleUnitUpdate = (updatedUnit: BccrUnit) => {
     const updatedUnits = localUnits.map((unit: BccrUnit) =>

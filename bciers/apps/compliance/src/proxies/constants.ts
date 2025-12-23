@@ -48,7 +48,6 @@ export enum AppRoutes {
   RI_REVIEW_SUMMARY_CREDITS = "review-credits-issuance-request",
   RI_TRACK_STATUS = "track-status-of-issuance",
   REVIEW_BY_DIRECTOR = "review-by-director",
-  REVIEW_PENALTY_SUMMARY = "review-penalty-summary",
 }
 
 export type ComplianceStatus =

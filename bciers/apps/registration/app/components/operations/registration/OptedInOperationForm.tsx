@@ -6,7 +6,7 @@ import {
   OptedInOperationFormData,
   OperationRegistrationFormProps,
 } from "apps/registration/app/components/operations/registration/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { actionHandler } from "@bciers/actions";
 import { IChangeEvent } from "@rjsf/core";
 
@@ -26,14 +26,9 @@ const OptedInOperationForm = ({
   formData,
 }: OptedInOperationFormProps) => {
   const [formState, setFormState] = useState(formData);
-  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
-
-  //To run the check on initial load when the form already has data
-  useEffect(() => {
-    if (formData) {
-      setSubmitButtonDisabled(!allQuestionsAnswered(formData));
-    }
-  }, []);
+  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
+    !allQuestionsAnswered(formData),
+  );
 
   const handleChange = (e: IChangeEvent) => {
     setFormState(e.formData);

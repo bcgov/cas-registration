@@ -1,7 +1,8 @@
 import { UUID } from "crypto";
 import { RJSFSchema } from "@rjsf/utils";
+import { Dict } from "@bciers/types/dictionary";
 
-export interface FacilityInformationFormData {}
+export type FacilityInformationFormData = Dict;
 
 export interface NewEntrantOperationFormData {
   id: UUID;
@@ -20,7 +21,7 @@ export interface OptedInOperationFormData {
   meets_notification_to_director_on_criteria_change: boolean | null;
 }
 
-export interface OperationInformationFormData {}
+export type OperationInformationFormData = Dict;
 
 export interface OperationRepresentativeFormData {
   operation_representatives?: number[];
@@ -38,7 +39,7 @@ export interface OperationRepresentativeFormData {
   }[];
 }
 
-export interface RegistrationPurposeFormData {}
+export type RegistrationPurposeFormData = Dict;
 
 export interface RegistrationSubmissionFormData {
   acknowledgement_of_review: boolean;

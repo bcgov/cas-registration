@@ -10,7 +10,7 @@ import {
 } from "apps/registration/app/components/operations/registration/types";
 
 interface NewEntrantOperationFormProps extends OperationRegistrationFormProps {
-  formData: NewEntrantOperationFormData | {};
+  formData: NewEntrantOperationFormData;
 }
 
 const NewEntrantOperationForm = ({

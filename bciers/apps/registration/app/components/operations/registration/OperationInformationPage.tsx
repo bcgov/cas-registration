@@ -14,7 +14,7 @@ const OperationInformationPage = async ({
   steps: string[];
   operation: UUID;
 }) => {
-  let formData: OperationInformationFormData | { error: string } | {} = {};
+  let formData: OperationInformationFormData | { error: string } = {};
   if (operation && isValidUUID(operation))
     formData = await getOperationRegistration(operation);
 

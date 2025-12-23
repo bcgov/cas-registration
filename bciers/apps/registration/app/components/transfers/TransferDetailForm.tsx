@@ -15,6 +15,7 @@ import { FrontEndRoles } from "@bciers/utils/src/enums";
 import { TransferEventStatus } from "@/registration/app/components/transfers/enums";
 import { RJSFSchema } from "@rjsf/utils";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
+import useKey from "@bciers/utils/src/useKey";
 
 interface TransferDetailFormProps {
   formData: TransferDetailFormData;
@@ -38,7 +39,7 @@ export default function TransferDetailForm({
   const [error, setError] = useState(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [disabled, setDisabled] = useState(true);
-  const [key, setKey] = useState(Math.random()); // NOSONAR
+  const [key, resetKey] = useKey();
 
   const handleCancelTransfer = async () => {
     const endpoint = `registration/transfer-events/${transferId}`;
@@ -103,7 +104,7 @@ export default function TransferDetailForm({
               onClick={() => {
                 setDisabled(false);
                 // force re-render to clear the form
-                setKey(Math.random()); // NOSONAR
+                resetKey();
               }}
             >
               Edit Details
