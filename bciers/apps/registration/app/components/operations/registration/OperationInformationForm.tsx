@@ -3,7 +3,7 @@
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
 import { actionHandler } from "@bciers/actions";
 import { RJSFSchema } from "@rjsf/utils";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import { getOperationRegistration } from "@bciers/actions/api";
 import {
@@ -18,6 +18,8 @@ import {
 } from "@/registration/app/components/operations/registration/enums";
 import { eioOperationInformationSchema } from "@/administration/app/data/jsonSchema/operationInformation/operationInformation";
 import ConfirmChangeOfFieldModal from "@/registration/app/components/operations/registration/ConfirmChangeOfFieldModal";
+import useKey from "@bciers/utils/src/useKey";
+import { Dict } from "@bciers/types/dictionary";
 
 interface OperationInformationFormProps {
   rawFormData: { [key: string]: any };
@@ -51,7 +53,7 @@ const OperationInformationForm = ({
     useState<boolean>(false);
   const [isConfirmTypeChangeModalOpen, setIsConfirmTypeChangeModalOpen] =
     useState<boolean>(false);
-  const [key, setKey] = useState(Math.random());
+  const [key, resetKey] = useKey();
   const searchParams = useSearchParams();
   const continueRegistration =
     searchParams.get("continueRegistration") === "true";
@@ -90,42 +92,40 @@ const OperationInformationForm = ({
     });
   };
 
-  useEffect(() => {
-    if (confirmedFormState?.section1?.registration_purpose) {
-      if (
-        confirmedFormState.section1.registration_purpose ===
-        RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
-      ) {
-        // EIOs only require basic information, so if a user selects EIO we remove some of the form fields
-        setSchema({
-          ...initialSchema,
-          properties: {
-            ...initialSchema.properties,
-            section2: eioOperationInformationSchema,
-          },
-        });
-      } else {
-        setSchema(initialSchema);
-      }
-      setConfirmedFormState((prevState) => ({
-        ...prevState,
-        section1: {
-          ...prevState.section1,
-          registration_purpose:
-            confirmedFormState.section1.registration_purpose,
-        },
-      }));
-      updateUiSchemaWithHelpText(
-        confirmedFormState.section1.registration_purpose,
-      );
-      setIsConfirmPurposeChangeModalOpen(false);
-    }
-  }, [confirmedFormState?.section1?.registration_purpose]);
+  function updateConfirmedFormState(newConfirmedFormState: Dict) {
+    setConfirmedFormState(newConfirmedFormState);
 
-  function customValidate(
-    formData: { [key: string]: any },
-    errors: { [key: string]: any },
-  ) {
+    if (
+      !newConfirmedFormState?.section1?.registration_purpose ||
+      newConfirmedFormState?.section1?.registration_purpose ===
+        confirmedFormState?.section1?.registration_purpose
+    ) {
+      return;
+    }
+
+    if (
+      confirmedFormState.section1.registration_purpose ===
+      RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
+    ) {
+      // EIOs only require basic information, so if a user selects EIO we remove some of the form fields
+      setSchema({
+        ...initialSchema,
+        properties: {
+          ...initialSchema.properties,
+          section2: eioOperationInformationSchema,
+        },
+      });
+    } else {
+      setSchema(initialSchema);
+    }
+    updateUiSchemaWithHelpText(
+      newConfirmedFormState.section1
+        .registration_purpose as RegistrationPurposes,
+    );
+    setIsConfirmPurposeChangeModalOpen(false);
+  }
+
+  function customValidate(formData: Dict, errors: Dict) {
     // @ts-expect-error - we know that schema.properties.section2.required exists because we set it in the useEffect above
     const requiredOperationProperties = schema?.properties?.section2.required;
 
@@ -184,8 +184,8 @@ const OperationInformationForm = ({
     if (operationData?.error) {
       setError("Failed to fetch operation data!" as any);
     }
-    setConfirmedFormState(createNestedFormData(operationData, schema));
-    setKey(Math.random()); // NOSONAR
+    updateConfirmedFormState(createNestedFormData(operationData, schema));
+    resetKey();
   };
   // purpose change
   const handleSelectedPurposeChange = (data: any) => {
@@ -198,7 +198,7 @@ const OperationInformationForm = ({
       newSelectedPurpose &&
       !confirmedFormState?.section1?.registration_purpose
     ) {
-      setConfirmedFormState({
+      updateConfirmedFormState({
         ...confirmedFormState,
         section1: {
           ...confirmedFormState.section1,
@@ -225,19 +225,19 @@ const OperationInformationForm = ({
 
   const cancelRegistrationPurposeChange = () => {
     setPendingFormState({});
-    setKey(Math.random());
+    resetKey();
     setIsConfirmPurposeChangeModalOpen(false);
   };
 
   const confirmRegistrationPurposeChange = () => {
     if (pendingFormState?.section1?.registration_purpose) {
-      setConfirmedFormState((prevState) => ({
-        ...prevState,
+      updateConfirmedFormState({
+        ...confirmedFormState,
         section1: {
-          ...prevState.section1,
+          ...confirmedFormState.section1,
           registration_purpose: pendingFormState.section1.registration_purpose,
         },
-      }));
+      });
     }
     setPendingFormState({});
     setIsConfirmPurposeChangeModalOpen(false);
@@ -247,7 +247,7 @@ const OperationInformationForm = ({
     const newSelectedType = data.section2?.type;
     // if type is being selected for the first time, we don't need to show the ConfirmChangeOfTypeModal.
     if (newSelectedType && !confirmedFormState?.section2?.type) {
-      setConfirmedFormState({
+      updateConfirmedFormState({
         ...confirmedFormState,
         section2: {
           ...confirmedFormState.section2,
@@ -271,7 +271,7 @@ const OperationInformationForm = ({
 
   const cancelTypeChange = () => {
     setPendingFormState({});
-    setKey(Math.random());
+    resetKey();
     setIsConfirmTypeChangeModalOpen(false);
   };
 
