@@ -41,10 +41,10 @@ const InternalContactsLayout = () => {
 
 // 🧩 Main component
 export default async function ContactsPage({
-  searchParams,
+  searchParams = {},
   isExternalUser = true,
 }: Readonly<{
-  searchParams: ContactsSearchParams;
+  searchParams?: ContactsSearchParams;
   isExternalUser?: boolean;
 }>) {
   const contacts: {
