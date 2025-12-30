@@ -125,7 +125,9 @@ export async function actionHandler(
 
         const data = await response.json();
 
-        if (pathToRevalidate) revalidatePath(pathToRevalidate);
+        if (method !== "GET" && pathToRevalidate) {
+          revalidatePath(pathToRevalidate);
+        }
 
         return data;
       } catch (error: unknown) {
