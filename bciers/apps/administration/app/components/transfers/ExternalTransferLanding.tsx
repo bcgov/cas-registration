@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { reportAnEventLink } from "@bciers/utils/src/urls";
 
-// 🧩 Main component
-export default async function ExternalTransferPage() {
+export default function ExternalTransferLanding() {
   return (
     <div>
       <h1 className="form-heading mt-4">Report Transfers and Closures</h1>

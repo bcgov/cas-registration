@@ -1,7 +1,3 @@
-// 🚩 flagging that for shared routes between roles, "Page" code is a component for code maintainability
+import Page from "@/administration/app/components/transfers/ExternalTransferLanding";
 
-import IndustryUserTransferPage from "../../industry_user/transfers/page";
-
-export default async function Page() {
-  return <IndustryUserTransferPage />;
-}
+export default Page;
