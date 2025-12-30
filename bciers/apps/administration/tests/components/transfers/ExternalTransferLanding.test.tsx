@@ -1,13 +1,13 @@
 import { render, screen } from "@testing-library/react";
-import ExternalTransferPage from "@/administration/app/components/transfers/ExternalTransferPage";
+import ExternalTransferLanding from "@/administration/app/components/transfers/ExternalTransferLanding";
 
-describe("ExternalTransferPage component", () => {
+describe("ExternalTransferLanding component", () => {
   beforeEach(async () => {
     vi.resetAllMocks();
   });
 
-  it("renders the external transfers apge", async () => {
-    render(await ExternalTransferPage());
+  it("renders the external transfers landing page", async () => {
+    render(await ExternalTransferLanding());
     expect(
       screen.getByRole("heading", { name: /Report Transfers and Closures/i }),
     ).toBeVisible();

@@ -1,3 +1,3 @@
-import Page from "@/administration/app/components/transfers/ExternalTransferLanding";
+import Landing from "@/administration/app/components/transfers/ExternalTransferLanding";
 
-export default Page;
+export default Landing;
