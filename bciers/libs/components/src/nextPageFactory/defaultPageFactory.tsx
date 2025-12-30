@@ -36,6 +36,7 @@ type DefaultPageFactoryOptions<TPageParams extends object> = {
    * Optional Suspense fallback for the body. Defaults to <Loading />.
    */
   fallback?: React.ReactNode;
+  pageProps?: Partial<TPageParams>;
 };
 
 export default function defaultPageFactory<
@@ -56,6 +57,7 @@ export default function defaultPageFactory<
 
     const props = {
       ...resolvedParams,
+      ...(options?.pageProps ?? {}),
       searchParams: resolvedSearchParams,
     } as TPageParams & { searchParams?: DefaultSearchParams };
 

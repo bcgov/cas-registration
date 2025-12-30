@@ -1,14 +1,8 @@
 import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
-import ContactsPage from "@/administration/app/components/contacts/ContactsPage";
-import type { ContactsSearchParams } from "@/administration/app/components/contacts/types";
+import Header from "@/administration/app/components/contacts/ContactsHeader";
+import Page from "@/administration/app/components/contacts/ContactsPage";
 
-const ContactsRoute: React.FC<{ searchParams?: ContactsSearchParams }> = ({
-  searchParams,
-}) => (
-  <ContactsPage
-    searchParams={(searchParams ?? {}) as ContactsSearchParams}
-    isExternalUser={false}
-  />
-);
-
-export default defaultPageFactory(ContactsRoute);
+export default defaultPageFactory(Page, {
+  header: Header,
+  pageProps: { isExternalUser: false },
+});
