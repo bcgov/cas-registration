@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonGrid";
+import Loading from "@bciers/components/loading/SkeletonForm";
 
 /**
  * Page factory for NextJS pages with parameters in URL.

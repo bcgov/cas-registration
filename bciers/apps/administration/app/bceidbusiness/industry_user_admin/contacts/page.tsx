@@ -1,8 +1,3 @@
-import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
-import Header from "@/administration/app/components/contacts/ContactsHeader";
-import Page from "@/administration/app/components/contacts/ContactsPage";
+import Page from "@/administration/app/components/contacts/ContactsPageFactory";
 
-export default defaultPageFactory(Page, {
-  header: Header,
-  pageProps: { isExternalUser: true },
-});
+export default Page({ isExternalUser: true });

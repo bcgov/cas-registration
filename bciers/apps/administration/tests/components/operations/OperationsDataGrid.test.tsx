@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import OperationDataGrid from "apps/administration/app/components/operations/OperationDataGrid";
+import OperationsDataGrid from "apps/administration/app/components/operations/OperationsDataGrid";
 import { OperationStatus, OperationTypes } from "@bciers/utils/src/enums";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 import { expect } from "vitest";
@@ -79,7 +79,7 @@ describe("OperationsDataGrid component", () => {
   });
   it("renders the OperationsDataGrid grid for external users", async () => {
     render(
-      <OperationDataGrid isInternalUser={false} initialData={mockResponse} />,
+      <OperationsDataGrid isInternalUser={false} initialData={mockResponse} />,
     );
 
     // correct headers
@@ -133,7 +133,7 @@ describe("OperationsDataGrid component", () => {
 
   it("renders the OperationsDataGrid grid for internal users", async () => {
     render(
-      <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
+      <OperationsDataGrid isInternalUser={true} initialData={mockResponse} />,
     );
 
     // correct headers
@@ -173,7 +173,7 @@ describe("OperationsDataGrid component", () => {
 
   it("renders the correct url for the LFO facilities link", async () => {
     render(
-      <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
+      <OperationsDataGrid isInternalUser={true} initialData={mockResponse} />,
     );
 
     const facilitiesLink = screen.getByRole("link", {
@@ -188,7 +188,7 @@ describe("OperationsDataGrid component", () => {
 
   it("renders the correct url for the SFO facilities link", async () => {
     render(
-      <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
+      <OperationsDataGrid isInternalUser={true} initialData={mockResponse} />,
     );
 
     const facilityLink = screen.getByRole("link", {
@@ -203,7 +203,7 @@ describe("OperationsDataGrid component", () => {
 
   it("renders the correct url for the SFO facilities link when no facility id is present", async () => {
     render(
-      <OperationDataGrid isInternalUser={false} initialData={mockResponse} />,
+      <OperationsDataGrid isInternalUser={false} initialData={mockResponse} />,
     );
 
     const facilityLinks = screen.getAllByRole("link", {
@@ -218,7 +218,7 @@ describe("OperationsDataGrid component", () => {
 
   it("renders the correct url for the operation information link for internal users", async () => {
     render(
-      <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
+      <OperationsDataGrid isInternalUser={true} initialData={mockResponse} />,
     );
 
     const operationInfoLinks = screen.getAllByRole("link", {
@@ -237,7 +237,7 @@ describe("OperationsDataGrid component", () => {
 
   it("renders the correct url for the operation information link for external users", async () => {
     render(
-      <OperationDataGrid isInternalUser={false} initialData={mockResponse} />,
+      <OperationsDataGrid isInternalUser={false} initialData={mockResponse} />,
     );
 
     expect(screen.getAllByText(/Draft/i)).toHaveLength(2);
@@ -273,7 +273,7 @@ describe("OperationsDataGrid component", () => {
   });
   it("renders the correct text about BORO ID column depending the registration purpose", async () => {
     render(
-      <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
+      <OperationsDataGrid isInternalUser={true} initialData={mockResponse} />,
     );
     expect(screen.getAllByRole("gridcell")[3]).toHaveTextContent("N/A");
     expect(screen.getAllByRole("gridcell")[10]).toHaveTextContent("24-0001");

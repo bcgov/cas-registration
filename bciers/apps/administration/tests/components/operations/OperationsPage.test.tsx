@@ -4,7 +4,7 @@ import {
   useRouter,
   useSearchParams,
 } from "@bciers/testConfig/mocks";
-import Operations from "@/administration/app/components/operations/OperationPage";
+import Operations from "@/administration/app/components/operations/OperationsPage";
 import { getSessionRole } from "@bciers/testConfig/mocks";
 
 useRouter.mockReturnValue({
@@ -16,7 +16,7 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-describe("Operations component", () => {
+describe("OperationsPage component", () => {
   beforeEach(async () => {
     vi.resetAllMocks();
     useRouter.mockReturnValue({

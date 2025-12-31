@@ -2,17 +2,15 @@ import {
   OperationRow,
   OperationsSearchParams,
 } from "@/administration/app/components/operations/types";
-import OperationDataGridPage from "@/administration/app/components/operations/OperationDataGridPage";
+import OperationsDataGrid from "@/administration/app/components/operations/OperationsDataGrid";
 import {
-  InternalUserOperationDataGridLayout,
-  ExternalUserOperationDataGridLayout,
-} from "@/administration/app/components/operations/OperationLayouts";
-import Loading from "@bciers/components/loading/SkeletonGrid";
-import { Suspense } from "react";
+  InternalUserOperationsDataGridLayout,
+  ExternalUserOperationsDataGridLayout,
+} from "@/administration/app/components/operations/OperationsLayouts";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 import { fetchOperationsPageData } from "@bciers/actions/api";
 
-export default async function OperationPage({
+export default async function OperationsPage({
   searchParams,
 }: {
   searchParams: OperationsSearchParams;
@@ -44,20 +42,18 @@ export default async function OperationPage({
     .map((operation) => operation.operation__name);
 
   const OperationLayoutComponent = isInternalUser
-    ? InternalUserOperationDataGridLayout
-    : ExternalUserOperationDataGridLayout;
+    ? InternalUserOperationsDataGridLayout
+    : ExternalUserOperationsDataGridLayout;
 
   return (
     <OperationLayoutComponent
       operationsWithoutContacts={operationsWithoutContacts}
     >
-      <Suspense fallback={<Loading />}>
-        <OperationDataGridPage
-          filteredSearchParams={filteredSearchParams}
-          isInternalUser={isInternalUser}
-          initialData={operations}
-        />
-      </Suspense>
+      <OperationsDataGrid
+        filteredSearchParams={filteredSearchParams}
+        isInternalUser={isInternalUser}
+        initialData={operations}
+      />
     </OperationLayoutComponent>
   );
 }

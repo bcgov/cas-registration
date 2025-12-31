@@ -7,10 +7,13 @@ import OperationsActionCell from "@bciers/components/datagrid/cells/operations/O
 import OperationFacilitiesActionCell from "apps/administration/app/components/operations/cells/OperationFacilitiesActionCell";
 import operationColumns from "@/administration/app/components/datagrid/models/operations/operationColumns";
 import operationGroupColumns from "@/administration/app/components/datagrid/models/operations/operationGroupColumns";
-import { OperationRow, OperationsSearchParams } from "./types";
+import {
+  OperationRow,
+  OperationsSearchParams,
+} from "@/administration/app/components/operations/types";
 import { fetchOperationsPageData } from "@bciers/actions/api";
 
-const OperationDataGrid = ({
+const OperationsDataGrid = ({
   initialData,
   isInternalUser = false,
   filteredSearchParams,
@@ -61,4 +64,4 @@ const OperationDataGrid = ({
   );
 };
 
-export default OperationDataGrid;
+export default OperationsDataGrid;

@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import {
-  ExternalUserOperationDataGridLayout,
-  InternalUserOperationDataGridLayout,
-} from "apps/administration/app/components/operations/OperationLayouts";
+  ExternalUserOperationsDataGridLayout,
+  InternalUserOperationsDataGridLayout,
+} from "apps/administration/app/components/operations/OperationsLayouts";
 
 useRouter.mockReturnValue({
   query: {},
@@ -14,14 +14,14 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-describe("OperationLayouts component", () => {
+describe("OperationsLayouts component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
 
   it("renders the external operation data grid layout", async () => {
     render(
-      ExternalUserOperationDataGridLayout({
+      ExternalUserOperationsDataGridLayout({
         children: <div>Im a little teapot</div>,
       }),
     );
@@ -35,7 +35,7 @@ describe("OperationLayouts component", () => {
   });
   it("renders the internal operation data grid layout", async () => {
     render(
-      InternalUserOperationDataGridLayout({
+      InternalUserOperationsDataGridLayout({
         children: <div>Im a little moka pot</div>,
       }),
     );
@@ -49,7 +49,7 @@ describe("OperationLayouts component", () => {
   it("renders the missing representative alert when operationsWithoutContacts is provided", async () => {
     const operationsWithoutContacts = ["Operation 1", "Operation 2"];
     render(
-      ExternalUserOperationDataGridLayout({
+      ExternalUserOperationsDataGridLayout({
         operationsWithoutContacts,
         children: <div>Im a little teapot</div>,
       }),

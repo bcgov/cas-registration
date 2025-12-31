@@ -14,9 +14,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
   </>
 );
 
-export { Layout as InternalUserOperationDataGridLayout };
+export { Layout as InternalUserOperationsDataGridLayout };
 
-export const ExternalUserOperationDataGridLayout = ({
+export const ExternalUserOperationsDataGridLayout = ({
   operationsWithoutContacts,
   children,
 }: {
