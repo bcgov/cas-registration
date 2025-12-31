@@ -46,6 +46,12 @@ test.describe("Test compliance report version manage obligation flow", () => {
       urlPattern: REVIEW_OBLIGATION_URL_PATTERN,
     });
 
+    // happo screenshot
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "Compliance obligation not met",
+      variant: "default",
+    });
+
     // From the Manage Obligation task list, click "Download Payment Instructions"
     const taskListManageObligation = new ManageObligationTaskListPOM(page);
     await taskListManageObligation.clickDownloadPaymentInstructions();

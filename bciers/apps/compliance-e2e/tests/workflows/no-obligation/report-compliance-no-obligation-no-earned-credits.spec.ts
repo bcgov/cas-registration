@@ -48,7 +48,7 @@ test.describe("Test compliance report version no obligation or earned credits fl
 
     // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: "Compliance no obligation no earned credits",
+      component: "Compliance no obligation or earned credits",
       variant: "default",
     });
   });
