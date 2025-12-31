@@ -21,26 +21,15 @@ def mock_bccr_client() -> Iterator[None]:
     eLicensing client doesn't validate - it directly makes HTTP requests even with None values,
     so HTTP-layer mocking is sufficient (URLs like "None/client" get intercepted by our mocks).
 
-    This patch provides dummy config values so BCCR client passes validation and makes HTTP
-    requests that our HTTP-layer mocks can intercept.
+    This patch directly bypasses the _validate_config method to avoid needing real credentials.
+    All HTTP requests will be intercepted by our HTTP-layer mocks regardless of config state.
     """
-    from django.conf import settings
     from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
 
-    # Clear singleton instance so it gets recreated with patched settings
-    original_instance = BCCarbonRegistryAPIClient._instance
-    BCCarbonRegistryAPIClient._instance = None
-
-    try:
-        with (
-            patch.object(settings, "BCCR_API_URL", "http://bccr-mock.local"),  # NOSONAR
-            patch.object(settings, "BCCR_CLIENT_ID", "e2e-test-client"),
-            patch.object(settings, "BCCR_CLIENT_SECRET", "e2e-test-secret"),
-        ):
-            yield
-    finally:
-        # Restore original singleton instance
-        BCCarbonRegistryAPIClient._instance = original_instance
+    # Patch _validate_config to be a no-op, allowing the client to work without real credentials
+    # HTTP requests will still be intercepted by our HTTP mocks
+    with patch.object(BCCarbonRegistryAPIClient, "_validate_config", return_value=None):
+        yield
 
 
 @contextmanager
