@@ -224,7 +224,7 @@ def mock_external_http() -> Iterator[None]:
             return response
 
         # Block unconfigured external HTTP calls
-        if url.startswith(("http://", "https://")) and not is_local_url(url):
+        if url.startswith(("http://", "https://")) and not is_local_url(url):  # NOSONAR
             # Check if this is an unmocked call to a configured API
             for service_name, _, setting in API_MOCKS:
                 api_base = base_url(setting)

@@ -33,7 +33,7 @@ def mock_bccr_client() -> Iterator[None]:
 
     try:
         with (
-            patch.object(settings, "BCCR_API_URL", "http://bccr-mock.local"),
+            patch.object(settings, "BCCR_API_URL", "http://bccr-mock.local"),  # NOSONAR
             patch.object(settings, "BCCR_CLIENT_ID", "e2e-test-client"),
             patch.object(settings, "BCCR_CLIENT_SECRET", "e2e-test-secret"),
         ):
