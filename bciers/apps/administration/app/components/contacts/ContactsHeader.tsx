@@ -2,6 +2,7 @@ import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import { Button } from "@mui/material";
 import NewTabBanner from "@bciers/components/layout/NewTabBanner";
+import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 
 const ExternalContactsLayout = () => {
   return (
@@ -35,11 +36,10 @@ const InternalContactsLayout = () => {
 };
 
 // 🧩 Main component
-export default function ContactsHeader({
-  isExternalUser = true,
-}: Readonly<{
-  isExternalUser?: boolean;
-}>) {
+export default async function ContactsHeader() {
+  const role = await getSessionRole();
+  const isExternalUser = !role.includes("cas_");
+
   // Render the header component
   return (
     <>

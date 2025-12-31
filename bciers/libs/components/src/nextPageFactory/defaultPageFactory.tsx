@@ -37,6 +37,10 @@ type DefaultPageFactoryOptions<TPageParams extends object> = {
    */
   fallback?: React.ReactNode;
   pageProps?: Partial<TPageParams>;
+  mapParamsToPageProps?: (ctx: {
+    params: Promise<any>;
+    searchParams?: DefaultSearchParams;
+  }) => Promise<Partial<TPageParams>> | Partial<TPageParams>;
 };
 
 export default function defaultPageFactory<

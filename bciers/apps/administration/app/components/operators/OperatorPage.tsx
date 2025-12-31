@@ -11,7 +11,10 @@ import { getBusinessStructures } from "@bciers/actions/api";
 export default async function OperatorPage({
   isCreating = false,
   operatorId,
-}: { isCreating?: boolean; operatorId?: UUID } = {}) {
+}: {
+  isCreating?: boolean;
+  operatorId?: UUID;
+}) {
   const role = await getSessionRole();
 
   let operatorFormData: { [key: string]: any } | { error: string } = {};

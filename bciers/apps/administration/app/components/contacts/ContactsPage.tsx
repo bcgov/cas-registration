@@ -1,15 +1,17 @@
 import { ContactRow, ContactsSearchParams } from "./types";
 import fetchContactsPageData from "./fetchContactsPageData";
 import ContactsDataGrid from "./ContactsDataGrid";
+import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 
 // 🧩 Main component
 export default async function ContactsPage({
   searchParams,
-  isExternalUser = true,
 }: Readonly<{
   searchParams: ContactsSearchParams;
-  isExternalUser?: boolean;
 }>) {
+  const role = await getSessionRole();
+  const isExternalUser = !role.includes("cas_");
+
   const contacts: {
     rows: ContactRow[];
     row_count: number;

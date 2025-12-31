@@ -1,3 +1,4 @@
-import Page from "@/administration/app/components/contacts/ContactPageFactory";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import Page from "@/administration/app/components/contacts/ContactPage";
 
-export default Page;
+export default defaultPageFactory(Page);

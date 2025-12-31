@@ -1,7 +1,3 @@
-// 🚩 flagging that for shared routes between roles, `OperatorPage` code is a component for code maintainability
+import Page from "@/administration/app/components/operators/OperatorPageFactory";
 
-import OperatorPage from "@/administration/app/components/operators/OperatorPage";
-
-export default async function Page() {
-  return <OperatorPage isCreating={true} />;
-}
+export default Page({ isCreating: true });
