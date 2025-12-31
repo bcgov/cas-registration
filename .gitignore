@@ -158,6 +158,9 @@ helm/**/charts
 vite.config.**s.timestamp-*
 vitest.config.**s.timestamp-*
 
+# ESLint cache
+.eslintcache
+
 # Local file attachments
 bc_obps/test_media/*
 
