@@ -1,4 +1,5 @@
 import pytest
+import time_machine
 from unittest.mock import patch
 from decimal import Decimal
 from datetime import date
@@ -189,7 +190,7 @@ class TestElicensingInterestRateService:
         assert_record_state(date(2025, 1, 1), expected_is_current=False)
         assert_record_state(date(2025, 7, 1), expected_is_current=True)
 
-        # Second run with the same data
+        # Second run with the same data - verifies idempotency
         run_refresh_with_mock_data(*standard_period_data)
         assert ElicensingInterestRate.objects.count() == 2
         assert_record_state(date(2025, 1, 1), expected_is_current=False)
@@ -216,3 +217,71 @@ class TestElicensingInterestRateService:
         assert existing_latest_record.is_current_rate is True
         # The new earlier record should not be current
         assert_record_state(date(2025, 1, 1), expected_is_current=False)
+
+    def test_fix_overlapping_records_updates_existing_record_end_date(
+        self, create_existing_record, run_refresh_with_mock_data
+    ):
+        # Create an existing record from Jan 1 to far future
+        existing_record = create_existing_record(date(2025, 1, 1), '0.045600', is_current=True)
+
+        # Add a new rate starting July 1 - should update existing record's end date
+        run_refresh_with_mock_data(('6.78', '2025-07-01'))
+
+        existing_record.refresh_from_db()
+        assert existing_record.end_date == date(2025, 6, 30)  # One day before new period
+        assert ElicensingInterestRate.objects.count() == 2
+
+    def test_fix_overlapping_records_does_not_affect_future_periods(self, create_existing_record, mock_api_client):
+        # Create an existing record
+        create_existing_record(date(2025, 1, 1), '0.045600', date(2099, 12, 31), is_current=True)
+
+        # Add new rates for April and July
+        mock_periods = [
+            InterestRatePeriod(rate=Decimal('5.0'), startDate='2025-04-01'),
+            InterestRatePeriod(rate=Decimal('6.78'), startDate='2025-07-01'),
+        ]
+        mock_response = InterestRateResponse(daysPerYear=Decimal('365'), periods=mock_periods)
+        mock_api_client.return_value = mock_response
+
+        ElicensingInterestRateService.refresh_interest_rates()
+
+        # The July record should not be affected by the April record creation
+        july_record = ElicensingInterestRate.objects.get(start_date=date(2025, 7, 1))
+        assert july_record.end_date == ElicensingInterestRateService.FAR_FUTURE_DATE
+        assert ElicensingInterestRate.objects.count() == 3
+
+    @time_machine.travel('2025-06-15')
+    def test_update_current_rate_flag_marks_correct_period_as_current(self, mock_api_client):
+        mock_periods = [
+            InterestRatePeriod(rate=Decimal('4.56'), startDate='2025-01-01'),
+            InterestRatePeriod(rate=Decimal('6.78'), startDate='2025-07-01'),
+        ]
+        mock_response = InterestRateResponse(daysPerYear=Decimal('365'), periods=mock_periods)
+        mock_api_client.return_value = mock_response
+
+        ElicensingInterestRateService.refresh_interest_rates()
+
+        # On June 15, the Jan 1 rate should be current, not the July 1 rate
+        jan_record = ElicensingInterestRate.objects.get(start_date=date(2025, 1, 1))
+        july_record = ElicensingInterestRate.objects.get(start_date=date(2025, 7, 1))
+
+        assert jan_record.is_current_rate is True
+        assert july_record.is_current_rate is False
+
+    @time_machine.travel('2025-07-15')
+    def test_update_current_rate_flag_switches_to_new_rate_after_start_date(self, mock_api_client):
+        mock_periods = [
+            InterestRatePeriod(rate=Decimal('4.56'), startDate='2025-01-01'),
+            InterestRatePeriod(rate=Decimal('6.78'), startDate='2025-07-01'),
+        ]
+        mock_response = InterestRateResponse(daysPerYear=Decimal('365'), periods=mock_periods)
+        mock_api_client.return_value = mock_response
+
+        ElicensingInterestRateService.refresh_interest_rates()
+
+        # On July 15, the July 1 rate should be current
+        jan_record = ElicensingInterestRate.objects.get(start_date=date(2025, 1, 1))
+        july_record = ElicensingInterestRate.objects.get(start_date=date(2025, 7, 1))
+
+        assert jan_record.is_current_rate is False
+        assert july_record.is_current_rate is True

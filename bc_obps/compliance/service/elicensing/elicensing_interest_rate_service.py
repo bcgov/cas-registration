@@ -47,21 +47,20 @@ class ElicensingInterestRateService:
         sorted_periods = sorted(filtered_periods, key=lambda x: x.startDate)
 
         with transaction.atomic():
-            ElicensingInterestRate.objects.update(is_current_rate=False)
             cls._process_and_store_periods(sorted_periods)
+            cls._update_current_rate_flag()
 
     @classmethod
     def _process_and_store_periods(cls, periods: List[InterestRatePeriod]) -> None:
         """Process and store interest rate periods in the database."""
         for index, period in enumerate(periods):
             start_date = date.fromisoformat(period.startDate)
-            is_latest = index == len(periods) - 1
 
             if ElicensingInterestRate.objects.filter(start_date=start_date).exists():
-                # If this is the latest period, ensure it's marked as current
-                if is_latest:
-                    ElicensingInterestRate.objects.filter(start_date=start_date).update(is_current_rate=True)
                 continue
+
+            # Before creating a new record, update any existing records that would overlap
+            cls._fix_overlapping_records(start_date)
 
             end_date = cls._calculate_period_end_date(periods[index + 1] if index < len(periods) - 1 else None)
             # Convert to Decimal and divide by 100, then quantize to 6 decimal places
@@ -71,7 +70,7 @@ class ElicensingInterestRateService:
                 start_date=start_date,
                 interest_rate=quantized_rate,
                 end_date=end_date,
-                is_current_rate=is_latest,
+                is_current_rate=False,  # Will be set correctly by _update_current_rate_flag
             )
             cls._update_previous_period_end_date(index, start_date, periods)
 
@@ -103,3 +102,44 @@ class ElicensingInterestRateService:
             previous_record.end_date = new_end_date
             previous_record.save(update_fields=['end_date'])
             logger.info(f"Updated previous record end date from {previous_start_date} to {new_end_date}")
+
+    @classmethod
+    def _fix_overlapping_records(cls, new_start_date: date) -> None:
+        """
+        Fix any existing database records that would overlap with a new period starting on new_start_date.
+        Updates the end_date of overlapping records to be one day before the new_start_date.
+        Only updates records that START before the new period (to avoid invalid date ranges).
+
+        Args:
+            new_start_date: The start date of the new period being created.
+        """
+        new_end_date = new_start_date - cls.DEFAULT_END_DATE_OFFSET
+        overlapping_records = ElicensingInterestRate.objects.filter(
+            start_date__lt=new_start_date, end_date__gte=new_start_date
+        )
+
+        for record in overlapping_records:
+            record.end_date = new_end_date
+            record.save(update_fields=['end_date'])
+            logger.info(f"Updated overlapping record (start_date={record.start_date}) end_date to {new_end_date}")
+
+    @classmethod
+    def _update_current_rate_flag(cls) -> None:
+        """
+        Updates the is_current_rate flag based on today's date.
+        The current rate is the one where start_date <= today <= end_date.
+        """
+        today = date.today()
+
+        # Reset all rates to not current
+        ElicensingInterestRate.objects.update(is_current_rate=False)
+
+        # Find and mark the current rate
+        current_rate = ElicensingInterestRate.objects.filter(start_date__lte=today, end_date__gte=today).first()
+
+        if current_rate:
+            current_rate.is_current_rate = True
+            current_rate.save(update_fields=['is_current_rate'])
+            logger.info(f"Set current rate to period starting {current_rate.start_date}")
+        else:
+            logger.warning(f"No interest rate found for today's date: {today}")
