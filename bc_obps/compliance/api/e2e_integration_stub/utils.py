@@ -6,17 +6,17 @@ from django.http import HttpRequest
 from requests.models import Response
 
 
-def json_response(status: int, payload: Any, url: str) -> Response:
-    """Create a mocked HTTP response with JSON content.
-
+def json_response(status: int, payload: dict, url: str) -> Response:
+    """
+    Create a mocked HTTP response with JSON content.
     Used by HTTP mocking to simulate external API responses.
     """
-    r = Response()
-    r.status_code = status
-    r._content = json.dumps(payload).encode("utf-8")
-    r.headers["Content-Type"] = "application/json"
-    r.url = url
-    return r
+    resp = Response()
+    resp.status_code = status
+    resp._content = json.dumps(payload).encode("utf-8")
+    resp.headers["Content-Type"] = "application/json"
+    resp.url = url
+    return resp
 
 
 def base_url(setting_name: str) -> str:

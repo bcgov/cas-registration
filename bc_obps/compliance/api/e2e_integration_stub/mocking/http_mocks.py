@@ -8,6 +8,8 @@ from ..utils import base_url, is_local_url, json_response
 
 
 class UnmockedExternalCall(RuntimeError):
+    """Raised when code tries to call an external system not mocked in E2E sandbox."""
+
     pass
 
 
