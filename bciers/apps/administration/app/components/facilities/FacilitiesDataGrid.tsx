@@ -2,10 +2,10 @@
 
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
-import facilityColumns from "../datagrid/models/facilities/facilityColumns";
-import facilityGroupColumns from "../datagrid/models/facilities/facilityGroupColumns";
-import { FacilityRow } from "./types";
-import createFetchFacilitiesPageData from "./createFetchFacilitiesPageData";
+import facilityColumns from "@/administration/app/components/datagrid/models/facilities/facilityColumns";
+import facilityGroupColumns from "@/administration/app/components/datagrid/models/facilities/facilityGroupColumns";
+import { FacilityRow } from "@/administration/app/components/facilities/types";
+import createFetchFacilitiesPageData from "@/administration/app/components/facilities/createFetchFacilitiesPageData";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import { GridRenderCellParams } from "@mui/x-data-grid";
