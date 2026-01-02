@@ -24,6 +24,11 @@ import {
 } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 import { FrontendMessages, FrontEndRoles } from "@bciers/utils/src/enums";
 import { expect } from "vitest";
+
+const currentYear = new Date().getFullYear();
+const currentYearDateString = `${currentYear}-07-11 02:00:00.000 -0700`;
+const currentYearISOString = `${currentYear}-07-07T09:00:00.000Z`;
+
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 const facilityId = "025328a0-f9e8-4e1a-888d-aa192cb053db";
 const facilityName = "bloop";
@@ -54,7 +59,7 @@ const sfoFormData = {
   postal_code: "h0h0h0",
   id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
   is_current_year: true,
-  starting_date: "2024-07-11 02:00:00.000 -0700",
+  starting_date: currentYearDateString,
 };
 
 const lfoFormData = {
@@ -68,7 +73,7 @@ const lfoFormData = {
   postal_code: "h0h0h0",
   id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
   is_current_year: true,
-  starting_date: "2024-07-11 02:00:00.000 -0700",
+  starting_date: currentYearDateString,
 };
 
 const defaultFillFormValues = {
@@ -82,7 +87,7 @@ const defaultFillFormValues = {
   latitude_of_largest_emissions: 48.3,
   longitude_of_largest_emissions: 123.32,
   is_current_year: true,
-  starting_date: "2024-07-11 02:00:00.000 -0700",
+  starting_date: currentYearDateString,
 };
 
 const defaultUpdateFormValues = {
@@ -94,7 +99,7 @@ const defaultUpdateFormValues = {
   latitude_of_largest_emissions: 8.35,
   longitude_of_largest_emissions: -23.3,
   is_current_year: true,
-  starting_date: "2024-07-11 02:00:00.000 -0700",
+  starting_date: currentYearDateString,
 };
 
 const sfoResponsePost = [
@@ -121,7 +126,7 @@ const lfoResponsePost = [
     longitude_of_largest_emissions: 123.32,
     well_authorization_numbers: ["355"],
     is_current_year: true,
-    starting_date: "2024-07-07T09:00:00.000Z",
+    starting_date: currentYearISOString,
     operation_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
   },
 ];
@@ -460,7 +465,7 @@ describe("FacilityForm component", () => {
     );
     expect(
       container.querySelector("#root_section1_starting_date"),
-    ).toHaveTextContent("Jul 11, 2024");
+    ).toHaveTextContent(`Jul 11, ${currentYear}`);
     expect(
       container.querySelector("#root_section2_street_address"),
     ).toHaveTextContent("adf");
@@ -510,7 +515,7 @@ describe("FacilityForm component", () => {
     );
     expect(
       container.querySelector("#root_section1_starting_date"),
-    ).toHaveTextContent("Jul 11, 2024");
+    ).toHaveTextContent(`Jul 11, ${currentYear}`);
     expect(
       container.querySelector("#root_section1_street_address"),
     ).toHaveTextContent("adf");
