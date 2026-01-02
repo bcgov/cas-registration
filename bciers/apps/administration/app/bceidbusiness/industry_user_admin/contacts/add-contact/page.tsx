@@ -1,11 +1,4 @@
-import ContactPage from "@/administration/app/components/contacts/ContactPage";
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import Page from "@/administration/app/components/contacts/ContactPage";
 
-export default function Page() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <ContactPage />
-    </Suspense>
-  );
-}
+export default defaultPageFactory(Page);

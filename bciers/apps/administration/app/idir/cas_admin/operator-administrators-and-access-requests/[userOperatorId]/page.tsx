@@ -1,15 +1,4 @@
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonGrid";
-import UserOperator from "@/administration/app/components/userOperators/UserOperator";
-import { UUID } from "crypto";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import Page from "@/administration/app/components/userOperators/UserOperator";
 
-export default async function Page(props: {
-  params: Promise<{ userOperatorId: UUID; readonly: boolean }>;
-}) {
-  const params = await props.params;
-  return (
-    <Suspense fallback={<Loading />}>
-      <UserOperator params={params} />
-    </Suspense>
-  );
-}
+export default defaultPageFactory(Page);

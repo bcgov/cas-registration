@@ -1,7 +1,3 @@
-import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
-import Header from "@/administration/app/components/users/InternalAccessRequestsHeader";
-import Page from "@/administration/app/components/users/InternalAccessRequestsPage";
+import Page from "@/administration/app/components/users/InternalAccessRequestsPageFactory";
 
-export default defaultPageFactory(Page, {
-  header: Header,
-});
+export default Page;
