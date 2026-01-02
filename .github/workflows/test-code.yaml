@@ -87,7 +87,6 @@ jobs:
         with:
           path: |
             ./.pre-commit-cache
-            ./bciers/.eslintcache
           key: pre-commit-${{ env.PY }}-${{ hashFiles('.pre-commit-config.yaml') }}-v4
       - run: pip install -r requirements.txt
       - uses: pre-commit/action@v3.0.1
