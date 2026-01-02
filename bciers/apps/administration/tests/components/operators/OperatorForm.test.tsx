@@ -8,7 +8,7 @@ import {
   signIn,
 } from "@bciers/testConfig/mocks";
 
-import OperatorForm from "apps/administration/app/components/operators/OperatorForm";
+import OperatorForm from "@/administration/app/components/operators/OperatorForm";
 
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectField from "@bciers/testConfig/helpers/expectField";

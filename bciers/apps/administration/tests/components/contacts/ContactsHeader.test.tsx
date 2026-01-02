@@ -17,7 +17,7 @@ describe("ContactsHeader component", () => {
   });
 
   it("renders the correct note message for external users", async () => {
-    render(await ContactsHeader({ isExternalUser: true }));
+    render(await ContactsHeader());
     const note = screen.getByTestId("note");
     expect(note).toBeVisible();
     expect(note).toHaveTextContent(
@@ -26,7 +26,7 @@ describe("ContactsHeader component", () => {
   });
 
   it("displays `Add Contact` button for external admin users", async () => {
-    render(await ContactsHeader({ isExternalUser: true }));
+    render(await ContactsHeader());
     const note = screen.getByTestId("note");
     expect(note).toBeVisible();
     expect(note).toHaveTextContent(
@@ -40,7 +40,7 @@ describe("ContactsHeader component", () => {
   });
 
   it("renders the correct note message for internal users", async () => {
-    render(await ContactsHeader({ isExternalUser: false }));
+    render(await ContactsHeader());
     const note = screen.getByTestId("note");
     expect(note).toBeVisible();
     expect(note).toHaveTextContent(

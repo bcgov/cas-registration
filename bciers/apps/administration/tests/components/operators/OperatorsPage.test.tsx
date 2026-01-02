@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import Operators from "apps/administration/app/components/operators/OperatorDataGridPage";
+import Operators from "apps/administration/app/components/operators/OperatorsPage";
 import { fetchOperatorsPageData } from "@/administration/tests/components/operators/mocks";
 
 useRouter.mockReturnValue({
@@ -39,7 +39,7 @@ const mockResponse = {
   row_count: 2,
 };
 
-describe("OperatorDataGridPage component", () => {
+describe("OperatorsPage component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
@@ -56,7 +56,7 @@ describe("OperatorDataGridPage component", () => {
     expect(screen.queryByRole("grid")).not.toBeInTheDocument();
   });
 
-  it("renders the OperatorDataGrid component when there are operators in the database", async () => {
+  it("renders the OperatorsDataGrid component when there are operators in the database", async () => {
     fetchOperatorsPageData.mockReturnValueOnce(mockResponse);
     render(await Operators({ searchParams: {} }));
     expect(screen.getByRole("grid")).toBeVisible();

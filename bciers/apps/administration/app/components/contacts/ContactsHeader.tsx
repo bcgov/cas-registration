@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 import NewTabBanner from "@bciers/components/layout/NewTabBanner";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 
-const ExternalContactsLayout = () => {
+const ExternalContactsHeader = () => {
   return (
     <>
       <Note>
@@ -23,7 +23,7 @@ const ExternalContactsLayout = () => {
   );
 };
 
-const InternalContactsLayout = () => {
+const InternalContactsHeader = () => {
   return (
     <>
       <Note>
@@ -35,16 +35,15 @@ const InternalContactsLayout = () => {
   );
 };
 
-// 🧩 Main component
+// Render the header component
 export default async function ContactsHeader() {
   const role = await getSessionRole();
   const isExternalUser = !role.includes("cas_");
 
-  // Render the header component
   return (
     <>
       <NewTabBanner />
-      {isExternalUser ? <ExternalContactsLayout /> : <InternalContactsLayout />}
+      {isExternalUser ? <ExternalContactsHeader /> : <InternalContactsHeader />}
     </>
   );
 }

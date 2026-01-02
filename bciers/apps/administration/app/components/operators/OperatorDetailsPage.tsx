@@ -1,7 +1,5 @@
 import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
-import Loading from "@bciers/components/loading/SkeletonForm";
-import { Suspense } from "react";
 import getOperator from "@/administration/app/components/operators/getOperator";
 import { fetchDashboardData } from "@bciers/actions";
 import { OperatorRow } from "@/administration/app/components/operators/types";
@@ -33,10 +31,10 @@ const OperatorDetailsPage = async ({ operatorId }: { operatorId: UUID }) => {
   );
 
   return (
-    <Suspense fallback={<Loading />}>
+    <>
       <h2>{operator.legal_name} Details</h2>
       <Tiles tiles={newOperatorDashboardData} />
-    </Suspense>
+    </>
   );
 };
 

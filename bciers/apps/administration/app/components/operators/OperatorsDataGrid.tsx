@@ -3,10 +3,10 @@
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import fetchOperatorsPageData from "./fetchOperatorsPageData";
-import { OperatorRow } from "./types";
-import operatorColumns from "../datagrid/models/operators/operatorColumns";
-import operatorGroupColumns from "../datagrid/models/operators/operatorGroupColumns";
+import fetchOperatorsPageData from "@/administration/app/components/operators//fetchOperatorsPageData";
+import { OperatorRow } from "@/administration/app/components/operators/types";
+import operatorColumns from "@/administration/app/components/datagrid/models/operators/operatorColumns";
+import operatorGroupColumns from "@/administration/app/components/datagrid/models/operators/operatorGroupColumns";
 import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 
@@ -17,7 +17,7 @@ const OperatorsActionCell = ActionCellFactory({
   cellText: "View Details",
 });
 
-const OperatorDataGrid = ({
+const OperatorsDataGrid = ({
   initialData,
 }: {
   initialData: {
@@ -50,4 +50,4 @@ const OperatorDataGrid = ({
   );
 };
 
-export default OperatorDataGrid;
+export default OperatorsDataGrid;

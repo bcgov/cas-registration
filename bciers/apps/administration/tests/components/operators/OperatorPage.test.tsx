@@ -18,7 +18,7 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-describe("Operator component", () => {
+describe("OperatorPage component", () => {
   beforeEach(async () => {
     vi.resetAllMocks();
     getSessionRole.mockReturnValue("industry_user_admin");

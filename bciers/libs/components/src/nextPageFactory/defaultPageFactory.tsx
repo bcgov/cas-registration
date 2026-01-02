@@ -19,7 +19,7 @@ import Loading from "@bciers/components/loading/SkeletonForm";
  * const nextJsPage = defaultPageFactory(SomePage)
  *
  * Supports two styles:
- * 1) Fullscreen async page (default): wraps the whole component in Suspense with default <Loading />.
+ * 1) Fullscreen async page (default): wraps the whole component in Suspense with default <Loading /> SkeletonForm.
  * 2) Content-first streaming: provide `options.header` to render immediate content outside Suspense,
  *    while `Component` renders inside Suspense (use `options.fallback` to customize).
  */
@@ -28,12 +28,12 @@ type DefaultSearchParams = Record<string, string | number | undefined>;
 
 type DefaultPageFactoryOptions<TPageParams extends object> = {
   /**
-   * Optional header that always renders immediately (outside Suspense).
+   * Optional header that always renders immediately.
    * Useful for Note/title/instructions that should show while the body suspends.
    */
   header?: React.FC<TPageParams & { searchParams?: DefaultSearchParams }>;
   /**
-   * Optional Suspense fallback for the body. Defaults to <Loading />.
+   * Optional Suspense fallback for the body. Defaults to <Loading /> SkeletonForm
    */
   fallback?: React.ReactNode;
   pageProps?: Partial<TPageParams>;

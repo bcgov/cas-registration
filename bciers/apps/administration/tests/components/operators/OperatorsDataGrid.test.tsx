@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import OperatorDataGrid from "apps/administration/app/components/operators/OperatorDataGrid";
+import OperatorsDataGrid from "apps/administration/app/components/operators/OperatorsDataGrid";
 import { UUID } from "crypto";
 
 useRouter.mockReturnValue({
@@ -40,13 +40,13 @@ const mockResponse = {
   row_count: 2,
 };
 
-describe("OperatorDataGrid component", () => {
+describe("OperatorsDataGrid component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
 
   it("renders the OperatorsDataGrid grid for internal users", async () => {
-    render(<OperatorDataGrid initialData={mockResponse} />);
+    render(<OperatorsDataGrid initialData={mockResponse} />);
 
     // correct headers
     expect(
