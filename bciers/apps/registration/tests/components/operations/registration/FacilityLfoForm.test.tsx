@@ -74,6 +74,8 @@ const defaultProps = {
   initialGridData: { rows: [], row_count: 0 },
 };
 
+const currentYear = new Date().getFullYear();
+
 describe("the FacilityLfoForm component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -202,7 +204,7 @@ describe("the FacilityLfoForm component", () => {
 
       fillNameAndTypeFields(0);
 
-      await toggleAndFillStartDate(0, "20240101");
+      await toggleAndFillStartDate(0, `${currentYear}0101`);
 
       fillAddressFields(0);
 
@@ -245,7 +247,7 @@ describe("the FacilityLfoForm component", () => {
               longitude_of_largest_emissions: 0.1,
               well_authorization_numbers: [],
               is_current_year: true,
-              starting_date: "2024-01-01T09:00:00.000Z",
+              starting_date: `${currentYear}-01-01T09:00:00.000Z`,
               operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
             },
           ]),

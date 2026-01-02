@@ -42,6 +42,8 @@ const defaultProps = {
   isCreating: true,
 };
 
+const currentYear = new Date().getFullYear();
+
 describe("the FacilitySfoForm component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -114,7 +116,7 @@ describe("the FacilitySfoForm component", () => {
         />,
       );
 
-      await toggleAndFillStartDate(0, "20240101");
+      await toggleAndFillStartDate(0, `${currentYear}0101`);
 
       fillAddressFields(0);
 
@@ -140,7 +142,7 @@ describe("the FacilitySfoForm component", () => {
               name: "Test Operation",
               type: "Single Facility",
               is_current_year: true,
-              starting_date: "2024-01-01T09:00:00.000Z",
+              starting_date: `${currentYear}-01-01T09:00:00.000Z`,
               street_address: "123 Test St",
               municipality: "Test City",
               province: "BC",
