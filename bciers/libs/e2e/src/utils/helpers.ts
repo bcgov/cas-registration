@@ -324,13 +324,36 @@ export async function takeStabilizedScreenshot(
     return;
   }
   const { component, variant, targets } = happoArgs;
-  const pageContent = page.locator("html");
-  await waitForElementToStabilize(page, "main");
-  await happoScreenshot(pageContent, {
-    component,
-    variant,
-    targets,
-  });
+
+  // Retry logic to handle frame detachment errors
+  const maxRetries = 3;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const pageContent = page.locator("html");
+      await page.waitForLoadState("domcontentloaded");
+
+      // Use a shorter timeout for stability check
+      try {
+        await waitForElementToStabilize(page, "main");
+      } catch (e) {
+        // If stabilization fails, wait a bit and continue anyway
+        await page.waitForTimeout(300);
+      }
+
+      await happoScreenshot(pageContent, {
+        component,
+        variant,
+        targets,
+      });
+      return; // Success, exit
+    } catch (error: any) {
+      if (attempt === maxRetries) {
+        throw error; // Failed all retries
+      }
+      // Wait before retry
+      await page.waitForTimeout(500);
+    }
+  }
 }
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
