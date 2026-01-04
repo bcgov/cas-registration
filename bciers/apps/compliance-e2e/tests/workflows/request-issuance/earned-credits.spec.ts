@@ -95,11 +95,6 @@ test.describe("Test earned credits request issuance flow", () => {
         BCCR_HOLDING_ACCOUNT_INPUT_VALUE,
       );
 
-      await takeStabilizedScreenshot(happoScreenshot, industryPage, {
-        component: "Earned credits request issuance",
-        variant: `industry-form-filled`,
-      });
-
       await industryEarnedCredits.submitRequestIssuance();
       await industryContext.close();
 
