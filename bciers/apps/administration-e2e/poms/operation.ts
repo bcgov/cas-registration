@@ -79,11 +79,12 @@ export class OperationPOM {
   }
 
   async goToOperation(row: Locator) {
-    const viewOperation = await row.getByRole("link", {
+    const viewOperation = row.getByRole("link", {
       name: /view operation/i,
     });
     await expect(viewOperation).toBeVisible();
     await viewOperation.click();
+    await this.page.waitForLoadState("networkidle");
   }
 
   async findRowByBcghgId(bcghgid) {

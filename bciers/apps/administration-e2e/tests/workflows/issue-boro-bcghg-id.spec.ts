@@ -35,7 +35,9 @@ test.describe("Issue BCGHG and BORO ID", () => {
     );
 
     await operationPage.goToOperation(row);
-    await expect(page.getByText(IDE2EValue.OPERATION_NAME)).toBeVisible();
+    await expect(
+      page.locator("#root_section1_name").getByText(IDE2EValue.OPERATION_NAME),
+    ).toBeVisible();
 
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "BORO ID and BCGHG ID not issued",
