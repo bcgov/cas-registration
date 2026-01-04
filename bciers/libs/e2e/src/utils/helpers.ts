@@ -325,6 +325,8 @@ export async function takeStabilizedScreenshot(
   }
   const { component, variant, targets } = happoArgs;
   const pageContent = page.locator("html");
+  // Wait for network to be idle before capturing screenshot
+  await page.waitForLoadState("networkidle");
   await waitForElementToStabilize(page, "main");
   await happoScreenshot(pageContent, {
     component,
