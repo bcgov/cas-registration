@@ -308,7 +308,7 @@ export async function setupTestEnvironment(
 }
 
 export async function waitForElementToStabilize(page: Page, element: string) {
-  await page.waitForLoadState();
+  await page.waitForLoadState("load", { timeout: 500 });
   const el = await page.$(element);
   await el?.waitForElementState("stable");
 }
@@ -325,8 +325,6 @@ export async function takeStabilizedScreenshot(
   }
   const { component, variant, targets } = happoArgs;
   const pageContent = page.locator("html");
-  // Wait for network to be idle before capturing screenshot
-  await page.waitForLoadState("networkidle");
   await waitForElementToStabilize(page, "main");
   await happoScreenshot(pageContent, {
     component,

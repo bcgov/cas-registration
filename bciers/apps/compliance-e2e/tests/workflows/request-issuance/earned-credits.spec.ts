@@ -95,6 +95,15 @@ test.describe("Test earned credits request issuance flow", () => {
         BCCR_HOLDING_ACCOUNT_INPUT_VALUE,
       );
 
+      // Wait for the submit button to ensure form is fully loaded and stable
+      const submitButton = industryPage.getByTestId("submit-button");
+      await submitButton.waitFor({ state: "visible" });
+
+      await takeStabilizedScreenshot(happoScreenshot, industryPage, {
+        component: "Earned credits request issuance",
+        variant: `industry-form-filled`,
+      });
+
       await industryEarnedCredits.submitRequestIssuance();
       await industryContext.close();
 
