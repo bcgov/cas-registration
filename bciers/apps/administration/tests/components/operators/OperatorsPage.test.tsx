@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import Operators from "apps/administration/app/components/operators/OperatorsPage";
+import OperatorsPage from "@/administration/app/components/operators/OperatorsPage";
 import { fetchOperatorsPageData } from "@/administration/tests/components/operators/mocks";
 
 useRouter.mockReturnValue({
@@ -50,7 +50,7 @@ describe("OperatorsPage component", () => {
       row_count: undefined,
     });
     await expect(async () => {
-      render(await Operators({ searchParams: {} }));
+      render(await OperatorsPage({ searchParams: {} }));
     }).rejects.toThrow("Failed to retrieve operators");
 
     expect(screen.queryByRole("grid")).not.toBeInTheDocument();
@@ -58,7 +58,7 @@ describe("OperatorsPage component", () => {
 
   it("renders the OperatorsDataGrid component when there are operators in the database", async () => {
     fetchOperatorsPageData.mockReturnValueOnce(mockResponse);
-    render(await Operators({ searchParams: {} }));
+    render(await OperatorsPage({ searchParams: {} }));
     expect(screen.getByRole("grid")).toBeVisible();
     expect(
       screen.queryByText(/No operator data in database./i),

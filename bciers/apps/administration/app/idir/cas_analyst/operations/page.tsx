@@ -1,7 +1,3 @@
-import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
-import Loading from "@bciers/components/loading/SkeletonGrid";
-import Page from "@/administration/app/components/operations/OperationsPage";
+import Page from "@/administration/app/components/operations/OperationsPageFactory";
 
-export default defaultPageFactory(Page, {
-  fallback: <Loading />,
-});
+export default Page;

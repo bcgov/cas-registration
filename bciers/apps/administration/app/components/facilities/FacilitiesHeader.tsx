@@ -1,4 +1,3 @@
-// FacilitiesHeader.tsx
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import { Button } from "@mui/material";

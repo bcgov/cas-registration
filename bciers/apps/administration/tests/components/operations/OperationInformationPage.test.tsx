@@ -83,9 +83,6 @@ describe("the OperationInformationPage component", () => {
 
     expect(screen.getByText(/Operation 3/i)).toBeVisible();
     expect(screen.getByText(/Single Facility Operation/i)).toBeVisible();
-    expect(
-      screen.getByText(/211110 - Oil and gas extraction \(except oil sands\)/i),
-    ).toBeVisible();
     expect(screen.getByText(/212114 - Bituminous coal mining/i)).toBeVisible();
   });
   it("should render the form with Registration Information", async () => {

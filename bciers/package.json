@@ -10,7 +10,7 @@
     "admin:e2e:ui": "nx run administration:e2e:ui",
     "admin:e2e:report": "nx run administration:e2e:report",
     "admin:coverage": "nx run administration:test --coverage",
-    "admin:test": "nx run administration:test",
+    "admin:test": "nx run administration:test --watch",
     "compliance": "nx dev compliance -p 7000",
     "compliance:build": "nx build compliance",
     "compliance:e2e": "nx run compliance:e2e",

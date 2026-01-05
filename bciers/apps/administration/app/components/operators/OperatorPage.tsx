@@ -16,6 +16,7 @@ export default async function OperatorPage({
   operatorId?: UUID;
 }) {
   const role = await getSessionRole();
+  const isInternalUser = role.includes("cas_");
 
   let operatorFormData: { [key: string]: any } | { error: string } = {};
 
@@ -41,7 +42,7 @@ export default async function OperatorPage({
       schema={await createOperatorSchema()}
       formData={operatorFormData}
       isCreating={isCreating}
-      isInternalUser={role.includes("cas_")}
+      isInternalUser={isInternalUser}
     />
   );
 }

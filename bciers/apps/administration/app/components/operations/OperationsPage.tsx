@@ -3,12 +3,12 @@ import {
   OperationsSearchParams,
 } from "@/administration/app/components/operations/types";
 import OperationsDataGrid from "@/administration/app/components/operations/OperationsDataGrid";
-import {
-  InternalUserOperationsDataGridLayout,
-  ExternalUserOperationsDataGridLayout,
-} from "@/administration/app/components/operations/OperationsLayouts";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 import { fetchOperationsPageData } from "@bciers/actions/api";
+
+import AlertNote from "@bciers/components/form/components/AlertNote";
+import { BC_GOV_TEXT } from "@bciers/styles";
+import { InfoRounded } from "@mui/icons-material";
 
 export default async function OperationsPage({
   searchParams,
@@ -41,19 +41,44 @@ export default async function OperationsPage({
     )
     .map((operation) => operation.operation__name);
 
-  const OperationLayoutComponent = isInternalUser
-    ? InternalUserOperationsDataGridLayout
-    : ExternalUserOperationsDataGridLayout;
+  const shouldShowMissingContactsAlert =
+    !isInternalUser && operationsWithoutContacts.length > 0;
+
+  const missingContactsAlert = shouldShowMissingContactsAlert ? (
+    <div className="min-h-[48px] box-border mt-4">
+      <AlertNote
+        alertType="ALERT"
+        icon={<InfoRounded fontSize="inherit" sx={{ color: BC_GOV_TEXT }} />}
+      >
+        Missing Information: Please add an operation representative for{" "}
+        {operationsWithoutContacts.join(", ")} in{" "}
+        {operationsWithoutContacts.length > 1 ? "their" : "its"} operation
+        information page.
+      </AlertNote>
+    </div>
+  ) : null;
+
+  const addAndRegisterOperationLink = !isInternalUser ? (
+    <div className="w-full flex justify-end pb-6">
+      <a
+        className="link-button-blue"
+        href="../registration/register-an-operation"
+      >
+        Add and Register an Operation
+      </a>
+    </div>
+  ) : null;
 
   return (
-    <OperationLayoutComponent
-      operationsWithoutContacts={operationsWithoutContacts}
-    >
+    <>
+      {missingContactsAlert}
+      <h2 className="text-bc-primary-blue">Operations</h2>
+      {addAndRegisterOperationLink}
       <OperationsDataGrid
         filteredSearchParams={filteredSearchParams}
         isInternalUser={isInternalUser}
         initialData={operations}
       />
-    </OperationLayoutComponent>
+    </>
   );
 }
