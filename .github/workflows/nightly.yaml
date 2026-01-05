@@ -127,6 +127,9 @@ jobs:
     with:
       zap_fail_on_risk_level: 3
     secrets: inherit
+  schemaspy:
+    uses: ./.github/workflows/schemaspy.yaml
+    secrets: inherit
   trivy:
     uses: ./.github/workflows/trivy.yaml
   codeql:
