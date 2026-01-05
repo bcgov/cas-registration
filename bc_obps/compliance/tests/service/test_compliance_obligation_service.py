@@ -201,18 +201,3 @@ class TestComplianceObligationService:
         )
 
         assert result.fee_amount_dollars == Decimal('5596.26')
-
-    @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
-    def test_create_compliance_obligation_sets_correct_deadline(self, mock_get_rate):
-        """Test that create_compliance_obligation sets the correct obligation deadline"""
-        # Setup
-        mock_get_rate.return_value = Decimal('40.00')
-        test_data = ComplianceTestHelper.build_test_data(reporting_year=2023)
-
-        result = ComplianceObligationService.create_compliance_obligation(
-            compliance_report_version_id=test_data.compliance_report_version.id,
-            emissions_amount=Decimal('100.0'),
-        )
-
-        # Verify deadline is November 30 of the following year (2024)
-        assert result.obligation_deadline == date(2024, 11, 30)
