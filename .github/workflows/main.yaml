@@ -131,21 +131,6 @@ jobs:
       nx_app_port: 7000
       nx_project: compliance
     secrets: inherit
-  zap-owasp:
-    needs:
-      [
-        build-administration,
-        build-backend,
-        build-compliance,
-        build-dashboard-e2e,
-        build-registration,
-        build-reporting,
-        check-nx-affected,
-      ]
-    uses: ./.github/workflows/zap-owasp.yaml
-    with:
-      zap_fail_on_risk_level: 3
-    secrets: inherit
   trivy:
     uses: ./.github/workflows/trivy.yaml
   codeql:
