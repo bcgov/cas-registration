@@ -42,7 +42,7 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
             models.UniqueConstraint(
                 fields=['email', 'operator'],
                 name='unique_email_per_operator',
-                condition=models.Q(operator__isnull=False),
+                condition=models.Q(operator__isnull=False, archived_at__isnull=True),
             )
         ]
         triggers = [
