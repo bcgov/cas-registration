@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             constraint=models.UniqueConstraint(
                 condition=models.Q(('archived_at__isnull', True), ('operator__isnull', False)),
                 fields=('email', 'operator'),
-                name='unique_email_per_operator',
+                name='unique_active_email_per_operator',
             ),
         ),
     ]

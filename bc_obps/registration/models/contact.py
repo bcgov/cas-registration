@@ -41,7 +41,7 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
         constraints = [
             models.UniqueConstraint(
                 fields=['email', 'operator'],
-                name='unique_email_per_operator',
+                name='unique_active_email_per_operator',
                 condition=models.Q(operator__isnull=False, archived_at__isnull=True),
             )
         ]
