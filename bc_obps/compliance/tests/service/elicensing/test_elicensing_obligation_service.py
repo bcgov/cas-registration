@@ -1023,6 +1023,26 @@ class TestElicensingObligationService:
                 "end_date": date(2026, 12, 31),
             },
         )
+        ry1 = ReportingYear.objects.get(reporting_year=2025)
+        cp1, _ = CompliancePeriod.objects.get_or_create(
+            reporting_year=ry1,
+            defaults={
+                "invoice_generation_date": date(2025, 11, 1),
+                "compliance_deadline": date(2026, 11, 30),
+                "start_date": date(2025, 1, 1),
+                "end_date": date(2025, 12, 31),
+            },
+        )
+        ry2 = ReportingYear.objects.get(reporting_year=2026)
+        cp2, _ = CompliancePeriod.objects.get_or_create(
+            reporting_year=ry2,
+            defaults={
+                "invoice_generation_date": date(2026, 11, 1),
+                "compliance_deadline": date(2027, 11, 30),
+                "start_date": date(2026, 1, 1),
+                "end_date": date(2026, 12, 31),
+            },
+        )
 
         o1 = _make_obligation_for_period(cp1)
         o2 = _make_obligation_for_period(cp2)

@@ -1,4 +1,4 @@
-from django.db import ProgrammingError, transaction
+from django.db import ProgrammingError, transaction, IntegrityError
 from django.test import TestCase
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import Contact, BusinessRole
@@ -10,6 +10,7 @@ from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
 )
 from model_bakery import baker
+from datetime import datetime, timezone
 
 
 class ContactModelTest(BaseTestCase):
@@ -104,3 +105,30 @@ class ContactTriggerTests(TestCase):
         self.null_address_contact.refresh_from_db()
         self.assertEqual(self.null_address_contact.email, "updated_null_op_rep@example.com")
         self.assertIsNone(self.null_address_contact.address)
+
+    def test_duplicate_email_for_same_operator_not_allowed(self):
+        """Test that can't create 2 contacts for same operator with same email address"""
+        with transaction.atomic():
+            with self.assertRaises(IntegrityError):
+                baker.make_recipe(
+                    "registration.tests.utils.contact",
+                    email=self.senior_officer_contact.email,
+                    operator=self.senior_officer_contact.operator,
+                )
+
+    def test_duplicate_email_for_same_operator_when_contact_archived(self):
+        """Test that can create a new contact for an operator when an archived contact with the same email address already exists"""
+        # First archive the existing contact
+        self.senior_officer_contact.archived_at = datetime.now(timezone.utc)
+        self.senior_officer_contact.save(update_fields=["archived_at"])
+        self.senior_officer_contact.refresh_from_db()
+
+        # Now create a new contact with the same email address
+        new_contact = baker.make_recipe(
+            "registration.tests.utils.contact",
+            email=self.senior_officer_contact.email,
+            operator=self.senior_officer_contact.operator,
+        )
+
+        # assert that new_contact created OK
+        self.assertIsNotNone(new_contact.id)
