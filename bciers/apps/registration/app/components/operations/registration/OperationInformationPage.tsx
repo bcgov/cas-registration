@@ -22,12 +22,13 @@ const OperationInformationPage = async ({
     // using dot notation for error raises a TS error
     throw new Error("Failed to fetch operation data");
 
+  // Resolve issue: Can't perform a React state update on a component that hasn't mounted yet.
   // Seeding empty values to prevent RJSF from auto-selecting `anyOf`/`oneOf` fields
   // prevents firing an initial onChange that triggers async updates before mount.
   formData = {
     ...formData,
-    registration_purpose: (formData as any).registration_purpose ?? "",
-    operation: (formData as any).operation ?? "",
+    registration_purpose: formData.registration_purpose ?? "",
+    operation: formData.operation ?? "",
   } as OperationInformationFormData;
 
   return (
