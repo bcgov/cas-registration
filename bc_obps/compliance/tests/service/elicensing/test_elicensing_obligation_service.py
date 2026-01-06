@@ -998,6 +998,9 @@ class TestElicensingObligationService:
             reporting_year=ry,
             defaults={
                 "invoice_generation_date": date(2024, 11, 1),
+                "start_date": date(2024, 1, 1),
+                "end_date": date(2024, 12, 31),
+                "compliance_deadline": date(2025, 11, 30),
             },
         )
         ry1 = ReportingYear.objects.get(reporting_year=2025)
