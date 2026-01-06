@@ -81,8 +81,6 @@ export const REVIEW_BY_DIRECTOR_URL_PATTERN = new RegExp(
 export const DIRECTOR_REVIEW_CRV_ID =
   /compliance-summaries\/(\d+)\/review-by-director/;
 
-// Scenario names used by the Django stub
+// Scenario name used by the Django stub for APPROVE (DECLINE doesn't need stub)
 export const EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO =
   "earned_credits_director_approve";
-export const EARNED_CREDITS_DIRECTOR_DECLINE_SCENARIO =
-  "earned_credits_director_decline";

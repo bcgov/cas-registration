@@ -139,7 +139,7 @@ test.describe("Test earned credits request issuance flow", () => {
       await analystEarnedCredits.submitAnalystReviewRequestIssuance();
       await analystContext.close();
 
-      // 3. CAS_DIRECTOR context: Review "Ready to Approve" request issuance of earned credits and set as "Approved"
+      // 3. CAS_DIRECTOR context: Review "Ready to Approve" request issuance of earned credits and make decision
 
       // Create role context
       const directorContext = await createContextForRole(UserRole.CAS_DIRECTOR);
@@ -149,8 +149,11 @@ test.describe("Test earned credits request issuance flow", () => {
       const directorSummaries = new ComplianceSummariesPOM(directorPage);
       const directorEarnedCredits =
         new InternalReviewComplianceEarnedCreditsPOM(directorPage);
-      // 🔌 Attach stub to mock the call to API for director earned-credits
-      await directorEarnedCredits.attachDirectorReviewStub(request);
+
+      // 🔌 Only attach stub for APPROVE (mocks BCCR API). DECLINE doesn't need stub.
+      if (c.decision === IssuanceStatus.APPROVED) {
+        await directorEarnedCredits.attachDirectorApproveStub(request);
+      }
 
       // Open compliance report version
       await directorSummaries.route();

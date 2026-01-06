@@ -4,7 +4,6 @@ import {
   ANALYST_SUGGESTION_INPUT,
   DIRECTOR_REVIEW_CRV_ID,
   EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO,
-  EARNED_CREDITS_DIRECTOR_DECLINE_SCENARIO,
   REVIEW_BY_DIRECTOR_URL_PATTERN,
   DECISION_TO_BUTTON,
   DirectorDecision,
@@ -26,11 +25,10 @@ export class InternalReviewComplianceEarnedCreditsPOM {
   }
 
   /**
-   * Attach a route so to intercept the action handler submit call
-   * and delegate to the Django /e2e-integration-stub endpoint.
-   * Dynamically selects the scenario based on director_decision in the request body.
+   * Attach a route to intercept the director APPROVE decision and mock BCCR API calls.
+   * Only needed for APPROVE - DECLINE doesn't call BCCR so uses the real endpoint.
    */
-  async attachDirectorReviewStub(api: APIRequestContext): Promise<void> {
+  async attachDirectorApproveStub(api: APIRequestContext): Promise<void> {
     await attachE2EStubEndpoint(
       this.page,
       api,
@@ -42,14 +40,8 @@ export class InternalReviewComplianceEarnedCreditsPOM {
 
         if (!crvId) throw new Error(`Could not extract crvId from URL: ${url}`);
 
-        // Select scenario based on director_decision field
-        const scenario =
-          body.director_decision === "Declined"
-            ? EARNED_CREDITS_DIRECTOR_DECLINE_SCENARIO
-            : EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO;
-
         const payload = {
-          scenario,
+          scenario: EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO,
           compliance_report_version_id: Number(crvId),
           payload: body,
         };
@@ -65,7 +57,7 @@ export class InternalReviewComplianceEarnedCreditsPOM {
         });
       },
 
-      "earned_credits_director_review",
+      "earned_credits_director_approve",
     );
   }
 

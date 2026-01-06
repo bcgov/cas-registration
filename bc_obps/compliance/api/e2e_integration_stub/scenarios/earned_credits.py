@@ -56,27 +56,3 @@ class EarnedCreditsDirectorApproveScenario(ScenarioHandler):
             "bccr_project_id": earned.bccr_project_id,
             "bccr_issuance_id": earned.bccr_issuance_id,
         }
-
-
-class EarnedCreditsDirectorDeclineScenario(ScenarioHandler):
-    def execute(self, request: HttpRequest, data: ScenarioPayload) -> Dict[str, Any]:
-        if data.compliance_report_version_id is None:
-            raise ValueError("compliance_report_version_id is required for earned_credits_director_decline")
-
-        payload = data.payload or {}
-        user = get_current_user(request)
-
-        # Update earned credit with decline decision
-        earned = ComplianceEarnedCreditsService.update_earned_credit(
-            compliance_report_version_id=data.compliance_report_version_id,
-            payload=payload,
-            user=user,
-        )
-
-        earned.refresh_from_db()
-
-        return {
-            "id": earned.id,
-            "compliance_report_version_id": data.compliance_report_version_id,
-            "issuance_status": earned.issuance_status,
-        }
