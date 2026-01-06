@@ -34,7 +34,7 @@ const fetchFormEnums = (app: Apps) => {
       {
         id: 2,
         name: "Fuel combustion by mobile equipment",
-        applicable_to: "sfo",
+        applicable_to: "Single Facility Operation",
       },
     ]);
 

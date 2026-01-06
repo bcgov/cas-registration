@@ -8,8 +8,8 @@ from registration.enums.enums import RegistrationTableNames
 
 class Activity(BaseModel):
     class Applicability(models.TextChoices):
-        SFO = "sfo"
-        LFO = "lfo"
+        SFO = "Single Facility Operation"
+        LFO = "Linear Facilities Operation"
         ALL = "all"
 
     name = models.CharField(

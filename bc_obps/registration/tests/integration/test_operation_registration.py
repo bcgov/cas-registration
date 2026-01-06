@@ -260,7 +260,7 @@ class TestOperationRegistration(CommonTestSetup):
             assert self.operation.secondary_naics_code_id == 2
             assert self.operation.tertiary_naics_code_id == 3
             assert self.operation.activities.count() == 2
-            assert list(self.operation.activities.values_list('id', flat=True)) == [1, 2]
+            assert sorted(list(self.operation.activities.values_list('id', flat=True))) == [1, 2]
 
         if purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             assert self.operation.date_of_first_shipment == "On or after April 1, 2024"
