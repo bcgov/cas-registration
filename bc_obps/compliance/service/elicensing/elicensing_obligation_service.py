@@ -46,7 +46,7 @@ class ElicensingObligationService:
         return current_date == compliance_period.invoice_generation_date
 
     @classmethod
-    def _has_obligation_deadline_passed(cls, obligation_deadline: date) -> bool:
+    def _has_compliance_deadline_passed(cls, obligation_deadline: date) -> bool:
         # Convert current UTC time to Vancouver timezone before extracting date to ensure proper comparison
         vancouver_timezone = ZoneInfo("America/Vancouver")
         current_date = timezone.now().astimezone(vancouver_timezone).date()
@@ -139,8 +139,8 @@ class ElicensingObligationService:
 
                 # If successful, update the compliance status
                 ComplianceReportVersionService.update_compliance_status(obligation.compliance_report_version)
-                # If the new obligation was created by a supplementary report and the obligation deadline has passed, we send a specific email. Otherwise, we send the general one about the obligation being due.
-                if obligation.compliance_report_version.is_supplementary and cls._has_obligation_deadline_passed(
+                # If the new obligation was created by a supplementary report and the compliance deadline has passed, we send a specific email. Otherwise, we send the general one about the obligation being due.
+                if obligation.compliance_report_version.is_supplementary and cls._has_compliance_deadline_passed(
                     obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
                 ):
                     retryable_notice_of_supplementary_report_post_deadline_increases_emissions.execute(obligation.id)

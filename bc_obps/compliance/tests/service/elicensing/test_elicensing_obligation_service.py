@@ -991,13 +991,16 @@ class TestElicensingObligationService:
     ):
         """
         CP exists; base queryset returned by _get_obligations_for_reminders.
-        All obligations have obligation_deadline AFTER the period deadline -> no emails.
+        All obligations belong to compliance periods with compliance_deadline AFTER the current period's deadline -> no emails.
         """
         ry = ReportingYear.objects.get(reporting_year=2024)
         cp, _ = CompliancePeriod.objects.get_or_create(
             reporting_year=ry,
             defaults={
                 "invoice_generation_date": date(2024, 11, 1),
+                "start_date": date(2024, 1, 1),
+                "end_date": date(2024, 12, 31),
+                "compliance_deadline": date(2025, 11, 30),
             },
         )
         ry1 = ReportingYear.objects.get(reporting_year=2025)
