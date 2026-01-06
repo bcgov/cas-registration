@@ -25,6 +25,7 @@ from reporting.models import (
     ReportVersion,
 )
 import common.lib.pgtrigger as pgtrigger
+from datetime import datetime, timezone
 
 
 class ReportSupplementaryVersionServiceTests(TestCase):
@@ -445,6 +446,8 @@ class ReportSupplementaryVersionServiceTests(TestCase):
                 attachment_type="wci_352_362",
                 attachment_name="Attachment 2",
             )
+
+        current_year = datetime.now(timezone.utc).year
 
         # ACT: Clone the ReportAttachment instances.
         with patch("django.core.files.storage.default_storage.duplicate_file") as mock_duplicate:
