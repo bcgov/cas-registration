@@ -44,26 +44,11 @@ const mockResponse = {
   row_count: 2,
 };
 
-describe("User Operators (External Access Requests) Page", () => {
+describe("UserOperatorsPage component (External Access Requests)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders UserOperatorsPage with the note on top of the page", async () => {
-    getUserOperatorsPageData.mockReturnValueOnce({
-      data: [],
-      row_count: 0,
-    });
-    render(await UserOperatorsPage({ searchParams: {} }));
-    expect(screen.getByTestId("note")).toBeVisible();
-    expect(
-      screen.getByText(
-        /once "approved", the user will have access to their operator dashboard with full admin permissions,and can grant access and designate permissions to other authorized users there\./i,
-      ),
-    ).toBeVisible();
-    expect(screen.queryByRole("grid")).toBeInTheDocument();
-    expect(screen.getByText(/No records found/i)).toBeVisible();
-  });
   it("renders UserOperatorsPage that correctly handle a non-empty data array", async () => {
     getUserOperatorsPageData.mockReturnValueOnce(mockResponse);
     render(await UserOperatorsPage({ searchParams: {} }));

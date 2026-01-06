@@ -4,13 +4,13 @@ import { createOperatorSchema } from "@/administration/app/data/jsonSchema/opera
 import getUserOperatorFormData from "@/administration/app/components/userOperators/getUserOperatorFormData";
 import { UUID } from "crypto";
 
-export default async function UserOperator({
-  params,
-}: Readonly<{
-  params: { userOperatorId: UUID; readonly?: boolean };
-}>) {
+const UserOperatorPage = async ({
+  userOperatorId,
+}: {
+  userOperatorId: UUID;
+}) => {
   const userOperatorData: UserOperatorFormData | { error: string } =
-    await getUserOperatorFormData(params.userOperatorId as string);
+    await getUserOperatorFormData(userOperatorId as string);
   if (!userOperatorData || "error" in userOperatorData) {
     throw new Error("Failed to retrieve operator and admin information");
   }
@@ -18,7 +18,9 @@ export default async function UserOperator({
     <UserOperatorReviewForm
       operatorSchema={await createOperatorSchema()}
       formData={userOperatorData}
-      userOperatorId={params.userOperatorId}
+      userOperatorId={userOperatorId}
     />
   );
-}
+};
+
+export default UserOperatorPage;

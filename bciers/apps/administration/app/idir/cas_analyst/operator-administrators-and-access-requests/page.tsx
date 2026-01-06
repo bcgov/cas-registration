@@ -1,4 +1,3 @@
-import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
-import Page from "@/administration/app/components/userOperators/UserOperatorsPage";
+import Page from "@/administration/app/components/userOperators/UserOperatorsPageFactory";
 
-export default defaultPageFactory(Page);
+export default Page;

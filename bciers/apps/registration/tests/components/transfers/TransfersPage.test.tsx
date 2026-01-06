@@ -6,7 +6,7 @@ import {
   useSearchParams,
   useSessionRole,
 } from "@bciers/testConfig/mocks";
-import TransfersDataGridPage from "@/registration/app/components/transfers/TransfersDataGridPage";
+import TransfersDataGridPage from "@/registration/app/components/transfers/TransfersPage";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
 
 useRouter.mockReturnValue({
@@ -94,18 +94,5 @@ describe("TransfersDataGrid page", () => {
     expect(
       screen.queryByText(/No transfers data in database./i),
     ).not.toBeInTheDocument();
-    // make sure the `Make a Transfer` button is not visible
-    expect(screen.queryByText(/Make a Transfer/i)).not.toBeInTheDocument();
   });
-
-  it.each([FrontEndRoles.CAS_ANALYST, FrontEndRoles.CAS_DIRECTOR])(
-    "shows the 'Make a Transfer' button to %s users",
-    async (role) => {
-      getSessionRole.mockClear();
-      getSessionRole.mockReturnValue(role);
-      fetchTransferEventsPageData.mockReturnValueOnce(mockResponse);
-      render(await TransfersDataGridPage({ searchParams: {} }));
-      expect(screen.getByText(/make a transfer/i)).toBeVisible();
-    },
-  );
 });

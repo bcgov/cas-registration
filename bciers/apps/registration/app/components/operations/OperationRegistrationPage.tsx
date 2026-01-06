@@ -17,16 +17,21 @@ import { getOperationV2 } from "@bciers/actions/api";
 import { FacilitiesSearchParams } from "@/administration/app/components/facilities/types";
 
 const OperationRegistrationPage = async ({
-  step,
+  step = 1,
   operation,
   searchParams,
 }: {
-  step: number;
+  step?: number;
   operation: UUID;
   searchParams: FacilitiesSearchParams;
 }) => {
   let operationData;
   let steps = [...initialOperationRegistrationSteps];
+  console.log(
+    "***************************************************************8",
+  );
+  console.log(operation);
+  console.log(step);
   if (operation && isValidUUID(operation)) {
     operationData = await getOperationV2(operation);
     const purpose = operationData?.registration_purpose;

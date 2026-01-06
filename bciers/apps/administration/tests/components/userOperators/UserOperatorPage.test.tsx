@@ -5,7 +5,7 @@ import {
   useSession,
 } from "@bciers/testConfig/mocks";
 import { getUserOperatorFormData } from "./mocks";
-import UserOperator from "apps/administration/app/components/userOperators/UserOperator";
+import UserOperator from "apps/administration/app/components/userOperators/UserOperatorPage";
 
 describe("UserOperator component", () => {
   beforeEach(async () => {
