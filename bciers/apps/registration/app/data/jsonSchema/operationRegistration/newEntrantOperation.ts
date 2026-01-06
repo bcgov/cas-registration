@@ -5,7 +5,7 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { newEntrantApril1OrLater } from "@bciers/utils/src/urls";
 
 export const newEntrantOperationSchema: RJSFSchema = {
-  title: "New Entrant Application",
+  title: "New Entrant Operation",
   type: "object",
   required: ["new_entrant_application"],
   properties: {

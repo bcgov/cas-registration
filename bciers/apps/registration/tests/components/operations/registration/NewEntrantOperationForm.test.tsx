@@ -46,7 +46,7 @@ describe("the NewEntrantOperationForm component", () => {
     );
 
     expect(screen.getByTestId("field-template-label")).toHaveTextContent(
-      "New Entrant Application",
+      "New Entrant Operation",
     );
 
     expect(
