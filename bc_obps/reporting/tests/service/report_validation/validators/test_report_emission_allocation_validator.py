@@ -1,6 +1,7 @@
 from django.test import TestCase
 from model_bakery.baker import make_recipe, make
 import pytest
+from registration.models.operation import Operation
 from reporting.models.report_operation import ReportOperation
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
@@ -132,3 +133,31 @@ class TestReportEmissionAllocationValidator(TestCase):
                 f"Emissions allocated for {self.test_infrastructure.facility_report.facility_name} in 'Flaring emissions' category do not match reported emissions. Please correct this issue on the Allocation of Emissions page.",
             )
         }
+
+    def test_no_validation_for_non_regulated_operations(self):
+        """Test that validation is skipped for non-regulated operations."""
+        # Change the operation to a non-regulated one (e.g., REPORTING_OPERATION)
+        operation = self.test_infrastructure.report_version.report.operation
+        operation.registration_purpose = Operation.Purposes.REPORTING_OPERATION
+        operation.save()
+
+        report_emission_allocation = make_recipe(
+            "reporting.tests.utils.report_emission_allocation",
+            report_version=self.test_infrastructure.report_version,
+            facility_report=self.test_infrastructure.facility_report,
+            allocation_methodology="Other",
+            allocation_other_methodology_description="test",
+        )
+        # allocate only some of the emissions (would normally trigger an error)
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=report_emission_allocation,
+            report_version=self.test_infrastructure.report_version,
+            report_product=self.report_product,
+            emission_category_id=self.FLARING_CATEGORY_ID,
+            allocated_quantity=self.EMISSIONS_AMOUNT - 10,
+        )
+
+        # Should return no errors because operation is not regulated
+        result = validate(self.test_infrastructure.report_version)
+        assert result == {}

@@ -16,15 +16,21 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     matches the reported emission total, unless the allocation methodology is "Not applicable".
     Returns a dictionary of errors keyed by facility and emission category if mismatches are found.
 
+    This validation only applies to regulated operations.
+
     Args:
         report_version (ReportVersion): The report version to validate.
 
     Returns:
         dict[str, ReportValidationError]: A dictionary of validation errors, keyed by facility and category.
     """
-    facility_reports = FacilityReport.objects.filter(report_version=report_version)
-
     errors: dict[str, ReportValidationError] = {}
+
+    # Only validate for regulated operations
+    if not report_version.report.operation.is_regulated_operation:
+        return errors
+
+    facility_reports = FacilityReport.objects.filter(report_version=report_version)
 
     for fr in facility_reports:
         emission_data = ReportEmissionAllocationService.get_emission_allocation_data(report_version.id, fr.facility_id)
