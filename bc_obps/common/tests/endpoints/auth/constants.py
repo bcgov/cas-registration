@@ -616,8 +616,8 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_applicable_activities",
-            "kwargs": {"version_id": MOCK_INT},
+            "endpoint_name": "get_facility_review_report_data",
+            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
     ],
     "authorized_irc_user_and_industry_admin_user": [],
