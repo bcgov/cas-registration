@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 # Constants
 ZERO_DECIMAL = Decimal('0')
+ONE_DECIMAL = Decimal('1')
 MONEY = Decimal("0.01")
 EMISS = Decimal("0.0000")
 
@@ -134,7 +135,7 @@ class SupercedeVersionHandler:
         if previous_summary.excess_emissions > ZERO_DECIMAL:
             # Return True if the previous version has an obligation with no invoice
             return SupplementaryVersionService._obligation_has_no_invoice(previous_compliance_report_version)
-        if previous_summary.credited_emissions > ZERO_DECIMAL:
+        if previous_summary.credited_emissions >= ONE_DECIMAL:
             # Return True if the previous version has earned credits that have not been requested
             return SupplementaryVersionService._earned_credits_not_issued(previous_compliance_report_version)
         return False
@@ -172,7 +173,7 @@ class SupercedeVersionHandler:
             ComplianceObligation.objects.get(compliance_report_version=previous_compliance_version).delete()
 
         # Handle supercede earned credit
-        if previous_summary.credited_emissions > ZERO_DECIMAL:
+        if previous_summary.credited_emissions >= ONE_DECIMAL:
             # Delete hanging superceded earned credit record
             ComplianceEarnedCredit.objects.get(compliance_report_version=previous_compliance_version).delete()
 
@@ -187,7 +188,7 @@ class SupercedeVersionHandler:
             )
 
         # Create new earned credit record if new version has earned credits
-        if new_summary.credited_emissions > ZERO_DECIMAL:
+        if new_summary.credited_emissions >= ONE_DECIMAL:
             ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
             compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
             compliance_report_version.save()
@@ -804,7 +805,7 @@ class IncreasedCreditHandler:
         if not previous_earned_credit_record:
             return False
         # Return True if excess emissions increased from previous version
-        return ZERO_DECIMAL < previous_summary.credited_emissions < new_summary.credited_emissions
+        return ONE_DECIMAL <= previous_summary.credited_emissions < new_summary.credited_emissions
 
     @staticmethod
     @transaction.atomic()
@@ -884,7 +885,7 @@ class DecreasedCreditHandler:
             return False
 
         return (
-            previous_summary.credited_emissions > ZERO_DECIMAL
+            previous_summary.credited_emissions >= ONE_DECIMAL
             and new_summary.credited_emissions < previous_summary.credited_emissions
         )
 
@@ -963,7 +964,7 @@ class NewEarnedCreditsHandler:
         ).first()
         if previous_earned_credit_record:
             return False
-        return previous_summary.credited_emissions == ZERO_DECIMAL and new_summary.credited_emissions > ZERO_DECIMAL
+        return previous_summary.credited_emissions == ZERO_DECIMAL and new_summary.credited_emissions >= ONE_DECIMAL
 
     @staticmethod
     @transaction.atomic()
