@@ -27,11 +27,7 @@ const OperationRegistrationPage = async ({
 }) => {
   let operationData;
   let steps = [...initialOperationRegistrationSteps];
-  console.log(
-    "***************************************************************8",
-  );
-  console.log(operation);
-  console.log(step);
+
   if (operation && isValidUUID(operation)) {
     operationData = await getOperationV2(operation);
     const purpose = operationData?.registration_purpose;

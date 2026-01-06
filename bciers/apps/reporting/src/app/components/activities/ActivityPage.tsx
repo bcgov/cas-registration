@@ -1,7 +1,7 @@
 import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import ActivityForm from "./ActivityForm";
-import { UUID } from "crypto";
+import type { UUID } from "crypto";
 import { ActivityData } from "@reporting/src/app/components/taskList/taskListPages/2_facilitiesInformation";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
@@ -10,33 +10,41 @@ import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
 import { getAllGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
 
-interface Props {
-  versionId: number;
-  facilityId: UUID;
-  activityId?: number;
-  step: number; // Index from 0
-}
+type DefaultSearchParams = Record<string, string | number | undefined>;
 
-// 🧩 Main component
-export default async function ActivityInit({
-  versionId,
-  facilityId,
-  activityId,
-  step,
-}: Readonly<Props>) {
+type ActivityInitFactoryProps = {
+  version_id: string; // Next param
+  facility_id: UUID; // Next param (or string)
+  searchParams?: DefaultSearchParams; // from defaultPageFactory
+};
+
+export default async function ActivityPage({
+  version_id,
+  facility_id,
+  searchParams,
+}: Readonly<ActivityInitFactoryProps>) {
+  const versionId = Number(version_id);
+  const facilityId = facility_id;
+
+  const activityId =
+    searchParams?.activity_id !== undefined
+      ? Number(searchParams.activity_id)
+      : undefined;
+
+  const step = searchParams?.step !== undefined ? Number(searchParams.step) : 0;
+
   const gasTypes = await getAllGasTypes();
   const orderedActivities = await getOrderedActivities(versionId, facilityId);
-  if (step === -1) step = orderedActivities.length - 1; // handle last step from non-attributable emissions page
-  let currentActivity = orderedActivities[step];
+
+  const resolvedStep = step === -1 ? orderedActivities.length - 1 : step;
+
+  let currentActivity = orderedActivities[resolvedStep];
   if (activityId) {
     currentActivity = orderedActivities.find(
       (obj: ActivityData) => obj.id === activityId,
     );
   }
-
-  if (!currentActivity) {
-    currentActivity = orderedActivities[0];
-  }
+  if (!currentActivity) currentActivity = orderedActivities[0];
 
   const activityData = await actionHandler(
     `reporting/report-version/${versionId}/facility-report/${facilityId}/initial-activity-data?activity_id=${currentActivity.id}`,
@@ -46,7 +54,9 @@ export default async function ActivityInit({
   if (activityData.error) {
     throw new Error("We couldn't find the activity data for this facility.");
   }
+
   const activityDataObject = safeJsonParse(activityData);
+
   const reportInfoTaskListData = await getReportInformationTasklist(
     versionId,
     facilityId,
@@ -65,13 +75,12 @@ export default async function ActivityInit({
     facilityId,
     {
       facilityName: reportInfoTaskListData?.facilityName,
-      orderedActivities: orderedActivities,
-      currentActivity: currentActivity,
+      orderedActivities,
+      currentActivity,
     },
   );
 
-  // Determine which source types (if any) are selected in the loaded formData & fetch the jsonSchema accordingly
-  const sourceTypeIds = [];
+  const sourceTypeIds: string[] = [];
   let sourceTypeQueryString = "";
   for (const [k, v] of Object.entries(activityDataObject.sourceTypeMap)) {
     if (formData[`${v}`]) {
@@ -80,16 +89,12 @@ export default async function ActivityInit({
     }
   }
 
-  const fetchSchema = async () => {
-    const schema = await actionHandler(
-      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${versionId}&facility_id=${facilityId}${sourceTypeQueryString}`,
-      "GET",
-      "",
-    );
-    return schema;
-  };
+  const jsonSchema = await actionHandler(
+    `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${versionId}&facility_id=${facilityId}${sourceTypeQueryString}`,
+    "GET",
+    "",
+  );
 
-  const jsonSchema = await fetchSchema();
   return (
     <ActivityForm
       key={currentActivity.id}

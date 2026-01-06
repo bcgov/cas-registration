@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, expect, vi, it, beforeEach } from "vitest";
-import ActivityInit from "@reporting/src/app/components/activities/ActivityInit";
+import ActivityPage from "@reporting/src/app/components/activities/ActivityPage";
 import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
@@ -52,12 +52,21 @@ vi.mock("@reporting/src/app/components/activities/ActivityForm", () => ({
 import ActivityForm from "@reporting/src/app/components/activities/ActivityForm";
 const ActivityFormMock = ActivityForm as ReturnType<typeof vi.fn>;
 
-async function renderActivityInit(props: any) {
-  const ActivityInitComponent = await ActivityInit(props);
-  return render(ActivityInitComponent);
+async function renderActivityPage(props: any) {
+  const ActivityPageComponent = await ActivityPage({
+    version_id: String(props.versionId),
+    facility_id: props.facilityId,
+    searchParams: {
+      ...(props.searchParams ?? {}),
+      step: props.step,
+      activity_id: props.activityId,
+    },
+  } as any);
+
+  return render(ActivityPageComponent);
 }
 
-describe("ActivityInit Component", () => {
+describe("ActivityPage Component", () => {
   const versionId = 1;
   const facilityId = "00000000-0000-0000-0000-000000000001" as UUID;
   const activityId = 123;
@@ -146,7 +155,7 @@ describe("ActivityInit Component", () => {
     it("should use the activity at the specified step when no activityId is provided", async () => {
       const step = 1;
 
-      await renderActivityInit({
+      await renderActivityPage({
         versionId,
         facilityId,
         step,
@@ -160,7 +169,7 @@ describe("ActivityInit Component", () => {
     });
 
     it("should use the specified activityId when provided", async () => {
-      await renderActivityInit({
+      await renderActivityPage({
         versionId,
         facilityId,
         activityId,
@@ -177,7 +186,7 @@ describe("ActivityInit Component", () => {
     it("should use the last activity when step is -1", async () => {
       const step = -1;
 
-      await renderActivityInit({
+      await renderActivityPage({
         versionId,
         facilityId,
         step,
@@ -194,7 +203,7 @@ describe("ActivityInit Component", () => {
     it("should fall back to the first activity when current activity is not found", async () => {
       const step = 999; // Invalid step
 
-      await renderActivityInit({
+      await renderActivityPage({
         versionId,
         facilityId,
         step,
@@ -210,7 +219,7 @@ describe("ActivityInit Component", () => {
     it("should fall back to the first activity when activityId doesn't exist", async () => {
       const nonExistentActivityId = 999;
 
-      await renderActivityInit({
+      await renderActivityPage({
         versionId,
         facilityId,
         activityId: nonExistentActivityId,
@@ -227,7 +236,7 @@ describe("ActivityInit Component", () => {
     it("should fall back to the first activity when step is negative (other than -1)", async () => {
       const step = -5;
 
-      await renderActivityInit({
+      await renderActivityPage({
         versionId,
         facilityId,
         step,
@@ -243,7 +252,7 @@ describe("ActivityInit Component", () => {
 
   describe("API Calls", () => {
     it("should fetch all required data", async () => {
-      await renderActivityInit({
+      await renderActivityPage({
         versionId,
         facilityId,
         step: 0,
@@ -289,7 +298,7 @@ describe("ActivityInit Component", () => {
       });
 
       await expect(async () => {
-        await renderActivityInit({
+        await renderActivityPage({
           versionId,
           facilityId,
           step: 0,
@@ -325,7 +334,7 @@ describe("ActivityInit Component", () => {
           : mockActivityDataWithSourceTypes,
       );
 
-      await renderActivityInit({
+      await renderActivityPage({
         versionId,
         facilityId,
         step: 0,
@@ -348,7 +357,7 @@ describe("ActivityInit Component", () => {
         mockFormDataNoSelection,
       );
 
-      await renderActivityInit({
+      await renderActivityPage({
         versionId,
         facilityId,
         step: 0,
@@ -364,7 +373,7 @@ describe("ActivityInit Component", () => {
 
   describe("Component Rendering", () => {
     it("should render ActivityForm with correct props", async () => {
-      const component = await renderActivityInit({
+      const component = await renderActivityPage({
         versionId,
         facilityId,
         step: 0,
@@ -374,7 +383,7 @@ describe("ActivityInit Component", () => {
     });
 
     it("should pass correct props to ActivityForm", async () => {
-      await renderActivityInit({
+      await renderActivityPage({
         versionId,
         facilityId,
         step: 0,
@@ -404,7 +413,7 @@ describe("ActivityInit Component", () => {
       );
 
       await expect(async () => {
-        await renderActivityInit({
+        await renderActivityPage({
           versionId,
           facilityId,
           step: 0,
@@ -416,7 +425,7 @@ describe("ActivityInit Component", () => {
       (getOrderedActivities as ReturnType<typeof vi.fn>).mockResolvedValue([]);
 
       await expect(async () => {
-        await renderActivityInit({
+        await renderActivityPage({
           versionId,
           facilityId,
           step: 0,

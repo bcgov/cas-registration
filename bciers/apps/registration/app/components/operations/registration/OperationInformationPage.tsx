@@ -21,6 +21,15 @@ const OperationInformationPage = async ({
   if (formData && "error" in formData)
     // using dot notation for error raises a TS error
     throw new Error("Failed to fetch operation data");
+
+  // Seeding empty values to prevent RJSF from auto-selecting `anyOf`/`oneOf` fields
+  // prevents firing an initial onChange that triggers async updates before mount.
+  formData = {
+    ...formData,
+    registration_purpose: (formData as any).registration_purpose ?? "",
+    operation: (formData as any).operation ?? "",
+  } as OperationInformationFormData;
+
   return (
     <OperationInformationForm
       rawFormData={formData}

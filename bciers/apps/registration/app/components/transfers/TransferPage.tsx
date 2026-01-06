@@ -51,6 +51,16 @@ export default async function TransferPage({
     operators = fetchedOperators; // Populate operators
   }
 
+  // Seeding empty values to prevent RJSF from auto-selecting `anyOf`/`oneOf` fields
+  // prevents firing an initial onChange that triggers async updates before mount.
+  // Resolves issue: Can't perform a React state update on a component that hasn't mounted yet.
+  transferFormData = {
+    ...transferFormData,
+    from_operator: transferFormData.from_operator ?? "",
+    to_operator: transferFormData.to_operator ?? "",
+    transfer_entity: transferFormData.transfer_entity ?? "",
+  };
+
   return (
     <>
       {transferId ? (
@@ -72,7 +82,7 @@ export default async function TransferPage({
         />
       ) : (
         <TransferForm
-          formData={{} as TransferFormData}
+          formData={transferFormData as TransferFormData}
           operators={operators.rows}
         />
       )}
