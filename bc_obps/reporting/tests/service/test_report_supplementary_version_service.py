@@ -446,8 +446,6 @@ class ReportSupplementaryVersionServiceTests(TestCase):
                 attachment_name="Attachment 2",
             )
 
-        current_year = datetime.now(timezone.utc).year
-
         # ACT: Clone the ReportAttachment instances.
         with patch("django.core.files.storage.default_storage.duplicate_file") as mock_duplicate:
             mock_duplicate.return_value = "test_file"
