@@ -1,7 +1,8 @@
 from django.test import TestCase
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 from model_bakery.baker import make_recipe
 from django.core.files.base import ContentFile
+from django.utils import timezone
 from registration.models import Operation
 from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.tests.service.test_report_activity_save_service import data
@@ -452,10 +453,12 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             ReportSupplementaryVersionService.clone_report_version_attachments(
                 self.old_report_version, self.new_report_version
             )
-            assert mock_duplicate.mock_calls == [
-                call("report_attachments/2026/file1.pdf"),
-                call("report_attachments/2026/file2.doc"),
-            ]
+            current_year = timezone.now().year
+            # we add random suffixes to filenames, so we check patterns instead of exact matches
+            assert len(mock_duplicate.mock_calls) == 2
+            call_args = [str(call_obj) for call_obj in mock_duplicate.mock_calls]
+            assert any(f"report_attachments/{current_year}/file1" in arg and ".pdf" in arg for arg in call_args)
+            assert any(f"report_attachments/{current_year}/file2" in arg and ".doc" in arg for arg in call_args)
 
         # ASSERT: Verify that two ReportAttachment instances have been cloned.
         new_attachments = ReportAttachment.objects.filter(report_version=self.new_report_version)

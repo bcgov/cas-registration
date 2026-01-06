@@ -53,14 +53,21 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
 
   const isReadOnly = disabled || readonly || isLoading;
 
+  // 🔌 Allow E2E to override the validator via window.__E2E_VALIDATE_BCCR_ACCOUNT__
+  // This is necessary because getBccrAccountDetails makes server-to-server calls that cannot be
+  // intercepted by Playwright.
+  const effectiveValidateBccrAccount =
+    (typeof window !== "undefined" &&
+      (window as any).__E2E_VALIDATE_BCCR_ACCOUNT__) ||
+    validateBccrAccount;
   const validateAccount = async (accountId: string) => {
-    if (accountId.length !== 15 || !validateBccrAccount) return;
+    if (accountId.length !== 15 || !effectiveValidateBccrAccount) return;
 
     setIsLoading(true);
     setShowError(false);
 
     try {
-      const response = await validateBccrAccount(
+      const response = await effectiveValidateBccrAccount(
         accountId,
         complianceReportVersionId,
       );

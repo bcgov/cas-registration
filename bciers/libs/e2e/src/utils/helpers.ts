@@ -7,6 +7,7 @@ import {
   firefox,
   webkit,
   Browser,
+  BrowserContext,
 } from "@playwright/test";
 import { baseUrlSetup } from "@bciers/e2e/utils/constants";
 import { DataTestID, MessageTextResponse } from "@bciers/e2e/utils/enums";
@@ -23,6 +24,7 @@ export async function analyzeAccessibility(
   }).analyze();
 
   if (accessibilityScanResults.violations.length > 0) {
+    // eslint-disable-next-line no-console
     console.log(
       `[Accessibility Violation: ${description}]`,
       accessibilityScanResults.violations,
@@ -32,12 +34,27 @@ export async function analyzeAccessibility(
   expect(accessibilityScanResults.violations).toEqual([]);
 }
 
-export async function clickButton(page: Page, buttonName: string | RegExp) {
-  await page
-    .getByRole("button", {
-      name: buttonName,
-    })
-    .click();
+export async function clickButton(
+  page: Page,
+  buttonText: string | RegExp,
+  opts?: {
+    inForm?: boolean; // default false
+    waitForUrl?: RegExp;
+  },
+) {
+  const { inForm = false, waitForUrl } = opts ?? {};
+
+  const name =
+    buttonText instanceof RegExp ? buttonText : new RegExp(buttonText, "i");
+
+  const root = inForm ? page.locator("form") : page;
+  const button = root.getByRole("button", { name });
+
+  if (waitForUrl) {
+    await Promise.all([page.waitForURL(waitForUrl), button.click()]);
+  } else {
+    await button.click();
+  }
 }
 
 export async function fillComboxboxWidget(
@@ -353,6 +370,7 @@ export async function clickWithRetry(
       await clickButton(page, buttonName);
       return;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn(`Click failed. Retrying... Attempt ${i}/${retries}`);
     }
   }
@@ -464,4 +482,15 @@ export async function assertFieldVisibility(
       visible: visible,
     });
   }
+}
+
+export async function newContextForRole(
+  browser: Browser,
+  baseURL: string,
+  role: string,
+): Promise<BrowserContext> {
+  return browser.newContext({
+    storageState: getStorageStateForRole(role),
+    baseURL,
+  });
 }

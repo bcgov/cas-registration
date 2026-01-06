@@ -135,12 +135,15 @@ export enum ContactE2EValue {
   POSTAL_CODE = "X1X1X1",
 }
 
-export enum IDE2EValue {
-  OPERATION_NAME = "Brine LFO - Registered - No BORO and BCGHG ID",
-  OPERATOR_NAME = "Bravo Technologies - has parTNER operator",
-  EXPECTED_BCGHG_ID = "23251810001",
-  EXPECTED_BORO_ID = "25-0001",
-}
+export const IDE2EValue = {
+  OPERATION_NAME: "Brine LFO - Registered - No BORO and BCGHG ID",
+  OPERATOR_NAME: "Bravo Technologies - has parTNER operator",
+  EXPECTED_BCGHG_ID: "23251810001",
+  get EXPECTED_BORO_ID() {
+    const year = new Date().getFullYear().toString().slice(-2);
+    return `${year}-0001`;
+  },
+} as const;
 
 export enum SnackbarMessages {
   ISSUED_BCGHG_ID = "BCGHG ID issued successfully",

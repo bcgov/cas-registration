@@ -6,3 +6,16 @@ export const SIGN_OFF_SUBMIT_BUTTON_TEXT = "Submit Report";
 export const TEST_SIGNATURE_NAME = "Test Signer";
 
 export const SUBMISSION_SUCCESS_TEXT = "Successful Submission";
+
+// Route pattern for sign-off form
+export const SIGN_OFF_REPORT_ROUTE_PATTERN = "**/reporting/reports/*/sign-off";
+// Regex to extract id from the endpoint request
+export const SIGN_OFF_REPORT_VERSION_ID_REGEX = /reports\/(\d+)\/sign-off/;
+// Scenario name used by the Django stub to call to external API
+export const SIGN_OFF_REPORT_SCENARIO = "submit_report";
+
+export const REPORTING_REPORTS_BASE_PATH = "/reporting/reports";
+
+export const SIGN_OFF_SUBMIT_URL_PATTERN = new RegExp(
+  `${REPORTING_REPORTS_BASE_PATH}/\\d+/submission$`,
+);

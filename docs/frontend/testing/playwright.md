@@ -17,7 +17,7 @@ Ensure you have the correct env variables set up in the `bciers/.env.local` file
 
 ## Test organization in our monorepo
 
-The e2e tests are organized in separate projects in the `/bciers/apps` directory. Each project has its own `e2e` directory where the tests are located. To run the tests we need to have the `Dashboard` app running due to our auth implementation alongside whichever app we are testing. There are shared utilities in the `bciers/libs/e2e` directory that can be used across all e2e tests.
+The e2e tests are organized in separate projects in the `/bciers/apps` directory. Each project has its own `/bciers/apps/apppname-e2e` directory where the tests are located. To run the tests we need to have the `Dashboard` app running due to our auth implementation alongside whichever app we are testing. There are shared utilities in the `bciers/libs/e2e` directory that can be used across all e2e tests.
 
 ## Writing Tests
 
@@ -244,7 +244,7 @@ cd bc_obps && make run
 2.0 Run the tests:
 
 Run tests from new terminal command:
-Run tests in the background using terminal command `yarn <app shortform>:e2e:ci`. These commands are located in `package.json`:
+Run tests in the background using terminal command `yarn <app shortform>:e2e`. These commands are located in `package.json`:
 
 ```bash
 cd bciers && yarn reg:e2e
@@ -256,14 +256,19 @@ Run tests with the Playwright GUI using terminal command:
 cd bciers && yarn reg:e2e:ui
 ```
 
-pre-commit run --all-files
+Run a single test using terminal command (example):
+
+```bash
+cd bciers && npx nx run compliance:e2e -- bciers/apps/compliance-e2e/tests/workflows/manage-obligation/report-compliance-obligation.spec.ts
+```
 
 ### Debugging Playwright
 
 **HTML report**
 The HTML report shows you a report of all your tests that have been ran and on which browsers as well as how long they took. Tests can be filtered by passed tests, failed, flakey or skipped tests. You can also search for a particular test. Clicking on a test will open the detailed view where you can see more information on your tests such as the errors, the test steps and the trace.
 
-For debugging CI, you can download the HTML report artifact found in `GitHub\Actions\Test Registration App\Artifacts\ playwright-report` and extract the files to `bciers/playwright-report`. To view the downloaded the HTML report artifact locally run terminal command:
+For debugging CI, you can download the HTML report artifact found in `GitHub\Actions\
+📊 e2e report artifact` and extract the files to `bciers/playwright-report`. To view the downloaded the HTML report artifact locally run terminal command:
 
 ```bash
 cd bciers && yarn reg:e2e:report

@@ -95,3 +95,6 @@ export const appRouteRoles: Record<AppRoute, UserRole[]> = {
   ],
   [AppRoute.USERS]: [UserRole.CAS_ADMIN, UserRole.INDUSTRY_USER_ADMIN],
 };
+
+export const COMPLIANCE_E2E_INTEGRATION_STUB_PATH =
+  "compliance/e2e-integration-stub";

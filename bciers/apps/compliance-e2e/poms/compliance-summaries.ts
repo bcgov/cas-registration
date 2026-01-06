@@ -3,6 +3,7 @@ import {
   AppRoutes,
   ComplianceSummariesGridHeaders,
 } from "@/compliance-e2e/utils/enums";
+import { GRID_ROOT } from "@/compliance-e2e/utils/constants";
 
 export class ComplianceSummariesPOM {
   readonly page: Page;
@@ -21,7 +22,7 @@ export class ComplianceSummariesPOM {
   }
 
   private get grid(): Locator {
-    return this.page.locator(".MuiDataGrid-root");
+    return this.page.locator(GRID_ROOT);
   }
 
   /**
@@ -91,7 +92,7 @@ export class ComplianceSummariesPOM {
     // Build absolute URL
     const targetUrl = new URL(href, this.url).toString();
 
-    // Navigate explicitly instead of relying on client-side routing
+    // Navigate to url route
     await this.page.goto(targetUrl, { waitUntil: "load" });
 
     // Optionally assert URL

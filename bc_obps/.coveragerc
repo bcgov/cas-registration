@@ -11,3 +11,4 @@ omit =
   */wsgi.py,
   */schema/*,
   */api/e2e_test_setup.py,
+  */api/e2e_integration_stub.py,

@@ -206,6 +206,7 @@ class TestFileTODataURL:
     @staticmethod
     def test_file_to_data_url_returns_data_url(mocker, monkeypatch):
         monkeypatch.setenv("CI", "false")
+        monkeypatch.setenv("ENVIRONMENT", "develop")
 
         # Mock the document object
         document = document_baker()
@@ -215,7 +216,7 @@ class TestFileTODataURL:
         mock_response.status_code = 200
         mock_response.content = b"PDF content"
 
-        mocker.patch("requests.get", return_value=mock_response)
+        mocker.patch("registration.utils.requests.get", return_value=mock_response)
 
         # Call the function
         result = file_to_data_url(document)
@@ -228,12 +229,13 @@ class TestFileTODataURL:
     @staticmethod
     def test_file_to_data_url_handles_timeout(mocker, caplog, monkeypatch):
         monkeypatch.setenv("CI", "false")
+        monkeypatch.setenv("ENVIRONMENT", "develop")
 
         # Mock the document object
         document = document_baker()
 
         # Mock the response of requests.get to raise a timeout exception
-        mocker.patch("requests.get", side_effect=requests.exceptions.Timeout)
+        mocker.patch("registration.utils.requests.get", side_effect=requests.exceptions.Timeout)
 
         # Call the function
         result = file_to_data_url(document)
@@ -247,12 +249,15 @@ class TestFileTODataURL:
     @staticmethod
     def test_file_to_data_url_handles_request_exception(mocker, caplog, monkeypatch):
         monkeypatch.setenv("CI", "false")
+        monkeypatch.setenv("ENVIRONMENT", "develop")
 
         # Mock the document object
         document = document_baker()
 
         # Mock the response of requests.get to raise a request exception
-        mocker.patch("requests.get", side_effect=requests.exceptions.RequestException("An error occurred"))
+        mocker.patch(
+            "registration.utils.requests.get", side_effect=requests.exceptions.RequestException("An error occurred")
+        )
 
         # Call the function
         result = file_to_data_url(document)

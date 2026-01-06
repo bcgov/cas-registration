@@ -1,5 +1,6 @@
 import pytest
 from model_bakery import baker
+from django.utils import timezone
 from reporting.service.sync_validation_service import SyncValidationService
 from reporting.models import ReportingYear
 
@@ -8,12 +9,15 @@ pytestmark = pytest.mark.django_db
 
 class TestSyncValidationService:
     def setup_method(self):
-        self.current_year = 2025
-        self.current_reporting_year, _ = ReportingYear.objects.get_or_create(reporting_year=self.current_year)
+        # Use dynamic year calculation: reporting year is typically the previous calendar year
+        # (e.g., in 2026, we report on 2025 activities)
+        now = timezone.now()
+        current_reporting_year = now.year - 1
+        self.current_reporting_year, _ = ReportingYear.objects.get_or_create(reporting_year=current_reporting_year)
 
-        # Create previous reporting year
-        self.previous_year = 2024
-        self.previous_reporting_year, _ = ReportingYear.objects.get_or_create(reporting_year=self.previous_year)
+        # Previous reporting year
+        previous_reporting_year = current_reporting_year - 1
+        self.previous_reporting_year, _ = ReportingYear.objects.get_or_create(reporting_year=previous_reporting_year)
 
         # Create operator and operation
         self.operator = baker.make_recipe("registration.tests.utils.operator")
