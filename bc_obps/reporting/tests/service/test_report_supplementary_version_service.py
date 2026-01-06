@@ -25,7 +25,6 @@ from reporting.models import (
     ReportVersion,
 )
 import common.lib.pgtrigger as pgtrigger
-from datetime import datetime, timezone
 
 
 class ReportSupplementaryVersionServiceTests(TestCase):
