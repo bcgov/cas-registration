@@ -84,7 +84,7 @@ export class OperationPOM {
     });
     await expect(viewOperation).toBeVisible();
     await viewOperation.click();
-    await this.page.waitForLoadState("networkidle");
+    await this.page.waitForLoadState();
   }
 
   async findRowByBcghgId(bcghgid) {
