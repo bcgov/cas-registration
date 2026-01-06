@@ -91,7 +91,7 @@ test.describe("Test earned credits request issuance flow", () => {
         BCCR_HOLDING_ACCOUNT_INPUT_VALUE,
       );
 
-      // TODO(#xyz): Fix Happo screenshot frame detachment errors
+      // TODO(#4107): Fix Happo screenshot frame detachment errors
       // await takeStabilizedScreenshot(happoScreenshot, industryPage, {
       //   component: "Earned credits request issuance",
       //   variant: `industry-form-filled`,
@@ -129,7 +129,7 @@ test.describe("Test earned credits request issuance flow", () => {
       );
       await analystTaskList.clickReviewRequestIssuance();
 
-      // TODO(#xyz): Fix Happo screenshot frame detachment errors
+      // TODO(#4107): Fix Happo screenshot frame detachment errors
       // await takeStabilizedScreenshot(happoScreenshot, analystPage, {
       //   component: "Earned credits request issuance",
       //   variant: `analyst-review-page`,
@@ -169,7 +169,7 @@ test.describe("Test earned credits request issuance flow", () => {
       );
       await directorTaskList.clickReviewByDirector();
 
-      // TODO(#xyz): Fix Happo screenshot frame detachment errors
+      // TODO(#4107): Fix Happo screenshot frame detachment errors
       // await takeStabilizedScreenshot(happoScreenshot, directorPage, {
       //   component: "Earned credits request issuance",
       //   variant: `director-review-page-${c.decision.toLowerCase()}`,
@@ -184,7 +184,7 @@ test.describe("Test earned credits request issuance flow", () => {
         c.expectedStatus,
       );
 
-      // TODO(#xyz): Fix Happo screenshot frame detachment errors
+      // TODO(#4107): Fix Happo screenshot frame detachment errors
       // await takeStabilizedScreenshot(happoScreenshot, directorPage, {
       //   component: "Earned credits request issuance",
       //   variant: `final-status-${c.decision.toLowerCase()}`,
