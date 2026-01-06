@@ -63,14 +63,21 @@ describe("RJSF SelectWidget", () => {
     const selectField = screen.getByRole("combobox");
 
     act(() => {
+      selectField.focus();
       fireEvent.mouseDown(selectField);
     });
 
     await waitFor(() => {
-      userEvent.click(screen.getByRole("option", { name: "Option 2" }));
+      const option = screen.getByRole("option", { name: "Option 2" });
+      expect(option).toBeVisible();
     });
 
-    expect(screen.getByRole("option", { name: "Option 2" })).toBeVisible();
+    const option2 = screen.getByRole("option", { name: "Option 2" });
+    await userEvent.click(option2);
+
+    await waitFor(() => {
+      expect(screen.getByRole("combobox")).toHaveValue("Option 2");
+    });
   });
 
   it("should display the placeholder when no value is selected", async () => {
@@ -78,7 +85,7 @@ describe("RJSF SelectWidget", () => {
       <FormBase schema={selectFieldSchema} uiSchema={selectFieldUiSchema} />,
     );
 
-    expect(screen.getByText("Select an option")).toBeVisible();
+    expect(screen.getByPlaceholderText("Select an option")).toBeVisible();
   });
 
   it("should not trigger a validation error when data is valid", async () => {
