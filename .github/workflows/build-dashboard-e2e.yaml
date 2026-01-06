@@ -2,6 +2,12 @@ name: Build Dashboard e2e Docker container built with host env vars
 
 on:
   workflow_call:
+    inputs:
+      special_build_tag:
+        description: "Extra tag to use for the image (e.g. nightly, latest)"
+        required: false
+        type: string
+        default: latest
 
 jobs:
   docker-build:
@@ -19,3 +25,4 @@ jobs:
           host_compliance: http://localhost:7000
           host_registration: http://localhost:4000
           host_reporting: http://localhost:5000
+          special_build_tag: ${{ inputs.special_build_tag }}
