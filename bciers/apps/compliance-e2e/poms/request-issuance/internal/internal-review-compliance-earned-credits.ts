@@ -57,7 +57,7 @@ export class InternalReviewComplianceEarnedCreditsPOM {
         });
       },
 
-      "earned_credits_director_approve",
+      EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO,
     );
   }
 
