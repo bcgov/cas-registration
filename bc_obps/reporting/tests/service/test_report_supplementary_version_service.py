@@ -453,8 +453,8 @@ class ReportSupplementaryVersionServiceTests(TestCase):
                 self.old_report_version, self.new_report_version
             )
             assert mock_duplicate.mock_calls == [
-                call("report_attachments/2025/file1.pdf"),
-                call("report_attachments/2025/file2.doc"),
+                call("report_attachments/2026/file1.pdf"),
+                call("report_attachments/2026/file2.doc"),
             ]
 
         # ASSERT: Verify that two ReportAttachment instances have been cloned.

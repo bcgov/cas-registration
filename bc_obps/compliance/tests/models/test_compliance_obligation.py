@@ -16,7 +16,6 @@ class ComplianceObligationTest(BaseTestCase):
             ("compliance_report_version", "compliance report version", None, None),
             ("elicensing_invoice", "elicensing invoice", None, None),
             ("obligation_id", "obligation id", None, None),
-            ("obligation_deadline", "obligation deadline", None, None),
             ("fee_amount_dollars", "fee amount dollars", None, None),
             ("fee_date", "fee date", None, None),
             ("penalty_status", "penalty status", None, None),
@@ -103,7 +102,6 @@ class TestComplianceObligationRls(BaseTestCase):
                 id=888,
                 compliance_report_version=new_operator_compliance_report_version_for_insert,
                 obligation_id=888,
-                obligation_deadline="2025-11-30",
             )
 
         def forbidden_insert_function(cursor):
@@ -185,7 +183,6 @@ class TestComplianceObligationRls(BaseTestCase):
                 id=889,
                 compliance_report_version=old_operator_compliance_report_version_for_insert,
                 obligation_id=888,
-                obligation_deadline="2025-11-30",
             )
 
         def forbidden_insert_function(cursor):

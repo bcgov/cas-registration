@@ -8,11 +8,11 @@ pytestmark = pytest.mark.django_db
 
 class TestSyncValidationService:
     def setup_method(self):
-        self.current_year = 2024
+        self.current_year = 2025
         self.current_reporting_year, _ = ReportingYear.objects.get_or_create(reporting_year=self.current_year)
 
         # Create previous reporting year
-        self.previous_year = 2023
+        self.previous_year = 2024
         self.previous_reporting_year, _ = ReportingYear.objects.get_or_create(reporting_year=self.previous_year)
 
         # Create operator and operation

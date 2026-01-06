@@ -46,7 +46,7 @@ class ElicensingObligationService:
         return current_date == compliance_period.invoice_generation_date
 
     @classmethod
-    def _has_obligation_deadline_passed(cls, obligation_deadline: date) -> bool:
+    def _has_compliance_deadline_passed(cls, obligation_deadline: date) -> bool:
         # Convert current UTC time to Vancouver timezone before extracting date to ensure proper comparison
         vancouver_timezone = ZoneInfo("America/Vancouver")
         current_date = timezone.now().astimezone(vancouver_timezone).date()
@@ -139,9 +139,9 @@ class ElicensingObligationService:
 
                 # If successful, update the compliance status
                 ComplianceReportVersionService.update_compliance_status(obligation.compliance_report_version)
-                # If the new obligation was created by a supplementary report and the obligation deadline has passed, we send a specific email. Otherwise, we send the general one about the obligation being due.
-                if obligation.compliance_report_version.is_supplementary and cls._has_obligation_deadline_passed(
-                    obligation.obligation_deadline
+                # If the new obligation was created by a supplementary report and the compliance deadline has passed, we send a specific email. Otherwise, we send the general one about the obligation being due.
+                if obligation.compliance_report_version.is_supplementary and cls._has_compliance_deadline_passed(
+                    obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
                 ):
                     retryable_notice_of_supplementary_report_post_deadline_increases_emissions.execute(obligation.id)
                 else:
@@ -188,7 +188,9 @@ class ElicensingObligationService:
         """
 
         return {
-            "paymentDueDate": obligation.obligation_deadline.strftime("%Y-%m-%d"),
+            "paymentDueDate": obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline.strftime(
+                "%Y-%m-%d"
+            ),
             "businessAreaCode": "OBPS",
             "fees": [fee_id],
         }
@@ -326,9 +328,9 @@ class ElicensingObligationService:
             return
 
         # Reuse the reminders base (unpaid, unmet, non-void, has invoice)
-        # Filter reminders on obligation_deadline has passed compliance_deadline
+        # Filter reminders on attached complianced is passed current compliance_deadline
         obligations = cls._get_obligations_for_reminders(compliance_period).filter(
-            obligation_deadline__lte=compliance_period.compliance_deadline
+            compliance_report_version__compliance_report__compliance_period__compliance_deadline__lte=compliance_period.compliance_deadline
         )
 
         if not obligations.exists():

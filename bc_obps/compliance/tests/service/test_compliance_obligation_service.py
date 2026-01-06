@@ -97,16 +97,6 @@ class TestComplianceObligationService:
         mock_create.assert_not_called()
         mock_get_rate.assert_called_once_with(test_data.report.reporting_year)
 
-    def test_get_obligation_deadline(self):
-        """Test get_obligation_deadline returns the correct date"""
-        # Test for year 2023
-        deadline = ComplianceObligationService.get_obligation_deadline(2023)
-        assert deadline == date(2024, 11, 30)
-
-        # Test for year 2022
-        deadline = ComplianceObligationService.get_obligation_deadline(2022)
-        assert deadline == date(2023, 11, 30)
-
     def test_get_outstanding_balance_with_elicensing_invoice(self):
         """Test _get_outstanding_balance_dollars returns elicensing invoice balance when available"""
         # Create obligation with elicensing invoice
@@ -211,18 +201,3 @@ class TestComplianceObligationService:
         )
 
         assert result.fee_amount_dollars == Decimal('5596.26')
-
-    @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
-    def test_create_compliance_obligation_sets_correct_deadline(self, mock_get_rate):
-        """Test that create_compliance_obligation sets the correct obligation deadline"""
-        # Setup
-        mock_get_rate.return_value = Decimal('40.00')
-        test_data = ComplianceTestHelper.build_test_data(reporting_year=2023)
-
-        result = ComplianceObligationService.create_compliance_obligation(
-            compliance_report_version_id=test_data.compliance_report_version.id,
-            emissions_amount=Decimal('100.0'),
-        )
-
-        # Verify deadline is November 30 of the following year (2024)
-        assert result.obligation_deadline == date(2024, 11, 30)
