@@ -4,6 +4,7 @@ from . import (
     contacts,
     e2e_test_setup,
     facilities,
+    facility_snapshots,
     naics_codes,
     operations,
     operators,

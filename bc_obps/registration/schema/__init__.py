@@ -5,6 +5,7 @@ from .business_structure import *
 from .bcghg_id import *
 from .contact import *
 from .facility import *
+from .facility_snapshot import *
 from .facility_designated_operation_timeline import *
 from .generic import *
 from .multiple_operator import *
