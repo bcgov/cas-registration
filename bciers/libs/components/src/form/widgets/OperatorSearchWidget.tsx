@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { SyntheticEvent } from "react";
 import { Autocomplete, TextField } from "@mui/material";
-import { actionHandler } from "@bciers/actions";
 import debounce from "lodash.debounce";
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { actionHandler } from "@bciers/actions";
+import type { WidgetProps } from "@rjsf/utils/lib/types";
 import {
   DARK_GREY_BG_COLOR,
   BC_GOV_SEMANTICS_RED,
@@ -21,36 +21,33 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   uiSchema,
   formContext,
 }) => {
-  const [options, setOptions] = useState([] as string[]);
+  const [options, setOptions] = useState<string[]>([]);
   const [isSearchAttempted, setIsSearchAttempted] = useState(false);
 
-  const handleChange = (
-    e: SyntheticEvent<Element, Event>,
-    option: string | null,
-  ) => {
+  const handleSelect = (_e: SyntheticEvent, option: string | null) => {
     onChange(option);
     setOptions([]);
     setIsSearchAttempted(false);
   };
 
-  const changeHandler = useCallback(
-    async (_event: React.ChangeEvent<object>, val: string) => {
+  // Fetch suggestions (called by debounced wrapper below)
+  const fetchOperators = useCallback(
+    async (val: string) => {
       if (!val) {
         setIsSearchAttempted(false);
         setOptions([]);
         return;
       }
-      const response = await actionHandler(
-        `${formContext.endpoint}?legal_name=${val}`,
-        "GET",
-      );
 
-      if (!response || response?.error) {
-        return;
-      }
+      const endpoint = formContext?.endpoint ?? "registration/operators/search";
+      const url = `${endpoint}?legal_name=${encodeURIComponent(val)}`;
 
-      const results = response.map(
-        (item: { legal_name: string }) => item.legal_name,
+      const response = await actionHandler(url, "GET");
+
+      if (!response || response?.error) return;
+
+      const results = (response as Array<{ legal_name: string }>).map(
+        (item) => item.legal_name,
       );
 
       setOptions(results);
@@ -59,33 +56,29 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
     [formContext],
   );
 
-  // 200ms debounce to prevent excessive API calls
-  const debouncedChangeHandler = useCallback(
-    () => debounce(changeHandler, 200),
-    [changeHandler],
+  // Create ONE debounced function and pass it to MUI directly
+  const debouncedOnInputChange = useMemo(
+    () =>
+      debounce((_event: SyntheticEvent, val: string) => {
+        fetchOperators(val);
+      }, 200),
+    [fetchOperators],
   );
 
-  // Clear options when the field loses focus as the dropdown will remain open otherwise
   const handleBlur = () => {
     setOptions([]);
     setIsSearchAttempted(false);
   };
 
-  const isError = rawErrors && rawErrors.length > 0;
+  const isError = !!(rawErrors && rawErrors.length > 0);
   const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
 
   const styles = {
     width: "100%",
-    "& .MuiSelect-outlined": {
-      borderColor: DARK_GREY_BG_COLOR,
-    },
-    "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: borderColor,
-    },
-    "& .MuiAutocomplete-noOptions": {
-      color: "red!important",
-    },
-  };
+    "& .MuiSelect-outlined": { borderColor: DARK_GREY_BG_COLOR },
+    "& .MuiOutlinedInput-notchedOutline": { borderColor },
+    "& .MuiAutocomplete-noOptions": { color: "red!important" },
+  } as const;
 
   return (
     <Autocomplete
@@ -98,25 +91,22 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       sx={styles}
       noOptionsText="No results found. Retry or create an operator."
       open={
-        // open the dropdown if there are options and no value
-        // or if the user has attempted a search so we can show the "no results" message
         (options.length > 0 && !options.includes(value as string)) ||
         (options.length === 0 && isSearchAttempted)
       }
-      onChange={handleChange}
+      onChange={handleSelect}
       onBlur={handleBlur}
-      onInputChange={debouncedChangeHandler}
+      onInputChange={debouncedOnInputChange}
       renderInput={(params) => (
         <TextField
           {...params}
           placeholder={uiSchema?.["ui:placeholder"] ?? ""}
         />
       )}
-      renderOption={(renderProps, option: any) => (
+      renderOption={(renderProps, option) => (
         <li
           {...renderProps}
           key={option}
-          // We need to use MuiAutocomplete-option to keep the default styles
           className="MuiAutocomplete-option text-left"
         >
           {option}
@@ -125,4 +115,5 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
     />
   );
 };
+
 export default OperatorSearchWidget;
