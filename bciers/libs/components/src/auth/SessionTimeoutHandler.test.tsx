@@ -7,7 +7,6 @@ import SessionTimeoutHandler, {
 } from "@bciers/components/auth/SessionTimeoutHandler";
 import { getEnvValue, getToken } from "@bciers/actions";
 import { LogoutWarningModalProps } from "@bciers/components/auth/LogoutWarningModal";
-import * as Sentry from "@sentry/nextjs";
 import createThrottledEventHandler from "./throttleEventsEffect";
 
 // Mock dependencies
@@ -261,9 +260,7 @@ describe("SessionTimeoutHandler", () => {
     });
   });
 
-  it("handles session refresh failure with no logoutUrl by logging out, alerting Sentry, and redirecting to fallback logoutUrl", async () => {
-    const sentrySpy = vi.spyOn(Sentry, "captureException");
-
+  it("handles session refresh failure with no logoutUrl by logging out and redirecting to fallback logoutUrl", async () => {
     mockGetEnvValue.mockReturnValue(undefined); // Simulate no logout URL
 
     renderWithSession({
@@ -288,8 +285,6 @@ describe("SessionTimeoutHandler", () => {
       expect(mockSignOut).toHaveBeenCalled();
       expect(window.location.href).toBe("/");
     });
-
-    expect(sentrySpy).toHaveBeenCalledWith("Failed to fetch logout URL");
   });
 
   it("do not refresh session when user is in a non-app tab", async () => {

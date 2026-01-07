@@ -7,7 +7,7 @@ from django.http import HttpRequest
 from django.db.utils import InternalError, ProgrammingError, DatabaseError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from ninja.responses import Response
-from sentry_sdk import set_tag, capture_exception
+from sentry_sdk import set_tag, capture_exception, set_user
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.utils import generate_useful_error
 from registration.constants import UNAUTHORIZED_MESSAGE
@@ -55,13 +55,43 @@ class ExceptionHandler:
         print("-" * 48 + "ERROR END" + "-" * 48)
 
     @staticmethod
-    def capture_sentry_exception(exc: Any, tag: Optional[str] = None) -> Optional[str]:
-        """Capture exception in Sentry with optional tag."""
-        if not settings.ENABLE_SENTRY:
+    def set_user_context(request: HttpRequest) -> None:
+        """Set user context in error tracking (Sentry or BetterStack) from the request."""
+        if not (settings.ENABLE_SENTRY or settings.ENABLE_BETTERSTACK):
+            return
+
+        # Check if current_user is set by middleware
+        if hasattr(request, "current_user") and request.current_user:
+            user = request.current_user
+            set_user(
+                {
+                    "id": str(user.user_guid),
+                }
+            )
+        else:
+            # Clear user context if no user is available
+            set_user(None)
+
+    @staticmethod
+    def capture_sentry_exception(
+        exc: Any, tag: Optional[str] = None, request: Optional[HttpRequest] = None
+    ) -> Optional[str]:
+        """Capture exception in Sentry (prod/test) or BetterStack (dev)."""
+        if not (settings.ENABLE_SENTRY or settings.ENABLE_BETTERSTACK):
             return None
+
+        # Set user context if request is available
+        if request:
+            ExceptionHandler.set_user_context(request)
+
         if tag:
             set_tag(tag, True)
-        return capture_exception(exc)
+
+        # Capture exception (Sentry for prod/test, BetterStack for dev)
+        # Both use sentry_sdk, so capture_exception works for either
+        event_id = capture_exception(exc)
+
+        return event_id
 
     @classmethod
     def get_response_body(cls, exc: BaseException, response_config: ExceptionResponse) -> dict:
@@ -87,7 +117,7 @@ class ExceptionHandler:
 
                 # Handle Sentry for specific cases
                 if response_config.sentry_tag:
-                    event_id = cls.capture_sentry_exception(exc, response_config.sentry_tag)
+                    event_id = cls.capture_sentry_exception(exc, response_config.sentry_tag, request)
                     if event_id:
                         body["message"] += f" Reference ID: {event_id}"
                         logger.critical(body["message"], exc_info=True)
@@ -95,7 +125,7 @@ class ExceptionHandler:
                 return Response(body, status=response_config.status)
 
         # Default: unexpected error
-        event_id = cls.capture_sentry_exception(exc, "unexpected_error")
+        event_id = cls.capture_sentry_exception(exc, "unexpected_error", request)
         if event_id:
             logger.critical(f"Unexpected error. Sentry Reference ID: {event_id}", exc_info=True)
 

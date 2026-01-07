@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "@bciers/actions";
-import * as Sentry from "@sentry/nextjs";
+import { captureException } from "@bciers/sentryConfig/sentry";
 
 /**
  * API route handler for downloading invoice PDFs directly.
@@ -81,7 +81,13 @@ export async function GET(
       headers: responseHeaders,
     });
   } catch (err) {
-    Sentry.captureException(err);
+    // Get user_guid from token for error reporting
+    const token = await getToken();
+    const userGuid = token?.user_guid ?? "";
+    captureException(
+      err instanceof Error ? err : new Error(String(err)),
+      userGuid,
+    );
     const message =
       err instanceof Error ? err.message : "An unknown error occurred";
     return NextResponse.json({ error: message }, { status: 500 });

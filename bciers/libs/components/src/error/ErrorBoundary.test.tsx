@@ -6,7 +6,18 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import ErrorBoundary from "./ErrorBoundary";
-import { captureException } from "@bciers/testConfig/mocks";
+
+// Mock the Sentry config module that ErrorBoundary imports from
+// Use vi.hoisted() to ensure the mock function is available during hoisting
+const { captureExceptionMock } = vi.hoisted(() => {
+  return {
+    captureExceptionMock: vi.fn(),
+  };
+});
+
+vi.mock("@bciers/sentryConfig/sentry", () => ({
+  captureException: captureExceptionMock,
+}));
 
 describe("ErrorBoundary", () => {
   /**
@@ -22,7 +33,7 @@ describe("ErrorBoundary", () => {
       .spyOn(console, "error")
       .mockImplementation(() => {});
 
-    captureException.mockReturnValue("sentry-event-id");
+    captureExceptionMock.mockReturnValue("sentry-event-id");
 
     render(<ErrorBoundary error={error} />);
     expect(
@@ -40,13 +51,13 @@ describe("ErrorBoundary", () => {
     const reference = screen.getByText(/sentry-event-id/i);
     expect(reference.tagName.toLowerCase()).toBe("strong");
 
-    expect(captureException).toHaveBeenCalledWith(error);
+    expect(captureExceptionMock).toHaveBeenCalledWith(error);
     consoleErrorSpy.mockRestore();
   });
 
   it("shows 'pending' instead of reference code if not available", () => {
     const error = new Error("Test error");
-    captureException.mockReturnValue(undefined);
+    captureExceptionMock.mockReturnValue(undefined);
 
     render(<ErrorBoundary error={error} />);
 

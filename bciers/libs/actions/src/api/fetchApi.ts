@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/nextjs";
+import { captureException } from "@bciers/sentryConfig/sentry";
 /**
  * 🛠 Generic helper to fetch data from an API endpoint.
  *
@@ -38,8 +38,10 @@ export const fetchApi = async (
   const response = await fetch(`${baseApiUrl}${endpoint}`, options);
 
   if (!response.ok) {
-    Sentry.captureException(
-      `❗ Failed to fetchAPI ${endpoint}: ${response.statusText}`,
+    const userGuid = token?.user_guid;
+    captureException(
+      new Error(`❗ Failed to fetchAPI ${endpoint}: ${response.statusText}`),
+      userGuid,
     );
   }
 
