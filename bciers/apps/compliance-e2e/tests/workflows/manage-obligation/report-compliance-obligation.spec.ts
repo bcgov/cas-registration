@@ -22,12 +22,10 @@ test.describe("Test compliance report version manage obligation flow", () => {
     request,
     happoScreenshot,
   }) => {
-    // 🔌 wire the stub before submitting the report
     const gridReportingReports = new CurrentReportsPOM(page);
-    await gridReportingReports.attachSubmitReportStub(request);
 
-    // Submit obligation report
-    await gridReportingReports.submitReportObligation();
+    // Submit obligation report with stub attached after form is filled
+    await gridReportingReports.submitReportObligation(false, request);
 
     // Navigate to the compliance summaries grid
     const gridComplianceSummaries = new ComplianceSummariesPOM(page);

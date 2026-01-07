@@ -37,6 +37,7 @@ export class CurrentReportsPOM {
     });
     await expect(checkbox).toBeVisible();
     await checkbox.check();
+    await expect(checkbox).toBeChecked();
   }
 
   // ✅ "Submit Report" button (from Sign-off form)
@@ -131,13 +132,24 @@ export class CurrentReportsPOM {
    *
    * - Goes to sign-off for the specified report
    * - Completes all required fields
+   * - Optionally attaches stub (if apiContext provided) AFTER form is filled
    * - Clicks "Submit Report"
    * - Waits for /reporting/reports/:id/submission and success text
    */
-  async submitReportById(reportId: string | number, isEioFlow = false) {
+  async submitReportById(
+    reportId: string | number,
+    isEioFlow = false,
+    apiContext?: APIRequestContext,
+  ) {
     await this.gotoSignOff(reportId);
 
     await this.completeSignOffRequiredFields(isEioFlow);
+
+    // 🔌 Attach stub AFTER form is filled to ensure payload is populated
+    if (apiContext) {
+      await this.page.waitForTimeout(200);
+      await this.attachSubmitReportStub(apiContext);
+    }
 
     // Click submit and wait for navigation
     await clickButton(this.page, SIGN_OFF_SUBMIT_BUTTON_TEXT, {
@@ -152,15 +164,32 @@ export class CurrentReportsPOM {
 
   // 🧩 Convenience wrappers for specific seeded report IDs
 
-  async submitReportNoObligation(isEioFlow = false) {
-    await this.submitReportById(ReportIDs.NO_OBLIGATION, isEioFlow);
+  async submitReportNoObligation(
+    isEioFlow = false,
+    apiContext?: APIRequestContext,
+  ) {
+    await this.submitReportById(ReportIDs.NO_OBLIGATION, isEioFlow, apiContext);
   }
 
-  async submitReportEarnedCredits(isEioFlow = false) {
-    await this.submitReportById(ReportIDs.EARNED_CREDITS, isEioFlow);
+  async submitReportEarnedCredits(
+    isEioFlow = false,
+    apiContext?: APIRequestContext,
+  ) {
+    await this.submitReportById(
+      ReportIDs.EARNED_CREDITS,
+      isEioFlow,
+      apiContext,
+    );
   }
 
-  async submitReportObligation(isEioFlow = false) {
-    await this.submitReportById(ReportIDs.OBLIGATION_NOT_MET, isEioFlow);
+  async submitReportObligation(
+    isEioFlow = false,
+    apiContext?: APIRequestContext,
+  ) {
+    await this.submitReportById(
+      ReportIDs.OBLIGATION_NOT_MET,
+      isEioFlow,
+      apiContext,
+    );
   }
 }
