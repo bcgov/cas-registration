@@ -1,5 +1,4 @@
 import "@bciers/styles/globals.css";
-import dynamic from "next/dynamic";
 import type { Metadata, Viewport } from "next";
 import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
@@ -19,16 +18,8 @@ import {
   isCIEnvironment,
   isVitestEnvironment,
 } from "@bciers/utils/src/environmentDetection";
-
-const SessionTimeoutHandler = dynamic(
-  () => import("@bciers/components/auth/SessionTimeoutHandler"),
-);
-
-// Dynamically import SentryUserContext with SSR disabled
-const SentryUserContext = dynamic(
-  () => import("@bciers/components/sentry/SentryUserContext"),
-  { ssr: false },
-);
+import SessionTimeoutHandler from "@bciers/components/auth/SessionTimeoutHandler";
+import SentryUserContext from "@bciers/components/sentry/SentryUserContext";
 
 const rootMetadata: Metadata = {
   title: "CAS OBPS",
