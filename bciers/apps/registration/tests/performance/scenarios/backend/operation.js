@@ -153,7 +153,6 @@ function getNewEntrantApplication(operationId) {
 function updateNewEntrantApplication(operationId) {
   const payload = JSON.stringify({
     new_entrant_application: MOCK_DATA_URL,
-    date_of_first_shipment: "On or after April 1, 2024",
   });
 
   makeRequest(

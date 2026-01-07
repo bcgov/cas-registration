@@ -163,7 +163,6 @@ const newEntrantFormData = {
   type: "Single Facility Operation",
   registration_purpose: RegistrationPurposes.NEW_ENTRANT_OPERATION,
   new_entrant_application: mockDataUri,
-  date_of_first_shipment: "On or before March 31, 2024",
 };
 
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
@@ -728,10 +727,6 @@ describe("the OperationInformationForm component", () => {
       container.querySelector("#root_section3_new_entrant_preface"),
     ).toHaveTextContent("New Entrant Operation");
     expect(
-      screen.getByText(/when is this operation's date of first shipment\?/i),
-    ).toBeVisible();
-    expect(screen.getByText(/on or before march 31, 2024/i)).toBeVisible();
-    expect(
       screen.getByText(/new entrant application and statutory declaration/i),
     ).toBeVisible();
     expect(screen.getByText("testpdf.pdf")).toBeVisible();
@@ -779,13 +774,6 @@ describe("the OperationInformationForm component", () => {
             new_entrant_preface: {
               type: "string",
             },
-            date_of_first_shipment: {
-              type: "string",
-              enum: [
-                "On or before March 31, 2024",
-                "On or after April 1, 2024",
-              ],
-            },
             new_entrant_application: {
               type: "string",
               title: "New Entrant Application and Statutory Declaration",
@@ -809,11 +797,7 @@ describe("the OperationInformationForm component", () => {
     );
 
     await userEvent.click(screen.getByRole("button", { name: "Edit" }));
-    const afterAprilRadioButton = screen.getByLabelText(
-      "On or after April 1, 2024",
-    );
 
-    await userEvent.click(afterAprilRadioButton);
     const mockFile = new File(["test"], "mock_file.pdf", {
       type: "application/pdf",
     });
@@ -844,7 +828,6 @@ describe("the OperationInformationForm component", () => {
           name: "Operation 5",
           type: "Single Facility Operation",
           registration_purpose: "New Entrant Operation",
-          date_of_first_shipment: "On or after April 1, 2024",
           new_entrant_application:
             "data:application/pdf;name=mock_file.pdf;base64,dGVzdA==",
         }),

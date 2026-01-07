@@ -225,8 +225,6 @@ export enum OperationFields { //All of these fields are also used for New Entran
   BOUNDARY_MAP = "Boundary Map",
   REPORTING_ACTIVITIES = "Reporting Activities*",
   REGULATED_PRODUCT_NAMES = "Regulated Product Name(s)*",
-  NEW_ENTRANT_APPLICATION = "New Entrant Application and Statutory Declaration*",
-  FIRST_SHIPMENT_DATE = "When is this operation's date of First Shipment?*",
 }
 
 export const RegulatedOperationFields: ReadonlyArray<OperationFields> = [
