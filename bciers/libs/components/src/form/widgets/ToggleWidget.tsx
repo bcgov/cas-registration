@@ -177,26 +177,4 @@ const ToggleWidget: React.FC<
   );
 };
 
-// const ToggleWidget: React.FC<WidgetProps> = ({
-//   disabled,
-//   id,
-//   onChange,
-//   value,
-//   trueLabel,
-//   falseLabel,
-// }) => {
-//   return (
-//     <StyledSwitch
-//       id={id}
-//       checked={value}
-//       onChange={(event: { target: { checked: boolean } }) =>
-//         onChange(event.target.checked)
-//       }
-//       disabled={disabled}
-//       trueLabel={trueLabel}
-//       falseLabel={falseLabel}
-//     />
-//   );
-// };
-
 export default ToggleWidget;
