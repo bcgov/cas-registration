@@ -2,7 +2,7 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import TitleOnlyFieldTemplate from "@bciers/components/form/fields/TitleOnlyFieldTemplate";
 import { GenerateNewEntrantFormMessageDefault } from "apps/registration/app/components/operations/registration/form/titles";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import { newEntrantApril1OrLater } from "@bciers/utils/src/urls";
+import { newEntrant } from "@bciers/utils/src/urls";
 
 export const newEntrantOperationSchema: RJSFSchema = {
   title: "New Entrant Operation",
@@ -28,7 +28,7 @@ export const newEntrantOperationUiSchema: UiSchema = {
   "ui:order": ["new_entrant_operation_section", "new_entrant_application"],
   new_entrant_operation_section: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": GenerateNewEntrantFormMessageDefault(newEntrantApril1OrLater),
+    "ui:title": GenerateNewEntrantFormMessageDefault(newEntrant),
   },
   new_entrant_application: {
     "ui:widget": "FileWidget",
