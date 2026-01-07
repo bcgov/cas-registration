@@ -27,7 +27,6 @@ const NewEntrantOperationForm = ({
     const response = await actionHandler(endpoint, "PUT", `${baseUrl}`, {
       body: JSON.stringify({
         new_entrant_application: e.formData.new_entrant_application,
-        date_of_first_shipment: e.formData.date_of_first_shipment,
       }),
     });
     return response;

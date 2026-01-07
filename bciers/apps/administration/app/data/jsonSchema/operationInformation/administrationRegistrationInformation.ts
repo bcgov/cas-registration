@@ -158,14 +158,6 @@ export const createAdministrationRegistrationInformationSchema =
                 activities: {
                   ...reportingActivitiesSchema,
                 },
-                date_of_first_shipment: {
-                  type: "string",
-                  title: "When is this operation's date of First Shipment?",
-                  enum: [
-                    "On or before March 31, 2024",
-                    "On or after April 1, 2024",
-                  ],
-                },
                 new_entrant_application: {
                   type: "string",
                   title: "New Entrant Application and Statutory Declaration",
@@ -174,7 +166,6 @@ export const createAdministrationRegistrationInformationSchema =
               required: [
                 "regulated_products",
                 "activities",
-                "date_of_first_shipment",
                 "new_entrant_application",
               ],
             },
@@ -262,7 +253,6 @@ export const registrationInformationUiSchema: UiSchema = {
     "regulated_products",
     "reporting_activities",
     "new_entrant_preface",
-    "date_of_first_shipment",
     "new_entrant_application",
   ],
   "ui:FieldTemplate": SectionFieldTemplate,
@@ -304,9 +294,6 @@ export const registrationInformationUiSchema: UiSchema = {
     "ui:classNames": "text-bc-bg-blue text-lg",
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": "Potential Reporting Operation",
-  },
-  date_of_first_shipment: {
-    "ui:widget": "RadioWidget",
   },
   new_entrant_application: {
     "ui:widget": "FileWidget",

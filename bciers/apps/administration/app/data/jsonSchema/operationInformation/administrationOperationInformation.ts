@@ -57,7 +57,6 @@ export const administrationOperationInformationUiSchema: UiSchema = {
       "activities",
       "regulated_products",
       "opted_in_operation",
-      "date_of_first_shipment",
       "new_entrant_application",
     ],
     ...optedInOperationDetailsUiSchema,

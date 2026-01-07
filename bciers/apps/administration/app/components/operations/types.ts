@@ -75,5 +75,4 @@ export interface OperationInformationPartialFormData {
   forcasted_emmisions?: string;
   status?: string;
   new_entrant_application?: string;
-  date_of_first_shipment?: string;
 }

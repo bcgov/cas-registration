@@ -36,7 +36,6 @@ export const newEntrantOperationUiSchema: UiSchema = {
       accept: ".pdf",
       label: false,
       filePreview: true,
-      uploadLabel: "Upload application and statutory declaration",
     },
   },
 };
