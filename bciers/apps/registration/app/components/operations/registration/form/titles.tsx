@@ -1,30 +1,19 @@
-import { ggerrLink } from "@bciers/utils/src/urls";
-
-const GenerateNewEntrantFormMessage = (
-  dateMessage: string,
-  applicationUrl: string,
-) => {
+const GenerateNewEntrantFormMessageDefault = (applicationUrl: string) => {
   return (
     <div className="max-w-[900px]">
       <p>
-        For a definition of the Date of First Shipment, please refer to the{" "}
-        <a href={ggerrLink} target="_blank" rel="noopener noreferrer">
-          GGERR
-        </a>
-        .
-      </p>
-      <p>
         Please download and complete the following application form template to
-        receive designation as a New Entrant in the B.C. OBPS. This application
-        form is for operations with a date of First Shipment{" "}
-        <b>{dateMessage}</b>.
+        receive designation as a New Entrant in the B.C. OBPS.
       </p>
       <p>
-        Download <a href={applicationUrl}>application form template</a>
+        Download{" "}
+        <a href={applicationUrl} target="_blank" rel="noopener noreferrer">
+          application form template
+        </a>
       </p>
       <p>Please upload the completed form below.</p>
     </div>
   );
 };
 
-export { GenerateNewEntrantFormMessage };
+export { GenerateNewEntrantFormMessageDefault };

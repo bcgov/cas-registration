@@ -25,10 +25,7 @@ export const penaltiesRegulationLink =
 export const interestRegulationLink =
   "https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/214_83";
 
-export const newEntrantBeforeMarch31 =
-  "https://www2.gov.bc.ca/assets/download/F5375D72BE1C450AB52C2E3E6A618959";
-
-export const newEntrantApril1OrLater =
+export const newEntrant =
   "https://www2.gov.bc.ca/assets/download/751CDDAE4C9A411E974EEA9737CD42C6";
 
 export const ghgRegulatorEmail = "mailto:GHGRegulator@gov.bc.ca";

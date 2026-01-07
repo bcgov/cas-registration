@@ -106,7 +106,6 @@ class TestOperationRegistration(CommonTestSetup):
             "industry_user",
             self.content_type,
             {
-                "date_of_first_shipment": "On or after April 1, 2024",
                 'new_entrant_application': MOCK_DATA_URL,
             },
             custom_reverse_lazy(
@@ -263,10 +262,7 @@ class TestOperationRegistration(CommonTestSetup):
             assert sorted(list(self.operation.activities.values_list('id', flat=True))) == [1, 2]
 
         if purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
-            assert self.operation.date_of_first_shipment == "On or after April 1, 2024"
             assert self.operation.documents.filter(type__name='new_entrant_application').exists()
-        else:
-            assert self.operation.date_of_first_shipment is None
 
         if purpose == Operation.Purposes.OPTED_IN_OPERATION:
             assert self.operation.opted_in_operation is not None

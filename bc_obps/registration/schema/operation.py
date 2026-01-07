@@ -1,6 +1,6 @@
 from uuid import UUID
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
-from typing import List, Optional, Literal
+from typing import List, Optional
 from registration.models.contact import Contact
 from registration.schema import OperatorForOperationOut, MultipleOperatorIn, MultipleOperatorOut
 from ninja import Field, ModelSchema, Schema
@@ -251,11 +251,6 @@ class OperationRegistrationSubmissionIn(Schema):
 
 class OperationNewEntrantApplicationIn(Schema):
     new_entrant_application: str
-    # not using model schema because I wanted to enforce the date_of_first_shipment to be not null and to be a specific value
-    date_of_first_shipment: Literal[
-        Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
-        Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
-    ] = Field(...)
 
     @field_validator("new_entrant_application")
     @classmethod

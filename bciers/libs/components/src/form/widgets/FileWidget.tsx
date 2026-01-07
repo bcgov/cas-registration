@@ -255,16 +255,24 @@ const FileWidget = ({
   const disabledColour =
     disabled || readonly ? "text-bc-bg-dark-grey" : "text-bc-link-blue";
 
+  const uploadLabel = options.uploadLabel
+    ? String(options.uploadLabel)
+    : "Upload attachment";
+  const reuploadLabel = options.reuploadLabel
+    ? String(options.reuploadLabel)
+    : "Reupload attachment";
+
   /*   File input styling options are limited so we are attaching a ref to it, hiding it and triggering it with a styled button. */
   return (
-    <div className="py-4 flex">
+    <div className="py-4 flex flex-col md:flex-row items-start gap-2 md:gap-4">
       {!isCasInternal && (
         <button
           type="button"
           onClick={handleClick}
-          className={`p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline ${disabledColour}`}
+          className={`p-0 decoration-solid border-0 text-base md:text-lg bg-transparent cursor-pointer underline flex-shrink-0 ${disabledColour}`}
+          style={{ whiteSpace: "nowrap" }}
         >
-          {localValue ? "Reupload attachment" : "Upload attachment"}
+          {localValue ? reuploadLabel : uploadLabel}
         </button>
       )}
       <input
@@ -288,7 +296,9 @@ const FileWidget = ({
           preview={options.filePreview}
         />
       ) : (
-        <span className="ml-4 text-lg">No attachment was uploaded</span>
+        <span className="text-base md:text-lg flex-shrink-0">
+          No attachment was uploaded
+        </span>
       )}
     </div>
   );
