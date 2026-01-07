@@ -12,7 +12,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0148_V4_6_1'),
+        ('registration', '0150_constraint_contact_unique_active_email'),
     ]
 
     operations = [
