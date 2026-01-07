@@ -42,11 +42,10 @@ jobs:
             bc_obps/.tool-versions
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup-frontend
-      - name: Run Nx Affected Tests with Remote Caching
+      - name: Run Nx Tests (all apps)
         id: nx-tests
         run: |
-          yarn nx affected --base=origin/develop --target=test --parallel
-        shell: bash
+          yarn nx run-many -t test -p dashboard,administration,registration,reporting,compliance --parallel
 
   yarn-audit:
     runs-on: ubuntu-latest
