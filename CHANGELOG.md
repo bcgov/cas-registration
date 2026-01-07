@@ -1,3 +1,20 @@
+# [4.7.0](https://github.com/bcgov/cas-registration/compare/v4.6.1...v4.7.0) (2026-01-07)
+
+### Bug Fixes
+
+- Change lowest credited_emissions from > 0 to >= 1 to prevent earned credits record creation at <1 && >0 ([aa74cbb](https://github.com/bcgov/cas-registration/commit/aa74cbb43f65b70fd444d3871c22df2a33456810))
+- changed unique-email-per-contact constraint so that it doesn't apply to archived contacts ([d6ad0fd](https://github.com/bcgov/cas-registration/commit/d6ad0fddabcee60d4cbcf2b09f4fe2eb71a260e9))
+- check for previous base path change before redirecting on cancel button to fix chunk load error ([26368b2](https://github.com/bcgov/cas-registration/commit/26368b2a008dca068868fef220c37a802b721293))
+- dag problems cause tasks to fail ([d76f8cb](https://github.com/bcgov/cas-registration/commit/d76f8cbfdce8220f83a0a0dfb6ccc17296cb585c))
+- grant UPDATE on elicensing_invoice for industry users (decreased obligation flow) ([e6ce9cd](https://github.com/bcgov/cas-registration/commit/e6ce9cdfe9feff6daad6a8270cfcca5b0f68d346))
+- make backend-rollout wait non-blocking for dag ([3e96071](https://github.com/bcgov/cas-registration/commit/3e96071b0d34d7cdd90bfb5d0f9e9433a55e8133))
+- mock time now doesn't crash when the cookie value is undefined ([314b7ae](https://github.com/bcgov/cas-registration/commit/314b7ae87b4927c3ce8386ae795a3e68abdb0d9e))
+- use proper env detection for secure cookies ([eb33f63](https://github.com/bcgov/cas-registration/commit/eb33f633f090bd55ca27f4943e3da93f5cda2987))
+
+### Features
+
+- add betterstack to dev namespace ([9a6a6b8](https://github.com/bcgov/cas-registration/commit/9a6a6b874f51453a895cb9d57fc45cdf589d6d60))
+
 ## [4.6.1](https://github.com/bcgov/cas-registration/compare/v4.6.0...v4.6.1) (2025-12-09)
 
 ### Bug Fixes
