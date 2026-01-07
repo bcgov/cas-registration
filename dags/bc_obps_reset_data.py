@@ -41,7 +41,7 @@ def reset_data():
         trigger_k8s_cronjob("reset-database", BCIERS_NAMESPACE)
 
     cycle_backend_pod_task = KubernetesJobOperator(
-        task_id="cycle_backend_pod",
+        task_id="cycle-backend-pod",
         name="cycle-backend-pod",
         namespace=BCIERS_NAMESPACE,
         service_account_name=SERVICE_ACCOUNT_NAME,
@@ -53,7 +53,7 @@ def reset_data():
 
     # Triggers a check to see if the backend rollout has completed, but does not block the helm release use of the DAG
     trigger_wait_for_backend_rollout = TriggerDagRunOperator(
-        task_id="trigger_wait_for_backend_rollout",
+        task_id="trigger-wait-for-backend-rollout",
         trigger_dag_id=WAIT_FOR_BACKEND_ROLLOUT_DAG_NAME,
     )
 
@@ -74,7 +74,7 @@ DAG to wait for the backend rollout to complete. Intended to be triggered after 
 )
 def wait_for_backend_rollout():
     wait_for_backend_rollout_task = KubernetesJobOperator(
-        task_id="wait_for_backend_rollout",
+        task_id="wait-for-backend-rollout",
         name="wait-for-backend-rollout",
         namespace=BCIERS_NAMESPACE,
         service_account_name=SERVICE_ACCOUNT_NAME,

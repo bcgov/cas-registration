@@ -63,7 +63,7 @@ def test_migrations(
         trigger_k8s_cronjob(job_name, namespace)
 
     postgres_helm_install = KubernetesJobOperator(
-        task_id="install_cas_obps_postgres_migration_test_chart",
+        task_id="install-cas-obps-postgres-migration-test-chart",
         name="install-cas-obps-postgres-migration-test-chart",
         namespace="{{ params.destination_namespace }}",
         service_account_name=SERVICE_ACCOUNT_NAME,
@@ -84,21 +84,21 @@ def test_migrations(
     )
 
     time_delay_postgres = TimeDeltaSensor(
-        task_id="wait_time_before_postgres_initial_ready_check",
+        task_id="wait-time-before-postgres-initial-ready-check",
         delta=timedelta(minutes=8),
         doc_md="""Waits for 8 minutes before checking if the postgres pod is ready.""",
     )
 
-    wait_for_postgres_restore = trigger_k8s_cronjob_with_params.override(task_id="wait_for_postgres_restore")(
+    wait_for_postgres_restore = trigger_k8s_cronjob_with_params.override(task_id="wait-for-postgres-restore")(
         "pg-migration-test-wait-for-postgres-restore-job"
     )
 
-    postgres_migration_test = trigger_k8s_cronjob_with_params.override(task_id="postgres_migration_test")(
+    postgres_migration_test = trigger_k8s_cronjob_with_params.override(task_id="postgres-migration-test")(
         "pg-migration-test-job"
     )
 
     backend_helm_install = KubernetesJobOperator(
-        task_id="install_cas_obps_backend_migration_test_chart",
+        task_id="install-cas-obps-backend-migration-test-chart",
         name="install-cas-obps-backend-migration-test-chart",
         namespace="{{ params.destination_namespace }}",
         service_account_name=SERVICE_ACCOUNT_NAME,
@@ -120,21 +120,21 @@ def test_migrations(
     )
 
     time_delay_backend = TimeDeltaSensor(
-        task_id="wait_time_before_backend_initial_ready_check",
+        task_id="wait-time-before-backend-initial-ready-check",
         delta=timedelta(seconds=150),
         doc_md="""Waits for 150 seconds (based on the initial ready check time set in the backend) before checking if the backend pod is ready.""",
     )
 
-    wait_for_backend = trigger_k8s_cronjob_with_params.override(task_id="wait_for_backend")(
+    wait_for_backend = trigger_k8s_cronjob_with_params.override(task_id="wait-for-backend")(
         "be-migration-test-wait-for-backend-job"
     )
 
-    backend_migration_test = trigger_k8s_cronjob_with_params.override(task_id="backend_migration_test")(
+    backend_migration_test = trigger_k8s_cronjob_with_params.override(task_id="backend-migration-test")(
         "be-migration-test-job"
     )
 
     uninstall_postgres_helm_charts = KubernetesJobOperator(
-        task_id="uninstall_postgres_helm_charts",
+        task_id="uninstall-postgres-helm-charts",
         name="uninstall-postgres-helm-charts",
         namespace="{{ params.destination_namespace }}",
         service_account_name=SERVICE_ACCOUNT_NAME,
@@ -149,7 +149,7 @@ def test_migrations(
     )
 
     uninstall_backend_helm_charts = KubernetesJobOperator(
-        task_id="uninstall_backend_helm_charts",
+        task_id="uninstall-backend-helm-charts",
         name="uninstall-backend-helm-charts",
         namespace="{{ params.destination_namespace }}",
         service_account_name=SERVICE_ACCOUNT_NAME,
