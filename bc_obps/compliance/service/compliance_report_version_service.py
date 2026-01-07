@@ -20,6 +20,7 @@ from compliance.tasks import retryable_send_notice_of_no_obligation_no_earned_cr
 logger = logging.getLogger(__name__)
 
 ZERO_DECIMAL = Decimal('0')
+ONE_DECIMAL = Decimal('1')
 
 
 class ComplianceReportVersionService:
@@ -137,7 +138,7 @@ class ComplianceReportVersionService:
         """
         if excess_emissions > ZERO_DECIMAL:
             return ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
-        elif int(credited_emissions) > ZERO_DECIMAL:
+        elif int(credited_emissions) >= ONE_DECIMAL:
             return ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
         else:
             return ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
