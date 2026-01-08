@@ -24,7 +24,7 @@ const SimpleModal: React.FC<Props> = ({
   confirmText = "Confirm",
   cancelText = "Cancel",
   showConfirmButton = true,
-  textComponentType = "p",
+  textComponentType = "div",
   children,
   dialogContentClassName,
   isSubmitting = false,
