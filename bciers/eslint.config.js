@@ -125,6 +125,7 @@ module.exports = [
             "**/test-*.{ts,tsx,js,jsx}",
             "**/*{.,_}{test,spec}.{ts,tsx,js,jsx}",
             "**/e2e/**/*.{ts,tsx,js,jsx}",
+            "**/*-e2e/**/*.{ts,tsx,js,jsx}",
             "**/playwright.config.{ts,js}",
             "**/tailwind.config.{ts,js}",
             "**/next.config.{ts,js}",
