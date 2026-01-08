@@ -56,7 +56,7 @@ export const buildProductionDataSchema2025 = (
           product_name: {
             title: "Name",
             type: "string",
-            value: "custom value",
+            default: "custom value",
           },
           unit: {
             title: "Unit",
