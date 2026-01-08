@@ -151,10 +151,8 @@ describe("The TransferForm component", () => {
     selectOperator(/current operator\*/i, "Operator 1");
     selectOperator(/select the new operator\*/i, "Operator 2");
     await selectEntityAndAssertFields("Operation");
-    await waitFor(() => {
-      selectOperation(/operation\*/i, "Operation 1");
-      selectDateOfTransfer("2022-12-31");
-    });
+    await selectOperation(/operation\*/i, "Operation 1");
+    await selectDateOfTransfer("2022-12-31");
     expectButton("Transfer Entity");
   });
 
@@ -253,8 +251,11 @@ describe("The TransferForm component", () => {
     // make sure the success page is displayed
     expect(
       screen.getByText(
-        /operation will be transferred from operator 1 to operator 2 on \./i,
+        /operation has been transferred from operator 1 to operator 2\./i,
       ),
+    ).toBeVisible();
+    expect(
+      screen.getByText(/operation is now in the account of operator 2/i),
     ).toBeVisible();
     expect(
       screen.getByRole("button", {

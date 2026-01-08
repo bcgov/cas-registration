@@ -10,7 +10,6 @@ const defaultProps = {
   isSuccess: false,
   isRedirecting: false,
   saveButtonDisabled: false,
-  saveAndContinue: () => {},
   isSignOffPage: false,
 };
 
@@ -52,7 +51,7 @@ describe("The ReportingStepButtons component", () => {
     expect(screen.getByRole("button", { name: "Save" })).toBeVisible();
     // Check spinner is visible when saving
     render(<ReportingStepButtons {...defaultProps} isSaving={true} />);
-    expect(screen.getByRole("progress")).toBeVisible();
+    expect(screen.getByTestId("progressbarsave")).toBeVisible();
     //  Check success when saving is over
     render(<ReportingStepButtons {...defaultProps} isSuccess={true} />);
     expect(screen.getByRole("button", { name: "✅ Success" })).toBeVisible();
@@ -66,7 +65,7 @@ describe("The ReportingStepButtons component", () => {
     ).toBeVisible();
     // Check spinner is visible when saving
     render(<ReportingStepButtons {...defaultProps} isSaving={true} />);
-    expect(screen.getByRole("progressContinuing")).toBeVisible();
+    expect(screen.getByTestId("progressbar")).toBeVisible();
     //  Check redirecting when saving is over
     render(<ReportingStepButtons {...defaultProps} isRedirecting={true} />);
     expect(
