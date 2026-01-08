@@ -6,7 +6,6 @@ import {
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
-import type { JSONSchema7 } from "json-schema";
 
 export const buildProductionDataSchema2025 = (
   compliance_period_start: string,
@@ -120,7 +119,7 @@ export const buildProductionDataSchema2025 = (
   // conditionally add Jan-Mar production data field for opted-out operations
   if (is_opted_out) {
     const productionDataItem = schema.definitions
-      ?.productionDataItem as JSONSchema7;
+      ?.productionDataItem as RJSFSchema;
 
     // protection in case productionDataItem is undefined
     productionDataItem.properties ??= {};
