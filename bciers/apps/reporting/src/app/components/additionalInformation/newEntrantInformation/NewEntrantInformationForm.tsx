@@ -58,7 +58,9 @@ export default function NewEntrantInformationForm({
       formData={formData}
       backUrl={navigationInformation.backUrl}
       onChange={handleChange as (data: object) => void}
-      onSubmit={(data: object, _navigateAfterSubmit: boolean) => handleSubmit((data as any).formData)}
+      onSubmit={(data: object, _navigateAfterSubmit: boolean) =>
+        handleSubmit((data as any).formData)
+      }
       submitButtonDisabled={submitButtonDisabled}
       formContext={formData}
       continueUrl={navigationInformation.continueUrl}

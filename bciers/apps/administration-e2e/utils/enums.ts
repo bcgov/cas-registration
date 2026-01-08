@@ -217,7 +217,8 @@ export enum RegistrationPurposes {
   ELECTRICITY_IMPORT_OPERATION = "Electricity Import Operation",
 }
 
-export enum OperationFields { //All of these fields are also used for New Entrant Operations
+export enum OperationFields {
+  //All of these fields are also used for New Entrant Operations
   PRIMARY_NAICS_CODE = "Primary NAICS Code*",
   SECONDARY_NAICS_CODE = "Secondary NAICS Code",
   TERTIARY_NAICS_CODE = "Tertiary NAICS Code",

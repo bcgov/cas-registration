@@ -35,7 +35,6 @@ This directory contains all the files necessary to import data from ciip/swrs in
 ## Manual Testing:
 
 - This import was manually tested in the following ways:
-
   - The set of results in the obps operator table is equal to the number of results from the initial swrs.organisation query used to pare down the results into unique operator rows where the operator submitted a swrs report in 2022.
   - The set of results in the obps operation table is equal to the number of results from the initial swrs.facilty query used to pare down the results into unique facility rows where the facility_type was either 'SFO' or 'LFO' and the facility submitted a swrs report in 2022.
   - The following union query was run on the output of the fdw import to ensure that the correct operations were associated to the correct operators in the obps operation table:
@@ -77,7 +76,6 @@ This directory contains all the files necessary to import data from ciip/swrs in
   ```
 
   The number of results did not differ after applying the union operator on the two queries. So there are no extraneous rows between the two queries where a facility / operation's swrs_facility_id has been associated incorrecty with a different organisation / operator's swrs_organisation_id.
-
   - The following similar query was run to ensure that no addresses were incorrectly associated with an operator after import:
 
   ```sql

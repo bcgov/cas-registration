@@ -182,12 +182,10 @@ This guide will help you set up the frontend development environment for the CAS
 ### Required Tools
 
 1. **Node.js**
-
    - Version: 24.11.1 (as specified in `.tool-versions`)
    - Required for running the JavaScript/TypeScript codebase
 
 2. **Package Manager**
-
    - Yarn (Modern version using `.yarnrc.yml`)
    - Used for managing project dependencies
 
@@ -235,7 +233,6 @@ This guide will help you set up the frontend development environment for the CAS
 ### Alternative Method (Without asdf)
 
 1. **Install Node.js 24.11.1**
-
    - Using nvm:
      ```bash
      nvm install 24.11.1
@@ -440,7 +437,6 @@ yarn nx run coam:test   # Run tests
 ### Common Issues
 
 1. **Node.js version mismatch**
-
    - Verify your Node.js version:
      ```bash
      node --version
@@ -448,7 +444,6 @@ yarn nx run coam:test   # Run tests
    - Should output: v24.11.1
 
 2. **Yarn issues**
-
    - Clear yarn cache:
      ```bash
      yarn cache clean

@@ -33,12 +33,10 @@ Directory structure:
 ### Frontend Technologies
 
 - **Framework**:
-
   - Next.js (React-based framework)
   - React
 
 - **Build & Development**:
-
   - Nx (Monorepo management)
   - Node.js
   - Yarn (Package management)
@@ -46,7 +44,6 @@ Directory structure:
   - Babel (JavaScript compiler)
 
 - **Testing & Quality**:
-
   - Playwright (E2E testing)
   - ESLint (Code linting)
   - Prettier (Code formatting)
@@ -60,13 +57,11 @@ Directory structure:
 ### Backend Technologies
 
 - **Framework**:
-
   - Django (Python web framework)
   - Django-Ninja (Fast and type-safe REST API framework)
   - Python
 
 - **Development & Build**:
-
   - Poetry (Python dependency management)
   - Make (Build automation)
 
@@ -79,12 +74,10 @@ Directory structure:
 ### Infrastructure & DevOps
 
 - **Containerization**:
-
   - Docker
   - Docker Compose
 
 - **Version Control**:
-
   - Git
   - GitHub Actions (CI/CD)
   - Pre-commit hooks

@@ -40,7 +40,6 @@ In `bciers/apps/registration/e2e` directory, create a `bciers/apps//e2e/.env.loc
 9. Run `make create_db` to create the database.
 10. Run `make migrate` to run all database migrations.
 11. Run `make run`, which will start running the development server locally (default port is :8000; terminal output will indicate what localhost address to use to access the backend. server).
-
     - to test it out, navigate to the `/api/docs` endpoint in your browser, you should see documentation for the /add endpoint
     - navigate to the `api/add?a=4&b=2` endpoint in your browser, which should return as a result the sum of the specified values for a and b.
 
