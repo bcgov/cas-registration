@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 export const fillComboboxWidgetField = async (

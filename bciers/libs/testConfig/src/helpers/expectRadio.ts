@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { screen } from "@testing-library/react";
 import { expect } from "vitest";
 
