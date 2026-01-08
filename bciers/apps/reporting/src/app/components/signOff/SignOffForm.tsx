@@ -77,7 +77,7 @@ export default function SignOffForm({
       formData={formState}
       onSubmit={handleSubmit}
       buttonText={"Submit Report"}
-      onChange={handleChange}
+      onChange={handleChange as (data: object) => void}
       saveButtonDisabled={true}
       submitButtonDisabled={submitButtonDisabled}
       continueUrl={navigationInformation.continueUrl}

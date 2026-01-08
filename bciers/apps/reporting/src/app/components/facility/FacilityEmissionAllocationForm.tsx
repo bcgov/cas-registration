@@ -383,8 +383,8 @@ export default function FacilityEmissionAllocationForm({
       submitButtonDisabled={submitButtonDisabled}
       backUrl={navigationInformation.backUrl}
       saveButtonDisabled={submitButtonDisabled}
-      onChange={handleChange}
-      onSubmit={handleSubmit}
+      onChange={handleChange as (data: object) => void}
+      onSubmit={handleSubmit as (data: object, navigateAfterSubmit: boolean) => Promise<boolean>}
       continueUrl={navigationInformation.continueUrl}
       errors={errors}
       formContext={{

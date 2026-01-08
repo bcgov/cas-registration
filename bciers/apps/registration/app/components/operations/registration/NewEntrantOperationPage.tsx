@@ -24,7 +24,7 @@ const NewEntrantOperationPage = async ({
 
   return (
     <NewEntrantOperationForm
-      formData={formData}
+      formData={formData as NewEntrantOperationFormData}
       operation={operation}
       schema={newEntrantOperationSchema}
       step={step}

@@ -93,7 +93,7 @@ export default function NonAttributableEmissionsForm({
       uiSchema={nonAttributableEmissionUiSchema}
       formData={formData}
       cancelUrl="#"
-      onChange={(data) => setFormData(data.formData)}
+      onChange={(data: any) => setFormData((data as any).formData)}
       onSubmit={handleSubmit}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}

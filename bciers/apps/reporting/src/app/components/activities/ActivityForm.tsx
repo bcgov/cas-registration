@@ -12,7 +12,6 @@ import { customizeValidator } from "@rjsf/validator-ajv8";
 import setNestedErrorForCustomValidate from "@bciers/utils/src/setCustomValidateErrors";
 import { findPathsWithNegativeNumbers } from "@bciers/utils/src/findInObject";
 import { calculateMobileAnnualAmount } from "@bciers/utils/src/customReportingActivityFormCalculations";
-import { IChangeEvent } from "@rjsf/core";
 import { NavigationInformation } from "../taskList/types";
 import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
 import { Dict } from "@bciers/types/dictionary";
@@ -119,7 +118,7 @@ export default function ActivityForm({
   };
 
   // 🛠️ Function to submit user form data to API
-  const submitHandler = async (e: IChangeEvent) => {
+  const submitHandler = async (data: any, _navigateAfterSubmit: boolean) => {
     if (isFallbackSchema) {
       //if the schema is a fallback schema, we just return true
       return true;
@@ -129,7 +128,7 @@ export default function ActivityForm({
     const sourceTypeCount = Object.keys(sourceTypeMap).length;
 
     // Ensure we use the filtered formData with omitted extra data
-    const filteredData = e.formData;
+    const filteredData = data.formData;
 
     if (!filteredData.sourceTypes) {
       setErrorList([
@@ -193,7 +192,7 @@ export default function ActivityForm({
       noSaveButton={isFallbackSchema}
       formData={formState}
       uiSchema={getUiSchema(currentActivity.slug)}
-      onChange={debounce(handleFormChange, 200)}
+      onChange={debounce(handleFormChange, 200) as (data: object) => void}
       errors={errorList}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
