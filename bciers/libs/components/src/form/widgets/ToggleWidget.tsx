@@ -4,6 +4,7 @@ import { WidgetProps } from "@rjsf/utils/lib/types";
 import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Switch, { SwitchProps } from "@mui/material/Switch";
+import { V_DARK_GREY_BG_COLOR } from "@bciers/styles/colors";
 
 /**
  * Helper to safely embed text in an SVG data URL
@@ -72,7 +73,7 @@ const StyledSwitch = styled(
   },
   "& .MuiSwitch-track": {
     borderRadius: 32 / 2,
-    backgroundColor: theme.palette.secondary.dark,
+    backgroundColor: V_DARK_GREY_BG_COLOR,
     opacity: 1,
     transition: theme.transitions.create(["background-color"], {
       duration: 500,
