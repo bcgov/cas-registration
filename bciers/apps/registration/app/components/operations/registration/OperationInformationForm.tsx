@@ -104,7 +104,7 @@ const OperationInformationForm = ({
     }
 
     if (
-      confirmedFormState.section1.registration_purpose ===
+      newConfirmedFormState.section1.registration_purpose ===
       RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
     ) {
       // EIOs only require basic information, so if a user selects EIO we remove some of the form fields
