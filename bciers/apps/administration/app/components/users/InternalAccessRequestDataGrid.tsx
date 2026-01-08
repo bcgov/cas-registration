@@ -17,7 +17,7 @@ const InternalAccessRequestDataGrid = ({
   const currentUserRole = useSessionRole();
   const columns = useMemo(
     () => internalAccessRequestColumns(currentUserRole),
-    [],
+    [currentUserRole],
   );
   return (
     <DataGrid

@@ -11,6 +11,7 @@ import { archiveContact } from "@bciers/actions/api";
 import { useParams, useRouter } from "next/navigation";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { actionHandler } from "@bciers/actions";
+import useKey from "@bciers/utils/src/useKey";
 
 interface Props {
   schema: any;
@@ -37,7 +38,7 @@ export default function ContactForm({
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData ?? {});
   const [isCreatingState, setIsCreatingState] = useState(isCreating);
-  const [key, setKey] = useState(Math.random());
+  const [key, resetKey] = useKey();
   const role = useSessionRole();
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -133,7 +134,7 @@ export default function ContactForm({
               id: response.id,
             }));
           } else {
-            setKey(Math.random());
+            resetKey();
           }
           const replaceUrl = `/contacts/${
             method === "POST" ? response.id : formState.id

@@ -244,7 +244,7 @@ describe("the OperationInformationForm component", () => {
     // registration info & purpose
     expect(
       screen.getByText(
-        /The purpose of this registration is to register as a\:/i,
+        /The purpose of this registration is to register as a:/i,
       ),
     ).toBeVisible();
     const reportingOperationLabels =
@@ -287,7 +287,7 @@ describe("the OperationInformationForm component", () => {
     // registration info & purpose
     expect(
       screen.getByText(
-        /The purpose of this registration is to register as a\:/i,
+        /The purpose of this registration is to register as a:/i,
       ),
     ).toBeVisible();
   });
@@ -717,7 +717,7 @@ describe("the OperationInformationForm component", () => {
     ).toBeVisible();
     expect(
       screen.getByText(
-        /The purpose of this registration is to register as a\:/i,
+        /The purpose of this registration is to register as a:/i,
       ),
     ).toBeVisible();
     expect(

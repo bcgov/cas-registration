@@ -18,6 +18,7 @@ import FormBase, { FormPropsWithTheme } from "@bciers/components/form/FormBase";
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
 import SnackBar from "@bciers/components/form/components/SnackBar";
+import useKey from "@bciers/utils/src/useKey";
 
 interface NewOperationRepresentativeFormProps
   extends Omit<FormPropsWithTheme<any>, "schema" | "uiSchema"> {
@@ -40,7 +41,7 @@ const NewOperationRepresentativeForm: FC<
 
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData);
-  const [key, setKey] = useState(Math.random());
+  const [key, resetKey] = useKey();
   const [existingContactId, setExistingContactId] = useState("");
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const isSubmitButton = formState?.new_operation_representative?.length > 0;
@@ -65,7 +66,7 @@ const NewOperationRepresentativeForm: FC<
           },
         ],
       });
-      setKey(Math.random()); // force re-render to handle blank fields in the new selected contact data
+      resetKey(); // force re-render to handle blank fields in the new selected contact data
     } catch (_err) {
       setError("Failed to fetch contact data!" as any);
     }
@@ -78,7 +79,7 @@ const NewOperationRepresentativeForm: FC<
       operation_representatives: formState.operation_representatives,
       new_operation_representative: [{}],
     });
-    setKey(Math.random()); // force re-render to clear the form
+    resetKey(); // force re-render to clear the form
   };
 
   const handleChange = ({ formData: newFormData }: IChangeEvent) => {
@@ -115,7 +116,7 @@ const NewOperationRepresentativeForm: FC<
       ],
       new_operation_representative: [{}],
     });
-    setKey(Math.random()); // force re-render to clear the form
+    resetKey(); // force re-render to clear the form
     setIsSnackbarOpen(true);
   };
 

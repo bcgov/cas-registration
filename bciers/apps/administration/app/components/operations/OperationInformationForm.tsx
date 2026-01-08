@@ -132,6 +132,7 @@ const OperationInformationForm = ({
       setSelectedPurpose(pendingChangeRegistrationPurpose);
       setIsConfirmPurposeChangeModalOpen(false);
     }
+    // eslint-disable-next-line react-hooks/immutability
     formData.registration_purpose = pendingChangeRegistrationPurpose;
     setPendingChangeRegistrationPurpose("");
   };

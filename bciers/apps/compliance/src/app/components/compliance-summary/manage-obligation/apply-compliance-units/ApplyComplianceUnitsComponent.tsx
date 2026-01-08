@@ -35,9 +35,9 @@ export default function ApplyComplianceUnitsComponent({
   reportingYear,
 }: Readonly<ApplyComplianceUnitsComponentProps>) {
   const router = useRouter();
-  const [formData, setFormData] = useState<ApplyComplianceUnitsFormData | {}>(
-    {},
-  );
+  const [formData, setFormData] = useState<
+    Partial<ApplyComplianceUnitsFormData>
+  >({});
   const [operationName, setOperationName] = useState<string>();
   type Status = "idle" | "submitting" | "submitted" | "applying" | "applied";
 
@@ -178,7 +178,7 @@ export default function ApplyComplianceUnitsComponent({
       setInitialOutstandingBalance(response.outstanding_balance || 0);
 
       // Update form data with the full compliance data from the response
-      setFormData((prev: ApplyComplianceUnitsFormData) => {
+      setFormData((prev: Partial<ApplyComplianceUnitsFormData>) => {
         // Create a clean data object for the compliance phase
         const cleanFormData = {
           bccr_holding_account_id: prev.bccr_holding_account_id,
@@ -304,7 +304,7 @@ export default function ApplyComplianceUnitsComponent({
         complianceReportVersionId,
         onValidAccountResolved: (response?: BccrComplianceAccountResponse) => {
           if (response) {
-            setFormData((prev: ApplyComplianceUnitsFormData) => ({
+            setFormData((prev: Partial<ApplyComplianceUnitsFormData>) => ({
               ...prev,
               ...response,
             }));

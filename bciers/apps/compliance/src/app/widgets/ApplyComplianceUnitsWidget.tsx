@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, type ReactNode } from "react";
+import { useState, useMemo, type ReactNode } from "react";
 import { WidgetProps } from "@rjsf/utils";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import applyComplianceUnitsColumns from "@/compliance/src/app/components/datagrid/models/apply-compliance-units/applyComplianceUnitsColumns";

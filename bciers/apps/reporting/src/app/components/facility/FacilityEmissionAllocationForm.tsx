@@ -225,6 +225,7 @@ export default function FacilityEmissionAllocationForm({
           products: initialData.report_product_emission_allocation_totals,
         },
       };
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData(restoredFormData);
       setShouldReset(false);
       return;
@@ -384,7 +385,12 @@ export default function FacilityEmissionAllocationForm({
       backUrl={navigationInformation.backUrl}
       saveButtonDisabled={submitButtonDisabled}
       onChange={handleChange as (data: object) => void}
-      onSubmit={handleSubmit as (data: object, navigateAfterSubmit: boolean) => Promise<boolean>}
+      onSubmit={
+        handleSubmit as (
+          data: object,
+          navigateAfterSubmit: boolean,
+        ) => Promise<boolean>
+      }
       continueUrl={navigationInformation.continueUrl}
       errors={errors}
       formContext={{

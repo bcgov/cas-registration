@@ -32,6 +32,7 @@ module.exports = [
       "vite.config.**s.timestamp-*",
       "vitest.config.**s.timestamp-*",
       "**/tests/performance/**",
+      "**/next-env.d.ts",
     ],
   },
   // Base recommended configs
@@ -124,6 +125,8 @@ module.exports = [
             "**/test.{ts,tsx,js,jsx}",
             "**/test-*.{ts,tsx,js,jsx}",
             "**/*{.,_}{test,spec}.{ts,tsx,js,jsx}",
+            "**/tests/**/*.{ts,tsx,js,jsx}",
+            "libs/testConfig/**/*.{ts,tsx,js,jsx}",
             "**/e2e/**/*.{ts,tsx,js,jsx}",
             "**/*-e2e/**/*.{ts,tsx,js,jsx}",
             "**/playwright.config.{ts,js}",
