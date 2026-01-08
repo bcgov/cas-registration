@@ -107,6 +107,11 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
       showErrorList={false}
       transformErrors={transformErrors}
       validator={validator}
+      experimental_defaultFormStateBehavior={{
+        // keep any other behavior callers
+        ...(props.experimental_defaultFormStateBehavior ?? {}),
+        constAsDefaults: "never", // force global policy: prevent RJSF from auto-selecting `anyOf`/`oneOf` fields
+      }}
     />
   );
 };
