@@ -29,6 +29,7 @@ export const createRegistrationPurposeSchema = async () => {
     id: number;
     applicable_to: string;
     name: string;
+    display_name?: string;
   }[] = await getReportingActivities();
   if (reportingActivities && "error" in reportingActivities)
     throw new Error("Failed to retrieve reporting activities information");
@@ -130,11 +131,18 @@ export const createRegistrationPurposeSchema = async () => {
                       id: number;
                       applicable_to: string;
                       name: string;
+                      display_name?: string;
                     }) => activity.id,
                   ),
                   enumNames: reportingActivities.map(
-                    (activity: { applicable_to: string; name: string }) =>
-                      activity.name,
+                    (activity: {
+                      applicable_to: string;
+                      name: string;
+                      display_name?: string;
+                    }) =>
+                      activity.display_name
+                        ? activity.display_name
+                        : activity.name,
                   ),
                 },
               },

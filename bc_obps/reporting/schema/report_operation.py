@@ -79,6 +79,7 @@ class ActivitySchema(Schema):
     id: int
     name: str
     applicable_to: str
+    display_name: Optional[str]
 
 
 class ReportOperationDataSchema(Schema):

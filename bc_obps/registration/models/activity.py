@@ -25,6 +25,12 @@ class Activity(BaseModel):
         max_length=50,
         db_comment="A varchar slug to identify the activity on the frontend. This will be used to generate the routes to navigate to each activity",
     )
+    display_name = models.CharField(
+        max_length=1000,
+        null=True,
+        blank=True,
+        db_comment="The display name of the activity. This is the name that will be shown on the frontend.",
+    )
     weight = models.FloatField(
         db_comment='A weighted float value used to order activities. This will be used on the frontend to determine the order in which activity pages appear in an emissions report'
     )

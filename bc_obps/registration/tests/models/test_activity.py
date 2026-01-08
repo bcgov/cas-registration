@@ -10,6 +10,7 @@ class ActivityModelTest(BaseTestCase):
             ("name", "name", 1000, None),
             ("applicable_to", "applicable to", None, None),
             ("slug", "slug", 50, None),
+            ("display_name", "display name", 1000, None),
             ("weight", "weight", None, None),
             ("operations", "operation", None, None),
             ("configuration_elements", "configuration element", None, None),

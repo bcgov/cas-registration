@@ -9,4 +9,4 @@ class ActivitySchemaOut(ModelSchema):
 
     class Meta:
         model = Activity
-        fields = ['id', "name", "applicable_to"]
+        fields = ['id', "name", "applicable_to", "display_name"]

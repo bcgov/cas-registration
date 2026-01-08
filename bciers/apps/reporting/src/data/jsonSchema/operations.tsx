@@ -119,7 +119,11 @@ export const buildOperationReviewSchema = (
                   items: {
                     type: "number",
                     enum: allActivities.map((activity) => activity.id),
-                    enumNames: allActivities.map((activity) => activity.name),
+                    enumNames: allActivities.map((activity) =>
+                      activity.display_name
+                        ? activity.display_name
+                        : activity.name,
+                    ),
                   },
                 },
               }),

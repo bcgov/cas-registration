@@ -9,6 +9,7 @@ export interface ActivityData {
   name: string;
   id: number;
   applicable_to: string;
+  display_name?: string;
 }
 
 export const buildFacilitySchema = (
@@ -42,7 +43,9 @@ export const buildFacilitySchema = (
         title: "Activities",
         items: {
           type: "string",
-          enum: activities.map((activitiy) => activitiy.name),
+          enum: activities.map((activitiy) =>
+            activitiy.display_name ? activitiy.display_name : activitiy.name,
+          ),
         },
         uniqueItems: true,
       },

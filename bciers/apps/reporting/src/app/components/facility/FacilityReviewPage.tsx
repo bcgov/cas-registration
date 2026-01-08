@@ -33,7 +33,8 @@ export default async function FacilityReviewPage({
   const formData = {
     ...facilityData,
     activities: selectedActivities.map(
-      (activity: { name: any }) => activity.name,
+      (activity: { name: any; display_name?: any }) =>
+        activity.display_name ? activity.display_name : activity.name,
     ),
   };
   const isSyncAllowed = facilityData.is_sync_allowed ?? true;
