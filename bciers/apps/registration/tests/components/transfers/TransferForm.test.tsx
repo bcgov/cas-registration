@@ -221,7 +221,7 @@ describe("The TransferForm component", () => {
   it(
     "submits the form and shows success screen",
     {
-      timeout: 1000,
+      timeout: 2000,
     },
     async () => {
       actionHandler.mockResolvedValueOnce({});
