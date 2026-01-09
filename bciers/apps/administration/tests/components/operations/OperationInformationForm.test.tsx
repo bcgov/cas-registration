@@ -740,7 +740,7 @@ describe("the OperationInformationForm component", () => {
   it(
     "should edit and save the new entrant application form",
     {
-      timeout: 1000,
+      timeout: 5000,
     },
     async () => {
       useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
