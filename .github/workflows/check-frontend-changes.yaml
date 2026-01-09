@@ -32,25 +32,28 @@ jobs:
             echo "HEAD: $(git rev-parse HEAD)"
             echo "BASE_REF commit: $(git rev-parse $BASE_REF)"
 
-            # Run git diff and capture both output and exit code
+            # Write to temp file to avoid pipe buffer issues with large diffs
+            CHANGED_FILES_TMP=$(mktemp)
             set +e
-            CHANGED_FILES=$(git diff --name-only $BASE_REF...HEAD 2>&1)
+            git diff --name-only $BASE_REF...HEAD > "$CHANGED_FILES_TMP" 2>&1
             DIFF_EXIT_CODE=$?
             set -e
 
             echo "git diff exit code: $DIFF_EXIT_CODE"
-            echo "Number of changed files: $(echo "$CHANGED_FILES" | grep -c . || echo 0)"
+            echo "Number of changed files: $(wc -l < "$CHANGED_FILES_TMP" | tr -d ' ')"
 
             if [ $DIFF_EXIT_CODE -ne 0 ]; then
-              echo "git diff failed with: $CHANGED_FILES"
+              echo "git diff failed with:"
+              cat "$CHANGED_FILES_TMP"
               echo "changed=true" >> "$GITHUB_OUTPUT"
-            elif echo "$CHANGED_FILES" | grep -qE "^(bciers/|\.tool-versions)"; then
+            elif grep -qE "^(bciers/|\.tool-versions)" "$CHANGED_FILES_TMP"; then
               echo "changed=true" >> "$GITHUB_OUTPUT"
             else
               echo "changed=false" >> "$GITHUB_OUTPUT"
               echo "No bciers/ or .tool-versions changes found. First 20 changed files:"
-              echo "$CHANGED_FILES" | head -20
+              head -20 "$CHANGED_FILES_TMP"
             fi
+            rm -f "$CHANGED_FILES_TMP"
           else
             # For pushes to develop/main, always report changes
             echo "changed=true" >> "$GITHUB_OUTPUT"
