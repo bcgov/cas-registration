@@ -218,49 +218,55 @@ describe("The TransferForm component", () => {
     );
   });
 
-  it("submits the form and shows success screen", async () => {
-    actionHandler.mockResolvedValueOnce({});
-    renderTransferForm();
-    selectOperator(/current operator\*/i, "Operator 1");
-    selectOperator(/select the new operator\*/i, "Operator 2");
-    await selectEntityAndAssertFields("Operation");
-    await waitFor(() => {
-      selectOperation(/operation\*/i, "Operation 1");
-      selectDateOfTransfer("2022-12-31");
-      expectButton("Transfer Entity");
-      fireEvent.click(
-        screen.getByRole("button", {
-          name: /transfer entity/i,
-        }),
+  it(
+    "submits the form and shows success screen",
+    {
+      timeout: 1000,
+    },
+    async () => {
+      actionHandler.mockResolvedValueOnce({});
+      renderTransferForm();
+      selectOperator(/current operator\*/i, "Operator 1");
+      selectOperator(/select the new operator\*/i, "Operator 2");
+      await selectEntityAndAssertFields("Operation");
+      await waitFor(() => {
+        selectOperation(/operation\*/i, "Operation 1");
+        selectDateOfTransfer("2022-12-31");
+        expectButton("Transfer Entity");
+        fireEvent.click(
+          screen.getByRole("button", {
+            name: /transfer entity/i,
+          }),
+        );
+      });
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/transfer-events",
+        "POST",
+        "",
+        {
+          body: JSON.stringify({
+            from_operator: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
+            to_operator: "8be4c7aa-6ab3-4aad-9206-0ef914fea064",
+            transfer_entity: "Operation",
+            operation: "8be4c7aa-6ab3-4aad-9206-0ef914fea065",
+            effective_date: "2022-12-31T09:00:00.000Z",
+          }),
+        },
       );
-    });
-    expect(actionHandler).toHaveBeenCalledWith(
-      "registration/transfer-events",
-      "POST",
-      "",
-      {
-        body: JSON.stringify({
-          from_operator: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-          to_operator: "8be4c7aa-6ab3-4aad-9206-0ef914fea064",
-          transfer_entity: "Operation",
-          operation: "8be4c7aa-6ab3-4aad-9206-0ef914fea065",
-          effective_date: "2022-12-31T09:00:00.000Z",
+      // make sure the success page is displayed
+      expect(
+        screen.getByText(
+          /operation has been transferred from operator 1 to operator 2\./i,
+        ),
+      ).toBeVisible();
+      expect(
+        screen.getByText(/operation is now in the account of operator 2/i),
+      ).toBeVisible();
+      expect(
+        screen.getByRole("button", {
+          name: /return to transfer requests table/i,
         }),
-      },
-    );
-    // make sure the success page is displayed
-    expect(
-      screen.getByText(
-        /operation has been transferred from operator 1 to operator 2\./i,
-      ),
-    ).toBeVisible();
-    expect(
-      screen.getByText(/operation is now in the account of operator 2/i),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("button", {
-        name: /return to transfer requests table/i,
-      }),
-    ).toBeVisible();
-  });
+      ).toBeVisible();
+    },
+  );
 });
