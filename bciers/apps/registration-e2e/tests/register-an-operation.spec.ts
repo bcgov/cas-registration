@@ -90,6 +90,7 @@ test.describe("Test register operations", () => {
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "filled",
+      snapshotStrategy: 'clip',
     });
     await analyzeAccessibility(page, componentName);
     await clickButton(registrationPage.page, /submit/i); // button on this form is `Submit`
@@ -102,6 +103,7 @@ test.describe("Test register operations", () => {
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "default",
+      snapshotStrategy: 'clip',
     });
     await analyzeAccessibility(page);
   });
