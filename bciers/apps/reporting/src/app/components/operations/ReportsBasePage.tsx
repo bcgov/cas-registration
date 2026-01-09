@@ -2,7 +2,7 @@ import { Tabs } from "@bciers/components/tabs/Tabs";
 import ReportingYearHeader from "@bciers/components/reporting/ReportingYearHeader";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 import type { ReactNode } from "react";
-import { getReportingYear } from "../../utils/getReportingYear";
+import { getReportingYear } from "@bciers/actions/api";
 
 interface ReportsBasePageProps {
   activeTab: number;
