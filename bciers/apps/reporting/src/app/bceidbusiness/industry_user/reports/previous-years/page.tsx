@@ -3,9 +3,10 @@ import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFa
 import PastReportsPage from "@reporting/src/app/components/operations/PastReportsPage";
 import ReportsBasePage from "@reporting/src/app/components/operations/ReportsBasePage";
 import { ReportSearchParams } from "@reporting/src/app/components/operations/types";
+import type { Metadata } from "next";
 
 const title = "Reports";
-export const metadata = generateMetadata(title);
+export const metadata: Metadata = generateMetadata(title);
 
 function ReportsPage({ searchParams }: { searchParams: ReportSearchParams }) {
   return (

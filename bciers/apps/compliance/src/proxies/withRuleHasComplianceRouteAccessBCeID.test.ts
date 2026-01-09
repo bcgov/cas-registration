@@ -18,6 +18,7 @@ import {
 
 import { mockIndustryUserToken } from "@bciers/testConfig/data/tokens";
 import { PenaltyStatus } from "@bciers/utils/src/enums";
+import type { Mock } from "vitest";
 
 // --------------------
 // Mocks
@@ -108,17 +109,17 @@ const moNonPenaltyPaths = moPaths.filter(
 // Mock Helpers
 // --------------------
 const mockComplianceStatus = (status: ComplianceSummaryStatus) => {
-  (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({ status });
+  (getUserComplianceAccessStatus as Mock).mockResolvedValue({ status });
 };
 
 const mockIssuanceStatus = (status: IssuanceStatus) => {
-  (getRequestIssuanceComplianceSummaryData as vi.Mock).mockResolvedValue({
+  (getRequestIssuanceComplianceSummaryData as Mock).mockResolvedValue({
     issuance_status: status,
   });
 };
 
 const mockCanApplyComplianceUnits = (canApply: boolean) => {
-  (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
+  (getComplianceAppliedUnits as Mock).mockResolvedValue({
     can_apply_compliance_units: canApply,
     rows: [],
     row_count: 0,
@@ -129,7 +130,7 @@ const mockComplianceSummary = (summary: {
   outstanding_balance_tco2e: number;
   penalty_status: PenaltyStatus;
 }) => {
-  (getComplianceSummary as unknown as vi.Mock).mockResolvedValue(summary);
+  (getComplianceSummary as unknown as Mock).mockResolvedValue(summary);
 };
 // --------------------
 // Setup
@@ -137,8 +138,8 @@ const mockComplianceSummary = (summary: {
 beforeEach(() => {
   vi.clearAllMocks();
 
-  (getToken as vi.Mock).mockResolvedValue(mockIndustryUserToken);
-  (getUserRole as vi.Mock).mockReturnValue(IDP.BCEIDBUSINESS);
+  (getToken as Mock).mockResolvedValue(mockIndustryUserToken);
+  (getUserRole as Mock).mockReturnValue(IDP.BCEIDBUSINESS);
 
   vi.spyOn(constants, "extractComplianceReportVersionId").mockImplementation(
     (pathname: string) => {
@@ -175,7 +176,7 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
 
   describe("redirectManualHandling", () => {
     it("redirects to summaries when requires_manual_handling is true", async () => {
-      (getComplianceSummary as unknown as vi.Mock).mockResolvedValue({
+      (getComplianceSummary as unknown as Mock).mockResolvedValue({
         requires_manual_handling: true,
       });
 
@@ -185,7 +186,7 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
     });
 
     it("does not redirect when requires_manual_handling is false/undefined", async () => {
-      (getComplianceSummary as unknown as vi.Mock).mockResolvedValue({
+      (getComplianceSummary as unknown as Mock).mockResolvedValue({
         requires_manual_handling: false,
       });
 
@@ -432,14 +433,14 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
 
   describe("bypass & edge flows", () => {
     it("bypasses for IDIR users", async () => {
-      (getUserRole as vi.Mock).mockReturnValue(IDP.IDIR);
+      (getUserRole as Mock).mockReturnValue(IDP.IDIR);
       const { next, res } = await runProxy(applyUnitsPath);
       expect(next).toHaveBeenCalledOnce();
       expect(res!.status).toBe(200);
     });
 
     it("redirects to onboarding on error", async () => {
-      (getUserComplianceAccessStatus as vi.Mock).mockRejectedValue(
+      (getUserComplianceAccessStatus as Mock).mockRejectedValue(
         new Error("boom"),
       );
       const { res } = await runProxy(applyUnitsPath);

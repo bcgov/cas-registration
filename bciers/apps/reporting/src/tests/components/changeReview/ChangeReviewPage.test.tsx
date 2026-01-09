@@ -6,6 +6,7 @@ import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportV
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
+import type { MockedFunction } from "vitest";
 
 // Mock all the async utility functions
 vi.mock("@reporting/src/app/utils/getReportVersionDetails", () => ({
@@ -53,26 +54,22 @@ vi.mock("@reporting/src/app/components/changeReview/ChangeReviewForm", () => ({
 }));
 
 describe("The ChangeReviewPage component", () => {
-  const mockGetReportVersionDetails =
-    getReportVersionDetails as vi.MockedFunction<
-      typeof getReportVersionDetails
-    >;
+  const mockGetReportVersionDetails = getReportVersionDetails as MockedFunction<
+    typeof getReportVersionDetails
+  >;
   const mockGetIsSupplementaryReport =
-    getIsSupplementaryReport as vi.MockedFunction<
-      typeof getIsSupplementaryReport
-    >;
+    getIsSupplementaryReport as MockedFunction<typeof getIsSupplementaryReport>;
   const mockGetReportVerificationStatus =
-    getReportVerificationStatus as vi.MockedFunction<
+    getReportVerificationStatus as MockedFunction<
       typeof getReportVerificationStatus
     >;
   const mockGetNavigationInformation =
-    getNavigationInformation as vi.MockedFunction<
-      typeof getNavigationInformation
-    >;
-  const mockGetRegistrationPurpose =
-    getRegistrationPurpose as vi.MockedFunction<typeof getRegistrationPurpose>;
+    getNavigationInformation as MockedFunction<typeof getNavigationInformation>;
+  const mockGetRegistrationPurpose = getRegistrationPurpose as MockedFunction<
+    typeof getRegistrationPurpose
+  >;
 
-  const mockGetReportFacilityList = getReportFacilityList as vi.MockedFunction<
+  const mockGetReportFacilityList = getReportFacilityList as MockedFunction<
     typeof getReportFacilityList
   >;
 

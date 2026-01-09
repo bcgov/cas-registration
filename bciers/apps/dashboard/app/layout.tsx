@@ -9,7 +9,8 @@ import "@bciers/styles/globals.css";
 import RootLayout, {
   generateMetadata,
 } from "@bciers/components/layout/RootLayout";
+import type { Metadata } from "next";
 
-export const metadata = generateMetadata("Dashboard");
+export const metadata: Metadata = generateMetadata("Dashboard");
 
 export default RootLayout;

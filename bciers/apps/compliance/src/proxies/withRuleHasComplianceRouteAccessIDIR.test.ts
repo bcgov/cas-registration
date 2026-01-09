@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { NextURL } from "next/dist/server/web/next-url";
-
 import { withRuleHasComplianceRouteAccessIDIR } from "./withRuleHasComplianceRouteAccessIDIR";
 import * as constants from "./constants";
 import { IDP, IssuanceStatus } from "@bciers/utils/src/enums";
-
 import { getToken } from "@bciers/actions";
 import { getUserRole } from "@bciers/proxies";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+import type { Mock } from "vitest";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Mocks
@@ -70,8 +69,8 @@ const getPathname = (res?: NextResponse | null) => {
 // Keep ID extraction simple & deterministic for tests
 beforeEach(() => {
   vi.clearAllMocks();
-  (getToken as vi.Mock).mockResolvedValue({ sub: "u" });
-  (getUserRole as vi.Mock).mockReturnValue(IDP.IDIR);
+  (getToken as Mock).mockResolvedValue({ sub: "u" });
+  (getUserRole as Mock).mockReturnValue(IDP.IDIR);
   vi.spyOn(constants, "extractComplianceReportVersionId").mockImplementation(
     (pathname: string) => {
       const m = pathname.match(/\/compliance-summaries\/(\d+)/);
@@ -85,7 +84,7 @@ const mockIssuance = (
   status: IssuanceStatus,
   analyst_suggestion?: string | null,
 ) => {
-  (getRequestIssuanceComplianceSummaryData as vi.Mock).mockResolvedValue({
+  (getRequestIssuanceComplianceSummaryData as Mock).mockResolvedValue({
     issuance_status: status,
     analyst_suggestion,
   });
@@ -229,7 +228,7 @@ describe("withRuleHasComplianceRouteAccessIDIR", () => {
   // ── Fallbacks / Bypass
   describe("fallbacks & bypass", () => {
     it("falls back to hub on fetch error", async () => {
-      (getRequestIssuanceComplianceSummaryData as vi.Mock).mockRejectedValue(
+      (getRequestIssuanceComplianceSummaryData as Mock).mockRejectedValue(
         new Error("boom"),
       );
       const { res } = await runProxy(PATH_REVIEW_DIRECTOR);
@@ -238,7 +237,7 @@ describe("withRuleHasComplianceRouteAccessIDIR", () => {
     });
 
     it("bypasses all rules when user is not IDIR", async () => {
-      (getUserRole as vi.Mock).mockReturnValue(IDP.BCEIDBUSINESS);
+      (getUserRole as Mock).mockReturnValue(IDP.BCEIDBUSINESS);
       mockIssuance(IssuanceStatus.CREDITS_NOT_ISSUED, null);
       const { next, res } = await runProxy(PATH_TRACK);
       expect(next).toHaveBeenCalledOnce();

@@ -37,6 +37,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     analyst_submitted_by: "Test User",
     analyst_submitted_date: "2023-01-01",
     analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
+    supplementary_declined: false,
   };
   const mockComplianceReportVersionId = 123;
 

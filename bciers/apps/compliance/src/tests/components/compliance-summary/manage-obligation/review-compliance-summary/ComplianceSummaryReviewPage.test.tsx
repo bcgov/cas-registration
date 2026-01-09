@@ -47,6 +47,7 @@ import {
   generateManageObligationTaskList,
   ActivePage,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
+import type { Mock } from "vitest";
 
 describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
   const mockComplianceReportVersionId = 123;
@@ -71,9 +72,7 @@ describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (fetchComplianceSummaryReviewPageData as vi.Mock).mockResolvedValue(
-      mockData,
-    );
+    (fetchComplianceSummaryReviewPageData as Mock).mockResolvedValue(mockData);
   });
 
   it("fetches data, generates task list, and renders layout with review component", async () => {

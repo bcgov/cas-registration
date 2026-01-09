@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ChangeReviewForm from "@reporting/src/app/components/changeReview/ChangeReviewForm";
 import { actionHandler } from "@bciers/actions";
 import { HeaderStep } from "@reporting/src/app/components/taskList/types";
+import type { MockedFunction } from "vitest";
 
 const mockRouterPush = vi.fn();
 
@@ -71,7 +72,7 @@ vi.mock(
 );
 
 describe("ChangeReviewForm", () => {
-  const mockActionHandler = actionHandler as vi.MockedFunction<
+  const mockActionHandler = actionHandler as MockedFunction<
     typeof actionHandler
   >;
 

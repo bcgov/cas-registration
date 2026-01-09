@@ -3,9 +3,10 @@ import ComplianceNavigationPage from "@/compliance/src/app/components/compliance
 import { generateMetadata } from "@bciers/components/layout/RootLayout";
 import { DataGridSearchParams } from "@/compliance/src/app/types";
 import ComplianceSummariesPage from "@/compliance/src/app/components/compliance-summaries/ComplianceSummariesPage";
+import type { Metadata } from "next";
 
 const title = "Compliance Administration";
-export const metadata = generateMetadata(title);
+export const metadata: Metadata = generateMetadata(title);
 
 function ComplianceSummariesWithNavigation({
   searchParams,
