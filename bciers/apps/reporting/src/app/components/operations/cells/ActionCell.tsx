@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import { createReport } from "@reporting/src/app/utils/createReport";
 import { createReportVersion } from "@reporting/src/app/utils/createReportVersion";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
+import { getReportingYear } from "@bciers/actions/api";
 import Button from "@mui/material/Button";
 import {
   BC_GOV_LINKS_COLOR,

@@ -1,7 +1,7 @@
 import OperationDataGrid from "./OperationDataGrid";
 import { OperationRow, OperationsSearchParams } from "./types";
 import { fetchOperationsPageData } from "./fetchOperationsPageData";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
+import { getReportingYear } from "@bciers/actions/api";
 
 // 🧩 Main component
 export default async function Operations({

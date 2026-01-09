@@ -1,7 +1,7 @@
 import { actionHandler } from "@bciers/actions";
 import dayjs from "dayjs";
 
-export const getReportingYear = async (): Promise<{
+const getReportingYear = async (): Promise<{
   reporting_year: number;
   report_due_date: string;
   reporting_window_end: string;
@@ -20,3 +20,5 @@ export const getReportingYear = async (): Promise<{
     report_due_year: dayjs(response.report_due_date).year(),
   };
 };
+
+export default getReportingYear;

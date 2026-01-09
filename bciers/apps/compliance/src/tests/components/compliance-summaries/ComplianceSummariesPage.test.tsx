@@ -8,7 +8,7 @@ import {
   FrontEndRoles,
   PenaltyStatus,
 } from "@bciers/utils/src/enums";
-import * as reportingYearModule from "@reporting/src/app/utils/getReportingYear";
+import * as reportingYearModule from "@bciers/actions/api";
 
 // --- Component Mocks ---
 
