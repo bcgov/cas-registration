@@ -31,7 +31,8 @@ export const buildProductionDataSchema2024 = (
         type: "array",
         items: {
           type: "string",
-          enum: product_selection,
+          // Only include enum if there are products available (enum must have at least 1 item)
+          ...(product_selection.length > 0 && { enum: product_selection }),
         },
         uniqueItems: true,
       },
