@@ -27,14 +27,29 @@ jobs:
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             BASE_REF="origin/${{ github.base_ref }}"
 
-            # Run git diff once and store the result to avoid race conditions with partial clone
-            CHANGED_FILES=$(git diff --name-only $BASE_REF...HEAD)
+            # Debug: show what we're comparing
+            echo "BASE_REF: $BASE_REF"
+            echo "HEAD: $(git rev-parse HEAD)"
+            echo "BASE_REF commit: $(git rev-parse $BASE_REF)"
 
-            # Check if any files in bciers directory changed, or if .tool-versions changed (affects Node.js version)
-            if echo "$CHANGED_FILES" | grep -qE "^(bciers/|\.tool-versions)"; then
+            # Run git diff and capture both output and exit code
+            set +e
+            CHANGED_FILES=$(git diff --name-only $BASE_REF...HEAD 2>&1)
+            DIFF_EXIT_CODE=$?
+            set -e
+
+            echo "git diff exit code: $DIFF_EXIT_CODE"
+            echo "Number of changed files: $(echo "$CHANGED_FILES" | grep -c . || echo 0)"
+
+            if [ $DIFF_EXIT_CODE -ne 0 ]; then
+              echo "git diff failed with: $CHANGED_FILES"
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+            elif echo "$CHANGED_FILES" | grep -qE "^(bciers/|\.tool-versions)"; then
               echo "changed=true" >> "$GITHUB_OUTPUT"
             else
               echo "changed=false" >> "$GITHUB_OUTPUT"
+              echo "No bciers/ or .tool-versions changes found. First 20 changed files:"
+              echo "$CHANGED_FILES" | head -20
             fi
           else
             # For pushes to develop/main, always report changes
