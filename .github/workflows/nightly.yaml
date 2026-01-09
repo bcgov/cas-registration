@@ -1,6 +1,5 @@
-# This workflow builds and tests nightly on the `develop` branch. Scheduled jobs always run on the default branch, which is `develop` in our case.
-
 name: nightly
+# This workflow builds and tests nightly on the `develop` branch. Scheduled jobs always run on the default branch, which is `develop` in our case.
 
 on:
   schedule:
