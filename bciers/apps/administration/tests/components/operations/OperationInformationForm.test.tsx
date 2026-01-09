@@ -737,109 +737,104 @@ describe("the OperationInformationForm component", () => {
     ).toHaveAttribute("href", mockDataUri);
   });
 
-  it(
-    "should edit and save the new entrant application form",
-    {
-      timeout: 5000,
-    },
-    async () => {
-      useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
+  it("should edit and save the new entrant application form", async () => {
+    useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
 
-      const testSchemaWithNewEntrant: RJSFSchema = {
-        type: "object",
-        properties: {
-          section1: {
-            title: "Section 1",
-            type: "object",
-            properties: {
-              name: {
-                type: "string",
-                title: "Operation Name",
-              },
-            },
-          },
-          section2: {
-            title: "Section 2",
-            type: "object",
-            properties: {
-              type: {
-                type: "string",
-                title: "Operation Type",
-              },
-            },
-          },
-          section3: {
-            title: "Registration Information",
-            type: "object",
-            properties: {
-              registration_purpose: {
-                type: "string",
-                enum: ["New Entrant Operation"],
-              },
-              new_entrant_preface: {
-                type: "string",
-              },
-              new_entrant_application: {
-                type: "string",
-                title: "New Entrant Application and Statutory Declaration",
-                format: "data-url",
-              },
+    const testSchemaWithNewEntrant: RJSFSchema = {
+      type: "object",
+      properties: {
+        section1: {
+          title: "Section 1",
+          type: "object",
+          properties: {
+            name: {
+              type: "string",
+              title: "Operation Name",
             },
           },
         },
-      };
-      fetchFormEnums(Apps.ADMINISTRATION);
-      getOperationWithDocuments.mockResolvedValueOnce(newEntrantFormData);
+        section2: {
+          title: "Section 2",
+          type: "object",
+          properties: {
+            type: {
+              type: "string",
+              title: "Operation Type",
+            },
+          },
+        },
+        section3: {
+          title: "Registration Information",
+          type: "object",
+          properties: {
+            registration_purpose: {
+              type: "string",
+              enum: ["New Entrant Operation"],
+            },
+            new_entrant_preface: {
+              type: "string",
+            },
+            new_entrant_application: {
+              type: "string",
+              title: "New Entrant Application and Statutory Declaration",
+              format: "data-url",
+            },
+          },
+        },
+      },
+    };
+    fetchFormEnums(Apps.ADMINISTRATION);
+    getOperationWithDocuments.mockResolvedValueOnce(newEntrantFormData);
 
-      render(
-        <OperationInformationForm
-          eioSchema={testSchema}
-          generalSchema={testSchemaWithNewEntrant}
-          formData={newEntrantFormData}
-          schema={testSchemaWithNewEntrant}
-          operationId={operationId}
-        />,
-      );
+    render(
+      <OperationInformationForm
+        eioSchema={testSchema}
+        generalSchema={testSchemaWithNewEntrant}
+        formData={newEntrantFormData}
+        schema={testSchemaWithNewEntrant}
+        operationId={operationId}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
 
-      await userEvent.click(screen.getByRole("button", { name: "Edit" }));
-
-      const mockFile = new File(["test"], "mock_file.pdf", {
-        type: "application/pdf",
-      });
-      const newEntrantApplicationDocument = screen.getByLabelText(
-        /new entrant application and statutory declaration/i,
-      );
+    const mockFile = new File(["test"], "mock_file.pdf", {
+      type: "application/pdf",
+    });
+    const newEntrantApplicationDocument = screen.getByLabelText(
+      /new entrant application and statutory declaration/i,
+    );
+    await act(async () => {
       await userEvent.upload(newEntrantApplicationDocument, mockFile);
-      expect(
-        screen.getByText(
-          "Uploading. You may continue to the next page while the file is being scanned for security.",
-        ),
-      ).toBeVisible();
-      expect(screen.getByRole("listitem")).toHaveAttribute(
-        "data-name",
-        "mock_file.pdf",
-      );
-      const saveButton = screen.getByRole("button", {
-        name: /save/i,
-      });
-      await userEvent.click(saveButton);
-      expect(actionHandler).toHaveBeenCalledTimes(1);
-      expect(actionHandler).toHaveBeenCalledWith(
-        `registration/operations/${operationId}`,
-        "PUT",
-        "",
-        {
-          body: JSON.stringify({
-            name: "Operation 5",
-            type: "Single Facility Operation",
-            registration_purpose: "New Entrant Operation",
-            new_entrant_application:
-              "data:application/pdf;name=mock_file.pdf;base64,dGVzdA==",
-          }),
-        },
-      );
-    },
-  );
+    });
+    expect(
+      screen.getByText(
+        "Uploading. You may continue to the next page while the file is being scanned for security.",
+      ),
+    ).toBeVisible();
+    expect(screen.getByRole("listitem")).toHaveAttribute(
+      "data-name",
+      "mock_file.pdf",
+    );
+    const saveButton = screen.getByRole("button", {
+      name: /save/i,
+    });
+    await userEvent.click(saveButton);
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operations/${operationId}`,
+      "PUT",
+      "",
+      {
+        body: JSON.stringify({
+          name: "Operation 5",
+          type: "Single Facility Operation",
+          registration_purpose: "New Entrant Operation",
+          new_entrant_application:
+            "data:application/pdf;name=mock_file.pdf;base64,dGVzdA==",
+        }),
+      },
+    );
+  });
 
   it("should not allow external users to remove their operation rep", async () => {
     useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
