@@ -191,7 +191,7 @@ export class RegistrationPOM {
   async waitForRegistrationUrl(step: number) {
     const mockUuid = "[0-9a-fA-F-]+";
     await this.page.waitForURL(
-      new RegExp(`registration/register-an-operation/${mockUuid}/${step}+`),
+      new RegExp(`registration/register-an-operation/${mockUuid}/${step}$`),
       {
         waitUntil: "load",
       },

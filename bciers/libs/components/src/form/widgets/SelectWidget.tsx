@@ -6,6 +6,7 @@ import {
   DARK_GREY_BG_COLOR,
   BC_GOV_SEMANTICS_RED,
 } from "@bciers/styles/colors";
+import React from "react";
 
 const SelectWidget: React.FC<WidgetProps> = (props) => {
   const {
@@ -24,7 +25,7 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
   // @ts-ignore
   const options = schema.enum as Array<string>;
 
-  const handleChange = (e: React.ChangeEvent<{}>, option: string | null) => {
+  const handleChange = (e: React.SyntheticEvent, option: string | null) => {
     onChange(option || "");
   };
 
@@ -50,11 +51,7 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
       onChange={handleChange}
       getOptionLabel={(option: string) => option}
       renderInput={(params) => (
-        <TextField
-          {...params}
-          data-testid={id}
-          placeholder={placeholder ?? ""}
-        />
+        <TextField {...params} data-testid={id} placeholder={placeholder} />
       )}
       renderOption={(renderProps, option: string) => {
         return (

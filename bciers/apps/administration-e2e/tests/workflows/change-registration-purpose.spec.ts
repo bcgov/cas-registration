@@ -14,7 +14,6 @@ import {
   assertSuccessfulSnackbar,
   checkBreadcrumbText,
   clickButton,
-  selectItemFromMuiSelect,
   stabilizeGrid,
   urlIsCorrect,
   takeStabilizedScreenshot,
@@ -24,6 +23,7 @@ import {
   fillComboxboxWidget,
   assertConfirmationModal,
   searchGridByUniqueValue,
+  selectItemFromAutocomplete,
 } from "@bciers/e2e/utils/helpers";
 
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
@@ -60,7 +60,7 @@ test.describe("Test changing registration purpose", () => {
     // Set and use registrationPurpose via OperationPOM getter/setter
     const registrationPurpose = RegistrationPurposes.REPORTING_OPERATION;
     const registrationPurposeXPath = operationPage.registrationPurposeXPath;
-    await selectItemFromMuiSelect(
+    await selectItemFromAutocomplete(
       page,
       registrationPurpose,
       registrationPurposeXPath,
@@ -149,7 +149,7 @@ test.describe("Test changing registration purpose", () => {
     const registrationPurpose =
       RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION;
     const registrationPurposeXPath = operationPage.registrationPurposeXPath;
-    await selectItemFromMuiSelect(
+    await selectItemFromAutocomplete(
       page,
       registrationPurpose,
       registrationPurposeXPath,
@@ -231,7 +231,7 @@ test.describe("Test changing registration purpose", () => {
     // Set and use registrationPurpose via OperationPOM getter/setter
     const registrationPurpose = RegistrationPurposes.OBPS_REGULATED_OPERATION;
     const registrationPurposeXPath = operationPage.registrationPurposeXPath;
-    await selectItemFromMuiSelect(
+    await selectItemFromAutocomplete(
       page,
       registrationPurpose,
       registrationPurposeXPath,
@@ -312,7 +312,7 @@ test.describe("Test changing registration purpose", () => {
 
     const registrationPurpose = RegistrationPurposes.OBPS_REGULATED_OPERATION;
     const registrationPurposeXPath = operationPage.registrationPurposeXPath;
-    await selectItemFromMuiSelect(
+    await selectItemFromAutocomplete(
       page,
       registrationPurpose,
       registrationPurposeXPath,

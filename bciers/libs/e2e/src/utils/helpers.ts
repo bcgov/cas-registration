@@ -416,6 +416,46 @@ export async function selectItemFromMuiSelect(
   await option.click();
 }
 
+export async function selectItemFromAutocomplete(
+  page: Page,
+  choice: string | RegExp,
+  selector?: string,
+  exactChoice: boolean = false,
+) {
+  let input;
+
+  if (selector) {
+    const container = page.locator(selector);
+    await expect(container).toBeVisible({ timeout: 10000 });
+
+    input = container.locator("input");
+  } else {
+    input = page.locator(".MuiAutocomplete-input");
+  }
+
+  await expect(input).toBeVisible({ timeout: 10000 });
+  await input.click();
+
+  const optionsPopper = page.locator(".MuiAutocomplete-popper");
+  await expect(optionsPopper).toBeVisible();
+
+  const option = optionsPopper.locator(".MuiAutocomplete-option", {
+    hasText: choice instanceof RegExp ? choice : new RegExp(`^${choice}$`),
+  });
+
+  if (exactChoice && typeof choice === "string") {
+    await expect(
+      option.filter({ hasText: new RegExp(`^${choice}$`) }),
+    ).toBeVisible();
+    await option.filter({ hasText: new RegExp(`^${choice}$`) }).click();
+  } else {
+    await expect(option.first()).toBeVisible();
+    await option.first().click();
+  }
+
+  await expect(optionsPopper).not.toBeVisible();
+}
+
 export async function urlIsCorrect(page: Page, expectedPath: string) {
   const currentUrl = page.url();
   expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
