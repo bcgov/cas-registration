@@ -22,11 +22,12 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test compliance report version no obligation or earned credits flow", () => {
   test("Submits a No Obligation or Earned Credits report and verifies status in Compliance Summary grid", async ({
     page,
+    request,
     happoScreenshot,
   }) => {
     // Submit No Obligation or Earned Credits report
     const gridReportingReports = new CurrentReportsPOM(page);
-    await gridReportingReports.submitReportNoObligation();
+    await gridReportingReports.submitReportNoObligation(false, request);
 
     // Navigate to Compliance Summaries Page
     const gridComplianceSummaries = new ComplianceSummariesPOM(page);

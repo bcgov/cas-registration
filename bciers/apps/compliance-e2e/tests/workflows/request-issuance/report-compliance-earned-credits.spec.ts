@@ -19,12 +19,12 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test compliance report version request issuance of earned credits flow", () => {
   test("Submits an Earned Credits report and verifies status in Compliance Summary grid", async ({
     page,
+    request,
     happoScreenshot,
   }) => {
     // Submit the report for "Earned credits"
     const gridReportingReports = new CurrentReportsPOM(page);
-    await gridReportingReports.submitReportEarnedCredits();
-
+    await gridReportingReports.submitReportEarnedCredits(false, request);
     // Navigate to the compliance summaries grid
     const gridComplianceSummaries = new ComplianceSummariesPOM(page);
     await gridComplianceSummaries.route();

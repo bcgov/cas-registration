@@ -10,7 +10,6 @@ import {
   SIGN_OFF_SIGNATURE_LABEL,
   TEST_SIGNATURE_NAME,
   SIGN_OFF_REPORT_ROUTE_PATTERN,
-  SIGN_OFF_REPORT_VERSION_ID_REGEX,
   SIGN_OFF_REPORT_SCENARIO,
   SUBMISSION_SUCCESS_TEXT,
   SIGN_OFF_SUBMIT_URL_PATTERN,
@@ -97,37 +96,6 @@ export class CurrentReportsPOM {
   }
 
   /**
-   * Attach a route so to intercept the action handler submit call
-   * and delegate to the Django /e2e-integration-stub endpoint.
-   */
-  async attachSubmitReportStub(api: APIRequestContext): Promise<void> {
-    await attachE2EStubEndpoint(
-      this.page,
-      api,
-      SIGN_OFF_REPORT_ROUTE_PATTERN,
-      ({ url, body }) => {
-        const match = url.match(SIGN_OFF_REPORT_VERSION_ID_REGEX);
-        const crvId = match?.[1];
-        if (!crvId) throw new Error(`Could not extract crvId from URL: ${url}`);
-
-        return {
-          scenario: SIGN_OFF_REPORT_SCENARIO,
-          compliance_report_version_id: Number(crvId),
-          payload: body,
-        };
-      },
-      async ({ route, stubResponse, json }) => {
-        await route.fulfill({
-          status: stubResponse.status(),
-          contentType: "application/json",
-          body: JSON.stringify(json),
-        });
-      },
-      SIGN_OFF_REPORT_SCENARIO,
-    );
-  }
-
-  /**
    * Generic flow: submit any report by id.
    *
    * - Goes to sign-off for the specified report
@@ -147,8 +115,30 @@ export class CurrentReportsPOM {
 
     // 🔌 Attach stub AFTER form is filled to ensure payload is populated
     if (apiContext) {
-      await this.page.waitForTimeout(200);
-      await this.attachSubmitReportStub(apiContext);
+      // Attach a route so to intercept the action handler submit call
+      await attachE2EStubEndpoint(
+        this.page,
+        apiContext,
+        SIGN_OFF_REPORT_ROUTE_PATTERN,
+        () => ({
+          scenario: SIGN_OFF_REPORT_SCENARIO,
+          compliance_report_version_id: Number(reportId),
+          payload: {
+            signature: TEST_SIGNATURE_NAME,
+            acknowledgement_of_records: true,
+          },
+        }),
+        async () => {},
+        SIGN_OFF_REPORT_SCENARIO,
+        { directCall: true },
+      );
+
+      await this.page.goto(this.getSubmissionUrl(reportId));
+      await expect(
+        this.page.getByText(new RegExp(SUBMISSION_SUCCESS_TEXT, "i")),
+      ).toBeVisible();
+
+      return;
     }
 
     // Click submit and wait for navigation

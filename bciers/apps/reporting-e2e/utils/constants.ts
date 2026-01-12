@@ -9,8 +9,7 @@ export const SUBMISSION_SUCCESS_TEXT = "Successful Submission";
 
 // Route pattern for sign-off form
 export const SIGN_OFF_REPORT_ROUTE_PATTERN = "**/reporting/reports/*/sign-off";
-// Regex to extract id from the endpoint request
-export const SIGN_OFF_REPORT_VERSION_ID_REGEX = /reports\/(\d+)\/sign-off/;
+
 // Scenario name used by the Django stub to call to external API
 export const SIGN_OFF_REPORT_SCENARIO = "submit_report";
 

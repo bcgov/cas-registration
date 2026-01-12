@@ -313,24 +313,31 @@ export async function waitForElementToStabilize(page: Page, element: string) {
   await el?.waitForElementState("stable");
 }
 
-// This function can be used instead of `happoScreenshot` directly when experiencing flaky screenshots. It waits for the page to be stable before taking a screenshot.
+// This function can be used instead of `happoScreenshot` directly when experiencing flaky screenshots.
+// It waits for the page to be stable before taking a screenshot.
 export async function takeStabilizedScreenshot(
-  happoScreenshot: any,
+  happoScreenshot: unknown,
   page: Page,
   happoArgs: { component: string; variant: string; targets?: string[] },
 ) {
-  // Skip Happo screenshots if Happo is not enabled (e.g., running locally without API keys)
-  if (!happoScreenshot) {
-    return;
-  }
+  if (typeof happoScreenshot !== "function") return;
+
   const { component, variant, targets } = happoArgs;
-  const pageContent = page.locator("html");
+
+  // Avoid capturing mid-navigation / reload
+  await page.waitForLoadState("domcontentloaded");
+
+  // Wait for the main content to be present & stable (your existing helper)
   await waitForElementToStabilize(page, "main");
-  await happoScreenshot(pageContent, {
-    component,
-    variant,
-    targets,
-  });
+
+  // Wait one animation frame
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => requestAnimationFrame(() => resolve())),
+  );
+
+  const pageContent = page.locator("html");
+  await happoScreenshot(pageContent, { component, variant, targets });
 }
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
@@ -506,6 +513,17 @@ export async function assertFieldVisibility(
   }
 }
 
+/**
+ * Creates a new Playwright BrowserContext for a specific application role.
+ *
+ * This helper is used in E2E tests that need to switch users (e.g. Industry → Analyst → Director)
+ * without logging out and logging back in within the same browser session.
+ *
+ * Key behaviors:
+ * - Applies the correct `storageState` for the given role so the user is already authenticated.
+ * - Uses the test-runner's `browser` fixture so contexts stay within Playwright’s managed sandbox
+ *   (better isolation, fewer flakes, and trace/video artifacts attach reliably).
+ */
 export async function newContextForRole(
   browser: Browser,
   baseURL: string,

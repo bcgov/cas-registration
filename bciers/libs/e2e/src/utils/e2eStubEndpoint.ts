@@ -35,6 +35,9 @@ type FulfillArgs = {
 type Options = {
   method?: string; // default "POST"
   parseRscBody?: (raw: string) => any; // optional override
+
+  // If true, bypass route interception entirely and call the Django stub directly once.
+  directCall?: boolean; // default false
 };
 
 /**
@@ -54,8 +57,6 @@ type Options = {
  *
  * Usage pattern:
  * - `buildStubData(...)` should construct the ScenarioPayload your Django stub expects.
- * - `fulfill(...)` should respond to the intercepted route, usually using `route.fulfill(...)`
- *   or `route.continue()` depending on test design.
  */
 export async function attachE2EStubEndpoint(
   page: Page,
@@ -74,6 +75,35 @@ export async function attachE2EStubEndpoint(
       const parsed = raw ? JSON.parse(raw) : null;
       return parsed?.[3]?.body ? JSON.parse(parsed[3].body) : {};
     });
+
+  // "direct call" mode: no routing, just call the stub endpoint once using the same auth header.
+  if (options.directCall) {
+    const userGuid = await getUserGuidFromPage(page);
+
+    const stubResponse = await api.post(
+      `${process.env.API_URL}${COMPLIANCE_E2E_INTEGRATION_STUB_PATH}`,
+      {
+        headers: {
+          Authorization: JSON.stringify({ user_guid: userGuid }),
+        },
+        data: buildStubData({
+          url: "direct-call",
+          method: expectedMethod,
+          body: {},
+          userGuid,
+        }),
+      },
+    );
+
+    if (!stubResponse.ok()) {
+      const text = await stubResponse.text();
+      throw new Error(
+        `${errorPrefix} stub endpoint failed: ${stubResponse.status()} – ${text}`,
+      );
+    }
+    await stubResponse.json();
+    return;
+  }
 
   await page.route(routePattern, async (route: Route) => {
     const req = route.request();
