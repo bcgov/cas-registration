@@ -2,7 +2,12 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import { ReportingPage, TaskListPageFactory } from "../types";
 import { getOrderedActivities } from "../../../utils/getOrderedActivities";
 
-export type ActivityData = { id: number; name: string; slug: string };
+export type ActivityData = {
+  id: number;
+  name: string;
+  slug: string;
+  display_name?: string;
+};
 
 const activitiesPageFactory: TaskListPageFactory = async (
   activePage,
@@ -31,7 +36,7 @@ const activitiesPageFactory: TaskListPageFactory = async (
     (activity: ActivityData, index: number) =>
       ({
         type: "Page",
-        title: activity.name,
+        title: activity.display_name ? activity.display_name : activity.name,
         link: `/reports/${reportVersionId}/facilities/${facilityId}/activities?activity_id=${activity.id}&step=${index}`,
         isActive:
           context?.currentActivity &&
