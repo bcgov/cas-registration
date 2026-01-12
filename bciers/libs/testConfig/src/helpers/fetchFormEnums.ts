@@ -5,7 +5,8 @@ import {
   getRegistrationPurposes,
   getRegulatedProducts,
   getReportingActivities,
-} from "@bciers/testConfig/mocks";
+  getReportingYears,
+} from "../../../testConfig/src/mocks";
 import { getContacts } from "@/administration/tests/components/contacts/mocks";
 import { Apps } from "@bciers/utils/src/enums";
 
@@ -74,6 +75,14 @@ const fetchFormEnums = (app: Apps) => {
       "Potential Reporting Operation",
       "Reporting Operation",
       "Opted-in Operation",
+    ]);
+
+    // Reporting Years
+    getReportingYears.mockResolvedValue([
+      { reporting_year: 2024 },
+      { reporting_year: 2025 },
+      { reporting_year: 2026 },
+      { reporting_year: 2027 },
     ]);
   }
   if (app === Apps.REGISTRATION) {
