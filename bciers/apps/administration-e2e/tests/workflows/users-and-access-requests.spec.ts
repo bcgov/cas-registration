@@ -148,7 +148,7 @@ test.describe("External User", () => {
 
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "EXTERNAL: Decline a user operator request",
-      variant: "default",
+      variant: "filled",
     });
 
     const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
@@ -172,7 +172,7 @@ test.describe("External User", () => {
     );
     await takeStabilizedScreenshot(happoScreenshot, newPage, {
       component: "Decline a user operator request",
-      variant: "default",
+      variant: "filled",
     });
   });
 
