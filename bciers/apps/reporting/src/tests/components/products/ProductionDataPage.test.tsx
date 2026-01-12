@@ -6,6 +6,7 @@ import { getReportInformationTasklist } from "@reporting/src/app/utils/getReport
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
+import { getReviewOperationInformationPageData } from "@reporting/src/app/utils/getReportOperationData";
 
 vi.mock("@bciers/actions/api", () => ({
   getProductionData: vi.fn(),
@@ -21,6 +22,9 @@ vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
 }));
 vi.mock("@reporting/src/app/utils/getFacilityReportDetails", () => ({
   getFacilityReportDetails: vi.fn().mockReturnValue([]),
+}));
+vi.mock("@reporting/src/app/utils/getReportOperationData", () => ({
+  getReviewOperationInformationPageData: vi.fn(),
 }));
 
 const getProductionDataMock = getProductionData as ReturnType<typeof vi.fn>;
@@ -44,6 +48,13 @@ describe("The Production Data component", () => {
     (getNavigationInformation as ReturnType<typeof vi.fn>).mockResolvedValue(
       dummyNavigationInformation,
     );
+    (
+      getReviewOperationInformationPageData as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      report_operation: {
+        operation_opted_out_final_reporting_year: undefined,
+      },
+    });
   });
 
   it("fetches the proper data and passes it to the form", async () => {
