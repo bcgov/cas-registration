@@ -9,17 +9,44 @@ import {
 } from "@bciers/testConfig/mocks";
 
 import { createAdministrationOperationInformationSchema } from "apps/administration/app/data/jsonSchema/operationInformation/administrationOperationInformation";
-import { Apps, FrontEndRoles, OperationStatus } from "@bciers/utils/src/enums";
+import { FrontEndRoles, OperationStatus } from "@bciers/utils/src/enums";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
-import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
+import {
+  naicsCodesMock,
+  reportingActivitiesMock,
+  reportingYearsMock,
+  businessStructuresMock,
+  contactsMock,
+  regulatedProductsMock,
+  registrationPurposesMock,
+} from "./mocks";
+import {
+  getBusinessStructures,
+  getContacts,
+  getNaicsCodes,
+  getRegistrationPurposes,
+  getRegulatedProducts,
+  getReportingActivities,
+  getReportingYears,
+} from "@bciers/actions/api";
 
 useSessionRole.mockReturnValue("industry_user_admin");
 
 useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
+
+vi.mock("@bciers/actions/api", () => ({
+  getNaicsCodes: vi.fn(),
+  getReportingYears: vi.fn(),
+  getContacts: vi.fn(),
+  getRegulatedProducts: vi.fn(),
+  getRegistrationPurposes: vi.fn(),
+  getReportingActivities: vi.fn(),
+  getBusinessStructures: vi.fn(),
+}));
 
 const mockDataUri =
   "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=";
@@ -170,6 +197,18 @@ const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 describe("the OperationInformationForm component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    vi.mocked(getNaicsCodes).mockResolvedValue(naicsCodesMock);
+    vi.mocked(getReportingYears).mockResolvedValue(reportingYearsMock);
+    vi.mocked(getContacts).mockResolvedValue(contactsMock);
+    vi.mocked(getRegulatedProducts).mockResolvedValue(regulatedProductsMock);
+    vi.mocked(getRegistrationPurposes).mockResolvedValue(
+      registrationPurposesMock,
+    );
+    vi.mocked(getReportingActivities).mockResolvedValue(
+      reportingActivitiesMock,
+    );
+    vi.mocked(getBusinessStructures).mockResolvedValue(businessStructuresMock);
   });
   it("renders the OperationInformationForm component", async () => {
     render(
@@ -193,7 +232,6 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should render the form with the correct values for a non-EIO when formData is provided", async () => {
-    fetchFormEnums(Apps.ADMINISTRATION);
     const createdFormSchema =
       await createAdministrationOperationInformationSchema(
         formData.registration_purpose,
@@ -256,7 +294,6 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should render the form with the correct form for an EIO when formData is provided", async () => {
-    fetchFormEnums(Apps.ADMINISTRATION);
     const createdFormSchema =
       await createAdministrationOperationInformationSchema(
         RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
@@ -694,7 +731,6 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should render the new entrant application information if purpose is new entrant", async () => {
-    fetchFormEnums(Apps.ADMINISTRATION);
     getOperationWithDocuments.mockResolvedValueOnce(newEntrantFormData);
     const modifiedSchema = await createAdministrationOperationInformationSchema(
       newEntrantFormData.registration_purpose,
@@ -783,7 +819,6 @@ describe("the OperationInformationForm component", () => {
         },
       },
     };
-    fetchFormEnums(Apps.ADMINISTRATION);
     getOperationWithDocuments.mockResolvedValueOnce(newEntrantFormData);
 
     render(
@@ -839,7 +874,6 @@ describe("the OperationInformationForm component", () => {
   it("should not allow external users to remove their operation rep", async () => {
     useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
 
-    fetchFormEnums(Apps.ADMINISTRATION);
     const createdFormSchema =
       await createAdministrationOperationInformationSchema(
         formData.registration_purpose,
@@ -886,7 +920,6 @@ describe("the OperationInformationForm component", () => {
       };
       useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
 
-      fetchFormEnums(Apps.ADMINISTRATION);
       const createdFormSchema =
         await createAdministrationOperationInformationSchema(
           testFormData.registration_purpose,
@@ -954,7 +987,6 @@ describe("the OperationInformationForm component", () => {
       get: mockGet,
     });
     mockGet.mockReturnValue("true");
-    fetchFormEnums(Apps.ADMINISTRATION);
     const createdFormSchema =
       await createAdministrationOperationInformationSchema(
         formData.registration_purpose,
@@ -991,7 +1023,6 @@ describe("the OperationInformationForm component", () => {
       status: OperationStatus.REGISTERED,
     };
     useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
-    fetchFormEnums(Apps.ADMINISTRATION);
     const createdFormSchema =
       await createAdministrationOperationInformationSchema(
         testFormData.registration_purpose,

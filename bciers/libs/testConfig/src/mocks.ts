@@ -42,6 +42,7 @@ const getOperation = vi.fn();
 const getOperationWithDocuments = vi.fn();
 const getNaicsCodes = vi.fn();
 const getReportingActivities = vi.fn();
+const getReportingYears = vi.fn();
 const getRegulatedProducts = vi.fn();
 const getRegistrationPurposes = vi.fn();
 const getBusinessStructures = vi.fn();
@@ -74,6 +75,7 @@ export {
   getOperationWithDocuments,
   getNaicsCodes,
   getReportingActivities,
+  getReportingYears,
   getRegulatedProducts,
   getRegistrationPurposes,
   getBusinessStructures,
