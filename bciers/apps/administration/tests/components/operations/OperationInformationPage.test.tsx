@@ -1,13 +1,38 @@
 import { render, screen } from "@testing-library/react";
 import OperationInformationPage from "@/administration/app/components/operations/OperationInformationPage";
-import {
-  getOperationWithDocuments,
-  useSearchParams,
-  useSessionRole,
-} from "@bciers/testConfig/mocks";
+import { useSearchParams, useSessionRole } from "@bciers/testConfig/mocks";
 import { beforeAll } from "vitest";
-import { Apps, OperationStatus } from "@bciers/utils/src/enums";
-import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
+import { OperationStatus } from "@bciers/utils/src/enums";
+import {
+  businessStructuresMock,
+  contactsMock,
+  naicsCodesMock,
+  registrationPurposesMock,
+  regulatedProductsMock,
+  reportingActivitiesMock,
+  reportingYearsMock,
+} from "./mocks";
+import {
+  getReportingYears,
+  getOperationWithDocuments,
+  getNaicsCodes,
+  getBusinessStructures,
+  getReportingActivities,
+  getRegulatedProducts,
+  getContacts,
+  getRegistrationPurposes,
+} from "@bciers/actions/api";
+
+vi.mock("@bciers/actions/api", () => ({
+  getReportingYears: vi.fn(),
+  getOperationWithDocuments: vi.fn(),
+  getNaicsCodes: vi.fn(),
+  getBusinessStructures: vi.fn(),
+  getReportingActivities: vi.fn(),
+  getRegulatedProducts: vi.fn(),
+  getContacts: vi.fn(),
+  getRegistrationPurposes: vi.fn(),
+}));
 
 const formData = {
   name: "Operation 3",
@@ -39,6 +64,18 @@ const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 describe("the OperationInformationPage component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    vi.mocked(getReportingYears).mockResolvedValue(reportingYearsMock);
+    vi.mocked(getNaicsCodes).mockResolvedValue(naicsCodesMock);
+    vi.mocked(getBusinessStructures).mockResolvedValue(businessStructuresMock);
+    vi.mocked(getReportingActivities).mockResolvedValue(
+      reportingActivitiesMock,
+    );
+    vi.mocked(getRegulatedProducts).mockResolvedValue(regulatedProductsMock);
+    vi.mocked(getContacts).mockResolvedValue(contactsMock);
+    vi.mocked(getRegistrationPurposes).mockResolvedValue(
+      registrationPurposesMock,
+    );
   });
   beforeAll(() => {
     vi.resetAllMocks();
@@ -48,7 +85,6 @@ describe("the OperationInformationPage component", () => {
     });
   });
   it("renders the OperationInformationPage component without Registration Information", async () => {
-    fetchFormEnums(Apps.ADMINISTRATION);
     getOperationWithDocuments.mockResolvedValueOnce(formData);
     render(await OperationInformationPage({ operationId }));
 
@@ -76,7 +112,6 @@ describe("the OperationInformationPage component", () => {
   });
 
   it("should render the form without Registration Information", async () => {
-    fetchFormEnums(Apps.ADMINISTRATION);
     getOperationWithDocuments.mockResolvedValueOnce(formData);
 
     render(await OperationInformationPage({ operationId }));
@@ -86,7 +121,6 @@ describe("the OperationInformationPage component", () => {
     expect(screen.getByText(/212114 - Bituminous coal mining/i)).toBeVisible();
   });
   it("should render the form with Registration Information", async () => {
-    fetchFormEnums(Apps.ADMINISTRATION);
     getOperationWithDocuments.mockResolvedValueOnce({
       status: OperationStatus.REGISTERED,
     });
