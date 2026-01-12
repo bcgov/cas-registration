@@ -1,0 +1,166 @@
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import OptedOutOperationWidget from "./OptedOutOperationWidget";
+import { actionHandler } from "@bciers/actions";
+
+// -------------------- mocks --------------------
+
+vi.mock("@bciers/actions", () => ({
+  actionHandler: vi.fn(),
+}));
+
+vi.mock("./ComboBox", () => ({
+  default: ({ onChange, disabled, value, rawErrors }: any) => (
+    <div>
+      <button onClick={() => onChange(2025)} disabled={disabled}>
+        select-year
+      </button>
+      <div>value:{String(value)}</div>
+      {rawErrors && <div role="alert">{rawErrors[0]}</div>}
+    </div>
+  ),
+}));
+
+vi.mock("./ToggleWidget", () => ({
+  default: ({ value, onChange, disabled }: any) => (
+    <button onClick={() => onChange(!value)} disabled={disabled}>
+      toggle:{value ? "on" : "off"}
+    </button>
+  ),
+}));
+
+// -------------------- helpers --------------------
+
+const baseProps: any = {
+  id: "opted-out",
+  value: { final_reporting_year: 2024 },
+  onChange: vi.fn(),
+  registry: {},
+  schema: {
+    properties: {
+      final_reporting_year: {},
+    },
+  },
+  uiSchema: {},
+};
+
+function renderWidget(formContext: any) {
+  return render(
+    <OptedOutOperationWidget {...baseProps} formContext={formContext} />,
+  );
+}
+
+// -------------------- tests --------------------
+
+describe("OptedOutOperationWidget", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("renders opted-out state with year selector", () => {
+    renderWidget({
+      isOptedOut: true,
+      isCasDirector: true,
+      operationId: "123",
+    });
+
+    expect(screen.getByText("Opt-in status:")).toBeInTheDocument();
+    expect(screen.getByText("toggle:off")).toBeInTheDocument();
+    expect(screen.getByText("select-year")).toBeInTheDocument();
+  });
+
+  it("disables controls for non-CAS director", () => {
+    renderWidget({
+      isOptedOut: true,
+      isCasDirector: false,
+      operationId: "123",
+    });
+
+    expect(screen.getByText("toggle:off")).toBeDisabled();
+    expect(screen.getByText("select-year")).toBeDisabled();
+  });
+
+  it("persists final reporting year change", async () => {
+    vi.mocked(actionHandler).mockResolvedValue({});
+
+    renderWidget({
+      isOptedOut: true,
+      isCasDirector: true,
+      operationId: "123",
+    });
+
+    fireEvent.click(screen.getByText("select-year"));
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/operations/123/registration/opted-out-operation-detail",
+        "POST",
+        "",
+        {
+          body: JSON.stringify({ final_reporting_year: 2025 }),
+        },
+      );
+    });
+
+    expect(baseProps.onChange).toHaveBeenCalledWith({
+      final_reporting_year: 2025,
+    });
+  });
+
+  it("shows error when save fails", async () => {
+    vi.mocked(actionHandler).mockResolvedValue({
+      error: "Something went wrong",
+    });
+
+    renderWidget({
+      isOptedOut: true,
+      isCasDirector: true,
+      operationId: "123",
+    });
+
+    fireEvent.click(screen.getByText("select-year"));
+
+    const widgetAlert = await screen.findByText("Something went wrong", {
+      selector: "span",
+    });
+    expect(widgetAlert).toBeInTheDocument();
+  });
+
+  it("toggles to opted-in and deletes record", async () => {
+    vi.mocked(actionHandler).mockResolvedValue({});
+
+    renderWidget({
+      isOptedOut: true,
+      isCasDirector: true,
+      operationId: "123",
+    });
+
+    fireEvent.click(screen.getByText("toggle:off"));
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/operations/123/registration/opted-out-operation-detail",
+        "DELETE",
+        "",
+      );
+    });
+
+    expect(baseProps.onChange).toHaveBeenCalledWith(undefined);
+  });
+
+  it("renders explanatory text when year is selected", () => {
+    renderWidget({
+      isOptedOut: true,
+      isCasDirector: true,
+      operationId: "123",
+    });
+
+    fireEvent.click(screen.getByText("select-year"));
+
+    expect(
+      screen.getByText(
+        "Operation will not report for 2026 reporting year and subsequent years",
+      ),
+    ).toBeInTheDocument();
+  });
+});
