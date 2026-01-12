@@ -25,6 +25,7 @@ const OperationRegistrationPage = async ({
   operation: UUID;
   searchParams: FacilitiesSearchParams;
 }) => {
+  const stepNumber = Number(step) || 1;
   let operationData;
   let steps = [...initialOperationRegistrationSteps];
 
@@ -46,12 +47,12 @@ const OperationRegistrationPage = async ({
     steps = [...initialOperationRegistrationSteps];
   }
 
-  const stepIndex = step - 1;
+  const stepIndex = stepNumber - 1;
   const formSectionName = steps[stepIndex];
 
   const defaultProps = {
     operation,
-    step,
+    step: stepNumber,
     steps,
   };
   switch (formSectionName) {

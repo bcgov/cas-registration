@@ -313,31 +313,24 @@ export async function waitForElementToStabilize(page: Page, element: string) {
   await el?.waitForElementState("stable");
 }
 
-// This function can be used instead of `happoScreenshot` directly when experiencing flaky screenshots.
-// It waits for the page to be stable before taking a screenshot.
+// This function can be used instead of `happoScreenshot` directly when experiencing flaky screenshots. It waits for the page to be stable before taking a screenshot.
 export async function takeStabilizedScreenshot(
-  happoScreenshot: unknown,
+  happoScreenshot: any,
   page: Page,
   happoArgs: { component: string; variant: string; targets?: string[] },
 ) {
-  if (typeof happoScreenshot !== "function") return;
-
+  // Skip Happo screenshots if Happo is not enabled (e.g., running locally without API keys)
+  if (!happoScreenshot) {
+    return;
+  }
   const { component, variant, targets } = happoArgs;
-
-  // Avoid capturing mid-navigation / reload
-  await page.waitForLoadState("domcontentloaded");
-
-  // Wait for the main content to be present & stable (your existing helper)
-  await waitForElementToStabilize(page, "main");
-
-  // Wait one animation frame
-  await page.evaluate(
-    () =>
-      new Promise<void>((resolve) => requestAnimationFrame(() => resolve())),
-  );
-
   const pageContent = page.locator("html");
-  await happoScreenshot(pageContent, { component, variant, targets });
+  await waitForElementToStabilize(page, "main");
+  await happoScreenshot(pageContent, {
+    component,
+    variant,
+    targets,
+  });
 }
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
