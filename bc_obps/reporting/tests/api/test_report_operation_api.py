@@ -39,7 +39,7 @@ class TestReportOperationDataApi(CommonTestSetup):
             "facility_id": self.facility_report.facility_id,
             "operation_type": self.operation.type,
         }
-        self.activities = [{"id": 1, "name": "Activity 1", "applicable_to": "TypeA"}]
+        self.activities = [{"id": 1, "name": "Activity 1", "applicable_to": "TypeA", "display_name": None}]
         self.products = [{"id": 1, "name": "Product A", "is_regulated": True, "unit": "TypeA"}]
         self.reporting_year = MagicMock()
         self.reporting_year.reporting_year = 2024
