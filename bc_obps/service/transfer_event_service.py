@@ -266,8 +266,20 @@ class TransferEventService:
     @transaction.atomic()
     def _process_operation_transfer(cls, event: TransferEvent, user_guid: UUID) -> None:
         """
-        Process an operation transfer event. Updates the timelines for the associated operation. Deletes the link between the contacts and the  original operator (ie, deletes the record in the operation_contacts through table). Does not delete the contact record in the contact table.
+        Process an operation transfer event. Updates the timelines for the associated operation.
+        Creates snapshots of all facilities belonging to the operation for the old operator.
+        Deletes the link between the contacts and the original operator (ie, deletes the record in the operation_contacts through table).
+        Does not delete the contact record in the contact table.
         """
+
+        # Create snapshots for all facilities belonging to the operation before transfer
+        facilities = event.operation.facilities.all()  # type: ignore # we are sure that operation is not None
+        for facility in facilities:
+            FacilitySnapshotService.create_facility_snapshot(
+                user_guid=user_guid,
+                facility=facility,
+                operation=event.operation,  # type: ignore # we are sure that operation is not None
+            )
 
         # get the current timeline for the operation and operator
         current_timeline = OperationDesignatedOperatorTimelineService.get_current_timeline(event.from_operator.id, event.operation.id)  # type: ignore # we are sure that operation is not None

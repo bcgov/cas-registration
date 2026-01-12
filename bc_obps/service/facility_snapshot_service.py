@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 from uuid import UUID
 from django.db import transaction
 from django.db.models import QuerySet
@@ -71,29 +70,21 @@ class FacilitySnapshotService:
         cls,
         operation_id: UUID,
         facility_id: UUID,
-    ) -> Optional[FacilitySnapshot]:
+    ) -> QuerySet[FacilitySnapshot]:
         """
-        Get the facility snapshot for a specific operation and facility.
-        Returns the most recent snapshot if multiple exist.
+        Get all facility snapshots for a specific operation and facility.
 
         Args:
             operation_id: The operation ID
             facility_id: The facility ID
 
         Returns:
-            The FacilitySnapshot instance or None if not found
+            QuerySet of FacilitySnapshot instances
         """
-        try:
-            return (
-                FacilitySnapshot.objects.filter(
-                    operation_id=operation_id,
-                    facility_id=facility_id,
-                )
-                .order_by('-snapshot_timestamp')
-                .first()
-            )
-        except FacilitySnapshot.DoesNotExist:
-            return None
+        return FacilitySnapshot.objects.filter(
+            operation_id=operation_id,
+            facility_id=facility_id,
+        ).order_by('-snapshot_timestamp')
 
     @classmethod
     def get_facility_snapshots_by_operation(

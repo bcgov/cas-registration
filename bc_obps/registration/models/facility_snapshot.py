@@ -25,13 +25,13 @@ class FacilitySnapshot(TimeStampedModel):
         Facility,
         on_delete=models.PROTECT,
         db_comment="The facility that this snapshot represents",
-        related_name="snapshots",
+        related_name="facility_snapshot",
     )
     operation = models.ForeignKey(
         Operation,
         on_delete=models.PROTECT,
         db_comment="The operation that owned the facility at the time of the snapshot",
-        related_name="facility_snapshots",
+        related_name="facility_snapshot",
     )
     name = models.CharField(
         max_length=1000,

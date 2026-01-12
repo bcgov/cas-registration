@@ -82,6 +82,7 @@ class OperationModelTest(BaseTestCase):
             ("status", "status", 1000, None),
             ("multiple_operators", "multiple operator", None, None),
             ("facility_designated_operations", "facility designated operation timeline", None, None),
+            ("facility_snapshot", "facility snapshot", None, None),
             ("designated_operators", "operation designated operator timeline", None, None),
             ("facilities", "facility", None, None),
             ("report", "report", None, None),
