@@ -22,7 +22,7 @@ import useKey from "@bciers/utils/src/useKey";
 import { Dict } from "@bciers/types/dictionary";
 
 interface OperationInformationFormProps {
-  rawFormData: { [key: string]: any };
+  rawFormData: Dict;
   schema: RJSFSchema;
   step: number;
   steps: string[];
@@ -45,9 +45,7 @@ const OperationInformationForm = ({
     ? createNestedFormData(rawFormData, schema)
     : {};
   // pendingFormState holds the form's state when a user is trying to change the registration purpose but hasn't confirmed the change yet
-  const [pendingFormState, setPendingFormState] = useState(
-    {} as { [key: string]: any },
-  );
+  const [pendingFormState, setPendingFormState] = useState({} as Dict);
   const [confirmedFormState, setConfirmedFormState] = useState(nestedFormData);
   const [isConfirmPurposeChangeModalOpen, setIsConfirmPurposeChangeModalOpen] =
     useState<boolean>(false);
@@ -126,14 +124,14 @@ const OperationInformationForm = ({
   }
 
   function customValidate(formData: Dict, errors: Dict) {
-    // @ts-expect-error - we know that schema.properties.section2.required exists because we set it in the useEffect above
-    const requiredOperationProperties = schema?.properties?.section2.required;
+    const requiredOperationProperties: string[] =
+      schema?.properties?.section2.required;
 
     const isOperationInformationComplete = requiredOperationProperties.every(
-      (el: any) => formData.section2[el],
+      (el: string) => formData.section2[el],
     );
 
-    if (!formData.section1.operation && !isOperationInformationComplete) {
+    if (!selectedOperation && !isOperationInformationComplete) {
       errors.section1.operation.addError(
         "Select an operation or add a new operation in the form below",
       );
@@ -144,7 +142,7 @@ const OperationInformationForm = ({
   const shouldRedirectToOperationsPage =
     continueRegistration || !selectedOperation;
 
-  const handleSubmit = async (data: { formData?: any }) => {
+  const handleSubmit = async (data: { formData: Dict }) => {
     const isCreating = !data.formData?.section1?.operation;
     const postEndpoint = `registration/operations`;
     const putEndpoint = `registration/operations/${data.formData?.section1?.operation}/registration/operation`;
