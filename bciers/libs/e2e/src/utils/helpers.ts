@@ -325,7 +325,7 @@ export async function takeStabilizedScreenshot(
   }
   const { component, variant, targets } = happoArgs;
   const pageContent = page.locator("html");
-  await waitForElementToStabilize(page, "main");
+  await waitForElementToStabilize(page, "html"); // <-- match the screenshot target
   await happoScreenshot(pageContent, {
     component,
     variant,

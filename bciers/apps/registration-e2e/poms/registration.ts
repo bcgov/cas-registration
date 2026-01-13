@@ -36,6 +36,9 @@ export class RegistrationPOM {
   }
 
   async clickSaveAndContinue() {
+    await expect(this.saveAndContinueButton).toBeEnabled({
+      timeout: 30_000,
+    });
     await this.saveAndContinueButton.click();
   }
 

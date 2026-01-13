@@ -161,7 +161,7 @@ test.describe("External User", () => {
     // 👉 Action search by legal name
     await selectOperatorPage.selectByLegalName(
       OperatorE2EValue.SEARCH_LEGAL_NAME,
-      "Bravo Technologies - has parTNER operator",
+      "Bravo Technologies - has parTNER operator - name from admin",
     );
 
     await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
@@ -171,10 +171,10 @@ test.describe("External User", () => {
       true,
     );
     // TODO:To be handled in ticket #457
-    // await takeStabilizedScreenshot(happoScreenshot, newPage, {
-    //   component: "Decline a user operator request",
-    //   variant: "default",
-    // });
+    await takeStabilizedScreenshot(happoScreenshot, newPage, {
+      component: "Decline a user operator request",
+      variant: "default",
+    });
   });
 
   test("Edit a request", async ({ page }) => {

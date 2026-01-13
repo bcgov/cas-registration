@@ -363,7 +363,14 @@ export class OperatorPOM {
   async selectByLegalName(name: string, legalName: string) {
     await this.fieldSelectLegalName.click();
     await this.fieldSelectLegalName.fill(name);
-    await this.page.getByRole("option", { name: legalName }).click();
+
+    const option = this.page.getByRole("option", { name: legalName });
+    await expect(option).toBeVisible({ timeout: 15_000 });
+    await option.click();
+    await expect(this.fieldSelectLegalName).toHaveValue(legalName, {
+      timeout: 10_000,
+    });
+
     await this.buttonSelectOperator.click();
   }
 
