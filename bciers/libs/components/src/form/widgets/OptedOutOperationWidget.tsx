@@ -8,6 +8,21 @@ import { AlertIcon } from "@bciers/components/icons";
 import ToggleWidget from "./ToggleWidget";
 import { BC_GOV_COMPONENTS_GREY, BC_GOV_SEMANTICS_RED } from "@bciers/styles";
 
+function saveOptedOutDetail(operationId: string, val: number | undefined) {
+  const endpoint = `registration/operations/${operationId}/registration/opted-out-operation-detail`;
+
+  const payload = { final_reporting_year: val };
+
+  return actionHandler(endpoint, "POST", "", {
+    body: JSON.stringify(payload),
+  });
+}
+
+function deleteOptedOutDetail(operationId: string) {
+  const endpoint = `registration/operations/${operationId}/registration/opted-out-operation-detail`;
+  return actionHandler(endpoint, "DELETE", "");
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   id,
@@ -32,21 +47,6 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   const isDisabled = !isCasDirector;
 
   const finalReportingYearSchema = schema?.properties?.final_reporting_year;
-
-  function saveOptedOutDetail(operationId: string, val: number | undefined) {
-    const endpoint = `registration/operations/${operationId}/registration/opted-out-operation-detail`;
-
-    const payload = { final_reporting_year: val };
-
-    return actionHandler(endpoint, "POST", "", {
-      body: JSON.stringify(payload),
-    });
-  }
-
-  function deleteOptedOutDetail(operationId: string) {
-    const endpoint = `registration/operations/${operationId}/registration/opted-out-operation-detail`;
-    return actionHandler(endpoint, "DELETE", "");
-  }
 
   // ---------- Handlers ------------------
   const handleComboChange = async (val: number | undefined) => {
@@ -88,7 +88,6 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
       }
 
       setError(undefined);
-      return;
     }
   };
 
