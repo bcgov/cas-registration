@@ -8,6 +8,7 @@ import { AlertIcon } from "@bciers/components/icons";
 import ToggleWidget from "./ToggleWidget";
 import { BC_GOV_COMPONENTS_GREY, BC_GOV_SEMANTICS_RED } from "@bciers/styles";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   id,
   value,

@@ -39,6 +39,16 @@ const mockReportTaskList = {
   facilityName: "Test Facility",
   operationType: "SFO",
 };
+const mockReviewOperation = (optedOutFinalYear: number | undefined) => {
+  (
+    getReviewOperationInformationPageData as ReturnType<typeof vi.fn>
+  ).mockResolvedValue({
+    report_operation: {
+      operation_opted_out_final_reporting_year: optedOutFinalYear,
+    },
+  });
+};
+
 describe("The Production Data component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -48,13 +58,9 @@ describe("The Production Data component", () => {
     (getNavigationInformation as ReturnType<typeof vi.fn>).mockResolvedValue(
       dummyNavigationInformation,
     );
-    (
-      getReviewOperationInformationPageData as ReturnType<typeof vi.fn>
-    ).mockResolvedValue({
-      report_operation: {
-        operation_opted_out_final_reporting_year: undefined,
-      },
-    });
+
+    // default: operation is NOT opted-out
+    mockReviewOperation(undefined);
   });
 
   it("fetches the proper data and passes it to the form", async () => {
@@ -170,5 +176,65 @@ describe("The Production Data component", () => {
     expect(
       screen.getByLabelText("Production data for Apr 1 - Dec 31, 2024*"),
     ).toHaveRole("textbox");
+  });
+
+  it("displays the jan-mar field if the reporting year is 2025 and the operation has opted-out effective 2025", async () => {
+    mockReviewOperation(2025);
+
+    getProductionDataMock.mockReturnValue({
+      report_data: {
+        reporting_year: 2025,
+      },
+      facility_data: { facility_type: "SFO" },
+      payload: {
+        allowed_products: [],
+        report_products: [
+          {
+            product_name: "testProduct",
+            unit: "tonnes of tests",
+          },
+        ],
+      },
+    });
+
+    render(await ProductionDataPage(props));
+
+    expect(
+      screen.getByLabelText("Production data for Jan 1 - Mar 31, 2025*"),
+    ).toHaveRole("textbox");
+  });
+
+  it("calculates isOptedOut as false when reporting year is before opt-out year", async () => {
+    mockReviewOperation(2025);
+
+    getProductionDataMock.mockReturnValue({
+      report_data: { reporting_year: 2024 },
+      facility_data: { facility_type: "SFO" },
+      payload: {
+        allowed_products: [],
+        report_products: [],
+      },
+    });
+
+    render(await ProductionDataPage(props));
+
+    expect(getReviewOperationInformationPageData).toHaveBeenCalledWith(1);
+  });
+
+  it("calculates isOptedOut as true when reporting year is equal to opt-out year", async () => {
+    mockReviewOperation(2025); // final reporting year is 2025
+
+    getProductionDataMock.mockReturnValue({
+      report_data: { reporting_year: 2025 },
+      facility_data: { facility_type: "SFO" },
+      payload: {
+        allowed_products: [],
+        report_products: [],
+      },
+    });
+
+    render(await ProductionDataPage(props));
+
+    expect(getReviewOperationInformationPageData).toHaveBeenCalledWith(1);
   });
 });

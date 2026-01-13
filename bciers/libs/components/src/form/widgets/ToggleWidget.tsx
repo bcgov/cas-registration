@@ -129,9 +129,23 @@ const ToggleWidget: React.FC<
   id,
   onChange,
   value,
-  trueLabel = "Yes",
-  falseLabel = "No",
+  trueLabel: propTrueLabel,
+  falseLabel: propFalseLabel,
+  options,
 }) => {
+  // NOTE: the true/false custom labels can be set by either direct props
+  // (i.e., <ToggleWidget trueLabel="Oui" falseLabel="Non" />)
+  // or via RJSF with ui:options. Precedence is given to direct props.
+  // If no labels are passed, default used is Yes/No.
+  const { trueLabel: optionTrueLabel, falseLabel: optionFalseLabel } =
+    (options ?? {}) as {
+      trueLabel?: string;
+      falseLabel?: string;
+    };
+
+  const trueLabel = propTrueLabel ?? optionTrueLabel ?? "Yes";
+  const falseLabel = propFalseLabel ?? optionFalseLabel ?? "No";
+
   const leftWidth = measureTextWidth(falseLabel);
   const rightWidth = measureTextWidth(trueLabel);
   const maxLabelWidth = Math.max(leftWidth, rightWidth);
