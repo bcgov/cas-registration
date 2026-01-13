@@ -527,3 +527,18 @@ export async function newContextForRole(
     baseURL,
   });
 }
+
+/**
+ * Extracts the compliance report version ID (CRV ID) from a URL.
+ * Supports routes containing `/compliance-summaries/:id`,
+ * `/compliance-report-versions/:id`, or `?complianceReportVersionId=:id`.
+ */
+export function getCrvIdFromUrl({ url }: { url: string }): number {
+  const match =
+    url.match(/compliance-summaries\/(\d+)\b/) ??
+    url.match(/compliance-report-versions\/(\d+)\b/) ??
+    url.match(/[?&]complianceReportVersionId=(\d+)\b/);
+
+  if (!match) throw new Error(`Could not extract crvId from URL: ${url}`);
+  return Number(match[1]);
+}

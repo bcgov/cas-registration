@@ -1,5 +1,4 @@
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
-
 import { UserRole } from "@bciers/e2e/utils/enums";
 import { newContextForRole } from "@bciers/e2e/utils/helpers";
 import {
@@ -7,12 +6,7 @@ import {
   ComplianceDisplayStatus,
   GridActionText,
 } from "@/compliance-e2e/utils/enums";
-
-import {
-  BCCR_HOLDING_ACCOUNT_INPUT_VALUE,
-  DirectorDecision,
-} from "@/compliance-e2e/utils/constants";
-
+import { DirectorDecision } from "@/compliance-e2e/utils/constants";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summaries";
 import { ReviewComplianceEarnedCreditsPOM } from "@/compliance-e2e/poms/request-issuance/review-compliance-earned-credits";
@@ -59,22 +53,15 @@ test.describe("Test earned credits request issuance flow", () => {
       );
       // Init POMS
       const industryPage = await industryContext.newPage();
-      const industryReports = new CurrentReportsPOM(industryPage);
+      const gridReportingReports = new CurrentReportsPOM(industryPage);
       const industrySummaries = new ComplianceSummariesPOM(industryPage);
       const industryTaskList = new RequestIssuanceTaskListPOM(industryPage);
       const industryEarnedCredits = new ReviewComplianceEarnedCreditsPOM(
         industryPage,
       );
 
-      // 🔌 Attach stub to mock the call to API: getBccrAccountDetails
-      await industryEarnedCredits.attachBccrAccountValidationStub(
-        "Mock Trading Name Inc.",
-      );
-      // 🔌 Attach stub to mock the call to API for industry earned-credits
-      await industryEarnedCredits.attachRequestIssuanceStub(request);
-
       // Submit report version
-      await industryReports.submitReportEarnedCredits();
+      await gridReportingReports.submitReportEarnedCredits(false, request);
 
       // Open compliance report version
       await industrySummaries.route();
@@ -86,18 +73,15 @@ test.describe("Test earned credits request issuance flow", () => {
       // Navigate to request issuance
       await industryTaskList.clickRequestIssuance();
 
-      // Submit request issuance of earned credits
-      await industryEarnedCredits.fillRequestIssuanceForm(
-        BCCR_HOLDING_ACCOUNT_INPUT_VALUE,
-      );
-
       // TODO(#4107): Fix Happo screenshot frame detachment errors
       // await takeStabilizedScreenshot(happoScreenshot, industryPage, {
       //   component: "Earned credits request issuance",
       //   variant: `industry-form-filled`,
       // });
 
-      await industryEarnedCredits.submitRequestIssuance();
+      // Submit request issuance of earned credits
+      await industryEarnedCredits.submitRequestIssuance(request);
+
       await industryContext.close();
 
       // 2. CAS_ANALYST context: Review request issuance of earned credits and set as "Ready to Approve"
@@ -150,11 +134,6 @@ test.describe("Test earned credits request issuance flow", () => {
       const directorEarnedCredits =
         new InternalReviewComplianceEarnedCreditsPOM(directorPage);
 
-      // 🔌 Only attach stub for APPROVE (mocks BCCR API). DECLINE doesn't need stub.
-      if (c.decision === IssuanceStatus.APPROVED) {
-        await directorEarnedCredits.attachDirectorApproveStub(request);
-      }
-
       // Open compliance report version
       await directorSummaries.route();
       await directorSummaries.assertStatusForOperation(
@@ -179,7 +158,11 @@ test.describe("Test earned credits request issuance flow", () => {
       // });
 
       // Submit director decision of request issuance of earned credits
-      await directorEarnedCredits.submitDirectorReviewIssuance(c.decision);
+      if (c.decision === IssuanceStatus.APPROVED) {
+        await directorEarnedCredits.approveIssuanceDirect(request);
+      } else {
+        await directorEarnedCredits.submitDirectorReviewIssuance(c.decision);
+      }
 
       await directorSummaries.route();
       await directorSummaries.assertStatusForOperation(

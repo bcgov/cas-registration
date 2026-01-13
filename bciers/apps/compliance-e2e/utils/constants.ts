@@ -14,9 +14,8 @@ export const ISSUANCE_STATUS_FIELD =
   'xpath=//label[@for="root_issuance_status"]/../following-sibling::div//span';
 
 // --- Request Issuance form ---
-export const BCCR_HOLDING_ACCOUNT_INPUT = "#root_bccr_holding_account_id";
 export const BCCR_HOLDING_ACCOUNT_INPUT_VALUE = "000000000000000";
-export const BCCR_TRADING_NAME_FIELD = "#root_bccr_trading_name";
+export const BCCR_TRADING_NAME_FIELD_VALUE = "Mock Trading Name Inc.";
 export const REQUEST_ISSUANCE_BUTTON_TEXT =
   "Request Issuance of Earned Credits";
 
@@ -76,10 +75,6 @@ export const REVIEW_REQUEST_ISSUANCE_CREDITS_URL_PATTERN = new RegExp(
 export const REVIEW_BY_DIRECTOR_URL_PATTERN = new RegExp(
   `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/review-by-director$`,
 );
-
-// Extract CRV id from director submit URL
-export const DIRECTOR_REVIEW_CRV_ID =
-  /compliance-summaries\/(\d+)\/review-by-director/;
 
 // Scenario name used by the Django stub for APPROVE (DECLINE doesn't need stub)
 export const EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO =
