@@ -134,3 +134,44 @@ jobs:
     uses: ./.github/workflows/trivy.yaml
   codeql:
     uses: ./.github/workflows/codeql.yaml
+  notify-airflow:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs:
+      [
+        test-code,
+        test-backend,
+        test-administration-e2e,
+        test-registration-e2e,
+        test-dashboard-e2e,
+        test-compliance-e2e,
+        zap-owasp,
+        schemaspy,
+        trivy,
+        codeql,
+      ]
+    env:
+      STATUS: ${{ job.status }}
+      DAG_ID: cas_bciers_nightly_build_report
+      AIRFLOW_USERNAME: ${{ secrets.AIRFLOW_USERNAME }}
+      AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}
+      AIRFLOW_ENDPOINT: ${{ secrets.AIRFLOW_ENDPOINT }}
+    steps:
+      - name: Report status to Airflow
+        run: |
+          jwt_token=$(curl -X POST "$AIRFLOW_ENDPOINT/auth/token" \
+            -H "Content-Type: application/json" \
+            -d "{\"username\": \"$AIRFLOW_USERNAME\", \"password\": \"$AIRFLOW_PASSWORD\"}" \
+            | jq -r .access_token)
+
+          dag_config="{status: \"$STATUS\", \"run_id\": \"${{ github.run_id }}\", \"note\: \"GitHub Workflow at https://github.com/bcgov/cas-registration/actions/runs/{{ github.run_id }}\"}"
+          dag_run_url="$AIRFLOW_ENDPOINT/api/v2/dags/$DAG_ID/dagRuns"
+
+          run_json=$(curl -sSf -H \"Authorization: Bearer $jwt_token\" \
+            -X POST "$dag_run_url" \
+            -H 'Cache-Control: no-cache' \
+            -H 'Content-Type: application/json' \
+            -d "{\"logical_date\": null,\"conf\": $dag_config}")
+          dag_run_id=$(echo "$run_json" | jq -r .dag_run_id)
+
+          echo "Reported status for ${{ github.run_id }} to Airflow $dag_run_id with status $STATUS"
