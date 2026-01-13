@@ -27,6 +27,7 @@ DAG triggering cron job to process due transfers
     default_args=default_args,
     is_paused_upon_creation=False,
     doc_md=PROCESS_DUE_DAG_DOC,
+    tags=['bciers'],
 )
 def process_transfer_event():
     @task
@@ -57,6 +58,7 @@ The following parameters are available:
     default_args=default_args,
     is_paused_upon_creation=False,
     doc_md=NIGHTLY_BUILD_DAG_DOC,
+    tags=['bciers'],
 )
 def nightly_build_report(
     status: str = None,
