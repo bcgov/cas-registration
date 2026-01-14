@@ -175,3 +175,25 @@ jobs:
           dag_run_id=$(echo "$run_json" | jq -r .dag_run_id)
 
           echo "Reported status for ${{ github.run_id }} to Airflow $dag_run_id with status $STATUS"
+  notify-issue:
+    name: Notify failed build
+    needs: [
+        test-code,
+        test-backend,
+        test-administration-e2e,
+        test-registration-e2e,
+        test-dashboard-e2e,
+        test-compliance-e2e,
+        zap-owasp,
+        schemaspy,
+        trivy,
+        codeql,
+    ]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: jayqi/failed-build-issue-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          label-name: "nightly failed"
+          title-template: "Failed nightly build and test: {{workflow}}"
