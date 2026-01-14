@@ -418,42 +418,24 @@ export async function selectItemFromMuiSelect(
 
 export async function selectItemFromAutocomplete(
   page: Page,
-  choice: string | RegExp,
+  choice: string,
   selector?: string,
   exactChoice: boolean = false,
 ) {
-  let input;
+  let container;
 
-  if (selector) {
-    const container = page.locator(selector);
-    await expect(container).toBeVisible({ timeout: 10000 });
-
-    input = container.locator("input");
-  } else {
-    input = page.locator(".MuiAutocomplete-input");
-  }
-
-  await expect(input).toBeVisible({ timeout: 10000 });
-  await input.click();
-
-  const optionsPopper = page.locator(".MuiAutocomplete-popper");
+  if (selector) container = page.locator(selector);
+  else container = page.locator(".MuiAutocomplete-input");
+  await expect(container).toBeVisible();
+  await container.click();
+  const optionsPopper = page.locator(".MuiAutocomplete-listbox");
   await expect(optionsPopper).toBeVisible();
-
-  const option = optionsPopper.locator(".MuiAutocomplete-option", {
-    hasText: choice instanceof RegExp ? choice : new RegExp(`^${choice}$`),
+  const option = optionsPopper.getByRole("option", {
+    name: choice,
+    exact: exactChoice,
   });
-
-  if (exactChoice && typeof choice === "string") {
-    await expect(
-      option.filter({ hasText: new RegExp(`^${choice}$`) }),
-    ).toBeVisible();
-    await option.filter({ hasText: new RegExp(`^${choice}$`) }).click();
-  } else {
-    await expect(option.first()).toBeVisible();
-    await option.first().click();
-  }
-
-  await expect(optionsPopper).not.toBeVisible();
+  await expect(option).toBeVisible();
+  await option.click();
 }
 
 export async function urlIsCorrect(page: Page, expectedPath: string) {

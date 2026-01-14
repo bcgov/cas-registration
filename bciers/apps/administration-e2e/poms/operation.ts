@@ -29,9 +29,9 @@ export class OperationPOM {
   readonly operationsUrl: string =
     process.env.E2E_BASEURL + AppRoute.OPERATIONS;
 
-  readonly registrationPurposeXPath: string = `//*[@id="root_section3_registration_purpose_select"]`;
+  readonly registrationPurposeXPath: string = `//*[@id="root_section3_registration_purpose"]`;
 
-  readonly operationTypeXPath: string = `//*[@id="root_section1_type_select"]`;
+  readonly operationTypeXPath: string = `//*[@id="root_section1_type"]`;
 
   constructor(page: Page) {
     this.page = page;
