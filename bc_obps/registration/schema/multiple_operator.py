@@ -4,7 +4,7 @@ from registration.schema import validate_business_structure, validate_cra_busine
 from ninja import Field, ModelSchema
 from registration.constants import BC_CORPORATE_REGISTRY_REGEX, CRA_BUSINESS_NUMBER_REGEX
 from registration.models import MultipleOperator
-from pydantic import field_validator
+from pydantic import ConfigDict, field_validator
 
 
 class MultipleOperatorIn(ModelSchema):
@@ -25,6 +25,8 @@ class MultipleOperatorIn(ModelSchema):
     province: Optional[str] = Field(None, alias="mo_province")
     postal_code: Optional[str] = Field(None, alias="mo_postal_code")
 
+    model_config = ConfigDict(populate_by_name=True)
+
     @field_validator("cra_business_number")
     @classmethod
     def validate_cra_business_number(cls, value: str) -> Optional[str]:
@@ -38,7 +40,6 @@ class MultipleOperatorIn(ModelSchema):
     class Meta:
         model = MultipleOperator
         fields = ["id"]
-        populate_by_name = True
 
 
 class MultipleOperatorOut(ModelSchema):

@@ -1,6 +1,7 @@
 from typing import Annotated, Optional
 from uuid import UUID
 
+from pydantic import ConfigDict
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import Contact
 
@@ -12,6 +13,8 @@ class ContactOut(ModelSchema):
     postal_code: Optional[str] = Field(None, alias="address.postal_code")
     places_assigned: Optional[list] = None
 
+    model_config = ConfigDict(populate_by_name=True)
+
     @staticmethod
     def resolve_phone_number(obj: Contact) -> str:
         return str(obj.phone_number)
@@ -19,7 +22,6 @@ class ContactOut(ModelSchema):
     class Meta:
         model = Contact
         fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'position_title', 'business_role']
-        populate_by_name = True
 
 
 class PlacesAssigned(Schema):

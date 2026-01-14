@@ -1,5 +1,5 @@
 from ninja import ModelSchema
-from pydantic import alias_generators
+from pydantic import alias_generators, ConfigDict
 
 from reporting.models import ReportPersonResponsible
 
@@ -13,6 +13,8 @@ class ReportPersonResponsibleOut(ModelSchema):
     Schema for the get report operation endpoint request output
     """
 
+    model_config = ConfigDict(populate_by_name=True)
+
     @staticmethod
     def resolve_phone_number(obj: ReportPersonResponsible) -> str:
         return str(obj.phone_number)
@@ -20,7 +22,6 @@ class ReportPersonResponsibleOut(ModelSchema):
     class Meta:
         # alias_generator = to_snake
         model = ReportPersonResponsible
-        populate_by_name = True
         fields = [
             'street_address',
             'municipality',
