@@ -3,7 +3,7 @@ import { ComplianceTaskTitles } from "@/compliance-e2e/utils/enums";
 import { REQUEST_ISSUANCE_CREDITS_URL_PATTERN } from "@/compliance-e2e/utils/constants";
 
 export class RequestIssuanceTaskListPOM {
-  readonly page: Page;
+  private readonly page: Page;
 
   constructor(page: Page) {
     this.page = page;

@@ -5,6 +5,7 @@ import {
   EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO,
   DECISION_TO_BUTTON,
   DirectorDecision,
+  REVIEW_BY_DIRECTOR_URL_PATTERN,
 } from "@/compliance-e2e/utils/constants";
 import { clickButton } from "@bciers/e2e/utils/helpers";
 import { AnalystSuggestion } from "@bciers/utils/src/enums";
@@ -44,7 +45,9 @@ export class InternalReviewComplianceEarnedCreditsPOM {
     );
 
     // Click submit and wait for navigation
-    await clickButton(this.page, CONTINUE_BUTTON_TEXT);
+    await clickButton(this.page, CONTINUE_BUTTON_TEXT, {
+      waitForUrl: REVIEW_BY_DIRECTOR_URL_PATTERN,
+    });
   }
 
   /**

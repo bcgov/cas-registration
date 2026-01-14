@@ -59,23 +59,18 @@ export const REQUEST_ISSUANCE_CREDITS_URL_PATTERN = new RegExp(
   `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/request-issuance-of-earned-credits$`,
 );
 
-// Industry: regex to extract compliance_report_version_id from the endpoint request
-export const EARNED_CREDITS_REQUEST_ISSUANCE_CRV_ID =
-  /compliance-summaries\/(\d+)\/request-issuance-of-earned-credit/;
-
 // Industry: scenario name used by the Django stub
 export const EARNED_CREDITS_REQUEST_ISSUANCE_SCENARIO =
   "earned_credits_request_issuance";
 
 // Analyst: review credits issuance request url
 export const REVIEW_REQUEST_ISSUANCE_CREDITS_URL_PATTERN = new RegExp(
-  `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/review-credits-issuance-request$`,
+  `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/review-credits-issuance-request/?(?:\\?.*)?$`,
 );
 // Director: review by director url
 export const REVIEW_BY_DIRECTOR_URL_PATTERN = new RegExp(
-  `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/review-by-director$`,
+  `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/review-by-director/?(?:\\?.*)?$`,
 );
-
 // Scenario name used by the Django stub for APPROVE (DECLINE doesn't need stub)
 export const EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO =
   "earned_credits_director_approve";

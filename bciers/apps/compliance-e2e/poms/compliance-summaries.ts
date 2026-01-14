@@ -28,20 +28,17 @@ export class ComplianceSummariesPOM {
   /**
    * Find the row whose text contains the given operation name.
    */
-
   async getRowByOperationName(operationName: string): Promise<Locator> {
-    // wait for the grid to have rendered rows at all
-    await expect(this.grid.getByRole("row").first()).toHaveCount(1);
-
     const row = this.grid
       .getByRole("row")
       .filter({ hasText: operationName })
       .first();
 
-    // wait for it to exist before asserting visibility
-    await expect(row).toHaveCount(1);
-    await expect(row).toBeVisible();
+    await expect
+      .poll(async () => await row.count(), { timeout: 15_000 })
+      .toBeGreaterThan(0);
 
+    await expect(row).toBeVisible();
     return row;
   }
 

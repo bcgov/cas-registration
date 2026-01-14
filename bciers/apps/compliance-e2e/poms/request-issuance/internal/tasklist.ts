@@ -6,7 +6,7 @@ import {
 import { ComplianceTaskTitles } from "@/compliance-e2e/utils/enums";
 
 export class InternalRequestIssuanceTaskListPOM {
-  readonly page: Page;
+  private readonly page: Page;
 
   constructor(page: Page) {
     this.page = page;
