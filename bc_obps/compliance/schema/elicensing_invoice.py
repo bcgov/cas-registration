@@ -1,7 +1,8 @@
 from decimal import Decimal
-from typing import Literal, Optional
+from typing import Annotated, Literal, Optional
+
 from compliance.models.elicensing_invoice import ElicensingInvoice
-from ninja import Schema, ModelSchema, Field, FilterSchema
+from ninja import Field, FilterSchema, ModelSchema, Schema
 
 
 class ElicensingInvoiceOut(ModelSchema):
@@ -84,11 +85,11 @@ class ElicensingInvoiceListOut(ModelSchema):
 
 
 class ElicensingInvoiceFilterSchema(FilterSchema):
-    operator_legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator_legal_name__icontains'})
-    operation_name: Optional[str] = Field(None, json_schema_extra={'q': 'operation_name__icontains'})
-    invoice_type: Optional[str] = Field(None, json_schema_extra={'q': 'invoice_type__icontains'})
-    invoice_number: Optional[str] = Field(None, json_schema_extra={'q': 'invoice_number__icontains'})
-    compliance_period: Optional[str] = Field(None, json_schema_extra={'q': 'compliance_period__icontains'})
-    invoice_total: Optional[str] = Field(None, json_schema_extra={'q': 'invoice_total__icontains'})
-    total_payments: Optional[str] = Field(None, json_schema_extra={'q': 'total_payments__icontains'})
-    total_adjustments: Optional[str] = Field(None, json_schema_extra={'q': 'total_adjustments__icontains'})
+    operator_legal_name: Annotated[str | None, Field(q='operator_legal_name__icontains')] = None
+    operation_name: Annotated[str | None, Field(q='operation_name__icontains')] = None
+    invoice_type: Annotated[str | None, Field(q='invoice_type__icontains')] = None
+    invoice_number: Annotated[str | None, Field(q='invoice_number__icontains')] = None
+    compliance_period: Annotated[str | None, Field(q='compliance_period__icontains')] = None
+    invoice_total: Annotated[str | None, Field(q='invoice_total__icontains')] = None
+    total_payments: Annotated[str | None, Field(q='total_payments__icontains')] = None
+    total_adjustments: Annotated[str | None, Field(q='total_adjustments__icontains')] = None

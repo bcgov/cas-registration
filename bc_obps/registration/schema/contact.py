@@ -1,8 +1,8 @@
-from typing import Optional
-from ninja import ModelSchema, Field, Schema
-from registration.models import Contact
-from ninja import FilterSchema
+from typing import Annotated, Optional
 from uuid import UUID
+
+from ninja import Field, FilterSchema, ModelSchema, Schema
+from registration.models import Contact
 
 
 class ContactOut(ModelSchema):
@@ -41,14 +41,11 @@ class ContactListOut(ModelSchema):
 
 
 class ContactFilterSchema(FilterSchema):
-    # NOTE: we could simply use the `q` parameter to filter by related fields but,
-    # due to this issue: https://github.com/vitalik/django-ninja/issues/1037 mypy is unhappy so I'm using the `json_schema_extra` parameter
-    # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error
-    first_name: Optional[str] = Field(None, json_schema_extra={'q': 'first_name__icontains'})
-    last_name: Optional[str] = Field(None, json_schema_extra={'q': 'last_name__icontains'})
-    email: Optional[str] = Field(None, json_schema_extra={'q': 'email__icontains'})
-    operator__legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator__legal_name__icontains'})
-    operator_id: Optional[UUID] = Field(None, json_schema_extra={'q': 'operator_id'})
+    first_name: Annotated[str | None, Field(q='first_name__icontains')] = None
+    last_name: Annotated[str | None, Field(q='last_name__icontains')] = None
+    email: Annotated[str | None, Field(q='email__icontains')] = None
+    operator__legal_name: Annotated[str | None, Field(q='operator__legal_name__icontains')] = None
+    operator_id: Annotated[UUID | None, Field(q='operator_id')] = None
 
 
 class OperationRepresentativeListOut(Schema):

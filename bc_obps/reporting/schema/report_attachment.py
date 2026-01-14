@@ -1,4 +1,5 @@
-from typing import List, Optional
+from typing import Annotated, List, Optional
+
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
@@ -39,12 +40,8 @@ class InternalReportAttachmentOut(ModelSchema):
 
 
 class InternalReportAttachmentFilterSchema(FilterSchema):
-    operator: Optional[str] = Field(
-        None, json_schema_extra={"q": "report_version__report__operator__legal_name__icontains"}
-    )
-    operation: Optional[str] = Field(
-        None, json_schema_extra={"q": "report_version__report__operation__name__icontains"}
-    )
-    report_version_id: Optional[int] = Field(None, json_schema_extra={"q": "report_version__id"})
-    attachment_type: Optional[str] = Field(None, json_schema_extra={"q": "attachment_type__icontains"})
-    attachment_name: Optional[str] = Field(None, json_schema_extra={"q": "attachment_name__icontains"})
+    operator: Annotated[str | None, Field(q="report_version__report__operator__legal_name__icontains")] = None
+    operation: Annotated[str | None, Field(q="report_version__report__operation__name__icontains")] = None
+    report_version_id: Annotated[int | None, Field(q="report_version__id")] = None
+    attachment_type: Annotated[str | None, Field(q="attachment_type__icontains")] = None
+    attachment_name: Annotated[str | None, Field(q="attachment_name__icontains")] = None

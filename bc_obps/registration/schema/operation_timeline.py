@@ -1,8 +1,9 @@
+from typing import Annotated, Optional
 from uuid import UUID
-from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
-from typing import Optional
-from ninja import Field, FilterSchema, ModelSchema
+
 from common.constants import AUDIT_FIELDS
+from ninja import Field, FilterSchema, ModelSchema
+from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 
 
 class OperationTimelineListOut(ModelSchema):
@@ -29,16 +30,13 @@ class OperationTimelineListOut(ModelSchema):
 
 
 class OperationTimelineFilterSchema(FilterSchema):
-    # NOTE: we could simply use the `q` parameter to filter by related fields but,
-    # due to this issue: https://github.com/vitalik/django-ninja/issues/1037 mypy is unhappy, so I'm using the `json_schema_extra` parameter
-    # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error
-    operation__bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'operation__bcghg_id__id__icontains'})
-    operation__name: Optional[str] = Field(None, json_schema_extra={'q': 'operation__name__icontains'})
-    operation__type: Optional[str] = Field(None, json_schema_extra={'q': 'operation__type__icontains'})
-    operation__status: Optional[str] = Field(None, json_schema_extra={'q': 'operation__status__icontains'})
-    operation__bc_obps_regulated_operation: Optional[str] = Field(
-        None, json_schema_extra={'q': 'operation__bc_obps_regulated_operation__id__icontains'}
-    )
-    operator__legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator__legal_name__icontains'})
-    operator_id: Optional[UUID] = Field(None, json_schema_extra={'q': 'operator__id__exact'})
-    end_date: Optional[bool] = Field(None, json_schema_extra={'q': 'end_date__isnull'})
+    operation__bcghg_id: Annotated[str | None, Field(q='operation__bcghg_id__id__icontains')] = None
+    operation__name: Annotated[str | None, Field(q='operation__name__icontains')] = None
+    operation__type: Annotated[str | None, Field(q='operation__type__icontains')] = None
+    operation__status: Annotated[str | None, Field(q='operation__status__icontains')] = None
+    operation__bc_obps_regulated_operation: Annotated[
+        str | None, Field(q='operation__bc_obps_regulated_operation__id__icontains')
+    ] = None
+    operator__legal_name: Annotated[str | None, Field(q='operator__legal_name__icontains')] = None
+    operator_id: Annotated[UUID | None, Field(q='operator__id__exact')] = None
+    end_date: Annotated[bool | None, Field(q='end_date__isnull')] = None

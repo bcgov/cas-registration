@@ -1,14 +1,12 @@
+import re
 from datetime import datetime
 from enum import Enum
-import re
-from typing import Optional
+from typing import Annotated, Optional
 from uuid import UUID
 
-from ninja import FilterSchema, ModelSchema
-
+from django.db.models import F, Q
+from ninja import Field, FilterSchema, ModelSchema
 from registration.models.operation import Operation
-from ninja import Field
-from django.db.models import Q, F
 from reporting.models.report import Report
 
 
@@ -44,9 +42,9 @@ class ReportingDashboardReportOut(ModelSchema):
 
 
 class ReportingDashboardFilterSchema(FilterSchema):
-    operation_name: Optional[str] = Field(None, json_schema_extra={'q': 'operation_name__icontains'})
-    report_version_id: Optional[int] = Field(None, json_schema_extra={'q': 'report_version_id'})
-    report_status: Optional[str] = Field(None, json_schema_extra={'q': 'report_status__icontains'})
+    operation_name: Annotated[str | None, Field(q='operation_name__icontains')] = None
+    report_version_id: Annotated[int | None, Field(q='report_version_id')] = None
+    report_status: str | None = None  # Uses custom filter method below
 
     def filter_report_status(self, value: str) -> Q:
         """
@@ -70,11 +68,11 @@ class ReportingDashboardFilterSchema(FilterSchema):
 
 
 class ReportingDashboardOperationFilterSchema(ReportingDashboardFilterSchema):
-    bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'bcghg_id__id__icontains'})
+    bcghg_id: Annotated[str | None, Field(q='bcghg_id__id__icontains')] = None
 
 
 class ReportingDashboardReportFilterSchema(ReportingDashboardFilterSchema):
-    reporting_year: Optional[int] = Field(None, json_schema_extra={'q': 'reporting_year'})
+    reporting_year: Annotated[int | None, Field(q='reporting_year')] = None
 
 
 class ReportsPeriod(str, Enum):

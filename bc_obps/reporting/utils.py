@@ -1,12 +1,10 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from django.core.paginator import Paginator
-from ninja import Schema, Query
+from django.db.models import Case, Count, IntegerField, QuerySet, Sum, When
+from django.http import HttpRequest
+from ninja import Query, Schema
 from ninja.pagination import PaginationBase
-from django.db.models import Sum, QuerySet
-from typing import List
-
-from django.db.models import Count, Case, When, IntegerField
 
 
 def validate_overlapping_records(
@@ -42,7 +40,9 @@ class ReportingCustomPagination(PaginationBase):
         count: int  # Total count of all items
         is_completed_count: Optional[int]  # Count of completed items
 
-    def paginate_queryset(self, queryset: QuerySet[Any], pagination: Input, **params: Any) -> Dict[str, Any]:
+    def paginate_queryset(
+        self, queryset: QuerySet[Any], pagination: Input, request: HttpRequest, **params: Any
+    ) -> Dict[str, Any]:
         page = pagination.page
         page_size = 10
 

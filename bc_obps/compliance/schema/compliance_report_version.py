@@ -1,9 +1,10 @@
 from decimal import Decimal
-from typing import Optional, Any
-from ninja import ModelSchema, Field, FilterSchema
-from compliance.models.compliance_report_version import ComplianceReportVersion
-from reporting.models.report_operation import ReportOperation
+from typing import Annotated, Any, Optional
+
 from compliance.models import CompliancePenalty
+from compliance.models.compliance_report_version import ComplianceReportVersion
+from ninja import Field, FilterSchema, ModelSchema
+from reporting.models.report_operation import ReportOperation
 
 # report aliases
 OPERATOR_NAME_ALIAS = "report_compliance_summary.report_version.report_operation.operator_legal_name"
@@ -105,9 +106,9 @@ class OperationByComplianceSummaryOut(ModelSchema):
 
 
 class ComplianceReportVersionFilterSchema(FilterSchema):
-    operator_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator_name__icontains'})
-    operation_name: Optional[str] = Field(None, json_schema_extra={'q': 'operation_name__icontains'})
-    display_status: Optional[str] = Field(None, json_schema_extra={'q': 'display_status__icontains'})
-    penalty_status: Optional[str] = Field(None, json_schema_extra={'q': 'penalty_status__icontains'})
-    obligation_id: Optional[str] = Field(None, json_schema_extra={'q': 'obligation_id__icontains'})
-    reporting_year: Optional[str] = Field(None, json_schema_extra={'q': 'reporting_year__icontains'})
+    operator_name: Annotated[str | None, Field(q='operator_name__icontains')] = None
+    operation_name: Annotated[str | None, Field(q='operation_name__icontains')] = None
+    display_status: Annotated[str | None, Field(q='display_status__icontains')] = None
+    penalty_status: Annotated[str | None, Field(q='penalty_status__icontains')] = None
+    obligation_id: Annotated[str | None, Field(q='obligation_id__icontains')] = None
+    reporting_year: Annotated[str | None, Field(q='reporting_year__icontains')] = None

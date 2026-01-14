@@ -1,29 +1,28 @@
-from typing import List, Optional
-from registration.models.partner_operator import PartnerOperator
-from registration.schema import (
-    PartnerOperatorIn,
-    PartnerOperatorOut,
-    ParentOperatorIn,
-    ParentOperatorOut,
-    validate_business_structure,
-    validate_cra_business_number,
-)
-from ninja import ModelSchema, FilterSchema, Schema
-from pydantic import field_validator, Field
-from registration.models import BusinessStructure, Operator, ParentOperator
+from typing import Annotated, List, Optional
+
+from ninja import Field, FilterSchema, ModelSchema, Schema
+from pydantic import field_validator
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
     CRA_BUSINESS_NUMBER_REGEX,
 )
+from registration.models import BusinessStructure, Operator, ParentOperator
+from registration.models.partner_operator import PartnerOperator
+from registration.schema import (
+    ParentOperatorIn,
+    ParentOperatorOut,
+    PartnerOperatorIn,
+    PartnerOperatorOut,
+    validate_business_structure,
+    validate_cra_business_number,
+)
 
 
 class OperatorFilterSchema(FilterSchema):
-    legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'legal_name__icontains'})
-    business_structure: Optional[str] = Field(None, json_schema_extra={'q': 'business_structure_id__name__icontains'})
-    cra_business_number: Optional[str] = Field(None, json_schema_extra={'q': 'cra_business_number__icontains'})
-    bc_corporate_registry_number: Optional[str] = Field(
-        None, json_schema_extra={'q': 'bc_corporate_registry_number__icontains'}
-    )
+    legal_name: Annotated[str | None, Field(q='legal_name__icontains')] = None
+    business_structure: Annotated[str | None, Field(q='business_structure_id__name__icontains')] = None
+    cra_business_number: Annotated[str | None, Field(q='cra_business_number__icontains')] = None
+    bc_corporate_registry_number: Annotated[str | None, Field(q='bc_corporate_registry_number__icontains')] = None
 
 
 class OperatorOut(ModelSchema):

@@ -225,10 +225,11 @@ class OperationOutWithDocuments(OperationOut):
 class OperationCreateOut(ModelSchema):
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
 
-    class Config:
+    class Meta:
         model = Operation
-        model_fields = ['id', 'name', 'type', 'naics_code', 'regulated_products']
-        populate_by_name = True
+        fields = ['id', 'name', 'type', 'naics_code', 'regulated_products']
+
+    model_config = {"populate_by_name": True}
 
 
 class OperationUpdateOut(ModelSchema):
