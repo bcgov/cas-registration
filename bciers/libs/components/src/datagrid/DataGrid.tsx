@@ -21,18 +21,19 @@ import type { GridRowParams } from "@mui/x-data-grid";
 import Pagination from "@bciers/components/datagrid/Pagination";
 import SortIcon from "@bciers/components/icons/SortIcon";
 import styles from "@bciers/components/datagrid/styles";
+import { Dict } from "@bciers/types/dictionary";
 
 interface Props {
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
   disabled?: boolean; // Optional prop to disable sorting and filtering - was needed to prevent URL updates on page change
-  fetchPageData?: (params: { [key: string]: any }) => Promise<any>;
+  fetchPageData?: (params: Dict) => Promise<any>;
   initialData: {
-    rows: { [key: string]: any }[];
+    rows: Dict[] | undefined;
     row_count?: number;
   };
   paginationMode?: "client" | "server";
-  sx?: { [key: string]: any };
+  sx?: Dict;
   getRowId?: GridRowIdGetter<any> | undefined;
   pageSize?: number;
   rowSelection?: boolean;

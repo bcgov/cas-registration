@@ -124,8 +124,13 @@ const OperationInformationForm = ({
   }
 
   function customValidate(formData: Dict, errors: Dict) {
+    const section2Schema = schema?.properties?.section2;
     const requiredOperationProperties: string[] =
-      schema?.properties?.section2.required;
+      typeof section2Schema === "object" &&
+      section2Schema !== null &&
+      "required" in section2Schema
+        ? (section2Schema as RJSFSchema).required || []
+        : [];
 
     const isOperationInformationComplete = requiredOperationProperties.every(
       (el: string) => formData.section2[el],
@@ -142,16 +147,13 @@ const OperationInformationForm = ({
   const shouldRedirectToOperationsPage =
     continueRegistration || !selectedOperation;
 
-  const handleSubmit = async (data: { formData: Dict }) => {
-    const isCreating = !data.formData?.section1?.operation;
+  const handleSubmit = async (e: IChangeEvent) => {
+    const formData = e.formData;
+    const isCreating = !formData?.section1?.operation;
     const postEndpoint = `registration/operations`;
-    const putEndpoint = `registration/operations/${data.formData?.section1?.operation}/registration/operation`;
+    const putEndpoint = `registration/operations/${formData?.section1?.operation}/registration/operation`;
     const body = JSON.stringify(
-      createUnnestedFormData(data.formData, [
-        "section1",
-        "section2",
-        "section3",
-      ]),
+      createUnnestedFormData(formData, ["section1", "section2", "section3"]),
     );
     const response = await actionHandler(
       isCreating ? postEndpoint : putEndpoint,

@@ -34,7 +34,7 @@
       "@bciers/img/*": ["libs/img/*"],
       "@bciers/proxies": ["libs/proxies/src/index.ts"],
       "@bciers/sentryConfig/*": ["libs/sentryConfig/src/*"],
-      "@bciers/styles": ["libs/styles/src/index.js"],
+      "@bciers/styles": ["libs/styles"],
       "@bciers/styles/*": ["libs/styles/src/*"],
       "@bciers/testConfig/*": ["libs/testConfig/src/*"],
       "@bciers/testConfig/helpers/*": ["libs/testConfig/src/helpers/*"],
