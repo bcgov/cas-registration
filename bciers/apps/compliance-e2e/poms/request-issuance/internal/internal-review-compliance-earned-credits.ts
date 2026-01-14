@@ -22,6 +22,11 @@ export class InternalReviewComplianceEarnedCreditsPOM {
     this.analystSuggestionInput = this.page.locator(ANALYST_SUGGESTION_INPUT);
   }
 
+  async assertAnalystSuggestionValue(expected: RegExp | string): Promise<void> {
+    await expect(this.analystSuggestionInput).toBeVisible();
+    await expect(this.analystSuggestionInput).toHaveText(expected);
+  }
+
   /**
    * Analyst flow: submits the analyst review
    */

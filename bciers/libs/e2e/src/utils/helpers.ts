@@ -7,7 +7,6 @@ import {
   firefox,
   webkit,
   Browser,
-  BrowserContext,
 } from "@playwright/test";
 import { baseUrlSetup } from "@bciers/e2e/utils/constants";
 import { DataTestID, MessageTextResponse } from "@bciers/e2e/utils/enums";
@@ -504,28 +503,6 @@ export async function assertFieldVisibility(
       visible: visible,
     });
   }
-}
-
-/**
- * Creates a new Playwright BrowserContext for a specific application role.
- *
- * This helper is used in E2E tests that need to switch users (e.g. Industry → Analyst → Director)
- * without logging out and logging back in within the same browser session.
- *
- * Key behaviors:
- * - Applies the correct `storageState` for the given role so the user is already authenticated.
- * - Uses the test-runner's `browser` fixture so contexts stay within Playwright’s managed sandbox
- *   (better isolation, fewer flakes, and trace/video artifacts attach reliably).
- */
-export async function newContextForRole(
-  browser: Browser,
-  baseURL: string,
-  role: string,
-): Promise<BrowserContext> {
-  return browser.newContext({
-    storageState: getStorageStateForRole(role),
-    baseURL,
-  });
 }
 
 /**

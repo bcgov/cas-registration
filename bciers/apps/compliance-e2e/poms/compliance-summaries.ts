@@ -28,13 +28,20 @@ export class ComplianceSummariesPOM {
   /**
    * Find the row whose text contains the given operation name.
    */
+
   async getRowByOperationName(operationName: string): Promise<Locator> {
+    // wait for the grid to have rendered rows at all
+    await expect(this.grid.getByRole("row").first()).toHaveCount(1);
+
     const row = this.grid
       .getByRole("row")
       .filter({ hasText: operationName })
       .first();
 
+    // wait for it to exist before asserting visibility
+    await expect(row).toHaveCount(1);
     await expect(row).toBeVisible();
+
     return row;
   }
 
@@ -93,7 +100,7 @@ export class ComplianceSummariesPOM {
     const targetUrl = new URL(href, this.url).toString();
 
     // Navigate to url route
-    await this.page.goto(targetUrl, { waitUntil: "load" });
+    await this.page.goto(targetUrl, { waitUntil: "domcontentloaded" });
 
     // Optionally assert URL
     if (urlPattern) {

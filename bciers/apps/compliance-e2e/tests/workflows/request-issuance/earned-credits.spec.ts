@@ -1,6 +1,6 @@
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { UserRole } from "@bciers/e2e/utils/enums";
-import { newContextForRole } from "@bciers/e2e/utils/helpers";
+import { openNewBrowserContextAs } from "@bciers/e2e/utils/helpers";
 import {
   ComplianceOperations,
   ComplianceDisplayStatus,
@@ -13,7 +13,7 @@ import { ReviewComplianceEarnedCreditsPOM } from "@/compliance-e2e/poms/request-
 import { RequestIssuanceTaskListPOM } from "@/compliance-e2e/poms/request-issuance/tasklist";
 import { InternalRequestIssuanceTaskListPOM } from "@/compliance-e2e/poms/request-issuance/internal/tasklist";
 import { InternalReviewComplianceEarnedCreditsPOM } from "@/compliance-e2e/poms/request-issuance/internal/internal-review-compliance-earned-credits";
-import { IssuanceStatus } from "@bciers/utils/src/enums";
+import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
 
 // Seed environment
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
@@ -37,146 +37,109 @@ const CASES: Array<{
 test.describe("Test earned credits request issuance flow", () => {
   for (const c of CASES) {
     test(`Industry submits request issuance → analyst sets as ready for approval → director ${c.decision}`, async ({
-      browser,
-      baseURL,
       request,
     }) => {
-      // Wrapper to call helper newContextForRole for role switching
-      const createContextForRole = (role: UserRole) =>
-        newContextForRole(browser, baseURL, role);
+      // 1. Industry user: Submit report for earned credits then request issuance of earned credits
 
-      // 1. Industry user context: Submit report for earned credits then request issuance of earned credits
-
-      // Create role context
-      const industryContext = await createContextForRole(
+      const industryPage = await openNewBrowserContextAs(
         UserRole.INDUSTRY_USER_ADMIN,
       );
-      // Init POMS
-      const industryPage = await industryContext.newPage();
-      const gridReportingReports = new CurrentReportsPOM(industryPage);
-      const industrySummaries = new ComplianceSummariesPOM(industryPage);
-      const industryTaskList = new RequestIssuanceTaskListPOM(industryPage);
-      const industryEarnedCredits = new ReviewComplianceEarnedCreditsPOM(
-        industryPage,
-      );
+      try {
+        const gridReportingReports = new CurrentReportsPOM(industryPage);
+        const industrySummaries = new ComplianceSummariesPOM(industryPage);
+        const industryTaskList = new RequestIssuanceTaskListPOM(industryPage);
+        const industryEarnedCredits = new ReviewComplianceEarnedCreditsPOM(
+          industryPage,
+        );
 
-      // Submit report version
-      await gridReportingReports.submitReportEarnedCredits(false, request);
+        await gridReportingReports.submitReportEarnedCredits(false, request);
 
-      // Open compliance report version
-      await industrySummaries.route();
-      await industrySummaries.openActionForOperation({
-        operationName: ComplianceOperations.EARNED_CREDITS,
-        linkName: GridActionText.REQUEST_ISSUANCE_CREDITS,
-      });
+        await industrySummaries.route();
+        await industrySummaries.openActionForOperation({
+          operationName: ComplianceOperations.EARNED_CREDITS,
+          linkName: GridActionText.REQUEST_ISSUANCE_CREDITS,
+        });
 
-      // Navigate to request issuance
-      await industryTaskList.clickRequestIssuance();
-
-      // TODO(#4107): Fix Happo screenshot frame detachment errors
-      // await takeStabilizedScreenshot(happoScreenshot, industryPage, {
-      //   component: "Earned credits request issuance",
-      //   variant: `industry-form-filled`,
-      // });
-
-      // Submit request issuance of earned credits
-      await industryEarnedCredits.submitRequestIssuance(request);
-
-      await industryContext.close();
+        await industryTaskList.clickRequestIssuance();
+        await industryEarnedCredits.submitRequestIssuance(request);
+      } finally {
+        await industryPage.close();
+      }
 
       // 2. CAS_ANALYST context: Review request issuance of earned credits and set as "Ready to Approve"
 
-      // Create role context
-      const analystContext = await createContextForRole(UserRole.CAS_ANALYST);
+      const analystPage = await openNewBrowserContextAs(UserRole.CAS_ANALYST);
+      try {
+        const analystSummaries = new ComplianceSummariesPOM(analystPage);
+        const analystEarnedCredits =
+          new InternalReviewComplianceEarnedCreditsPOM(analystPage);
+        const analystTaskList = new InternalRequestIssuanceTaskListPOM(
+          analystPage,
+        );
 
-      // Init POMS
-      const analystPage = await analystContext.newPage();
-      const analystSummaries = new ComplianceSummariesPOM(analystPage);
-      const analystEarnedCredits = new InternalReviewComplianceEarnedCreditsPOM(
-        analystPage,
-      );
+        await analystSummaries.route();
+        await analystSummaries.assertStatusForOperation(
+          ComplianceOperations.EARNED_CREDITS,
+          ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
+        );
 
-      // Open compliance report version
-      await analystSummaries.route();
-      await analystSummaries.assertStatusForOperation(
-        ComplianceOperations.EARNED_CREDITS,
-        ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
-      );
-      await analystSummaries.openActionForOperation({
-        operationName: ComplianceOperations.EARNED_CREDITS,
-        linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
-      });
+        await analystSummaries.openActionForOperation({
+          operationName: ComplianceOperations.EARNED_CREDITS,
+          linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
+        });
 
-      // Navigate to review request issuance
-      const analystTaskList = new InternalRequestIssuanceTaskListPOM(
-        analystPage,
-      );
-      await analystTaskList.clickReviewRequestIssuance();
-
-      // TODO(#4107): Fix Happo screenshot frame detachment errors
-      // await takeStabilizedScreenshot(happoScreenshot, analystPage, {
-      //   component: "Earned credits request issuance",
-      //   variant: `analyst-review-page`,
-      // });
-
-      // Submit ready for approval for request issuance of earned credits
-      await analystEarnedCredits.submitAnalystReviewRequestIssuance();
-      await analystContext.close();
+        await analystTaskList.clickReviewRequestIssuance();
+        await analystEarnedCredits.submitAnalystReviewRequestIssuance();
+      } finally {
+        await analystPage.close();
+      }
 
       // 3. CAS_DIRECTOR context: Review "Ready to Approve" request issuance of earned credits and make decision
 
-      // Create role context
-      const directorContext = await createContextForRole(UserRole.CAS_DIRECTOR);
+      const directorPage = await openNewBrowserContextAs(UserRole.CAS_DIRECTOR);
+      try {
+        const directorSummaries = new ComplianceSummariesPOM(directorPage);
+        const directorEarnedCredits =
+          new InternalReviewComplianceEarnedCreditsPOM(directorPage);
+        const directorTaskList = new InternalRequestIssuanceTaskListPOM(
+          directorPage,
+        );
 
-      // Init POMS
-      const directorPage = await directorContext.newPage();
-      const directorSummaries = new ComplianceSummariesPOM(directorPage);
-      const directorEarnedCredits =
-        new InternalReviewComplianceEarnedCreditsPOM(directorPage);
+        await directorSummaries.route();
 
-      // Open compliance report version
-      await directorSummaries.route();
-      await directorSummaries.assertStatusForOperation(
-        ComplianceOperations.EARNED_CREDITS,
-        ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
-      );
-      await directorSummaries.openActionForOperation({
-        operationName: ComplianceOperations.EARNED_CREDITS,
-        linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
-      });
+        await directorSummaries.assertStatusForOperation(
+          ComplianceOperations.EARNED_CREDITS,
+          ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
+        );
+        await directorSummaries.openActionForOperation({
+          operationName: ComplianceOperations.EARNED_CREDITS,
+          linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
+        });
 
-      // Navigate to review by director
-      const directorTaskList = new InternalRequestIssuanceTaskListPOM(
-        directorPage,
-      );
-      await directorTaskList.clickReviewByDirector();
+        await directorTaskList.clickReviewRequestIssuance();
 
-      // TODO(#4107): Fix Happo screenshot frame detachment errors
-      // await takeStabilizedScreenshot(happoScreenshot, directorPage, {
-      //   component: "Earned credits request issuance",
-      //   variant: `director-review-page-${c.decision.toLowerCase()}`,
-      // });
+        await directorEarnedCredits.assertAnalystSuggestionValue(
+          new RegExp(AnalystSuggestion.READY_TO_APPROVE, "i"),
+        );
 
-      // Submit director decision of request issuance of earned credits
-      if (c.decision === IssuanceStatus.APPROVED) {
-        await directorEarnedCredits.approveIssuanceDirect(request);
-      } else {
-        await directorEarnedCredits.submitDirectorReviewIssuance(c.decision);
+        await directorTaskList.clickReviewByDirector();
+
+        if (c.decision === IssuanceStatus.APPROVED) {
+          // 🔌 Attach stub API, prevents external API calls
+          await directorEarnedCredits.approveIssuanceDirect(request);
+        } else {
+          // Continue with submit server action
+          await directorEarnedCredits.submitDirectorReviewIssuance(c.decision);
+        }
+
+        await directorSummaries.route();
+        await directorSummaries.assertStatusForOperation(
+          ComplianceOperations.EARNED_CREDITS,
+          c.expectedStatus,
+        );
+      } finally {
+        await directorPage.close();
       }
-
-      await directorSummaries.route();
-      await directorSummaries.assertStatusForOperation(
-        ComplianceOperations.EARNED_CREDITS,
-        c.expectedStatus,
-      );
-
-      // TODO(#4107): Fix Happo screenshot frame detachment errors
-      // await takeStabilizedScreenshot(happoScreenshot, directorPage, {
-      //   component: "Earned credits request issuance",
-      //   variant: `final-status-${c.decision.toLowerCase()}`,
-      // });
-
-      await directorContext.close();
     });
   }
 });

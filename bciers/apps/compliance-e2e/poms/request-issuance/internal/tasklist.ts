@@ -22,6 +22,7 @@ export class InternalRequestIssuanceTaskListPOM {
     const button = this.page.getByRole("button", { name: labelRegex });
 
     await expect(button).toBeVisible();
+    await expect(button).toBeEnabled();
 
     await Promise.all([
       this.page.waitForURL(expectedUrlPattern),
