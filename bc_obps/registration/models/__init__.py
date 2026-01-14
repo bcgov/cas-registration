@@ -20,6 +20,7 @@ from .opted_in_operation_detail import OptedInOperationDetail
 from .operation import Operation
 from .document import Document
 from .facility import Facility
+from .facility_snapshot import FacilitySnapshot
 from .facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from .multiple_operator import MultipleOperator
 from .operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
@@ -42,6 +43,7 @@ __all__ = [
     "ClosureEvent",
     "FacilityDesignatedOperationTimeline",
     "Facility",
+    "FacilitySnapshot",
     "MultipleOperator",
     "NaicsCode",
     "OperationDesignatedOperatorTimeline",

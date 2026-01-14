@@ -474,6 +474,7 @@ class TestTransferEventService:
         assert facility_event.status == TransferEvent.Statuses.TO_BE_TRANSFERRED
 
     @staticmethod
+    @patch("service.transfer_event_service.FacilitySnapshotService.create_facility_snapshot")
     @patch("service.transfer_event_service.FacilityDesignatedOperationTimelineService.get_current_timeline")
     @patch("service.transfer_event_service.FacilityDesignatedOperationTimelineService.set_timeline_end_date")
     @patch(
@@ -485,6 +486,7 @@ class TestTransferEventService:
         mock_create_timeline: MagicMock,
         mock_set_timeline: MagicMock,
         mock_get_current_timeline: MagicMock,
+        mock_create_snapshot: MagicMock,
     ):
         facility_1 = baker.make_recipe("registration.tests.utils.facility")
         facility_2 = baker.make_recipe("registration.tests.utils.facility")
@@ -507,6 +509,7 @@ class TestTransferEventService:
         # Simulate the behavior of setting the timeline status and creating a new timeline
         mock_set_timeline.return_value = None
         mock_create_timeline.return_value = None
+        mock_create_snapshot.return_value = MagicMock()  # Mock the snapshot creation
 
         # Call the method under test
         TransferEventService._process_facilities_transfer(transfer_event, user_guid)

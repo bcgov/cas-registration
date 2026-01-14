@@ -25,6 +25,7 @@ from service.data_access_service.transfer_event_service import TransferEventData
 from service.data_access_service.user_service import UserDataAccessService
 from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
 from service.facility_service import FacilityService
+from service.facility_snapshot_service import FacilitySnapshotService
 from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
 from service.operation_service import OperationService
 
@@ -118,7 +119,6 @@ class TransferEventService:
     @transaction.atomic
     def create_transfer_event(cls, user_guid: UUID, payload: TransferEventCreateIn) -> TransferEvent:
         user = UserDataAccessService.get_by_guid(user_guid)
-
         if not user.is_cas_analyst() and not user.is_cas_director():
             raise UserError("User is not authorized to create transfer events.")
 
@@ -231,8 +231,16 @@ class TransferEventService:
     def _process_facilities_transfer(cls, event: TransferEvent, user_guid: UUID) -> None:
         """
         Process a facility transfer event. Updates the timelines for all associated facilities.
+        Creates a snapshot of each facility before the transfer to preserve data for the old operator.
         """
         for facility in event.facilities.all():
+            # Create a snapshot of the facility for the old operation before transferring
+            FacilitySnapshotService.create_facility_snapshot(
+                user_guid=user_guid,
+                facility=facility,
+                operation=event.from_operation,  # type: ignore # we are sure that from_operation is not None
+            )
+
             # get the current timeline for the facility and operation
             current_timeline = FacilityDesignatedOperationTimelineService.get_current_timeline(event.from_operation.id, facility.id)  # type: ignore # we are sure that from_operation is not None
 
@@ -258,8 +266,20 @@ class TransferEventService:
     @transaction.atomic()
     def _process_operation_transfer(cls, event: TransferEvent, user_guid: UUID) -> None:
         """
-        Process an operation transfer event. Updates the timelines for the associated operation. Deletes the link between the contacts and the  original operator (ie, deletes the record in the operation_contacts through table). Does not delete the contact record in the contact table.
+        Process an operation transfer event. Updates the timelines for the associated operation.
+        Creates snapshots of all facilities belonging to the operation for the old operator.
+        Deletes the link between the contacts and the original operator (ie, deletes the record in the operation_contacts through table).
+        Does not delete the contact record in the contact table.
         """
+
+        # Create snapshots for all facilities belonging to the operation before transfer
+        facilities = event.operation.facilities.all()  # type: ignore # we are sure that operation is not None
+        for facility in facilities:
+            FacilitySnapshotService.create_facility_snapshot(
+                user_guid=user_guid,
+                facility=facility,
+                operation=event.operation,  # type: ignore # we are sure that operation is not None
+            )
 
         # get the current timeline for the operation and operator
         current_timeline = OperationDesignatedOperatorTimelineService.get_current_timeline(event.from_operator.id, event.operation.id)  # type: ignore # we are sure that operation is not None

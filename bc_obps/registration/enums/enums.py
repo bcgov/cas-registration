@@ -34,6 +34,7 @@ class RegistrationTableNames(Enum):
     DOCUMENT = "document"
     DOCUMENT_TYPE = "document_type"
     FACILITY = "facility"
+    FACILITY_SNAPSHOT = "facility_snapshot"
     FACILITY_DESIGNATED_OPERATION_TIMELINE = "facility_designated_operation_timeline"
     MULTIPLE_OPERATOR = "multiple_operator"
     NAICS_CODE = "naics_code"
