@@ -314,7 +314,7 @@ describe("FacilityEmissionAllocationForm component", () => {
     );
 
     expect(screen.getByRole("alert")).toHaveTextContent(
-      /Only products selected on the production data page appear here. To allocate emissions to a product that isn't shown below, return to the production data page and select it first./i,
+      /To allocate emissions to a product that isn't shown below, return to the production data page and select it first./i,
     );
   });
 

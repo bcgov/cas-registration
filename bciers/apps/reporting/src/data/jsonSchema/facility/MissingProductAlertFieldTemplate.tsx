@@ -19,9 +19,8 @@ const MissingProductAlertContent: React.FC<Props> = ({
   );
   return (
     <div>
-      Only products selected on the <LinkToProductionPage /> appear here. To
-      allocate emissions to a product that isn&apos;t shown below, return to the{" "}
-      <LinkToProductionPage /> and select it first.
+      To allocate emissions to a product that isn&apos;t shown below, return to
+      the <LinkToProductionPage /> and select it first.
     </div>
   );
 };
