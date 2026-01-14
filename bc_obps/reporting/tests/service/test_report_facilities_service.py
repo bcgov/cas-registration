@@ -212,27 +212,28 @@ class TestReportFacilitiesService(TestCase):
 
     def test_get_all_facilities_for_review_old_operator_only_shows_snapshots(self):
         """Test that old operators only see facilities from snapshots."""
-        # Create a new operator and change the operation's operator
-        new_operator = baker.make_recipe('registration.tests.utils.operator')
-        self.operation.operator = new_operator
-        self.operation.save()
 
-        # Create a facility with a snapshot
+        # Create a facility with a snapshot BEFORE changing the operator
         facility_with_snapshot = baker.make_recipe('registration.tests.utils.facility')
-        baker.make(
-            FacilitySnapshot,
-            operation=self.operation,
-            facility=facility_with_snapshot,
-            name='Facility With Snapshot',
-        )
         baker.make(
             FacilityDesignatedOperationTimeline,
             operation=self.operation,
             facility=facility_with_snapshot,
             end_date=None,
         )
+        baker.make(
+            FacilitySnapshot,
+            operation=self.operation,
+            facility=facility_with_snapshot,
+            name='Facility With Snapshot',
+        )
 
-        # Create a facility without a snapshot
+        new_operator = baker.make_recipe('registration.tests.utils.operator')
+        self.operation.operator = new_operator
+        self.operation.save()
+
+        # Create a facility without a snapshot AFTER the operator change
+        # This facility should NOT appear for the old operator
         facility_without_snapshot = baker.make_recipe('registration.tests.utils.facility')
         baker.make(
             FacilityDesignatedOperationTimeline,
@@ -241,7 +242,6 @@ class TestReportFacilitiesService(TestCase):
             end_date=None,
         )
 
-        # Act
         result = ReportFacilitiesService.get_all_facilities_for_review(self.report_version.id)
 
         # Assert: Only the facility with snapshot should appear

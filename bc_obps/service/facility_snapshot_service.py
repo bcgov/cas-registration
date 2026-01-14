@@ -1,7 +1,6 @@
 import logging
 from uuid import UUID
 from django.db import transaction
-from django.db.models import QuerySet
 from registration.models import Facility, FacilitySnapshot, Operation
 
 logger = logging.getLogger(__name__)
@@ -64,40 +63,3 @@ class FacilitySnapshotService:
 
         logger.info(f"Created facility snapshot {snapshot.id} for facility {facility.id} and operation {operation.id}")
         return snapshot
-
-    @classmethod
-    def get_facility_snapshots_by_operation_and_facility(
-        cls,
-        operation_id: UUID,
-        facility_id: UUID,
-    ) -> QuerySet[FacilitySnapshot]:
-        """
-        Get all facility snapshots for a specific operation and facility.
-
-        Args:
-            operation_id: The operation ID
-            facility_id: The facility ID
-
-        Returns:
-            QuerySet of FacilitySnapshot instances
-        """
-        return FacilitySnapshot.objects.filter(
-            operation_id=operation_id,
-            facility_id=facility_id,
-        ).order_by('-snapshot_timestamp')
-
-    @classmethod
-    def get_facility_snapshots_by_operation(
-        cls,
-        operation_id: UUID,
-    ) -> QuerySet[FacilitySnapshot]:
-        """
-        Get all facility snapshots for a specific operation.
-
-        Args:
-            operation_id: The operation ID
-
-        Returns:
-            QuerySet of FacilitySnapshot instances
-        """
-        return FacilitySnapshot.objects.filter(operation_id=operation_id).order_by('-snapshot_timestamp')

@@ -1,4 +1,3 @@
-import uuid
 from django.db import models
 from common.enums import Schemas
 from registration.enums.enums import RegistrationTableNames
@@ -15,12 +14,6 @@ class FacilitySnapshot(TimeStampedModel):
     allowing old operators to see the facility data as it existed at the time they owned it.
     """
 
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        db_comment="Primary key to identify the facility snapshot",
-        verbose_name="ID",
-    )
     facility = models.ForeignKey(
         Facility,
         on_delete=models.PROTECT,
@@ -45,7 +38,11 @@ class FacilitySnapshot(TimeStampedModel):
     starting_date = models.DateTimeField(
         blank=True, null=True, db_comment="The date of the facility starting operations at snapshot time"
     )
-    type = models.CharField(max_length=100, db_comment="The type of the facility at snapshot time")
+    type = models.CharField(
+        max_length=100,
+        choices=Facility.Types.choices,
+        db_comment="The type of the facility at snapshot time",
+    )
     street_address = models.CharField(
         max_length=1000,
         blank=True,
