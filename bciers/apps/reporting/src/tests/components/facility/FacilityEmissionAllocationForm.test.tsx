@@ -119,7 +119,12 @@ describe("FacilityEmissionAllocationForm component", () => {
       />,
     );
 
-    expect(screen.getByText(/Other/i)).toBeInTheDocument();
+    // Check that the methodology field has "Other" as its value (in the Autocomplete input)
+    const methodologyField = screen.getByTestId("root_allocation_methodology");
+    const methodologyInput = methodologyField.querySelector(
+      'input[role="combobox"]',
+    ) as HTMLInputElement;
+    expect(methodologyInput).toHaveValue("Other");
     expect(screen.getAllByText(/Product 1/i)).toHaveLength(2);
     expect(screen.getAllByText(/Product 2/i)).toHaveLength(2);
   });
@@ -251,12 +256,23 @@ describe("FacilityEmissionAllocationForm component", () => {
       />,
     );
 
-    await userEvent.click(
-      screen.getByRole("combobox", { name: /root_allocation_methodology/i }),
-    );
-    const methodology = screen.getAllByText(/Not Applicable/i)[0];
-    expect(methodology).toBeInTheDocument();
-    expect(methodology).toBeVisible();
+    // Get the methodology field and its input
+    const methodologyField = screen.getByTestId("root_allocation_methodology");
+    const methodologyInput = methodologyField.querySelector(
+      'input[role="combobox"]',
+    ) as HTMLElement;
+
+    // Open the dropdown
+    fireEvent.mouseDown(methodologyInput);
+
+    // Wait for the "Not Applicable" option to appear
+    await waitFor(() => {
+      const methodology = screen.getByRole("option", {
+        name: /Not Applicable/i,
+      });
+      expect(methodology).toBeInTheDocument();
+      expect(methodology).toBeVisible();
+    });
   });
 
   it("does not render a Not Applicable option for methodology if operation type is SFO", async () => {
@@ -280,11 +296,22 @@ describe("FacilityEmissionAllocationForm component", () => {
       />,
     );
 
-    await userEvent.click(
-      screen.getByRole("combobox", { name: /root_allocation_methodology/i }),
-    );
-    const methodology = screen.queryAllByText(/Not Applicable/i)[0];
-    expect(methodology).toBeUndefined();
+    // Get the methodology field and its input
+    const methodologyField = screen.getByTestId("root_allocation_methodology");
+    const methodologyInput = methodologyField.querySelector(
+      'input[role="combobox"]',
+    ) as HTMLElement;
+
+    // Open the dropdown
+    fireEvent.mouseDown(methodologyInput);
+
+    // Wait for options to appear, then verify "Not Applicable" is not among them
+    await waitFor(() => {
+      const methodology = screen.queryByRole("option", {
+        name: /Not Applicable/i,
+      });
+      expect(methodology).toBeNull();
+    });
   });
 
   it("renders a warning if there are missing products", async () => {
@@ -345,11 +372,24 @@ describe("FacilityEmissionAllocationForm component", () => {
     expect(screen.getAllByText(/Product 2/i)).toHaveLength(2);
 
     // Change methodology to "Not Applicable"
-    const methodologySelect = screen.getByRole("combobox", {
-      name: /root_allocation_methodology/i,
+    const methodologyField = screen.getByTestId("root_allocation_methodology");
+    const methodologyInput = methodologyField.querySelector(
+      'input[role="combobox"]',
+    ) as HTMLElement;
+
+    // Open the dropdown
+    fireEvent.mouseDown(methodologyInput);
+
+    // Wait for and click "Not Applicable" option
+    await waitFor(() => {
+      const notApplicableOption = screen.getByRole("option", {
+        name: /Not Applicable/i,
+      });
+      expect(notApplicableOption).toBeVisible();
     });
-    await user.click(methodologySelect);
-    const notApplicableOption = screen.getAllByText(/Not Applicable/i)[0];
+    const notApplicableOption = screen.getByRole("option", {
+      name: /Not Applicable/i,
+    });
     await user.click(notApplicableOption);
 
     // Wait for products to be cleared - they should not be in the document anymore
@@ -359,8 +399,22 @@ describe("FacilityEmissionAllocationForm component", () => {
     });
 
     // Change methodology back to "Other"
-    await user.click(methodologySelect);
-    const otherOption = screen.getAllByText(/Other/i)[0];
+    const methodologyFieldAfter = screen.getByTestId(
+      "root_allocation_methodology",
+    );
+    const methodologyInputAfter = methodologyFieldAfter.querySelector(
+      'input[role="combobox"]',
+    ) as HTMLElement;
+
+    // Open the dropdown again
+    fireEvent.mouseDown(methodologyInputAfter);
+
+    // Wait for and click "Other" option
+    await waitFor(() => {
+      const otherOption = screen.getByRole("option", { name: /Other/i });
+      expect(otherOption).toBeVisible();
+    });
+    const otherOption = screen.getByRole("option", { name: /Other/i });
     await user.click(otherOption);
 
     // Products should be restored

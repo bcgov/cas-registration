@@ -416,6 +416,28 @@ export async function selectItemFromMuiSelect(
   await option.click();
 }
 
+export async function selectItemFromAutocomplete(
+  page: Page,
+  choice: string,
+  selector?: string,
+  exactChoice: boolean = false,
+) {
+  let container;
+
+  if (selector) container = page.locator(selector);
+  else container = page.locator(".MuiAutocomplete-input");
+  await expect(container).toBeVisible();
+  await container.click();
+  const optionsPopper = page.locator(".MuiAutocomplete-listbox");
+  await expect(optionsPopper).toBeVisible();
+  const option = optionsPopper.getByRole("option", {
+    name: choice,
+    exact: exactChoice,
+  });
+  await expect(option).toBeVisible();
+  await option.click();
+}
+
 export async function urlIsCorrect(page: Page, expectedPath: string) {
   const currentUrl = page.url();
   expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());

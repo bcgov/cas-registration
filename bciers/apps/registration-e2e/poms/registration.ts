@@ -11,7 +11,6 @@ import {
   checkAllRadioButtons,
   clickButton,
   fillComboxboxWidget,
-  fillDropdownByLabel,
 } from "@bciers/e2e/utils/helpers";
 import { uploadFile } from "@bciers/e2e/utils/helpers";
 
@@ -58,7 +57,7 @@ export class RegistrationPOM {
       "Cement production",
     );
     await this.page.getByLabel(/operation name+/i).fill("n");
-    await fillDropdownByLabel(
+    await fillComboxboxWidget(
       this.page,
       /operation type+/i,
       "Single Facility Operation",

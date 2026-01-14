@@ -52,7 +52,7 @@ describe("RJSF SelectWidget", () => {
       />,
     );
 
-    expect(screen.getByText("Option 2")).toBeVisible();
+    expect(screen.getByDisplayValue("Option 2")).toBeVisible();
   });
 
   it("should allow selecting a value", async () => {
@@ -77,8 +77,7 @@ describe("RJSF SelectWidget", () => {
     render(
       <FormBase schema={selectFieldSchema} uiSchema={selectFieldUiSchema} />,
     );
-
-    expect(screen.getByText("Select an option")).toBeVisible();
+    expect(screen.getByPlaceholderText("Select an option")).toBeVisible();
   });
 
   it("should not trigger a validation error when data is valid", async () => {

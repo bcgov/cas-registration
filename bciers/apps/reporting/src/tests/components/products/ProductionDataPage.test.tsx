@@ -115,7 +115,7 @@ describe("The Production Data component", () => {
     ).not.toBeInTheDocument();
     expect(
       screen.getByLabelText("Production Quantification Methodology*"),
-    ).toHaveRole("textbox");
+    ).toHaveRole("combobox");
     expect(
       screen.getByLabelText(
         "Quantity in storage at the beginning of the compliance period [Jan 1], if applicable",

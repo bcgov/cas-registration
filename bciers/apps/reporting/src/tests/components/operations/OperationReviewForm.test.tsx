@@ -1,4 +1,11 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  act,
+} from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
 import { describe, expect, it, beforeEach, vi } from "vitest";
 import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
@@ -174,24 +181,44 @@ describe("OperationReviewForm Component", () => {
 
     renderForm();
 
-    const reportTypeSelect = screen.getByLabelText(
-      /Select what type of report you are filling/i,
-    );
+    // Use data-testid to target the specific report type field
+    const reportTypeField = screen.getByTestId("root_operation_report_type");
+    const reportTypeSelect = reportTypeField.querySelector(
+      'input[role="combobox"]',
+    ) as HTMLElement;
 
-    fireEvent.change(reportTypeSelect, {
-      target: { value: "Annual Report" },
+    // Open the dropdown
+    act(() => {
+      reportTypeSelect.focus();
+      fireEvent.mouseDown(reportTypeSelect);
     });
+
+    // Wait for options to appear
+    await waitFor(() => {
+      const option = screen.getByRole("option", { name: "Annual Report" });
+      expect(option).toBeVisible();
+    });
+
+    // Click on Annual Report option
+    const annualReportOption = screen.getByRole("option", {
+      name: "Annual Report",
+    });
+    await userEvent.click(annualReportOption);
 
     // Ensure the modal has been triggered by checking for its visibility.
     await waitFor(() => {
       expect(
-        screen.getByText(/Are you sure you want to change your report type/i),
+        screen.getByText(/Are you sure you want to change your report type/i, {
+          exact: false,
+        }),
       ).toBeVisible();
     });
 
-    expect(screen.getByText(/Change Report Type/i)).toBeVisible();
+    expect(screen.getByText(/Confirmation/i)).toBeVisible();
 
-    fireEvent.click(screen.getByRole("button", { name: "Change report type" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Change report type/i }),
+    );
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -203,12 +230,38 @@ describe("OperationReviewForm Component", () => {
   it("shows modal when switching report type and reverts report type when clicking cancel", async () => {
     renderForm();
 
-    fireEvent.change(
-      screen.getByLabelText(/Select what type of report you are filling/i),
-      {
-        target: { value: "Annual Report" },
-      },
-    );
+    // Use data-testid to target the specific report type field
+    const reportTypeField = screen.getByTestId("root_operation_report_type");
+    const reportTypeSelect = reportTypeField.querySelector(
+      'input[role="combobox"]',
+    ) as HTMLElement;
+
+    // Open the dropdown
+    act(() => {
+      reportTypeSelect.focus();
+      fireEvent.mouseDown(reportTypeSelect);
+    });
+
+    // Wait for options to appear
+    await waitFor(() => {
+      const option = screen.getByRole("option", { name: "Annual Report" });
+      expect(option).toBeVisible();
+    });
+
+    // Click on Annual Report option
+    const annualReportOption = screen.getByRole("option", {
+      name: "Annual Report",
+    });
+    await userEvent.click(annualReportOption);
+
+    // Wait for modal to appear
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Are you sure you want to change your report type/i, {
+          exact: false,
+        }),
+      ).toBeVisible();
+    });
 
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
@@ -219,10 +272,14 @@ describe("OperationReviewForm Component", () => {
       ).not.toBeInTheDocument(); // Use not.toBeInTheDocument() for checking absence
     });
 
-    const reportTypeSelect = screen.getByLabelText(
-      /Select what type of report you are filling/i,
+    const reportTypeFieldAfterCancel = screen.getByTestId(
+      "root_operation_report_type",
     );
-    expect(reportTypeSelect).toHaveValue("Simple Report");
+    const reportTypeSelectAfterCancel =
+      reportTypeFieldAfterCancel.querySelector(
+        'input[role="combobox"]',
+      ) as HTMLInputElement;
+    expect(reportTypeSelectAfterCancel).toHaveValue("Simple Report");
   });
 
   it("shows an error message when no operation representative exists", async () => {
