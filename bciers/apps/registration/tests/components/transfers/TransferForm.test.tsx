@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { UUID } from "crypto";
 import { expect } from "vitest";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
@@ -218,27 +224,25 @@ describe("The TransferForm component", () => {
     );
   });
 
-  it(
-    "submits the form and shows success screen",
-    {
-      timeout: 5000,
-    },
-    async () => {
-      actionHandler.mockResolvedValueOnce({});
-      renderTransferForm();
-      selectOperator(/current operator\*/i, "Operator 1");
-      selectOperator(/select the new operator\*/i, "Operator 2");
-      await selectEntityAndAssertFields("Operation");
-      await waitFor(() => {
-        selectOperation(/operation\*/i, "Operation 1");
-        selectDateOfTransfer("2022-12-31");
-        expectButton("Transfer Entity");
-        fireEvent.click(
-          screen.getByRole("button", {
-            name: /transfer entity/i,
-          }),
-        );
-      });
+  it("submits the form and shows success screen", async () => {
+    actionHandler.mockResolvedValueOnce({});
+    renderTransferForm();
+    selectOperator(/current operator\*/i, "Operator 1");
+    selectOperator(/select the new operator\*/i, "Operator 2");
+    await selectEntityAndAssertFields("Operation");
+    await selectOperation(/operation\*/i, "Operation 1");
+    await selectDateOfTransfer("2022-12-31");
+    expectButton("Transfer Entity");
+
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: /transfer entity/i,
+        }),
+      );
+    });
+
+    await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/transfer-events",
         "POST",
@@ -253,20 +257,23 @@ describe("The TransferForm component", () => {
           }),
         },
       );
-      // make sure the success page is displayed
+    });
+
+    // make sure the success page is displayed
+    await waitFor(() => {
       expect(
         screen.getByText(
           /operation has been transferred from operator 1 to operator 2\./i,
         ),
       ).toBeVisible();
-      expect(
-        screen.getByText(/operation is now in the account of operator 2/i),
-      ).toBeVisible();
-      expect(
-        screen.getByRole("button", {
-          name: /return to transfer requests table/i,
-        }),
-      ).toBeVisible();
-    },
-  );
+    });
+    expect(
+      screen.getByText(/operation is now in the account of operator 2/i),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", {
+        name: /return to transfer requests table/i,
+      }),
+    ).toBeVisible();
+  });
 });
