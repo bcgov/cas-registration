@@ -15,32 +15,46 @@ export class InternalRequestIssuanceTaskListPOM {
   /**
    * Generic helper to click a task-list button by label
    * and wait for the expected route.
+   *
+   * Uses expect.toPass to retry the whole "locate + click + navigate" block.
    */
-  private async clickTask(label: string, expectedUrlPattern: RegExp) {
+  private async clickTask(
+    label: string,
+    expectedUrlPattern: RegExp,
+    options?: { timeout?: number },
+  ) {
+    const timeout = options?.timeout ?? 30_000;
     const labelRegex = new RegExp(label, "i");
+    await expect(async () => {
+      const button = this.page.getByRole("button", { name: labelRegex });
+      const count = await button.count().catch(() => 0);
 
-    const button = this.page.getByRole("button", { name: labelRegex });
+      expect(count).toBeGreaterThan(0);
+      await expect(button).toBeVisible();
+      await expect(button).toBeEnabled();
 
-    await expect(button).toBeVisible();
-    await expect(button).toBeEnabled();
+      await Promise.all([
+        this.page.waitForURL(expectedUrlPattern, { timeout }),
+        button.click(),
+      ]);
 
-    await Promise.all([
-      this.page.waitForURL(expectedUrlPattern),
-      button.click(),
-    ]);
+      await expect(this.page).toHaveURL(expectedUrlPattern);
+    }).toPass({ timeout });
   }
 
-  async clickReviewRequestIssuance() {
+  async clickReviewRequestIssuance(options?: { timeout?: number }) {
     await this.clickTask(
       ComplianceTaskTitles.REVIEW_REQUEST_ISSUANCE,
       REVIEW_REQUEST_ISSUANCE_CREDITS_URL_PATTERN,
+      options,
     );
   }
 
-  async clickReviewByDirector() {
+  async clickReviewByDirector(options?: { timeout?: number }) {
     await this.clickTask(
       ComplianceTaskTitles.REVIEW_BY_DIRECTOR,
       REVIEW_BY_DIRECTOR_URL_PATTERN,
+      options,
     );
   }
 }

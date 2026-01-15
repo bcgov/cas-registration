@@ -17,6 +17,6 @@ export class PaymentInstructionsPOM {
   async assertHasInvoiceNumber() {
     await expect(this.invoiceNumberField).toBeVisible();
     const text = (await this.invoiceNumberField.textContent())?.trim() || "";
-    expect(text.length).toBeGreaterThan(0);
+    await expect(text.length).toBeGreaterThan(0);
   }
 }

@@ -35,6 +35,7 @@ const CASES: Array<{
 ];
 
 test.describe("Test earned credits request issuance flow", () => {
+  test.slow();
   for (const c of CASES) {
     test(`Industry submits request issuance → analyst sets as ready for approval → director ${c.decision}`, async ({
       request,
@@ -116,44 +117,43 @@ test.describe("Test earned credits request issuance flow", () => {
       try {
         //  Init POMs
         const directorSummaries = new ComplianceSummariesPOM(directorPage);
-        // const directorEarnedCredits =
-        //   new InternalReviewComplianceEarnedCreditsPOM(directorPage);
-        // const directorTaskList = new InternalRequestIssuanceTaskListPOM(
-        //   directorPage,
-        // );
+        const directorEarnedCredits =
+          new InternalReviewComplianceEarnedCreditsPOM(directorPage);
+        const directorTaskList = new InternalRequestIssuanceTaskListPOM(
+          directorPage,
+        );
 
         // Route to compliance summaries
         await directorSummaries.route();
         // Assert row for "Earned credits - issuance requested"
-
         await directorSummaries.assertStatusForOperation(
           ComplianceOperations.EARNED_CREDITS,
           ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
         );
         // Click earned credits summary report action "Review Credits Issuance Request"
-        // await directorSummaries.openActionForOperation({
-        //   operationName: ComplianceOperations.EARNED_CREDITS,
-        //   linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
-        // });
+        await directorSummaries.openActionForOperation({
+          operationName: ComplianceOperations.EARNED_CREDITS,
+          linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
+        });
 
-        // // Click task list "Review by Director"
-        // await directorTaskList.clickReviewByDirector();
+        // Click task list "Review by Director"
+        await directorTaskList.clickReviewByDirector();
 
-        // if (c.decision === IssuanceStatus.APPROVED) {
-        //   // Attach stub + submit for Approved
-        //   await directorEarnedCredits.approveIssuanceDirect(request);
-        // } else {
-        //   // Submit for Declined
-        //   await directorEarnedCredits.submitDirectorReviewIssuance(c.decision);
-        // }
+        if (c.decision === IssuanceStatus.APPROVED) {
+          // Attach stub + submit for Approved
+          await directorEarnedCredits.approveIssuanceDirect(request);
+        } else {
+          // Submit for Declined
+          await directorEarnedCredits.submitDirectorReviewIssuance(c.decision);
+        }
 
-        // // Route to compliance summaries
-        // await directorSummaries.route();
-        // // Assert row for earned credits - decision
-        // await directorSummaries.assertStatusForOperation(
-        //   ComplianceOperations.EARNED_CREDITS,
-        //   c.expectedStatus,
-        // );
+        // Route to compliance summaries
+        await directorSummaries.route();
+        // Assert row for earned credits - decision
+        await directorSummaries.assertStatusForOperation(
+          ComplianceOperations.EARNED_CREDITS,
+          c.expectedStatus,
+        );
       } finally {
         await directorPage.close();
       }

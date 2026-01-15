@@ -12,20 +12,34 @@ export class ManageObligationTaskListPOM {
   /**
    * Clicks the "Download Payment Instructions" task list item
    * and waits for the URL to reach the download-payment-instructions route.
+   *
+   * Uses expect.toPass to retry the entire "locate + click + navigate" block.
    */
-  async clickDownloadPaymentInstructions() {
+  async clickDownloadPaymentInstructions(options?: { timeout?: number }) {
+    const timeout = options?.timeout ?? 30_000;
+
     const labelRegex = new RegExp(
       ComplianceTaskTitles.DOWNLOAD_PAYMENT_INSTRUCTIONS,
       "i",
     );
 
-    const button = this.page.getByRole("button", { name: labelRegex });
+    await expect(async () => {
+      const button = this.page.getByRole("button", { name: labelRegex });
+      const count = await button.count().catch(() => 0);
+      expect(count).toBeGreaterThan(0);
+      await expect(button).toBeVisible();
+      await expect(button).toBeEnabled();
 
-    await expect(button).toBeVisible();
+      await Promise.all([
+        this.page.waitForURL(DOWNLOAD_PAYMENT_INSTRUCTIONS_URL_PATTERN, {
+          timeout,
+        }),
+        button.click(),
+      ]);
 
-    await Promise.all([
-      this.page.waitForURL(DOWNLOAD_PAYMENT_INSTRUCTIONS_URL_PATTERN),
-      button.click(),
-    ]);
+      await expect(this.page).toHaveURL(
+        DOWNLOAD_PAYMENT_INSTRUCTIONS_URL_PATTERN,
+      );
+    }).toPass({ timeout });
   }
 }

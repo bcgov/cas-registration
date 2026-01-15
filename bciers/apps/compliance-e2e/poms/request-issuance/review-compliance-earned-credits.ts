@@ -21,10 +21,11 @@ export class ReviewComplianceEarnedCreditsPOM {
 
   async assertIssuanceStatusValue(expected: string): Promise<void> {
     await expect(this.issuanceStatusField).toBeVisible();
-    const text = ((await this.issuanceStatusField.textContent()) ?? "").trim();
-    expect(text).toBe(expected);
+    await expect(this.issuanceStatusField).toHaveText(expected);
   }
-
+  /**
+   * Industry flow: submits request of issuance for the earned credits
+   */
   async submitRequestIssuance(apiContext: APIRequestContext): Promise<void> {
     const crvId = getCrvIdFromUrl({ url: this.page.url() });
     // 🔌 Attach stub API

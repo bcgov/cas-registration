@@ -262,6 +262,49 @@ Run a single test using terminal command (example):
 cd bciers && npx nx run compliance:e2e -- bciers/apps/compliance-e2e/tests/workflows/manage-obligation/report-compliance-obligation.spec.ts
 ```
 
+### UI Mode (Local Development)
+
+When running Playwright in **UI mode**:
+
+```bash
+yarn <app>:e2e:ui
+```
+
+We **allow HMR (Hot Module Reload / Fast Refresh)** from Next.js 16.
+
+**Why:**
+
+- Faster iteration while writing or debugging tests
+- Immediate feedback when editing test files or POMs
+- Ideal for interactive debugging
+
+**Trade-offs:**
+
+- HMR can trigger React re-mounts and transient DOM states
+- Elements may briefly disappear/reappear
+- This can introduce timing-related flakiness
+
+To mitigate this, our tests follow these patterns:
+
+- Use `expect.toPass()` to retry entire interaction blocks
+- Wait for clear “page ready” signals (tabs, headings, grids)
+- Prefer stable, user-facing locators over structural selectors
+
+HMR logs such as:
+
+```
+[HMR] connected
+[Fast Refresh] rebuilding
+```
+
+are expected in UI mode and **do not indicate test failure**.
+
+Best Practice
+
+- **Use Playwright UI mode with HMR enabled** when developing and debugging tests.
+- If you encounter flaky behavior, prefer improving test stability (retry patterns, better readiness checks) rather than disabling HMR.
+- HMR should only be disabled when explicitly validating production-like behavior.
+
 ### Debugging Playwright
 
 **HTML report**

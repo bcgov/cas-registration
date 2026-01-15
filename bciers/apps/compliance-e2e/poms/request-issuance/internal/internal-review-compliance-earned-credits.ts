@@ -8,7 +8,7 @@ import {
   REVIEW_BY_DIRECTOR_URL_PATTERN,
 } from "@/compliance-e2e/utils/constants";
 import { clickButton } from "@bciers/e2e/utils/helpers";
-import { AnalystSuggestion } from "@bciers/utils/src/enums";
+import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
 import { getCrvIdFromUrl } from "@bciers/e2e/utils/helpers";
 
@@ -55,14 +55,17 @@ export class InternalReviewComplianceEarnedCreditsPOM {
    */
   async approveIssuanceDirect(apiContext: APIRequestContext): Promise<void> {
     const crvId = getCrvIdFromUrl({ url: this.page.url() });
-    // 🔌 Attach stub API - required for APPROVE (mocks BCCR API)
+
     await attachE2EStubEndpoint(
       this.page,
       apiContext,
       () => ({
         scenario: EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO,
         compliance_report_version_id: crvId,
-        payload: {},
+        payload: {
+          director_decision: IssuanceStatus.APPROVED,
+          director_comment: "E2E approved",
+        },
       }),
       EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO,
     );

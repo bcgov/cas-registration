@@ -3,6 +3,9 @@ import { IssuanceStatus } from "@bciers/utils/src/enums";
 // MUI grid
 export const GRID_ROOT = ".MuiDataGrid-root";
 
+//  Compliance tab
+export const COMPLIANCE_SUMMARIES_TAB = "compliance summaries";
+
 // --- No Obligation form ---
 export const NO_OBLIGATION_OR_CREDITS_ALERT_REGEX =
   /No compliance obligation or earned credits for this operation over the \d{4} compliance period\./i;
