@@ -36,7 +36,8 @@ export class RegistrationPOM {
   }
 
   async clickSaveAndContinue() {
-    await expect(this.saveAndContinueButton).toBeEnabled({ timeout: 10_000});
+    // eslint-disable-next-line playwright/no-networkidle
+    await this.page.waitForLoadState("networkidle");
     await this.saveAndContinueButton.click();
   }
 
