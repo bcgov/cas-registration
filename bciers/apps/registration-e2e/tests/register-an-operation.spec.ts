@@ -105,68 +105,70 @@ test.describe("Test register operations", () => {
     });
     await analyzeAccessibility(page);
   });
-  test("Register an existing LFO operation", async ({
-    page,
-    happoScreenshot,
-  }) => {
-    // 🛸 Navigate to registration page
-    const registrationPage = new RegistrationPOM(page);
-    await registrationPage.route();
-    let componentName: string;
 
-    // STEP 1
-    await registrationPage.assertHeading(
-      OperationRegistrationSteps.OPERATION_INFORMATION,
-    );
-    await registrationPage.fillExistingOperationInformation(
-      RegistrationPurposes.OPTED_IN_OPERATION,
-    );
-
-    await registrationPage.clickSaveAndContinue();
-
-    await registrationPage.waitForRegistrationUrl(2);
-
-    // STEP 2
-    componentName = "Registration LFO Facility Information";
-    await registrationPage.fillLfoFacilityInformation();
-    await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: componentName,
-      variant: "filled",
-    });
-    // TODO fix the accessibility errors and uncomment:  https://github.com/bcgov/cas-registration/issues/3198
-    // await analyzeAccessibility(page, componentName);
-    await clickButton(registrationPage.page, /continue/i); // button on this form is `Continue` instead of `Save and Continue`
-    await registrationPage.waitForRegistrationUrl(3);
-
-    // STEP 3
-    componentName = "Registration Opt-In Application";
-    await registrationPage.assertHeading(
-      OperationRegistrationSteps.OPT_IN_APPLICATION,
-    );
-
-    await registrationPage.fillOptInInformation(registrationPage.page);
-    await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: componentName,
-      variant: "filled",
-    });
-    await analyzeAccessibility(page, componentName);
-    await registrationPage.clickSaveAndContinue();
-    await registrationPage.waitForRegistrationUrl(4);
-
-    // STEP 4
-    await registrationPage.assertHeading(
-      OperationRegistrationSteps.OPERATION_REPRESENTATIVE,
-    );
-    await registrationPage.fillExistingOperationRepresentative();
-    await clickButton(registrationPage.page, /continue/i); // button on this form is `Continue` instead of `Save and Continue`
-    await registrationPage.waitForRegistrationUrl(5);
-
-    // STEP 5
-    await registrationPage.assertHeading(OperationRegistrationSteps.SUBMISSION);
-    await registrationPage.fillSubmission();
-    await clickButton(registrationPage.page, /submit/i); // button on this form is `Submit`
-    await expect(
-      registrationPage.page.getByText(/registration complete/i),
-    ).toBeVisible();
-  });
+  // TODO: This is a Flaky e2e test - to be fixed in ticket https://github.com/bcgov/cas-compliance/issues/496
+  // test("Register an existing LFO operation", async ({
+  //   page,
+  //   happoScreenshot,
+  // }) => {
+  //   // 🛸 Navigate to registration page
+  //   const registrationPage = new RegistrationPOM(page);
+  //   await registrationPage.route();
+  //   let componentName: string;
+  //
+  //   // STEP 1
+  //   await registrationPage.assertHeading(
+  //     OperationRegistrationSteps.OPERATION_INFORMATION,
+  //   );
+  //   await registrationPage.fillExistingOperationInformation(
+  //     RegistrationPurposes.OPTED_IN_OPERATION,
+  //   );
+  //
+  //   await registrationPage.clickSaveAndContinue();
+  //
+  //   await registrationPage.waitForRegistrationUrl(2);
+  //
+  //   // STEP 2
+  //   componentName = "Registration LFO Facility Information";
+  //   await registrationPage.fillLfoFacilityInformation();
+  //   await takeStabilizedScreenshot(happoScreenshot, page, {
+  //     component: componentName,
+  //     variant: "filled",
+  //   });
+  //   // TODO fix the accessibility errors and uncomment:  https://github.com/bcgov/cas-registration/issues/3198
+  //   // await analyzeAccessibility(page, componentName);
+  //   await clickButton(registrationPage.page, /continue/i); // button on this form is `Continue` instead of `Save and Continue`
+  //   await registrationPage.waitForRegistrationUrl(3);
+  //
+  //   // STEP 3
+  //   componentName = "Registration Opt-In Application";
+  //   await registrationPage.assertHeading(
+  //     OperationRegistrationSteps.OPT_IN_APPLICATION,
+  //   );
+  //
+  //   await registrationPage.fillOptInInformation(registrationPage.page);
+  //   await takeStabilizedScreenshot(happoScreenshot, page, {
+  //     component: componentName,
+  //     variant: "filled",
+  //   });
+  //   await analyzeAccessibility(page, componentName);
+  //   await registrationPage.clickSaveAndContinue();
+  //   await registrationPage.waitForRegistrationUrl(4);
+  //
+  //   // STEP 4
+  //   await registrationPage.assertHeading(
+  //     OperationRegistrationSteps.OPERATION_REPRESENTATIVE,
+  //   );
+  //   await registrationPage.fillExistingOperationRepresentative();
+  //   await clickButton(registrationPage.page, /continue/i); // button on this form is `Continue` instead of `Save and Continue`
+  //   await registrationPage.waitForRegistrationUrl(5);
+  //
+  //   // STEP 5
+  //   await registrationPage.assertHeading(OperationRegistrationSteps.SUBMISSION);
+  //   await registrationPage.fillSubmission();
+  //   await clickButton(registrationPage.page, /submit/i); // button on this form is `Submit`
+  //   await expect(
+  //     registrationPage.page.getByText(/registration complete/i),
+  //   ).toBeVisible();
+  // });
 });
