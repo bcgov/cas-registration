@@ -446,10 +446,8 @@ export class OperatorPOM {
   }
 
   async msgRequestAccessDeclinedIsVisible() {
-    // eslint-disable-next-line playwright/no-networkidle
-    await this.page.waitForLoadState("networkidle");
     await expect(this.messageRequestAccessDeclined).toBeVisible({
-      timeout: 20_000,
+      timeout: 30_000,
     });
   }
 

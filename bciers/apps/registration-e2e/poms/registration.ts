@@ -36,8 +36,8 @@ export class RegistrationPOM {
   }
 
   async clickSaveAndContinue() {
-    // eslint-disable-next-line playwright/no-networkidle
-    await this.page.waitForLoadState("networkidle");
+    await expect(this.saveAndContinueButton).toBeVisible();
+    await expect(this.saveAndContinueButton).toBeEnabled();
     await this.saveAndContinueButton.click();
   }
 
