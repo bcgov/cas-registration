@@ -44,6 +44,8 @@ export class OperatorPOM {
 
   readonly buttonYesThisIsMyOperator: Locator;
 
+  readonly cancelAccessRequest: Locator;
+
   // Field Locators
 
   readonly fieldBCCrn: Locator;
@@ -129,6 +131,9 @@ export class OperatorPOM {
     });
     this.buttonYesThisIsMyOperator = page.getByRole("button", {
       name: OperatorButtonText.YES_OPERATOR,
+    });
+    this.cancelAccessRequest = page.getByRole("button", {
+      name: OperatorButtonText.CANCEL_ACCESS_REQUEST,
     });
     // Initialize Field Locators
     this.fieldBCCrn = page.getByLabel(OperatorFormField.BC_CRN);
@@ -334,6 +339,7 @@ export class OperatorPOM {
   }
 
   async requestAccess() {
+    await expect(this.buttonRequestAccess).toBeEnabled();
     await this.buttonRequestAccess.click();
   }
 
@@ -432,6 +438,7 @@ export class OperatorPOM {
 
   async msgRequestAccessConfirmedIsVisible() {
     await expect(this.messageRequestAccessConfirmed).toBeVisible();
+    await expect(this.cancelAccessRequest).toBeVisible();
   }
 
   async msgRequestAccessAdminConfirmedIsVisible() {
@@ -439,6 +446,7 @@ export class OperatorPOM {
   }
 
   async msgRequestAccessDeclinedIsVisible() {
+    await this.page.waitForLoadState();
     await expect(this.messageRequestAccessDeclined).toBeVisible();
   }
 

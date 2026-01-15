@@ -189,7 +189,7 @@ test.describe("Test changing registration purpose", () => {
     await clickButton(page, "Save");
     await checkAlertMessage(
       page,
-      // "Cannot change the type of an operation that has already been registered.", #EXPECTED MESSAGE: https://github.com/bcgov/cas-registration/issues/4134 issue logged
+      // /Cannot change the type of an operation that has already been registered./i, #EXPECTED MESSAGE: https://github.com/bcgov/cas-registration/issues/4134 issue logged
       "Select a Operation Type", //ACTUAL MESSAGE: This should be replaced with message above once issue has been fixed
     );
 

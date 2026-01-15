@@ -33,7 +33,7 @@ test.describe("Test select operator paths", () => {
     // 👉 Action search by legal name
     await selectOperatorPage.selectByLegalName(
       OperatorE2EValue.SEARCH_LEGAL_NAME,
-      "Bravo Technologies - has parTNER operator",
+      "Bravo Technologies - has parTNER operator - name from admin",
     );
 
     await happoScreenshot(pageContent, {

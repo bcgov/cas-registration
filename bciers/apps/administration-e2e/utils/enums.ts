@@ -21,6 +21,7 @@ export enum OperatorButtonText {
   SEARCH_OPERATOR = "Search Operator",
   SELECT_OPERATOR = "Select Operator",
   YES_OPERATOR = "Yes this is my operator",
+  CANCEL_ACCESS_REQUEST = "Cancel Access Request",
 }
 // 💬 Dashboard tiles
 export enum DashboardTileText {

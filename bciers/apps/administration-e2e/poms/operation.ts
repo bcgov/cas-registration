@@ -108,9 +108,9 @@ export class OperationPOM {
     if (
       registrationPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
     ) {
-      assertFieldVisibility(this.page, fields, false);
+      await assertFieldVisibility(this.page, fields, false);
     } else {
-      assertFieldVisibility(this.page, fields, true);
+      await assertFieldVisibility(this.page, fields, true);
     }
   }
 }

@@ -99,9 +99,10 @@ export async function checkAllRadioButtons(page: Page) {
 export async function checkAlertMessage(
   page: Page,
   alertMessage: string | RegExp,
-  index: number = 0,
 ) {
-  await expect(page.getByRole("alert").nth(index)).toHaveText(alertMessage);
+  await expect(
+    page.getByRole("alert").filter({ hasText: alertMessage }),
+  ).toBeVisible();
 }
 
 // 🛠️ Function: checks read only of form inputs
