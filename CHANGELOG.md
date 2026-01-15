@@ -1,3 +1,9 @@
+## [4.7.1](https://github.com/bcgov/cas-registration/compare/cas-obps-backend-migration-test-0.2.0...4.7.1) (2026-01-15)
+
+### Bug Fixes
+
+- use correct kebab-case for task_ids in dags ([819bfdd](https://github.com/bcgov/cas-registration/commit/819bfdd9ec205e41f538ebb7471c6fdabf14413c))
+
 # [4.7.0](https://github.com/bcgov/cas-registration/compare/v4.6.1...v4.7.0) (2026-01-07)
 
 ### Bug Fixes
