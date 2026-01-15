@@ -80,3 +80,4 @@ jobs:
         with:
           folder: output
           target-folder: schemaspy
+          single-commit: true
