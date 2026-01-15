@@ -201,7 +201,7 @@ export default function OperationReviewForm({
         saveButtonDisabled={!hasReps}
         submitButtonDisabled={!hasReps}
         onSubmit={saveHandler}
-        onChange={onChangeHandler}
+        onChange={onChangeHandler as (data: object) => void}
         backUrl={navigationInfo.backUrl}
         continueUrl={navigationInfo.continueUrl}
         errors={errors}

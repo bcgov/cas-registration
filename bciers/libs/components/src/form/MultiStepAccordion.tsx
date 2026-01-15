@@ -78,7 +78,7 @@ const MultiStepAccordion = ({
               formData={formData}
               disabled
               // Pass children as prop so RJSF doesn't render submit button
-              // eslint-disable-next-line react/no-children-prop
+
               children
             />
           </Accordion>

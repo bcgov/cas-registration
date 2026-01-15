@@ -244,7 +244,7 @@ describe("the OperationInformationForm component", () => {
     // registration info & purpose
     expect(
       screen.getByText(
-        /The purpose of this registration is to register as a\:/i,
+        /The purpose of this registration is to register as a:/i,
       ),
     ).toBeVisible();
     const reportingOperationLabels =
@@ -287,7 +287,7 @@ describe("the OperationInformationForm component", () => {
     // registration info & purpose
     expect(
       screen.getByText(
-        /The purpose of this registration is to register as a\:/i,
+        /The purpose of this registration is to register as a:/i,
       ),
     ).toBeVisible();
   });
@@ -717,7 +717,7 @@ describe("the OperationInformationForm component", () => {
     ).toBeVisible();
     expect(
       screen.getByText(
-        /The purpose of this registration is to register as a\:/i,
+        /The purpose of this registration is to register as a:/i,
       ),
     ).toBeVisible();
     expect(
@@ -795,7 +795,6 @@ describe("the OperationInformationForm component", () => {
         operationId={operationId}
       />,
     );
-
     await userEvent.click(screen.getByRole("button", { name: "Edit" }));
 
     const mockFile = new File(["test"], "mock_file.pdf", {
@@ -804,7 +803,9 @@ describe("the OperationInformationForm component", () => {
     const newEntrantApplicationDocument = screen.getByLabelText(
       /new entrant application and statutory declaration/i,
     );
-    await userEvent.upload(newEntrantApplicationDocument, mockFile);
+    await act(async () => {
+      await userEvent.upload(newEntrantApplicationDocument, mockFile);
+    });
     expect(
       screen.getByText(
         "Uploading. You may continue to the next page while the file is being scanned for security.",

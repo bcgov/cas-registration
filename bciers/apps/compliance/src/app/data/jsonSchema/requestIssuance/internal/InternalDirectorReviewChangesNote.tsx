@@ -1,4 +1,3 @@
-import React from "react";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 
 export const InternalDirectorReviewChangesNote = () => {

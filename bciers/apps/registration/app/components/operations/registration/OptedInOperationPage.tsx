@@ -3,6 +3,7 @@ import { validate as isValidUUID } from "uuid";
 import OptedInOperationForm from "apps/registration/app/components/operations/registration/OptedInOperationForm";
 import { optedInOperationSchema } from "apps/registration/app/data/jsonSchema/operationRegistration/optedInOperation";
 import { getOptedInOperationDetail } from "@bciers/actions/api";
+import { OptedInOperationFormData } from "@/registration/app/components/operations/registration/types";
 
 const OptedInOperationPage = async ({
   operation,
@@ -13,7 +14,7 @@ const OptedInOperationPage = async ({
   step: number;
   steps: string[];
 }) => {
-  let formData;
+  let formData = {};
   if (operation && isValidUUID(operation)) {
     formData = await getOptedInOperationDetail(operation);
   }
@@ -27,7 +28,7 @@ const OptedInOperationPage = async ({
     <OptedInOperationForm
       operation={operation}
       schema={optedInOperationSchema}
-      formData={formData}
+      formData={formData as OptedInOperationFormData}
       step={step}
       steps={steps}
     />

@@ -10,7 +10,7 @@ import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 export default async function InternalTrackStatusOfIssuancePage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<HasComplianceReportVersion>) {
-  let pageData = await getRequestIssuanceComplianceSummaryData(
+  const pageData = await getRequestIssuanceComplianceSummaryData(
     complianceReportVersionId,
   );
 

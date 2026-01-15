@@ -1,7 +1,7 @@
 "use client";
 
 import FacilityReportSection from "@reporting/src/app/components/shared/FacilityReportSection";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ReportData } from "@reporting/src/app/components/finalReview/reportTypes";
 import { useRouter } from "next/navigation";
 import Loading from "@bciers/components/loading/SkeletonGrid";

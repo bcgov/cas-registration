@@ -118,11 +118,16 @@ describe("RJSF TextWidget", () => {
     render(
       <TextWidget
         id="test-text"
-        schema={{ type: "text" }}
+        schema={{ type: "string" }}
         uiSchema={{}}
         onChange={handleChange}
         value=""
         name="testName"
+        options={{}}
+        onBlur={vi.fn()}
+        onFocus={vi.fn()}
+        label="Test Name"
+        registry={{} as any}
       />,
     );
 
@@ -141,6 +146,11 @@ describe("RJSF TextWidget", () => {
         onChange={handleChange}
         value={null}
         name="testNumber"
+        options={{}}
+        onBlur={vi.fn()}
+        onFocus={vi.fn()}
+        label="Test Number"
+        registry={{} as any}
       />,
     );
 

@@ -500,7 +500,7 @@ describe("ContactForm component", () => {
 
     // regression test: places assigned field should not be editable
     expect(
-      screen.queryByDisplayValue(/operation representative \- operation 1/i),
+      screen.queryByDisplayValue(/operation representative - operation 1/i),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /remove item/i }),

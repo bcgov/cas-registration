@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { fetchMocker } from "./global";
 
 // To reduce code duplication and simplify mocking you can import these common mocks from this file
@@ -54,6 +53,9 @@ const handleInternalAccessRequest = vi.fn();
 const captureException = vi.fn();
 const archiveContact = vi.fn();
 const getElicensingInvoices = vi.fn();
+const getContact = vi.fn();
+const getContacts = vi.fn();
+const getOperationRepresentatives = vi.fn();
 
 export {
   actionHandler,
@@ -88,4 +90,7 @@ export {
   signIn,
   archiveContact,
   getElicensingInvoices,
+  getContact,
+  getContacts,
+  getOperationRepresentatives,
 };

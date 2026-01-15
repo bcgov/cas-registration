@@ -1,11 +1,9 @@
-// eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
-import dynamic from "next/dynamic";
 import type { Metadata, Viewport } from "next";
+import type { Session } from "next-auth";
 import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import CssBaseline from "@mui/material/CssBaseline";
-import { auth } from "@/dashboard/auth";
 import SessionProvider from "@bciers/components/auth/SessionProvider";
 import {
   theme,
@@ -20,18 +18,8 @@ import {
   isCIEnvironment,
   isVitestEnvironment,
 } from "@bciers/utils/src/environmentDetection";
-
-// Dynamically import SessionTimeoutHandler with SSR disabled
-const SessionTimeoutHandler = dynamic(
-  () => import("@bciers/components/auth/SessionTimeoutHandler"),
-  { ssr: false },
-);
-
-// Dynamically import SentryUserContext with SSR disabled
-const SentryUserContext = dynamic(
-  () => import("@bciers/components/sentry/SentryUserContext"),
-  { ssr: false },
-);
+import SessionTimeoutHandler from "@bciers/components/auth/SessionTimeoutHandler";
+import SentryUserContext from "@bciers/components/sentry/SentryUserContext";
 
 const rootMetadata: Metadata = {
   title: "CAS OBPS",
@@ -59,16 +47,16 @@ type RootLayoutProps = {
   children: React.ReactNode;
   defaultLinks?: { label: string; href?: string }[]; // for breadcrumbs
   zone?: string; // for breadcrumbs
+  session: Session | null; // auth session passed from app layout
 };
 
 export default async function RootLayout({
   children,
   defaultLinks,
   zone,
+  session,
 }: RootLayoutProps) {
   //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
-
-  const session = await auth();
 
   const showMockTimePicker =
     !isCIEnvironment() &&

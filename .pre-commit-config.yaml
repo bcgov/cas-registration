@@ -11,7 +11,11 @@ repos:
         name: ESLint
         language: system
         files: \.(j|t)sx?$
+        exclude: (\.next/|node_modules/|dist/|build/|coverage/|\.nx/cache/|tests/performance/)
         entry: ./.bin/pre-commit-lint.sh
+        # Run once per commit instead of once per file since nx affected handles all files at once.
+        # This prevents parallel executions that cause git lock conflicts when fetching origin/develop.
+        pass_filenames: false
       - id: mypy
         name: Mypy
         language: system

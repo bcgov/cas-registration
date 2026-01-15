@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FormBase from "@bciers/components/form/FormBase";
 import { Alert, Button } from "@mui/material";
 import SubmitButton from "@bciers/components/button/SubmitButton";
@@ -19,6 +19,7 @@ import { actionHandler } from "@bciers/actions";
 import TransferSuccess from "@/registration/app/components/transfers/TransferSuccess";
 import { OperationRow } from "@/administration/app/components/operations/types";
 import { fetchOperationsPageData } from "@bciers/actions/api";
+import useKey from "@bciers/utils/src/useKey";
 
 interface TransferFormProps {
   formData: TransferFormData;
@@ -32,7 +33,7 @@ export default function TransferForm({
   const router = useRouter();
 
   const [formState, setFormState] = useState(formData);
-  const [key, setKey] = useState(Math.random()); // NOSONAR
+  const [key, resetKey] = useKey();
   const [error, setError] = useState(undefined);
   const [schema, setSchema] = useState(createTransferSchema(operators));
   const [uiSchema, setUiSchema] = useState(transferUISchema);
@@ -66,15 +67,15 @@ export default function TransferForm({
       return !!data[field];
     });
   };
-
+  // Handling the error when the same operator is selected for both from and to operators when transferring an operation
+  // uses functional update so it never closes over stale uiSchema
   const updateUiSchemaWithError = (): void =>
-    // Handling the error when the same operator is selected for both from and to operators when transferring an operation
-    setUiSchema({
-      ...uiSchema,
+    setUiSchema((prev: any) => ({
+      ...prev,
       operation: {
-        ...uiSchema.operation,
+        ...prev.operation,
         "ui:options": {
-          ...uiSchema.operation["ui:options"],
+          ...(prev.operation?.["ui:options"] ?? {}),
           disabled: true,
         },
         "ui:help": (
@@ -83,168 +84,181 @@ export default function TransferForm({
           </small>
         ),
       },
-    });
+    }));
 
   const resetUiSchema = () => setUiSchema(transferUISchema);
 
-  const sameOperatorSelectedForOperationEntity = (): boolean =>
-    !!formState?.from_operator &&
-    !!formState?.to_operator &&
-    formState?.from_operator === formState?.to_operator &&
-    formState?.transfer_entity === "Operation";
+  // ✅ check against the *incoming* data, not stale formState
+  const sameOperatorSelectedForOperationEntity = (
+    d: TransferFormData,
+  ): boolean =>
+    !!d?.from_operator &&
+    !!d?.to_operator &&
+    d.from_operator === d.to_operator &&
+    d.transfer_entity === "Operation";
 
   const fetchOperatorOperations = async (operatorId?: string) => {
-    if (!operatorId) return [];
-    const response: {
-      rows: OperationRow[];
-      row_count: number;
-    } = await fetchOperationsPageData({
-      paginate_results: false,
-      operator_id: operatorId,
-      sort_field: "operation__name",
-      sort_order: "asc",
-      end_date: true, // this indicates that the end_date is not null,
-      status: "Active", // only fetch active facilities
-    });
+    if (!operatorId)
+      return { rows: [] as OperationRow[], error: undefined as any };
+
+    const response: { rows: OperationRow[]; row_count: number } =
+      await fetchOperationsPageData({
+        paginate_results: false,
+        operator_id: operatorId,
+        sort_field: "operation__name",
+        sort_order: "asc",
+        end_date: true, // this indicates that the end_date is not null,
+        status: "Active", // only fetch active facilities
+      });
+
     if (!response || "error" in response || !response.rows) {
-      setError("Failed to fetch operations data!" as any);
-      return [];
+      return { rows: [], error: "Failed to fetch operations data!" as any };
     }
-    return response.rows;
+
+    return { rows: response.rows, error: undefined as any };
   };
 
-  const handleOperatorChange = async () => {
+  const handleOperatorChange = async (transferFormData: TransferFormData) => {
     // Reset error state
     setError(undefined);
+
     // Handle the error when the same operator is selected for both from and to operators when transferring an operation
-    if (sameOperatorSelectedForOperationEntity()) updateUiSchemaWithError();
+    if (sameOperatorSelectedForOperationEntity(transferFormData))
+      updateUiSchemaWithError();
     else resetUiSchema();
 
-    const getFromOperatorOperations = await fetchOperatorOperations(
-      formState?.from_operator,
+    const fromRes = await fetchOperatorOperations(
+      transferFormData?.from_operator,
     );
-
-    const getByOperatorOperations = await fetchOperatorOperations(
-      formState?.to_operator,
-    );
-
-    if (!error) {
-      setFromOperatorOperations(getFromOperatorOperations);
-      setToOperatorOperations(getByOperatorOperations);
-      setSchema(
-        createTransferSchema(
-          operators,
-          getFromOperatorOperations,
-          getByOperatorOperations,
-        ),
-      );
-
-      // reset selected operation, from_operation, to_operation and facilities when changing the operator
-      // Not doing this will cause the form to keep the old values when changing the operator
-      setFormState({
-        ...formState,
-        operation: "",
-        from_operation: "",
-        to_operation: "",
-        facilities: [],
-      });
+    if (fromRes.error) {
+      setError(fromRes.error);
+      return;
     }
+
+    const toRes = await fetchOperatorOperations(transferFormData?.to_operator);
+    if (toRes.error) {
+      setError(toRes.error);
+      return;
+    }
+
+    setFromOperatorOperations(fromRes.rows);
+    setToOperatorOperations(toRes.rows);
+    setSchema(createTransferSchema(operators, fromRes.rows, toRes.rows));
+
+    // reset dependent selections
+    setFormState({
+      ...transferFormData,
+      operation: "",
+      from_operation: "",
+      to_operation: "",
+      facilities: [],
+    });
   };
 
   const fetchFacilities = async (operationId?: string) => {
-    if (!operationId) return [];
-    const response: {
-      rows: FacilityRow[];
-      row_count: number;
-    } = await fetchFacilitiesPageData(operationId, {
-      paginate_results: false,
-      end_date: true, // this indicates that the end_date is not null,
-      status: "Active", // only fetch active facilities
-    });
+    if (!operationId)
+      return { rows: [] as FacilityRow[], error: undefined as any };
+
+    const response: { rows: FacilityRow[]; row_count: number } =
+      await fetchFacilitiesPageData(operationId, {
+        paginate_results: false,
+        end_date: true,
+        status: "Active",
+      });
+
     if (!response || "error" in response || !response.rows) {
-      setError("Failed to fetch facilities data!" as any);
-      return [];
+      return { rows: [], error: "Failed to fetch facilities data!" as any };
     }
-    return response.rows;
+
+    return { rows: response.rows, error: undefined as any };
   };
 
-  const handleFromOperationChange = async () => {
-    // Reset error state
+  const handleFromOperationChange = async (
+    transferFormData: TransferFormData,
+  ) => {
     setError(undefined);
-    const facilitiesByOperation = await fetchFacilities(
-      formState?.from_operation,
+
+    const facilitiesRes = await fetchFacilities(
+      transferFormData?.from_operation,
+    );
+    if (facilitiesRes.error) {
+      setError(facilitiesRes.error);
+      return;
+    }
+
+    const filteredToOperatorOperations = toOperatorOperations.filter(
+      (operation: OperationRow) =>
+        operation.operation__id !== transferFormData?.from_operation,
     );
 
-    if (!error) {
-      // Filter out the current from_operation from toOperatorOperations(we can't transfer facilities to the same operation)
-      const filteredToOperatorOperations = toOperatorOperations.filter(
-        (operation: OperationRow) =>
-          operation.operation__id !== formState?.from_operation,
-      );
+    setSchema(
+      createTransferSchema(
+        operators,
+        fromOperatorOperations,
+        filteredToOperatorOperations,
+        facilitiesRes.rows,
+      ),
+    );
 
-      setSchema(
-        createTransferSchema(
-          operators,
-          fromOperatorOperations,
-          filteredToOperatorOperations,
-          facilitiesByOperation,
-        ),
-      );
-      // reset selected facilities when changing the from_operation
-      setFormState({
-        ...formState,
-        facilities: [],
-      });
-      // force re-render
-      setKey(Math.random()); // NOSONAR
+    setFormState({
+      ...transferFormData,
+      facilities: [],
+    });
+
+    // force re-render
+    resetKey();
+  };
+
+  const handleFormStateUpdate = async (newFormState: TransferFormData) => {
+    if (newFormState?.from_operation !== formState?.from_operation) {
+      await handleFromOperationChange(newFormState);
+    }
+
+    if (
+      newFormState?.from_operator != formState?.from_operator ||
+      newFormState?.to_operator != formState?.to_operator ||
+      newFormState?.transfer_entity != formState?.transfer_entity
+    ) {
+      await handleOperatorChange(newFormState);
     }
   };
 
-  /*
-  Using multiple useEffects to listen to changes in the form state and update the schema accordingly
-  */
-  useEffect(() => {
-    handleOperatorChange();
-  }, [
-    formState?.from_operator,
-    formState?.to_operator,
-    formState?.transfer_entity,
-  ]);
-
-  useEffect(() => {
-    handleFromOperationChange();
-  }, [formState?.from_operation]);
-
   const submitHandler = async (e: IChangeEvent) => {
-    const updatedFormData = e.formData;
+    const updatedFormData = e.formData as TransferFormData;
     // we can't transfer facilities to the same operation
     if (
       updatedFormData.transfer_entity === "Facility" &&
       updatedFormData.from_operation === updatedFormData.to_operation
     ) {
       setError("Cannot transfer facilities to the same operation!" as any);
-      setIsSubmitting(false);
       return;
     }
 
     setIsSubmitting(true);
-    // Update the form state with the new data so we don't use stale data on edit
+
+    // ✅ keep local state aligned with what was submitted
     setFormState(updatedFormData);
-    const endpoint = "registration/transfer-events";
-    const response = await actionHandler(endpoint, "POST", "", {
-      body: JSON.stringify({
-        ...updatedFormData,
-      }),
-    });
+    await handleFormStateUpdate(updatedFormData);
+
+    const response = await actionHandler(
+      "registration/transfer-events",
+      "POST",
+      "",
+      {
+        body: JSON.stringify(updatedFormData),
+      },
+    );
+
     setIsSubmitting(false);
+
     if (!response || response?.error) {
       setDisabled(false);
-      setError(response.error as any);
+      setError(response?.error as any);
       return;
-    } else {
-      setDisabled(true);
-      setIsSubmitted(true);
     }
+
+    setDisabled(true);
+    setIsSubmitted(true);
   };
 
   return (
@@ -272,8 +286,12 @@ export default function TransferForm({
               uiSchema={uiSchema}
               formData={formState}
               onChange={(e: IChangeEvent) => {
-                const updatedFormData = e.formData;
+                const updatedFormData = e.formData as TransferFormData;
+
+                // ✅ keep state in sync immediately (prevents stale checks/UI)
                 setFormState(updatedFormData);
+
+                handleFormStateUpdate(updatedFormData);
                 setDisabled(!formIsValid(updatedFormData));
               }}
               onSubmit={submitHandler}

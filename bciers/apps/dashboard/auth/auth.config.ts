@@ -56,7 +56,7 @@ declare module "next-auth" {
 }
 
 /*
-📌 Make one central auth config that can be imported to auth.ts or middleware when required
+📌 Make one central auth config that can be imported to auth.ts or proxy when required
 */
 export const AUTH_BASE_PATH = "/api/auth";
 export const OAUTH_TOKEN_ROTATION_INTERVAL_SECONDS = 60;
@@ -148,7 +148,7 @@ export default {
                 } else {
                   // Default app_role (industry_user) if the API call fails
                 }
-              } catch (error) {
+              } catch (_error) {
                 // Default app_role (industry_user) if there's an error in the API call
               }
             }
@@ -156,7 +156,7 @@ export default {
             // 🛸 Routing: no app_role user found; so, user will be routed to dashboard\profile
           }
         }
-      } catch (error) {
+      } catch (_error) {
         token.error = Errors.ACCESS_TOKEN;
       }
       // 🔒 return encrypted nextauth JWT

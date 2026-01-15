@@ -16,7 +16,7 @@ const test = isHappoEnabled
       happoScreenshot: (locator: any, options: any) => Promise<void>;
     }>({
       // Provide a no-op happoScreenshot fixture when Happo is disabled
-      // eslint-disable-next-line no-empty-pattern
+
       happoScreenshot: async ({}, use) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         await use(() => Promise.resolve());
@@ -50,7 +50,7 @@ const testNxProjectLandingPage = async (zones: string[]) => {
 
       test.use({ storageState: storageState });
 
-      test("Test Selfie", async ({ page, happoScreenshot }) => {
+      test("Selfie", async ({ page, happoScreenshot }) => {
         // 🛸 Navigate to landing page
         await page.goto(url);
 

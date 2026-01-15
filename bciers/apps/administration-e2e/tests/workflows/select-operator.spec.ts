@@ -24,7 +24,7 @@ test.describe("Test select operator paths", () => {
     happoScreenshot,
   }) => {
     // setup pageContent for happo
-    let pageContent = page.locator("html");
+    const pageContent = page.locator("html");
     // 🛸 Navigates to select operator
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
@@ -33,7 +33,7 @@ test.describe("Test select operator paths", () => {
     // 👉 Action search by legal name
     await selectOperatorPage.selectByLegalName(
       OperatorE2EValue.SEARCH_LEGAL_NAME,
-      "Bravo Technologies - has parTNER operator",
+      "Bravo Technologies - has parTNER operator - name from admin",
     );
 
     await happoScreenshot(pageContent, {
@@ -64,7 +64,7 @@ test.describe("Test select operator paths", () => {
     happoScreenshot,
   }) => {
     // setup pageContent for happo
-    let pageContent = page.locator("html");
+    const pageContent = page.locator("html");
     // 🛸 Navigates to select operator
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
@@ -95,7 +95,7 @@ test.describe("Test select operator paths", () => {
     await selectOperatorPage.route(AppRoute.OPERATOR_ADD);
     // 👉 Action fill all operator form fields
     await selectOperatorPage.fillRequiredInformation();
-    let pageContent = page.locator("html");
+    const pageContent = page.locator("html");
     await happoScreenshot(pageContent, {
       component: "Add operator form",
       variant: "filled",

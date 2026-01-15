@@ -18,7 +18,7 @@ import {
   LIGHT_GREY_COLOR_300,
   LIGHT_BLUE_BG_COLOR,
   WHITE,
-} from "./libs/styles/src";
+} from "./libs/styles/src/index.js";
 
 module.exports = {
   corePlugins: {

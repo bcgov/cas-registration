@@ -7,7 +7,7 @@ vi.mock("@bciers/utils/src/sessionUtils", () => ({
   getSessionRole: vi.fn(),
 }));
 
-vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
+vi.mock("@bciers/actions/api", () => ({
   getReportingYear: vi.fn(() =>
     Promise.resolve({
       reporting_year: 2024,

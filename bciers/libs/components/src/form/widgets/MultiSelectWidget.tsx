@@ -49,7 +49,10 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
 
   const options = mapOptions(fieldSchema);
 
-  const handleChange = (e: React.ChangeEvent<{}>, option: Array<Option>) => {
+  const handleChange = (
+    e: React.ChangeEvent<object>,
+    option: Array<Option>,
+  ) => {
     onChange(option.map((o: Option) => o.id));
   };
 

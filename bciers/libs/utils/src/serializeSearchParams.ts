@@ -9,7 +9,7 @@ const serializeSearchParams = (
   try {
     const queryString = params.toString();
     return queryString ? `?${queryString}` : "?";
-  } catch (error) {
+  } catch (_error) {
     return "?";
   }
 };

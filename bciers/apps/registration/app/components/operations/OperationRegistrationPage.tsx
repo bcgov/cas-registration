@@ -17,16 +17,18 @@ import { getOperationV2 } from "@bciers/actions/api";
 import { FacilitiesSearchParams } from "@/administration/app/components/facilities/types";
 
 const OperationRegistrationPage = async ({
-  step,
+  step = 1,
   operation,
   searchParams,
 }: {
-  step: number;
+  step?: number;
   operation: UUID;
   searchParams: FacilitiesSearchParams;
 }) => {
+  const stepNumber = Number(step) || 1;
   let operationData;
   let steps = [...initialOperationRegistrationSteps];
+
   if (operation && isValidUUID(operation)) {
     operationData = await getOperationV2(operation);
     const purpose = operationData?.registration_purpose;
@@ -45,12 +47,12 @@ const OperationRegistrationPage = async ({
     steps = [...initialOperationRegistrationSteps];
   }
 
-  const stepIndex = step - 1;
+  const stepIndex = stepNumber - 1;
   const formSectionName = steps[stepIndex];
 
   const defaultProps = {
     operation,
-    step,
+    step: stepNumber,
     steps,
   };
   switch (formSectionName) {

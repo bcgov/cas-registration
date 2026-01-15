@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import {
   buildReviewFacilitiesSchema,
@@ -162,7 +162,7 @@ export default function LFOFacilitiesForm({
         router.push(navigationInformation.continueUrl);
       }
       return true;
-    } catch (err) {
+    } catch (_err) {
       setErrors(["An unexpected error occurred."]);
       return false;
     }

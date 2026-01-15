@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Profile from "@bciers/components/navigation/Profile";
-// eslint-disable-next-line import/extensions
 import Logo from "@bciers/img/src/BCID_CleanBC_rev_tagline_colour.svg";
 import HelpDrawer from "./HelpDrawer";
 
@@ -18,7 +17,7 @@ export default function Header() {
       >
         <div className={`max-w-page mx-auto padding-page py-3 h-fit text-lg`}>
           <div className="flex items-center w-full">
-            <Link href="/" passHref>
+            <Link href="/">
               <Image
                 src={Logo}
                 alt="Logo for Province of British Columbia CleanBC"

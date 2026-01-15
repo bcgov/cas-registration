@@ -29,19 +29,15 @@ export const formatTransferRows = (rows: GridRowsProp) => {
 export default async function fetchTransferEventsPageData(
   searchParams: TransfersSearchParams,
 ) {
-  try {
-    const queryParams = buildQueryParams(searchParams);
-    // fetch data from server
-    const pageData = await actionHandler(
-      `registration/transfer-events${queryParams}`,
-      "GET",
-      "",
-    );
-    return {
-      rows: formatTransferRows(pageData.items),
-      row_count: pageData.count,
-    };
-  } catch (error) {
-    throw error;
-  }
+  const queryParams = buildQueryParams(searchParams);
+  // fetch data from server
+  const pageData = await actionHandler(
+    `registration/transfer-events${queryParams}`,
+    "GET",
+    "",
+  );
+  return {
+    rows: formatTransferRows(pageData.items),
+    row_count: pageData.count,
+  };
 }

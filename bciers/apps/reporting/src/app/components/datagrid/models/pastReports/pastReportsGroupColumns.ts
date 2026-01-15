@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
 import createColumnGroup from "@bciers/components/datagrid/createColumnGrid";
 import {
@@ -6,7 +7,7 @@ import {
 } from "@mui/x-data-grid";
 
 const pastReportsGroupColumns = (
-  SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
+  SearchCell: (params: GridColumnGroupHeaderParams) => ReactNode,
 ) => {
   const columnGroupModel = [
     createColumnGroup("reporting_year", "Reporting Year", SearchCell),

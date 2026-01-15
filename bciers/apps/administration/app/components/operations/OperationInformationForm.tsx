@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import useKey from "@bciers/utils/src/useKey";
 
 import { UUID } from "crypto";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
@@ -17,7 +18,11 @@ import {
   RegistrationPurposes,
   regulatedOperationPurposes,
 } from "apps/registration/app/components/operations/registration/enums";
-import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
+import {
+  FormMode,
+  FrontEndRoles,
+  OperationTypes,
+} from "@bciers/utils/src/enums";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
@@ -38,15 +43,15 @@ const OperationInformationForm = ({
 }) => {
   const [error, setError] = useState(undefined);
   const [schema, setSchema] = useState(initialSchema);
-  const [selectedPurpose, setSelectedPurpose] = useState(
-    formData.registration_purpose || "",
-  );
+  const [confirmedFormData, setConfirmedFormData] = useState(formData);
   const [
     pendingChangeRegistrationPurpose,
     setPendingChangeRegistrationPurpose,
   ] = useState("");
   const [isConfirmPurposeChangeModalOpen, setIsConfirmPurposeChangeModalOpen] =
     useState<boolean>(false);
+  const [key, resetKey] = useKey();
+  const [formMode, setFormMode] = useState(FormMode.READ_ONLY);
 
   const router = useRouter();
   // To get the user's role from the session
@@ -66,16 +71,23 @@ const OperationInformationForm = ({
     checkMissingRepresentative(formData),
   );
 
-  useEffect(() => {
-    if (selectedPurpose) {
-      formData.registration_purpose = selectedPurpose;
-    }
-    if (selectedPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION) {
+  const updateConfirmedFormData = (newPurpose: string) => {
+    const isEio =
+      newPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION;
+    const newFormData = {
+      ...confirmedFormData,
+      registration_purpose: newPurpose,
+      // When switching to EIO, set the type to EIO since that's the only valid option
+      ...(isEio && { type: OperationTypes.EIO }),
+    };
+    setConfirmedFormData(newFormData);
+
+    if (isEio) {
       setSchema(eioSchema);
     } else {
       setSchema(generalSchema);
     }
-  }, [selectedPurpose, eioSchema, generalSchema, formData]);
+  };
 
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
@@ -123,20 +135,23 @@ const OperationInformationForm = ({
 
   const cancelRegistrationPurposeChange = () => {
     setPendingChangeRegistrationPurpose("");
+    setFormMode(FormMode.EDIT); // Keep form in edit mode after remount
+    resetKey();
     setIsConfirmPurposeChangeModalOpen(false);
   };
 
   const confirmRegistrationPurposeChange = () => {
     if (pendingChangeRegistrationPurpose !== "") {
-      setSelectedPurpose(pendingChangeRegistrationPurpose);
+      updateConfirmedFormData(pendingChangeRegistrationPurpose);
+      setFormMode(FormMode.EDIT); // Keep form in edit mode after remount
+      resetKey();
       setIsConfirmPurposeChangeModalOpen(false);
     }
-    formData.registration_purpose = pendingChangeRegistrationPurpose;
     setPendingChangeRegistrationPurpose("");
   };
 
   const handleSelectedPurposeChange = (newSelectedPurpose: string) => {
-    if (newSelectedPurpose && selectedPurpose) {
+    if (newSelectedPurpose && confirmedFormData.registration_purpose) {
       setIsConfirmPurposeChangeModalOpen(true);
       setPendingChangeRegistrationPurpose(newSelectedPurpose);
     }
@@ -173,16 +188,17 @@ const OperationInformationForm = ({
         confirmButtonText="Change registration purpose"
       />
       <SingleStepTaskListForm
+        key={key}
         allowEdit={!role.includes("cas_")}
-        mode={FormMode.READ_ONLY}
+        mode={formMode}
         error={error}
         schema={schema}
         uiSchema={administrationOperationInformationUiSchema}
-        formData={formData ?? {}}
+        formData={confirmedFormData ?? {}}
         onSubmit={handleSubmit}
         onChange={(e: IChangeEvent) => {
-          let newSelectedPurpose = e.formData?.section3?.registration_purpose;
-          if (newSelectedPurpose !== selectedPurpose) {
+          const newSelectedPurpose = e.formData?.section3?.registration_purpose;
+          if (newSelectedPurpose !== confirmedFormData.registration_purpose) {
             handleSelectedPurposeChange(newSelectedPurpose);
           }
           setIsMissingRepresentative(checkMissingRepresentative(e.formData));
@@ -191,13 +207,13 @@ const OperationInformationForm = ({
         formContext={{
           operationId,
           isRegulatedOperation: regulatedOperationPurposes.includes(
-            formData.registration_purpose as RegistrationPurposes,
+            confirmedFormData.registration_purpose as RegistrationPurposes,
           ),
           isCasDirector: role === FrontEndRoles.CAS_DIRECTOR,
-          isEio: formData.registration_purpose?.match(
+          isEio: confirmedFormData.registration_purpose?.match(
             RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION.valueOf(),
           ),
-          status: formData.status,
+          status: confirmedFormData.status,
           missing_representative_alert: isMissingRepresentative,
         }}
       />

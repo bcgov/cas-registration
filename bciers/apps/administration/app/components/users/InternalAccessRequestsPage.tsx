@@ -1,14 +1,18 @@
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonGrid";
-import InternalAccessRequests from "./InternalAccessRequests";
+import { getInternalAccessRequests } from "@bciers/actions/api";
+import InternalAccessRequestDataGrid from "./InternalAccessRequestDataGrid";
 
-export default function InternalAccessRequestsPage() {
+export default async function InternalAccessRequestsPage() {
+  const internalAccessRequestData = await getInternalAccessRequests();
+
+  if (!internalAccessRequestData || "error" in internalAccessRequestData)
+    throw new Error("Failed to retrieve internal access requests.");
+
   return (
-    <>
-      <h2 className="text-bc-primary-blue mb-4 mt-5">Users</h2>
-      <Suspense fallback={<Loading />}>
-        <InternalAccessRequests />
-      </Suspense>
-    </>
+    <InternalAccessRequestDataGrid
+      initialData={{
+        rows: internalAccessRequestData,
+        row_count: internalAccessRequestData.length,
+      }}
+    />
   );
 }

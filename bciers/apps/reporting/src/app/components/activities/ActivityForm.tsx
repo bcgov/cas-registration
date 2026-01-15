@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { actionHandler } from "@bciers/actions";
 import { FuelFields } from "./customFields/FuelFieldComponent";
-import { FieldProps, RJSFSchema } from "@rjsf/utils";
+import { CustomValidator, FieldProps, RJSFSchema } from "@rjsf/utils";
 import { getUiSchema } from "./uiSchemas/schemaMaps";
 import { UUID } from "crypto";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
@@ -12,9 +12,9 @@ import { customizeValidator } from "@rjsf/validator-ajv8";
 import setNestedErrorForCustomValidate from "@bciers/utils/src/setCustomValidateErrors";
 import { findPathsWithNegativeNumbers } from "@bciers/utils/src/findInObject";
 import { calculateMobileAnnualAmount } from "@bciers/utils/src/customReportingActivityFormCalculations";
-import { IChangeEvent } from "@rjsf/core";
 import { NavigationInformation } from "../taskList/types";
 import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
+import { Dict } from "@bciers/types/dictionary";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -25,7 +25,7 @@ interface Props {
     activityId: number;
     sourceTypeMap: { [key: number]: string };
   };
-  activityFormData: any;
+  activityFormData: Dict;
   currentActivity: { id: number; name: string; slug: string };
   navigationInformation: NavigationInformation;
   reportVersionId: number;
@@ -53,7 +53,7 @@ export default function ActivityForm({
   gasTypes,
 }: Readonly<Props>) {
   // 🐜 To display errors
-  const [errorList, setErrorList] = useState([] as any[]);
+  const [errorList, setErrorList] = useState([] as string[]);
   const [formState, setFormState] = useState(activityFormData);
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
   const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(
@@ -72,13 +72,7 @@ export default function ActivityForm({
     );
   };
 
-  useEffect(() => {
-    setJsonSchema(initialJsonSchema);
-    setFormState(activityFormData);
-    setSelectedSourceTypeIds(initialSelectedSourceTypeIds);
-  }, [currentActivity]);
-
-  const customValidate = (formData: { [key: string]: any }, errors: any) => {
+  const customValidate: CustomValidator = (formData, errors) => {
     // Negative numbers
     const results = findPathsWithNegativeNumbers(formData);
     results.forEach((result) => {
@@ -100,7 +94,7 @@ export default function ActivityForm({
     return schema;
   };
 
-  const handleFormChange = async (c: any) => {
+  const handleFormChange = async (c: { formData: Dict }) => {
     const selectedSourceTypes = [];
     // Checks for a change in source type selection & fetches the updated schema if they have changed.
     for (const [k, v] of Object.entries(sourceTypeMap)) {
@@ -124,7 +118,7 @@ export default function ActivityForm({
   };
 
   // 🛠️ Function to submit user form data to API
-  const submitHandler = async (e: IChangeEvent) => {
+  const submitHandler = async (data: any, _navigateAfterSubmit: boolean) => {
     if (isFallbackSchema) {
       //if the schema is a fallback schema, we just return true
       return true;
@@ -134,7 +128,7 @@ export default function ActivityForm({
     const sourceTypeCount = Object.keys(sourceTypeMap).length;
 
     // Ensure we use the filtered formData with omitted extra data
-    const filteredData = e.formData;
+    const filteredData = data.formData;
 
     if (!filteredData.sourceTypes) {
       setErrorList([
@@ -198,7 +192,7 @@ export default function ActivityForm({
       noSaveButton={isFallbackSchema}
       formData={formState}
       uiSchema={getUiSchema(currentActivity.slug)}
-      onChange={debounce(handleFormChange, 200)}
+      onChange={debounce(handleFormChange, 200) as (data: object) => void}
       errors={errorList}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}

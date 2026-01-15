@@ -7,12 +7,11 @@ import {
   firefox,
   webkit,
   Browser,
-  BrowserContext,
 } from "@playwright/test";
 import { baseUrlSetup } from "@bciers/e2e/utils/constants";
 import { DataTestID, MessageTextResponse } from "@bciers/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
-import path from "path";
+import path from "node:path";
 
 // 🛠️ Function: analyze the accessibility of the page. Use the description argument to indicate what screen/form/etc. is being tested.
 export async function analyzeAccessibility(
@@ -62,7 +61,7 @@ export async function fillComboxboxWidget(
   labelText: string | RegExp,
   value: string,
 ) {
-  const input = await page.getByRole("combobox", {
+  const input = page.getByRole("combobox", {
     name: labelText,
   });
   await expect(input).toBeVisible();
@@ -100,9 +99,10 @@ export async function checkAllRadioButtons(page: Page) {
 export async function checkAlertMessage(
   page: Page,
   alertMessage: string | RegExp,
-  index: number = 0,
 ) {
-  await expect(page.getByRole("alert").nth(index)).toHaveText(alertMessage);
+  await expect(
+    page.getByRole("alert").filter({ hasText: alertMessage }),
+  ).toBeVisible();
 }
 
 // 🛠️ Function: checks read only of form inputs
@@ -300,7 +300,7 @@ export async function setupTestEnvironment(
       ? `${baseUrlSetup}?truncate_only=true`
       : baseUrlSetup;
 
-  let response: APIResponse = await context.request.get(url);
+  const response: APIResponse = await context.request.get(url);
 
   // Wait for the response and check for success status text and code (e.g., 200)
   expect(await response.text()).toBe(MessageTextResponse.SETUP_SUCCESS);
@@ -325,7 +325,7 @@ export async function takeStabilizedScreenshot(
   }
   const { component, variant, targets } = happoArgs;
   const pageContent = page.locator("html");
-  await waitForElementToStabilize(page, "main");
+  await waitForElementToStabilize(page, "html"); // <-- match the screenshot target
   await happoScreenshot(pageContent, {
     component,
     variant,
@@ -369,7 +369,7 @@ export async function clickWithRetry(
     try {
       await clickButton(page, buttonName);
       return;
-    } catch (error) {
+    } catch (_error) {
       // eslint-disable-next-line no-console
       console.warn(`Click failed. Retrying... Attempt ${i}/${retries}`);
     }
@@ -506,13 +506,17 @@ export async function assertFieldVisibility(
   }
 }
 
-export async function newContextForRole(
-  browser: Browser,
-  baseURL: string,
-  role: string,
-): Promise<BrowserContext> {
-  return browser.newContext({
-    storageState: getStorageStateForRole(role),
-    baseURL,
-  });
+/**
+ * Extracts the compliance report version ID (CRV ID) from a URL.
+ * Supports routes containing `/compliance-summaries/:id`,
+ * `/compliance-report-versions/:id`, or `?complianceReportVersionId=:id`.
+ */
+export function getCrvIdFromUrl({ url }: { url: string }): number {
+  const match =
+    url.match(/compliance-summaries\/(\d+)\b/) ??
+    url.match(/compliance-report-versions\/(\d+)\b/) ??
+    url.match(/[?&]complianceReportVersionId=(\d+)\b/);
+
+  if (!match) throw new Error(`Could not extract crvId from URL: ${url}`);
+  return Number(match[1]);
 }

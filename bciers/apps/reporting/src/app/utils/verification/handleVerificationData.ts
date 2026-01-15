@@ -2,7 +2,7 @@ export function handleVerificationData(
   updatedData: any,
   operationType: string,
 ) {
-  let selectedValues = updatedData.visit_names;
+  const selectedValues = updatedData.visit_names;
 
   if (selectedValues.includes("None")) {
     if (selectedValues.length > 1) {

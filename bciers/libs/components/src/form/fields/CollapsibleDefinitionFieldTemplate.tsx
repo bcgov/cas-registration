@@ -24,6 +24,7 @@ function CollapsibleDefinitionFieldTemplate({
   classNames,
 }: FieldTemplateProps) {
   const [expandCollapse, setExpandCollapse] = useState(true);
+  const hasErrors = (errors?.props as any)?.errors;
 
   return (
     <Paper className={classNames} sx={{ marginBottom: "1rem" }}>
@@ -33,7 +34,7 @@ function CollapsibleDefinitionFieldTemplate({
             <CardHeader
               title={label}
               titleTypographyProps={
-                errors?.props.errors
+                hasErrors
                   ? { variant: "h6", color: "#DC2626" }
                   : { variant: "h6", color: "#38598A" }
               }

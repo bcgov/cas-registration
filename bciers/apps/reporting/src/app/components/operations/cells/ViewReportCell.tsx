@@ -2,7 +2,6 @@ import { BC_GOV_LINKS_COLOR } from "@bciers/styles";
 import Button from "@mui/material/Button";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
-import React from "react";
 
 const ViewReportCell = (params: GridRenderCellParams) => {
   const reportVersionId = params?.row?.report_version_id;

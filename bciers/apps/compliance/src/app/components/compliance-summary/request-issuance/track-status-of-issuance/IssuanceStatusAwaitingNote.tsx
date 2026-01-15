@@ -2,7 +2,6 @@ import AlertNote from "@bciers/components/form/components/AlertNote";
 import { TimeIcon } from "@bciers/components/icons";
 import { Link } from "@mui/material";
 import { BC_GOV_YELLOW } from "@bciers/styles";
-import React from "react";
 import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
 
 export const IssuanceStatusAwaitingNote = () => {

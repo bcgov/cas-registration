@@ -7,7 +7,6 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
-import React from "react";
 import { newEntrantOperationSchema } from "@/registration/app/data/jsonSchema/operationRegistration/newEntrantOperation";
 import NewEntrantOperationForm from "@/registration/app/components/operations/registration/NewEntrantOperationForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
@@ -144,11 +143,13 @@ describe("the NewEntrantOperationForm component", () => {
     const input = screen.getByTestId("root_new_entrant_application");
     await userEvent.upload(input, mockFile);
 
-    expect(
-      screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for security.",
-      ),
-    ).toBeVisible();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Uploading. You may continue to the next page while the file is being scanned for security.",
+        ),
+      ).toBeVisible();
+    });
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test.pdf",

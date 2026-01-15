@@ -33,7 +33,7 @@ const formData = {
   age: 30,
 };
 
-const mockOnSubmit = vi.fn(async () => {});
+const mockOnSubmit = vi.fn(async () => true);
 
 describe("MultiStepFormWithTaskList", () => {
   beforeEach(() => {

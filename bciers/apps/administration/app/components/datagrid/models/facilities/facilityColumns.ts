@@ -1,7 +1,8 @@
+import type { ReactNode } from "react";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 
 const facilityColumns = (
-  ActionCell: (params: GridRenderCellParams) => JSX.Element,
+  ActionCell: (params: GridRenderCellParams) => ReactNode,
 ) => {
   const columns: GridColDef[] = [
     {

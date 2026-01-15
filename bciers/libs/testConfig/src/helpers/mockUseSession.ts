@@ -1,6 +1,5 @@
 import { useSession } from "@bciers/testConfig/mocks";
 import { Session } from "@bciers/testConfig/types";
-import { vi } from "vitest";
 
 // ⛏️ Helper function to mock the useSession hook with default values
 export const mockUseSession = (

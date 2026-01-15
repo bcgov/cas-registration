@@ -21,6 +21,7 @@ export enum OperatorButtonText {
   SEARCH_OPERATOR = "Search Operator",
   SELECT_OPERATOR = "Select Operator",
   YES_OPERATOR = "Yes this is my operator",
+  CANCEL_ACCESS_REQUEST = "Cancel Access Request",
 }
 // 💬 Dashboard tiles
 export enum DashboardTileText {
@@ -217,7 +218,8 @@ export enum RegistrationPurposes {
   ELECTRICITY_IMPORT_OPERATION = "Electricity Import Operation",
 }
 
-export enum OperationFields { //All of these fields are also used for New Entrant Operations
+export enum OperationFields {
+  //All of these fields are also used for New Entrant Operations
   PRIMARY_NAICS_CODE = "Primary NAICS Code*",
   SECONDARY_NAICS_CODE = "Secondary NAICS Code",
   TERTIARY_NAICS_CODE = "Tertiary NAICS Code",

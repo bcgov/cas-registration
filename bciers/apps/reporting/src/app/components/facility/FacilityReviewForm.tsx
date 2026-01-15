@@ -119,12 +119,14 @@ export const FacilityReview: React.FC<Props> = ({
         }}
         formData={formData}
         onSubmit={handleSubmit}
-        onChange={(data: { formData: FacilityReviewFormData }) => {
-          setFormData((prevFormData: FacilityReviewFormData) => ({
-            ...prevFormData,
-            ...data.formData,
-          }));
-        }}
+        onChange={
+          ((data: { formData: FacilityReviewFormData }) => {
+            setFormData((prevFormData: FacilityReviewFormData) => ({
+              ...prevFormData,
+              ...data.formData,
+            }));
+          }) as (data: object) => void
+        }
         continueUrl={navigationInformation.continueUrl}
         initialStep={navigationInformation.headerStepIndex}
         steps={navigationInformation.headerSteps}

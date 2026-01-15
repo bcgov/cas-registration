@@ -3,7 +3,7 @@ import { fetchComplianceSummariesPageData } from "@/compliance/src/app/utils/fet
 import ComplianceSummariesDataGrid from "@/compliance/src/app/components/compliance-summaries/ComplianceSummariesDataGrid";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 import AlertNote from "@bciers/components/form/components/AlertNote";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
+import { getReportingYear } from "@bciers/actions/api";
 import {
   ComplianceSummaryStatus,
   FrontEndRoles,

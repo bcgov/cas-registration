@@ -96,11 +96,11 @@ describe("RJSF DateWidget", () => {
   });
 
   it("should allow typing a date", async () => {
-    await checkTypingDate("020240705", "2024-07-05");
+    await checkTypingDate("20240705", "2024-07-05");
   });
 
   it("should allow typing a date with a separator", async () => {
-    await checkTypingDate("02024-07-05", "2024-07-05");
+    await checkTypingDate("2024-07-05", "2024-07-05");
   });
 
   it("should not allow typing an invalid date", async () => {

@@ -4,7 +4,7 @@ import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import downloadAttachment from "../download";
 
 const AttachmentDownloadCell = (params: GridRenderCellParams) => {
-  const handleDownload = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -12,12 +12,12 @@ const AttachmentDownloadCell = (params: GridRenderCellParams) => {
   };
 
   return (
-    <a href="#" onClick={handleDownload} style={{ cursor: "pointer" }}>
+    <button onClick={handleDownload} style={{ cursor: "pointer" }}>
       <Stack alignItems="center" direction="row" spacing={1}>
         <span>{params.row.attachment_name}</span>
         <CloudDownload />
       </Stack>
-    </a>
+    </button>
   );
 };
 

@@ -1,4 +1,4 @@
-/// <reference types='vitest' />
+
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
@@ -6,14 +6,7 @@ import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
 export default defineConfig({
   root: __dirname,
   cacheDir: "../../node_modules/.vite/libs/utils",
-
   plugins: [react(), nxViteTsPaths()],
-
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
-
   test: {
     globals: true,
     environment: "jsdom",
@@ -24,6 +17,6 @@ export default defineConfig({
       reportsDirectory: "../../coverage/libs/utils",
       provider: "v8",
     },
-    setupFiles: ["./testConfig/src/global.tsx"],
+    setupFiles: ["../../libs/testConfig/src/global.tsx"],
   },
 });

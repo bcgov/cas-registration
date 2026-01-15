@@ -97,7 +97,7 @@ export default function VerificationForm({
       baseUrl={baseUrlReports}
       cancelUrl={cancelUrlReports}
       backUrl={navigationInformation.backUrl}
-      onChange={handleChange}
+      onChange={handleChange as (data: object) => void}
       onSubmit={handleSubmit}
       errors={errors}
       continueUrl={navigationInformation.continueUrl}

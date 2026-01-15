@@ -1,6 +1,5 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import React from "react";
 import {
   actionHandler,
   useRouter,

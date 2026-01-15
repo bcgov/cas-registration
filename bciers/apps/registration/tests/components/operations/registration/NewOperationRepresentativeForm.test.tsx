@@ -1,6 +1,10 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import { actionHandler, useSessionRole } from "@bciers/testConfig/mocks";
+import {
+  actionHandler,
+  useSessionRole,
+  getContact,
+} from "@bciers/testConfig/mocks";
 import userEvent from "@testing-library/user-event";
 import NewOperationRepresentativeForm from "@/registration/app/components/operations/registration/NewOperationRepresentativeForm";
 
@@ -183,7 +187,7 @@ describe("the NewOperationRepresentativeForm component", () => {
       }),
     );
     // Mock the getContact function before selecting an existing contact
-    actionHandler.mockReturnValueOnce({
+    getContact.mockResolvedValueOnce({
       id: 1,
       first_name: "Henry",
       last_name: "Ives",
@@ -197,12 +201,9 @@ describe("the NewOperationRepresentativeForm component", () => {
       }),
     );
 
-    expect(actionHandler).toHaveBeenNthCalledWith(
-      1,
-      "registration/contacts/1",
-      "GET",
-      "",
-    );
+    await waitFor(() => {
+      expect(getContact).toHaveBeenCalledWith(1);
+    });
 
     // check for the form to be filled with the selected contact
     expect(screen.getByLabelText(/First Name/i)).toHaveValue("Henry");
@@ -254,7 +255,7 @@ describe("the NewOperationRepresentativeForm component", () => {
       }),
     );
     // Mock the getContact function before selecting an existing contact
-    actionHandler.mockReturnValueOnce({
+    getContact.mockResolvedValueOnce({
       id: 1,
       first_name: "Henry",
       last_name: "Ives",
@@ -270,9 +271,11 @@ describe("the NewOperationRepresentativeForm component", () => {
     );
 
     // check for the form to be filled with the selected contact address info
-    expect(screen.getByLabelText(/Business mailing address+/i)).toHaveValue(
-      "123 Main St",
-    );
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Business mailing address+/i)).toHaveValue(
+        "123 Main St",
+      );
+    });
 
     // change the contact to another existing contact
     await userEvent.click(
@@ -282,7 +285,7 @@ describe("the NewOperationRepresentativeForm component", () => {
     );
 
     // Mock the getContact function before selecting another existing contact
-    actionHandler.mockReturnValueOnce({
+    getContact.mockResolvedValueOnce({
       id: 2,
       first_name: "Samantha",
       last_name: "Garcia",
@@ -297,11 +300,18 @@ describe("the NewOperationRepresentativeForm component", () => {
       }),
     );
     // check for the form to be filled with the selected contact address info
-    expect(screen.getByLabelText(/Business mailing address+/i)).toHaveValue("");
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Business mailing address+/i)).toHaveValue(
+        "",
+      );
+    });
   });
 
   it(
     "render the NewOperationRepresentativeForm component WITHOUT an existing operation representative",
+    {
+      timeout: 10000,
+    },
     async () => {
       const { rerender } = render(
         <NewOperationRepresentativeForm
@@ -382,9 +392,10 @@ describe("the NewOperationRepresentativeForm component", () => {
       );
       checkEmptyOperationRepresentativeForm();
       expect(screen.getByText(/operation representative\(s\):/i)).toBeVisible();
-      expect(screen.getByText(/isaac newton/i)).toBeVisible();
+      await waitFor(() => {
+        expect(screen.getByText(/isaac newton/i)).toBeVisible();
+      });
     },
-    { timeout: 10000 },
   );
   it("remove an operation representative", async () => {
     render(

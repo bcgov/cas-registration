@@ -1,4 +1,3 @@
-import React from "react";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import { BC_GOV_YELLOW } from "@bciers/styles";
 

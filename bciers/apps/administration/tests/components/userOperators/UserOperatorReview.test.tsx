@@ -3,6 +3,7 @@ import UserOperatorReview from "@/administration/app/components/userOperators/Us
 import userEvent from "@testing-library/user-event";
 import { UserOperatorStatus } from "@bciers/utils/src/enums";
 import { actionHandler, useSessionRole } from "@bciers/testConfig/mocks";
+import { UserOperatorFormData } from "@/administration/app/components/userOperators/types";
 
 useSessionRole.mockReturnValue("industry_user");
 
@@ -13,8 +14,9 @@ describe("UserOperatorReview component", () => {
   it("renders the component", () => {
     render(
       <UserOperatorReview
-        // @ts-ignore
-        userOperator={{ status: UserOperatorStatus.PENDING }}
+        userOperator={
+          { status: UserOperatorStatus.PENDING } as UserOperatorFormData
+        }
         userOperatorId="1b06e328-715d-4642-b403-3392256d7344"
       />,
     );
@@ -34,8 +36,9 @@ describe("UserOperatorReview component", () => {
     render(
       <UserOperatorReview
         userOperatorId="1b06e328-715d-4642-b403-3392256d7344"
-        // @ts-ignore
-        userOperator={{ status: UserOperatorStatus.PENDING }}
+        userOperator={
+          { status: UserOperatorStatus.PENDING } as UserOperatorFormData
+        }
       />,
     );
 
@@ -69,8 +72,9 @@ describe("UserOperatorReview component", () => {
     render(
       <UserOperatorReview
         userOperatorId="1b06e328-715d-4642-b403-3392256d7344"
-        // @ts-ignore
-        userOperator={{ status: UserOperatorStatus.PENDING }}
+        userOperator={
+          { status: UserOperatorStatus.PENDING } as UserOperatorFormData
+        }
       />,
     );
 

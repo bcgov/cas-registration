@@ -1,13 +1,4 @@
-import ContactPage from "apps/administration/app/components/contacts/ContactPage";
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import Page from "@/administration/app/components/contacts/ContactPage";
 
-export default function Page({
-  params: { contactId },
-}: Readonly<{ params: { contactId: string } }>) {
-  return (
-    <Suspense fallback={<Loading />}>
-      <ContactPage contactId={contactId} />
-    </Suspense>
-  );
-}
+export default defaultPageFactory(Page);

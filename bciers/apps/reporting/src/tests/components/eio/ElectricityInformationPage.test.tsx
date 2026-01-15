@@ -62,7 +62,7 @@ describe("ElectricityInformationPage component", () => {
         initialFormData: mockInitialFormData,
         navigationInformation: dummyNavigationInformation,
       },
-      {},
+      undefined,
     );
   });
 });

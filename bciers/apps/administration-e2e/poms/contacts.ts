@@ -39,7 +39,7 @@ export class ContactsPOM {
 
   readonly fieldMunicipality: Locator;
 
-  readonly fieldProvince: String;
+  readonly fieldProvince: string;
 
   readonly fieldPostalCode: Locator;
 
@@ -139,7 +139,7 @@ export class ContactsPOM {
 
   async urlIsCorrect() {
     const path = await this.url;
-    const currentUrl = await this.page.url();
+    const currentUrl = this.page.url();
     expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
 

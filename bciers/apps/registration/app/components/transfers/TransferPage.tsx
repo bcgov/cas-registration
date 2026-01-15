@@ -9,8 +9,6 @@ import {
 import { validate as isValidUUID } from "uuid";
 import { UUID } from "crypto";
 import getTransferEvent from "@/registration/app/components/transfers/getTransferEvent";
-import Loading from "@bciers/components/loading/SkeletonGrid";
-import { Suspense } from "react";
 import {
   facilityEntitySchema,
   operationEntitySchema,
@@ -54,8 +52,8 @@ export default async function TransferPage({
   }
 
   return (
-    <Suspense fallback={<Loading />}>
-      {!!transferId ? (
+    <>
+      {transferId ? (
         <TransferDetailForm
           formData={transferFormData as TransferDetailFormData}
           transferId={transferId}
@@ -74,10 +72,10 @@ export default async function TransferPage({
         />
       ) : (
         <TransferForm
-          formData={{} as TransferFormData}
+          formData={transferFormData as TransferFormData}
           operators={operators.rows}
         />
       )}
-    </Suspense>
+    </>
   );
 }

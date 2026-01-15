@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import WarningIcon from "@mui/icons-material/Warning";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -20,7 +21,7 @@ export default async function SelectOperatorConfirmPage({
       await getOperatorAccessDeclined(id);
 
     if (accessDeclined) {
-      const declinedHasAdminJSX: JSX.Element = (
+      const declinedHasAdminJSX: ReactNode = (
         <div data-testid="access-declined-admin-message">
           <p>
             Your access request was declined by an Administrator of{" "}
@@ -34,7 +35,7 @@ export default async function SelectOperatorConfirmPage({
         </div>
       );
 
-      const declinedNoAdminJSX: JSX.Element = (
+      const declinedNoAdminJSX: ReactNode = (
         <div data-testid="access-declined-no-admin-message">
           <p>
             Your administrator access request for{" "}

@@ -121,7 +121,7 @@ describe("VerificationPage component", () => {
         navigationInformation: dummyNavigationInformation,
         isSupplementaryReport: await mockGetIsSupplementaryReport(),
       },
-      {},
+      undefined,
     );
   });
 });

@@ -84,9 +84,8 @@ export default function FacilityLfoForm({
     }
     // Using window.location.href instead of MutliStepBase router.push as there were rerender issues due to
     // Facility Grid listerning to params change on this page which sometimes hijacked the route change
-    window.location.href = `${
-      window.location.origin
-    }/registration/register-an-operation/${operationId}/${step + 1}`;
+    const nextStep = Number(step) + 1;
+    window.location.href = `${window.location.origin}/registration/register-an-operation/${operationId}/${nextStep}`;
   };
   return (
     <MultiStepBase

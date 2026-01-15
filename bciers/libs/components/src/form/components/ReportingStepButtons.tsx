@@ -34,7 +34,11 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
 }) => {
   const router = useRouter();
   const saveButtonContent = isSaving ? (
-    <CircularProgress data-testid="progressbarsave" role="progress" size={24} />
+    <CircularProgress
+      data-testid="progressbarsave"
+      role="progressbar"
+      size={24}
+    />
   ) : isSuccess ? (
     "✅ Success"
   ) : (
@@ -42,11 +46,7 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
   );
 
   const saveAndContinueButtonContent = isSaving ? (
-    <CircularProgress
-      data-testid="progressbar"
-      role="progressContinuing"
-      size={24}
-    />
+    <CircularProgress data-testid="progressbar" role="progressbar" size={24} />
   ) : isRedirecting ? (
     "✅ Redirecting..."
   ) : buttonText ? (

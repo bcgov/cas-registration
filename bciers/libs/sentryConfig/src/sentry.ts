@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs";
+import type { Instrumentation } from "next";
 
 // Sentry configuration (for prod and test environments)
 const SENTRY_ENVIRONMENT =
@@ -75,3 +76,23 @@ export function captureException(
     return Sentry.captureException(error);
   });
 }
+
+// onRequestError hook for Next.js 16 - captures server-side errors from React Server Components
+export const onRequestError: Instrumentation.onRequestError = async (
+  error,
+  request,
+  context,
+) => {
+  if (SENTRY_DSN) {
+    Sentry.captureException(error, {
+      contexts: {
+        nextjs: {
+          request: { path: request.path, method: request.method },
+          router: context.routerKind,
+          route: context.routePath,
+          type: context.routeType,
+        },
+      },
+    });
+  }
+};

@@ -102,7 +102,7 @@ const getAssociatedProductName = (
 
     // If no match found
     return null;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 };
@@ -110,7 +110,7 @@ const getAssociatedProductName = (
 /**
  * Custom Field Template for displaying a dynamic label and input field inline
  * @param {FieldTemplateProps} props - Props including id, classNames, children, and formContext
- * @returns {JSX.Element} - Rendered label and input field
+ * @returns {ReactNode} - Rendered label and input field
  */
 const DynamicLabelProductAllocation: React.FC<FieldTemplateProps> = ({
   id,

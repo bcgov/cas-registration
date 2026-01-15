@@ -6,7 +6,6 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import React from "react";
 import {
   actionHandler,
   useRouter,
@@ -145,6 +144,7 @@ describe("the FacilityLfoForm component", () => {
   });
 
   it("should direct the user to the next page of the form when they click submit", async () => {
+    // eslint-disable-next-line no-global-assign
     window = Object.create(window);
     const origin = "http://localhost:3000";
     const path = `/registration/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d`;
@@ -183,6 +183,7 @@ describe("the FacilityLfoForm component", () => {
     "should update the grid when a user adds a new facility",
     { timeout: 100000 },
     async () => {
+      // eslint-disable-next-line no-global-assign
       window = Object.create(window);
       const origin = "http://localhost:3000";
       const path = `/registration/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d`;

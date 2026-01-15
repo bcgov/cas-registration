@@ -1,6 +1,12 @@
 "use client";
 
-import { useMemo, useEffect, useState } from "react";
+import React, {
+  useMemo,
+  useEffect,
+  useState,
+  useRef,
+  type ReactNode,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import debounce from "lodash.debounce";
 import {
@@ -15,22 +21,23 @@ import type { GridRowParams } from "@mui/x-data-grid";
 import Pagination from "@bciers/components/datagrid/Pagination";
 import SortIcon from "@bciers/components/icons/SortIcon";
 import styles from "@bciers/components/datagrid/styles";
+import { Dict } from "@bciers/types/dictionary";
 
 interface Props {
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
   disabled?: boolean; // Optional prop to disable sorting and filtering - was needed to prevent URL updates on page change
-  fetchPageData?: (params: { [key: string]: any }) => Promise<any>;
+  fetchPageData?: (params: Dict) => Promise<any>;
   initialData: {
-    rows: { [key: string]: any }[];
+    rows: Dict[] | undefined;
     row_count?: number;
   };
   paginationMode?: "client" | "server";
-  sx?: { [key: string]: any };
+  sx?: Dict;
   getRowId?: GridRowIdGetter<any> | undefined;
   pageSize?: number;
   rowSelection?: boolean;
-  noDataMessage?: JSX.Element | string;
+  noDataMessage?: ReactNode | string;
   hideFooter?: boolean;
   getRowClassName?: (params: GridRowParams) => string;
 }
@@ -67,10 +74,14 @@ const DataGrid: React.FC<Props> = ({
   const [rows, setRows] = useState(initialData.rows ?? []);
   const [rowCount, setRowCount] = useState(initialData.row_count ?? undefined);
   const [loading, setLoading] = useState(false);
-  const [isComponentMounted, setIsComponentMounted] = useState(false);
   const isRowsEmpty = !rows || rows.length === 0;
   const searchParams = useSearchParams();
   const [sortModel, setSortModel] = useState<GridSortItem[]>([]);
+
+  // Track if this is the initial mount - skip fetch since server already provided initialData
+  const isInitialMountRef = useRef(true);
+  // Track previous searchParams string to avoid fetching when object reference changes but values are the same
+  const prevSearchParamsRef = useRef<string>(searchParams.toString());
   const debouncedFetchData = debounce(async () => {
     const fetchData = async () => {
       const newParams = new URLSearchParams(searchParams);
@@ -100,21 +111,31 @@ const DataGrid: React.FC<Props> = ({
     ),
   };
   useEffect(() => {
-    setIsComponentMounted(true);
+    // Skip the initial mount - server already fetched data as initialData
+    if (isInitialMountRef.current) {
+      isInitialMountRef.current = false;
+      prevSearchParamsRef.current = searchParams.toString();
+      return;
+    }
+
+    // Only fetch if searchParams actually changed (compare strings, not object references)
+    const currentParamsString = searchParams.toString();
+    if (
+      prevSearchParamsRef.current === currentParamsString ||
+      !fetchPageData ||
+      disabled
+    ) {
+      return;
+    }
+
+    prevSearchParamsRef.current = currentParamsString;
+    setLoading(true);
+    debouncedFetchData();
 
     // Cancel debounce on unmount
     return () => debouncedFetchData.cancel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    // Don't fetch data if the component is not mounted
-    // Since we will grab the first page using the server side props
-    if (!isComponentMounted || !fetchPageData || disabled) return;
-    setLoading(true);
-    debouncedFetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, [searchParams, fetchPageData, disabled]);
 
   const handleSortModelChange = useMemo(
     () => (newSortModel: GridSortItem[]) => {

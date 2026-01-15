@@ -75,7 +75,9 @@ function InlineFieldTemplate({
       >
         {isLabel && (
           <div className="w-full lg:w-3/12">
-            <label className="font-bold">CAS Registry Number</label>
+            <label className="font-bold" htmlFor={id}>
+              CAS Registry Number
+            </label>
           </div>
         )}
         <div className={`relative flex items-center w-full ${cellWidth}`}>
@@ -85,7 +87,7 @@ function InlineFieldTemplate({
             </span>
           ) : (
             <TextField
-              id="outlined-basic"
+              id={id}
               variant="outlined"
               fullWidth
               disabled

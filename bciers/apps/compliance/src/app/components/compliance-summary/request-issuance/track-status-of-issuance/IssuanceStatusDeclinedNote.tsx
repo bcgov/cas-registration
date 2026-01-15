@@ -1,6 +1,5 @@
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import { Link } from "@mui/material";
-import React from "react";
 import {
   bcCarbonRegistryLink,
   bceabLink,

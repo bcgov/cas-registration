@@ -16,7 +16,7 @@ vi.mock(
 );
 
 // Mock the reporting year utility
-vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
+vi.mock("@bciers/actions/api", () => ({
   __esModule: true,
   getReportingYear: vi.fn().mockResolvedValue({
     reporting_year: 2024,

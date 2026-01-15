@@ -11,7 +11,6 @@
 3. **Choose Test** - Select the test you are going to run in `/app/tests/perf/[backend/frontend]-load-test.js`.
 
 4. **Local Testing** - Test that it is working correctly by running tests against your local backend server running at `http://127.0.0.1:8000/`.
-
    - **For Reporting Load Testing (Local):**
      Add the following command to the Makefile to populate test data:
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, type ReactNode } from "react";
 import { WidgetProps } from "@rjsf/utils";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import applyComplianceUnitsColumns from "@/compliance/src/app/components/datagrid/models/apply-compliance-units/applyComplianceUnitsColumns";
@@ -10,7 +10,7 @@ import { ComplianceLimitStatus } from "@/compliance/src/app/components/complianc
 
 const COMPLIANCE_LIMIT_MESSAGES: Record<
   ComplianceLimitStatus,
-  JSX.Element | null
+  ReactNode | null
 > = {
   EXCEEDS: (
     <AlertNote>
@@ -39,9 +39,10 @@ const ApplyComplianceUnitsWidget = ({
   const { chargeRate, complianceLimitStatus, isApplied } = formContext;
   const [localUnits, setLocalUnits] = useState<BccrUnit[]>(value || []);
 
-  // Update localUnits when value prop changes
+  // Update localUnits when value prop changes from the parent
   useEffect(() => {
     if (value && Array.isArray(value)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalUnits(value);
     }
   }, [value]);

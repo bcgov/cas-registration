@@ -5,18 +5,14 @@ import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 export default async function getUserOperatorsPageData(
   searchParams: UserOperatorsSearchParams,
 ) {
-  try {
-    const queryParams = buildQueryParams(searchParams);
-    const pageData = await actionHandler(
-      `registration/user-operators${queryParams}`,
-      "GET",
-      "",
-    );
-    return {
-      rows: pageData.items,
-      row_count: pageData.count,
-    };
-  } catch (error) {
-    throw error;
-  }
+  const queryParams = buildQueryParams(searchParams);
+  const pageData = await actionHandler(
+    `registration/user-operators${queryParams}`,
+    "GET",
+    "",
+  );
+  return {
+    rows: pageData.items,
+    row_count: pageData.count,
+  };
 }

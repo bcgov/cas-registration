@@ -41,7 +41,7 @@ export class OperationPOM {
 
   async route() {
     await this.page.goto(this.url);
-    const operationsLink = await this.page.getByRole("link", {
+    const operationsLink = this.page.getByRole("link", {
       name: "Operations",
       exact: true,
     });
@@ -108,9 +108,9 @@ export class OperationPOM {
     if (
       registrationPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
     ) {
-      assertFieldVisibility(this.page, fields, false);
+      await assertFieldVisibility(this.page, fields, false);
     } else {
-      assertFieldVisibility(this.page, fields, true);
+      await assertFieldVisibility(this.page, fields, true);
     }
   }
 }

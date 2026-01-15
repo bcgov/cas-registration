@@ -22,7 +22,7 @@ export async function getToken() {
   try {
     const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/token`, {
       method: "POST",
-      headers: { Cookie: cookies().toString() },
+      headers: { Cookie: (await cookies()).toString() },
     });
 
     if (!res.ok) {
@@ -84,14 +84,14 @@ export async function actionHandler(
 
         // Passing mock time cookie through if present
         // Except in production
-        const clientCookies = cookies();
+        const clientCookies = await cookies();
         if (
           process.env.ENVIRONMENT !== "prod" &&
           clientCookies.has("mock-time")
         ) {
           requestHeaders.append(
             "Cookie",
-            `mock-time=${cookies().get("mock-time")?.value}`,
+            `mock-time=${(await cookies()).get("mock-time")?.value}`,
           );
         }
 
@@ -125,7 +125,9 @@ export async function actionHandler(
 
         const data = await response.json();
 
-        if (pathToRevalidate) revalidatePath(pathToRevalidate);
+        if (method !== "GET" && pathToRevalidate) {
+          revalidatePath(pathToRevalidate);
+        }
 
         return data;
       } catch (error: unknown) {

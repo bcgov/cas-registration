@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import { ReviewChanges } from "@reporting/src/app/components/changeReview/templates/ReviewChanges";
 import { ChangeItem } from "@reporting/src/app/components/changeReview/constants/types";

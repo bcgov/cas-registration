@@ -25,9 +25,9 @@ const ReadOnlyArrayFieldTemplate = ({
             {{
               ...item.children,
               props: {
-                ...item.children.props,
+                ...(item.children as any).props,
                 uiSchema: {
-                  ...item.children.props.uiSchema,
+                  ...(item.children as any).props.uiSchema,
                   "ui:FieldTemplate": BasicFieldTemplate,
                   "ui:options": {
                     label: false,

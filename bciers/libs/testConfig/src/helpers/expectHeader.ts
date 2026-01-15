@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { screen } from "@testing-library/react";
 
 // Helper function to verify that a header is visible

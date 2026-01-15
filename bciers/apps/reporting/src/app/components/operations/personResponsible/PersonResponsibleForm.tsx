@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { getContacts } from "@bciers/actions/api";
 import { getContact } from "@bciers/actions/api";
@@ -48,9 +48,20 @@ const PersonResponsibleForm = ({
   });
   const [schema, setSchema] = useState<RJSFSchema>(initialSchema);
 
-  // Update schema whenever selectedContactId or contactFormData changes
-  useEffect(() => {
-    if (selectedContactId !== null && contactFormData) {
+  const updateContactShown = (
+    newContactId: number | undefined,
+    newContactFormData: Contact | undefined,
+  ) => {
+    if (
+      newContactId === selectedContactId &&
+      newContactFormData === contactFormData
+    )
+      return;
+
+    setSelectedContactId(newContactId);
+    setContactFormData(newContactFormData);
+
+    if (newContactId !== null && newContactFormData) {
       const updatedSchema = createPersonResponsibleSchema(
         personResponsibleSchema,
         contacts?.items || [],
@@ -60,7 +71,7 @@ const PersonResponsibleForm = ({
       );
       setSchema(updatedSchema);
     }
-  }, [selectedContactId, contactFormData]);
+  };
 
   const handleContactSelect = debounce(async (e: any) => {
     const selectedFullName = e.formData?.person_responsible;
@@ -85,16 +96,14 @@ const PersonResponsibleForm = ({
         ? `Missing address information.  <a href="/administration/contacts/${newContactFormData.id}?contacts_title=${newContactFormData.first_name} ${newContactFormData.last_name}/" target="_blank" rel="noopener noreferrer">Add contact's address information.</a>`
         : "";
       setSelectedContactAddressError(addressError);
-      setSelectedContactId(newSelectedContactId);
-      setContactFormData(newContactFormData);
+      updateContactShown(newSelectedContactId, newContactFormData);
       setFormData({
         person_responsible: `${newContactFormData?.first_name || ""} ${
           newContactFormData?.last_name || ""
         }`.trim(),
       });
     } else {
-      setSelectedContactId(undefined);
-      setContactFormData(undefined);
+      updateContactShown(undefined, undefined);
       setFormData((prevFormData: any) => ({
         ...prevFormData,
         person_responsible: "", // Reset to empty string if no contact is selected
@@ -144,8 +153,7 @@ const PersonResponsibleForm = ({
     } else {
       // If no contact is selected, reset form fields
       setSelectedContactAddressError(undefined);
-      setSelectedContactId(undefined);
-      setContactFormData(undefined);
+      updateContactShown(undefined, undefined);
       setFormData({ person_responsible: "" });
 
       const updatedSchema = createPersonResponsibleSchema(

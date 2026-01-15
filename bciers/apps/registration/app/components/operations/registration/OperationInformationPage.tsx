@@ -14,13 +14,14 @@ const OperationInformationPage = async ({
   steps: string[];
   operation: UUID;
 }) => {
-  let formData: OperationInformationFormData | { error: string } | {} = {};
+  let formData: OperationInformationFormData | { error: string } = {};
   if (operation && isValidUUID(operation))
     formData = await getOperationRegistration(operation);
 
   if (formData && "error" in formData)
     // using dot notation for error raises a TS error
     throw new Error("Failed to fetch operation data");
+
   return (
     <OperationInformationForm
       rawFormData={formData}

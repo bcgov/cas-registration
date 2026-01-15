@@ -94,10 +94,10 @@ test.describe("Test changing registration purpose", () => {
 
     // Assert visible fields are expected based on registration purpose
     await operationPage.assertCorrectFieldsAreVisible(registrationPurpose);
-    const registrationPurposeField = await page
-      .locator(registrationPurposeXPath)
-      .getAttribute("value");
-    await expect(registrationPurposeField).toBe(registrationPurpose);
+    await expect(page.locator(registrationPurposeXPath)).toHaveAttribute(
+      "value",
+      registrationPurpose,
+    );
 
     // Upload missing files to prevent error when saving
     await uploadFile(page, 0);
@@ -180,17 +180,16 @@ test.describe("Test changing registration purpose", () => {
     await operationPage.assertCorrectFieldsAreVisible(registrationPurpose);
 
     // Assert registration purpose has changed
-    const registrationPurposeField = await page
-      .locator(registrationPurposeXPath)
-      .getAttribute("value");
-    await expect(registrationPurposeField).toBe(registrationPurpose);
+    await expect(page.locator(registrationPurposeXPath)).toHaveAttribute(
+      "value",
+      registrationPurpose,
+    );
 
     // Click Save
     await clickButton(page, "Save");
     await checkAlertMessage(
       page,
-      // "Cannot change the type of an operation that has already been registered.", #EXPECTED MESSAGE: https://github.com/bcgov/cas-registration/issues/4134 issue logged
-      "Select a Operation Type", //ACTUAL MESSAGE: This should be replaced with message above once issue has been fixed
+      /Cannot change the type of an operation that has already been registered./i,
     );
 
     // Say cheese!
@@ -261,10 +260,10 @@ test.describe("Test changing registration purpose", () => {
     await operationPage.assertCorrectFieldsAreVisible(registrationPurpose);
 
     // Assert registration purpose has changed
-    const registrationPurposeField = await page
-      .locator(registrationPurposeXPath)
-      .getAttribute("value");
-    await expect(registrationPurposeField).toBe(registrationPurpose);
+    await expect(page.locator(registrationPurposeXPath)).toHaveAttribute(
+      "value",
+      registrationPurpose,
+    );
 
     // To prevent error when saving
     await uploadFile(page, 0);
@@ -353,10 +352,10 @@ test.describe("Test changing registration purpose", () => {
     await operationPage.assertCorrectFieldsAreVisible(registrationPurpose);
 
     // Assert registration purpose has changed
-    const registrationPurposeField = await page
-      .locator(registrationPurposeXPath)
-      .getAttribute("value");
-    await expect(registrationPurposeField).toBe(registrationPurpose);
+    await expect(page.locator(registrationPurposeXPath)).toHaveAttribute(
+      "value",
+      registrationPurpose,
+    );
 
     // Assert operation type dropdown is disabled
     await expect(page.locator(operationPage.operationTypeXPath)).toBeDisabled();

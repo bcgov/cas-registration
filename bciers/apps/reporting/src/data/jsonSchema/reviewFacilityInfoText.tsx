@@ -2,7 +2,6 @@ import InfoIcon from "@mui/icons-material/Info";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Box, Link, Paper, Tooltip, Typography } from "@mui/material";
 import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
-import React from "react";
 export const infoNote = (operation_id: string, facility_id: string) => (
   <Paper sx={{ p: 2, mb: 3, bgcolor: LIGHT_BLUE_BG_COLOR, color: BC_GOV_TEXT }}>
     <Box sx={{ display: "flex", alignItems: "center" }}>

@@ -1,5 +1,5 @@
-import { Suspense } from "react";
-import Loading from "../loading/SkeletonForm";
+import React, { Suspense } from "react";
+import Loading from "@bciers/components/loading/SkeletonForm";
 
 /**
  * Page factory for NextJS pages with parameters in URL.
@@ -17,24 +17,64 @@ import Loading from "../loading/SkeletonForm";
  *
  * const SomePage: React.FC<HasFacilityId> = (...) => ...
  * const nextJsPage = defaultPageFactory(SomePage)
+ *
+ * Supports two styles:
+ * 1) Fullscreen async page (default): wraps the whole component in Suspense with default <Loading /> SkeletonForm.
+ * 2) Content-first streaming: provide `options.header` to render immediate content outside Suspense,
+ *    while `Component` renders inside Suspense (use `options.fallback` to customize).
  */
 
-export default function defaultPageFactory<TPageParams extends {}>(
-  Component: React.FC<
-    TPageParams & { searchParams?: Record<string, string | number | undefined> }
-  >,
+type DefaultSearchParams = Record<string, string | number | undefined>;
+
+type DefaultPageFactoryOptions<TPageParams extends object> = {
+  /**
+   * Optional header that always renders immediately.
+   * Useful for Note/title/instructions that should show while the body suspends.
+   */
+  header?: React.FC<TPageParams & { searchParams?: DefaultSearchParams }>;
+  /**
+   * Optional Suspense fallback for the body. Defaults to <Loading /> SkeletonForm
+   */
+  fallback?: React.ReactNode;
+  pageProps?: Partial<TPageParams>;
+  mapParamsToPageProps?: (ctx: {
+    params: Promise<any>;
+    searchParams?: DefaultSearchParams;
+  }) => Promise<Partial<TPageParams>> | Partial<TPageParams>;
+};
+
+export default function defaultPageFactory<
+  TPageParams extends object = Record<string, never>,
+>(
+  Component: React.FC<TPageParams & { searchParams?: DefaultSearchParams }>,
+  options?: DefaultPageFactoryOptions<TPageParams>,
 ) {
   return async function Page({
     params,
     searchParams,
   }: {
-    params: TPageParams;
-    searchParams?: Record<string, string | number | undefined>;
+    params: Promise<TPageParams>;
+    searchParams?: Promise<DefaultSearchParams>;
   }) {
+    const resolvedParams = await params;
+    const resolvedSearchParams = searchParams ? await searchParams : undefined;
+
+    const props = {
+      ...resolvedParams,
+      ...(options?.pageProps ?? {}),
+      searchParams: resolvedSearchParams,
+    } as TPageParams & { searchParams?: DefaultSearchParams };
+
+    const Header = options?.header;
+    const fallback = options?.fallback ?? <Loading />;
+
     return (
-      <Suspense fallback={<Loading />}>
-        <Component {...params} searchParams={searchParams} />
-      </Suspense>
+      <>
+        {Header ? <Header {...props} /> : null}
+        <Suspense fallback={fallback}>
+          <Component {...props} />
+        </Suspense>
+      </>
     );
   };
 }

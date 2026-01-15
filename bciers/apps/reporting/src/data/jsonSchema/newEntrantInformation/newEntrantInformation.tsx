@@ -1,3 +1,4 @@
+import type { ReactNode, FC } from "react";
 import { UiSchema, WidgetProps } from "@rjsf/utils";
 import { Typography } from "@mui/material";
 import {
@@ -8,14 +9,13 @@ import {
 import CheckboxWidget from "@bciers/components/form/widgets/CheckboxWidget";
 import { DateWidget } from "@bciers/components/form/widgets";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
-import React from "react";
 import ObjectFieldTemplate from "@rjsf/core/lib/components/templates/ObjectFieldTemplate";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
 
 interface FieldTemplateProps {
   id: string;
   classNames: string;
-  children: React.ReactNode;
+  children: ReactNode;
   formContext: any;
 }
 
@@ -49,7 +49,7 @@ const getAssociatedEmissionName = (
 
     const emissionData = emissionCategory.emissionData?.[emissionDataIndex];
     return emissionData?.name || null;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 };
@@ -57,14 +57,14 @@ const getAssociatedEmissionName = (
 /**
  * Custom Field Template for displaying a dynamic label for emissions
  * @param {FieldTemplateProps} props - Props including id, classNames, children, and formContext
- * @returns {JSX.Element} - Rendered label and input field
+ * @returns {ReactNode} - Rendered label and input field
  */
-const DynamicEmissionLabelFieldTemplate: React.FC<FieldTemplateProps> = ({
+const DynamicEmissionLabelFieldTemplate: FC<FieldTemplateProps> = ({
   id,
   classNames,
   children,
   formContext,
-}: FieldTemplateProps): JSX.Element => {
+}: FieldTemplateProps): ReactNode => {
   const emissionName = getAssociatedEmissionName(id, formContext);
   return (
     <div className={`mb-4 md:mb-2 w-full ${classNames}`}>
@@ -80,10 +80,7 @@ const DynamicEmissionLabelFieldTemplate: React.FC<FieldTemplateProps> = ({
   );
 };
 
-export const EmissionDataTitleWidget: React.FC<WidgetProps> = ({
-  id,
-  value,
-}) => {
+export const EmissionDataTitleWidget: FC<WidgetProps> = ({ id, value }) => {
   return (
     <div id={id} className="w-full mt-8">
       <h2 className="inline-block p-0 text-lg font-bold text-bc-bg-blue m-0 mb-12">

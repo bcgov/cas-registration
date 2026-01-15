@@ -1,16 +1,4 @@
-import { UUID } from "crypto";
-import FacilityPage from "@/administration/app/components/facilities/FacilityPage";
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import Page from "@/administration/app/components/facilities/FacilityPage";
 
-export default function Page({
-  params,
-}: {
-  params: Readonly<{ operationId: UUID }>;
-}) {
-  return (
-    <Suspense fallback={<Loading />}>
-      <FacilityPage operationId={params.operationId} />
-    </Suspense>
-  );
-}
+export default defaultPageFactory(Page);

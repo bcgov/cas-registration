@@ -1,22 +1,15 @@
-import Link from "next/link";
-import { Button } from "@mui/material";
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonGrid";
-import { FacilitiesSearchParams } from "./types";
-import Facilities from "./Facilities";
-import Note from "@bciers/components/layout/Note";
 import getOperation from "@bciers/actions/api/getOperation";
 import { validate as isValidUUID } from "uuid";
-import { OperationTypes } from "@bciers/utils/src/enums";
+import { FacilityRow, FacilitiesSearchParams } from "./types";
+import FacilityDataGrid from "@/administration/app/components/facilities/FacilitiesDataGrid";
+import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
 
 export default async function FacilitiesPage({
   operationId,
   searchParams,
-  isExternalUser,
 }: Readonly<{
   operationId: string;
   searchParams: FacilitiesSearchParams;
-  isExternalUser: boolean;
 }>) {
   let operation;
 
@@ -28,27 +21,18 @@ export default async function FacilitiesPage({
       );
     }
   }
+  const facilities: {
+    rows: FacilityRow[];
+    row_count: number;
+  } = await fetchFacilitiesPageData(operationId, searchParams);
+
+  if (!facilities) {
+    return <div>No facilities data in database.</div>;
+  }
 
   return (
-    <>
-      <Note>
-        <b>Note: </b>View the facilities of this operation here.
-      </Note>
-      <h2 className="text-bc-primary-blue">Facilities</h2>
-      {/* Conditionally render the button based on user's role and operation type */}
-      {isExternalUser && operation?.type !== OperationTypes.SFO && (
-        <div className="text-right">
-          <Link
-            href={`/operations/${operationId}/facilities/add-facility?operations_title=${searchParams.operations_title}`}
-          >
-            <Button variant="contained">Add Facility</Button>
-          </Link>
-        </div>
-      )}
-
-      <Suspense fallback={<Loading />}>
-        <Facilities operationId={operationId} searchParams={searchParams} />
-      </Suspense>
-    </>
+    <div className="mt-5">
+      <FacilityDataGrid operationId={operationId} initialData={facilities} />
+    </div>
   );
 }

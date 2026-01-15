@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { UUID } from "crypto";
 import { expect } from "vitest";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
@@ -10,6 +16,7 @@ import {
   fetchOperationsPageData,
 } from "@bciers/testConfig/mocks";
 import TransferForm from "@/registration/app/components/transfers/TransferForm";
+import { TransferFormData } from "@/registration/app/components/transfers/types";
 
 const mockOperators = [
   {
@@ -43,7 +50,12 @@ const mockOperations = {
 };
 
 const renderTransferForm = () => {
-  render(<TransferForm formData={{} as any} operators={mockOperators} />);
+  render(
+    <TransferForm
+      formData={{} as TransferFormData}
+      operators={mockOperators}
+    />,
+  );
 };
 
 const selectOperator = (label: RegExp, operatorName: string) => {
@@ -104,18 +116,19 @@ const selectOperation = async (label: RegExp, operationName: string) => {
     expect(
       screen.getByRole("option", { name: operationName }),
     ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("option", { name: operationName }));
   });
-  fireEvent.click(screen.getByRole("option", { name: operationName }));
-  await waitFor(() =>
-    expect(screen.getByLabelText(label)).toHaveValue(operationName),
-  );
 };
 
-const selectDateOfTransfer = (date: string) => {
-  const dateOfTransfer = screen.getByLabelText(/effective date of transfer\*/i);
-  expect(dateOfTransfer).toBeVisible();
-  fireEvent.change(dateOfTransfer, { target: { value: date } });
-  expect(dateOfTransfer).toHaveValue(date);
+const selectDateOfTransfer = async (date: string) => {
+  await waitFor(() => {
+    const dateOfTransfer = screen.getByLabelText(
+      /effective date of transfer\*/i,
+    );
+    expect(dateOfTransfer).toBeVisible();
+    fireEvent.change(dateOfTransfer, { target: { value: date } });
+    expect(dateOfTransfer).toHaveValue(date);
+  });
 };
 
 describe("The TransferForm component", () => {
@@ -145,7 +158,7 @@ describe("The TransferForm component", () => {
     selectOperator(/select the new operator\*/i, "Operator 2");
     await selectEntityAndAssertFields("Operation");
     await selectOperation(/operation\*/i, "Operation 1");
-    selectDateOfTransfer("2022-12-31");
+    await selectDateOfTransfer("2022-12-31");
     expectButton("Transfer Entity");
   });
 
@@ -218,41 +231,49 @@ describe("The TransferForm component", () => {
     selectOperator(/select the new operator\*/i, "Operator 2");
     await selectEntityAndAssertFields("Operation");
     await selectOperation(/operation\*/i, "Operation 1");
-    selectDateOfTransfer("2022-12-31");
-    // submit the form
-    const submitButton = screen.getByRole("button", {
-      name: /transfer entity/i,
-    });
-    expect(submitButton).toBeEnabled();
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: /transfer entity/i,
-      }),
-    );
-    expect(actionHandler).toHaveBeenCalledWith(
-      "registration/transfer-events",
-      "POST",
-      "",
-      {
-        body: JSON.stringify({
-          from_operator: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-          to_operator: "8be4c7aa-6ab3-4aad-9206-0ef914fea064",
-          transfer_entity: "Operation",
-          operation: "8be4c7aa-6ab3-4aad-9206-0ef914fea065",
-          effective_date: "2022-12-31T09:00:00.000Z",
+    await selectDateOfTransfer("2022-12-31");
+    expectButton("Transfer Entity");
+
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: /transfer entity/i,
         }),
-      },
-    );
+      );
+    });
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/transfer-events",
+        "POST",
+        "",
+        {
+          body: JSON.stringify({
+            from_operator: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
+            to_operator: "8be4c7aa-6ab3-4aad-9206-0ef914fea064",
+            transfer_entity: "Operation",
+            operation: "8be4c7aa-6ab3-4aad-9206-0ef914fea065",
+            effective_date: "2022-12-31T09:00:00.000Z",
+          }),
+        },
+      );
+    });
+
     // make sure the success page is displayed
     await waitFor(() => {
       expect(
-        screen.getByRole("heading", { name: /transferred/i }),
-      ).toBeVisible();
-      expect(
-        screen.getByRole("button", {
-          name: /return to transfer requests table/i,
-        }),
+        screen.getByText(
+          /operation has been transferred from operator 1 to operator 2\./i,
+        ),
       ).toBeVisible();
     });
+    expect(
+      screen.getByText(/operation is now in the account of operator 2/i),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", {
+        name: /return to transfer requests table/i,
+      }),
+    ).toBeVisible();
   });
 });

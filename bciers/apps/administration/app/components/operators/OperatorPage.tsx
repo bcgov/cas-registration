@@ -11,8 +11,12 @@ import { getBusinessStructures } from "@bciers/actions/api";
 export default async function OperatorPage({
   isCreating = false,
   operatorId,
-}: { isCreating?: boolean; operatorId?: UUID } = {}) {
+}: {
+  isCreating?: boolean;
+  operatorId?: UUID;
+}) {
   const role = await getSessionRole();
+  const isInternalUser = role.includes("cas_");
 
   let operatorFormData: { [key: string]: any } | { error: string } = {};
 
@@ -38,7 +42,7 @@ export default async function OperatorPage({
       schema={await createOperatorSchema()}
       formData={operatorFormData}
       isCreating={isCreating}
-      isInternalUser={role.includes("cas_")}
+      isInternalUser={isInternalUser}
     />
   );
 }

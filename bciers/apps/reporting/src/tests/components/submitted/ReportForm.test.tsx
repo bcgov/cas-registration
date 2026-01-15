@@ -1,10 +1,9 @@
 import { useRouter } from "@bciers/testConfig/mocks";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import React from "react";
 import ReportForm from "@reporting/src/app/components/submitted/ReportForm";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
-import { vi } from "vitest";
+import { type Mock, vi } from "vitest";
 import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 
 const mockRouterPush = vi.fn();
@@ -35,7 +34,7 @@ describe("The SubmittedForm component", () => {
   });
 
   it("renders the Loading component while data is being fetched", async () => {
-    (getFinalReviewData as vi.Mock).mockImplementation(
+    (getFinalReviewData as Mock).mockImplementation(
       () => new Promise(() => {}), // Never resolves to keep loading state
     );
 
@@ -118,7 +117,7 @@ describe("The SubmittedForm component", () => {
       },
     };
 
-    (getFinalReviewData as vi.Mock).mockResolvedValue(mockData);
+    (getFinalReviewData as Mock).mockResolvedValue(mockData);
 
     render(
       <ReportForm
@@ -159,7 +158,7 @@ describe("The SubmittedForm component", () => {
       },
     };
 
-    (getFinalReviewData as vi.Mock).mockResolvedValue(mockData);
+    (getFinalReviewData as Mock).mockResolvedValue(mockData);
 
     const user = userEvent.setup();
     render(
@@ -181,7 +180,7 @@ describe("The SubmittedForm component", () => {
   });
 
   it("fetches data with correct version_id", () => {
-    (getFinalReviewData as vi.Mock).mockResolvedValue({});
+    (getFinalReviewData as Mock).mockResolvedValue({});
 
     render(
       <ReportForm

@@ -1,10 +1,14 @@
 /** @type {import('next').NextConfig} */
 const { withSentryConfig } = require("@sentry/nextjs");
+const path = require("node:path");
 
 const baseConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   output: "standalone",
+  turbopack: {
+    // Set the root directory to the bciers folder to avoid parent lockfile confusion
+    root: path.join(__dirname),
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "25mb",

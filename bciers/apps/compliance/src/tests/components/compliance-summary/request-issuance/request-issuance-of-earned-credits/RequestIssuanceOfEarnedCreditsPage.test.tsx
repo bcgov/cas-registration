@@ -8,7 +8,7 @@ import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 
 // Mock the reporting year utility
-vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
+vi.mock("@bciers/actions/api", () => ({
   __esModule: true,
   getReportingYear: vi.fn().mockResolvedValue({
     reporting_year: 2024,

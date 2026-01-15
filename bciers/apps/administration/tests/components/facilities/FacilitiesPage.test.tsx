@@ -1,77 +1,100 @@
-import { getOperation } from "@bciers/testConfig/mocks";
 import { render, screen } from "@testing-library/react";
-import FacilitiesPage from "apps/administration/app/components/facilities/FacilitiesPage";
+import getOperation from "@bciers/actions/api/getOperation";
+import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
 
-const searchParams = { operations_title: "Operation 2" };
-// mocking the child component until this issue is fixed: https://github.com/testing-library/react-testing-library/issues/1209#issuecomment-1673372612
-vi.mock("apps/administration/app/components/facilities/Facilities", () => {
-  return {
-    default: () => <div>mocked child component</div>,
-  };
-});
+vi.mock(
+  "@/administration/app/components/facilities/FacilitiesDataGrid",
+  () => ({
+    __esModule: true,
+    default: (props: any) => (
+      <div data-testid="facility-datagrid">
+        operationId:{props.operationId}
+        row_count:{props.initialData?.row_count}
+      </div>
+    ),
+  }),
+);
 
-describe("Facilities page", () => {
-  beforeEach(async () => {
+vi.mock("@bciers/actions/api/getOperation", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
+
+vi.mock(
+  "@/administration/app/components/facilities/fetchFacilitiesPageData",
+  () => ({
+    __esModule: true,
+    default: vi.fn(),
+  }),
+);
+
+describe("FacilitiesPage", () => {
+  beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
-  it("renders the appropriate error component when getOperation fails", async () => {
-    getOperation.mockReturnValueOnce({
-      error: "We couldn't find your operation information.",
-    });
+
+  it('renders "No facilities data in database." when fetchFacilitiesPageData returns falsy', async () => {
+    vi.mocked(fetchFacilitiesPageData).mockResolvedValueOnce(undefined as any);
+
+    const { default: FacilitiesPage } = await import(
+      "apps/administration/app/components/facilities/FacilitiesPage"
+    );
+
+    render(
+      await FacilitiesPage({
+        operationId: "not-a-uuid",
+        searchParams: {},
+      }),
+    );
+
+    expect(screen.getByText("No facilities data in database.")).toBeVisible();
+    expect(screen.queryByTestId("facility-datagrid")).not.toBeInTheDocument();
+  });
+
+  it("renders FacilityDataGrid when facilities are returned", async () => {
+    vi.mocked(fetchFacilitiesPageData).mockResolvedValueOnce({
+      rows: [],
+      row_count: 2,
+    } as any);
+
+    const { default: FacilitiesPage } = await import(
+      "apps/administration/app/components/facilities/FacilitiesPage"
+    );
+
+    render(
+      await FacilitiesPage({
+        operationId: "not-a-uuid",
+        searchParams: {},
+      }),
+    );
+
+    const grid = screen.getByTestId("facility-datagrid");
+    expect(grid).toBeVisible();
+    expect(grid).toHaveTextContent("operationId:not-a-uuid");
+    expect(grid).toHaveTextContent("row_count:2");
+  });
+
+  it("throws when operationId is a valid UUID and getOperation returns an error", async () => {
+    vi.mocked(getOperation).mockResolvedValueOnce({ error: "nope" } as any);
+    vi.mocked(fetchFacilitiesPageData).mockResolvedValueOnce({
+      rows: [],
+      row_count: 0,
+    } as any);
+
+    const { default: FacilitiesPage } = await import(
+      "apps/administration/app/components/facilities/FacilitiesPage"
+    );
+
     await expect(async () => {
       render(
         await FacilitiesPage({
           operationId: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-          searchParams: searchParams,
-          isExternalUser: true,
+          searchParams: {},
         }),
       );
-    }).rejects.toThrow("We couldn't find your operation information.");
-  });
-  it("displays `Add Facility` button for external users", async () => {
-    render(
-      await FacilitiesPage({
-        operationId: "random UUID",
-        searchParams: searchParams,
-        isExternalUser: true,
-      }),
+    }).rejects.toThrow(
+      "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
     );
-    const note = screen.getByTestId("note");
-    expect(note).toBeVisible();
-    expect(screen.getByRole("button", { name: "Add Facility" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Add Facility" })).toHaveAttribute(
-      "href",
-      "/operations/random UUID/facilities/add-facility?operations_title=Operation 2",
-    );
-  });
-  it("Not displaying `Add Facility` button for internal users", async () => {
-    render(
-      await FacilitiesPage({
-        operationId: "random UUID",
-        searchParams: {},
-        isExternalUser: false,
-      }),
-    );
-    const note = screen.getByTestId("note");
-    expect(note).toBeVisible();
-    expect(
-      screen.queryByRole("button", { name: "Add Facility" }),
-    ).not.toBeInTheDocument();
-  });
-  it("Not displaying `Add Facility` button for external users with an SFO operation", async () => {
-    getOperation.mockReturnValueOnce({
-      id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-      type: "Single Facility Operation",
-    });
-    render(
-      await FacilitiesPage({
-        operationId: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-        searchParams: {},
-        isExternalUser: true,
-      }),
-    );
-    expect(
-      screen.queryByRole("button", { name: "Add Facility" }),
-    ).not.toBeInTheDocument();
   });
 });

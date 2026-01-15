@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   GridColumnGroupHeaderParams,
   GridColumnGroupingModel,
@@ -7,7 +8,7 @@ import { OPERATOR_COLUMN_INDEX } from "./operationColumns";
 
 const operationGroupColumns = (
   isInternalUser: boolean,
-  SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
+  SearchCell: (params: GridColumnGroupHeaderParams) => ReactNode,
 ) => {
   let columnGroupModel: GridColumnGroupingModel = [
     {

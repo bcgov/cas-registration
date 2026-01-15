@@ -5,9 +5,9 @@ import {
   getRegistrationPurposes,
   getRegulatedProducts,
   getReportingActivities,
-} from "../../../testConfig/src/mocks";
+} from "@bciers/testConfig/mocks";
 import { getContacts } from "@/administration/tests/components/contacts/mocks";
-import { Apps } from "../../../utils/src/enums";
+import { Apps } from "@bciers/utils/src/enums";
 
 const fetchFormEnums = (app: Apps) => {
   if (app === Apps.ADMINISTRATION) {

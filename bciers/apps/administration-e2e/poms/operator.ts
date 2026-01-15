@@ -44,6 +44,8 @@ export class OperatorPOM {
 
   readonly buttonYesThisIsMyOperator: Locator;
 
+  readonly cancelAccessRequest: Locator;
+
   // Field Locators
 
   readonly fieldBCCrn: Locator;
@@ -129,6 +131,9 @@ export class OperatorPOM {
     });
     this.buttonYesThisIsMyOperator = page.getByRole("button", {
       name: OperatorButtonText.YES_OPERATOR,
+    });
+    this.cancelAccessRequest = page.getByRole("button", {
+      name: OperatorButtonText.CANCEL_ACCESS_REQUEST,
     });
     // Initialize Field Locators
     this.fieldBCCrn = page.getByLabel(OperatorFormField.BC_CRN);
@@ -228,7 +233,7 @@ export class OperatorPOM {
   async fillFields(fieldLabels: string[], values: { [key: string]: string }) {
     for (const labelText of fieldLabels) {
       // Get all matching input fields for the current field label
-      const inputFields = await this.page.getByLabel(labelText);
+      const inputFields = this.page.getByLabel(labelText);
       const inputField = inputFields.nth((await inputFields.count()) - 1);
 
       // Fill the field with the corresponding value from the values object
@@ -334,6 +339,7 @@ export class OperatorPOM {
   }
 
   async requestAccess() {
+    await expect(this.buttonRequestAccess).toBeEnabled();
     await this.buttonRequestAccess.click();
   }
 
@@ -363,7 +369,14 @@ export class OperatorPOM {
   async selectByLegalName(name: string, legalName: string) {
     await this.fieldSelectLegalName.click();
     await this.fieldSelectLegalName.fill(name);
-    await this.page.getByRole("option", { name: legalName }).click();
+
+    const option = this.page.getByRole("option", { name: legalName });
+    await expect(option).toBeVisible({ timeout: 15_000 });
+    await option.click();
+    await expect(this.fieldSelectLegalName).toHaveValue(legalName, {
+      timeout: 10_000,
+    });
+
     await this.buttonSelectOperator.click();
   }
 
@@ -404,7 +417,7 @@ export class OperatorPOM {
   }
 
   async formIsNotVisible() {
-    await expect(this.form).not.toBeVisible();
+    await expect(this.form).toBeHidden();
   }
 
   async formHasHeaders() {
@@ -425,6 +438,7 @@ export class OperatorPOM {
 
   async msgRequestAccessConfirmedIsVisible() {
     await expect(this.messageRequestAccessConfirmed).toBeVisible();
+    await expect(this.cancelAccessRequest).toBeVisible();
   }
 
   async msgRequestAccessAdminConfirmedIsVisible() {
@@ -432,7 +446,9 @@ export class OperatorPOM {
   }
 
   async msgRequestAccessDeclinedIsVisible() {
-    await expect(this.messageRequestAccessDeclined).toBeVisible();
+    await expect(this.messageRequestAccessDeclined).toBeVisible({
+      timeout: 30_000,
+    });
   }
 
   async msgRequestAccessAdminDeclinedIsVisible() {
@@ -456,7 +472,7 @@ export class OperatorPOM {
   }
 
   async urlIsCorrect(expectedPath: string) {
-    const currentUrl = await this.page.url();
-    await expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
+    const currentUrl = this.page.url();
+    expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
   }
 }

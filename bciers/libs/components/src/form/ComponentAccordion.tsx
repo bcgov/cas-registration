@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
 import Accordion from "@bciers/components/accordion/Accordion";
 
 interface Content {
   title: string;
-  component: JSX.Element;
+  component: ReactNode;
 }
 
 interface Props {

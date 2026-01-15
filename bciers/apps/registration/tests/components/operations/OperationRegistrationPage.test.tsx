@@ -23,8 +23,8 @@ describe("the OperationRegistrationPage component", () => {
     render(
       await OperationRegistrationPage({
         step: 1,
-        // @ts-ignore
-        operation: undefined, // the first step won't have an operation parameter because operation hasn't been selected yet
+        // @ts-expect-error - intentionally passing undefined to test the first step
+        operation: undefined,
         searchParams: {},
       }),
     );

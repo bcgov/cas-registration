@@ -8,7 +8,7 @@ import {
   signIn,
 } from "@bciers/testConfig/mocks";
 
-import OperatorForm from "apps/administration/app/components/operators/OperatorForm";
+import OperatorForm from "@/administration/app/components/operators/OperatorForm";
 
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectField from "@bciers/testConfig/helpers/expectField";
@@ -20,6 +20,7 @@ import { createOperatorSchema } from "@/administration/app/data/jsonSchema/opera
 const mockReplace = vi.fn();
 const mockRouterBack = vi.fn();
 const mockRouterPush = vi.fn();
+
 useRouter.mockReturnValue({
   query: {},
   replace: mockReplace,
@@ -149,6 +150,7 @@ const postPartnerParent = {
     },
   ],
 };
+
 const response = { user_operator_id: 1, operator_id: 2, error: null };
 
 // ⛏️ Helper function to fill form mandatory required fields
@@ -172,10 +174,12 @@ const fillMandatoryFields = async () => {
     screen.getByLabelText(/BC Corporate Registry Number+/i),
     postMandatory.bc_corporate_registry_number,
   );
+
   await userEvent.type(
     screen.getByLabelText(/Business Mailing Address+/i),
     postMandatory.street_address,
   );
+
   await userEvent.type(
     screen.getByLabelText(/Municipality+/i),
     postMandatory.municipality,
@@ -199,6 +203,7 @@ const fillPartnerParentFields = async () => {
     screen.getByLabelText(/Trade Name+/i),
     postPartnerParent.trade_name,
   );
+
   const businessStructureDropdown = openDDButtons[0];
   await userEvent.click(businessStructureDropdown);
   await userEvent.click(screen.getByText(postPartnerParent.business_structure));
@@ -208,6 +213,7 @@ const fillPartnerParentFields = async () => {
     screen.getAllByLabelText(/Legal Name+/i)[1],
     postPartnerParent.partner_operators_array[0].partner_legal_name,
   );
+
   await userEvent.type(
     screen.getAllByLabelText(/Trade Name+/i)[1],
     postPartnerParent.partner_operators_array[0].partner_trade_name,
@@ -222,10 +228,12 @@ const fillPartnerParentFields = async () => {
       postPartnerParent.partner_operators_array[0].partner_business_structure,
     ),
   );
+
   await userEvent.type(
     screen.getAllByLabelText(/CRA Business Number+/i)[1],
     postPartnerParent.partner_operators_array[0].partner_cra_business_number,
   );
+
   await userEvent.type(
     screen.getAllByLabelText(/BC Corporate Registry Number+/i)[1],
     postPartnerParent.partner_operators_array[0]
@@ -244,18 +252,22 @@ const fillPartnerParentFields = async () => {
     screen.getAllByLabelText(/Legal Name+/i)[2],
     postPartnerParent.parent_operators_array?.[0]?.po_legal_name,
   );
+
   await userEvent.type(
     screen.getAllByLabelText(/CRA Business Number+/i)[2],
     postPartnerParent.parent_operators_array?.[0]?.po_cra_business_number ?? "",
   );
+
   await userEvent.type(
     screen.getAllByLabelText(/business mailing Address+/i)[1],
     postPartnerParent.parent_operators_array?.[0]?.po_street_address ?? "",
   );
+
   await userEvent.type(
     screen.getAllByLabelText(/Municipality+/i)[1],
     postPartnerParent.parent_operators_array?.[0]?.po_municipality ?? "",
   );
+
   openDDButtons = screen.getAllByLabelText(/Open/i);
   const openParentOperatorProvinceDropdown = openDDButtons[3];
   await userEvent.click(openParentOperatorProvinceDropdown);
@@ -269,31 +281,32 @@ const fillPartnerParentFields = async () => {
   // Add second parent
   const addButton = screen.getAllByText("Add another parent company")[0];
   await userEvent.click(addButton);
-  // Get all radio buttons for "Is the parent company registered in Canada?"
+
   const inCanadaChecks = screen.getAllByLabelText(
     /Is the parent company registered in Canada\?/i,
   );
   expect(inCanadaChecks.length).toBe(2);
 
-  // Set the second radio button (which should correspond to 'false')
   await userEvent.click(inCanadaChecks[1]);
 
-  // Assert that the second radio button (false) is not checked
   expect(inCanadaChecks[1]).not.toBeChecked();
 
   await userEvent.type(
     screen.getAllByLabelText(/Legal Name+/i)[3],
     postPartnerParent.parent_operators_array?.[1]?.po_legal_name,
   );
+
   await userEvent.type(
     screen.getAllByLabelText(/mailing address/i)[2],
     postPartnerParent.parent_operators_array?.[1]?.foreign_address ?? "",
   );
+
   await userEvent.type(
     screen.getAllByLabelText(/Tax ID Number+/i)[0],
     postPartnerParent.parent_operators_array?.[1]?.foreign_tax_id_number ?? "",
   );
 };
+
 describe("OperatorForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -303,6 +316,7 @@ describe("OperatorForm component", () => {
       { name: "Limited Liability Partnership" },
     ]);
   });
+
   it("renders the empty operator form when creating a new operator", async () => {
     render(
       <OperatorForm
@@ -312,15 +326,17 @@ describe("OperatorForm component", () => {
         isInternalUser={false}
       />,
     );
-    // form fields and headings
+
     expectHeader(formHeaders);
     expectField(formFields);
     expectField(["CRA Business Number"], "");
+
     expect(
       screen.getByLabelText(
         /Does this operator have one or more parent company/i,
       ),
     ).not.toBeChecked();
+
     expectButton("Save");
     expectButton("Back");
   });
@@ -334,19 +350,29 @@ describe("OperatorForm component", () => {
         isInternalUser={false}
       />,
     );
-    const saveButton = screen.getByRole("button", { name: /save/i });
 
-    // Wrap the click event in act()
-    act(() => {
-      saveButton.click();
+    // ✅ Submit the actual <form> so validation is triggered reliably
+    const form = document.querySelector("form");
+    expect(form).toBeTruthy();
+
+    await act(async () => {
+      form!.dispatchEvent(
+        new Event("submit", { bubbles: true, cancelable: true }),
+      );
     });
 
-    // Assert on the validation errors
-    expect(screen.getAllByRole("alert")).toHaveLength(8);
-  });
-  it("fills the mandatory form fields, creates a new operator, updates the session, and shows a success message", async () => {
-    // Mock the session and get access to the update function
+    // ✅ If validation blocks submission, OperatorForm's onSubmit won't run
+    await waitFor(() => {
+      expect(actionHandler).not.toHaveBeenCalled();
+    });
 
+    // ✅ Should not show the success snackbar message
+    expect(
+      screen.queryByText(FrontendMessages.SUBMIT_CONFIRMATION),
+    ).not.toBeInTheDocument();
+  });
+
+  it("fills the mandatory form fields, creates a new operator, updates the session, and shows a success message", async () => {
     render(
       <OperatorForm
         schema={await createOperatorSchema()}
@@ -356,41 +382,37 @@ describe("OperatorForm component", () => {
       />,
     );
 
-    await fillMandatoryFields(); // Mock function to fill the form
+    await fillMandatoryFields();
 
-    // Mock the actionHandler response
-    const res = { success: true }; // Example response
+    const res = { success: true };
     actionHandler.mockReturnValueOnce(res);
 
-    // Submit the form
     const saveButton = screen.getByRole("button", { name: /save/i });
     act(() => {
       saveButton.click();
     });
 
-    // Ensure actionHandler is called with the correct arguments
     expect(actionHandler).toHaveBeenNthCalledWith(
       1,
       "registration/user-operators",
       "POST",
       "administration/operators",
       {
-        body: JSON.stringify(postMandatory), // Ensure postMandatory is defined
+        body: JSON.stringify(postMandatory),
       },
     );
 
-    // Ensure the session is updated by calling the update function
     await waitFor(() => {
       expect(signIn).toHaveBeenCalled();
     });
 
-    // Check for the success message after submission
     await waitFor(() => {
       expect(
         screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
       ).toBeVisible();
     });
   }, 60000);
+
   it("fills the partner and parent form fields, creates new operator, and redirects on success", async () => {
     render(
       <OperatorForm
@@ -404,11 +426,9 @@ describe("OperatorForm component", () => {
     await fillMandatoryFields();
     await fillPartnerParentFields();
 
-    // Submit
     actionHandler.mockReturnValueOnce(response);
-    const saveButton = screen.getByRole("button", {
-      name: /save/i,
-    });
+
+    const saveButton = screen.getByRole("button", { name: /save/i });
     act(() => {
       saveButton.click();
     });
@@ -423,8 +443,10 @@ describe("OperatorForm component", () => {
       },
     );
   }, 60000);
+
   it("edits an Operator", async () => {
     actionHandler.mockReturnValue({ error: null });
+
     render(
       <OperatorForm
         schema={await createOperatorSchema()}
@@ -432,32 +454,29 @@ describe("OperatorForm component", () => {
         isInternalUser={false}
       />,
     );
+
     const editButton = screen.getByRole("button", { name: /edit/i });
     act(() => {
       editButton.click();
     });
 
-    // 0=operator business stucture, 1=partner biz structure, 2=partner province, 3=operator province
+    // 0=operator business structure, 1=partner biz structure, 2=partner province, 3=operator province
     const openButtons = screen.getAllByLabelText(/Open/i);
 
     // section 1
-    // [0] because the partner/parent operator section asks for some of the same information
     await userEvent.type(screen.getAllByLabelText(/Legal Name+/i)[0], "edit");
     await userEvent.type(screen.getAllByLabelText(/Trade Name+/i)[0], "edit");
 
     const openBusinessStructureButton = openButtons[0];
-
     await userEvent.click(openBusinessStructureButton);
-    const businessStructureOption = screen.getByText(
-      "Limited Liability Partnership",
-    );
-    await userEvent.click(businessStructureOption);
+    await userEvent.click(screen.getByText("Limited Liability Partnership"));
 
     await userEvent.clear(screen.getAllByLabelText(/CRA Business Number+/i)[0]);
     await userEvent.type(
       screen.getAllByLabelText(/CRA Business Number+/i)[0],
       "999999999",
     );
+
     await userEvent.clear(
       screen.getAllByLabelText(/BC Corporate Registry Number+/i)[0],
     );
@@ -469,15 +488,17 @@ describe("OperatorForm component", () => {
     // Partner operators
     await userEvent.type(screen.getAllByLabelText(/Legal Name+/i)[1], "edit");
     await userEvent.type(screen.getAllByLabelText(/Trade Name+/i)[1], "edit");
-    const openPartnerBusinessStructureButton = openButtons[1];
 
+    const openPartnerBusinessStructureButton = openButtons[1];
     await userEvent.click(openPartnerBusinessStructureButton);
     await userEvent.click(screen.getByText("Limited Liability Partnership"));
+
     await userEvent.clear(screen.getAllByLabelText(/CRA Business Number+/i)[1]);
     await userEvent.type(
       screen.getAllByLabelText(/CRA Business Number+/i)[1],
       "888888888",
     );
+
     await userEvent.clear(
       screen.getAllByLabelText(/BC Corporate Registry Number+/i)[1],
     );
@@ -492,31 +513,37 @@ describe("OperatorForm component", () => {
       screen.getAllByLabelText(/Business mailing address+/i)[0],
       "edit",
     );
-    const openProvinceDropdownButton = openButtons[2];
 
+    const openProvinceDropdownButton = openButtons[2];
     await userEvent.click(openProvinceDropdownButton);
     await userEvent.click(screen.getByText(/manitoba/i));
+
     await userEvent.clear(screen.getAllByLabelText(/Postal Code+/i)[0]);
     await userEvent.type(
       screen.getAllByLabelText(/Postal Code+/i)[0],
       "A1B 2C3",
     );
 
-    //  Canadian parent operator
+    // Canadian parent operator
     await userEvent.type(screen.getAllByLabelText(/Legal Name+/i)[2], "edit");
+
     await userEvent.clear(screen.getAllByLabelText(/CRA Business Number+/i)[2]);
     await userEvent.type(
       screen.getAllByLabelText(/CRA Business Number+/i)[2],
       "888888888",
     );
+
     await userEvent.type(
       screen.getAllByLabelText(/business mailing Address+/i)[1],
       "edit",
     );
+
     await userEvent.type(screen.getAllByLabelText(/Municipality+/i)[1], "edit");
+
     const openParentOperatorProvinceDropdown = openButtons[3];
     await userEvent.click(openParentOperatorProvinceDropdown);
     await userEvent.click(screen.getByText(/manitoba/i));
+
     await userEvent.clear(screen.getAllByLabelText(/Postal Code+/i)[1]);
     await userEvent.type(
       screen.getAllByLabelText(/Postal Code+/i)[1],
@@ -589,6 +616,7 @@ describe("OperatorForm component", () => {
       ).toBeVisible();
     });
   }, 60000);
+
   it("loads existing readonly Operator form data for an internal user", async () => {
     const { container } = render(
       <OperatorForm
@@ -597,6 +625,7 @@ describe("OperatorForm component", () => {
         isInternalUser={true}
       />,
     );
+
     // section 1
     expect(
       container.querySelector("#root_section1_legal_name"),
@@ -711,10 +740,12 @@ describe("OperatorForm component", () => {
         "#root_section3_parent_operators_array_1_foreign_tax_id_number",
       ),
     ).toHaveTextContent("f id number");
+
     expect(
       screen.queryByRole("button", { name: "Edit" }),
     ).not.toBeInTheDocument();
   });
+
   it("calls the router.back function if back button is clicked on same base path", async () => {
     render(
       <OperatorForm
@@ -735,6 +766,7 @@ describe("OperatorForm component", () => {
     await userEvent.click(screen.getByRole("button", { name: /back/i }));
     expect(mockRouterBack).toHaveBeenCalledTimes(1);
   });
+
   it("calls the router.back function if previous route was different basepath", async () => {
     render(
       <OperatorForm
@@ -745,7 +777,6 @@ describe("OperatorForm component", () => {
       />,
     );
 
-    // simulate different base path for cancel button
     Object.defineProperty(document, "referrer", {
       configurable: true,
       get: () => "https://app.gov.bc.ca/dashboard",

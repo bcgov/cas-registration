@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   GridColumnGroupHeaderParams,
   GridColumnGroupingModel,
@@ -5,7 +6,7 @@ import {
 import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
 
 const operationGroupColumns = (
-  SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
+  SearchCell: (params: GridColumnGroupHeaderParams) => ReactNode,
 ) => {
   const columnGroupModel: GridColumnGroupingModel = [
     {

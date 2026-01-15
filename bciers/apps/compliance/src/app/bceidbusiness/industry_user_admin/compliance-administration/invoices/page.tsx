@@ -3,9 +3,10 @@ import ComplianceNavigationPage from "@/compliance/src/app/components/compliance
 import { generateMetadata } from "@bciers/components/layout/RootLayout";
 import { DataGridSearchParams } from "@/compliance/src/app/types";
 import ElicensingInvoicesPage from "@/compliance/src/app/components/elicensing-invoices/ElicensingInvoicesPage";
+import type { Metadata } from "next";
 
 const title = "Compliance Invoices";
-export const metadata = generateMetadata(title);
+export const metadata: Metadata = generateMetadata(title);
 
 function InvoicesWithNavigation({
   searchParams,

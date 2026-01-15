@@ -1,5 +1,6 @@
 import AlertIcon from "@bciers/components/icons/AlertIcon";
-import { ChangeEvent, MutableRefObject, useRef } from "react";
+import { useRef } from "react";
+import type { ChangeEvent } from "react";
 import { CircularProgress } from "@mui/material";
 import downloadAttachment from "./download";
 
@@ -30,13 +31,13 @@ const AttachmentElement: React.FC<Props> = ({
   required,
   isUploading,
 }) => {
-  const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
+  const hiddenFileInput = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
-    hiddenFileInput.current.click();
+    hiddenFileInput.current?.click();
   };
 
-  const handleDownload = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -85,14 +86,9 @@ const AttachmentElement: React.FC<Props> = ({
         <ul className="m-0 py-0 flex flex-col justify-start">
           <li>
             {fileId && (
-              <a
-                download={fileName}
-                href={"#"}
-                className="file-download"
-                onClick={handleDownload}
-              >
+              <button className="file-download" onClick={handleDownload}>
                 {fileName}
-              </a>
+              </button>
             )}
             {!fileId && (
               <>
@@ -104,7 +100,7 @@ const AttachmentElement: React.FC<Props> = ({
                       uploading
                       <CircularProgress
                         data-testid="progressbar"
-                        role="progressContinuing"
+                        role="progressbar"
                         size={18}
                         className="ml-3"
                       />

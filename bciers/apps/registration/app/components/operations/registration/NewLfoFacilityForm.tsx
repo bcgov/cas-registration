@@ -1,7 +1,8 @@
 "use client";
 
 import { IChangeEvent } from "@rjsf/core";
-import { useState, FC } from "react";
+import { useState } from "react";
+import type { FC } from "react";
 import { Button, Alert } from "@mui/material";
 import FormBase, { FormPropsWithTheme } from "@bciers/components/form/FormBase";
 import { actionHandler } from "@bciers/actions";

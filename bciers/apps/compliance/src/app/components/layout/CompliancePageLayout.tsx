@@ -1,6 +1,6 @@
+import type { ReactNode } from "react";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import ComplianceSummaryTaskList from "@bciers/components/navigation/complianceSummaryTaskList/ComplianceSummaryTaskList";
-import { ReactNode } from "react";
 import CompliancePageHeading from "@/compliance/src/app/components/layout/CompliancePageHeading";
 
 interface Props {
@@ -13,7 +13,7 @@ const CompliancePageLayout: ({
   complianceReportVersionId,
   taskListElements,
   children,
-}: Readonly<Props>) => JSX.Element = ({
+}: Readonly<Props>) => ReactNode = ({
   complianceReportVersionId,
   taskListElements,
   children,
@@ -21,11 +21,9 @@ const CompliancePageLayout: ({
   return (
     <div>
       <div className="container mx-auto pb-4">
-        <h2 className="text-2xl font-bold mb-4 text-bc-bg-blue">
-          <CompliancePageHeading
-            compliance_report_version_id={complianceReportVersionId}
-          />
-        </h2>
+        <CompliancePageHeading
+          compliance_report_version_id={complianceReportVersionId}
+        />
       </div>
       <div className="w-full flex">
         <div className="hidden md:block">

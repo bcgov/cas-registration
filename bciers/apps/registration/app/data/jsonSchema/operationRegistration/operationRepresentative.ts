@@ -137,7 +137,7 @@ export const createOperationRepresentativeSchema = (
   };
 
   if (hasExistingOperationReps) {
-    // @ts-ignore
+    // @ts-expect-error - we know that this property exists because we set it in the createOperationRepresentativeSchema function
     operationRepresentativeSchema.properties.operation_representatives = {
       type: "array",
       title: "Operation Representative(s):",
@@ -145,14 +145,14 @@ export const createOperationRepresentativeSchema = (
         enum: existingOperationRepresentatives.map(
           (operation_representative) => operation_representative?.id,
         ),
-        // @ts-ignore
+        // @ts-expect-error - we know that enumNames is a non-standard field
         enumNames: existingOperationRepresentatives.map(
           (operation_representative) => operation_representative?.full_name,
         ),
       },
     };
   } else {
-    // @ts-ignore
+    // @ts-expect-error - we know that this property exists because we set it in the createOperationRepresentativeSchema function
     operationRepresentativeSchema.properties.new_operation_representative.default =
       [{}];
   }

@@ -32,9 +32,8 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`;
   const saveAndContinueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`;
 
-  const [formData, setFormData] = useState<
-    RequestIssuanceOfEarnedCreditsFormData | {}
-  >(data);
+  const [formData, setFormData] =
+    useState<Partial<RequestIssuanceOfEarnedCreditsFormData>>(data);
   const [errors, setErrors] = useState<string[] | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const idRequiringChange =
@@ -112,10 +111,12 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
         complianceReportVersionId,
         validateBccrAccount: getBccrAccountDetails,
         onValidAccountResolved: (response?: BccrAccountDetailsResponse) =>
-          setFormData((prev: RequestIssuanceOfEarnedCreditsFormData) => ({
-            ...prev,
-            ...response,
-          })),
+          setFormData(
+            (prev: Partial<RequestIssuanceOfEarnedCreditsFormData>) => ({
+              ...prev,
+              ...response,
+            }),
+          ),
         onError: setErrors,
       }}
       className="w-full min-h-[62vh] flex flex-col justify-between"

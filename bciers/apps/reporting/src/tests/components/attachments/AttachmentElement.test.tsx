@@ -1,14 +1,13 @@
 import { actionHandler } from "@bciers/actions";
 import AttachmentElement from "@reporting/src/app/components/attachments/AttachmentElement";
 import { act, render, screen } from "@testing-library/react";
+import { MockedFunction } from "vitest";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
 
-const mockActionHandler = actionHandler as vi.MockedFunction<
-  typeof actionHandler
->;
+const mockActionHandler = actionHandler as MockedFunction<typeof actionHandler>;
 
 describe("The AttachmentElement component", () => {
   beforeEach(() => {
@@ -46,7 +45,7 @@ describe("The AttachmentElement component", () => {
       screen.getByRole("button", { name: "Reupload attachment" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "test file name" }),
+      screen.getByRole("button", { name: "test file name" }),
     ).toBeInTheDocument();
     expect(screen.queryByText("will upload on save")).not.toBeInTheDocument();
   });
@@ -62,9 +61,9 @@ describe("The AttachmentElement component", () => {
       />,
     );
 
-    const fileLink = screen.getByRole("link", { name: "test file name" });
+    const fileLink = screen.getByRole("button", { name: "test file name" });
 
-    await act(() => {
+    act(() => {
       fileLink.click();
     });
 

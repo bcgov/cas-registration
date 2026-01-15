@@ -7,20 +7,16 @@ const fetchFacilitiesPageData = async (
   operationId: string,
   searchParams: FacilitiesSearchParams,
 ) => {
-  try {
-    const queryParams = buildQueryParams(searchParams);
-    const pageData = await actionHandler(
-      `registration/operations/${operationId}/facilities${queryParams}`,
-      "GET",
-      "",
-    );
-    return {
-      rows: pageData.items,
-      row_count: pageData.count,
-    };
-  } catch (error) {
-    throw error;
-  }
+  const queryParams = buildQueryParams(searchParams);
+  const pageData = await actionHandler(
+    `registration/operations/${operationId}/facilities${queryParams}`,
+    "GET",
+    "",
+  );
+  return {
+    rows: pageData.items,
+    row_count: pageData.count,
+  };
 };
 
 export default fetchFacilitiesPageData;

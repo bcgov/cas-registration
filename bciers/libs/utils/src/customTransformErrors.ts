@@ -32,7 +32,7 @@ const customTransformErrors = (
       if (
         // we use some because fields can be nested in sections
         ["acitivities", "regulated_products"].some((field) => {
-          // @ts-ignore - we already checked for error.property's existance above
+          // @ts-expect-error - we already checked for error.property's existence above
           return error?.name === "required" && error.property.includes(field);
         })
       ) {
@@ -41,7 +41,7 @@ const customTransformErrors = (
       }
       if (
         ["registration_purpose"].some((field) => {
-          // @ts-ignore - we already checked for error.property's existance above
+          // @ts-expect-error - we already checked for error.property's existence above
           return error.property.includes(field);
         })
       ) {
@@ -50,7 +50,7 @@ const customTransformErrors = (
       }
       if (
         ["person_responsible"].some((field) => {
-          // @ts-ignore - we already checked for error.property's existance above
+          // @ts-expect-error - we already checked for error.property's existence above
           return error.property.includes(field);
         })
       ) {
@@ -63,7 +63,7 @@ const customTransformErrors = (
           "po_cra_business_number",
           "partner_cra_business_number",
         ].some((field) => {
-          // @ts-ignore - we already checked for error.property's existance above
+          // @ts-expect-error - we already checked for error.property's existence above
           return error.property.includes(field);
         })
       ) {
@@ -72,7 +72,7 @@ const customTransformErrors = (
       }
       if (
         ["latitude_of_largest_emissions"].some((field) => {
-          // @ts-ignore
+          // @ts-expect-error - we already checked for error.property's existence above
           return error.property.includes(field);
         })
       ) {
@@ -81,7 +81,7 @@ const customTransformErrors = (
       }
       if (
         ["longitude_of_largest_emissions"].some((field) => {
-          // @ts-ignore
+          // @ts-expect-error - we already checked for error.property's existence above
           return error.property.includes(field);
         })
       ) {

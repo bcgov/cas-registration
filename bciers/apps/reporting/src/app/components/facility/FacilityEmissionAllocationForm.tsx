@@ -225,6 +225,7 @@ export default function FacilityEmissionAllocationForm({
           products: initialData.report_product_emission_allocation_totals,
         },
       };
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData(restoredFormData);
       setShouldReset(false);
       return;
@@ -256,63 +257,66 @@ export default function FacilityEmissionAllocationForm({
   }, [formData, shouldReset]);
 
   // 🛠️ Handle changes to the form data, validates emissions, and updates the error state and submit button state.
-  const handleChange = useCallback((e: IChangeEvent) => {
-    const updatedFormData = e.formData;
-    const BASIC_CATEGORY_DATA = "basic_emission_allocation_data";
-    const EXCLUDED_CATEGORY_DATA = "fuel_excluded_emission_allocation_data";
-    const updatedDataKeys = [BASIC_CATEGORY_DATA, EXCLUDED_CATEGORY_DATA];
+  const handleChange = useCallback(
+    (e: IChangeEvent) => {
+      const updatedFormData = e.formData;
+      const BASIC_CATEGORY_DATA = "basic_emission_allocation_data";
+      const EXCLUDED_CATEGORY_DATA = "fuel_excluded_emission_allocation_data";
+      const updatedDataKeys = [BASIC_CATEGORY_DATA, EXCLUDED_CATEGORY_DATA];
 
-    // Initialize a map to store total allocated quantities by report_product_id
-    const productAllocations: Record<string, number> = {};
+      // Initialize a map to store total allocated quantities by report_product_id
+      const productAllocations: Record<string, number> = {};
 
-    // Iterate through each category and recalculate allocated emissions data for the category
-    updatedDataKeys.forEach((key) => {
-      updatedFormData[key] = updatedFormData[key]
-        .map((item: EmissionAllocationData) => ({
-          ...item,
-          products: item.products.map((product) => {
-            const allocatedQuantity =
-              parseFloat(product.allocated_quantity as any) || 0;
+      // Iterate through each category and recalculate allocated emissions data for the category
+      updatedDataKeys.forEach((key) => {
+        updatedFormData[key] = updatedFormData[key]
+          .map((item: EmissionAllocationData) => ({
+            ...item,
+            products: item.products.map((product) => {
+              const allocatedQuantity =
+                parseFloat(product.allocated_quantity as any) || 0;
 
-            // Accumulate the reportable allocated quantity for this report_product_id
-            if (key == BASIC_CATEGORY_DATA) {
-              productAllocations[product.report_product_id] =
-                (productAllocations[product.report_product_id] || 0) +
-                allocatedQuantity;
-            }
-            return {
+              // Accumulate the reportable allocated quantity for this report_product_id
+              if (key == BASIC_CATEGORY_DATA) {
+                productAllocations[product.report_product_id] =
+                  (productAllocations[product.report_product_id] || 0) +
+                  allocatedQuantity;
+              }
+              return {
+                ...product,
+                allocated_quantity: allocatedQuantity,
+              };
+            }),
+          }))
+          .map(calculateEmissionData); // Recalculate emissions data
+      });
+
+      // Recompute total allocations for each product
+      if (updatedFormData.total_emission_allocations?.products) {
+        updatedFormData.total_emission_allocations.products =
+          updatedFormData.total_emission_allocations.products.map(
+            (product: { report_product_id: number }) => ({
               ...product,
-              allocated_quantity: allocatedQuantity,
-            };
-          }),
-        }))
-        .map(calculateEmissionData); // Recalculate emissions data
-    });
+              allocated_quantity: parseFloat(
+                (productAllocations[product.report_product_id] || 0).toFixed(4),
+              ),
+            }),
+          );
+      }
+      // Validate the updated form data and set an error message if validation fails
+      const newErrors = validateFormData(
+        updatedFormData,
+        isPulpAndPaper,
+        overlappingIndustrialProcessEmissions,
+      );
+      setErrors(newErrors);
+      setSubmitButtonDisabled(newErrors.length > 0);
 
-    // Recompute total allocations for each product
-    if (updatedFormData.total_emission_allocations?.products) {
-      updatedFormData.total_emission_allocations.products =
-        updatedFormData.total_emission_allocations.products.map(
-          (product: { report_product_id: number }) => ({
-            ...product,
-            allocated_quantity: parseFloat(
-              (productAllocations[product.report_product_id] || 0).toFixed(4),
-            ),
-          }),
-        );
-    }
-    // Validate the updated form data and set an error message if validation fails
-    const newErrors = validateFormData(
-      updatedFormData,
-      isPulpAndPaper,
-      overlappingIndustrialProcessEmissions,
-    );
-    setErrors(newErrors);
-    setSubmitButtonDisabled(newErrors.length > 0);
-
-    // Update the form data state
-    setFormData(updatedFormData);
-  }, []);
+      // Update the form data state
+      setFormData(updatedFormData);
+    },
+    [isPulpAndPaper, overlappingIndustrialProcessEmissions],
+  );
 
   // 🛠️ Handle form submit
   const handleSubmit = async () => {
@@ -380,8 +384,13 @@ export default function FacilityEmissionAllocationForm({
       submitButtonDisabled={submitButtonDisabled}
       backUrl={navigationInformation.backUrl}
       saveButtonDisabled={submitButtonDisabled}
-      onChange={handleChange}
-      onSubmit={handleSubmit}
+      onChange={handleChange as (data: object) => void}
+      onSubmit={
+        handleSubmit as (
+          data: object,
+          navigateAfterSubmit: boolean,
+        ) => Promise<boolean>
+      }
       continueUrl={navigationInformation.continueUrl}
       errors={errors}
       formContext={{

@@ -45,11 +45,13 @@ const ArrayFieldTemplate = ({
   return (
     <div className="flex min-w-full flex-col">
       {items?.map((item, i: number) => {
+        // Type assertion for accessing formData
+        const formData = (item.children.props as any)?.formData;
         return (
           <div key={item.key} className="min-w-full">
-            {customItemName && (
+            {customItemName && formData?.name && (
               <div className="py-2 w-full font-bold text-bc-bg-blue mb-4">
-                <span>{item.children.props.formData.name}</span>
+                <span>{formData.name}</span>
               </div>
             )}
             {(customTitleName || (removable && i !== 0)) && !customItemName && (
@@ -74,9 +76,9 @@ const ArrayFieldTemplate = ({
             {{
               ...item.children,
               props: {
-                ...item.children.props,
+                ...(item.children as any).props,
                 uiSchema: {
-                  ...item.children.props.uiSchema,
+                  ...(item.children as any).props.uiSchema,
                   "ui:FieldTemplate": BasicFieldTemplate,
                   "ui:options": {
                     label: false,

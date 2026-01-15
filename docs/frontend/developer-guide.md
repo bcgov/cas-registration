@@ -114,13 +114,13 @@ Our dashboard app's `next.config.js` manages the rewrites mapping an incoming re
 ### Middleware
 
 Next.js [Middleware ](https://nextjs.org/docs/advanced-features/middleware) allows control over requests before they are completed. Responses can be modified based on conditions such as authentication session.
-Our apps use chained middlewares to improves code readability, and maintainability. A project's `/middlewares/withAuthorization{ProjectName}` middleware secures the app routes using Auth.js authentication JWT obtained from the IDIR keycloak provider. Based on the Auth.js JWT properties of identity_provider and user role, the middleware dynamically rewrites the request URL to the appropriate folder structure thereby enforcing both authentication and authorization.
+Our apps use chained proxies to improves code readability, and maintainability. A project's `/proxies/withAuthorization{ProjectName}` middleware secures the app routes using Auth.js authentication JWT obtained from the IDIR keycloak provider. Based on the Auth.js JWT properties of identity_provider and user role, the middleware dynamically rewrites the request URL to the appropriate folder structure thereby enforcing both authentication and authorization.
 
 ### Routing and Folder Structure
 
 The Registration code is organized into sub-folders based on the identity provider, an application role, and dashboard folder, or just dashboard folder for routes available for authenticated users without an authorization role. As mentioned, the middleware dynamically rewrites the request URL based on the Auth.js JWT properties of identity_provider and user role so to match our sub-folder structure. So route URL segments such as registration `http://localhost:3000/dashboard/operations` would get mapped to nested folder `bciers/apps/registration/app/(authenticated)/bceidbusiness/industry_user/dashboard/operations' for an authenticated industry user.
 
-For our multi-zone apps, the dashboard app manages the main domain and rewites request to the appropriate zone as defined in `bciers/apps/dashboard/next.config.js` and `bciers/apps/dashboard/middlewares/withAuthorizationDashboard.ts`.
+For our multi-zone apps, the dashboard app manages the main domain and rewites request to the appropriate zone as defined in `bciers/apps/dashboard/next.config.js` and `bciers/apps/dashboard/proxies/withAuthorizationDashboard.ts`.
 
 ### Folder Structure & Dashboard Tiles
 

@@ -167,7 +167,6 @@ describe("the SingleStepTaskListForm component", () => {
           console.log("cancel");
         }}
         onSubmit={async (e) => {
-          // eslint-disable-next-line no-console
           mockOnSubmit(e.formData);
         }}
       />,

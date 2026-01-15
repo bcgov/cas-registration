@@ -50,7 +50,6 @@ When testing Django models, we use the `BaseTestCase` class from the `bc_obps.co
 ### Key Components of `BaseTestCase`
 
 1. **`field_data`**:
-
    - This attribute should be overridden in the child class. It contains a list of tuples where each tuple represents a field's name, expected label, expected maximum length, and expected relations count.
    - Example:
 
@@ -63,21 +62,17 @@ When testing Django models, we use the `BaseTestCase` class from the `bc_obps.co
      ```
 
 2. **`assertFieldLabel(self, instance, field_name, expected_label)`**:
-
    - This method asserts that the label of a given field matches the expected label.
    - If the field is a `ManyToOneRel` or `ManyToManyRel`, it checks the verbose name of the related model instead.
      **Note:** This is particularly relevant if you are using Django views or the Django admin interface, where the field labels are displayed to the user. For example, if you have a field named `first_name`, you may want to display it as `First Name` in the admin interface.
 
 3. **`assertFieldMaxLength(self, instance, field_name, expected_max_length)`**:
-
    - This method asserts that the maximum length of a given field matches the expected maximum length.
 
 4. **`assertHasMultipleRelationsInField(self, instance, field_name, expected_relations_count)`**:
-
    - This method asserts that the number of relations in a field matches the expected relations count.
 
 5. **`test_field_labels_and_max_lengths(self)`**:
-
    - This test method iterates through the `field_data` list and uses subtests to check each field's label, maximum length, and relations count based on the provided data.
 
 6. **`test_field_data_length(self)`**:

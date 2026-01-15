@@ -6,7 +6,6 @@ import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
 export async function fetchComplianceSummaryReviewPageData(
   complianceReportVersionId: number,
 ): Promise<ComplianceSummaryReviewPageData> {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const [
     complianceReportVersion,
     monetaryPayments,

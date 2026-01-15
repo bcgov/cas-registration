@@ -53,21 +53,14 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
 
   const isReadOnly = disabled || readonly || isLoading;
 
-  // 🔌 Allow E2E to override the validator via window.__E2E_VALIDATE_BCCR_ACCOUNT__
-  // This is necessary because getBccrAccountDetails makes server-to-server calls that cannot be
-  // intercepted by Playwright.
-  const effectiveValidateBccrAccount =
-    (typeof window !== "undefined" &&
-      (window as any).__E2E_VALIDATE_BCCR_ACCOUNT__) ||
-    validateBccrAccount;
   const validateAccount = async (accountId: string) => {
-    if (accountId.length !== 15 || !effectiveValidateBccrAccount) return;
+    if (accountId.length !== 15 || !validateBccrAccount) return;
 
     setIsLoading(true);
     setShowError(false);
 
     try {
-      const response = await effectiveValidateBccrAccount(
+      const response = await validateBccrAccount(
         accountId,
         complianceReportVersionId,
       );
@@ -86,7 +79,6 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
     } catch (error) {
       setIsValid(false);
       const errorMessageText = (error as Error).message;
-      // Check if this is the wrong account type error
       if (
         errorMessageText.includes(
           "Account exists but does not match the required account type",

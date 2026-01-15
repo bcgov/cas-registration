@@ -4,20 +4,16 @@ import { ContactsSearchParams } from "./types";
 
 // ↓ fetch data from server
 const fetchContactsPageData = async (searchParams: ContactsSearchParams) => {
-  try {
-    const queryParams = buildQueryParams(searchParams);
-    const pageData = await actionHandler(
-      `registration/contacts${queryParams}`,
-      "GET",
-      "",
-    );
-    return {
-      rows: pageData.items,
-      row_count: pageData.count,
-    };
-  } catch (error) {
-    throw error;
-  }
+  const queryParams = buildQueryParams(searchParams);
+  const pageData = await actionHandler(
+    `registration/contacts${queryParams}`,
+    "GET",
+    "",
+  );
+  return {
+    rows: pageData.items,
+    row_count: pageData.count,
+  };
 };
 
 export default fetchContactsPageData;

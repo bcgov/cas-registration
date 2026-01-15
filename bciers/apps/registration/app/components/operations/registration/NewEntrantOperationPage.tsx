@@ -14,7 +14,10 @@ const NewEntrantOperationPage = async ({
   step: number;
   steps: string[];
 }) => {
-  let formData: NewEntrantOperationFormData | { error: string } | {} = {};
+  let formData:
+    | NewEntrantOperationFormData
+    | { error: string }
+    | Record<string, never> = {};
   if (operation && isValidUUID(operation))
     formData = await getOperationNewEntrantApplication(operation);
 
@@ -24,7 +27,7 @@ const NewEntrantOperationPage = async ({
 
   return (
     <NewEntrantOperationForm
-      formData={formData}
+      formData={formData as NewEntrantOperationFormData}
       operation={operation}
       schema={newEntrantOperationSchema}
       step={step}

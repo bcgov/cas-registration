@@ -1,3 +1,4 @@
+"use client";
 import Check from "@bciers/components/icons/Check";
 import Link from "next/link";
 import { Button, Box, Typography } from "@mui/material";

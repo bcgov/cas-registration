@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   GridColumnGroupHeaderParams,
   GridColumnGroupingModel,
@@ -8,7 +9,7 @@ import createColumnGroup from "@bciers/components/datagrid/createColumnGrid";
 
 const operationGroupColumns = (
   isOperatorColumn: boolean,
-  SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
+  SearchCell: (params: GridColumnGroupHeaderParams) => ReactNode,
 ) => {
   const columnGroupModel = [
     createColumnGroup("bcghg_id", "BC GHG ID", SearchCell),

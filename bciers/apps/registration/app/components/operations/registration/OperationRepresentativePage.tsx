@@ -13,14 +13,14 @@ const OperationRepresentativePage = async ({
   step: number;
   steps: string[];
 }) => {
-  let contacts: { items: ContactRow[]; count: number } | { error: string };
   let existingOperationRepresentatives:
     | OperationRepresentative[]
     | {
         error: string;
       } = [];
 
-  contacts = await getContacts();
+  const contacts: { items: ContactRow[]; count: number } | { error: string } =
+    await getContacts();
   existingOperationRepresentatives =
     await getOperationRepresentatives(operation);
 

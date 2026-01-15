@@ -194,7 +194,7 @@ const getAnalystSubmissionInfoElement = (
         month: "long",
         day: "numeric",
       });
-    } catch (error) {
+    } catch (_error) {
       // Fallback to original format if parsing fails
       return dateString;
     }

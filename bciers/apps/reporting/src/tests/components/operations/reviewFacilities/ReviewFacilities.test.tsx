@@ -1,4 +1,3 @@
-import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { vi, Mock, it, expect } from "vitest";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";

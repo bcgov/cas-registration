@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import { notFound } from "next/navigation";
 import getOperatorHasAdmin from "@/administration/app/components/operators/getOperatorHasAdmin";
@@ -28,7 +29,7 @@ export default async function SelectOperatorReceivedPage({
     if (currentUserOperator && "error" in currentUserOperator)
       throw new Error("Failed to retrieve current user operator information.");
 
-    const adminRequestJSX: JSX.Element = (
+    const adminRequestJSX: ReactNode = (
       <div data-testid="access-request-message">
         <div style={{ fontSize: "16px" }}>
           <p>
@@ -44,7 +45,7 @@ export default async function SelectOperatorReceivedPage({
       </div>
     );
 
-    const requestSubsequentAccessJSX: JSX.Element = (
+    const requestSubsequentAccessJSX: ReactNode = (
       <div data-testid="subsequent-access-request-message">
         <p>
           Your access request has been sent to the Administrator(s) of{" "}
@@ -58,7 +59,7 @@ export default async function SelectOperatorReceivedPage({
       </div>
     );
 
-    let content: JSX.Element | undefined;
+    let content: ReactNode | undefined;
     if (hasAdmin) content = requestSubsequentAccessJSX;
     else if (step === "request-access") content = adminRequestJSX;
 

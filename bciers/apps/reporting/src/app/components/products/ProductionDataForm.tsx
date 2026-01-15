@@ -104,8 +104,10 @@ const ProductionDataForm: React.FC<Props> = ({
       baseUrl={"#"}
       cancelUrl={"#"}
       backUrl={navigationInformation.backUrl}
-      onSubmit={(data) => onSubmit(data.formData)}
-      onChange={(data) => onChange(data.formData)}
+      onSubmit={(data: any, _navigateAfterSubmit: boolean) =>
+        onSubmit((data as any).formData)
+      }
+      onChange={(data: any) => onChange((data as any).formData)}
       continueUrl={navigationInformation.continueUrl}
       errors={errors}
     />

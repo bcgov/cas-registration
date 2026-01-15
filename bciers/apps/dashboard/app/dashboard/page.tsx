@@ -1,12 +1,12 @@
 import Tiles from "@bciers/components/navigation/Tiles";
 import ReportingYearHeader from "@bciers/components/reporting/ReportingYearHeader";
 import { fetchDashboardData } from "@bciers/actions";
+import { getReportingYear } from "@bciers/actions/api";
 import { ContentItem } from "@bciers/types/tiles";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
 import evalDashboardRules from "@bciers/utils/src/evalDashboardRules";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 
 // Component for the pending access message
 function PendingAccessMessage() {

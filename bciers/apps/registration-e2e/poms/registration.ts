@@ -36,6 +36,8 @@ export class RegistrationPOM {
   }
 
   async clickSaveAndContinue() {
+    await expect(this.saveAndContinueButton).toBeVisible();
+    await expect(this.saveAndContinueButton).toBeEnabled();
     await this.saveAndContinueButton.click();
   }
 
@@ -123,7 +125,7 @@ export class RegistrationPOM {
     await fillComboxboxWidget(this.page, /facility type+/i, "Small Aggregate");
   }
 
-  async fillOptInInformation(page) {
+  async fillOptInInformation(page: Page) {
     await checkAllRadioButtons(page);
   }
 

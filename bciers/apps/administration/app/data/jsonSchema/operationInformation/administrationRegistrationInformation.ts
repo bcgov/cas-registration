@@ -42,8 +42,7 @@ export const createAdministrationRegistrationInformationSchema =
           (activity: { id: number; applicable_to: string; name: string }) =>
             activity.id,
         ),
-        // enumNames is a non-standard field required for the MultiSelectWidget
-        // @ts-ignore
+        // @ts-expect-error - enumNames is a non-standard field required for the MultiSelectWidget
         enumNames: reportingActivities.map(
           (activity: { applicable_to: string; name: string }) => activity.name,
         ),
@@ -57,8 +56,7 @@ export const createAdministrationRegistrationInformationSchema =
       minItems: 1,
       items: {
         enum: regulatedProducts.map((product) => product.id),
-        // Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
-        // @ts-ignore
+        // @ts-expect-error - Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
         enumNames: regulatedProducts.map((product) => product.name),
       },
     };
@@ -80,8 +78,7 @@ export const createAdministrationRegistrationInformationSchema =
           minItems: 1,
           items: {
             enum: contacts.items.map((contact) => contact.id),
-            // Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
-            // @ts-ignore
+            // @ts-expect-error - Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
             enumNames: contacts.items.map(
               (contact) => `${contact.first_name} ${contact.last_name}`,
             ),

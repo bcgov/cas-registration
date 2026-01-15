@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { regulatedOperationPurposes } from "@/registration/app/components/operations/registration/enums";
 
@@ -5,8 +6,8 @@ export const OPERATOR_COLUMN_INDEX = 1;
 
 const operationColumns = (
   isInternalUser: boolean,
-  ActionCell: (params: GridRenderCellParams) => JSX.Element,
-  FacilitiesActionCell: (params: GridRenderCellParams) => JSX.Element,
+  ActionCell: (params: GridRenderCellParams) => ReactNode,
+  FacilitiesActionCell: (params: GridRenderCellParams) => ReactNode,
 ) => {
   let columns: GridColDef[] = [
     {

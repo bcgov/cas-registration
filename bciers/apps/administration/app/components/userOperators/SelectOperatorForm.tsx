@@ -44,33 +44,35 @@ export default function SelectOperatorForm() {
     );
   };
   return (
-    <section className="text-center text-2xl flex flex-col">
-      <Form
-        formContext={{ endpoint: "registration/operators/search" }}
-        schema={selectOperatorSchema}
-        onSubmit={handleSubmit}
-        uiSchema={selectOperatorUiSchema}
-        className="mx-auto"
-      >
-        {errorList.length > 0 &&
-          errorList.map((e: any) => (
-            <Alert key={e.message} severity="error" className="mt-2">
-              {e.message}
-            </Alert>
-          ))}
-        <></>
-      </Form>
-      <p>
-        Don&apos;t see the operator?{" "}
-        <Link
-          href="/select-operator/add-operator"
-          className="underline hover:no-underline mr-2"
-          style={{ color: BC_GOV_LINKS_COLOR }}
+    <div className="container mx-auto">
+      <section className="text-center text-2xl flex flex-col">
+        <Form
+          formContext={{ endpoint: "registration/operators/search" }}
+          schema={selectOperatorSchema}
+          onSubmit={handleSubmit}
+          uiSchema={selectOperatorUiSchema}
+          className="mx-auto"
         >
-          Add Operator
-        </Link>
-        instead
-      </p>
-    </section>
+          {errorList.length > 0 &&
+            errorList.map((e: any) => (
+              <Alert key={e.message} severity="error" className="mt-2">
+                {e.message}
+              </Alert>
+            ))}
+          <></>
+        </Form>
+        <p>
+          Don&apos;t see the operator?{" "}
+          <Link
+            href="/select-operator/add-operator"
+            className="underline hover:no-underline mr-2"
+            style={{ color: BC_GOV_LINKS_COLOR }}
+          >
+            Add Operator
+          </Link>
+          instead
+        </p>
+      </section>
+    </div>
   );
 }

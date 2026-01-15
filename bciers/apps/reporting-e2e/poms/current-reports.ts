@@ -9,15 +9,9 @@ import {
   SIGN_OFF_SUBMIT_BUTTON_TEXT,
   SIGN_OFF_SIGNATURE_LABEL,
   TEST_SIGNATURE_NAME,
-  SIGN_OFF_REPORT_ROUTE_PATTERN,
-  SIGN_OFF_REPORT_VERSION_ID_REGEX,
   SIGN_OFF_REPORT_SCENARIO,
   SUBMISSION_SUCCESS_TEXT,
-  SIGN_OFF_SUBMIT_URL_PATTERN,
 } from "@/reporting-e2e/utils/constants";
-
-import { clickButton } from "@bciers/e2e/utils/helpers";
-
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
 
 export class CurrentReportsPOM {
@@ -97,66 +91,37 @@ export class CurrentReportsPOM {
   }
 
   /**
-   * Attach a route so to intercept the action handler submit call
-   * and delegate to the Django /e2e-integration-stub endpoint.
-   */
-  async attachSubmitReportStub(api: APIRequestContext): Promise<void> {
-    await attachE2EStubEndpoint(
-      this.page,
-      api,
-      SIGN_OFF_REPORT_ROUTE_PATTERN,
-      ({ url, body }) => {
-        const match = url.match(SIGN_OFF_REPORT_VERSION_ID_REGEX);
-        const crvId = match?.[1];
-        if (!crvId) throw new Error(`Could not extract crvId from URL: ${url}`);
-
-        return {
-          scenario: SIGN_OFF_REPORT_SCENARIO,
-          compliance_report_version_id: Number(crvId),
-          payload: body,
-        };
-      },
-      async ({ route, stubResponse, json }) => {
-        await route.fulfill({
-          status: stubResponse.status(),
-          contentType: "application/json",
-          body: JSON.stringify(json),
-        });
-      },
-      SIGN_OFF_REPORT_SCENARIO,
-    );
-  }
-
-  /**
    * Generic flow: submit any report by id.
    *
    * - Goes to sign-off for the specified report
    * - Completes all required fields
-   * - Optionally attaches stub (if apiContext provided) AFTER form is filled
+   * - Attaches stub for direct call to
    * - Clicks "Submit Report"
    * - Waits for /reporting/reports/:id/submission and success text
    */
   async submitReportById(
     reportId: string | number,
     isEioFlow = false,
-    apiContext?: APIRequestContext,
+    apiContext: APIRequestContext,
   ) {
     await this.gotoSignOff(reportId);
 
     await this.completeSignOffRequiredFields(isEioFlow);
-
-    // 🔌 Attach stub AFTER form is filled to ensure payload is populated
-    if (apiContext) {
-      await this.page.waitForTimeout(200);
-      await this.attachSubmitReportStub(apiContext);
-    }
-
-    // Click submit and wait for navigation
-    await clickButton(this.page, SIGN_OFF_SUBMIT_BUTTON_TEXT, {
-      waitForUrl: SIGN_OFF_SUBMIT_URL_PATTERN,
-    });
-
-    // Assert submission success UI is visible
+    // 🔌 Attach stub API
+    await attachE2EStubEndpoint(
+      this.page,
+      apiContext,
+      () => ({
+        scenario: SIGN_OFF_REPORT_SCENARIO,
+        compliance_report_version_id: Number(reportId),
+        payload: {
+          signature: TEST_SIGNATURE_NAME,
+          acknowledgement_of_records: true,
+        },
+      }),
+      SIGN_OFF_REPORT_SCENARIO,
+    );
+    await this.page.goto(this.getSubmissionUrl(reportId));
     await expect(
       this.page.getByText(new RegExp(SUBMISSION_SUCCESS_TEXT, "i")),
     ).toBeVisible();

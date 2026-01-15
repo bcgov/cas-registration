@@ -1,3 +1,5 @@
+import React from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import Tooltip from "@mui/material/Tooltip";
@@ -13,7 +15,7 @@ const ActionCellFactory = ({
   generateHref: (params: GridRenderCellParams) => string;
   cellText: string;
   useWindowLocation?: boolean;
-  IconComponent?: JSX.Element;
+  IconComponent?: ReactNode;
   openInNewTab?: boolean;
   tooltipText?: string;
 }) => {

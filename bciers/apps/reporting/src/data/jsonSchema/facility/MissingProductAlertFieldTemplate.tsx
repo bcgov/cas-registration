@@ -6,21 +6,19 @@ interface Props {
   facility_id: string;
 }
 
-const MissingProductAlertContent: React.FC<Props> = ({
-  version_id,
-  facility_id,
-}) => {
-  const LinkToProductionPage = () => (
-    <Link
-      href={`/reports/${version_id}/facilities/${facility_id}/production-data`}
-    >
-      production data page
-    </Link>
-  );
+const LinkToProductionPage: React.FC<Props> = ({ version_id, facility_id }) => (
+  <Link
+    href={`/reports/${version_id}/facilities/${facility_id}/production-data`}
+  >
+    production data page
+  </Link>
+);
+
+const MissingProductAlertContent: React.FC<Props> = (props) => {
   return (
     <div>
       To allocate emissions to a product that isn&apos;t shown below, return to
-      the <LinkToProductionPage /> and select it first.
+      the <LinkToProductionPage {...props} /> and select it first.
     </div>
   );
 };

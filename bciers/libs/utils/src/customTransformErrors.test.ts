@@ -240,7 +240,6 @@ describe("customTransformErrors", () => {
 
   it("returns the fallback error message for enum field", () => {
     const originalErrorMessage = requiredFieldError[0].message;
-    //@ts-ignore
     const transformedErrors = customTransformErrors(
       [
         {
@@ -291,7 +290,6 @@ describe("customTransformErrors", () => {
   });
   it("returns the fallback error message for required field", () => {
     const originalErrorMessage = requiredFieldError[0].message;
-    //@ts-ignore
     const transformedErrors = customTransformErrors(
       [
         {
