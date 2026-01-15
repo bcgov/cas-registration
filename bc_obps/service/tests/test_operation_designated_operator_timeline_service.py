@@ -44,3 +44,42 @@ class TestOperationDesignatedOperatorTimelineService:
         # Verify the changes are saved in the database
         timeline.refresh_from_db()
         assert timeline.end_date == end_date
+
+    @staticmethod
+    def test_get_operation_designated_operator_for_reporting_year():
+
+        operation = baker.make_recipe('registration.tests.utils.operation')
+        operator1 = baker.make_recipe('registration.tests.utils.operator')
+        operator2 = baker.make_recipe('registration.tests.utils.operator')
+
+        timeline1 = baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=operator1,
+            start_date=timezone.datetime(2024, 6, 1).date(),
+            end_date=timezone.datetime(2025, 5, 31).date(),
+        )
+        timeline2 = baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=operator2,
+            start_date=timezone.datetime(2025, 5, 31).date(),
+            end_date=None,
+        )
+
+        # test returns correct result for given reporting years
+        result1 = OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
+            operation.id, 2024
+        )
+
+        assert result1 == timeline1
+
+        result2 = OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
+            operation.id, 2025
+        )
+        assert result2 == timeline2
+        # test returns None if no timeline found
+        result_none = OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
+            operation.id, 2023
+        )
+        assert result_none is None
