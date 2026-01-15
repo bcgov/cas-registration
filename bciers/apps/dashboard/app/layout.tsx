@@ -9,8 +9,23 @@ import "@bciers/styles/globals.css";
 import RootLayout, {
   generateMetadata,
 } from "@bciers/components/layout/RootLayout";
+import { auth } from "@/dashboard/auth";
 import type { Metadata } from "next";
+
+const defaultLinks = [{ label: "Dashboard" }];
 
 export const metadata: Metadata = generateMetadata("Dashboard");
 
-export default RootLayout;
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await auth();
+
+  return (
+    <RootLayout defaultLinks={defaultLinks} zone="dashboard" session={session}>
+      {children}
+    </RootLayout>
+  );
+}

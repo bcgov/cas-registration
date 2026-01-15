@@ -1,9 +1,9 @@
 import "@bciers/styles/globals.css";
 import type { Metadata, Viewport } from "next";
+import type { Session } from "next-auth";
 import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import CssBaseline from "@mui/material/CssBaseline";
-import { auth } from "@/dashboard/auth";
 import SessionProvider from "@bciers/components/auth/SessionProvider";
 import {
   theme,
@@ -47,16 +47,16 @@ type RootLayoutProps = {
   children: React.ReactNode;
   defaultLinks?: { label: string; href?: string }[]; // for breadcrumbs
   zone?: string; // for breadcrumbs
+  session: Session | null; // auth session passed from app layout
 };
 
 export default async function RootLayout({
   children,
   defaultLinks,
   zone,
+  session,
 }: RootLayoutProps) {
   //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
-
-  const session = await auth();
 
   const showMockTimePicker =
     !isCIEnvironment() &&
