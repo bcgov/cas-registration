@@ -95,11 +95,18 @@ class TestOperationOwnershipFromPayload:
     def test_operation_ownership_from_payload(self, role, status, expected_validity):
         user_operator = make_recipe("registration.tests.utils.user_operator", role=role, status=status)
         operation = make_recipe("registration.tests.utils.operation", operator=user_operator.operator)
+        make_recipe(
+            "registration.tests.utils.operation_designated_operator_timeline",
+            operation=operation,
+            operator=user_operator.operator,
+            start_date="2023-01-01",
+            end_date=None,
+        )
 
         validator_under_test = check_operation_ownership()
 
         mock_request = MagicMock()
-        mock_request.body = f'{{"operation_id": "{operation.id}"}}'
+        mock_request.body = f'{{"operation_id": "{operation.id}", "reporting_year": 2024}}'
         mock_request.current_user = user_operator.user
 
         is_valid = validator_under_test(mock_request)
@@ -109,11 +116,18 @@ class TestOperationOwnershipFromPayload:
     def test_operation_ownership_from_payload_denies_if_no_user_operator_record(self):
         operation = make_recipe("registration.tests.utils.operation")
         user = make_recipe("registration.tests.utils.industry_operator_user")
+        make_recipe(
+            "registration.tests.utils.operation_designated_operator_timeline",
+            operation=operation,
+            operator=operation.operator,
+            start_date="2023-01-01",
+            end_date=None,
+        )
 
         validator_under_test = check_operation_ownership()
 
         mock_request = MagicMock()
-        mock_request.body = f'{{"operation_id": "{operation.id}"}}'
+        mock_request.body = f'{{"operation_id": "{operation.id}", "reporting_year": 2024}}'
         mock_request.current_user = user
 
         is_valid = validator_under_test(mock_request)
@@ -127,9 +141,60 @@ class TestOperationOwnershipFromPayload:
         validator_under_test = check_operation_ownership()
 
         mock_request = MagicMock()
-        mock_request.body = f'{{"some_other_payload": "{operation.id}"}}'
+        mock_request.body = f'{{"some_other_payload": "{operation.id}", "reporting_year": 2024}}'
         mock_request.current_user = user_operator.user
 
+        is_valid = validator_under_test(mock_request)
+
+        assert is_valid is False
+
+        mock_request.body = f'{{"operation_id": "{operation.id}", "some_other_year": 2024}}'
+
+        is_valid = validator_under_test(mock_request)
+
+        assert is_valid is False
+
+    def test_operation_ownership_from_payload_allows_access_for_previous_operator(self):
+        old_user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
+        new_user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
+        operation = make_recipe("registration.tests.utils.operation", operator=new_user_operator.operator)
+
+        make_recipe(
+            "registration.tests.utils.operation_designated_operator_timeline",
+            operation=operation,
+            operator=old_user_operator.operator,
+            start_date="2024-01-01",
+            end_date="2025-01-31",
+        )
+        make_recipe(
+            "registration.tests.utils.operation_designated_operator_timeline",
+            operation=operation,
+            operator=new_user_operator.operator,
+            start_date="2025-02-01",
+            end_date=None,
+        )
+
+        validator_under_test = check_operation_ownership()
+
+        mock_request = MagicMock()
+        mock_request.body = f'{{"operation_id": "{operation.id}", "reporting_year": 2024}}'
+        mock_request.current_user = old_user_operator.user
+
+        is_valid = validator_under_test(mock_request)
+        # When reporting year is 2024, old operator has access and new operator does not
+        assert is_valid is True
+
+        mock_request.current_user = new_user_operator.user
+        is_valid = validator_under_test(mock_request)
+        assert is_valid is False
+
+        mock_request.body = f'{{"operation_id": "{operation.id}", "reporting_year": 2025}}'
+        is_valid = validator_under_test(mock_request)
+
+        # When reporting year is 2025, new operator has access and old operator does not
+        assert is_valid is True
+
+        mock_request.current_user = old_user_operator.user
         is_valid = validator_under_test(mock_request)
 
         assert is_valid is False
