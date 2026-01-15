@@ -112,7 +112,7 @@ test.describe("Test register operations", () => {
     // 🛸 Navigate to registration page
     const registrationPage = new RegistrationPOM(page);
     await registrationPage.route();
-    let componentName;
+    let componentName: string;
 
     // STEP 1
     await registrationPage.assertHeading(

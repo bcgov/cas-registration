@@ -36,6 +36,7 @@ export class RegistrationPOM {
   }
 
   async clickSaveAndContinue() {
+    await this.page.waitForLoadState();
     await expect(this.saveAndContinueButton).toBeEnabled({
       timeout: 30_000,
     });
@@ -126,7 +127,7 @@ export class RegistrationPOM {
     await fillComboxboxWidget(this.page, /facility type+/i, "Small Aggregate");
   }
 
-  async fillOptInInformation(page) {
+  async fillOptInInformation(page: Page) {
     await checkAllRadioButtons(page);
   }
 

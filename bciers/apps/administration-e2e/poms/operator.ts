@@ -446,7 +446,10 @@ export class OperatorPOM {
   }
 
   async msgRequestAccessDeclinedIsVisible() {
-    await this.page.waitForLoadState();
+    // The below line is not necessary, we do this instead of using timeout
+    await expect(
+      this.page.getByTestId("WarningIcon").locator("path"),
+    ).toBeVisible();
     await expect(this.messageRequestAccessDeclined).toBeVisible();
   }
 
