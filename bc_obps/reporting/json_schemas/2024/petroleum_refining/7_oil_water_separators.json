@@ -20,7 +20,7 @@
             "enum": []
           },
           "equivalentEmission": {
-            "title": "Equivalent emissions (tC02e)",
+            "title": "Equivalent Emissions (tCO2e)",
             "type": "number",
             "readOnly": true,
             "description": "Computed upon saving"
