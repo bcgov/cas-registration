@@ -12,8 +12,6 @@ import RootLayout, {
 import { auth } from "@/dashboard/auth";
 import type { Metadata } from "next";
 
-const defaultLinks = [{ label: "Dashboard" }];
-
 export const metadata: Metadata = generateMetadata("Dashboard");
 
 export default async function DashboardLayout({
@@ -24,7 +22,7 @@ export default async function DashboardLayout({
   const session = await auth();
 
   return (
-    <RootLayout defaultLinks={defaultLinks} zone="dashboard" session={session}>
+    <RootLayout zone="dashboard" session={session}>
       {children}
     </RootLayout>
   );
