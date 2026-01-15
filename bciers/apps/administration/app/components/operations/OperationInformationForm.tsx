@@ -18,7 +18,11 @@ import {
   RegistrationPurposes,
   regulatedOperationPurposes,
 } from "apps/registration/app/components/operations/registration/enums";
-import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
+import {
+  FormMode,
+  FrontEndRoles,
+  OperationTypes,
+} from "@bciers/utils/src/enums";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
@@ -68,13 +72,17 @@ const OperationInformationForm = ({
   );
 
   const updateConfirmedFormData = (newPurpose: string) => {
+    const isEio =
+      newPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION;
     const newFormData = {
       ...confirmedFormData,
       registration_purpose: newPurpose,
+      // When switching to EIO, set the type to EIO since that's the only valid option
+      ...(isEio && { type: OperationTypes.EIO }),
     };
     setConfirmedFormData(newFormData);
 
-    if (newPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION) {
+    if (isEio) {
       setSchema(eioSchema);
     } else {
       setSchema(generalSchema);
