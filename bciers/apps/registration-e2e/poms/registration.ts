@@ -36,10 +36,9 @@ export class RegistrationPOM {
   }
 
   async clickSaveAndContinue() {
-    await this.page.waitForLoadState();
-    await expect(this.saveAndContinueButton).toBeEnabled({
-      timeout: 30_000,
-    });
+    // Both toBeVisible and toBeEnabled are not needed, just doing this instead of using timeout
+    await expect(this.saveAndContinueButton).toBeVisible();
+    await expect(this.saveAndContinueButton).toBeEnabled();
     await this.saveAndContinueButton.click();
   }
 
