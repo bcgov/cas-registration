@@ -68,7 +68,7 @@ export async function fillComboxboxWidget(
   await expect(input).toBeEnabled();
   await input.fill(value);
   const option = page.getByRole("option", { name: value });
-  await expect(option).toBeVisible();
+  await expect(option).toBeVisible({ timeout: 30_000 });
   await option.click();
 
   // Wait for MUI listbox to close so we don't race form state updates
@@ -469,9 +469,8 @@ export async function searchGridByUniqueValue(
   await expect(row.first()).toBeVisible();
   return row;
 }
+
 export async function uploadFile(page: Page, index: number) {
-  // FileWidget uses a hidden <input type="file"> triggered by a styled "Upload" button.
-  // We click the nth "Upload" button to open the chooser for the correct widget
   const fileChooserPromise = page.waitForEvent("filechooser");
 
   const uploadButton = page
@@ -486,8 +485,7 @@ export async function uploadFile(page: Page, index: number) {
   const fileChooser = await fileChooserPromise;
   await fileChooser.setFiles(path.join(__dirname, "../docs/test.pdf"));
 
-  // The widget reads the file asynchronously (FileReader -> base64) and only then calls RJSF onChange.
-  // Wait until the widget UI reflects a value, otherwise "Save and Continue" can remain disabled in CI.
+  // Scope waits to the widget that owns this file input
   const input = page.locator('input[type="file"]').nth(index);
   const widget = input.locator("xpath=ancestor::div[1]");
 

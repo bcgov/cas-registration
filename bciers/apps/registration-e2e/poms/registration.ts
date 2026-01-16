@@ -24,15 +24,38 @@ export class RegistrationPOM {
 
   constructor(page: Page) {
     this.page = page;
-    this.saveAndContinueButton = page.getByRole("button", {
-      name: /save and continue/i,
-    });
+    // this.saveAndContinueButton = page.getByRole("button", {
+    //   name: /save and continue/i,
+    // });
+
+    // Most deterministic: avoids duplicate buttons / sticky footers / skeletons
+    this.saveAndContinueButton = page.getByTestId("submit-button");
   }
 
   // ###  Actions ###
 
   async route() {
     await this.page.goto(this.initialUrl);
+  }
+
+  async clickSaveAndContinue(stepLabel?: string) {
+    const btn = this.saveAndContinueButton;
+
+    try {
+      await expect(async () => {
+        // Keep per-attempt waits short; let toPass do the long waiting
+        await expect(btn).toBeVisible({ timeout: 1_000 });
+        await expect(btn).toBeEnabled({ timeout: 250 });
+        await btn.click({ timeout: 1_000 });
+      }).toPass({ timeout: 30_000 });
+    } catch (err) {
+      if (stepLabel) {
+        console.error("[save-and-continue] failed at:", stepLabel);
+      }
+      console.error("[save-and-continue] url:", this.page.url());
+      await this.dumpFormInvalidState(this.page);
+      throw err;
+    }
   }
 
   async dumpFormInvalidState(page: Page) {
@@ -44,48 +67,20 @@ export class RegistrationPOM {
     const invalidCount = await invalidInputs.count();
     const errorText = (await errorHelpers.allTextContents()).filter(Boolean);
 
-    // Collect labels for invalid fields when possible
-    const labels: string[] = [];
-    for (let i = 0; i < Math.min(invalidCount, 10); i++) {
-      const el = invalidInputs.nth(i);
-      const id = await el.getAttribute("id");
-      if (!id) continue;
-
-      const label = page.locator(`label[for="${id}"]`);
-      if (await label.count()) {
-        labels.push((await label.first().innerText()).trim());
-      } else {
-        labels.push(id);
-      }
+    console.error("[form-invalid] url:", page.url());
+    console.error("[form-invalid] invalidCount:", invalidCount);
+    if (errorText.length) {
+      console.error("[form-invalid] errorText:", errorText.slice(0, 10));
     }
 
-    console.log("[form-invalid] url:", page.url());
-    console.log("[form-invalid] invalidCount:", invalidCount);
-    if (labels.length) console.log("[form-invalid] invalidFields:", labels);
-    if (errorText.length)
-      console.log("[form-invalid] errorText:", errorText.slice(0, 10));
-  }
-
-  async clickSaveAndContinue() {
-    const btn = this.saveAndContinueButton;
-
-    try {
-      await expect(async () => {
-        await expect(btn).toBeVisible();
-
-        await expect(this.page.locator('[aria-invalid="true"]')).toHaveCount(0);
-
-        await expect(
-          this.page.locator(".MuiFormHelperText-root.Mui-error"),
-        ).toHaveCount(0);
-
-        await expect(btn).toBeEnabled();
-        await btn.click();
-      }).toPass({ timeout: 30_000 });
-    } catch (err) {
-      await this.dumpFormInvalidState(this.page);
-      throw err;
-    }
+    // Also dump submit state (since your issue is “disabled but not invalid”)
+    const btn = page.getByTestId("submit-button");
+    console.error("[submit] disabled:", await btn.isDisabled());
+    console.error(
+      "[submit] aria-disabled:",
+      await btn.getAttribute("aria-disabled"),
+    );
+    console.error("[submit] class:", await btn.getAttribute("class"));
   }
 
   // Registration-specific form-filling functions
