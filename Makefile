@@ -233,53 +233,10 @@ dr_restore: check_environment dr_verify_backup
 	   [[ $$REPLY =~ ^[Yy]$$ ]] || { echo "Cancelled"; exit 1; }; \
 	}; \
 	{ \
-	printf '%s\n' \
-	  'apiVersion: postgres-operator.crunchydata.com/v1beta1' \
-	  'kind: PostgresCluster' \
-	  'metadata:' \
-	  '  name: $(DB_CLUSTER_NAME)' \
-	  '  namespace: $(NAMESPACE)' \
-	  '  labels:' \
-	  '    app.kubernetes.io/name: cas-obps-postgres' \
-	  'spec:' \
-	  '  metadata:' \
-	  '    labels:' \
-	  '      app.kubernetes.io/name: cas-obps-postgres' \
-	  '  image: ""' \
-	  '  postgresVersion: 16' \
-	  '  backups:' \
-	  '    pgbackrest:' \
-	  '      configuration:' \
-	  '        - secret:' \
-	  '            items:' \
-	  '              - key: credentials.json' \
-	  '                path: gcs-key.json' \
-	  '            name: gcs-backup-credentials' \
-	  '      global:' \
-	  '        repo1-retention-full: "90"' \
-	  '        repo1-retention-full-type: time' \
-	  '      repos:' \
-	  '        - gcs:' \
-	  '            bucket: $(BACKUP_BUCKET)' \
-	  '          name: repo1' \
-	  '          path: /pgbackrest/repo1' \
-	  '  dataSource:' \
-	  '    pgbackrest:' \
-	  '      stanza: db' \
-	  '      configuration:' \
-	  '        - secret:' \
-	  '            items:' \
-	  '              - key: credentials.json' \
-	  '                path: gcs-key.json' \
-	  '            name: gcs-backup-credentials' \
-	  '      global:' \
-	  '        repo1-path: /pgbackrest/repo1' \
-	  '        repo1-gcs-key: /etc/pgbackrest/conf.d/gcs-key.json' \
-	  '      repo:' \
-	  '        name: repo1' \
-	  '        gcs:' \
-	  '          bucket: $(BACKUP_BUCKET)' \
-	  '      options:'; \
+	cat $(CHART_DIR)/templates/disaster-recovery/dr-postgres-cluster.yaml | sed \
+	  -e 's/__DB_CLUSTER_NAME__/$(DB_CLUSTER_NAME)/g' \
+	  -e 's/__NAMESPACE__/$(NAMESPACE)/g' \
+	  -e 's/__BACKUP_BUCKET__/$(BACKUP_BUCKET)/g'; \
 	if [ "$(RESTORE_TYPE)" = "time" ]; then \
 	   printf '%s\n' '        - --type=time' '        - --target=$(RESTORE_TARGET)'; \
 	else \
