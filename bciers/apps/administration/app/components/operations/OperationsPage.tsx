@@ -1,7 +1,5 @@
-import {
-  OperationRow,
-  OperationsSearchParams,
-} from "@/administration/app/components/operations/types";
+import { OperationRow } from "@/administration/app/components/operations/types";
+import { OperationsSearchParams } from "@bciers/types/operations";
 import OperationsDataGrid from "@/administration/app/components/operations/OperationsDataGrid";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 import { fetchOperationsPageData } from "@bciers/actions/api";

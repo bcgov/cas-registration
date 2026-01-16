@@ -29,14 +29,6 @@ export interface InternalAccessRequestAction {
   archive: boolean;
 }
 
-export interface InternalAccessRequest {
-  id: UUID;
-  name: string;
-  role: InternalFrontEndRoles;
-  email: string;
-  archived_at?: string;
-}
-
 export interface UserOperatorDataGridRow {
   id: number;
   user_friendly_id: string;

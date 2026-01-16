@@ -1,5 +1,5 @@
 import { actionHandler } from "@bciers/actions";
-import { InternalAccessRequest } from "@/administration/app/components/users/types";
+import { InternalAccessRequest } from "@bciers/types/users";
 
 async function getInternalAccessRequests(): Promise<
   InternalAccessRequest[] | { error: string }
