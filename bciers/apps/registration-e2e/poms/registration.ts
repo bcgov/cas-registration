@@ -35,15 +35,57 @@ export class RegistrationPOM {
     await this.page.goto(this.initialUrl);
   }
 
+  async dumpFormInvalidState(page: Page) {
+    const invalidInputs = page.locator('[aria-invalid="true"]');
+    const errorHelpers = page.locator(
+      ".MuiFormHelperText-root.Mui-error, .Mui-error",
+    );
+
+    const invalidCount = await invalidInputs.count();
+    const errorText = (await errorHelpers.allTextContents()).filter(Boolean);
+
+    // Collect labels for invalid fields when possible
+    const labels: string[] = [];
+    for (let i = 0; i < Math.min(invalidCount, 10); i++) {
+      const el = invalidInputs.nth(i);
+      const id = await el.getAttribute("id");
+      if (!id) continue;
+
+      const label = page.locator(`label[for="${id}"]`);
+      if (await label.count()) {
+        labels.push((await label.first().innerText()).trim());
+      } else {
+        labels.push(id);
+      }
+    }
+
+    console.log("[form-invalid] url:", page.url());
+    console.log("[form-invalid] invalidCount:", invalidCount);
+    if (labels.length) console.log("[form-invalid] invalidFields:", labels);
+    if (errorText.length)
+      console.log("[form-invalid] errorText:", errorText.slice(0, 10));
+  }
+
   async clickSaveAndContinue() {
     const btn = this.saveAndContinueButton;
 
-    await expect(async () => {
-      await expect(btn).toBeVisible();
-      await expect(btn).toBeEnabled();
-    }).toPass({ timeout: 30_000 });
+    try {
+      await expect(async () => {
+        await expect(btn).toBeVisible();
 
-    await btn.click();
+        await expect(this.page.locator('[aria-invalid="true"]')).toHaveCount(0);
+
+        await expect(
+          this.page.locator(".MuiFormHelperText-root.Mui-error"),
+        ).toHaveCount(0);
+
+        await expect(btn).toBeEnabled();
+        await btn.click();
+      }).toPass({ timeout: 30_000 });
+    } catch (err) {
+      await this.dumpFormInvalidState(this.page);
+      throw err;
+    }
   }
 
   // Registration-specific form-filling functions

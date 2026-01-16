@@ -70,6 +70,12 @@ export async function fillComboxboxWidget(
   const option = page.getByRole("option", { name: value });
   await expect(option).toBeVisible();
   await option.click();
+
+  // Wait for MUI listbox to close so we don't race form state updates
+  await expect(page.getByRole("listbox")).toHaveCount(0, { timeout: 30_000 });
+
+  // Trigger onBlur validation/commit
+  await input.press("Tab");
 }
 
 export async function fillDropdownByLabel(
