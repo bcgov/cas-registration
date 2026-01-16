@@ -36,9 +36,14 @@ export class RegistrationPOM {
   }
 
   async clickSaveAndContinue() {
-    await expect(this.saveAndContinueButton).toBeVisible();
-    await expect(this.saveAndContinueButton).toBeEnabled();
-    await this.saveAndContinueButton.click();
+    const btn = this.saveAndContinueButton;
+
+    await expect(async () => {
+      await expect(btn).toBeVisible();
+      await expect(btn).toBeEnabled();
+    }).toPass({ timeout: 30_000 });
+
+    await btn.click();
   }
 
   // Registration-specific form-filling functions

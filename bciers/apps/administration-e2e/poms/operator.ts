@@ -446,9 +446,9 @@ export class OperatorPOM {
   }
 
   async msgRequestAccessDeclinedIsVisible() {
-    await expect(this.messageRequestAccessDeclined).toBeVisible({
-      timeout: 30_000,
-    });
+    await expect(async () => {
+      await expect(this.messageRequestAccessDeclined).toBeVisible();
+    }).toPass({ timeout: 30_000 });
   }
 
   async msgRequestAccessAdminDeclinedIsVisible() {
