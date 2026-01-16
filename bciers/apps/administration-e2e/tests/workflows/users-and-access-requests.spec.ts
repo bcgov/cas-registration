@@ -122,6 +122,7 @@ test.describe("External User", () => {
 
   // TODO: This is a Flaky e2e test - to be fixed in ticket https://github.com/bcgov/cas-compliance/issues/496
   test("Reject a request", async ({ page, happoScreenshot }) => {
+    // Mark as slow: this flow relies on API calls that can be delayed in CI.
     test.slow();
     // 🛸 Navigate to Users and Access Requests from dashboard
     const accessRequestPage = new UsersAccessRequestPOM(page);
