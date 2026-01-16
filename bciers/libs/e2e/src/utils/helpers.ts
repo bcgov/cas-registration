@@ -463,19 +463,36 @@ export async function searchGridByUniqueValue(
   await expect(row.first()).toBeVisible();
   return row;
 }
-
 export async function uploadFile(page: Page, index: number) {
-  // Our file widget has been customized, so the upload button isn't attached to the input. We select by index to get around this.
+  // FileWidget uses a hidden <input type="file"> triggered by a styled "Upload" button.
+  // We click the nth "Upload" button to open the chooser for the correct widget
   const fileChooserPromise = page.waitForEvent("filechooser");
 
   const uploadButton = page
-    .getByRole("button", { name: /upload+/i })
+    .getByRole("button", {
+      name: /upload attachment|reupload attachment|upload/i,
+    })
     .nth(index);
 
+  await expect(uploadButton).toBeVisible();
   await uploadButton.click();
 
   const fileChooser = await fileChooserPromise;
   await fileChooser.setFiles(path.join(__dirname, "../docs/test.pdf"));
+
+  // The widget reads the file asynchronously (FileReader -> base64) and only then calls RJSF onChange.
+  // Wait until the widget UI reflects a value, otherwise "Save and Continue" can remain disabled in CI.
+  const input = page.locator('input[type="file"]').nth(index);
+  const widget = input.locator("xpath=ancestor::div[1]");
+
+  await expect(widget.getByText(/No attachment was uploaded/i)).toHaveCount(0, {
+    timeout: 30_000,
+  });
+
+  await expect(async () => {
+    const liCount = await widget.locator("li").count();
+    expect(liCount).toBeGreaterThan(0);
+  }).toPass({ timeout: 30_000 });
 }
 
 export async function assertConfirmationModal(
