@@ -32,6 +32,7 @@ class FilterModel(BaseModel):
     model_config = ConfigDict(
         extra="allow", from_attributes=True
     )  # to build models and look up discriminators using python object
+    entityId: CommonFilterType = None
     accountId: CommonFilterType = None
     masterAccountId: CommonFilterType = None
     accountTypeId: CommonFilterType = None
@@ -153,7 +154,7 @@ class UnitDetailsResponse(PaginatedResponse):
 
 ########## Projects ##########
 class ProjectPayloadMixedUnit(BaseModel):
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)  # Allow extra fields for API flexibility
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     city: Optional[str] = None  # "City"
     address_line_1: Optional[str] = None  # "Line 1"
     zipcode: Optional[str] = None  # "H0H0H0"
@@ -179,7 +180,7 @@ class ProjectPayloadMixedUnit(BaseModel):
 
 
 class ProjectPayload(BaseModel):
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)  # Allow extra fields for API flexibility
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     account_id: FifteenDigitString  # "103100000028575"
     project_name: str  # "Test BC Project"
     project_description: str  # "Test BC Project Description" - 2000 characters max
@@ -209,7 +210,7 @@ class TransferMixedUnit(BaseModel):
 
 
 class TransferPayload(BaseModel):
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)  # Allow extra fields for API flexibility
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     destination_account_id: FifteenDigitString  # "103000000036531" - Receiving account ID
     mixedUnitList: List[TransferMixedUnit]
 
@@ -241,7 +242,7 @@ class IssuancePayloadVerification(BaseModel):
 
 
 class IssuancePayload(BaseModel):
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)  # Allow extra fields for API flexibility
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     account_id: FifteenDigitString  # "103100000028575"
     issuance_requested_date: DateTimeStringField  # "2025-01-24T13:13:28.547Z" - as soon as user request the issuance
     project_id: FifteenDigitString  # "104000000036500"
@@ -254,7 +255,7 @@ class IssuancePayload(BaseModel):
 
 ####### SubAccount ########
 class SubAccountPayload(BaseModel):
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)  # Allow extra fields for API flexibility
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     master_account_id: FifteenDigitString  # "103000000037199"
     compliance_year: PositiveInt  # 2025
     organization_classification_id: (
