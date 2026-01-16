@@ -69,7 +69,9 @@ def nightly_build_report(
         status = dag_run.conf["status"]
         if status != "success":
             run_id = dag_run.conf["run_id"]
-            raise Exception(f"Nightly workflow resulted in failure. See workflow run {run_id} for details.")
+            raise Exception(
+                f"Nightly workflow resulted in failure. See workflow run https://github.com/bcgov/cas-registration/actions/runs/{run_id} for details."
+            )
 
     record_status()
 
