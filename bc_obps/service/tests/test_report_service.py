@@ -28,13 +28,20 @@ class TestReportService(TestCase):
     def test_throws_if_year_doesnt_exist(self):
         operator = operator_baker({"trade_name": "test_trade_name"})
         operation = operation_baker(operator_id=operator.id, type=Operation.Types.SFO)
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operator=operator,
+            operation=operation,
+            start_date="2023-01-01",
+            end_date=None,
+        )
 
         with self.assertRaises(ObjectDoesNotExist) as exception_context:
             ReportService.create_report(operation.id, reporting_year=2000)
 
         self.assertEqual(
             str(exception_context.exception),
-            "ReportingYear matching query does not exist.",
+            f"Designated operator for reporting year 2000 not found for operation {operation.id}.",
         )
 
     def test_throws_if_report_already_exists(self):
@@ -79,6 +86,14 @@ class TestReportService(TestCase):
                 RegulatedProduct.objects.get(name="Liquefied natural gas"),
             )
             reporting_year = reporting_year_baker(reporting_year=2101)
+            make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operator=operation.operator,
+                operation=operation,
+                start_date="2023-01-01",
+                end_date=None,
+            )
+
             # Calling the method under test
             report_version_id = ReportService.create_report(operation.id, reporting_year=2101)
             report = ReportVersion.objects.get(pk=report_version_id).report

@@ -129,6 +129,14 @@ class TestReportingDashboardService:
         [reporting_year_baker(reporting_year=year) for year in years]
 
         operations = operation_baker(operator_id=uo.operator.id, _quantity=3)
+        for operation in operations:
+            make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operator=uo.operator,
+                operation=operation,
+                start_date="2023-01-01",
+                end_date=None,
+            )
 
         sort_field: Optional[str] = "operation_name"
         sort_order: Optional[str] = "asc"
@@ -402,6 +410,15 @@ class TestReportingDashboardService:
         operation1 = operation_baker(name="a")
         operation2 = operation_baker(name="b")
         operations = [operation1, operation2]
+        for operation in operations:
+            make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operator=operation.operator,
+                operation=operation,
+                start_date="2023-01-01",
+                end_date=None,
+            )
+
         # Change operation names so sorting by name produces consistent results
         report_version_ids = [ReportService.create_report(op.id, year) for op in operations for year in years]
 
