@@ -4,10 +4,14 @@ import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   assertSuccessfulSnackbar,
   getRowByUniqueCellValue,
+  linkIsVisible,
   openNewBrowserContextAs,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
 import {
+  AppRoute,
+  MessageTextOperatorSelect,
+  OperatorE2EValue,
   UserAccessRequestActions,
   UserAccessRequestRoles,
   UserAndAccessRequestGridHeaders,
@@ -18,6 +22,7 @@ import { DashboardPOM } from "@/dashboard-e2e/poms/dashboard";
 import { AdministrationTileText } from "@/dashboard-e2e/utils/enums";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 import { SecondaryUserOperatorFixtureFields } from "@/administration-e2e/utils/enums";
+import { OperatorPOM } from "@/administration-e2e/poms/operator";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 test.beforeEach(async () => {
@@ -116,62 +121,63 @@ test.describe("External User", () => {
   });
 
   // TODO: This is a Flaky e2e test - to be fixed in ticket https://github.com/bcgov/cas-compliance/issues/496
-  // test("Reject a request", async ({ page, happoScreenshot }) => {
-  //   // 🛸 Navigate to Users and Access Requests from dashboard
-  //   const accessRequestPage = new UsersAccessRequestPOM(page);
-  //   await accessRequestPage.goToUserAccessRequestPage();
-  //   await accessRequestPage.pageIsStable();
-  //
-  //   const row = await getRowByUniqueCellValue(
-  //     page,
-  //     UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
-  //     UserAndAccessRequestValues.EMAIL,
-  //   );
-  //
-  //   const role = await accessRequestPage.getCurrentRole(row);
-  //
-  //   // Decline Request
-  //   await accessRequestPage.approveOrDeclineRequest(
-  //     row,
-  //     role,
-  //     UserAccessRequestActions.DECLINE,
-  //   );
-  //   await expect(row.getByText(role)).toBeHidden();
-  //   await assertSuccessfulSnackbar(page, /is now declined/i);
-  //
-  //   const currentStatus = await accessRequestPage.getCurrentStatus(row);
-  //   await accessRequestPage.assertActionVisibility(row, currentStatus);
-  //
-  //   await takeStabilizedScreenshot(happoScreenshot, page, {
-  //     component: "EXTERNAL: Decline a user operator request",
-  //     variant: "default",
-  //   });
-  //
-  //   const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
-  //
-  //   // Verify Select an operator is visible
-  //   const selectOperatorPage = new OperatorPOM(newPage);
-  //   await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
-  //   await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
-  //
-  //   // 👉 Action search by legal name
-  //   await selectOperatorPage.selectByLegalName(
-  //     OperatorE2EValue.SEARCH_LEGAL_NAME,
-  //     "Bravo Technologies - has parTNER operator - name from admin",
-  //   );
-  //
-  //   await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
-  //   await linkIsVisible(
-  //     selectOperatorPage.page,
-  //     MessageTextOperatorSelect.SELECT_ANOTHER_OPERATOR,
-  //     true,
-  //   );
-  //   // TODO:To be handled in ticket #457
-  //   await takeStabilizedScreenshot(happoScreenshot, newPage, {
-  //     component: "Decline a user operator request",
-  //     variant: "default",
-  //   });
-  // });
+  test("Reject a request", async ({ page, happoScreenshot }) => {
+    test.slow();
+    // 🛸 Navigate to Users and Access Requests from dashboard
+    const accessRequestPage = new UsersAccessRequestPOM(page);
+    await accessRequestPage.goToUserAccessRequestPage();
+    await accessRequestPage.pageIsStable();
+
+    const row = await getRowByUniqueCellValue(
+      page,
+      UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
+      UserAndAccessRequestValues.EMAIL,
+    );
+
+    const role = await accessRequestPage.getCurrentRole(row);
+
+    // Decline Request
+    await accessRequestPage.approveOrDeclineRequest(
+      row,
+      role,
+      UserAccessRequestActions.DECLINE,
+    );
+    await expect(row.getByText(role)).toBeHidden();
+    await assertSuccessfulSnackbar(page, /is now declined/i);
+
+    const currentStatus = await accessRequestPage.getCurrentStatus(row);
+    await accessRequestPage.assertActionVisibility(row, currentStatus);
+
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "EXTERNAL: Decline a user operator request",
+      variant: "default",
+    });
+
+    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+
+    // Verify Select an operator is visible
+    const selectOperatorPage = new OperatorPOM(newPage);
+    await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
+    await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
+
+    // 👉 Action search by legal name
+    await selectOperatorPage.selectByLegalName(
+      OperatorE2EValue.SEARCH_LEGAL_NAME,
+      "Bravo Technologies - has parTNER operator - name from admin",
+    );
+
+    await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
+    await linkIsVisible(
+      selectOperatorPage.page,
+      MessageTextOperatorSelect.SELECT_ANOTHER_OPERATOR,
+      true,
+    );
+    // TODO:To be handled in ticket #457
+    // await takeStabilizedScreenshot(happoScreenshot, newPage, {
+    //   component: "Decline a user operator request",
+    //   variant: "default",
+    // });
+  });
 
   test("Edit a request", async ({ page }) => {
     // 🛸 Navigate to Users and Access Requests from dashboard
