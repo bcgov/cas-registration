@@ -16,7 +16,6 @@ import {
   BoroIdWidget,
   OperationRepresentativeWidget,
 } from "../widgets";
-import ApplyComplianceUnitsWidget from "@/compliance/src/app/widgets/ApplyComplianceUnitsWidget";
 
 const { templates: defaultTemplates } = getDefaultRegistry();
 
@@ -42,7 +41,6 @@ const readOnlyTheme = {
     BcghgIdWidget: BcghgIdWidget,
     OperationRepresentativeWidget: OperationRepresentativeWidget,
     BccrHoldingAccountWidget: ReadOnlyWidget,
-    ApplyComplianceUnitsWidget: ApplyComplianceUnitsWidget,
   },
   templates: {
     ...defaultTemplates,

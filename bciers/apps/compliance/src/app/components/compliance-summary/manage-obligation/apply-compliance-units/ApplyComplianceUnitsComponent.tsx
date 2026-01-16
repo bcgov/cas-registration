@@ -2,6 +2,7 @@
 
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import { FormBase } from "@bciers/components/form";
+import ApplyComplianceUnitsWidget from "@/compliance/src/app/widgets/ApplyComplianceUnitsWidget";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useEffect } from "react";
 import {
@@ -297,6 +298,7 @@ export default function ApplyComplianceUnitsComponent({
       formData={formData}
       onChange={handleChange}
       onSubmit={handleSubmit}
+      widgets={{ ApplyComplianceUnitsWidget }}
       formContext={{
         reportingYear,
         chargeRate: (formData as ApplyComplianceUnitsFormData)?.charge_rate,
