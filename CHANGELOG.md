@@ -1,3 +1,14 @@
+# [5.0.0](https://github.com/bcgov/cas-registration/compare/4.7.1...5.0.0) (2026-01-15)
+
+### Bug Fixes
+
+- set operation type to EIO when switching to EIO purpose in OperationInformationForm - fix existing bug ([117d01c](https://github.com/bcgov/cas-registration/commit/117d01c6269a2b3c244a4169646cc79e29862899))
+
+### Features
+
+- migrate ESLint to v9 ([ee5836f](https://github.com/bcgov/cas-registration/commit/ee5836f856cf0d77af28d33dff9122fead37feb3))
+- upgrade Next.js version to 16.1 and make necessary changes ([b640e55](https://github.com/bcgov/cas-registration/commit/b640e55454852e52148593a9b4bf9bf909953760))
+
 ## [4.7.1](https://github.com/bcgov/cas-registration/compare/cas-obps-backend-migration-test-0.2.0...4.7.1) (2026-01-15)
 
 ### Bug Fixes
