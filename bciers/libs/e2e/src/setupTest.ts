@@ -1,7 +1,6 @@
 import { test as baseTest, type BrowserContext } from "@playwright/test";
 import { test as happoTest } from "happo/playwright";
 import { mergeTests } from "@playwright/test";
-import { AppName } from "@/administration-e2e/utils/constants";
 import {
   setupTestEnvironment,
   getStorageStateForRole,
@@ -46,7 +45,7 @@ export function setupTest(role: string, hookType: "beforeEach" | "beforeAll") {
   });
 
   const setupHook = async () => {
-    await setupTestEnvironment(`${AppName}-${role}`);
+    await setupTestEnvironment();
   };
 
   if (hookType === "beforeEach") {
