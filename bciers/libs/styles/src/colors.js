@@ -11,6 +11,7 @@ export const BC_GOV_SEMANTICS_RED = "#D8292F";
 export const BC_GOV_SEMANTICS_GREEN = "#2E8540";
 // App specific colors
 export const DARK_GREY_BG_COLOR = "#E5E5E5";
+export const V_DARK_GREY_BG_COLOR = "#606060";
 export const LIGHT_GREY_BG_COLOR = "#fafafc";
 export const LIGHT_GREY_COLOR_200 = "#f5f5f5";
 export const LIGHT_GREY_COLOR_300 = "#f0f0f0";
