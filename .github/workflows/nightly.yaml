@@ -151,7 +151,7 @@ jobs:
         codeql,
       ]
     env:
-      STATUS: ${{ job.status }}
+      STATUS: ${{ needs.test-code.result == 'success' && needs.test-backend.result == 'success' && needs.test-administration-e2e.result == 'success' && needs.test-registration-e2e.result == 'success' && needs.test-dashboard-e2e.result == 'success' && needs.test-compliance-e2e.result == 'success' && 'success' || 'failure' }}
       DAG_ID: cas_bciers_nightly_build_report
       AIRFLOW_USERNAME: ${{ secrets.AIRFLOW_USERNAME }}
       AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}
