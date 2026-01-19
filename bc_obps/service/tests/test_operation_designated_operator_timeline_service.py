@@ -72,13 +72,19 @@ class TestOperationDesignatedOperatorTimelineService:
             operation.id, 2024
         )
 
-        assert result1 == timeline1
+        assert result1.operation == timeline1.operation
+        assert result1.operator == timeline1.operator
+        assert result1.start_date == timeline1.start_date
+        assert result1.end_date == timeline1.end_date
         assert result1.has_been_transferred is True
 
         result2 = OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
             operation.id, 2025
         )
-        assert result2 == timeline2
+        assert result2.operation == timeline2.operation
+        assert result2.operator == timeline2.operator
+        assert result2.start_date == timeline2.start_date
+        assert result2.end_date == timeline2.end_date
         assert result2.has_been_transferred is False
 
         # test returns None if no timeline found
