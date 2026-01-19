@@ -49,10 +49,9 @@ class OperationDesignatedOperatorTimelineService:
         with an annotated boolean field 'has_been_transferred'.
         """
 
-        end_of_reporting_year = datetime(reporting_year, 12, 31).date()
         timeline = OperationDesignatedOperatorTimeline.objects.filter(
-            Q(end_date__gte=end_of_reporting_year) | Q(end_date__isnull=True),
-            start_date__lte=end_of_reporting_year,
+            Q(end_date__year__gt=reporting_year) | Q(end_date__isnull=True),
+            start_date__year__lte=reporting_year,
             operation_id=operation_id,
         ).first()
         if not timeline:
