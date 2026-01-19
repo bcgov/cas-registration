@@ -55,20 +55,18 @@ class ReportService:
             raise UserError("A report already exists for this operation and year, unable to create a new one.")
 
         # Fetching report context
-        operation = (
-            Operation.objects.select_related("operator")
-            .prefetch_related("activities", "regulated_products")
-            .get(id=operation_id)
-        )
         designated_operator_timeline = (
             OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
-                operation_id=operation.id, reporting_year=reporting_year
+                operation_id=operation_id, reporting_year=reporting_year
             )
         )
         if not designated_operator_timeline:
             raise ObjectDoesNotExist(
                 f"Designated operator for reporting year {reporting_year} not found for operation {operation_id}."
             )
+
+        operation = Operation.objects.prefetch_related("activities", "regulated_products").get(id=operation_id)
+
         # Creating report object
 
         report = Report.objects.create(
@@ -76,8 +74,10 @@ class ReportService:
             operator=designated_operator_timeline.operator,
             reporting_year=ReportingYearDataAccessService.get_by_year(reporting_year),
         )
-
-        report_version = ReportVersionService.create_report_version(report)
+        if designated_operator_timeline.has_been_transferred:
+            report_version = ReportVersionService.create_transferred_operation_report_version(report)
+        else:
+            report_version = ReportVersionService.create_report_version(report)
         return report_version.id
 
     @staticmethod
