@@ -11,6 +11,7 @@ import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData"
 import Loading from "@bciers/components/loading/SkeletonForm";
 import { ReportData } from "./reportTypes";
 import { FinalReviewReportSections } from "@reporting/src/app/components/finalReview/templates/FinalReviewReportSections";
+import DownloadPdfButton from "@bciers/components/downloadPDFButton/DownloadPdfButton";
 
 interface Props {
   version_id: any;
@@ -54,6 +55,7 @@ export const FinalReviewForm: React.FC<Props> = ({
             <Loading />
           ) : (
             <>
+              <DownloadPdfButton />
               <FinalReviewReportSections
                 version_id={version_id}
                 data={data}

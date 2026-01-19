@@ -31,6 +31,7 @@ vi.mock(
 describe("The SubmittedForm component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.print = vi.fn();
   });
 
   it("renders the Loading component while data is being fetched", async () => {
@@ -135,6 +136,15 @@ describe("The SubmittedForm component", () => {
     expect(
       screen.getByText("Report Sections: Test Operation"),
     ).toBeInTheDocument();
+
+    const user = userEvent.setup();
+    const printButton = screen.getByRole("button", {
+      name: /save as pdf|print/i,
+    });
+    expect(printButton).toBeInTheDocument();
+
+    await user.click(printButton);
+    expect(window.print).toHaveBeenCalled();
   });
 
   it("calls router.push('/reporting/reports/current-reports') when Back to All Reports button is clicked", async () => {
@@ -179,7 +189,7 @@ describe("The SubmittedForm component", () => {
     );
   });
 
-  it("fetches data with correct version_id", () => {
+  it("fetches data with correct version_id", async () => {
     (getFinalReviewData as Mock).mockResolvedValue({});
 
     render(
@@ -190,6 +200,8 @@ describe("The SubmittedForm component", () => {
       />,
     );
 
-    expect(getFinalReviewData).toHaveBeenCalledWith(42);
+    await waitFor(() => {
+      expect(getFinalReviewData).toHaveBeenCalledWith(42);
+    });
   });
 });
