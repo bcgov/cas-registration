@@ -32,9 +32,7 @@ from service.data_access_service.operation_service import OperationDataAccessSer
 from service.data_access_service.user_service import UserDataAccessService
 from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from registration.models.opted_out_operation_detail import OptedOutOperationDetail
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
-from service.data_access_service.opted_out_operation_detail_service import OptedOutOperationDataAccessService
 from service.document_service import DocumentService
 from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
 from service.facility_service import FacilityService
@@ -43,7 +41,6 @@ from registration.schema import (
     OperationInformationInUpdate,
     OperationRepresentativeRemove,
     OptedInOperationDetailIn,
-    OptedOutOperationDetailIn,
     OperationNewEntrantApplicationIn,
     OperationRepresentativeIn,
     FacilityIn,
@@ -143,31 +140,6 @@ class OperationService:
     def get_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Optional[OptedInOperationDetail]:
         operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
         return operation.opted_in_operation
-
-    @classmethod
-    @transaction.atomic()
-    def create_or_update_opted_out_operation_detail(
-        cls, user_guid: UUID, operation_id: UUID, payload: OptedOutOperationDetailIn
-    ) -> OptedOutOperationDetail:
-        operation = OperationService.get_if_authorized(user_guid, operation_id)
-        if not operation.opted_in_operation:
-            raise UserError("An operation can only opt-out if it has registered as opted-in.")
-        return OptedOutOperationDataAccessService.upsert_opted_out_operation_detail(
-            operation.opted_in_operation.id, payload
-        )
-
-    @classmethod
-    @transaction.atomic()
-    def delete_opted_out_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> None:
-        operation = OperationService.get_if_authorized(user_guid, operation_id)
-
-        opted_in = operation.opted_in_operation
-        if opted_in is None:
-            raise UserError("There is no opted-out operation record to delete")
-        opted_out = opted_in.opted_out_operation
-        if opted_out is None:
-            raise UserError("There is no opted-out operation record to delete")
-        return OptedOutOperationDataAccessService.delete_opted_out_operation_detail(opted_out.id)
 
     @classmethod
     def create_or_replace_new_entrant_application(

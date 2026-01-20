@@ -118,17 +118,6 @@ class OperationInformationInUpdate(OperationInformationIn):
     operation_representatives: List[int]
 
 
-class OptedOutOperationDetailOut(ModelSchema):
-    class Meta:
-        model = OptedOutOperationDetail
-        fields = ["final_reporting_year"]
-        from_attributes = True
-
-
-class OptedOutOperationDetailIn(OptedOutOperationDetailOut):
-    final_reporting_year: int = Field(...)
-
-
 class OptedInOperationDetailOut(ModelSchema):
     class Meta:
         model = OptedInOperationDetail
@@ -141,6 +130,7 @@ class OptedInOperationDetailOut(ModelSchema):
             "meets_producing_gger_schedule_a1_regulated_product",
             "meets_reporting_and_regulated_obligations",
             "meets_notification_to_director_on_criteria_change",
+            "final_reporting_year"
         ]
 
 
@@ -171,7 +161,6 @@ class OperationOut(ModelSchema):
     new_entrant_application: Optional[str] = None
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
     operation_representatives: Optional[List[int]] = []
-    opted_out_operation: Optional[OptedOutOperationDetailOut] = None
 
     @staticmethod
     def resolve_operation_representatives(obj: Operation) -> List[int]:
@@ -184,12 +173,6 @@ class OperationOut(ModelSchema):
     @staticmethod
     def resolve_operation_has_multiple_operators(obj: Operation) -> bool:
         return obj.multiple_operators.exists()
-
-    @staticmethod
-    def resolve_opted_out_operation(obj: Operation) -> Optional[OptedOutOperationDetail]:
-        if not obj.opted_in_operation:
-            return None
-        return obj.opted_in_operation.opted_out_operation
 
     @staticmethod
     def resolve_operator(obj: Operation, context: DictStrAny) -> Optional[Operator]:
