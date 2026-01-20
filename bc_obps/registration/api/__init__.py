@@ -27,7 +27,6 @@ from ._operations._operation_id._registration import (
     operation,
     operation_representative,
     opted_in_operation,
-    opted_out_operation,
     submission,
 )
 from ._user_operators import current, user_operator_id
