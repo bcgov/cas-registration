@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { RJSFSchema } from "@rjsf/utils";
+import { IChangeEvent } from "@rjsf/core";
 import { getContacts, getContact } from "@bciers/actions/api";
-import debounce from "lodash.debounce";
 import {
   personResponsibleSchema,
   personResponsibleUiSchema,
@@ -17,6 +17,10 @@ import { createPersonResponsibleSchema } from "@reporting/src/app/components/ope
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { AddressErrorWidget } from "@reporting/src/data/jsonSchema/personResponsibleWidgets";
 import SnackBar from "@bciers/components/form/components/SnackBar";
+
+interface PersonResponsibleFormData {
+  person_responsible: string;
+}
 
 interface Props {
   versionId: number;
@@ -38,14 +42,17 @@ const PersonResponsibleForm = ({
   const [selectedContactId, setSelectedContactId] = useState<number>();
   const [selectedContactAddressError, setSelectedContactAddressError] =
     useState<string>();
-  const [contactFormData, setContactFormData] = useState<any>();
+  const [contactFormData, setContactFormData] = useState<Contact | undefined>();
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<PersonResponsibleFormData>({
     person_responsible: personResponsible
       ? `${personResponsible.first_name} ${personResponsible.last_name}`
       : "",
   });
   const [schema, setSchema] = useState<RJSFSchema>(initialSchema);
+
+  // Track the latest request to ignore stale responses
+  const requestIdRef = useRef(0);
 
   const updateContactShown = (
     newContactId: number | undefined,
@@ -73,8 +80,9 @@ const PersonResponsibleForm = ({
     }
   };
 
-  const handleContactSelect = debounce(async (e: any) => {
-    const selectedFullName = e.formData?.person_responsible;
+  const handleChange = async (data: object) => {
+    const changeEvent = data as IChangeEvent<PersonResponsibleFormData>;
+    const selectedFullName = changeEvent.formData?.person_responsible;
 
     const selectedContact = contacts?.items.find(
       (contact) =>
@@ -82,10 +90,18 @@ const PersonResponsibleForm = ({
     );
 
     if (selectedContact) {
-      const newSelectedContactId = selectedContact.id;
+      // Track this request
+      const currentRequestId = ++requestIdRef.current;
+
       const newContactFormData: Contact = await getContact(
         `${selectedContact.id}`,
       );
+
+      // Ignore if a newer request was made
+      if (currentRequestId !== requestIdRef.current) return;
+
+      const newSelectedContactId = selectedContact.id;
+
       // Check if any address field is missing or empty
       const missingAddressInfo =
         !newContactFormData.street_address?.toString().trim() ||
@@ -108,12 +124,11 @@ const PersonResponsibleForm = ({
       });
     } else {
       updateContactShown(undefined, undefined);
-      setFormData((prevFormData: any) => ({
-        ...prevFormData,
-        person_responsible: "", // Reset to empty string if no contact is selected
-      }));
+      setFormData({
+        person_responsible: "",
+      });
     }
-  }, 300);
+  };
 
   const handleSave = async () => {
     // Do not proceed if there is an address error for the selected contact
@@ -198,7 +213,7 @@ const PersonResponsibleForm = ({
           },
         }}
         formData={formData}
-        onChange={handleContactSelect}
+        onChange={handleChange}
         onSubmit={handleSave}
       />
       <SnackBar
