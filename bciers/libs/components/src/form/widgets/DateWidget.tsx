@@ -67,6 +67,9 @@ const DateWidget: React.FC<WidgetProps> = ({
           textField: {
             id,
           },
+          openPickerButton: {
+            "aria-label": "Choose date",
+          },
         }}
         sx={styles}
       />

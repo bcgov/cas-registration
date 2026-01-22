@@ -31,7 +31,7 @@ export default function ChangeReviewForm({
   const [errors, setErrors] = useState<string[]>();
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
   const [reasonForChange, setReasonForChange] = useState(
-    initialFormData.reason_for_change || "",
+    initialFormData.reason_for_change ?? "",
   );
   const [isSaving, setIsSaving] = useState<boolean>(false);
 

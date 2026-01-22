@@ -47,7 +47,7 @@ const ReasonForChangeForm: React.FC<ReasonForChangeProps> = ({
           <TextareaAutosize
             id="reason-for-change"
             aria-label="Reason for change"
-            value={reasonForChange}
+            value={reasonForChange ?? ""}
             onChange={(e) =>
               onReasonChange((e.target as HTMLTextAreaElement).value)
             }

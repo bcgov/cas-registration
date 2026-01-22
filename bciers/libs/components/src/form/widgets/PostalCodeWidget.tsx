@@ -49,7 +49,7 @@ const TextWidget: React.FC<WidgetProps> = ({
         // format the postal code in uppercase with a space
         value && value.length > 3
           ? `${value.slice(0, 3)} ${value.slice(3)}`.toUpperCase()
-          : value
+          : (value ?? "")
       }
       onChange={handleChange}
       sx={styles}
