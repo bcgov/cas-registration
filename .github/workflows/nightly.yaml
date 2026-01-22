@@ -205,7 +205,7 @@ jobs:
 
           echo "Reported status for ${{ github.run_id }} to Airflow $dag_run_id with status ${{env.status}}"
       - name: Create failed build issue
-        uses: jayqi/failed-build-issue-action@v1
+        uses: jayqi/failed-build-issue-action@1a893bbf43ef1c2a8705e2b115cd4f0fe3c5649b
         if: failure()
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
