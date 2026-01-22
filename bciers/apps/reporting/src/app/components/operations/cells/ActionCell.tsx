@@ -52,20 +52,22 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
   };
 
   const handleStartClick = async () => {
+    setHasClicked(true); // Disable button immediately to prevent duplicate clicks
+    let newReportVersionId: string | number | null;
     if (reportId) {
       // create a new report version
-      const newReportVersionId = await handleNewDraftVersion();
+      newReportVersionId = await handleNewDraftVersion();
       setReportVersionId(newReportVersionId);
     } else {
       // create a new report
       const reportingYearObj = await getReportingYear();
-      const newReportVersionId = await handleStartReport(
+      newReportVersionId = await handleStartReport(
         reportingYearObj.reporting_year,
       );
       setReportVersionId(newReportVersionId);
     }
-    if (typeof reportVersionId === "number")
-      router.push(`${reportVersionId}/review-operation-information`);
+    if (newReportVersionId)
+      router.push(`${newReportVersionId}/review-operation-information`);
   };
 
   // Show "Available Soon" for all actions if reporting is not open
@@ -118,7 +120,9 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
       onClick={async () => {
         setHasClicked(true);
         await buttonAction();
-        setHasClicked(false);
+        if (buttonText !== "Start") {
+          setHasClicked(false);
+        }
       }}
     >
       {buttonText}
