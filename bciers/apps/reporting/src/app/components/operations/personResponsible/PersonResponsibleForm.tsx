@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
 import { RJSFSchema } from "@rjsf/utils";
-import { getContacts } from "@bciers/actions/api";
-import { getContact } from "@bciers/actions/api";
+import { getContacts, getContact } from "@bciers/actions/api";
 import debounce from "lodash.debounce";
 import {
   personResponsibleSchema,
@@ -51,6 +50,7 @@ const PersonResponsibleForm = ({
   const updateContactShown = (
     newContactId: number | undefined,
     newContactFormData: Contact | undefined,
+    addressError?: string,
   ) => {
     if (
       newContactId === selectedContactId &&
@@ -61,13 +61,13 @@ const PersonResponsibleForm = ({
     setSelectedContactId(newContactId);
     setContactFormData(newContactFormData);
 
-    if (newContactId !== null && newContactFormData) {
+    if (newContactId !== undefined && newContactFormData) {
       const updatedSchema = createPersonResponsibleSchema(
         personResponsibleSchema,
         contacts?.items || [],
-        selectedContactId,
-        contactFormData,
-        selectedContactAddressError,
+        newContactId,
+        newContactFormData,
+        addressError,
       );
       setSchema(updatedSchema);
     }
@@ -96,7 +96,11 @@ const PersonResponsibleForm = ({
         ? `Missing address information.  <a href="/administration/contacts/${newContactFormData.id}?contacts_title=${newContactFormData.first_name} ${newContactFormData.last_name}/" target="_blank" rel="noopener noreferrer">Add contact's address information.</a>`
         : "";
       setSelectedContactAddressError(addressError);
-      updateContactShown(newSelectedContactId, newContactFormData);
+      updateContactShown(
+        newSelectedContactId,
+        newContactFormData,
+        addressError,
+      );
       setFormData({
         person_responsible: `${newContactFormData?.first_name || ""} ${
           newContactFormData?.last_name || ""
