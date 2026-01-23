@@ -46,8 +46,8 @@ class BCCarbonRegistryAPIClient:
     AUTH_ENDPOINT = "/user-api/okta/token"
     ACCOUNT_SEARCH_ENDPOINT = "/raas-report-api/es/account/pagePrivateSearchByFilter"
     UNIT_SEARCH_ENDPOINT = "/raas-report-api/es/unit/pagePrivateSearchByFilter"
-    PROJECT_DETAILS_ENDPOINT = "/raas-project-api/project-manager/project"
-    PROJECT_SUBMIT_ENDPOINT = "/raas-project-api/project-manager/project"
+    PROJECT_DETAILS_ENDPOINT = "/raas-project-api/project-manager/getById"
+    PROJECT_SUBMIT_ENDPOINT = "/raas-project-api/project-manager/doSubmit"
     TRANSFER_SUBMIT_ENDPOINT = "/raas-credit-api/transfer-manager/doSubmit"
     ISSUANCE_SUBMIT_ENDPOINT = "/raas-credit-api/market-issuance-manager/doSubmit"
     ACCOUNT_SUBMIT_ENDPOINT = "/br-reg/rest/account-manager/doSubmit"
@@ -306,7 +306,7 @@ class BCCarbonRegistryAPIClient:
             logger.error("Invalid project_id: %s", project_id)
             raise ValueError("project_id must be a numeric string")
         url = f"{self.PROJECT_DETAILS_ENDPOINT}/{project_id}"
-        return self._make_request("POST", url, response_model=ProjectDetailsResponse)
+        return self._make_request("GET", url, response_model=ProjectDetailsResponse)
 
     def create_project(self, project_data: Dict) -> Dict:
         """
@@ -333,7 +333,6 @@ class BCCarbonRegistryAPIClient:
             data=project_data,
             url=self.PROJECT_SUBMIT_ENDPOINT,
             payload_model=ProjectPayload,
-            method="PUT",
             response_model=ProjectDetailsResponse,
             error_message="Invalid project payload",
         )

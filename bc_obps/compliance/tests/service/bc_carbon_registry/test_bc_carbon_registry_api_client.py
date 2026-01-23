@@ -652,8 +652,8 @@ class TestBCCarbonRegistryAPIClient:
         assert result["project_name"] == "Test Project"
         assert result["project_description"] == "Test Description"
         mock_request.assert_called_once_with(
-            method="POST",
-            url=f"{API_URL}/raas-project-api/project-manager/project/456",
+            method="GET",
+            url=f"{API_URL}/raas-project-api/project-manager/getById/456",
             headers=mock_request.call_args.kwargs["headers"],
             json=None,
             params=None,
