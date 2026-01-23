@@ -10,6 +10,14 @@
         "port": 5000
       }
     },
+    "start": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "reporting:build",
+        "port": 5000,
+        "dev": false
+      }
+    },
     "build": {
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],

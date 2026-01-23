@@ -24,7 +24,7 @@
       "executor": "@nx/next:server",
       "options": {
         "buildTarget": "registration:build",
-        "port": 3000,
+        "port": 4000,
         "dev": false
       }
     },
