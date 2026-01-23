@@ -12,14 +12,13 @@ const ReasonForChangeForm: React.FC<ReasonForChangeProps> = ({
   reasonForChange,
   onReasonChange,
 }) => {
-  const borderColor = DARK_GREY_BG_COLOR;
   const styles: React.CSSProperties = {
     width: "100%",
     padding: "8px",
     fontSize: "16px",
     fontFamily: "BCSans, sans-serif",
     borderRadius: "4px",
-    border: `1px solid ${borderColor}`,
+    border: `1px solid ${DARK_GREY_BG_COLOR}`,
     backgroundColor: "white",
     resize: "vertical",
   };
