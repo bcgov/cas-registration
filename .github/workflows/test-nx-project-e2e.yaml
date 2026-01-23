@@ -113,8 +113,9 @@ jobs:
           E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
           E2E_NEW_USER_STORAGE_STATE: ${{ secrets.E2E_NEW_USER_STORAGE_STATE}}
-          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
-          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+          # Happo env vars are only used when not running on a schedule (e.g., nightly builds)
+          HAPPO_API_KEY: ${{ github.event_name == 'schedule' && '' || secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ github.event_name == 'schedule' && '' || secrets.HAPPO_API_SECRET }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
         run: DEBUG=pw:api yarn nx run "$NX_PROJECT":e2e:ci -- --project=chromium
@@ -158,7 +159,7 @@ jobs:
 
   # Call Happo api and skip the project if it wasn't affected
   happo-skip-not-affected:
-    if: ${{ !inputs.is_nx_affected && github.ref_name != 'develop' && github.ref_name != 'main' && github.head_ref != 'develop' && github.head_ref != 'main' }}
+    if: ${{ !inputs.is_nx_affected && github.ref_name != 'develop' && github.ref_name != 'main' && github.head_ref != 'develop' && github.head_ref != 'main' || github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

@@ -49,6 +49,7 @@ The following parameters are available:
     catchup=False,
     is_paused_upon_creation=False,
     doc_md=DAG_DOC,
+    tags=['bciers'],
 )
 def test_migrations(
     destination_namespace: str = BCIERS_NAMESPACE,

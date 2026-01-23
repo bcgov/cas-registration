@@ -134,3 +134,80 @@ jobs:
     uses: ./.github/workflows/trivy.yaml
   codeql:
     uses: ./.github/workflows/codeql.yaml
+  notify:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs:
+      [
+        test-code,
+        test-backend,
+        test-administration-e2e,
+        test-registration-e2e,
+        test-dashboard-e2e,
+        test-compliance-e2e,
+        build-compliance-e2e,
+        build-dashboard,
+        zap-owasp,
+        schemaspy,
+        trivy,
+        codeql,
+      ]
+    env:
+      status: |-
+        ${{
+        needs.test-code.result == 'success'
+        && needs.test-backend.result == 'success'
+        && needs.test-administration-e2e.result == 'success'
+        && needs.test-registration-e2e.result == 'success'
+        && needs.test-dashboard-e2e.result == 'success'
+        && needs.test-compliance-e2e.result == 'success'
+        && needs.build-compliance-e2e.result == 'success'
+        && needs.build-dashboard.result == 'success'
+        && needs.zap-owasp.result == 'success'
+        && needs.schemaspy.result == 'success'
+        && needs.trivy.result == 'success'
+        && needs.codeql.result == 'success'
+        && 'success'
+        || 'failure'
+        }}
+      dag_id: cas_bciers_nightly_build_report
+      airflow_username: ${{ secrets.AIRFLOW_USERNAME }}
+      airflow_password: ${{ secrets.AIRFLOW_PASSWORD }}
+      airflow_endpoint: ${{ secrets.AIRFLOW_ENDPOINT }}
+    steps:
+      - name: Report status to Airflow
+        run: |
+          echo "Reporting status to Airflow"
+          echo "STATUS=${{ env.status }}"
+
+          jwt_token=$(curl -X POST ${{ env.airflow_endpoint }}/auth/token \
+            -H "Content-Type: application/json" \
+            -d "{\"username\": \"${{ env.airflow_username }}\", \"password\": \"${{ env.airflow_password }}\"}" \
+            | jq -r .access_token)
+          auth_params=(-H "Authorization: Bearer $jwt_token")
+
+          is_paused=$(curl "${auth_params[@]}" --url ${{ env.airflow_endpoint }}/api/v2/dags/${{ env.dag_id }} | jq -r .dag.is_paused)
+
+          if [ "$is_paused" == "true" ]; then
+            echo "DAG is paused, skipping trigger"
+            exit 0
+          fi
+
+          dag_config="{\"status\": \"${{ env.status }}\", \"run_id\": \"${{ github.run_id }}\"}"
+          dag_run_url="${{ env.airflow_endpoint }}/api/v2/dags/${{ env.dag_id }}/dagRuns"
+
+          run_json=$(curl -sSf "${auth_params[@]}" \
+            -X POST --url $dag_run_url \
+            -H 'Cache-Control: no-cache' \
+            -H 'Content-Type: application/json' \
+            -d "{\"logical_date\": null,\"conf\": $dag_config, \"note\": \"GitHub Workflow at https://github.com/bcgov/cas-registration/actions/runs/${{ github.run_id }}\"}")
+          dag_run_id=$(echo "$run_json" | jq -r .dag_run_id)
+
+          echo "Reported status for ${{ github.run_id }} to Airflow $dag_run_id with status ${{env.status}}"
+      - name: Create failed build issue
+        uses: jayqi/failed-build-issue-action@1a893bbf43ef1c2a8705e2b115cd4f0fe3c5649b
+        if: failure()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          label-name: "nightly failed"
+          title-template: "Failed nightly build and test: {{workflow}}"

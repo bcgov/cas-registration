@@ -29,6 +29,7 @@ DAG to reset the data in the BCIERS database to a freshly deployed state.
     default_args=default_args,
     is_paused_upon_creation=False,
     doc_md=RESET_DAG_DOC,
+    tags=['bciers'],
 )
 def reset_data():
 
@@ -71,6 +72,7 @@ DAG to wait for the backend rollout to complete. Intended to be triggered after 
     default_args=default_args,
     is_paused_upon_creation=False,
     doc_md=ROLLOUT_DAG_DOC,
+    tags=['bciers'],
 )
 def wait_for_backend_rollout():
     wait_for_backend_rollout_task = KubernetesJobOperator(
