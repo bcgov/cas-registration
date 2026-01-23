@@ -68,6 +68,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
       if (navigateAfterSubmit) {
         setIsRedirecting(true);
         router.push(continueUrl);
+        return;
       } else {
         setIsSuccess(true);
         setTimeout(() => {
