@@ -36,7 +36,7 @@ jobs:
       - name: check nx affected target e2e:ci projects and save output
         id: check-nx-affected
         run: |
-          NX_AFFECTED_E2E=$(yarn nx show projects --affected --with-target e2e:ci --base=origin/develop)
+          NX_AFFECTED_E2E="administration registration dashboard compliance"
           echo "NX_AFFECTED_E2E="$NX_AFFECTED_E2E"" >> "$GITHUB_OUTPUT"
         working-directory: ./bciers
         shell: bash
