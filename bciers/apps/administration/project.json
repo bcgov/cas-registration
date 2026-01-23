@@ -14,7 +14,7 @@
       "executor": "@nx/next:server",
       "options": {
         "buildTarget": "administration:build",
-        "port": 4001,
+        "port": 3000,
         "dev": false
       }
     },
