@@ -30,20 +30,19 @@ export default async function PersonResponsiblePage({
 
   // Determine selected contact if personResponsible exists
   const selectedContact = contactData?.items.find(
-    (contact: { first_name: any; last_name: any }) =>
+    (contact: { first_name: string; last_name: string }) =>
       personResponsibleData?.first_name === contact.first_name &&
       personResponsibleData?.last_name === contact.last_name,
   );
 
   const selectedContactId = selectedContact?.id;
-  const contactFormData = selectedContact || personResponsibleData;
 
   // Move schema creation to the server
   const schema = createPersonResponsibleSchema(
     personResponsibleSchema,
     contactData?.items ?? [],
     selectedContactId,
-    contactFormData,
+    personResponsibleData,
   );
 
   return (
@@ -53,6 +52,7 @@ export default async function PersonResponsiblePage({
       contacts={contactData}
       personResponsible={personResponsibleData}
       schema={schema}
+      initialContactId={selectedContactId}
     />
   );
 }
