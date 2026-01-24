@@ -12,8 +12,8 @@ def add_2025_compliance_period(apps, schema_editor):
         updated_at='2025-01-01T00:00:00Z',
         start_date='2025-01-01',
         end_date='2025-12-31',
-        compliance_deadline='2025-11-30',
-        invoice_generation_date='2025-11-01',
+        compliance_deadline='2026-11-30',
+        invoice_generation_date='2026-11-01',
         reporting_year=ReportingYear.objects.get(reporting_year=2025),
     )
 
