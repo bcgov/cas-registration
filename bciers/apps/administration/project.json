@@ -10,6 +10,14 @@
         "port": 4001
       }
     },
+    "start": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "administration:build",
+        "port": 3000,
+        "dev": false
+      }
+    },
     "build": {
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
