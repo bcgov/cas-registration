@@ -2,7 +2,7 @@ from typing import Literal, Optional, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from registration.schema import OptedInOperationDetailIn, OptedInOperationDetailOut, Message
+from registration.schema import OptedInOperationDetailIn, OptedInOperationDetailOut, OptedOutOperationDetailIn, Message
 from service.operation_service import OperationService
 from registration.constants import OPERATION_TAGS
 from common.permissions import authorize
@@ -37,3 +37,18 @@ def operation_registration_update_opted_in_operation_detail(
     request: HttpRequest, operation_id: UUID, payload: OptedInOperationDetailIn
 ) -> Tuple[Literal[200, 400], OptedInOperationDetail]:
     return 200, OperationService.update_opted_in_operation_detail(get_current_user_guid(request), operation_id, payload)
+
+
+@router.put(
+    "/operations/{uuid:operation_id}/registration/opted-in-operation-detail/final-reporting-year",
+    response={200: OptedInOperationDetailOut, custom_codes_4xx: Message},
+    tags=OPERATION_TAGS,
+    description="""""",
+    auth=authorize('cas_director'),
+)
+def operation_registration_update_final_reporting_year(
+    request: HttpRequest, operation_id: UUID, payload: OptedOutOperationDetailIn
+) -> Tuple[Literal[200, 400], OptedInOperationDetail]:
+    return 200, OperationService.update_opted_in_final_reporting_year(
+        get_current_user_guid(request), operation_id, payload
+    )

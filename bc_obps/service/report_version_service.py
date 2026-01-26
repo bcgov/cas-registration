@@ -31,8 +31,8 @@ class ReportVersionService:
         # Pre-populating data to the draft version
         operation = report.operation
         operator = report.operator
-        if (op_in := operation.opted_in_operation) and (op_out := op_in.opted_out_operation):
-            operation_opted_out_final_reporting_year = op_out.final_reporting_year.reporting_year
+        if (op_in := operation.opted_in_operation) and (op_in.final_reporting_year is not None):
+            operation_opted_out_final_reporting_year = op_in.final_reporting_year.reporting_year
         else:
             operation_opted_out_final_reporting_year = None
 
