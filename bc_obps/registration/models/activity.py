@@ -14,7 +14,7 @@ class Activity(BaseModel):
 
     name = models.CharField(
         max_length=1000,
-        db_comment="The name of an activity. The activity names come from Schedule A of the British Columbia Greenhouse Gas Emission Reporting Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleA",
+        db_comment="The display name of an activity. This is the name that will appear on the frontend when users are selecting activities to report on",
     )
     applicable_to = models.CharField(
         max_length=1000,
@@ -24,6 +24,10 @@ class Activity(BaseModel):
     slug = models.CharField(
         max_length=50,
         db_comment="A varchar slug to identify the activity on the frontend. This will be used to generate the routes to navigate to each activity",
+    )
+    regulated_name = models.CharField(
+        max_length=1000,
+        db_comment="The regulated name of an activity as it appears in Schedule A of the British Columbia Greenhouse Gas Emission Reporting Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleA",
     )
     weight = models.FloatField(
         db_comment='A weighted float value used to order activities. This will be used on the frontend to determine the order in which activity pages appear in an emissions report'
