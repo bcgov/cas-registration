@@ -130,7 +130,7 @@ class OptedInOperationDetailOut(ModelSchema):
             "meets_producing_gger_schedule_a1_regulated_product",
             "meets_reporting_and_regulated_obligations",
             "meets_notification_to_director_on_criteria_change",
-            "final_reporting_year"
+            "final_reporting_year",
         ]
 
 
@@ -143,6 +143,10 @@ class OptedInOperationDetailIn(OptedInOperationDetailOut):
     meets_producing_gger_schedule_a1_regulated_product: bool = Field(...)
     meets_reporting_and_regulated_obligations: bool = Field(...)
     meets_notification_to_director_on_criteria_change: bool = Field(...)
+
+
+class OptedOutOperationDetailIn(OptedInOperationDetailOut):
+    final_reporting_year: int = Field(...)
 
 
 class OperationOut(ModelSchema):
