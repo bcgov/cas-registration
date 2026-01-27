@@ -19,7 +19,11 @@ interface StyledSwitchProps extends SwitchProps {
 }
 
 const StyledSwitch = styled(
-  ({ trueLabel, falseLabel, ...props }: StyledSwitchProps) => (
+  ({
+    trueLabel: _trueLabel,
+    falseLabel: _falseLabel,
+    ...props
+  }: StyledSwitchProps) => (
     <Switch
       focusVisibleClassName=".Mui-focusVisible"
       disableRipple
@@ -180,6 +184,8 @@ const ToggleWidget: React.FC<
         checked={value}
         onChange={(event) => onChange(event.target.checked)}
         disabled={disabled}
+        trueLabel={trueLabel}
+        falseLabel={falseLabel}
         sx={{
           width: totalWidth,
           "& .MuiSwitch-switchBase.Mui-checked": {
