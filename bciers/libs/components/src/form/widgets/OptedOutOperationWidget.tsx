@@ -23,7 +23,6 @@ function deleteOptedOutDetail(operationId: string) {
   return actionHandler(endpoint, "DELETE", "");
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   id,
   value,
@@ -96,14 +95,18 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-[280px_1fr] items-center gap-4">
-        <label className="text-base font-bold text-left">Opt-in status:</label>
+        <label
+          className="text-base font-bold text-left"
+          htmlFor={`${id}-opt-in-status`}
+        >
+          Opt-in status:
+        </label>
         <div>
           <ToggleWidget
             {...({
               id: `${id}-opt-in-status`,
               value: status === "Opted-in",
               onChange: (checked: boolean) => {
-                if (!isCasDirector) return;
                 handleToggle(checked);
               },
               disabled: !isCasDirector,
@@ -113,20 +116,26 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
               uiSchema: {},
               formContext: {},
               registry,
-            } as any)}
+            } as unknown as WidgetProps)}
           />
         </div>
       </div>
       {status === "Opted-out" && (
         <div className="grid grid-cols-[280px_1fr] items-start gap-4">
-          <label className="text-base font-bold text-left pt-2">
+          <label
+            className="text-base font-bold text-left pt-2"
+            htmlFor={`${id}-final-reporting-year`}
+          >
             Year that final report is expected
           </label>
           <div className="flex flex-col gap-2">
             <div style={{ width: 300, minWidth: "12rem" }}>
               <ComboBox
                 id={`${id}-final-reporting-year`}
-                schema={(finalReportingYearSchema || {}) as any}
+                schema={
+                  (finalReportingYearSchema ||
+                    {}) as unknown as WidgetProps["schema"]
+                }
                 value={pendingFinalReportingYear}
                 registry={registry}
                 onChange={handleComboChange}
