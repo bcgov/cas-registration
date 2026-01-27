@@ -13,4 +13,10 @@ fi
 # Wrap Nx command with 'script' to provide a pseudo-TTY for CI environments.
 # Nx v18+ requires a TTY and panics with "No such device or address" in GitHub Actions.
 # See: https://github.com/nrwl/nx/issues/22445
-NODE_OPTIONS="--max-old-space-size=5120" script -qec "yarn nx affected --base=origin/develop --target=lint --parallel" /dev/null
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # macOS: script doesn't support -c flag, run directly
+  NODE_OPTIONS="--max-old-space-size=5120" yarn nx affected --base=origin/develop --target=lint --parallel
+else
+  # Linux: use script with -c flag for pseudo-TTY
+  NODE_OPTIONS="--max-old-space-size=5120" script -qec "yarn nx affected --base=origin/develop --target=lint --parallel" /dev/null
+fi
