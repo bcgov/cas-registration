@@ -19,6 +19,7 @@ class ReportingYearModelTest(BaseTestCase):
         cls.test_object = reporting_year_baker()
         cls.field_data = [
             ("report", "report", None, None),
+            ("optedinoperationdetail", "opted in operation detail", None, None),
             ("compliance_charge_rate", "compliance charge rate", None, None),
             ("compliance_period", "compliance period", None, 0),
             ("reporting_year", "reporting year", None, None),
