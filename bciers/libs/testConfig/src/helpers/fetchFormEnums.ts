@@ -28,7 +28,7 @@ const fetchFormEnums = (app: Apps) => {
     getReportingActivities.mockResolvedValue([
       {
         id: 1,
-        name: "General stationary combustion excluding line tracing",
+        name: "General stationary combustion excluding line tracing (at SFO)",
         applicable_to: "all",
       },
       {

@@ -7,7 +7,7 @@ from reporting.models.configuration_element import ConfigurationElement
 
 class TestGSCExcludingLineTracing2024(TestCase):
     def testDataExists(self):
-        activity = Activity.objects.get(name='General stationary combustion excluding line tracing')
+        activity = Activity.objects.get(name='General stationary combustion excluding line tracing (at SFO)')
         config = Configuration.objects.get(slug='2024')
 
         config_elements = ConfigurationElement.objects.filter(

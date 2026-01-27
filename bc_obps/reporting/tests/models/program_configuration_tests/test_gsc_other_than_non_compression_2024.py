@@ -7,9 +7,7 @@ from reporting.models.configuration_element import ConfigurationElement
 
 class TestGSCOtherThanNonCompression2024(TestCase):
     def testDataExists(self):
-        activity = Activity.objects.get(
-            name='General stationary combustion, other than non-compression and non-processing combustion'
-        )
+        activity = Activity.objects.get(name='General stationary combustion (compression and processing)')
         config = Configuration.objects.get(slug='2024')
 
         config_elements = ConfigurationElement.objects.filter(

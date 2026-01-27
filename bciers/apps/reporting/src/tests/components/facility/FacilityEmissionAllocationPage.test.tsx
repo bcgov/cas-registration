@@ -40,7 +40,7 @@ const mockReportTaskList = {
 const orderedActivities = [
   {
     id: 1,
-    name: "General stationary combustion excluding line tracing",
+    name: "General stationary combustion excluding line tracing (at SFO)",
     slug: "gsc_excluding_line_tracing",
   },
   { id: 5, name: "Ammonia production", slug: "ammonia_production" },
