@@ -9,8 +9,15 @@ vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
 
+interface ComboBoxProps {
+  onChange: (value: number) => void;
+  disabled: boolean;
+  value: number | undefined;
+  rawErrors: string[] | undefined;
+}
+
 vi.mock("./ComboBox", () => ({
-  default: ({ onChange, disabled, value, rawErrors }: any) => (
+  default: ({ onChange, disabled, value, rawErrors }: ComboBoxProps) => (
     <div>
       <button onClick={() => onChange(2025)} disabled={disabled}>
         select-year
@@ -21,8 +28,14 @@ vi.mock("./ComboBox", () => ({
   ),
 }));
 
+interface ToggleWidgetProps {
+  value: boolean;
+  onChange: (value: boolean) => void;
+  disabled: boolean;
+}
+
 vi.mock("./ToggleWidget", () => ({
-  default: ({ value, onChange, disabled }: any) => (
+  default: ({ value, onChange, disabled }: ToggleWidgetProps) => (
     <button onClick={() => onChange(!value)} disabled={disabled}>
       toggle:{value ? "on" : "off"}
     </button>
@@ -30,6 +43,12 @@ vi.mock("./ToggleWidget", () => ({
 }));
 
 // -------------------- helpers --------------------
+
+interface FormContext {
+  isOptedOut: boolean;
+  isCasDirector: boolean;
+  operationId: string;
+}
 
 const baseProps: any = {
   id: "opted-out",
@@ -42,9 +61,14 @@ const baseProps: any = {
     },
   },
   uiSchema: {},
+  name: "opted-out",
+  options: {},
+  onBlur: vi.fn(),
+  onFocus: vi.fn(),
+  label: "",
 };
 
-function renderWidget(formContext: any) {
+function renderWidget(formContext: FormContext) {
   return render(
     <OptedOutOperationWidget {...baseProps} formContext={formContext} />,
   );
