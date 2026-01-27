@@ -132,7 +132,7 @@ class OperationService:
     ) -> OptedInOperationDetail:
         operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
         if not operation.opted_in_operation:
-            raise UserError("Operation does not have an opted-in operation.")
+            raise OptedInOperationDetail.DoesNotExist("Operation does not have an opted-in operation.")
         return OptedInOperationDataAccessService.update_opted_in_operation_detail(
             operation.opted_in_operation.id, payload
         )
@@ -149,7 +149,7 @@ class OperationService:
     ) -> OptedInOperationDetail:
         operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
         if not operation.opted_in_operation:
-            raise UserError("Operation does not have an opted-in operation.")
+            raise OptedInOperationDetail.DoesNotExist("There is no opted-in operation detail for this operation.")
         return OptedInOperationDataAccessService.update_opted_in_final_reporting_year(
             operation.opted_in_operation.id, payload
         )
