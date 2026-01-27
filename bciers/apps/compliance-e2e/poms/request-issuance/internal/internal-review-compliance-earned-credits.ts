@@ -15,9 +15,9 @@ import { getCrvIdFromUrl } from "@bciers/e2e/utils/helpers";
 export class InternalReviewComplianceEarnedCreditsPOM {
   private readonly page: Page;
 
-  // 👇 Analyst controls
+  // Analyst sugestion control
   private readonly analystSuggestionInput: Locator;
-  // 👇 Director decision controls
+  // Director decision controls
   private readonly approveButton: Locator;
   private readonly declineButton: Locator;
 
@@ -36,6 +36,7 @@ export class InternalReviewComplianceEarnedCreditsPOM {
   }
 
   async assertAnalystSuggestionValue(expected: RegExp | string): Promise<void> {
+    // ✅ Assert expected value
     await expect(this.analystSuggestionInput).toBeVisible();
     await expect(this.analystSuggestionInput).toHaveText(expected);
   }
@@ -44,9 +45,11 @@ export class InternalReviewComplianceEarnedCreditsPOM {
     isVisible: boolean,
   ): Promise<void> {
     if (isVisible) {
+      // ✅ Assert buttons visible
       await expect(this.approveButton).toBeVisible();
       await expect(this.declineButton).toBeVisible();
     } else {
+      // ❌ Assert NO buttons
       await expect(this.approveButton).toHaveCount(0);
       await expect(this.declineButton).toHaveCount(0);
     }
@@ -69,16 +72,20 @@ export class InternalReviewComplianceEarnedCreditsPOM {
     await expect(option).toBeVisible();
     await option.click();
 
-    // Assert the selected suggestion matches the one requested
+    // ✅ Assert the selected suggestion matches the suggestion prop
     const selectedText = await group
       .locator('label:has(input[type="radio"]:checked)')
       .innerText();
 
     expect(selectedText).toMatch(new RegExp(suggestion, "i"));
 
+    // Click submit and wait for navigation
     await clickButton(this.page, CONTINUE_BUTTON_TEXT, {
       waitForUrl: REVIEW_BY_DIRECTOR_URL_PATTERN,
     });
+
+    // ✅ Assert the route
+    await expect(this.page).toHaveURL(REVIEW_BY_DIRECTOR_URL_PATTERN);
   }
 
   /**

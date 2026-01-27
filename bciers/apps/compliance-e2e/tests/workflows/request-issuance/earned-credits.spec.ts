@@ -95,7 +95,7 @@ test.describe("Test earned credits request issuance flow", () => {
         // Route to compliance summaries
         await industrySummaries.route();
 
-        // Click earned credits summary action "Request Issuance of Credits"
+        // Click action "Request Issuance of Credits"
         await industrySummaries.openActionForOperation({
           operationName: ComplianceOperations.EARNED_CREDITS,
           linkName: GridActionText.REQUEST_ISSUANCE_CREDITS,
@@ -106,6 +106,24 @@ test.describe("Test earned credits request issuance flow", () => {
 
         // Submit Request Issuance of Earned Credits
         await industryEarnedCredits.submitRequestIssuance(request);
+
+        // Route to compliance summaries
+        await industrySummaries.route();
+
+        // ✅ Assert status updated
+        await industrySummaries.assertStatusForOperation(
+          ComplianceOperations.EARNED_CREDITS,
+          ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
+        );
+
+        // Click action "Request Issuance of Credits"
+        await industrySummaries.openActionForOperation({
+          operationName: ComplianceOperations.EARNED_CREDITS,
+          linkName: GridActionText.VIEW_DETAILS,
+        });
+
+        // ❌ Assert NO "Request Issuance of Credits" button
+        await industryEarnedCredits.assertRequestIssuanceButtonVisible(false);
       } finally {
         await industryPage.close();
       }
@@ -124,7 +142,7 @@ test.describe("Test earned credits request issuance flow", () => {
 
         await analystSummaries.route();
 
-        // Assert row for "Earned credits - issuance requested"
+        // ✅ Assert row status
         await analystSummaries.assertStatusForOperation(
           ComplianceOperations.EARNED_CREDITS,
           ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
@@ -139,14 +157,15 @@ test.describe("Test earned credits request issuance flow", () => {
         // Click task list "Review Credits Issuance Request"
         await analystTaskList.clickReviewRequestIssuance();
 
-        // Set analyst suggestion
+        // Submit analyst suggestion
         await analystEarnedCredits.submitAnalystReviewRequestIssuance(
           c.analystSuggestion,
         );
 
+        // ❌ Assert NO Approve\Decline buttons
         await analystEarnedCredits.assertDirectorDecisionButtonsVisible(false);
 
-        // Assert analyst suggestion persisted
+        // ✅ Assert analyst suggestion persisted
         await analystTaskList.clickReviewRequestIssuance();
         await analystEarnedCredits.assertAnalystSuggestionValue(
           new RegExp(c.analystSuggestion, "i"),
@@ -156,10 +175,10 @@ test.describe("Test earned credits request issuance flow", () => {
       }
 
       // ----------------
-      // Branch A) Suggestion != READY_TO_APPROVE
+      // Branch Suggestion != READY_TO_APPROVE
+      // Industry user sees correct issuance status
       // ----------------
       if (!isReadyToApproveCase(c)) {
-        // Industry sees changes required action
         const industryPage2 = await openNewBrowserContextAs(
           UserRole.INDUSTRY_USER_ADMIN,
         );
@@ -181,7 +200,7 @@ test.describe("Test earned credits request issuance flow", () => {
       }
 
       // ----------------
-      // Branch B) Suggestion == READY_TO_APPROVE
+      // Branch Suggestion == READY_TO_APPROVE
       // Director approves/declines
       // ----------------
       const directorPage = await openNewBrowserContextAs(UserRole.CAS_DIRECTOR);
@@ -207,8 +226,10 @@ test.describe("Test earned credits request issuance flow", () => {
 
         await directorTaskList.clickReviewByDirector();
 
+        // ✅ Assert Approve\Decline buttons
         await directorEarnedCredits.assertDirectorDecisionButtonsVisible(true);
 
+        // Submit director decision
         if (c.directorDecision === IssuanceStatus.APPROVED) {
           // Attach stub + submit for Approved
           await directorEarnedCredits.approveIssuanceDirect(request);
@@ -220,6 +241,7 @@ test.describe("Test earned credits request issuance flow", () => {
 
         await directorSummaries.route();
 
+        // ✅ Assert row status is director decision
         await directorSummaries.assertStatusForOperation(
           ComplianceOperations.EARNED_CREDITS,
           c.expectedFinalStatus,
