@@ -591,7 +591,7 @@ class DecreasedObligationHandler:
         prior_invoices: QuerySet[ElicensingInvoice],
     ) -> QuerySet[ElicensingInvoice]:
         """
-        Find all non-void invoices linked to obligations on the given CRV id,
+        Find most recent non-void invoices linked to obligations on the given CRV id,
         if it is void it will go to the previous in the CRV chain.
         """
 

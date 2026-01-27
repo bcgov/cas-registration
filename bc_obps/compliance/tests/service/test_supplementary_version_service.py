@@ -3,6 +3,7 @@ from compliance.models import (
     ComplianceReportVersion,
     ComplianceEarnedCredit,
     ComplianceReportVersionManualHandling,
+    ElicensingInvoice,
 )
 from reporting.models import ReportVersion
 from compliance.service.supplementary_version_service import (
@@ -934,6 +935,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
     Grouped by purpose:
       - can_handle_* : Eligibility logic (whether the handler should run)
       - handle_* : Behavioral logic (effects on invoices, refunds, manual handling)
+      - helper_* : Internal helper methods
     """
 
     # -------------------------------------------------------------------
@@ -2069,6 +2071,109 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_void_invoices.assert_not_called()
         # Not all cleared → no manual handling
         mock_record_manual_handling.assert_not_called()
+
+    # -------------------------------------------------------------------
+    # helper tests
+    # -------------------------------------------------------------------
+
+    def test_helper__find_newest_non_void_prior_invoices(
+        self,
+    ):
+        """
+        Tests if helper function correctly walks backwards through report versions finding nearest valid invoice past voided ones
+        """
+        # Arrange
+        self.invoice_1 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+        )
+        self.invoice_2 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+        )
+        self.invoice_3 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+            is_void=True,
+        )
+        self.invoice_4 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+            is_void=True,
+        )
+
+        self.line_item_1 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_line_item',
+            elicensing_invoice=self.invoice_1,
+        )
+        self.line_item_2 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_line_item',
+            elicensing_invoice=self.invoice_2,
+        )
+        self.line_item_3 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_line_item',
+            elicensing_invoice=self.invoice_3,
+        )
+        self.line_item_4 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_line_item',
+            elicensing_invoice=self.invoice_4,
+        )
+
+        self.payment_1 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_payment',
+            elicensing_line_item=self.line_item_1,
+            amount=Decimal('100.01'),
+        )
+        self.payment_2 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_payment',
+            elicensing_line_item=self.line_item_2,
+            amount=Decimal('100.01'),
+        )
+
+        self.crv_1 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+        )
+        self.crv_2 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            previous_version=self.crv_1,
+        )
+        self.crv_3 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            previous_version=self.crv_2,
+        )
+        self.crv_4 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            previous_version=self.crv_3,
+        )
+        self.crv_5 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            previous_version=self.crv_4,
+        )
+
+        self.obligation_1 = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            elicensing_invoice=self.invoice_1,
+            compliance_report_version=self.crv_1,
+        )
+        self.obligation_2 = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            elicensing_invoice=self.invoice_2,
+            compliance_report_version=self.crv_2,
+        )
+        self.obligation_3 = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            elicensing_invoice=self.invoice_3,
+            compliance_report_version=self.crv_3,
+        )
+        self.obligation_4 = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            elicensing_invoice=self.invoice_4,
+            compliance_report_version=self.crv_4,
+        )
+
+        # Act
+        result = DecreasedObligationHandler._find_newest_non_void_prior_invoices(
+            self.crv_5.id, ElicensingInvoice.objects.none()
+        )
+
+        # Assert
+        assert result.first() == self.invoice_2
 
 
 class TestNoChangeHandler(BaseSupplementaryVersionServiceTest):
