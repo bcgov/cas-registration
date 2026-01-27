@@ -1,3 +1,9 @@
+## [5.0.1](https://github.com/bcgov/cas-registration/compare/5.0.0...5.0.1) (2026-01-27)
+
+### Bug Fixes
+
+- slow navigation after save and continue in reporting app ([1d917e3](https://github.com/bcgov/cas-registration/commit/1d917e39c1dfaaccf8ba2d33dd0bda3b1f4d8775))
+
 # [5.0.0](https://github.com/bcgov/cas-registration/compare/4.7.1...5.0.0) (2026-01-15)
 
 ### Bug Fixes
