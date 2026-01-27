@@ -42,6 +42,7 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
         )
         assert response.status_code == 200
         assert response.json() == {
+            "final_reporting_year": None,
             "meets_section_3_emissions_requirements": True,
             "meets_electricity_import_operation_criteria": True,
             "meets_entire_operation_requirements": True,
