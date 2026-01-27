@@ -15,12 +15,24 @@ import { getCrvIdFromUrl } from "@bciers/e2e/utils/helpers";
 export class InternalReviewComplianceEarnedCreditsPOM {
   private readonly page: Page;
 
+  // 👇 Analyst controls
   private readonly analystSuggestionInput: Locator;
+  // 👇 Director decision controls
+  private readonly approveButton: Locator;
+  private readonly declineButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
 
     this.analystSuggestionInput = this.page.locator(ANALYST_SUGGESTION_INPUT);
+
+    this.approveButton = this.page.getByRole("button", {
+      name: DECISION_TO_BUTTON[IssuanceStatus.APPROVED],
+    });
+
+    this.declineButton = this.page.getByRole("button", {
+      name: DECISION_TO_BUTTON[IssuanceStatus.DECLINED],
+    });
   }
 
   async assertAnalystSuggestionValue(expected: RegExp | string): Promise<void> {
@@ -28,30 +40,49 @@ export class InternalReviewComplianceEarnedCreditsPOM {
     await expect(this.analystSuggestionInput).toHaveText(expected);
   }
 
+  async assertDirectorDecisionButtonsVisible(
+    isVisible: boolean,
+  ): Promise<void> {
+    if (isVisible) {
+      await expect(this.approveButton).toBeVisible();
+      await expect(this.declineButton).toBeVisible();
+    } else {
+      await expect(this.approveButton).toHaveCount(0);
+      await expect(this.declineButton).toHaveCount(0);
+    }
+  }
+
   /**
    * Analyst flow: submits the analyst review
+     Submits the analyst suggestion to update_compliance_report_version_earned_credit
    */
-  async submitAnalystReviewRequestIssuance(): Promise<void> {
-    // Assert the analyst suggestion is READY_TO_APPROVE
+  async submitAnalystReviewRequestIssuance(
+    suggestion: AnalystSuggestion = AnalystSuggestion.READY_TO_APPROVE,
+  ): Promise<void> {
     const group = this.analystSuggestionInput;
     await expect(group).toBeVisible();
 
+    // Select the requested suggestion
+    const option = group.locator("label", {
+      hasText: new RegExp(suggestion, "i"),
+    });
+    await expect(option).toBeVisible();
+    await option.click();
+
+    // Assert the selected suggestion matches the one requested
     const selectedText = await group
       .locator('label:has(input[type="radio"]:checked)')
       .innerText();
 
-    expect(selectedText).toMatch(
-      new RegExp(AnalystSuggestion.READY_TO_APPROVE, "i"),
-    );
+    expect(selectedText).toMatch(new RegExp(suggestion, "i"));
 
-    // Click submit and wait for navigation
     await clickButton(this.page, CONTINUE_BUTTON_TEXT, {
       waitForUrl: REVIEW_BY_DIRECTOR_URL_PATTERN,
     });
   }
 
   /**
-   * Director flow: director decision is Approved
+   * Director flow: submits director decision Approved to run_e2e_integration_stub
    */
   async approveIssuanceDirect(apiContext: APIRequestContext): Promise<void> {
     const crvId = getCrvIdFromUrl({ url: this.page.url() });
@@ -72,7 +103,7 @@ export class InternalReviewComplianceEarnedCreditsPOM {
   }
 
   /**
-   * Director flow: submits the director decision
+   * Director flow: submits the director decision to update_compliance_report_version_earned_credit
    */
   async submitDirectorReviewIssuance(
     decision: DirectorDecision,

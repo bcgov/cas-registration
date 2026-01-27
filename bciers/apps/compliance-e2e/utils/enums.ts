@@ -32,10 +32,12 @@ export enum ComplianceSummariesGridHeaders {
 }
 
 // Grid Action Text
+
 export enum GridActionText {
   REQUEST_ISSUANCE_CREDITS = "Request Issuance of Credits",
   REVIEW_REQUEST_ISSUANCE = "Review Credits Issuance Request",
   MANAGE_OBLIGATION = "Manage Obligation",
   VIEW_DETAILS = "View Details",
   CONTACT_US = "Contact Us",
+  REVIEW_CHANGE_REQUIRED = "Review Change Required",
 }

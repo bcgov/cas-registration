@@ -6,7 +6,10 @@ import {
   ComplianceDisplayStatus,
   GridActionText,
 } from "@/compliance-e2e/utils/enums";
-import { DirectorDecision } from "@/compliance-e2e/utils/constants";
+import {
+  DirectorDecision,
+  REQUEST_ISSUANCE_CREDITS_URL_PATTERN,
+} from "@/compliance-e2e/utils/constants";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summaries";
 import { ReviewComplianceEarnedCreditsPOM } from "@/compliance-e2e/poms/request-issuance/review-compliance-earned-credits";
@@ -20,32 +23,65 @@ const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
 
 test.describe.configure({ mode: "serial" });
 
-const CASES: Array<{
-  decision: DirectorDecision;
-  expectedStatus: ComplianceDisplayStatus;
-}> = [
+/**
+ * READY_TO_APPROVE => director can approve/decline
+ * REQUIRING_*      => should map to issuance_status === CHANGES_REQUIRED
+ */
+type ReadyToApproveCase = {
+  analystSuggestion: AnalystSuggestion.READY_TO_APPROVE;
+  directorDecision: DirectorDecision;
+  expectedFinalStatus: ComplianceDisplayStatus;
+};
+
+type ChangeRequiredCase = {
+  analystSuggestion:
+    | AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID
+    | AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT;
+};
+
+type FlowCase = ReadyToApproveCase | ChangeRequiredCase;
+
+function isReadyToApproveCase(c: FlowCase): c is ReadyToApproveCase {
+  return c.analystSuggestion === AnalystSuggestion.READY_TO_APPROVE;
+}
+
+const FLOW_CASES: FlowCase[] = [
   {
-    decision: IssuanceStatus.APPROVED,
-    expectedStatus: ComplianceDisplayStatus.EARNED_CREDITS_APPROVED,
+    analystSuggestion: AnalystSuggestion.READY_TO_APPROVE,
+    directorDecision: IssuanceStatus.APPROVED,
+    expectedFinalStatus: ComplianceDisplayStatus.EARNED_CREDITS_APPROVED,
   },
   {
-    decision: IssuanceStatus.DECLINED,
-    expectedStatus: ComplianceDisplayStatus.EARNED_CREDITS_DECLINED,
+    analystSuggestion: AnalystSuggestion.READY_TO_APPROVE,
+    directorDecision: IssuanceStatus.DECLINED,
+    expectedFinalStatus: ComplianceDisplayStatus.EARNED_CREDITS_DECLINED,
+  },
+  {
+    analystSuggestion:
+      AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID,
+  },
+  {
+    analystSuggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
   },
 ];
 
 test.describe("Test earned credits request issuance flow", () => {
   test.slow();
-  for (const c of CASES) {
-    test(`Industry submits request issuance → analyst sets as ready for approval → director ${c.decision}`, async ({
-      request,
-    }) => {
-      // 1) Industry user
+
+  for (const c of FLOW_CASES) {
+    const title = isReadyToApproveCase(c)
+      ? `Industry submits → Analyst(${String(c.analystSuggestion)}) → Director(${String(c.directorDecision)})`
+      : `Industry submits → Analyst(${String(c.analystSuggestion)})`;
+
+    // eslint-disable-next-line playwright/valid-title
+    test(String(title), async ({ request }) => {
+      // ----------------
+      // 1) Industry user submits issuance request
+      // ----------------
       const industryPage = await openNewBrowserContextAs(
         UserRole.INDUSTRY_USER_ADMIN,
       );
       try {
-        // Init POMs
         const gridReportingReports = new CurrentReportsPOM(industryPage);
         const industrySummaries = new ComplianceSummariesPOM(industryPage);
         const industryTaskList = new RequestIssuanceTaskListPOM(industryPage);
@@ -53,12 +89,13 @@ test.describe("Test earned credits request issuance flow", () => {
           industryPage,
         );
 
-        //  Submit report for earned credits
+        // Submit report for earned credits
         await gridReportingReports.submitReportEarnedCredits(false, request);
 
         // Route to compliance summaries
         await industrySummaries.route();
-        // Click earned credits summary report action "Review Credits Issuance Request"
+
+        // Click earned credits summary action "Request Issuance of Credits"
         await industrySummaries.openActionForOperation({
           operationName: ComplianceOperations.EARNED_CREDITS,
           linkName: GridActionText.REQUEST_ISSUANCE_CREDITS,
@@ -73,10 +110,11 @@ test.describe("Test earned credits request issuance flow", () => {
         await industryPage.close();
       }
 
-      // 2) Analyst
+      // ----------------
+      // 2) Analyst sets suggestion
+      // ----------------
       const analystPage = await openNewBrowserContextAs(UserRole.CAS_ANALYST);
       try {
-        // Init POMs
         const analystSummaries = new ComplianceSummariesPOM(analystPage);
         const analystEarnedCredits =
           new InternalReviewComplianceEarnedCreditsPOM(analystPage);
@@ -84,14 +122,15 @@ test.describe("Test earned credits request issuance flow", () => {
           analystPage,
         );
 
-        // Route to compliance summaries
         await analystSummaries.route();
+
         // Assert row for "Earned credits - issuance requested"
         await analystSummaries.assertStatusForOperation(
           ComplianceOperations.EARNED_CREDITS,
           ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
         );
-        // Click earned credits summary report action "Review Credits Issuance Request"
+
+        // Open action "Review Credits Issuance Request"
         await analystSummaries.openActionForOperation({
           operationName: ComplianceOperations.EARNED_CREDITS,
           linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
@@ -100,22 +139,53 @@ test.describe("Test earned credits request issuance flow", () => {
         // Click task list "Review Credits Issuance Request"
         await analystTaskList.clickReviewRequestIssuance();
 
-        // Submit analyst suggestion "Ready for approval"
-        await analystEarnedCredits.submitAnalystReviewRequestIssuance();
+        // Set analyst suggestion
+        await analystEarnedCredits.submitAnalystReviewRequestIssuance(
+          c.analystSuggestion,
+        );
 
-        // Assert analyst suggestion "Ready for approval"
+        await analystEarnedCredits.assertDirectorDecisionButtonsVisible(false);
+
+        // Assert analyst suggestion persisted
         await analystTaskList.clickReviewRequestIssuance();
         await analystEarnedCredits.assertAnalystSuggestionValue(
-          new RegExp(AnalystSuggestion.READY_TO_APPROVE, "i"),
+          new RegExp(c.analystSuggestion, "i"),
         );
       } finally {
         await analystPage.close();
       }
 
-      // 3) Director
+      // ----------------
+      // Branch A) Suggestion != READY_TO_APPROVE
+      // ----------------
+      if (!isReadyToApproveCase(c)) {
+        // Industry sees changes required action
+        const industryPage2 = await openNewBrowserContextAs(
+          UserRole.INDUSTRY_USER_ADMIN,
+        );
+        try {
+          const industrySummaries2 = new ComplianceSummariesPOM(industryPage2);
+
+          await industrySummaries2.route();
+
+          await industrySummaries2.openActionForOperation({
+            operationName: ComplianceOperations.EARNED_CREDITS,
+            linkName: GridActionText.REVIEW_CHANGE_REQUIRED,
+            urlPattern: REQUEST_ISSUANCE_CREDITS_URL_PATTERN,
+          });
+        } finally {
+          await industryPage2.close();
+        }
+
+        return; // No director decision in this branch
+      }
+
+      // ----------------
+      // Branch B) Suggestion == READY_TO_APPROVE
+      // Director approves/declines
+      // ----------------
       const directorPage = await openNewBrowserContextAs(UserRole.CAS_DIRECTOR);
       try {
-        //  Init POMs
         const directorSummaries = new ComplianceSummariesPOM(directorPage);
         const directorEarnedCredits =
           new InternalReviewComplianceEarnedCreditsPOM(directorPage);
@@ -123,36 +193,36 @@ test.describe("Test earned credits request issuance flow", () => {
           directorPage,
         );
 
-        // Route to compliance summaries
         await directorSummaries.route();
-        // Assert row for "Earned credits - issuance requested"
+
         await directorSummaries.assertStatusForOperation(
           ComplianceOperations.EARNED_CREDITS,
           ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
         );
-        // Click earned credits summary report action "Review Credits Issuance Request"
+
         await directorSummaries.openActionForOperation({
           operationName: ComplianceOperations.EARNED_CREDITS,
           linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
         });
 
-        // Click task list "Review by Director"
         await directorTaskList.clickReviewByDirector();
 
-        if (c.decision === IssuanceStatus.APPROVED) {
+        await directorEarnedCredits.assertDirectorDecisionButtonsVisible(true);
+
+        if (c.directorDecision === IssuanceStatus.APPROVED) {
           // Attach stub + submit for Approved
           await directorEarnedCredits.approveIssuanceDirect(request);
         } else {
-          // Submit for Declined
-          await directorEarnedCredits.submitDirectorReviewIssuance(c.decision);
+          await directorEarnedCredits.submitDirectorReviewIssuance(
+            c.directorDecision,
+          );
         }
 
-        // Route to compliance summaries
         await directorSummaries.route();
-        // Assert row for earned credits - decision
+
         await directorSummaries.assertStatusForOperation(
           ComplianceOperations.EARNED_CREDITS,
-          c.expectedStatus,
+          c.expectedFinalStatus,
         );
       } finally {
         await directorPage.close();
