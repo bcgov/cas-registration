@@ -109,7 +109,7 @@ class ReportingDashboardService:
             )  # ✅ Filter operations with status "Registered"
             .exclude(registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
             # Exclude operations that have opted-out effective before the specified reporting_year
-            .exclude(opted_in_operation__opted_out_operation__final_reporting_year__lt=reporting_year)
+            .exclude(opted_in_operation__final_reporting_year__lt=reporting_year)
             .annotate(
                 # the [:1] is necessary for the sorting and filters to work
                 report_id=Subquery(report_subquery.values("id")[:1]),

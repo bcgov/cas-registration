@@ -661,13 +661,8 @@ ENDPOINTS = {
             "kwargs": {"facility_id": MOCK_UUID},
         },
         {
-            "method": "post",
-            "endpoint_name": "operation_registration_create_opted_out_operation_detail",
-            "kwargs": {"operation_id": MOCK_UUID},
-        },
-        {
-            "method": "delete",
-            "endpoint_name": "delete_opted_out_operation_detail",
+            "method": "put",
+            "endpoint_name": "operation_registration_update_final_reporting_year",
             "kwargs": {"operation_id": MOCK_UUID},
         },
     ],
