@@ -43,7 +43,7 @@ def update_activity_name(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0154_V5_0_0'),
+        ('registration', '0155_V5_0_1'),
     ]
 
     operations = [
