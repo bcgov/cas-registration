@@ -20,14 +20,16 @@ BCCR_ACCOUNT_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.bccr_account_service"
 COMPLIANCE_REPORT_VERSION_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.ComplianceReportVersionService"
 COMPLIANCE_CHARGE_RATE_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.ComplianceChargeRateService"
 COMPLIANCE_OBLIGATION_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.ComplianceObligationService"
-RETRYABLE_CREATE_ADJUSTMENT_PATH = f"{APPLY_UNITS_BASE_PATH}.retryable_create_adjustment"
+RETRYABLE_CREATE_ADJUSTMENT_FOR_CURRENT_VERSION_PATH = (
+    f"{APPLY_UNITS_BASE_PATH}.retryable_create_adjustment_for_current_version"
+)
 ELICENSING_DATA_REFRESH_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.ElicensingDataRefreshService"
 
 # Specific method paths
 COMPUTE_COMPLIANCE_UNIT_CAPS_PATH = f"{APPLY_UNITS_SERVICE_PATH}._compute_compliance_unit_caps"
 VALIDATE_QUANTITY_LIMITS = f"{APPLY_UNITS_SERVICE_PATH}._validate_quantity_limits"
 CAN_APPLY_COMPLIANCE_UNITS_PATH = f"{APPLY_UNITS_SERVICE_PATH}.can_apply_compliance_units"
-COMPLIANCE_CREATE_ADJUSTMENT_PATH = f"{RETRYABLE_CREATE_ADJUSTMENT_PATH}.execute"
+COMPLIANCE_CREATE_ADJUSTMENT_PATH = f"{RETRYABLE_CREATE_ADJUSTMENT_FOR_CURRENT_VERSION_PATH}.execute"
 GET_OBLIGATION_FOR_REPORT_VERSION_PATH = f"{COMPLIANCE_OBLIGATION_SERVICE_PATH}.get_obligation_for_report_version"
 GET_OBLIGATION_DATA_BY_REPORT_VERSION_PATH = (
     f"{COMPLIANCE_OBLIGATION_SERVICE_PATH}.get_obligation_data_by_report_version"
@@ -259,7 +261,7 @@ class TestApplyComplianceUnitsService:
         invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
         obligation = baker.make_recipe(
             "compliance.tests.utils.compliance_obligation",
-            fee_amount_dollars=Decimal('1000'),
+            fee_amount_dollars=Decimal("1000"),
             elicensing_invoice_id=invoice.id,
         )
 
@@ -448,7 +450,7 @@ class TestApplyComplianceUnitsService:
 
         # Act
         result = ApplyComplianceUnitsService._get_total_adjustments_for_report_version_by_reason(
-            1, 'Compliance Units Applied'
+            1, "Compliance Units Applied"
         )
 
         # Assert: fallback to zero when no line items or aggregate is None

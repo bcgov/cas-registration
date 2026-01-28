@@ -33,6 +33,13 @@ retryable_create_adjustment = create_retryable(
     retry_delay_minutes=5,
 )
 
+retryable_create_adjustment_for_current_version = create_retryable(
+    func=ComplianceAdjustmentService.create_adjustment_for_current_version,
+    tag="elicensing_adjustment_create_current_version",
+    max_retries=2,
+    retry_delay_minutes=5,
+)
+
 retryable_process_obligation_integration = create_retryable(
     func=ElicensingObligationService.process_obligation_integration,
     tag="elicensing_obligation_integration",
