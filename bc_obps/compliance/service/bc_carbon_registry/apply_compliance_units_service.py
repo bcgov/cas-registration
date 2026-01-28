@@ -1,6 +1,5 @@
 from dataclasses import asdict
 from typing import Dict, List, Optional, Any
-from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 from common.exceptions import UserError
 from compliance.dataclass import ComplianceUnitsPageData, BCCRUnit, TransferComplianceUnitsPayload, MixedUnit
 from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
@@ -8,6 +7,7 @@ from compliance.service.compliance_charge_rate_service import ComplianceChargeRa
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
+from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 
 from decimal import Decimal
 from compliance.models.elicensing_adjustment import ElicensingAdjustment

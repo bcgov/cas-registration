@@ -10,7 +10,7 @@ VALID_COMPLIANCE_REPORT_VERSION_ID = 1
 APPLY_COMPLIANCE_UNITS_SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.get_apply_compliance_units_page_data"
 VALIDATE_PERMISSION_PATH = 'common.permissions.validate_all'
 APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.apply_compliance_units"
-CREATE_ADJUSTMENT_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment_for_current_version"
+COMPLIANCE_ADJUSTMENT_SERVICE_CREATE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment_for_current_version"
 CAN_APPLY_COMPLIANCE_UNITS_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.can_apply_compliance_units"
 ELICENSING_DATA_REFRESH_WRAPPER_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
 
@@ -142,7 +142,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
 
     @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
     @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
-    @patch(CREATE_ADJUSTMENT_PATH)
+    @patch(COMPLIANCE_ADJUSTMENT_SERVICE_CREATE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
     @patch(APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH)
     def test_apply_compliance_units_success(
@@ -209,7 +209,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
 
     @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
     @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
-    @patch(CREATE_ADJUSTMENT_PATH)
+    @patch(COMPLIANCE_ADJUSTMENT_SERVICE_CREATE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
     @patch(APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH)
     def test_apply_compliance_units_with_units_having_zero_quantity(

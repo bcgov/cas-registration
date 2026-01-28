@@ -259,7 +259,7 @@ class TestApplyComplianceUnitsService:
         invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
         obligation = baker.make_recipe(
             "compliance.tests.utils.compliance_obligation",
-            fee_amount_dollars=Decimal('1000'),
+            fee_amount_dollars=Decimal("1000"),
             elicensing_invoice_id=invoice.id,
         )
 
@@ -448,7 +448,7 @@ class TestApplyComplianceUnitsService:
 
         # Act
         result = ApplyComplianceUnitsService._get_total_adjustments_for_report_version_by_reason(
-            1, 'Compliance Units Applied'
+            1, "Compliance Units Applied"
         )
 
         # Assert: fallback to zero when no line items or aggregate is None
