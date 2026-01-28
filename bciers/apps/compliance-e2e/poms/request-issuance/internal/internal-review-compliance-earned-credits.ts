@@ -6,6 +6,7 @@ import {
   DECISION_TO_BUTTON,
   DirectorDecision,
   REVIEW_BY_DIRECTOR_URL_PATTERN,
+  TRACK_ISSUANCE_URL_PATTERN,
 } from "@/compliance-e2e/utils/constants";
 import { clickButton } from "@bciers/e2e/utils/helpers";
 import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
@@ -15,7 +16,7 @@ import { getCrvIdFromUrl } from "@bciers/e2e/utils/helpers";
 export class InternalReviewComplianceEarnedCreditsPOM {
   private readonly page: Page;
 
-  // Analyst sugestion control
+  // Analyst suggestion control
   private readonly analystSuggestionInput: Locator;
   // Director decision controls
   private readonly approveButton: Locator;
@@ -23,13 +24,10 @@ export class InternalReviewComplianceEarnedCreditsPOM {
 
   constructor(page: Page) {
     this.page = page;
-
     this.analystSuggestionInput = this.page.locator(ANALYST_SUGGESTION_INPUT);
-
     this.approveButton = this.page.getByRole("button", {
       name: DECISION_TO_BUTTON[IssuanceStatus.APPROVED],
     });
-
     this.declineButton = this.page.getByRole("button", {
       name: DECISION_TO_BUTTON[IssuanceStatus.DECLINED],
     });
@@ -79,13 +77,14 @@ export class InternalReviewComplianceEarnedCreditsPOM {
 
     expect(selectedText).toMatch(new RegExp(suggestion, "i"));
 
-    // Click submit and wait for navigation
-    await clickButton(this.page, CONTINUE_BUTTON_TEXT, {
-      waitForUrl: REVIEW_BY_DIRECTOR_URL_PATTERN,
-    });
+    // Determine expected navigation
+    const waitForUrl =
+      suggestion === AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT
+        ? TRACK_ISSUANCE_URL_PATTERN
+        : REVIEW_BY_DIRECTOR_URL_PATTERN;
 
-    // ✅ Assert the route
-    await expect(this.page).toHaveURL(REVIEW_BY_DIRECTOR_URL_PATTERN);
+    //  Click submit
+    await clickButton(this.page, CONTINUE_BUTTON_TEXT, { waitForUrl });
   }
 
   /**

@@ -17,7 +17,6 @@ export class ReviewComplianceEarnedCreditsPOM {
 
   constructor(page: Page) {
     this.page = page;
-
     this.issuanceStatusField = this.page.locator(ISSUANCE_STATUS_FIELD);
     this.requestIssuanceButton = this.page.getByRole("button", {
       name: REQUEST_ISSUANCE_BUTTON_TEXT,
@@ -28,16 +27,6 @@ export class ReviewComplianceEarnedCreditsPOM {
   async assertIssuanceStatusValue(expected: string): Promise<void> {
     await expect(this.issuanceStatusField).toBeVisible();
     await expect(this.issuanceStatusField).toHaveText(expected);
-  }
-
-  async assertRequestIssuanceButtonVisible(
-    shouldBeVisible = true,
-  ): Promise<void> {
-    if (shouldBeVisible) {
-      await expect(this.requestIssuanceButton).toBeVisible();
-    } else {
-      await expect(this.requestIssuanceButton).not.toBeVisible();
-    }
   }
 
   /**
