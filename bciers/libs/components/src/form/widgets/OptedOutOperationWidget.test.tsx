@@ -117,8 +117,8 @@ describe("OptedOutOperationWidget", () => {
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/operations/123/registration/opted-out-operation-detail",
-        "POST",
+        "registration/operations/123/registration/opted-in-operation-detail/final-reporting-year",
+        "PUT",
         "",
         {
           body: JSON.stringify({ final_reporting_year: 2025 }),
@@ -150,7 +150,7 @@ describe("OptedOutOperationWidget", () => {
     expect(widgetAlert).toBeInTheDocument();
   });
 
-  it("toggles to opted-in and deletes record", async () => {
+  it("toggles to opted-in and clears final reporting year", async () => {
     vi.mocked(actionHandler).mockResolvedValue({});
 
     renderWidget({
@@ -163,9 +163,12 @@ describe("OptedOutOperationWidget", () => {
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/operations/123/registration/opted-out-operation-detail",
-        "DELETE",
+        "registration/operations/123/registration/opted-in-operation-detail/final-reporting-year",
+        "PUT",
         "",
+        {
+          body: JSON.stringify({ final_reporting_year: null }),
+        },
       );
     });
 
