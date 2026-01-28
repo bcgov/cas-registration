@@ -49,7 +49,7 @@ class BCCarbonRegistryAPIClient:
     PROJECT_DETAILS_ENDPOINT = "/raas-project-api/project-manager/getById"
     PROJECT_SUBMIT_ENDPOINT = "/raas-project-api/project-manager/doSubmit"
     TRANSFER_SUBMIT_ENDPOINT = "/raas-credit-api/transfer-manager/doSubmit"
-    ISSUANCE_SUBMIT_ENDPOINT = "/br-reg/rest/market-issuance-manager/doSubmit"
+    ISSUANCE_SUBMIT_ENDPOINT = "/raas-credit-api/market-issuance-manager/doSubmit"
     ACCOUNT_SUBMIT_ENDPOINT = "/br-reg/rest/account-manager/doSubmit"
 
     def __new__(cls) -> 'BCCarbonRegistryAPIClient':
@@ -213,7 +213,7 @@ class BCCarbonRegistryAPIClient:
         payload = SearchFilterWrapper(
             searchFilter=SearchFilter(
                 filterModel=FilterModel(
-                    accountId={"columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=account_id)]}
+                    entityId={"columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=account_id)]}
                 ),
             )
         )
