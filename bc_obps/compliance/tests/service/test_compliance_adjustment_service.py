@@ -101,7 +101,7 @@ class TestComplianceAdjustmentService:
         mock_adjust_fees.return_value = mock_response
 
         # API call
-        ComplianceAdjustmentService.create_adjustment_for_current_version(
+        ComplianceAdjustmentService.create_adjustment(
             compliance_report_version_id=compliance_report_version.id, adjustment_total=Decimal('160')
         )
 
@@ -150,7 +150,7 @@ class TestComplianceAdjustmentService:
         mock_adjust_fees.side_effect = Exception("API connection error")
 
         with pytest.raises(ValueError) as excinfo:
-            ComplianceAdjustmentService.create_adjustment_for_current_version(
+            ComplianceAdjustmentService.create_adjustment(
                 compliance_report_version_id=compliance_report_version.id, adjustment_total=Decimal('160')
             )
 
@@ -170,11 +170,58 @@ class TestComplianceAdjustmentService:
         )
 
         with pytest.raises(ValueError) as excinfo:
-            ComplianceAdjustmentService.create_adjustment_for_current_version(
+            ComplianceAdjustmentService.create_adjustment(
                 compliance_report_version_id=compliance_report_version.id, adjustment_total=Decimal('160')
             )
 
         assert "No elicensing invoice found" in str(excinfo.value)
+
+    def test_create_adjustment_for_current_version(self, mock_transaction, mock_retryable_create_adjustment):
+        """Queues retryable adjustment via transaction.on_commit for the current version."""
+
+        # Arrange
+        crv = make_recipe("compliance.tests.utils.compliance_report_version")
+        amount = Decimal("160")
+
+        # Mock transaction.on_commit to execute the callback immediately
+        def mock_on_commit(callback):
+            callback()
+
+        mock_transaction.on_commit.side_effect = mock_on_commit
+
+        # Act
+        ComplianceAdjustmentService.create_adjustment_for_current_version(
+            compliance_report_version_id=crv.id,
+            adjustment_total=amount,
+        )
+
+        # Assert
+        mock_transaction.on_commit.assert_called_once()
+        mock_retryable_create_adjustment.execute.assert_called_once_with(
+            compliance_report_version_id=crv.id,
+            adjustment_total=amount,
+        )
+
+    def test_create_adjustment_for_current_version_does_not_trigger_on_rollback(
+        self,
+        mock_retryable_create_adjustment,
+        mock_transaction,
+    ):
+        # Arrange: simulate rollback by NOT invoking the callback
+        def _swallow(cb):
+            return None
+
+        mock_transaction.on_commit.side_effect = _swallow
+
+        # Act
+        ComplianceAdjustmentService.create_adjustment_for_current_version(
+            compliance_report_version_id=999,
+            adjustment_total=Decimal("-1.00"),
+        )
+
+        # Assert: on_commit was registered, but execute was never run
+        mock_transaction.on_commit.assert_called_once()
+        mock_retryable_create_adjustment.execute.assert_not_called()
 
     def test_create_adjustment_for_target_version_supplementary_report(
         self, mock_transaction, mock_retryable_create_adjustment
