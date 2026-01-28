@@ -2,6 +2,7 @@
 
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import * as React from "react";
+import { useState, useLayoutEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Switch, { SwitchProps } from "@mui/material/Switch";
 
@@ -117,7 +118,11 @@ const SwitchLabel = styled("span")({
   whiteSpace: "nowrap",
 });
 
+// Default width used for SSR and initial render to avoid hydration mismatch
+const DEFAULT_WIDTH = 64;
+
 function measureTextWidth(text: string, font = "12px Arial") {
+  if (typeof document === "undefined") return 0;
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) return 0;
@@ -149,11 +154,17 @@ const ToggleWidget: React.FC<
   const trueLabel = propTrueLabel ?? optionTrueLabel ?? "Yes";
   const falseLabel = propFalseLabel ?? optionFalseLabel ?? "No";
 
-  const leftWidth = measureTextWidth(falseLabel);
-  const rightWidth = measureTextWidth(trueLabel);
-  const maxLabelWidth = Math.max(leftWidth, rightWidth);
-  const thumbSpace = thumbWidth + 20;
-  const totalWidth = maxLabelWidth + thumbSpace;
+  // Use state to defer width calculation to client side to avoid hydration mismatch
+  const [totalWidth, setTotalWidth] = useState(DEFAULT_WIDTH);
+
+  useLayoutEffect(() => {
+    const leftWidth = measureTextWidth(falseLabel);
+    const rightWidth = measureTextWidth(trueLabel);
+    const maxLabelWidth = Math.max(leftWidth, rightWidth);
+    const thumbSpace = thumbWidth + 20;
+    // eslint-disable-next-line @eslint-react/hooks-extra/no-direct-set-state-in-use-effect -- DOM measurement requires setState in useLayoutEffect
+    setTotalWidth(maxLabelWidth + thumbSpace);
+  }, [trueLabel, falseLabel]);
 
   return (
     <SwitchContainer style={{ width: totalWidth }}>

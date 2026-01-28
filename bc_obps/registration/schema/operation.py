@@ -146,7 +146,7 @@ class OptedInOperationDetailIn(OptedInOperationDetailOut):
 
 
 class OptedOutOperationDetailIn(OptedInOperationDetailOut):
-    final_reporting_year: int = Field(...)
+    final_reporting_year: Optional[int] = Field(None)
 
 
 class OperationOut(ModelSchema):
