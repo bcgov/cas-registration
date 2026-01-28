@@ -35,10 +35,10 @@ WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules node_modules
 COPY --from=deps /usr/src/app/package.json package.json
 COPY ./.next/standalone .
-COPY ./public ./public
+COPY ./public ./apps/${application_path}/public
 COPY ./.next/static ./dist/${application_path}/.next/static
 
-RUN chmod -R g+rwX ./dist
+RUN chmod -R g+rwX ./dist ./apps
 
 USER node
 EXPOSE 3000
