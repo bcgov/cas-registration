@@ -1,4 +1,6 @@
 from ninja import ModelSchema, Field
+from pydantic import ConfigDict
+
 from registration.models import Facility
 from uuid import UUID
 from typing import List, Optional
@@ -15,6 +17,8 @@ class FacilityIn(ModelSchema):
     latitude_of_largest_emissions: Optional[decimal.Decimal] = None
     longitude_of_largest_emissions: Optional[decimal.Decimal] = None
 
+    model_config = ConfigDict(populate_by_name=True)
+
     class Meta:
         model = Facility
         fields = [
@@ -23,7 +27,6 @@ class FacilityIn(ModelSchema):
             "is_current_year",
             "starting_date",
         ]
-        populate_by_name = True
 
 
 class FacilityOut(ModelSchema):
@@ -35,6 +38,8 @@ class FacilityOut(ModelSchema):
     longitude_of_largest_emissions: Optional[float] = Field(None, alias="longitude_of_largest_emissions")
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
     well_authorization_numbers: List[str]
+
+    model_config = ConfigDict(populate_by_name=True)
 
     @staticmethod
     def resolve_well_authorization_numbers(obj: Facility) -> List[str]:
@@ -56,4 +61,3 @@ class FacilityOut(ModelSchema):
             "is_current_year",
             "starting_date",
         ]
-        populate_by_name = True

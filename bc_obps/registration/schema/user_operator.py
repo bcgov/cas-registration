@@ -1,14 +1,15 @@
-from typing import Optional, List
-from ninja import Schema, FilterSchema, Field, ModelSchema
+from typing import Annotated, List, Optional
 from uuid import UUID
-from registration.models import UserOperator
+
+from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.constants import BC_CORPORATE_REGISTRY_REGEX, CRA_BUSINESS_NUMBER_REGEX
+from registration.models import UserOperator
 from registration.models.partner_operator import PartnerOperator
 from registration.schema import (
     OperatorExternalDashboardUsersTileData,
-    PartnerOperatorOut,
     ParentOperator,
     ParentOperatorOut,
+    PartnerOperatorOut,
     UserExternalDashboardUsersTileData,
 )
 
@@ -19,16 +20,14 @@ class UserOperatorOperatorOut(Schema):
 
 
 class UserOperatorFilterSchema(FilterSchema):
-    user_friendly_id: Optional[str] = Field(None, json_schema_extra={'q': 'user_friendly_id__icontains'})
-    status: Optional[str] = None
-    user__first_name: Optional[str] = Field(None, json_schema_extra={'q': 'user__first_name__icontains'})
-    user__last_name: Optional[str] = Field(None, json_schema_extra={'q': 'user__last_name__icontains'})
-    user__email: Optional[str] = Field(None, json_schema_extra={'q': 'user__email__icontains'})
-    user__bceid_business_name: Optional[str] = Field(
-        None, json_schema_extra={'q': 'user__bceid_business_name__icontains'}
-    )
-    operator__legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator__legal_name__icontains'})
-    role: Optional[str] = Field(None, json_schema_extra={'q': 'role__icontains'})
+    user_friendly_id: Annotated[str | None, Field(q='user_friendly_id__icontains')] = None
+    status: str | None = None
+    user__first_name: Annotated[str | None, Field(q='user__first_name__icontains')] = None
+    user__last_name: Annotated[str | None, Field(q='user__last_name__icontains')] = None
+    user__email: Annotated[str | None, Field(q='user__email__icontains')] = None
+    user__bceid_business_name: Annotated[str | None, Field(q='user__bceid_business_name__icontains')] = None
+    operator__legal_name: Annotated[str | None, Field(q='operator__legal_name__icontains')] = None
+    role: Annotated[str | None, Field(q='role__icontains')] = None
 
 
 class UserOperatorListOut(ModelSchema):

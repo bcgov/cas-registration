@@ -1,8 +1,8 @@
+from typing import Annotated, List, Optional
 from uuid import UUID
 
-from ninja import ModelSchema, Field, FilterSchema
+from ninja import Field, FilterSchema, ModelSchema
 from pydantic import alias_generators
-from typing import List, Optional
 
 from reporting.models import FacilityReport
 
@@ -67,5 +67,5 @@ class FacilityReportListInSchema(ModelSchema):
 
 
 class FacilityReportFilterSchema(FilterSchema):
-    facility_name: Optional[str] = Field(None, json_schema_extra={'q': 'facility_name__icontains'})
-    facility_bcghgid: Optional[str] = Field(None, json_schema_extra={'q': 'facility_bcghgid__icontains'})
+    facility_name: Annotated[str | None, Field(q='facility_name__icontains')] = None
+    facility_bcghgid: Annotated[str | None, Field(q='facility_bcghgid__icontains')] = None

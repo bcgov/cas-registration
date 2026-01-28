@@ -1,5 +1,6 @@
 from typing import List, Optional, Any, Dict, Union
 from ninja import ModelSchema
+from pydantic import ConfigDict
 
 from registration.models import Operation
 from reporting.models import (
@@ -247,13 +248,14 @@ class FacilityReportSchema(ModelSchema):
 
 
 class ReportPersonResponsibleOut(ModelSchema):
+    model_config = ConfigDict(populate_by_name=True)
+
     @staticmethod
     def resolve_phone_number(obj: ReportPersonResponsible) -> str:
         return str(obj.phone_number)
 
     class Meta:
         model = ReportPersonResponsible
-        populate_by_name = True
         fields = [
             'street_address',
             'municipality',

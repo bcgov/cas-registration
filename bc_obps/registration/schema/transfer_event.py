@@ -1,11 +1,12 @@
-from typing import Optional, List, Literal, Dict, Union
+import re
+from typing import Annotated, Dict, List, Literal, Optional, Union
 from uuid import UUID
-from ninja import ModelSchema, Field, FilterSchema
+
+from django.db.models import Q
+from ninja import Field, FilterSchema, ModelSchema
 
 from common.utils import format_decimal
-from registration.models import TransferEvent, Facility
-from django.db.models import Q
-import re
+from registration.models import Facility, TransferEvent
 
 
 class TransferEventListOut(ModelSchema):
@@ -20,13 +21,10 @@ class TransferEventListOut(ModelSchema):
 
 
 class TransferEventFilterSchema(FilterSchema):
-    # NOTE: we could simply use the `q` parameter to filter by related fields but,
-    # due to this issue: https://github.com/vitalik/django-ninja/issues/1037 mypy is unhappy so I'm using the `json_schema_extra` parameter
-    # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error
-    effective_date: Optional[str] = Field(None, json_schema_extra={'q': 'effective_date__icontains'})
-    operation__name: Optional[str] = None
-    facilities__name: Optional[str] = Field(None, json_schema_extra={'q': 'facilities__name__icontains'})
-    status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})
+    effective_date: Annotated[str | None, Field(q='effective_date__icontains')] = None
+    operation__name: str | None = None  # Uses custom filter method below
+    facilities__name: Annotated[str | None, Field(q='facilities__name__icontains')] = None
+    status: Annotated[str | None, Field(q='status__icontains')] = None
 
     @staticmethod
     def filtering_including_not_applicable(field: str, value: str) -> Q:

@@ -6,7 +6,7 @@ from registration.schema import OperatorForOperationOut, MultipleOperatorIn, Mul
 from ninja import Field, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from pydantic import field_validator
+from pydantic import field_validator, ConfigDict
 from django.core.files.base import ContentFile
 from registration.utils import data_url_to_file
 from registration.utils import file_to_data_url
@@ -225,10 +225,11 @@ class OperationOutWithDocuments(OperationOut):
 class OperationCreateOut(ModelSchema):
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
 
-    class Config:
+    model_config = ConfigDict(populate_by_name=True)
+
+    class Meta:
         model = Operation
-        model_fields = ['id', 'name', 'type', 'naics_code', 'regulated_products']
-        populate_by_name = True
+        fields = ['id', 'name', 'type', 'naics_code', 'regulated_products']
 
 
 class OperationUpdateOut(ModelSchema):

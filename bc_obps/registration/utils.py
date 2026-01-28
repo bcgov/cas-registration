@@ -1,21 +1,23 @@
+import base64
 import logging
 import os
-from django.db.models import QuerySet
-from typing import Any, TypeVar, Union, Iterable, Dict, Optional
-from django.core.exceptions import ValidationError
-from ninja.errors import ValidationError as NinjaValidationError
-from django.db import IntegrityError, models
-from registration.constants import DEFAULT_API_NAMESPACE
-from registration.models.operation import Operation
-import requests
-import base64
 import re
-from django.core.files.base import ContentFile
-from registration.models import Document
-from django.urls import reverse_lazy
-from ninja.types import DictStrAny
-from ninja.pagination import PageNumberPagination
+from typing import Any, Dict, Iterable, Optional, TypeVar, Union
+
+import requests
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
+from django.db import IntegrityError, models
+from django.db.models import QuerySet
+from django.http import HttpRequest
+from django.urls import reverse_lazy
+from ninja.errors import ValidationError as NinjaValidationError
+from ninja.pagination import PageNumberPagination
+from ninja.types import DictStrAny
+from registration.constants import DEFAULT_API_NAMESPACE
+from registration.models import Document
+from registration.models.operation import Operation
 
 
 logger = logging.getLogger(__name__)
@@ -144,6 +146,7 @@ class CustomPagination(PageNumberPagination):
         self,
         queryset: QuerySet,
         pagination: PageNumberPagination.Input,
+        request: HttpRequest,
         **params: Any,
     ) -> Any:
         paginate_result = params.get('paginate_result')

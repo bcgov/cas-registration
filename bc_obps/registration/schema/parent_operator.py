@@ -2,7 +2,7 @@ from typing import Optional
 from registration.constants import CRA_BUSINESS_NUMBER_REGEX
 from registration.schema import validate_cra_business_number
 from ninja import ModelSchema, Field
-from pydantic import field_validator
+from pydantic import field_validator, ConfigDict
 from registration.models import ParentOperator
 
 
@@ -24,6 +24,8 @@ class ParentOperatorIn(ModelSchema):
     foreign_address: Optional[str] = None
     foreign_tax_id_number: Optional[str] = None
 
+    model_config = ConfigDict(populate_by_name=True)
+
     @field_validator("cra_business_number")
     @classmethod
     def validate_cra_business_number(cls, value: str) -> Optional[str]:
@@ -32,7 +34,6 @@ class ParentOperatorIn(ModelSchema):
     class Meta:
         model = ParentOperator
         fields = ["id"]
-        populate_by_name = True
 
 
 class ParentOperatorOut(ModelSchema):
@@ -53,6 +54,8 @@ class ParentOperatorOut(ModelSchema):
     foreign_address: Optional[str] = None
     foreign_tax_id_number: Optional[str] = None
 
+    model_config = ConfigDict(populate_by_name=True)
+
     @staticmethod
     def resolve_operator_registered_in_canada(obj: ParentOperator) -> bool:
         return not obj.foreign_tax_id_number
@@ -60,4 +63,3 @@ class ParentOperatorOut(ModelSchema):
     class Meta:
         model = ParentOperator
         fields = ["id"]
-        populate_by_name = True
