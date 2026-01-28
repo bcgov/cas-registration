@@ -1,10 +1,7 @@
 import base64
 import logging
 import os
-from django.db.models import QuerySet
-from typing import Any, TypeVar, Union, Iterable, Dict, Optional
-from django.core.exceptions import ValidationError
-		import re
+import re
 from typing import Any, Dict, Iterable, Optional, TypeVar, Union
 
 import requests
