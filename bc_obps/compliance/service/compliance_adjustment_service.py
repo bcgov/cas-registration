@@ -9,7 +9,6 @@ from compliance.models.elicensing_line_item import ElicensingLineItem
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
-
 from django.db import transaction
 
 logger = logging.getLogger(__name__)
@@ -38,9 +37,13 @@ class ComplianceAdjustmentService:
             compliance_report_version_id: ID of the compliance report version to which the adjustment applies
             adjustment_total: Total amount of the adjustment to be applied
         """
-        cls.create_adjustment(
-            compliance_report_version_id=compliance_report_version_id,
-            adjustment_total=adjustment_total,
+        from compliance.tasks import retryable_create_adjustment
+
+        transaction.on_commit(
+            lambda: retryable_create_adjustment.execute(
+                compliance_report_version_id=compliance_report_version_id,
+                adjustment_total=adjustment_total,
+            )
         )
 
     @classmethod
@@ -58,6 +61,7 @@ class ComplianceAdjustmentService:
             target_compliance_report_version_id: ID of the target compliance report version to which the adjustment applies
             adjustment_total: Total amount of the adjustment to be applied
             supplementary_compliance_report_version_id: ID of the supplementary compliance report version that triggered this adjustment
+            reason: Reason for the adjustment
         """
         from compliance.tasks import retryable_create_adjustment
 
@@ -85,6 +89,7 @@ class ComplianceAdjustmentService:
             compliance_report_version_id: ID of the compliance report version to which the adjustment applies
             adjustment_total: Total amount of the adjustment to be applied
             supplementary_compliance_report_version_id: ID of the supplementary compliance report version that triggered this adjustment
+            reason: Reason for the adjustment
         """
 
         # Get the compliance obligation from the compliance report version
