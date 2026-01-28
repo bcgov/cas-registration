@@ -31,7 +31,7 @@ const customTransformErrors = (
       }
       if (
         // we use some because fields can be nested in sections
-        ["acitivities", "regulated_products"].some((field) => {
+        ["activities", "regulated_products"].some((field) => {
           // @ts-expect-error - we already checked for error.property's existence above
           return error?.name === "required" && error.property.includes(field);
         })
@@ -91,9 +91,18 @@ const customTransformErrors = (
     }
     // custom messages for general errors
     if (error?.name === "enum") {
-      // for enum errors, the field name is in the error.stack, not the error.message
-      const fieldName = getFieldNameIfExists(error?.stack);
-      error.message = fieldName ? `Select a ${fieldName}` : `Select an option`;
+      console.log("enum error", error);
+      if (error?.property?.includes("gasType")) {
+        // leave the default message for now
+        error.message = "Select a gas type";
+      } else {
+        // for enum errors, the field name is in the error.stack, not the error.message
+        const fieldName = getFieldNameIfExists(error?.stack);
+        error.message = fieldName
+          ? `Select a ${fieldName}`
+          : `Select an option`;
+      }
+
       return error;
     }
     if (error?.name === "minItems") {
@@ -119,7 +128,20 @@ const customTransformErrors = (
     }
     if (error?.name === "required") {
       const fieldName = getFieldNameIfExists(error?.message);
-      error.message = fieldName ? `${fieldName} is required` : `Required field`;
+      const selectOptionFields = ["Fuel Name", "Gas Type", "Methodology"];
+
+      const isSelectOptionField = selectOptionFields.some((match) =>
+        fieldName?.includes(match),
+      );
+
+      if (isSelectOptionField && fieldName) {
+        error.message = `Select a ${fieldName}`;
+      } else {
+        error.message = fieldName
+          ? `${fieldName} is required`
+          : "Required field";
+      }
+
       return error;
     }
     return error;

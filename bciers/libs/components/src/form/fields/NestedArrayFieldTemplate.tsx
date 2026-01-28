@@ -23,15 +23,7 @@ const NestedArrayFieldTemplate = ({
   const bgColor = (uiSchema?.["ui:options"]?.bgColor as string) || "#f2f2f2";
   const showSeparator = uiSchema?.["ui:options"]?.showSeparator ?? false;
   const padding = uiSchema?.["ui:options"]?.padding;
-  const verticalBorder = uiSchema?.["ui:options"]?.verticalBorder
-    ? {
-        borderLeft: "6px solid #003366",
-        marginLeft: "1rem",
-        paddingLeft: "1rem",
-        height: "50%",
-        backgroundColor: "transparent",
-      }
-    : {};
+  const verticalBorder = uiSchema?.["ui:options"]?.verticalBorder;
 
   return (
     <div className="flex min-w-full flex-col">
@@ -43,44 +35,49 @@ const NestedArrayFieldTemplate = ({
                 display: "block",
                 marginTop: "1rem",
                 marginBottom: "1rem",
-                marginLeft: "1rem",
-                marginRight: "1rem",
               }}
             />
             <div
               style={{
-                ...verticalBorder,
-                backgroundColor: bgColor,
+                marginLeft: verticalBorder ? "1rem" : "0",
               }}
-              className={`min-w-full rounded-md ${padding}`}
             >
-              {customTitleName && (
-                <span className="emission-array-header">
-                  {customTitleName} {i + 1}
-                </span>
-              )}
-              {!readonly && (
-                <button
-                  onClick={item.onDropIndexClick(item.index)}
-                  className="border-none bg-transparent"
-                  aria-label="Remove item"
-                >
-                  <DeleteForeverOutlinedIcon />
-                </button>
-              )}
-              {{
-                ...item.children,
-                props: {
-                  ...(item.children as any).props,
-                  uiSchema: {
-                    ...(item.children as any).props.uiSchema,
-                    "ui:FieldTemplate": BasicFieldTemplate,
-                    "ui:options": {
-                      label: false,
+              <div
+                style={{
+                  borderLeft: verticalBorder ? "6px solid #003366" : "none",
+                  backgroundColor: bgColor,
+                  paddingLeft: "1rem",
+                }}
+                className={`min-w-full rounded-md ${padding}`}
+              >
+                {customTitleName && (
+                  <span className="emission-array-header">
+                    {customTitleName} {i + 1}
+                  </span>
+                )}
+                {!readonly && (
+                  <button
+                    onClick={item.onDropIndexClick(item.index)}
+                    className="border-none bg-transparent"
+                    aria-label="Remove item"
+                  >
+                    <DeleteForeverOutlinedIcon />
+                  </button>
+                )}
+                {{
+                  ...item.children,
+                  props: {
+                    ...(item.children as any).props,
+                    uiSchema: {
+                      ...(item.children as any).props.uiSchema,
+                      "ui:FieldTemplate": BasicFieldTemplate,
+                      "ui:options": {
+                        label: false,
+                      },
                     },
                   },
-                },
-              }}
+                }}
+              </div>
             </div>
             {showSeparator && (
               <hr

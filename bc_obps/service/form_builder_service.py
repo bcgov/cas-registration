@@ -98,7 +98,7 @@ def handle_methodologies(
     # Check if "not applicable" options should be added
     if add_not_applicable_methodology:
         methodology_enum.append("Not Applicable")
-        methodology_one_of["methodology"]["oneOf"].append({'properties': {'methodology': {'enum': ['Not Applicable']}}})
+        methodology_one_of["methodology"]["oneOf"].append({"properties": {"methodology": {"enum": ["Not Applicable"]}}})
 
     # Update gas_type_one_of with computed values
     gas_type_one_of["gasType"]["oneOf"][index]["properties"]["methodology"]["properties"]["methodology"][
@@ -178,8 +178,10 @@ def handle_gas_types(
                             "enum": [],
                         }
                     },
+                    "required": ["methodology"],
                 },
-            }
+            },
+            "required": ["methodology"],
         }
 
         # Append the gas type schema to the oneOf branch
@@ -211,12 +213,22 @@ def handle_source_type_schema(
         st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["fuelType"][
             "properties"
         ]["fuelName"]["enum"] = fuel_list
+
+        # Make fuelType required on the fuel item
+        st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["required"] = ["fuelType"]
+
+        # Require the fuelName inside the fuelType object
+        st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["fuelType"][
+            "required"
+        ] = ["fuelName"]
+
+        # Ensure emissions require both emission and gasType
         st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["emissions"]["items"][
             "properties"
         ]["gasType"]["enum"] = gas_type_enum
         st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["emissions"]["items"][
             "required"
-        ] = ["emission"]
+        ] = ["emission", "gasType"]
         st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["emissions"]["items"][
             "dependencies"
         ] = gas_type_one_of
@@ -224,21 +236,37 @@ def handle_source_type_schema(
         st_schema["properties"]["units"]["items"]["properties"]["emissions"]["items"]["properties"]["gasType"][
             "enum"
         ] = gas_type_enum
-        st_schema["properties"]["units"]["items"]["properties"]["emissions"]["items"]["required"] = ["emission"]
+        # Require both emission and gasType when there's no fuel but there are units
+        st_schema["properties"]["units"]["items"]["properties"]["emissions"]["items"]["required"] = [
+            "emission",
+            "gasType",
+        ]
         st_schema["properties"]["units"]["items"]["properties"]["emissions"]["items"]["dependencies"] = gas_type_one_of
     elif not source_type_schema.has_unit and source_type_schema.has_fuel:
         fuel_list = list(FuelTypeDataAccessService.get_fuels().values_list("name", flat=True))
         st_schema["properties"]["fuels"]["items"]["properties"]["fuelType"]["properties"]["fuelName"][
             "enum"
         ] = fuel_list
+
+        # Make fuelType required on the fuel item
+        st_schema["properties"]["fuels"]["items"]["required"] = ["fuelType"]
+
+        # Require the fuelName inside the fuelType object
+        st_schema["properties"]["fuels"]["items"]["properties"]["fuelType"]["required"] = ["fuelName"]
+
         st_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["properties"]["gasType"][
             "enum"
         ] = gas_type_enum
-        st_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["required"] = ["emission"]
+        # Require both emission and gasType on the emissions item
+        st_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["required"] = [
+            "emission",
+            "gasType",
+        ]
         st_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["dependencies"] = gas_type_one_of
     else:
         st_schema["properties"]["emissions"]["items"]["properties"]["gasType"]["enum"] = gas_type_enum
-        st_schema["properties"]["emissions"]["items"]["required"] = ["emission"]
+        # Require both emission and gasType when there are neither units nor fuels
+        st_schema["properties"]["emissions"]["items"]["required"] = ["emission", "gasType"]
         st_schema["properties"]["emissions"]["items"]["dependencies"] = gas_type_one_of
     return st_schema
 

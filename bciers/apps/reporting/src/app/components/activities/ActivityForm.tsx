@@ -8,7 +8,6 @@ import { UUID } from "crypto";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import debounce from "lodash.debounce";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { customizeValidator } from "@rjsf/validator-ajv8";
 import setNestedErrorForCustomValidate from "@bciers/utils/src/setCustomValidateErrors";
 import { findPathsWithNegativeNumbers } from "@bciers/utils/src/findInObject";
 import { calculateMobileAnnualAmount } from "@bciers/utils/src/customReportingActivityFormCalculations";
@@ -86,12 +85,11 @@ export default function ActivityForm({
     const sourceTypeQueryString = sourceTypeIds.length
       ? `&${sourceTypeIds.map((id) => `source_types[]=${id}`).join("&")}`
       : "";
-    const schema = await actionHandler(
+    return await actionHandler(
       `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${reportVersionId}&facility_id=${facilityId}${sourceTypeQueryString}`,
       "GET",
       "",
     );
-    return schema;
   };
 
   const handleFormChange = async (c: { formData: Dict }) => {
@@ -123,7 +121,6 @@ export default function ActivityForm({
       //if the schema is a fallback schema, we just return true
       return true;
     }
-
     setErrorList([]);
     const sourceTypeCount = Object.keys(sourceTypeMap).length;
 
@@ -196,7 +193,6 @@ export default function ActivityForm({
       errors={errorList}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
-      validator={customizeValidator({})}
       customValidate={customValidate}
       formContext={{
         gasTypes,
