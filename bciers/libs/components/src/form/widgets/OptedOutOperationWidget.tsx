@@ -3,24 +3,28 @@
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import ComboBox from "./ComboBox";
 import { actionHandler } from "@bciers/actions";
-import { useState } from "react";
+import { useState, useLayoutEffect } from "react";
 import { AlertIcon } from "@bciers/components/icons";
 import ToggleWidget from "./ToggleWidget";
 import { BC_GOV_COMPONENTS_GREY, BC_GOV_SEMANTICS_RED } from "@bciers/styles";
 
 function saveOptedOutDetail(operationId: string, val: number | undefined) {
-  const endpoint = `registration/operations/${operationId}/registration/opted-out-operation-detail`;
+  const endpoint = `registration/operations/${operationId}/registration/opted-in-operation-detail/final-reporting-year`;
 
   const payload = { final_reporting_year: val };
 
-  return actionHandler(endpoint, "POST", "", {
+  return actionHandler(endpoint, "PUT", "", {
     body: JSON.stringify(payload),
   });
 }
 
-function deleteOptedOutDetail(operationId: string) {
-  const endpoint = `registration/operations/${operationId}/registration/opted-out-operation-detail`;
-  return actionHandler(endpoint, "DELETE", "");
+function clearOptedOutDetail(operationId: string) {
+  // Clear final_reporting_year to opt back in
+  const endpoint = `registration/operations/${operationId}/registration/opted-in-operation-detail/final-reporting-year`;
+  const payload = { final_reporting_year: null };
+  return actionHandler(endpoint, "PUT", "", {
+    body: JSON.stringify(payload),
+  });
 }
 
 const OptedOutOperationWidget: React.FC<WidgetProps> = ({
@@ -32,14 +36,29 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   uiSchema,
   registry,
 }) => {
-  const [status, setStatus] = useState<string>(
-    formContext?.isOptedOut ? "Opted-out" : "Opted-in",
-  );
+  // Initialize status from value.final_reporting_year if available
+  const initialStatus =
+    value?.final_reporting_year !== undefined &&
+    value?.final_reporting_year !== null
+      ? "Opted-out"
+      : "Opted-in";
+  const [status, setStatus] = useState<string>(initialStatus);
   // pendingFinalReportingYear reflects the value that is rendered in the UI
   const [pendingFinalReportingYear, setPendingFinalReportingYear] = useState<
     number | undefined
   >(value?.final_reporting_year);
   const [error, setError] = useState<string | undefined>(undefined);
+
+  // Sync status when value changes from outside (e.g., initial load)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => {
+    if (
+      value?.final_reporting_year !== undefined &&
+      value?.final_reporting_year !== null
+    ) {
+      setStatus("Opted-out");
+    }
+  }, [value?.final_reporting_year]);
 
   const isCasDirector = Boolean(formContext?.isCasDirector);
 
@@ -71,15 +90,14 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   const handleToggle = async (checked: boolean) => {
     if (!isCasDirector) return;
 
-    setStatus(checked ? "Opted-in" : "Opted-out");
-
     if (checked) {
+      // User is toggling to opted-in (opting back in)
       // clear UI state
       setPendingFinalReportingYear(undefined);
       // tell RJSF the value no longer exists
       onChange(undefined);
-      // delete the opted-out operation detail record in the database
-      const response = await deleteOptedOutDetail(formContext?.operationId);
+      // clear the opted-out status by setting final_reporting_year to null
+      const response = await clearOptedOutDetail(formContext?.operationId);
 
       if (response?.error) {
         setError(response.error);
@@ -87,6 +105,9 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
       }
 
       setError(undefined);
+    } else {
+      // User is toggling to opted-out
+      setStatus("Opted-out");
     }
   };
 

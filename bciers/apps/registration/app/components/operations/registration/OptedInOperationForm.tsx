@@ -13,9 +13,25 @@ import { IChangeEvent } from "@rjsf/core";
 interface OptedInOperationFormProps extends OperationRegistrationFormProps {
   formData: OptedInOperationFormData;
 }
-// Check if all questions are answered
+// Required boolean fields that must be answered
+const requiredBooleanFields: (keyof OptedInOperationFormData)[] = [
+  "meets_section_3_emissions_requirements",
+  "meets_electricity_import_operation_criteria",
+  "meets_entire_operation_requirements",
+  "meets_section_6_emissions_requirements",
+  "meets_naics_code_11_22_562_classification_requirements",
+  "meets_producing_gger_schedule_a1_regulated_product",
+  "meets_reporting_and_regulated_obligations",
+  "meets_notification_to_director_on_criteria_change",
+];
+
+// Check if all required questions are answered
+// Boolean fields can be true or false, so we need to check for undefined and null
 const allQuestionsAnswered = (formData: OptedInOperationFormData) => {
-  return Object.values(formData).every((value) => value !== null);
+  return requiredBooleanFields.every((field) => {
+    const value = formData[field];
+    return value !== null && value !== undefined;
+  });
 };
 
 const OptedInOperationForm = ({

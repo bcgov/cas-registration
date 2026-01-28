@@ -29,10 +29,13 @@ class OptedInOperationDataAccessService:
     ) -> OptedInOperationDetail:
         """
         Updates the final reporting year of an OptedInOperationDetail instance (for opted-in operations that are opting out).
+        If final_reporting_year is null, clears the field.
         """
-
         opted_in_operation_detail = OptedInOperationDetail.objects.get(id=opted_in_operation_detail_id)
-        reporting_year = ReportingYearDataAccessService.get_by_year(payload.final_reporting_year)
-        opted_in_operation_detail.final_reporting_year = reporting_year
+        if payload.final_reporting_year is not None:
+            reporting_year = ReportingYearDataAccessService.get_by_year(payload.final_reporting_year)
+            opted_in_operation_detail.final_reporting_year = reporting_year
+        else:
+            opted_in_operation_detail.final_reporting_year = None
         opted_in_operation_detail.save()
         return opted_in_operation_detail

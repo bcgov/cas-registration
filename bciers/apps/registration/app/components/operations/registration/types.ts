@@ -19,13 +19,10 @@ export interface OptedInOperationFormData {
   meets_producing_gger_schedule_a1_regulated_product: boolean | null;
   meets_reporting_and_regulated_obligations: boolean | null;
   meets_notification_to_director_on_criteria_change: boolean | null;
+  final_reporting_year: number | null;
 }
 
 export type OperationInformationFormData = Dict;
-export interface OptedOutOperationFormData {
-  final_reporting_year: number;
-}
-
 
 export interface OperationRepresentativeFormData {
   operation_representatives?: number[];
