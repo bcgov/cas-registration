@@ -84,3 +84,4 @@ jobs:
           folder: output
           target-folder: schemaspy
           single-commit: true
+          token: ${{ secrets.GITHUB_TOKEN }}
