@@ -26,7 +26,7 @@ def reverse_add_2025_compliance_period(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0024_V5_0_0'),
+        ('compliance', '0025_V5_0_1'),
     ]
 
     operations = [
