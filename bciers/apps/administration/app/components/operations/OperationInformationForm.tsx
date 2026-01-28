@@ -211,7 +211,7 @@ const OperationInformationForm = ({
             confirmedFormData.registration_purpose as RegistrationPurposes,
           ),
           isOptedOut:
-            formData.opted_out_operation?.final_reporting_year !== null,
+            formData.opted_in_operation?.final_reporting_year !== null,
           isCasDirector: role === FrontEndRoles.CAS_DIRECTOR,
           isEio: confirmedFormData.registration_purpose?.match(
             RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION.valueOf(),

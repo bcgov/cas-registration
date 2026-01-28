@@ -106,7 +106,7 @@ describe("RJSF ToggleWidget", () => {
       />,
     );
 
-    expect(screen.getByText("Negative")).toBeInTheDocument();
+    expect(screen.getByText("Negative")).toBeVisible();
   });
 
   it("switches visible labels when toggled", async () => {
@@ -170,6 +170,6 @@ describe("RJSF ToggleWidget", () => {
       />,
     );
 
-    expect(screen.getByText("Direct OFF")).toBeInTheDocument();
+    expect(screen.getByText("Direct OFF")).toBeVisible();
   });
 });
