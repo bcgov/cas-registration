@@ -2,6 +2,8 @@ import { useRouter } from "@bciers/testConfig/mocks";
 import { render, screen, waitFor } from "@testing-library/react";
 import { FinalReviewForm } from "@reporting/src/app/components/finalReview/FinalReviewForm";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
+import { vi } from "vitest";
+import userEvent from "@testing-library/user-event";
 import {
   HeaderStep,
   ReportingFlow,
@@ -64,6 +66,7 @@ describe("The FinalReviewForm component", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    window.print = vi.fn();
   });
 
   it("renders the Loading component while data is being fetched", async () => {
@@ -152,11 +155,20 @@ describe("The FinalReviewForm component", () => {
       />,
     );
 
-    await waitFor(() => {
+    await waitFor(async () => {
       expect(screen.getByTestId("facility-review")).toBeInTheDocument();
       expect(screen.getByTestId("multi-step-header")).toBeInTheDocument();
       expect(screen.getByTestId("reporting-task-list")).toBeInTheDocument();
       expect(screen.getByTestId("reporting-step-buttons")).toBeInTheDocument();
     });
+
+    const user = userEvent.setup();
+    const printButton = screen.getByRole("button", {
+      name: /save as pdf|print/i,
+    });
+    expect(printButton).toBeInTheDocument();
+
+    await user.click(printButton);
+    expect(window.print).toHaveBeenCalled();
   });
 });

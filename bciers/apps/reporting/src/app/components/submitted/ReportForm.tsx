@@ -8,6 +8,7 @@ import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData"
 import Loading from "@bciers/components/loading/SkeletonForm";
 import { FinalReviewReportSections } from "@reporting/src/app/components/finalReview/templates/FinalReviewReportSections";
 import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
+import DownloadPdfButton from "@bciers/components/downloadPDFButton/DownloadPdfButton";
 
 interface Props {
   version_id: number;
@@ -33,6 +34,7 @@ const ReportForm: React.FC<Props> = ({ version_id, flow, origin }) => {
     <div className="flex flex-col gap-6">
       {!loading && data ? (
         <>
+          <DownloadPdfButton />
           <FinalReviewReportSections
             version_id={version_id}
             data={data}
