@@ -35,6 +35,14 @@ class ELicensingAPIClient:
     base_url: str
     auth_token: str
 
+    # API Endpoints
+    CLIENT_ENDPOINT = "/client"
+    BALANCE_ENDPOINT = "/balance"
+    FEES_ENDPOINT = "/fees"
+    ADJUST_ENDPOINT = "/adjust"
+    INVOICE_ENDPOINT = "/invoice"
+    INTEREST_RATES_ENDPOINT = "/interestRates"
+
     def __new__(cls) -> 'ELicensingAPIClient':
         """Singleton pattern to ensure only one instance of ELicensingAPIClient is created"""
         if cls._instance is None:
@@ -159,7 +167,7 @@ class ELicensingAPIClient:
             requests.RequestException: If the API request fails
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/client"
+        endpoint = self.CLIENT_ENDPOINT
 
         client_dict = {
             "clientGUID": client_data.clientGUID,
@@ -199,7 +207,7 @@ class ELicensingAPIClient:
             ValueError: If the response format is invalid
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = f"/client/{client_object_id}"
+        endpoint = f"{self.CLIENT_ENDPOINT}/{client_object_id}"
 
         response = self._make_request(endpoint, method='GET')
 
@@ -251,7 +259,7 @@ class ELicensingAPIClient:
             ValueError: If the response format is invalid
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/client"
+        endpoint = self.CLIENT_ENDPOINT
 
         # Ensure businessAreaCode is set to "CG" as required
         client_data['businessAreaCode'] = "CG"
@@ -290,7 +298,7 @@ class ELicensingAPIClient:
             ValueError: If the response format is invalid
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/balance"
+        endpoint = self.BALANCE_ENDPOINT
         params = {"clientObjectId": client_object_id}
 
         response = self._make_request(endpoint, method='GET', params=params)
@@ -327,7 +335,7 @@ class ELicensingAPIClient:
             requests.RequestException: If the API request fails
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = f"/client/{client_id}/fees"
+        endpoint = f"{self.CLIENT_ENDPOINT}/{client_id}{self.FEES_ENDPOINT}"
 
         # Convert dataclass to dict for API request
         fees_dict = {
@@ -370,7 +378,7 @@ class ELicensingAPIClient:
             ValueError: If the response format is invalid
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = f"/client/{client_object_id}/adjust"
+        endpoint = f"{self.CLIENT_ENDPOINT}/{client_object_id}{self.ADJUST_ENDPOINT}"
 
         response = self._make_request(endpoint, method='POST', data=adjustment_data)
 
@@ -407,7 +415,7 @@ class ELicensingAPIClient:
             ValueError: If the response format is invalid
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = f"/client/{client_object_id}/fees"
+        endpoint = f"{self.CLIENT_ENDPOINT}/{client_object_id}{self.FEES_ENDPOINT}"
         params = {}
 
         if fee_status:
@@ -447,7 +455,7 @@ class ELicensingAPIClient:
             requests.RequestException: If the API request fails
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = f"/client/{client_id}/invoice"
+        endpoint = f"{self.CLIENT_ENDPOINT}/{client_id}{self.INVOICE_ENDPOINT}"
         params = {"InvoiceNumber": invoice_number}
 
         response = self._make_request(endpoint, method='GET', params=params)
@@ -493,7 +501,7 @@ class ELicensingAPIClient:
             requests.RequestException: If the API request fails
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = f"/client/{client_id}/invoice"
+        endpoint = f"{self.CLIENT_ENDPOINT}/{client_id}{self.INVOICE_ENDPOINT}"
         # Convert dataclass to dict for API request
         invoice_dict = {
             "paymentDueDate": invoice_data.paymentDueDate,
@@ -516,7 +524,7 @@ class ELicensingAPIClient:
             requests.RequestException: If the API request fails
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/interestRates"
+        endpoint = self.INTEREST_RATES_ENDPOINT
         response = self._make_request(endpoint, method='GET')
         response.raise_for_status()
 
