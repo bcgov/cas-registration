@@ -161,6 +161,7 @@ class OperationOut(ModelSchema):
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
     opted_in_operation: Optional[OptedInOperationDetailOut] = None
+    opted_out_operation: Optional[int] = None
     date_of_first_shipment: Optional[str] = None
     new_entrant_application: Optional[str] = None
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
@@ -188,6 +189,16 @@ class OperationOut(ModelSchema):
             user: User = request.current_user
             if user.is_irc_user():
                 return obj.operator
+        return None
+
+    @staticmethod
+    def resolve_opted_out_operation(obj: Operation) -> Optional[int]:
+        """
+        Extract final_reporting_year from opted_in_operation to use as opted_out_operation
+        """
+        if hasattr(obj, 'opted_in_operation') and obj.opted_in_operation is not None:
+            if obj.opted_in_operation.final_reporting_year is not None:
+                return obj.opted_in_operation.final_reporting_year.reporting_year
         return None
 
     class Meta:

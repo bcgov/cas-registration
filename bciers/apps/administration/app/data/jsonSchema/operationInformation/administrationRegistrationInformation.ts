@@ -197,14 +197,9 @@ export const createAdministrationRegistrationInformationSchema =
                   ...reportingActivitiesSchema,
                 },
                 opted_out_operation: {
-                  type: "string",
-                  properties: {
-                    final_reporting_year: {
-                      title: "Year that final report is expected",
-                      type: ["number", "null"],
-                      anyOf: reportingYearsDropdownOptions,
-                    },
-                  },
+                  title: "Year that final report is expected",
+                  type: ["number", "null"],
+                  anyOf: reportingYearsDropdownOptions,
                 },
                 opted_in_preface: {
                   // Not an actual field, just used to display a message
@@ -318,6 +313,9 @@ export const registrationInformationUiSchema: UiSchema = {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": "Opted-In Operation",
   },
+  opted_in_operation: {
+    "ui:FieldTemplate": SectionFieldTemplate,
+  },
   new_entrant_preface: {
     "ui:classNames": "text-bc-bg-blue text-lg",
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
@@ -332,12 +330,6 @@ export const registrationInformationUiSchema: UiSchema = {
     "ui:classNames": "text-bc-bg-blue text-lg",
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": "Potential Reporting Operation",
-  },
-  opted_out_operation_detail: {
-    "ui:widget": "OptedOutOperationWidget",
-    "ui:options": {
-      wide: true,
-    },
   },
   new_entrant_application: {
     "ui:widget": "FileWidget",

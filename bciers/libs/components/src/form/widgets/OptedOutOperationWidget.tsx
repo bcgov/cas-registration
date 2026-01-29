@@ -36,46 +36,48 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   uiSchema,
   registry,
 }) => {
-  // Initialize status from value.final_reporting_year if available
+  // Handle both object format ({ final_reporting_year: number }) and direct number format
+  const finalReportingYear =
+    typeof value === "object" && value !== null
+      ? value.final_reporting_year
+      : typeof value === "number"
+        ? value
+        : undefined;
+
+  // Initialize status from final_reporting_year if available
   const initialStatus =
-    value?.final_reporting_year !== undefined &&
-    value?.final_reporting_year !== null
+    finalReportingYear !== undefined && finalReportingYear !== null
       ? "Opted-out"
       : "Opted-in";
   const [status, setStatus] = useState<string>(initialStatus);
   // pendingFinalReportingYear reflects the value that is rendered in the UI
   const [pendingFinalReportingYear, setPendingFinalReportingYear] = useState<
     number | undefined
-  >(value?.final_reporting_year);
+  >(finalReportingYear);
   const [error, setError] = useState<string | undefined>(undefined);
 
   // Sync status when value changes from outside (e.g., initial load)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
-    if (
-      value?.final_reporting_year !== undefined &&
-      value?.final_reporting_year !== null
-    ) {
+    if (finalReportingYear !== undefined && finalReportingYear !== null) {
       setStatus("Opted-out");
     }
-  }, [value?.final_reporting_year]);
+  }, [finalReportingYear]);
 
   const isCasDirector = Boolean(formContext?.isCasDirector);
 
   const isDisabled = !isCasDirector;
 
-  const finalReportingYearSchema = schema?.properties?.final_reporting_year;
+  // Schema now has anyOf directly on the field (not nested under final_reporting_year)
+  const finalReportingYearSchema = schema || {};
 
   // ---------- Handlers ------------------
   const handleComboChange = async (val: number | undefined) => {
     if (isDisabled) return;
     setPendingFinalReportingYear(val);
 
-    // for RJSF validation
-    onChange({
-      ...(value ?? {}),
-      final_reporting_year: val ?? null,
-    });
+    // for RJSF validation - pass the number directly (simplified format)
+    onChange(val ?? null);
 
     // persist the change to the database
     const response = await saveOptedOutDetail(formContext?.operationId, val);
@@ -141,61 +143,60 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
           />
         </div>
       </div>
-      {status === "Opted-out" && (
-        <div className="grid grid-cols-[280px_1fr] items-start gap-4">
-          <label
-            className="text-base font-bold text-left pt-2"
-            htmlFor={`${id}-final-reporting-year`}
-          >
-            Year that final report is expected
-          </label>
-          <div className="flex flex-col gap-2">
-            <div style={{ width: 300, minWidth: "12rem" }}>
-              <ComboBox
-                id={`${id}-final-reporting-year`}
-                schema={
-                  (finalReportingYearSchema ||
-                    {}) as unknown as WidgetProps["schema"]
-                }
-                value={pendingFinalReportingYear}
-                registry={registry}
-                onChange={handleComboChange}
-                disabled={isDisabled}
-                readonly={isDisabled}
-                uiSchema={uiSchema?.final_reporting_year}
-                rawErrors={error ? [error] : undefined}
-                name={`${id}-final-reporting-year`}
-                options={{}}
-                onBlur={() => {}}
-                onFocus={() => {}}
-                label=""
-                formContext={formContext}
-              />
-            </div>
-            {error && (
-              <div
-                className="flex items-center text-sm"
-                role="alert"
-                style={{ color: BC_GOV_SEMANTICS_RED }}
-              >
-                <div className="hidden md:block mr-2">
-                  <AlertIcon />
-                </div>
-                <span>{error}</span>
-              </div>
-            )}
-            {pendingFinalReportingYear !== undefined && (
-              <div
-                className="text-sm leading-relaxed"
-                style={{ color: BC_GOV_COMPONENTS_GREY }}
-              >
-                Operation will not report for {pendingFinalReportingYear + 1}{" "}
-                reporting year and subsequent years
-              </div>
-            )}
+      {/* Year selector is always visible for CAS Director users to allow setting/removing final_reporting_year */}
+      <div className="grid grid-cols-[280px_1fr] items-start gap-4">
+        <label
+          className="text-base font-bold text-left pt-2"
+          htmlFor={`${id}-final-reporting-year`}
+        >
+          Year that final report is expected
+        </label>
+        <div className="flex flex-col gap-2">
+          <div style={{ width: 300, minWidth: "12rem" }}>
+            <ComboBox
+              id={`${id}-final-reporting-year`}
+              schema={
+                (finalReportingYearSchema ||
+                  {}) as unknown as WidgetProps["schema"]
+              }
+              value={pendingFinalReportingYear}
+              registry={registry}
+              onChange={handleComboChange}
+              disabled={isDisabled}
+              readonly={isDisabled}
+              uiSchema={uiSchema?.final_reporting_year}
+              rawErrors={error ? [error] : undefined}
+              name={`${id}-final-reporting-year`}
+              options={{}}
+              onBlur={() => {}}
+              onFocus={() => {}}
+              label=""
+              formContext={formContext}
+            />
           </div>
+          {error && (
+            <div
+              className="flex items-center text-sm"
+              role="alert"
+              style={{ color: BC_GOV_SEMANTICS_RED }}
+            >
+              <div className="hidden md:block mr-2">
+                <AlertIcon />
+              </div>
+              <span>{error}</span>
+            </div>
+          )}
+          {pendingFinalReportingYear !== undefined && (
+            <div
+              className="text-sm leading-relaxed"
+              style={{ color: BC_GOV_COMPONENTS_GREY }}
+            >
+              Operation will not report for {pendingFinalReportingYear + 1}{" "}
+              reporting year and subsequent years
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
