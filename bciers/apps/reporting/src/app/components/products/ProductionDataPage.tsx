@@ -7,15 +7,12 @@ import { getReportInformationTasklist } from "@reporting/src/app/utils/getReport
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
 import { getOverlappingIndustrialProcessEmissions } from "@reporting/src/app/utils/getOverlappingIndProcessEmissions";
-import { getReviewOperationInformationPageData } from "@reporting/src/app/utils/getReportOperationData";
 
 export default async function ProductionDataPage({
   version_id,
   facility_id,
 }: HasFacilityId) {
   const response = await getProductionData(version_id, facility_id);
-  const reportOperation =
-    await getReviewOperationInformationPageData(version_id);
 
   const allowedProductNames = response.payload.allowed_products.map(
     (p) => p.name,
@@ -30,7 +27,7 @@ export default async function ProductionDataPage({
 
   const reportingYear = response.report_data.reporting_year;
   const isOptedOut =
-    reportOperation.report_operation.operation_opted_out_final_reporting_year <=
+    (response.report_operation.operation_opted_out_final_reporting_year ?? 0) <=
     reportingYear;
 
   const schema: any = buildProductionDataSchema(
