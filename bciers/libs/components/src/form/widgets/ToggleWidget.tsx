@@ -162,8 +162,11 @@ const ToggleWidget: React.FC<
     const rightWidth = measureTextWidth(trueLabel);
     const maxLabelWidth = Math.max(leftWidth, rightWidth);
     const thumbSpace = thumbWidth + 20;
-    // eslint-disable-next-line @eslint-react/hooks-extra/no-direct-set-state-in-use-effect -- DOM measurement requires setState in useLayoutEffect
-    setTotalWidth(maxLabelWidth + thumbSpace);
+    // Use requestAnimationFrame to defer setState, avoiding cascading renders
+    const requestAnimationFrameId = requestAnimationFrame(() => {
+      setTotalWidth(maxLabelWidth + thumbSpace);
+    });
+    return () => cancelAnimationFrame(requestAnimationFrameId);
   }, [trueLabel, falseLabel]);
 
   return (

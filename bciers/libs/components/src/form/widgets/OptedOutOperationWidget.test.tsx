@@ -126,9 +126,7 @@ describe("OptedOutOperationWidget", () => {
       );
     });
 
-    expect(baseProps.onChange).toHaveBeenCalledWith({
-      final_reporting_year: 2025,
-    });
+    expect(baseProps.onChange).toHaveBeenCalledWith(2025);
   });
 
   it("shows error when save fails", async () => {
