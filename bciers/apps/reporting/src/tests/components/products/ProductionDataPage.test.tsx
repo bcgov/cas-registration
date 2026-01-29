@@ -6,7 +6,6 @@ import { getReportInformationTasklist } from "@reporting/src/app/utils/getReport
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
-import { getReviewOperationInformationPageData } from "@reporting/src/app/utils/getReportOperationData";
 
 vi.mock("@bciers/actions/api", () => ({
   getProductionData: vi.fn(),
@@ -23,9 +22,6 @@ vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
 vi.mock("@reporting/src/app/utils/getFacilityReportDetails", () => ({
   getFacilityReportDetails: vi.fn().mockReturnValue([]),
 }));
-vi.mock("@reporting/src/app/utils/getReportOperationData", () => ({
-  getReviewOperationInformationPageData: vi.fn(),
-}));
 
 const getProductionDataMock = getProductionData as ReturnType<typeof vi.fn>;
 
@@ -39,14 +35,20 @@ const mockReportTaskList = {
   facilityName: "Test Facility",
   operationType: "SFO",
 };
-const mockReviewOperation = (optedOutFinalYear: number | undefined) => {
-  (
-    getReviewOperationInformationPageData as ReturnType<typeof vi.fn>
-  ).mockResolvedValue({
-    report_operation: {
-      operation_opted_out_final_reporting_year: optedOutFinalYear,
-    },
-  });
+
+// Default mock return value for getProductionData
+const defaultGetProductionDataMock = {
+  report_data: {
+    reporting_year: 2020,
+  },
+  facility_data: { facility_type: "SFO" },
+  report_operation: {
+    operation_opted_out_final_reporting_year: undefined,
+  },
+  payload: {
+    allowed_products: [],
+    report_products: [],
+  },
 };
 
 describe("The Production Data component", () => {
@@ -60,7 +62,7 @@ describe("The Production Data component", () => {
     );
 
     // default: operation is NOT opted-out
-    mockReviewOperation(undefined);
+    getProductionDataMock.mockReturnValue(defaultGetProductionDataMock);
   });
 
   it("fetches the proper data and passes it to the form", async () => {
@@ -68,13 +70,9 @@ describe("The Production Data component", () => {
       getReportInformationTasklist as ReturnType<typeof vi.fn>
     ).mockResolvedValueOnce(mockReportTaskList);
     getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
       report_data: {
         reporting_year: 2020,
-      },
-      facility_data: { facility_type: "SFO" },
-      payload: {
-        allowed_products: [],
-        report_products: [],
       },
     });
 
@@ -84,10 +82,10 @@ describe("The Production Data component", () => {
 
   it("renders the form with the right checkboxes", async () => {
     getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
       report_data: {
         reporting_year: 2020,
       },
-      facility_data: { facility_type: "SFO" },
       payload: {
         allowed_products: [
           { id: 123, name: "testProduct" },
@@ -108,10 +106,10 @@ describe("The Production Data component", () => {
   });
   it("renders the form with the right form elements except apr-dec production", async () => {
     getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
       report_data: {
         reporting_year: 2020,
       },
-      facility_data: { facility_type: "SFO" },
       payload: {
         allowed_products: [],
         report_products: [
@@ -157,10 +155,10 @@ describe("The Production Data component", () => {
 
   it("displays the apr-dec field if the year is 2024", async () => {
     getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
       report_data: {
         reporting_year: 2024,
       },
-      facility_data: { facility_type: "SFO" },
       payload: {
         allowed_products: [],
         report_products: [
@@ -179,13 +177,14 @@ describe("The Production Data component", () => {
   });
 
   it("displays the jan-mar field if the reporting year is 2025 and the operation has opted-out effective 2025", async () => {
-    mockReviewOperation(2025);
-
     getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
       report_data: {
         reporting_year: 2025,
       },
-      facility_data: { facility_type: "SFO" },
+      report_operation: {
+        operation_opted_out_final_reporting_year: 2025,
+      },
       payload: {
         allowed_products: [],
         report_products: [
@@ -205,36 +204,26 @@ describe("The Production Data component", () => {
   });
 
   it("calculates isOptedOut as false when reporting year is before opt-out year", async () => {
-    mockReviewOperation(2025);
-
     getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
       report_data: { reporting_year: 2024 },
-      facility_data: { facility_type: "SFO" },
-      payload: {
-        allowed_products: [],
-        report_products: [],
+      report_operation: {
+        operation_opted_out_final_reporting_year: 2025,
       },
     });
 
     render(await ProductionDataPage(props));
-
-    expect(getReviewOperationInformationPageData).toHaveBeenCalledWith(1);
   });
 
   it("calculates isOptedOut as true when reporting year is equal to opt-out year", async () => {
-    mockReviewOperation(2025); // final reporting year is 2025
-
     getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
       report_data: { reporting_year: 2025 },
-      facility_data: { facility_type: "SFO" },
-      payload: {
-        allowed_products: [],
-        report_products: [],
+      report_operation: {
+        operation_opted_out_final_reporting_year: 2025,
       },
     });
 
     render(await ProductionDataPage(props));
-
-    expect(getReviewOperationInformationPageData).toHaveBeenCalledWith(1);
   });
 });
