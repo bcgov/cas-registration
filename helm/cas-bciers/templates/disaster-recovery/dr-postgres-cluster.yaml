@@ -1,0 +1,46 @@
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: __DB_CLUSTER_NAME__
+  namespace: __NAMESPACE__
+  labels:
+    app.kubernetes.io/name: cas-obps-postgres
+spec:
+  metadata:
+    labels:
+      app.kubernetes.io/name: cas-obps-postgres
+  image: ""
+  postgresVersion: 16
+  backups:
+    pgbackrest:
+      configuration:
+        - secret:
+            items:
+              - key: credentials.json
+                path: gcs-key.json
+            name: gcs-backup-credentials
+      global:
+        repo1-retention-full: "90"
+        repo1-retention-full-type: time
+      repos:
+        - gcs:
+            bucket: __BACKUP_BUCKET__
+          name: repo1
+          path: /pgbackrest/repo1
+  dataSource:
+    pgbackrest:
+      stanza: db
+      configuration:
+        - secret:
+            items:
+              - key: credentials.json
+                path: gcs-key.json
+            name: gcs-backup-credentials
+      global:
+        repo1-path: /pgbackrest/repo1
+        repo1-gcs-key: /etc/pgbackrest/conf.d/gcs-key.json
+      repo:
+        name: repo1
+        gcs:
+          bucket: __BACKUP_BUCKET__
+      options:
