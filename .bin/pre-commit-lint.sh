@@ -10,6 +10,6 @@ if ! git rev-parse --verify origin/develop >/dev/null 2>&1; then
   git fetch origin develop --depth=1
 fi
 
-# Disable Nx TUI to prevent pseudo-terminal panic in CI
+# Use legacy output style to prevent pseudo-terminal panic in CI
 # See: https://github.com/nrwl/nx/issues/31484
-NX_TUI=false NODE_OPTIONS="--max-old-space-size=5120" yarn nx affected --base=origin/develop --target=lint --parallel
+NODE_OPTIONS="--max-old-space-size=5120" yarn nx affected --base=origin/develop --target=lint --parallel --output-style=dynamic-legacy
