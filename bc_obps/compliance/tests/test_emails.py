@@ -7,6 +7,8 @@ from registration.models.user import User
 from registration.models.user_operator import UserOperator
 from service.email.email_service import EmailService
 import pytest
+from django.template import Template, Context
+from django.test import TestCase
 from service.data_access_service.email_template_service import EmailNotificationTemplateService
 from model_bakery import baker
 from compliance.emails import (
@@ -188,6 +190,51 @@ class TestComplianceEmailHelpers:
                 _send_email_to_operators_approved_users_or_raise(
                     approved_user_operator.operator, template_instance, {"foo": "bar"}
                 )
+
+
+class TestEmailTemplateRendering(TestCase):
+    def test_email_template_renders_all_variables(self):
+        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        context = {
+            "operator_legal_name": "Test Operator Ltd.",
+            "operation_name": "Test Operation",
+            "compliance_year": 2025,
+            "earned_credit_amount": 1234,
+        }
+        template = Template(template_instance.body)
+        # Simulate CHES template merge with Django's Template.render()
+        rendered_html = template.render(Context(context))
+        self.assertIn("Test Operator Ltd.", rendered_html)
+        self.assertIn("Test Operation", rendered_html)
+        self.assertIn("2025", rendered_html)
+        self.assertIn("1234", rendered_html)
+
+    def test_email_template_missing_variable_renders_blank(self):
+        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        context = {
+            "operator_legal_name": "Test Operator Ltd.",
+            "operation_name": "Test Operation",
+            "compliance_year": 2025,
+        }
+        template = Template(template_instance.body)
+        rendered_html = template.render(Context(context))
+        self.assertIn("Test Operator Ltd.", rendered_html)
+        self.assertIn("Test Operation", rendered_html)
+        self.assertIn("2025", rendered_html)
+        self.assertNotIn('earned_credit_amount', rendered_html)
+
+    def test_email_template_has_html_structure(self):
+        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        context = {
+            "operator_legal_name": "Test Operator Ltd.",
+            "operation_name": "Test Operation",
+            "compliance_year": 2025,
+            "earned_credit_amount": 1234,
+        }
+        template = Template(template_instance.body)
+        rendered_html = template.render(Context(context)).strip()
+        self.assertTrue(rendered_html.startswith("<"))
+        self.assertTrue(rendered_html.endswith(">"))
 
 
 class TestSendNotifications:
