@@ -116,13 +116,37 @@ export const buildOperationReviewSchema = (
               },
               ...(showActivities && {
                 activities: {
+                  title: "Reporting Activities",
                   type: "array",
-                  title: "Reporting activities",
                   minItems: 1,
+                  default: [],
                   items: {
                     type: "number",
-                    enum: allActivities.map((activity) => activity.id),
-                    enumNames: allActivities.map((activity) => activity.name),
+                    enum: allActivities.map(
+                      (activity: {
+                        id: number;
+                        applicable_to: string;
+                        name: string;
+                        regulated_name: string;
+                      }) => activity.id,
+                    ),
+                    enumNames: allActivities.map(
+                      (activity: {
+                        applicable_to: string;
+                        name: string;
+                        regulated_name: string;
+                      }) => activity.name,
+                    ),
+                    enumTooltips: allActivities.map(
+                      (activity: {
+                        applicable_to: string;
+                        name: string;
+                        regulated_name: string;
+                      }) =>
+                        activity.name != activity.regulated_name
+                          ? activity.regulated_name
+                          : "",
+                    ),
                   },
                 },
               }),
@@ -228,12 +252,13 @@ export const buildOperationReviewUiSchema = (
   },
 
   activities: {
-    "ui:widget": "MultiSelectWidget",
+    "ui:widget": "MultiSelectWidgetWithTooltip",
     "ui:options": {
       ...commonUiOptions,
       label: { style: { verticalAlign: "top" } },
     },
     "ui:placeholder": "Reporting activities",
+    "ui:tooltipPrefix": "Regulatory name: ",
     uniqueItems: true,
   },
   regulated_products: {
