@@ -14,7 +14,7 @@ describe("DownloadPdfButton", () => {
     expect(button).toBeVisible();
     expect(button).toHaveTextContent("Save as PDF");
 
-    // description contains the browser print hint
+    // description contains the browser print/savePDF hint
     expect(screen.getByText(/Or use your browser/i)).toBeInTheDocument();
   });
 
