@@ -31,6 +31,7 @@ const readOnlyTheme = {
     EmailWidget: ReadOnlyWidget,
     FileWidget: ReadOnlyFileWidget,
     MultiSelectWidget: ReadOnlyMultiSelectWidget,
+    MultiSelectWidgetWithTooltip: ReadOnlyMultiSelectWidget,
     PhoneWidget: ReadOnlyWidget,
     PostalCodeWidget: ReadOnlyWidget,
     RadioWidget: ReadOnlyRadioWidget,

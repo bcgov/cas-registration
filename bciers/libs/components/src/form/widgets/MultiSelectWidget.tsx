@@ -8,7 +8,7 @@ import {
   BC_GOV_SEMANTICS_RED,
 } from "@bciers/styles/colors";
 
-interface Option {
+export interface Option {
   id: string | number;
   label: string | number;
 }
