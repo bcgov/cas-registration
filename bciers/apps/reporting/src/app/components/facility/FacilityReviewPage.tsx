@@ -15,7 +15,7 @@ export default async function FacilityReviewPage({
 
   const facilityData = await getFacilityReportDetails(version_id, facility_id);
   const activitiesData = await getAllActivities();
-  const selectedActivities = activitiesData.filter((item: { id: any }) =>
+  const selectedActivities = activitiesData.filter((item: { id: number }) =>
     facilityData.activities.includes(item.id),
   );
 
@@ -33,7 +33,7 @@ export default async function FacilityReviewPage({
   const formData = {
     ...facilityData,
     activities: selectedActivities.map(
-      (activity: { name: any }) => activity.name,
+      (activity: { name: string }) => activity.name,
     ),
   };
   const isSyncAllowed = facilityData.is_sync_allowed ?? true;

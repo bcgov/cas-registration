@@ -1,4 +1,5 @@
 import { actionHandler } from "@bciers/actions";
+import { Activity } from "../components/operations/types";
 
 export async function getAllActivities() {
   const endpoint = "reporting/activities";
@@ -6,5 +7,5 @@ export async function getAllActivities() {
   if (response.error) {
     throw new Error("Failed to fetch the activities.");
   }
-  return response;
+  return response as Activity[];
 }
