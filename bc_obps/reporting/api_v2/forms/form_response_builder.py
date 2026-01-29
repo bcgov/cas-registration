@@ -27,6 +27,11 @@ class FacilityData:
     facility_type: str
 
 
+@dataclass
+class ReportOperationOptOutStatus:
+    operation_opted_out_final_reporting_year: int | None
+
+
 class FormResponseBuilder(ResponseBuilder):
     """
     Builder that extends the base ResponseBuilder. For Reporting form GET requests.
@@ -51,4 +56,9 @@ class FormResponseBuilder(ResponseBuilder):
         facility_data = FacilityData(facility_type=facility_report.facility_type)
 
         self.response["facility_data"] = dataclasses.asdict(facility_data)
+        return self
+
+    def report_operation_opt_out_status(self, operation_opted_out_final_reporting_year: int | None) -> Self:
+        opt_out_status = ReportOperationOptOutStatus(operation_opted_out_final_reporting_year=operation_opted_out_final_reporting_year)
+        self.response["report_operation"] = dataclasses.asdict(opt_out_status)
         return self

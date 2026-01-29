@@ -5,6 +5,7 @@ from .form_response_builder import FormResponseBuilder
 from .form_schema import ReportingFormSchema
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.models.report_product import ReportProduct
+from reporting.models.report_operation import ReportOperation
 from reporting.schema.generic import Message
 from reporting.schema.report_product import ProductionDataOut
 from reporting.service.report_product_service import ReportProductService
@@ -34,6 +35,15 @@ def get_production_form_data(request: HttpRequest, version_id: int, facility_id:
     allowed_products = ReportProductService.get_allowed_products(version_id)
     payload = {"report_products": report_products, "allowed_products": allowed_products}
 
-    response = FormResponseBuilder(version_id).payload(payload).facility_data(facility_id).build()
+    report_operation = ReportOperation.objects.get(report_version_id=version_id)
+    operation_opted_out_final_reporting_year = report_operation.operation_opted_out_final_reporting_year
+
+    response = (
+        FormResponseBuilder(version_id)
+        .payload(payload)
+        .facility_data(facility_id)
+        .report_operation_opt_out_status(operation_opted_out_final_reporting_year)
+        .build()
+    )
 
     return 200, response

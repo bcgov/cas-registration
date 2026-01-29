@@ -14,6 +14,9 @@ async function getProductionData(
     facility_data: {
       facility_type: string;
     };
+    report_operation: {
+      operation_opted_out_final_reporting_year: number | null;
+    };
     payload: {
       report_products: ProductData[];
       allowed_products: Product[];
