@@ -6,6 +6,7 @@ export { default as DateWidget } from "./DateWidget";
 export { default as EmailWidget } from "./EmailWidget";
 export { default as FileWidget } from "./FileWidget";
 export { default as MultiSelectWidget } from "./MultiSelectWidget";
+export { default as MultiSelectWidgetWithTooltip } from "./MultiSelectWidgetWithTooltip";
 export { default as OperatorSearchWidget } from "./OperatorSearchWidget";
 export { default as PhoneWidget } from "./PhoneWidget";
 export { default as PostalCodeWidget } from "./PostalCodeWidget";
