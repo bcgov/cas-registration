@@ -14,14 +14,19 @@ import {
   ANNUAL_REPORT,
   SIMPLE_REPORT,
 } from "@reporting/src/app/utils/constants";
+import {
+  Activity,
+  RegulatedProduct,
+  ReportOperationRepresentative,
+} from "@reporting/src/app/components/operations/types";
 const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const buildOperationReviewSchema = (
   formDataState: any,
   reportingYear: number,
-  allActivities: any[],
-  allRegulatedProducts: any[],
-  allRepresentatives: any[],
+  allActivities: Activity[],
+  allRegulatedProducts: RegulatedProduct[],
+  allRepresentatives: ReportOperationRepresentative[],
   reportType: string,
   showRegulatedProducts: boolean,
   showBoroId: boolean,
@@ -58,7 +63,8 @@ export const buildOperationReviewSchema = (
         items: {
           type: "number",
           enum: allRepresentatives.map(
-            (representative: { id: number }) => representative.id,
+            (representative: ReportOperationRepresentative) =>
+              representative.id,
           ),
           enumNames: allRepresentatives.map(
             (representative: { representative_name: string }) =>
