@@ -1,5 +1,6 @@
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from datetime import datetime
+import time_machine
 
 
 class TestReportingYearsEndpoint(CommonTestSetup):
@@ -28,5 +29,6 @@ class TestReportingYearsEndpoint(CommonTestSetup):
         response_json = response.json()
         returned_years = [item["reporting_year"] for item in response_json]
         assert 2023 not in returned_years
-        current_year = datetime.now().year
+        with time_machine.travel(datetime(2025, 1, 1)):
+            current_year = datetime.now().year
         assert current_year in returned_years

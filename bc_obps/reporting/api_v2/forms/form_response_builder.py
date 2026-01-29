@@ -59,6 +59,8 @@ class FormResponseBuilder(ResponseBuilder):
         return self
 
     def report_operation_opt_out_status(self, operation_opted_out_final_reporting_year: int | None) -> Self:
-        opt_out_status = ReportOperationOptOutStatus(operation_opted_out_final_reporting_year=operation_opted_out_final_reporting_year)
+        opt_out_status = ReportOperationOptOutStatus(
+            operation_opted_out_final_reporting_year=operation_opted_out_final_reporting_year
+        )
         self.response["report_operation"] = dataclasses.asdict(opt_out_status)
         return self
