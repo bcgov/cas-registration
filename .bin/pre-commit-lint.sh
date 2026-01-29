@@ -10,5 +10,6 @@ if ! git rev-parse --verify origin/develop >/dev/null 2>&1; then
   git fetch origin develop --depth=1
 fi
 
-# Use --no-tui to disable interactive terminal UI that causes TTY panic in CI.
-NODE_OPTIONS="--max-old-space-size=5120" yarn nx affected --base=origin/develop --target=lint --parallel --no-tui
+# Disable Nx TUI to prevent pseudo-terminal panic in CI
+# See: https://github.com/nrwl/nx/issues/31484
+NX_TUI=false NODE_OPTIONS="--max-old-space-size=5120" yarn nx affected --base=origin/develop --target=lint --parallel
