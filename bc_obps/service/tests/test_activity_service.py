@@ -12,3 +12,5 @@ class TestAddressService:
         from_service = ActivityService.get_all_activities()
         for i in range(len(all_activities_sorted)):
             assert all_activities_sorted[i].name == from_service[i]['name']
+            assert all_activities_sorted[i].applicable_to == from_service[i]['applicable_to']
+            assert all_activities_sorted[i].regulated_name == from_service[i]['regulated_name']
