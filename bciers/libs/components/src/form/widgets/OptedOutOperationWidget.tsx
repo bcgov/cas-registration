@@ -37,12 +37,12 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   registry,
 }) => {
   // Handle both object format ({ final_reporting_year: number }) and direct number format
-  const finalReportingYear =
-    typeof value === "object" && value !== null
-      ? value.final_reporting_year
-      : typeof value === "number"
-        ? value
-        : undefined;
+  let finalReportingYear: number | undefined;
+  if (typeof value === "object" && value !== null) {
+    finalReportingYear = value.final_reporting_year;
+  } else if (typeof value === "number") {
+    finalReportingYear = value;
+  }
 
   // Initialize status from final_reporting_year if available
   const initialStatus =
