@@ -5,6 +5,8 @@ from unittest.mock import patch
 import requests
 from requests.models import Response
 from ..utils import base_url, is_local_url, json_response
+from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
+from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
 
 
 class UnmockedExternalCall(RuntimeError):
@@ -15,7 +17,7 @@ class UnmockedExternalCall(RuntimeError):
 
 ELICENSING_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
     (
-        r"/client$",
+        rf"{ELicensingAPIClient.CLIENT_ENDPOINT}$",
         "POST",
         lambda url: json_response(
             200,
@@ -27,7 +29,7 @@ ELICENSING_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
         ),
     ),
     (
-        r"/client/\d+/fees$",
+        rf"{ELicensingAPIClient.CLIENT_ENDPOINT}/\d+{ELicensingAPIClient.FEES_ENDPOINT}$",
         "POST",
         lambda url: json_response(
             200,
@@ -45,7 +47,7 @@ ELICENSING_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
         ),
     ),
     (
-        r"/client/\d+/invoice$",
+        rf"{ELicensingAPIClient.CLIENT_ENDPOINT}/\d+{ELicensingAPIClient.INVOICE_ENDPOINT}$",
         "POST",
         lambda url: json_response(
             200,
@@ -59,7 +61,7 @@ ELICENSING_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
         ),
     ),
     (
-        r"/client/\d+/invoice$",
+        rf"{ELicensingAPIClient.CLIENT_ENDPOINT}/\d+{ELicensingAPIClient.INVOICE_ENDPOINT}$",
         "GET",
         lambda url: json_response(
             200,
@@ -122,7 +124,7 @@ E2E_PROJECT_DETAILS = {
 
 BCCR_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
     (
-        r"/user-api/okta/token$",
+        rf"{BCCarbonRegistryAPIClient.AUTH_ENDPOINT}$",
         "POST",
         lambda url: json_response(
             200,
@@ -135,7 +137,7 @@ BCCR_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
         ),
     ),
     (
-        r"/raas-report-api/es/account/pagePrivateSearchByFilter$",
+        rf"{BCCarbonRegistryAPIClient.ACCOUNT_SEARCH_ENDPOINT}$",
         "POST",
         lambda url: json_response(
             200,
@@ -164,17 +166,17 @@ BCCR_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
         ),
     ),
     (
-        r"/raas-project-api/project-manager/doSubmit$",
+        rf"{BCCarbonRegistryAPIClient.PROJECT_SUBMIT_ENDPOINT}$",
         "POST",
         lambda url: json_response(200, E2E_PROJECT_DETAILS, url),
     ),
     (
-        r"/br-reg/rest/market-issuance-manager/doSubmit$",
+        rf"{BCCarbonRegistryAPIClient.ISSUANCE_SUBMIT_ENDPOINT}$",
         "POST",
         lambda url: json_response(200, {"id": "E2E-ISSUANCE-1"}, url),
     ),
     (
-        r"/raas-project-api/project-manager/getById/\d+(?:/)?(?:\?.*)?$",
+        rf"{BCCarbonRegistryAPIClient.PROJECT_DETAILS_ENDPOINT}/\d+(?:/)?(?:\?.*)?$",
         "GET",
         lambda url: json_response(
             200,
