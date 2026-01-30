@@ -233,7 +233,7 @@ dr_restore: check_environment dr_verify_backup
 	   [[ $$REPLY =~ ^[Yy]$$ ]] || { echo "Cancelled"; exit 1; }; \
 	}; \
 	{ \
-	cat $(CHART_DIR)/templates/disaster-recovery/dr-postgres-cluster.yaml | sed \
+	cat ./disaster_recovery/dr-postgres-cluster.yaml | sed \
 	  -e 's/__DB_CLUSTER_NAME__/$(DB_CLUSTER_NAME)/g' \
 	  -e 's/__NAMESPACE__/$(NAMESPACE)/g' \
 	  -e 's/__BACKUP_BUCKET__/$(BACKUP_BUCKET)/g'; \
