@@ -27,7 +27,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
         name: checkout code
