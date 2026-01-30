@@ -34,8 +34,10 @@ class FilterModel(BaseModel):
     )  # to build models and look up discriminators using python object
     entityId: CommonFilterType = None
     accountId: CommonFilterType = None
+    subAccountId: CommonFilterType = None
     masterAccountId: CommonFilterType = None
     accountTypeId: CommonFilterType = None
+    accountTypeCode: CommonFilterType = None
     stateCode: CommonFilterType = None
     vintage: CommonFilterType = None
     complianceYear: CommonFilterType = None

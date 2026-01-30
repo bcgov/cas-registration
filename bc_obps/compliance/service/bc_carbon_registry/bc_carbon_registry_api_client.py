@@ -12,6 +12,7 @@ from compliance.service.bc_carbon_registry.schema import (
     Pagination,
     FilterModel,
     ColumnFilter,
+    CommonFilterType,
     AccountDetailsResponse,
     UnitDetailsResponse,
     ProjectDetailsResponse,
@@ -255,19 +256,21 @@ class BCCarbonRegistryAPIClient:
         vintage_year: int,
         limit: int = 20,
         start: int = 0,
-        state_filter: str = "ACTIVE",
+        account_type: Literal["holding_account", "sub_account"] = "holding_account",
     ) -> Dict:
         """
-        List compliance units for a given holding account.
+        List compliance units for a given holding account or sub-account.
         Filters units by vintage year (units with vintage >= vintage_year).
 
         Args:
-            account_id: The ID of the account
+            account_id: The ID of the account (holding account or sub-account)
             vintage_year: Vintage year to filter by. Filters units with vintage >= vintage_year.
             limit: Maximum number of units to return
             start: Starting index for pagination
-            state_filter: State filter for units. Can be single state like "ACTIVE"
-                         or multiple states like "ACTIVE,RETIRED"
+            account_type: Type of account to list units for. Use "holding_account" to filter by
+                         accountId (state: ACTIVE, accountTypeCode: REGULATED_OPERATION),
+                         or "sub_account" to filter by subAccountId
+                         (state: ACTIVE,RETIRED, accountTypeCode: COMPLIANCE_SUB_ACCOUNT).
         """
         self._check_pagination_params(limit, start)
 
@@ -275,23 +278,39 @@ class BCCarbonRegistryAPIClient:
             logger.error("Invalid account_id: %s", account_id)
             raise ValueError("account_id must be a numeric string")
 
-        # Determine filter type based on whether we have multiple states
+        # Use the appropriate filter key, accountTypeCode, and state filter based on account type
+        account_filter: CommonFilterType = {
+            "columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=account_id)]
+        }
+        if account_type == "sub_account":
+            state_filter = "ACTIVE,RETIRED"
+            filter_model = FilterModel(
+                subAccountId=account_filter,
+                accountTypeCode={
+                    "columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="COMPLIANCE_SUB_ACCOUNT")]
+                },
+            )
+        else:
+            state_filter = "ACTIVE"
+            filter_model = FilterModel(
+                accountId=account_filter,
+                accountTypeCode={
+                    "columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="REGULATED_OPERATION")]
+                },
+            )
+
         filter_type: Literal["in", "equals"] = "in" if "," in state_filter else "equals"
+        filter_model.stateCode = {
+            "columnFilters": [ColumnFilter(filterType="Text", type=filter_type, filter=state_filter)]
+        }
+        filter_model.vintage = {
+            "columnFilters": [ColumnFilter(filterType="Number", type="greaterThanOrEqual", filter=vintage_year - 3)]
+        }
 
         payload = SearchFilterWrapper(
             searchFilter=SearchFilter(
                 pagination=Pagination(start=start, limit=limit),
-                filterModel=FilterModel(
-                    accountId={"columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=account_id)]},
-                    stateCode={
-                        "columnFilters": [ColumnFilter(filterType="Text", type=filter_type, filter=state_filter)]
-                    },
-                    vintage={
-                        "columnFilters": [
-                            ColumnFilter(filterType="Number", type="greaterThanOrEqual", filter=vintage_year - 3)
-                        ]
-                    },
-                ),
+                filterModel=filter_model,
             )
         )
         return self._make_request(
