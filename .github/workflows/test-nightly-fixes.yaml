@@ -4,7 +4,9 @@
 name: Test Nightly Fixes
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - chore-fix-nightly-build-schemaspy-and-happo
 
 jobs:
   schemaspy:
