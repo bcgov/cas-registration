@@ -118,7 +118,7 @@ jobs:
           HAPPO_API_SECRET: ${{ github.event_name == 'schedule' && '' || secrets.HAPPO_API_SECRET }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
-        run: DEBUG=pw:api yarn nx run "$NX_PROJECT":e2e:ci -- --project=chromium
+        run: DEBUG=pw:api yarn nx run "$NX_PROJECT":${{ github.event_name == 'schedule' && 'e2e' || 'e2e:ci' }} -- --project=chromium
         working-directory: ./bciers
 
 #      #     Reports weren't being used regularly though leaving this in here for debugging purposes.
@@ -159,7 +159,7 @@ jobs:
 
   # Call Happo api and skip the project if it wasn't affected
   happo-skip-not-affected:
-    if: ${{ !inputs.is_nx_affected && github.ref_name != 'develop' && github.ref_name != 'main' && github.head_ref != 'develop' && github.head_ref != 'main' || github.event_name == 'schedule' }}
+    if: ${{ !inputs.is_nx_affected && github.ref_name != 'develop' && github.ref_name != 'main' && github.head_ref != 'develop' && github.head_ref != 'main' && github.event_name != 'schedule' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
