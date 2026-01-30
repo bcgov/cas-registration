@@ -1,0 +1,12 @@
+# Temporary workflow to test nightly fixes on a feature branch.
+# Delete this file once the fixes are verified.
+
+name: Test Nightly Fixes
+
+on:
+  workflow_dispatch:
+
+jobs:
+  schemaspy:
+    uses: ./.github/workflows/schemaspy.yaml
+    secrets: inherit
