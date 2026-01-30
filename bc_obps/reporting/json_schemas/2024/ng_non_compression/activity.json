@@ -1,5 +1,5 @@
 {
-  "title": "Natural Gas (non-processing, non-compression)",
+  "title": "Natural gas transmission (other than compression and processing)",
   "type": "object",
   "properties": {
     "id": {
