@@ -2,9 +2,7 @@ from common.models import BaseModel
 from django.db import models
 from registration.models import Activity
 from reporting.models import SourceType, GasType, Methodology, Configuration, ReportingField
-import typing
 from reporting.models.custom_methodology_schema import CustomMethodologySchema
-from reporting.utils import validate_overlapping_records
 from reporting.models.rls_configs.configuration_element import Rls as ConfigurationElementRls
 
 
@@ -36,13 +34,3 @@ class ConfigurationElement(BaseModel):
         db_table = 'erc"."configuration_element'
 
     Rls = ConfigurationElementRls
-
-    @typing.no_type_check
-    def save(self, *args, **kwargs) -> None:
-        """
-        Override the save method to validate if there are overlapping records.
-        """
-        exception_message = f'This record will result in duplicate configuration elements being returned for the date range {self.valid_from.valid_from} - {self.valid_to.valid_to} as it overlaps with a current record or records'
-
-        validate_overlapping_records(ConfigurationElement, self, exception_message)
-        super().save(*args, **kwargs)
