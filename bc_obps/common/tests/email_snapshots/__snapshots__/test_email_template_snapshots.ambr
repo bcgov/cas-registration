@@ -1,0 +1,671 @@
+# serializer version: 1
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Admin Access Request Approved]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your request to receive access to Acme Corp Ltd. in BCIERS has been approved by the Climate Action Secretariat. You may now log back into <a href="https://registration.industrialemissions.gov.bc.ca">BCIERS</a> to register your operation(s).</p>
+              <p>You have been granted administrator access for Acme Corp Ltd.. This user role allows you to grant access and assign user roles to other individuals from your organization.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Admin Access Request Confirmation]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your request to receive access to Acme Corp Ltd. in BCIERS has been received by the Climate Action Secretariat (CAS).</p>
+              <p>CAS is reviewing your request and will contact you within 3 business days to provide a status update.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Admin Access Request Declined]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your request to receive access to Acme Corp Ltd. in BCIERS has been declined by the Climate Action Secretariat.
+              </p><br>
+              <p>f you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[BORO ID Application Approved]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your application to obtain a BC OBPS Regulated Operation ID (BORO ID) for Test Smelter of Acme Corp Ltd. has been approved by the Climate Action Secretariat.</p>
+              <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca/">BCIERS</a> to see Test Smelter’s assigned BORO ID. For more information on how to use the BORO ID, please refer to <a href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf">Getting Started with the B.C. Output-Based Pricing System (gov.bc.ca)</a>.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[BORO ID Application Changes Requested]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Changes are requested to your application to obtain a BC OBPS Regulated Operation ID (BORO ID) for Test Smelter of Acme Corp Ltd..</p>
+              <p>A staff member of the Climate Action Secretariat has sent, or will send shortly, an email explaining the details of the changes requested. Please revise and resubmit your application accordingly.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[BORO ID Application Confirmation]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your application to obtain a BC OBPS Regulated Operation ID (BORO ID) for Test Smelter of Acme Corp Ltd. has been received by the Climate Action Secretariat (CAS) through BCIERS.</p>
+              <p>CAS is reviewing the application. Please allow 3-5 business days to process this request. Clarifications and changes may be requested as part of the reviewing process. Once a decision is made, you may expect a notification email.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[BORO ID Application Declined]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your application to obtain a BC OBPS Regulated Operation ID (BORO ID) for Test Smelter of Acme Corp Ltd. has been declined by the Climate Action Secretariat.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[BORO ID Issuance]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Test Smelter of Acme Corp Ltd. has been issued a B.C. OBPS Regulated Operation ID (BORO ID) in BCIERS.</p>
+              <p>Please log back into <a href="https://industrialemissions.gov.bc.ca">BCIERS</a> to see Test Smelter's assigned BORO ID. This BORO ID is required to complete a carbon tax exemption certificate, which is available on <a href="https://www2.gov.bc.ca/gov/content/taxes/sales-taxes/motor-fuel-carbon-tax/business/exemptions/obps-carbon-tax-exemption">this webpage</a>.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Compliance Obligation Due Date Passed - Penalty now Accruing]
+  '''
+
+      <p style="text-align: center;">Province of British Columbia</p>
+      <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
+      <br/>
+      <p>Dear Acme Corp Ltd.,</p>
+      <br/>
+      <p>
+          Based on our records, <b>Test Smelter</b> has an unmet compliance obligation
+          <b>1000</b> in the amount of <b>50000</b>.
+      </p>
+      <br/>
+      <p>
+          The unmet compliance obligation is now subject to daily compounding penalties, as well as interest under
+          the <i>Financial Administration Act</i> (FAA). These charges will continue to accrue until the outstanding
+          obligation is met. Upon meeting the obligation, the BCIERS will calculate and invoice the amount of the
+          penalty. You will be able to pay the penalty and interest once you receive the penalty invoice.
+      </p>
+      <br/>
+      <p>
+          To review your compliance obligation and/or penalty, including how it was calculated, log-into BCIERS at
+          <a href="https://industrialemissions.gov.bc.ca/onboarding">https://industrialemissions.gov.bc.ca/onboarding</a>.
+      </p>
+      <p>To meet your compliance obligation:</p>
+      <ol>
+          <li>Navigate to the Compliance module and click <i>My Compliance &gt; Compliance Summaries</i>.</li>
+          <li>Find your operation in the grid and click <em>Manage Obligation</em>.</li>
+      </ol>
+      <br/>
+      <p>
+          <b>Please Note:</b> It may take up to five business days for payments to be processed and reconciled.
+          Once payment is received, BCIERS updates the obligation status accordingly. The Ministry uses the payment
+          date to determine compliance with the deadline and whether a penalty exists. For clarity, the payment date
+          is the date when payment is deposited to the B.C. OBPS bank account. If a payment date is on or before
+          the November 30 deadline and processed after the deadline, BCIERS may temporarily show that a penalty
+          exists until the payment is processed and the system refreshes the information. Please refer to the
+          B.C. OBPS compliance module guidance document on our website for further information.
+      </p>
+      <br/>
+      <p>
+          If you have recently submitted payment and/or compliance units, please check that the details provided in
+          your Payment Notification are accurate and that you have paid in full.
+      </p>
+      <p>
+          If the details in your Payment Notification are correct and you have met your compliance obligation,
+          you may disregard this email.
+      </p>
+      <p>
+          If the payment information does not match the details provided in your Payment Notification email as
+          required in the Payment Instructions available in BCIERS, we cannot process your payment.
+      </p>
+      <br/>
+      <p>
+          If you need to correct the payment information you have provided, please contact us at
+          <a href="mailto:OBPSPayments@gov.bc.ca">OBPSPayments@gov.bc.ca</a>.
+      </p>
+      <br/>
+      <p><em>
+          Please do not reply to this email. This email is auto-generated. If you have any questions, or need
+          further assistance, please reach out to our support team at
+          <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a>.
+      </em></p>
+      <br/>
+      <p>Best Regards,</p>
+      <p>Ministry of Energy and Climate Solutions</p>
+      <p>Email: <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></p>
+      <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">
+          BC Government Website Link</a>
+      </p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[New Operator And Admin Access Request Approved]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your request to add Acme Corp Ltd. and obtain administrator access to its profile in BCIERS has been approved by Climate Action Secretariat.</p>
+              <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca">BCIERS</a> to perform additional tasks, such as starting an application for a BC OBPS Regulated Operation ID.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[New Operator And Admin Access Request Confirmation]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your request to add Acme Corp Ltd. and obtain administrator access to its profile in BCIERS has been received by the Climate Action Secretariat (CAS).</p>
+              <p>CAS is reviewing your requests. Please allow 3-5 business days to process this request. Once a decision is made, you may expect a notification email.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[New Operator And Admin Access Request Declined]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your requests to add Acme Corp Ltd. and obtain administrator access to its profile in BCIERS has been declined by the Climate Action Secretariat.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[No Obligation No Earned Credits Generated]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
+              <br>
+              <p>Dear Acme Corp Ltd.,</p>
+              <br>
+              <p>Based on the information submitted in <b>Test Smelter</b>’s  Annual Report for the 2025 compliance period, you have met your compliance obligation with no excess emissions or earned credits.  You can now review your records in the BC Industrial Emissions Reporting System (BCIERS). There is no further action required at this time.</p>
+              <p>To review your compliance obligation, including how it was calculated, please log-into BCIERS at <a
+                href="https://industrialemissions.gov.bc.ca/onboarding">https://industrialemissions.gov.bc.ca/onboarding</a>.</p>
+              <p><em>Please do not reply to this email. This email is auto-generated and sent from an unmonitored address. If you have
+                any questions, or need further assistance, please reach out to our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a>.</em>
+              </p>
+              <br>
+              <p>Best Regards,</p>
+              <p>Ministry of Energy and Climate Solutions</p>
+              <p>Email: <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></p>
+              <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
+                Government Website Link</a>
+              </p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Notice of Compliance Obligation Due]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
+              <br>
+              <p>Dear Acme Corp Ltd.,</p>
+              <br>
+              <p>You can now review your compliance obligation and take action to meet your obligation using the BC Industrial Emissions Reporting System (BCIERS).
+              </p>
+              <br>
+              <p>Based on the information submitted in <b>Test Smelter</b>’s Annual Report for the 2025 compliance period and the applicable compliance charge rate, a compliance obligation for excess emissions of 1000 at an equivalent amount of  50000 is now payable.   </p>
+              <br>
+              <p>You have the option to use compliance units to meet part of your obligation. When you apply compliance units against your obligation, BCIERS automatically adjusts the equivalent monetary amount due on the invoice. To review your compliance obligation and how it was calculated, please log-into BCIERS at <a
+                href="https://industrialemissions.gov.bc.ca/onboarding">https://industrialemissions.gov.bc.ca/onboarding</a>.</p><br>
+              <p>To meet your compliance obligation:  </p>
+              <ol>
+              <li>Navigate to the Compliance module and click <em>My Compliance > Compliance Summaries</em>.</li>
+              <li>Find your operation in the grid and click <em>Manage Obligation</em>.</li>
+              </ol>
+              <p>You must meet your compliance obligation by <b>November 30, 2026</b>.</p>
+              <br>
+              <p>
+              <b>Please note:</b> Unmet obligations after the payment deadline of November 30 will be subject to daily compounding penalties, as well as interest under the <em>Financial Administration Act</em> (FAA).</p>
+              <br >
+              <p>
+              <b>It may take up to five business days for payments to be processed and reconciled.</b> Once payment is received, BCIERS updates the obligation status accordingly. The Ministry uses the payment date to determine compliance with the deadline and whether a penalty exists. For clarity, the payment date is the date when payment is deposited to the B.C. OBPS bank account. If a payment date is on or before the deadline and processed after the deadline, BCIERS may temporarily show that a penalty exists until the payment is processed and the system refreshes the information. Please refer to the B.C. OBPS compliance module guidance document on our website for further information.  </p><br >
+              <p><em>Please do not reply to this email. This email is auto-generated. If you have any questions, or need further assistance, please reach out to our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></em></p>
+              <br>
+              <p>Best Regards,</p>
+              <p>Ministry of Energy and Climate Solutions</p>
+              <p>Email: <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></p>
+              <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
+                Government Website Link</a>
+              </p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Notice of Credits Requested]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
+              <br>
+              <p>Hi there,</p>
+              <br>
+              <p><b>Acme Corp Ltd.</b> has requested issuance of earned credits on behalf of <b>Test Smelter</b>. Please log-in to <a href="https://industrialemissions.gov.bc.ca/onboarding">BCIERS</a> to see the details of this request.
+              <br>
+              </p>
+              <p><em>Please do not reply to this email. This email is auto-generated and sent from an unmonitored address.</em></p>
+              <br>
+              <p>Best Regards,</p>
+              <p>Ministry of Energy and Climate Solutions</p>
+              <p>Email: <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></p>
+              <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
+                Government Website Link</a>
+              </p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Notice of Earned Credits Generated]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
+              <br>
+              <p>Dear Acme Corp Ltd.,</p>
+              <br>
+              <p>You can now review and request your earned credits using the BC Industrial Emissions Reporting System (BCIERS).</p>
+              <p>Based on the information submitted in <b>Test Smelter</b>&apos;s Annual Report for the 2025
+                compliance period, you can now request an issuance of 500 earned credit(s).
+              </p>
+              <p>To submit your earned credit request or review how it was calculated, please log-into BCIERS at <a
+                href="https://industrialemissions.gov.bc.ca/onboarding">https://industrialemissions.gov.bc.ca/onboarding</a>.</p>
+              <p>To request earned credit issuance:</p>
+              <ol type="1">
+                <li>Navigate to the Compliance module and click <em>My Compliance</em> > <em>Compliance Summaries</em>.</li>
+                <li>Find your operation in the grid and click <em>Request Issuance of Credits</em>.</li>
+              </ol>
+              <p><b>Please note:</b> To receive your credits, you need to have an Operator of
+                Regulated Operation account in the B.C.
+                Carbon Registry. If you do not have an account of this type, please follow the steps outlined here: <a
+                  href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/offset-projects/bc-carbon-registry">Accessing
+                the BC Carbon Registry - Province of British Columbia</a>.
+              </p>
+              <p><em>Please do not reply to this email. This email is auto-generated and sent from an unmonitored address. If you have
+                any questions, or need further assistance, please reach out to our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a>.</em>
+              </p>
+              <br>
+              <p>Best Regards,</p>
+              <p>Ministry of Energy and Climate Solutions</p>
+              <p>Email: <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></p>
+              <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
+                Government Website Link</a>
+              </p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Notice of Obligation Generated]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
+              <br>
+              <p>Dear Acme Corp Ltd.,</p>
+              <br>
+              <p>You can now view your compliance obligation for the 2025 compliance period in the BC Industrial Emissions Reporting System (BCIERS). This compliance obligation is based on the information submitted in <b>Test Smelter</b>’s Annual Report for the 2025 compliance period. </p>
+              <p>On <b>November 1, 2025</b>, the Ministry will issue an invoice to <b>Acme Corp Ltd.</b> based on <b>Test Smelter</b>’s excess emissions for the 2024 compliance period multiplied by the applicable compliance charge rate. On November 1, 2025, you will receive payment instructions and have the option to use compliance units to meet part of your obligation. </p>
+              <p><b>Please note:</b> Payments cannot be made before you receive your invoice. Payments received after the payment deadline of November 30 will be subject to daily compounding penalties, as well as interest under the <em>Financial Administration Act</em> (FAA). We encourage you to make your monetary payment at least five business days in advance of the compliance obligation deadline to allow for payment processing time. </p>
+              <p><em>Please do not reply to this email. This email is auto-generated and sent from an unmonitored address. If you have
+                any questions, or need further assistance, please reach out to our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a>.</em>
+              </p>
+              <br>
+              <p>Best Regards,</p>
+              <p>Ministry of Energy and Climate Solutions</p>
+              <p>Email: <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></p>
+              <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
+                Government Website Link</a>
+              </p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Notice of Obligation Met]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
+              <br/>
+              <p>Dear Acme Corp Ltd.,</p>
+              <br/>
+              <p>This email confirms that the compliance obligation for <b>Test Smelter</b> based on its annual report for the 2025 compliance period, has been met.
+              </p>
+              <br/>
+              <p><em>Please do not reply to this email. This email is auto-generated. If you have any questions, or need further assistance, please reach out to our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></em></p>
+              <br/>
+              <p>Best Regards,</p>
+              <p>Ministry of Energy and Climate Solutions</p>
+              <p>Email: <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></p>
+              <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
+                Government Website Link</a>
+              </p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Operator With Admin Access Request Approved]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your request to receive access to Acme Corp Ltd. in BCIERS has been approved by an operation representative with administrator access to Acme Corp Ltd.. You may now log-in to <a href="https://registration.industrialemissions.gov.bc.ca">BCIERS</a> and access Acme Corp Ltd..
+              </p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Operator With Admin Access Request Confirmation]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your request to receive access to Acme Corp Ltd. in BCIERS has been submitted.</p>
+              <p>An operation representative with administrator access to Acme Corp Ltd. can now review and approve your request. You will receive a notification email once a decision is made.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Operator With Admin Access Request Declined]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your request to receive access to Acme Corp Ltd. in BCIERS has been declined by an operation representative with administrator access to Acme Corp Ltd..
+  </p><br>
+              <p>If you have any questions, please reach out to the individual that holds administrator access to Acme Corp Ltd..</p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Opt-in And BORO ID Application Approved]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your application to opt-in as a reporting and regulated operation and obtain a BC OBPS Regulated Operation ID (BORO ID) for Test Smelter of Acme Corp Ltd. has been approved by the Climate Action Secretariat.</p>
+              <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca/">BCIERS</a> to see Test Smelter’s assigned BORO ID. For more information on how to use the BORO ID, please refer to <a href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf">Getting Started with the B.C. Output-Based Pricing System (gov.bc.ca)</a>.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Opt-in And BORO ID Application Changes Requested]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Changes are requested to your application to opt-in as a reporting and regulated operation and obtain a BC OBPS Regulated Operation ID (BORO ID) for Test Smelter of Acme Corp Ltd..</p>
+              <p>A staff member of the Climate Action Secretariat has sent, or will send shortly, an email explaining the details of the changes requested. Please revise and resubmit your application accordingly.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Opt-in And BORO ID Application Confirmation]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Part of your application to opt-in as a reporting and regulated operation and obtain a BC OBPS Regulated Operation ID (BORO ID) for Test Smelter of Acme Corp Ltd. has been received by the Climate Action Secretariat (CAS) through BCIERS.</p>
+              <p>A complete application requires additional documents to be sent to <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a> according to <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system#opting-in">B.C. Output-Based Pricing System - Province of British Columbia (gov.bc.ca)</a>.</p><br>
+              <p>CAS will only review a complete application. Once a complete application has been received, please allow 3-5 business days to process this request. Clarifications and changes may be requested as part of the reviewing process. Once a decision is made, you may expect a notification email.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Opt-in And BORO ID Application Declined]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>Your application to opt-in as a reporting and regulated operation and obtain a BC OBPS Regulated Operation ID (BORO ID) for Test Smelter of Acme Corp Ltd. has been declined by the Climate Action Secretariat.</p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Registration Submission Acknowledgement]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+              <p>Dear Jane Smith,</p><br>
+              <p>This email confirms that you have successfully submitted a registration for Test Smelter of Acme Corp Ltd. in BCIERS. You now have access to the Reporting Module in BCIERS where you can submit an annual report on behalf of Test Smelter. A staff member from the Climate Action Secretariat will contact you if there are any questions about the registration information provided.
+              </p><br>
+              <p>If this operation is eligible to receive a B.C. OBPS Regulated Operation ID (BORO ID) and has not received one yet, Climate Action Secretariat staff will review the information provided and issue a BORO ID as applicable. You will receive an email notification if a BORO ID is issued to this operation.</p><br>
+              <p>To return to BCIERS, click here: <a href="https://registration.industrialemissions.gov.bc.ca">registration.industrialemissions.gov.bc.ca/home</a></p><br>
+              <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+              <p>Sent to: jane@example.com</p>
+              <p>On behalf of the Climate Action Secretariat</p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Reminder of Compliance Obligation Due]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
+              <br/>
+              <p>Dear Acme Corp Ltd.,</p>
+              <br/>
+              <p>This is a reminder to meet your compliance obligation by <b>November 30, 2026</b>.
+              </p>
+              <br/>
+              <p>Based on our records, <b>Test Smelter</b> has an outstanding compliance obligation of 1000 in the amount of 50000 that must be met using the BC Industrial Emissions Reporting System (BCIERS).
+              </p>
+              <br/>
+              <p>If you have recently submitted payment and/or compliance units, please check that the details provided in your Payment Notification are accurate and that you have paid in full. It may take up to five business days for payments to be processed and reconciled.   </p><br/>
+              <p>If the details in your Payment Notification are correct and you have met your compliance obligation, you may disregard this email. </p><br/>
+              <p>If the payment information does not match the details provided in your Payment Notification email as required in the Payment Instructions available in BCIERS, we cannot process your payment.</p>
+              <br/>
+
+
+
+              <p>If you need to correct the details in your Payment Notification, please contact us at <a href="mailto:OBPSPayments@gov.bc.ca">OBPSPayments@gov.bc.ca</a>.
+              </p>
+              <br/ >
+              <p>To review your compliance obligation, including how it was calculated, log-into BCIERS at <a
+                href="https://industrialemissions.gov.bc.ca/onboarding">https://industrialemissions.gov.bc.ca/onboarding</a>.</p><br/>
+              <p>To meet your compliance obligation:  </p>
+              <ol>
+              <li>Navigate to the Compliance module and click <em>My Compliance > Compliance Summaries</em>.</li>
+              <li>Find your operation in the grid and click <em>Manage Obligation</em>.</li>
+              </ol>
+
+              <p>
+              <b>Please note:</b> Unmet obligations after the payment deadline of November 30 will be subject to daily compounding penalties, as well as interest under the <em>Financial Administration Act</em> (FAA).  </p><br/>
+              <p><b>It may take up to five business days for payments to be processed and reconciled.</b> Once payment is received, BCIERS updates the obligation status accordingly. The Ministry uses the payment date to determine compliance with the deadline and whether a penalty exists. For clarity, the payment date is the date when payment is deposited to the B.C. OBPS bank account. If a payment date is on or before the deadline and processed after the deadline, BCIERS may temporarily show that a penalty exists until the payment is processed and the system refreshes the information. Please refer to the B.C. OBPS compliance module guidance document on our website for further information.  </p><br/ >
+              <p><em>Please do not reply to this email. This email is auto-generated. If you have any questions, or need further assistance, please reach out to our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></em></p>
+              <br/>
+              <p>Best Regards,</p>
+              <p>Ministry of Energy and Climate Solutions</p>
+              <p>Email: <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></p>
+              <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
+                Government Website Link</a>
+              </p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_body_snapshot[Supplementary Report Submitted after Deadline]
+  '''
+
+              <p style="text-align: center;">Province of British Columbia</p>
+              <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
+              <br/>
+              <p>Dear Acme Corp Ltd.,</p>
+              <br/>
+              <p>Thank you for submitting a supplementary report through the BC Industrial Emissions Reporting System (BCIERS).
+              </p>
+              <br/>
+              <p>Because your supplementary report results in an increased amount of excess emissions, <b>you must meet an additional compliance obligation</b>. Based on the information submitted in <b>Test Smelter</b>’s supplementary report and the applicable compliance charge rate, an additional compliance obligation for excess emissions of 1000 at an equivalent amount of 50000 is now payable.   </p>
+              <br/>
+              <p><b>Because the supplementary report was submitted after the compliance obligation deadline</b>, the additional compliance obligation is subject to interest under the Greenhouse Gas Emission Administrative Penalty and Appeals Regulation (GGEAPAR). Interest is calculated at the prime lending rate + 3%, compounded monthly from the compliance obligation deadline of November 30, 2026 and applies until you resolve the overdue obligation.</p>
+              <br/><p>To review your compliance obligation and how it was calculated, please log-into BCIERS at <a
+                href="https://industrialemissions.gov.bc.ca/onboarding">https://industrialemissions.gov.bc.ca/onboarding</a>.</p><br/>
+              <p>To meet your compliance obligation:  </p>
+              <ol>
+              <li>Navigate to the Compliance module and click <em>My Compliance > Compliance Summaries</em>.</li>
+              <li>Find your operation in the grid and click <em>Manage Obligation</em>.</li>
+              </ol>
+              <p>If you do not meet the additional compliance obligation <b>within 30 days</b>, the additional obligation will be subject to daily compounding penalties, as well as interest under the <i>Financial Administration Act</i> (FAA). We strongly encourage you to make your payment on time to avoid these additional charges. Please refer to the B.C. OBPS compliance module guidance document on our website for further information. </p><br/>
+              <p><em>Please do not reply to this email. This email is auto-generated. If you have any questions, or need further assistance, please reach out to our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></em></p>
+              <br/>
+              <p>Best Regards,</p>
+              <p>Ministry of Energy and Climate Solutions</p>
+              <p>Email: <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a></p>
+              <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
+                Government Website Link</a>
+              </p>
+
+  '''
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Admin Access Request Approved]
+  'BCIERS Approval Notification – Access request to {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Admin Access Request Confirmation]
+  'BCIERS Receipt Acknowledgement – Access Request to {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Admin Access Request Declined]
+  'BCIERS Decline Notification – Access request to {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[BORO ID Application Approved]
+  'BCIERS Approval Notification – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[BORO ID Application Changes Requested]
+  'BCIERS Changes Request – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[BORO ID Application Confirmation]
+  'BCIERS Receipt Acknowledgement - BORO ID application for {{ operation_name }} of {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[BORO ID Application Declined]
+  'BCIERS Decline Notification – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[BORO ID Issuance]
+  'BCIERS Notification - BORO ID issued for {{ operation_name }} of {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Compliance Obligation Due Date Passed - Penalty now Accruing]
+  'BCIERS Notification – Compliance Obligation Unmet'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[New Operator And Admin Access Request Approved]
+  'BCIERS Approval Notification – Addition of {{ operator_legal_name }} and administrator access request'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[New Operator And Admin Access Request Confirmation]
+  'BCIERS Receipt Acknowledgement – Addition of {{ operator_legal_name }} and administrator access request'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[New Operator And Admin Access Request Declined]
+  'BCIERS Decline Notification – Addition of {{ operator_legal_name }} and administrator access request'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[No Obligation No Earned Credits Generated]
+  'BCIERS Notification – Compliance Obligation Met'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Notice of Compliance Obligation Due]
+  'BCIERS Notification – Compliance Obligation Due'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Notice of Credits Requested]
+  'BCIERS Notification – Earned Credits Requested '
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Notice of Earned Credits Generated]
+  'BCIERS Notification – Earned Credits Available to Request'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Notice of Obligation Generated]
+  'BCIERS Notification – Compliance Obligation Available to View'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Notice of Obligation Met]
+  'BCIERS Notification – Compliance Obligation Met'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Operator With Admin Access Request Approved]
+  'BCIERS Approval Notification – Access request to {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Operator With Admin Access Request Confirmation]
+  'BCIERS Receipt Acknowledgement – Access request to {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Operator With Admin Access Request Declined]
+  'BCIERS Decline Notification – Access request to {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Opt-in And BORO ID Application Approved]
+  'BCIERS Approval Notification – Opt-in and BORO ID application for {{ operation_name }} of {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Opt-in And BORO ID Application Changes Requested]
+  'BCIERS Changes Request – Opt-in and BORO ID application for {{ operation_name }} of {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Opt-in And BORO ID Application Confirmation]
+  'BCIERS Receipt Acknowledgement - Opt-in and BORO ID application for {{ operation_name }} of {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Opt-in And BORO ID Application Declined]
+  'BCIERS Decline Notification – Opt-in and BORO ID application for {{ operation_name }} of {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Registration Submission Acknowledgement]
+  'BCIERS Receipt Acknowledgement – Registration Submitted for {{ operation_name }} of {{ operator_legal_name }}'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Reminder of Compliance Obligation Due]
+  'BCIERS Reminder – Compliance Obligation Due on November 30th'
+# ---
+# name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Supplementary Report Submitted after Deadline]
+  'BCIERS Notification – Supplementary Report Submitted after Deadline'
+# ---
