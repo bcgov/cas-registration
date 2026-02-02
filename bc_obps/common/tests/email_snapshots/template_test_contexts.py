@@ -136,6 +136,8 @@ TEMPLATE_CONTEXTS = {
         "operator_legal_name": "Acme Corp Ltd.",
         "operation_name": "Test Smelter",
         "compliance_year": "2025",
+        "invoice_generation_date": "November 1, 2026",
+        "compliance_deadline": "November 30, 2026",
     },
     "Notice of Credits Requested": {
         "operator_legal_name": "Acme Corp Ltd.",

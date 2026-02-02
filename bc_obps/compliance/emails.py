@@ -117,10 +117,13 @@ def send_notice_of_obligation_generated_email(compliance_report_version_id: int)
     crv = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
     template = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Generated')
 
+    compliance_period = crv.compliance_report.compliance_period
     email_context = {
         "operator_legal_name": crv.report_compliance_summary.report_version.report_operation.operator_legal_name,
         "operation_name": crv.report_compliance_summary.report_version.report_operation.operation_name,
         "compliance_year": crv.compliance_report.report.reporting_year.reporting_year,
+        "invoice_generation_date": compliance_period.invoice_generation_date.strftime("%B %d, %Y"),
+        "compliance_deadline": compliance_period.compliance_deadline.strftime("%B %d, %Y"),
     }
 
     _send_email_to_operators_approved_users_or_raise(crv.compliance_report.report.operator, template, email_context)

@@ -326,10 +326,14 @@ class TestSendNotifications:
 
         template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Generated')
 
+        compliance_period = compliance_report.compliance_period
+
         expected_context = {
             "operator_legal_name": report_operation.operator_legal_name,
             "operation_name": report_operation.operation_name,
             "compliance_year": report.reporting_year.reporting_year,
+            "invoice_generation_date": compliance_period.invoice_generation_date.strftime("%B %d, %Y"),
+            "compliance_deadline": compliance_period.compliance_deadline.strftime("%B %d, %Y"),
         }
 
         # Call the function with the report id
