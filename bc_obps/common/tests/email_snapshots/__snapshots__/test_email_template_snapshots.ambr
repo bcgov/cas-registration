@@ -1,7 +1,7 @@
 # serializer version: 1
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Admin Access Request Approved]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -10,12 +10,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Admin Access Request Confirmation]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -24,12 +24,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Admin Access Request Declined]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -38,12 +38,12 @@
               <p>f you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[BORO ID Application Approved]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -52,12 +52,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[BORO ID Application Changes Requested]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -66,12 +66,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[BORO ID Application Confirmation]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -80,12 +80,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[BORO ID Application Declined]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -93,12 +93,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[BORO ID Issuance]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -107,12 +107,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Compliance Obligation Due Date Passed - Penalty now Accruing]
   '''
-
+  
       <p style="text-align: center;">Province of British Columbia</p>
       <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
       <br/>
@@ -180,12 +180,12 @@
       <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">
           BC Government Website Link</a>
       </p>
-
+  
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[New Operator And Admin Access Request Approved]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -194,12 +194,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[New Operator And Admin Access Request Confirmation]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -208,12 +208,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[New Operator And Admin Access Request Declined]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -221,12 +221,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[No Obligation No Earned Credits Generated]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
               <br>
@@ -245,12 +245,12 @@
               <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
                 Government Website Link</a>
               </p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Notice of Compliance Obligation Due]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
               <br>
@@ -283,12 +283,12 @@
               <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
                 Government Website Link</a>
               </p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Notice of Credits Requested]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
               <br>
@@ -305,12 +305,12 @@
               <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
                 Government Website Link</a>
               </p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Notice of Earned Credits Generated]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
               <br>
@@ -343,12 +343,12 @@
               <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
                 Government Website Link</a>
               </p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Notice of Obligation Generated]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
               <br>
@@ -367,12 +367,12 @@
               <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
                 Government Website Link</a>
               </p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Notice of Obligation Met]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
               <br/>
@@ -389,12 +389,12 @@
               <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
                 Government Website Link</a>
               </p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Operator With Admin Access Request Approved]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -403,12 +403,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Operator With Admin Access Request Confirmation]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -417,12 +417,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Operator With Admin Access Request Declined]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -431,12 +431,12 @@
               <p>If you have any questions, please reach out to the individual that holds administrator access to Acme Corp Ltd..</p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Opt-in And BORO ID Application Approved]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -445,12 +445,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Opt-in And BORO ID Application Changes Requested]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -459,12 +459,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Opt-in And BORO ID Application Confirmation]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -474,12 +474,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Opt-in And BORO ID Application Declined]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -487,12 +487,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Registration Submission Acknowledgement]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
@@ -503,12 +503,12 @@
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Reminder of Compliance Obligation Due]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
               <br/>
@@ -524,9 +524,9 @@
               <p>If the details in your Payment Notification are correct and you have met your compliance obligation, you may disregard this email. </p><br/>
               <p>If the payment information does not match the details provided in your Payment Notification email as required in the Payment Instructions available in BCIERS, we cannot process your payment.</p>
               <br/>
-
-
-
+  
+  
+  
               <p>If you need to correct the details in your Payment Notification, please contact us at <a href="mailto:OBPSPayments@gov.bc.ca">OBPSPayments@gov.bc.ca</a>.
               </p>
               <br/ >
@@ -537,7 +537,7 @@
               <li>Navigate to the Compliance module and click <em>My Compliance > Compliance Summaries</em>.</li>
               <li>Find your operation in the grid and click <em>Manage Obligation</em>.</li>
               </ol>
-
+  
               <p>
               <b>Please note:</b> Unmet obligations after the payment deadline of November 30 will be subject to daily compounding penalties, as well as interest under the <em>Financial Administration Act</em> (FAA).  </p><br/>
               <p><b>It may take up to five business days for payments to be processed and reconciled.</b> Once payment is received, BCIERS updates the obligation status accordingly. The Ministry uses the payment date to determine compliance with the deadline and whether a penalty exists. For clarity, the payment date is the date when payment is deposited to the B.C. OBPS bank account. If a payment date is on or before the deadline and processed after the deadline, BCIERS may temporarily show that a penalty exists until the payment is processed and the system refreshes the information. Please refer to the B.C. OBPS compliance module guidance document on our website for further information.  </p><br/ >
@@ -549,12 +549,12 @@
               <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
                 Government Website Link</a>
               </p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_body_snapshot[Supplementary Report Submitted after Deadline]
   '''
-
+  
               <p style="text-align: center;">Province of British Columbia</p>
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
               <br/>
@@ -582,7 +582,7 @@
               <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
                 Government Website Link</a>
               </p>
-
+          
   '''
 # ---
 # name: TestEmailTemplateSnapshots.test_template_subject_snapshot[Admin Access Request Approved]
