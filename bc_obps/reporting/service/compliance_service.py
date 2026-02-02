@@ -135,9 +135,11 @@ class ComplianceService:
             report_version_id, product_id, REPORTING_ONLY_CATEGORY_IDS
         )
         return reporting_only_allocated
-    
+
     @staticmethod
-    def get_production_period(report_version_id: int, registration_purpose: Operation.Purposes, final_reporting_year: int) -> ProductionPeriod:
+    def get_production_period(
+        report_version_id: int, registration_purpose: Operation.Purposes, final_reporting_year: int
+    ) -> ProductionPeriod:
         """
         Determine which production period to use for compliance calculations based on operation criteria.
         """
@@ -146,7 +148,11 @@ class ComplianceService:
 
         if reporting_year == 2024:
             return "apr_dec"
-        elif (registration_purpose == Operation.Purposes.OPTED_IN_OPERATION and reporting_year == 2025 and final_reporting_year == 2025):
+        elif (
+            registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
+            and reporting_year == 2025
+            and final_reporting_year == 2025
+        ):
             return "jan_mar"
         else:
             return "annual"
@@ -261,7 +267,11 @@ class ComplianceService:
             allocated_reporting_only = ComplianceService.get_reporting_only_allocated(report_version_id, rp.product_id)
             allocated_for_compliance = allocated - allocated_reporting_only
 
-            production_period = ComplianceService.get_production_period(report_version_id, report_version_record.report_operation.registration_purpose, report_version_record.report_operation.operation_opted_out_final_reporting_year or 0)
+            production_period = ComplianceService.get_production_period(
+                report_version_id,
+                Operation.Purposes(report_version_record.report_operation.registration_purpose),
+                report_version_record.report_operation.operation_opted_out_final_reporting_year or 0,
+            )
             production_for_limit, allocated_for_compliance_2024, allocated_compliance_emissions_value = (
                 resolve_compliance_parameters(production_period, allocated_for_compliance, production_totals)
             )
@@ -319,7 +329,9 @@ class ComplianceService:
         else:
             # Select which allocated total to use for compliance comparisons: Apr-Dec 2024 window or default full-year total
             total_allocated_for_compliance_used = (
-                total_allocated_for_compliance_2024 if use_apr_dec else total_allocated_for_compliance_default
+                total_allocated_for_compliance_2024
+                if production_period == "apr_dec"
+                else total_allocated_for_compliance_default
             )
             if total_allocated_for_compliance_used > emissions_limit_total:
                 excess_emissions = total_allocated_for_compliance_used - emissions_limit_total
