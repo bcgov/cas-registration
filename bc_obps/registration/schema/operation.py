@@ -119,6 +119,15 @@ class OperationInformationInUpdate(OperationInformationIn):
 
 
 class OptedInOperationDetailOut(ModelSchema):
+    final_reporting_year: Optional[int] = None
+
+    @staticmethod
+    def resolve_final_reporting_year(obj: OptedInOperationDetail) -> Optional[int]:
+        """
+        Extract the year integer from the final_reporting_year ForeignKey.
+        """
+        return obj.final_reporting_year.reporting_year if obj.final_reporting_year else None
+
     class Meta:
         model = OptedInOperationDetail
         fields = [
@@ -130,7 +139,6 @@ class OptedInOperationDetailOut(ModelSchema):
             "meets_producing_gger_schedule_a1_regulated_product",
             "meets_reporting_and_regulated_obligations",
             "meets_notification_to_director_on_criteria_change",
-            "final_reporting_year",
         ]
 
 
@@ -196,9 +204,8 @@ class OperationOut(ModelSchema):
         """
         Extract final_reporting_year from opted_in_operation to use as opted_out_operation
         """
-        if hasattr(obj, 'opted_in_operation') and obj.opted_in_operation is not None:
-            if obj.opted_in_operation.final_reporting_year is not None:
-                return obj.opted_in_operation.final_reporting_year.reporting_year
+        if obj.opted_in_operation and obj.opted_in_operation.final_reporting_year:
+            return obj.opted_in_operation.final_reporting_year.reporting_year
         return None
 
     class Meta:

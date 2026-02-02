@@ -33,3 +33,4 @@ class ReportProductSchemaOut(ReportProductSchema):
 class ProductionDataOut(Schema):
     report_products: List[ReportProductSchemaOut]
     allowed_products: List[RegulatedProductSchema]
+    operation_opted_out_final_reporting_year: int | None

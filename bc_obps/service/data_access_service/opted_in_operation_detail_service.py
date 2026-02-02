@@ -1,4 +1,4 @@
-from registration.schema import OptedInOperationDetailIn, OptedOutOperationDetailIn
+from registration.schema import OptedInOperationDetailIn
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.utils import update_model_instance
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
@@ -25,15 +25,15 @@ class OptedInOperationDataAccessService:
 
     @classmethod
     def update_opted_in_final_reporting_year(
-        cls, opted_in_operation_detail_id: int, payload: OptedOutOperationDetailIn
+        cls, opted_in_operation_detail_id: int, final_reporting_year: int | None
     ) -> OptedInOperationDetail:
         """
         Updates the final reporting year of an OptedInOperationDetail instance (for opted-in operations that are opting out).
-        If final_reporting_year is null, clears the field.
+        If final_reporting_year is None, clears the field.
         """
         opted_in_operation_detail = OptedInOperationDetail.objects.get(id=opted_in_operation_detail_id)
-        if payload.final_reporting_year is not None:
-            reporting_year = ReportingYearDataAccessService.get_by_year(payload.final_reporting_year)
+        if final_reporting_year is not None:
+            reporting_year = ReportingYearDataAccessService.get_by_year(final_reporting_year)
             opted_in_operation_detail.final_reporting_year = reporting_year
         else:
             opted_in_operation_detail.final_reporting_year = None

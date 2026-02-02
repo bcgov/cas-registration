@@ -50,5 +50,5 @@ def operation_registration_update_final_reporting_year(
     request: HttpRequest, operation_id: UUID, payload: OptedOutOperationDetailIn
 ) -> Tuple[Literal[200, 400], OptedInOperationDetail]:
     return 200, OperationService.update_opted_in_final_reporting_year(
-        get_current_user_guid(request), operation_id, payload
+        get_current_user_guid(request), operation_id, payload.final_reporting_year
     )
