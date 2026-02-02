@@ -25,6 +25,8 @@ export const REQUEST_ISSUANCE_BUTTON_TEXT =
 // --- Review Request Issuance form ---
 export const ANALYST_SUGGESTION_INPUT = "#root_analyst_suggestion";
 export const CONTINUE_BUTTON_TEXT = "Continue";
+export const FINAL_SUGGESTION_LOCKED_ERROR =
+  "Updates are not allowed after the analyst has provided a final suggestion";
 
 // --- Approve/Decline Director Review Request Issuance form ---
 export const APPROVE_BUTTON_TEXT = "Approve";
@@ -70,10 +72,14 @@ export const EARNED_CREDITS_REQUEST_ISSUANCE_SCENARIO =
 export const REVIEW_REQUEST_ISSUANCE_CREDITS_URL_PATTERN = new RegExp(
   `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/review-credits-issuance-request/?(?:\\?.*)?$`,
 );
+export const TRACK_ISSUANCE_URL_PATTERN = new RegExp(
+  `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/track-status-of-issuance/?(?:\\?.*)?$`,
+);
 // Director: review by director url
 export const REVIEW_BY_DIRECTOR_URL_PATTERN = new RegExp(
   `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/review-by-director/?(?:\\?.*)?$`,
 );
+
 // Scenario name used by the Django stub for APPROVE (DECLINE doesn't need stub)
 export const EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO =
   "earned_credits_director_approve";

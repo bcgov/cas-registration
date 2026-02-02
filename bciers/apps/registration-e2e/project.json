@@ -4,5 +4,13 @@
   "sourceRoot": "apps/registration-e2e",
   "tags": [],
   "implicitDependencies": ["registration"],
-  "targets": {}
+  "targets": {
+    "e2e:ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/registration-e2e",
+        "command": "happo -- playwright test"
+      }
+    }
+  }
 }

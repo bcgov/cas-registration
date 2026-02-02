@@ -9,6 +9,13 @@
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {}
+    },
+    "e2e:ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/reporting-e2e",
+        "command": "happo -- playwright test"
+      }
     }
   }
 }

@@ -438,7 +438,7 @@ export async function selectItemFromAutocomplete(
   await option.click();
 }
 
-export async function urlIsCorrect(page: Page, expectedPath: string) {
+export function urlIsCorrect(page: Page, expectedPath: string) {
   const currentUrl = page.url();
   expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
 }
