@@ -7,6 +7,7 @@ import {
   DirectorDecision,
   REVIEW_BY_DIRECTOR_URL_PATTERN,
   TRACK_ISSUANCE_URL_PATTERN,
+  FINAL_SUGGESTION_LOCKED_ERROR,
 } from "@/compliance-e2e/utils/constants";
 import { clickButton } from "@bciers/e2e/utils/helpers";
 import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
@@ -16,8 +17,9 @@ import { getCrvIdFromUrl } from "@bciers/e2e/utils/helpers";
 export class InternalReviewComplianceEarnedCreditsPOM {
   private readonly page: Page;
 
-  // Analyst suggestion control
+  // Analyst suggestion controls
   private readonly analystSuggestionInput: Locator;
+  private readonly errorMessage: Locator;
   // Director decision controls
   private readonly approveButton: Locator;
   private readonly declineButton: Locator;
@@ -25,6 +27,7 @@ export class InternalReviewComplianceEarnedCreditsPOM {
   constructor(page: Page) {
     this.page = page;
     this.analystSuggestionInput = this.page.locator(ANALYST_SUGGESTION_INPUT);
+    this.errorMessage = this.page.locator(".MuiAlert-message");
     this.approveButton = this.page.getByRole("button", {
       name: DECISION_TO_BUTTON[IssuanceStatus.APPROVED],
     });
@@ -52,13 +55,19 @@ export class InternalReviewComplianceEarnedCreditsPOM {
       await expect(this.declineButton).toHaveCount(0);
     }
   }
-
+  async assertFinalSuggestionLockedError(): Promise<void> {
+    // ✅ Assert update error
+    await expect(this.errorMessage).toContainText(
+      FINAL_SUGGESTION_LOCKED_ERROR,
+    );
+  }
   /**
    * Analyst flow: submits the analyst review
      Submits the analyst suggestion to update_compliance_report_version_earned_credit
    */
   async submitAnalystReviewRequestIssuance(
     suggestion: AnalystSuggestion = AnalystSuggestion.READY_TO_APPROVE,
+    opts?: { expectSuccess?: boolean },
   ): Promise<void> {
     const group = this.analystSuggestionInput;
     await expect(group).toBeVisible();
@@ -77,14 +86,19 @@ export class InternalReviewComplianceEarnedCreditsPOM {
 
     expect(selectedText).toMatch(new RegExp(suggestion, "i"));
 
-    // Determine expected navigation
-    const waitForUrl =
-      suggestion === AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT
+    const expectSuccess = opts?.expectSuccess ?? true;
+
+    // Determine expected navigation (only for success)
+    const waitForUrl = !expectSuccess
+      ? undefined
+      : suggestion === AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT
         ? TRACK_ISSUANCE_URL_PATTERN
         : REVIEW_BY_DIRECTOR_URL_PATTERN;
 
-    //  Click submit
-    await clickButton(this.page, CONTINUE_BUTTON_TEXT, { waitForUrl });
+    // Click submit
+    await clickButton(this.page, CONTINUE_BUTTON_TEXT, {
+      ...(waitForUrl ? { waitForUrl } : {}),
+    });
   }
 
   /**
