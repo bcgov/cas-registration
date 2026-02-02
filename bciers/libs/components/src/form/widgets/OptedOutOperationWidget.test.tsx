@@ -188,4 +188,62 @@ describe("OptedOutOperationWidget", () => {
       ),
     ).toBeInTheDocument();
   });
+
+  it("can toggle between Opted-in and Opted-out multiple times", async () => {
+    vi.mocked(actionHandler).mockResolvedValue({});
+
+    // Start in opted-out state
+    renderWidget({
+      isOptedOut: true,
+      isCasDirector: true,
+      operationId: "123",
+    });
+
+    // Verify initial state: opted-out with year selector visible
+    expect(screen.getByText("toggle:off")).toBeInTheDocument();
+    expect(screen.getByText("select-year")).toBeInTheDocument();
+
+    // First toggle: opted-out -> opted-in
+    fireEvent.click(screen.getByText("toggle:off"));
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/operations/123/registration/opted-in-operation-detail/final-reporting-year",
+        "PUT",
+        "",
+        {
+          body: JSON.stringify({ final_reporting_year: null }),
+        },
+      );
+    });
+
+    // Verify opted-in state: year selector should be hidden
+    expect(screen.getByText("toggle:on")).toBeInTheDocument();
+    expect(screen.queryByText("select-year")).not.toBeInTheDocument();
+
+    // Second toggle: opted-in -> opted-out
+    fireEvent.click(screen.getByText("toggle:on"));
+
+    // Verify opted-out state: year selector should be visible again
+    expect(screen.getByText("toggle:off")).toBeInTheDocument();
+    expect(screen.getByText("select-year")).toBeInTheDocument();
+
+    // Third toggle: opted-out -> opted-in again
+    fireEvent.click(screen.getByText("toggle:off"));
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/operations/123/registration/opted-in-operation-detail/final-reporting-year",
+        "PUT",
+        "",
+        {
+          body: JSON.stringify({ final_reporting_year: null }),
+        },
+      );
+    });
+
+    // Verify opted-in state again
+    expect(screen.getByText("toggle:on")).toBeInTheDocument();
+    expect(screen.queryByText("select-year")).not.toBeInTheDocument();
+  });
 });
