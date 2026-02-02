@@ -88,9 +88,9 @@ describe("OptedOutOperationWidget", () => {
       operationId: "123",
     });
 
-    expect(screen.getByText("Opt-in status:")).toBeInTheDocument();
-    expect(screen.getByText("toggle:off")).toBeInTheDocument();
-    expect(screen.getByText("select-year")).toBeInTheDocument();
+    expect(screen.getByText("Opt-in status:")).toBeVisible();
+    expect(screen.getByText("toggle:off")).toBeVisible();
+    expect(screen.getByText("select-year")).toBeVisible();
   });
 
   it("disables controls for non-CAS director", () => {
@@ -145,7 +145,7 @@ describe("OptedOutOperationWidget", () => {
     const widgetAlert = await screen.findByText("Something went wrong", {
       selector: "span",
     });
-    expect(widgetAlert).toBeInTheDocument();
+    expect(widgetAlert).toBeVisible();
   });
 
   it("toggles to opted-in and clears final reporting year", async () => {
@@ -186,7 +186,7 @@ describe("OptedOutOperationWidget", () => {
       screen.getByText(
         "Operation will not report for 2026 reporting year and subsequent years",
       ),
-    ).toBeInTheDocument();
+    ).toBeVisible();
   });
 
   it("can toggle between Opted-in and Opted-out multiple times", async () => {
@@ -200,8 +200,8 @@ describe("OptedOutOperationWidget", () => {
     });
 
     // Verify initial state: opted-out with year selector visible
-    expect(screen.getByText("toggle:off")).toBeInTheDocument();
-    expect(screen.getByText("select-year")).toBeInTheDocument();
+    expect(screen.getByText("toggle:off")).toBeVisible();
+    expect(screen.getByText("select-year")).toBeVisible();
 
     // First toggle: opted-out -> opted-in
     fireEvent.click(screen.getByText("toggle:off"));
@@ -218,15 +218,15 @@ describe("OptedOutOperationWidget", () => {
     });
 
     // Verify opted-in state: year selector should be hidden
-    expect(screen.getByText("toggle:on")).toBeInTheDocument();
+    expect(screen.getByText("toggle:on")).toBeVisible();
     expect(screen.queryByText("select-year")).not.toBeInTheDocument();
 
     // Second toggle: opted-in -> opted-out
     fireEvent.click(screen.getByText("toggle:on"));
 
     // Verify opted-out state: year selector should be visible again
-    expect(screen.getByText("toggle:off")).toBeInTheDocument();
-    expect(screen.getByText("select-year")).toBeInTheDocument();
+    expect(screen.getByText("toggle:off")).toBeVisible();
+    expect(screen.getByText("select-year")).toBeVisible();
 
     // Third toggle: opted-out -> opted-in again
     fireEvent.click(screen.getByText("toggle:off"));
@@ -243,7 +243,7 @@ describe("OptedOutOperationWidget", () => {
     });
 
     // Verify opted-in state again
-    expect(screen.getByText("toggle:on")).toBeInTheDocument();
+    expect(screen.getByText("toggle:on")).toBeVisible();
     expect(screen.queryByText("select-year")).not.toBeInTheDocument();
   });
 });
