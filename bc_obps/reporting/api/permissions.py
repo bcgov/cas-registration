@@ -67,7 +67,7 @@ def _validate_operator_ownership_in_url(
     return is_access_granted(user_operator)
 
 
-def _validate_report_version_ownership_in_url(request: HttpRequest, version_id_param: str) -> bool:
+def _validate_version_ownership_in_url(request: HttpRequest, version_id_param: str) -> bool:
     return _validate_operator_ownership_in_url(request, version_id_param, get_operator_from_version_id)
 
 
@@ -114,7 +114,7 @@ def check_version_ownership_in_url(
         if request.current_user.is_irc_user():  # type: ignore
             return True
 
-        return _validate_report_version_ownership_in_url(request, version_id_param)
+        return _validate_version_ownership_in_url(request, version_id_param)
 
     return validate_func
 
