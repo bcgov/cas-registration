@@ -177,8 +177,8 @@ class TestInitialData(TestCase):
     def test_activity_initial_data(self):
         expected_activities = sorted(
             [
-                ('General stationary combustion excluding line tracing', 'all'),
-                ('General stationary combustion solely for the purpose of line tracing', 'all'),
+                ('General stationary combustion excluding line tracing (at SFO)', 'all'),
+                ('General stationary combustion (line tracing)', 'all'),
                 ('Fuel combustion by mobile equipment', 'Single Facility Operation'),
                 ('Aluminum or alumina production', 'all'),
                 ('Ammonia production', 'all'),
@@ -206,25 +206,28 @@ class TestInitialData(TestCase):
                 ('Storage of petroleum products', 'all'),
                 ('Carbonate use', 'all'),
                 (
-                    'General stationary combustion, other than non-compression and non-processing combustion',
+                    'General stationary combustion (compression and processing)',
                     'Linear Facilities Operation',
                 ),
-                ('General stationary non-compression and non-processing combustion', 'Linear Facilities Operation'),
+                (
+                    'General stationary combustion (other than compression and processing)',
+                    'Linear Facilities Operation',
+                ),
                 ('Electricity transmission', 'Linear Facilities Operation'),
                 (
-                    'Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities',
+                    'Oil & Gas extraction (compression and processing)',
                     'Linear Facilities Operation',
                 ),
                 (
-                    'Non-compression and non-processing activities that are oil and gas extraction and gas processing activities',
+                    'Oil & Gas extraction (other than compression and processing)',
                     'Linear Facilities Operation',
                 ),
                 (
-                    'Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities',
+                    'Natural gas transmission (compression and processing)',
                     'Linear Facilities Operation',
                 ),
                 (
-                    'Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission',
+                    'Natural gas transmission (other than compression and processing)',
                     'Linear Facilities Operation',
                 ),
                 ('LNG activities', 'Linear Facilities Operation'),

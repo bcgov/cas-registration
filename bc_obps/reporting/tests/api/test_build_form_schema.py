@@ -90,7 +90,7 @@ class TestBuildFormSchema(CommonTestSetup):
         )
         assert response.status_code == 200
         response_object = json.loads(response.json())
-        assert response_object['schema']['title'] == 'General stationary combustion excluding line tracing'
+        assert response_object['schema']['title'] == 'General stationary combustion excluding line tracing (at SFO)'
         # No source types passed (and no mandatory single source type). Return only the activity schema
         assert 'sourceTypes' not in response_object['schema']['properties']
         # There is 1 id property

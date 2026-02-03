@@ -21,7 +21,8 @@ describe("The Reporting task list component", () => {
             elements: [
               {
                 type: "Page",
-                title: "General stationary combustion excluding line tracing",
+                title:
+                  "General stationary combustion excluding line tracing (at SFO)",
               },
               { type: "Page", title: "Mobile combustion", isActive: true },
               { type: "Page", title: "...", isChecked: true },
@@ -59,7 +60,9 @@ describe("The Reporting task list component", () => {
     expect(screen.getByText("Facility 3 info")).toBeInTheDocument();
     expect(screen.getByText("Review facility 2")).not.toBeVisible(); // collapsed
     expect(
-      screen.getByText("General stationary combustion excluding line tracing"),
+      screen.getByText(
+        "General stationary combustion excluding line tracing (at SFO)",
+      ),
     ).toBeVisible(); // expanded
   });
 });

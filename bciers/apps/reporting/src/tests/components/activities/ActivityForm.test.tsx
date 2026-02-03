@@ -33,7 +33,7 @@ const mockUUID = "00000000-0000-0000-0000-000000000001";
 const activitySchema = {
   schema: {
     type: "object",
-    title: "General stationary combustion excluding line tracing",
+    title: "General stationary combustion excluding line tracing (at SFO)",
     properties: {
       firstTestSourceType: {
         type: "boolean",
@@ -65,7 +65,7 @@ describe("ActivityForm component", () => {
           activityData={mockActivityData}
           currentActivity={{
             id: 1,
-            name: "General stationary combustion excluding line tracing",
+            name: "General stationary combustion excluding line tracing (at SFO)",
             slug: "gsc_excluding_line_tracing",
           }}
           navigationInformation={dummyNavigationInformation}
@@ -88,7 +88,7 @@ describe("ActivityForm component", () => {
     const sourceTypeSchema = {
       schema: {
         type: "object",
-        title: "General stationary combustion excluding line tracing",
+        title: "General stationary combustion excluding line tracing (at SFO)",
         properties: {
           firstTestSourceType: {
             type: "boolean",
@@ -126,7 +126,7 @@ describe("ActivityForm component", () => {
           activityData={mockActivityData}
           currentActivity={{
             id: 1,
-            name: "General stationary combustion excluding line tracing",
+            name: "General stationary combustion excluding line tracing (at SFO)",
             slug: "gsc_excluding_line_tracing",
           }}
           navigationInformation={dummyNavigationInformation}

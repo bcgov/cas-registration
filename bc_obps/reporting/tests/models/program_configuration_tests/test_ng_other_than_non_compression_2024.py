@@ -5,7 +5,7 @@ from .base_program_configuration_test import BaseProgramConfigurationTest
 class NaturalGasOtherThanNonCompression2024Test(BaseProgramConfigurationTest, TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.activity_name = "Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities"
+        cls.activity_name = "Natural gas transmission (compression and processing)"
         cls.year = 2024
         cls.config_element_count = 103
         cls.config = {

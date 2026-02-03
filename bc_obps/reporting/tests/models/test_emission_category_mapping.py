@@ -200,10 +200,10 @@ class TestInitialData(TestCase):
                 [
                     'Petrochemical production',
                     'Petroleum refining',
-                    'Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities',
-                    'Non-compression and non-processing activities that are oil and gas extraction and gas processing activities',
-                    'Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities',
-                    'Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission',
+                    'Oil & Gas extraction (compression and processing)',
+                    'Oil & Gas extraction (other than compression and processing)',
+                    'Natural gas transmission (compression and processing)',
+                    'Natural gas transmission (other than compression and processing)',
                     'LNG activities',
                 ]
             ),
@@ -223,11 +223,11 @@ class TestInitialData(TestCase):
                     'Petroleum refining',
                     'Open pit coal mining',
                     'Storage of petroleum products',
-                    'Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities',
-                    'Non-compression and non-processing activities that are oil and gas extraction and gas processing activities',
+                    'Oil & Gas extraction (compression and processing)',
+                    'Oil & Gas extraction (other than compression and processing)',
                     'Electricity transmission',
-                    'Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities',
-                    'Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission',
+                    'Natural gas transmission (compression and processing)',
+                    'Natural gas transmission (other than compression and processing)',
                     'LNG activities',
                 ]
             ),
@@ -272,12 +272,12 @@ class TestInitialData(TestCase):
             stationary_activities,
             sorted(
                 [
-                    'General stationary combustion excluding line tracing',
-                    'General stationary combustion solely for the purpose of line tracing',
+                    'General stationary combustion excluding line tracing (at SFO)',
+                    'General stationary combustion (line tracing)',
                     'Electricity generation',
                     'Refinery fuel gas combustion',
-                    'General stationary combustion, other than non-compression and non-processing combustion',
-                    'General stationary non-compression and non-processing combustion',
+                    'General stationary combustion (compression and processing)',
+                    'General stationary combustion (other than compression and processing)',
                 ]
             ),
         )
@@ -286,10 +286,10 @@ class TestInitialData(TestCase):
             venting_useful_activities,
             sorted(
                 [
-                    'Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities',
-                    'Non-compression and non-processing activities that are oil and gas extraction and gas processing activities',
-                    'Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities',
-                    'Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission',
+                    'Oil & Gas extraction (compression and processing)',
+                    'Oil & Gas extraction (other than compression and processing)',
+                    'Natural gas transmission (compression and processing)',
+                    'Natural gas transmission (other than compression and processing)',
                     'LNG activities',
                 ]
             ),
@@ -301,10 +301,10 @@ class TestInitialData(TestCase):
                 [
                     'Petrochemical production',
                     'Petroleum refining',
-                    'Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities',
-                    'Non-compression and non-processing activities that are oil and gas extraction and gas processing activities',
-                    'Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities',
-                    'Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission',
+                    'Oil & Gas extraction (compression and processing)',
+                    'Oil & Gas extraction (other than compression and processing)',
+                    'Natural gas transmission (compression and processing)',
+                    'Natural gas transmission (other than compression and processing)',
                     'LNG activities',
                 ]
             ),
@@ -314,9 +314,9 @@ class TestInitialData(TestCase):
             waste_activities,
             sorted(
                 [
-                    'General stationary combustion excluding line tracing',
-                    'General stationary combustion, other than non-compression and non-processing combustion',
-                    'General stationary non-compression and non-processing combustion',
+                    'General stationary combustion excluding line tracing (at SFO)',
+                    'General stationary combustion (compression and processing)',
+                    'General stationary combustion (other than compression and processing)',
                 ]
             ),
         )
@@ -328,13 +328,13 @@ class TestInitialData(TestCase):
             woody_biomass_activities,
             sorted(
                 [
-                    'General stationary combustion excluding line tracing',
-                    'General stationary combustion solely for the purpose of line tracing',
+                    'General stationary combustion excluding line tracing (at SFO)',
+                    'General stationary combustion (line tracing)',
                     'Fuel combustion by mobile equipment',
                     'Electricity generation',
                     'Pulp and paper production',
-                    'General stationary combustion, other than non-compression and non-processing combustion',
-                    'General stationary non-compression and non-processing combustion',
+                    'General stationary combustion (compression and processing)',
+                    'General stationary combustion (other than compression and processing)',
                 ]
             ),
         )
@@ -343,13 +343,13 @@ class TestInitialData(TestCase):
             excluded_biomass_activities,
             sorted(
                 [
-                    'General stationary combustion excluding line tracing',
-                    'General stationary combustion solely for the purpose of line tracing',
+                    'General stationary combustion excluding line tracing (at SFO)',
+                    'General stationary combustion (line tracing)',
                     'Fuel combustion by mobile equipment',
                     'Electricity generation',
                     'Pulp and paper production',
-                    'General stationary combustion, other than non-compression and non-processing combustion',
-                    'General stationary non-compression and non-processing combustion',
+                    'General stationary combustion (compression and processing)',
+                    'General stationary combustion (other than compression and processing)',
                 ]
             ),
         )
@@ -358,12 +358,12 @@ class TestInitialData(TestCase):
             excluded_nonbiomass_activities,
             sorted(
                 [
-                    'General stationary combustion excluding line tracing',
-                    'General stationary combustion solely for the purpose of line tracing',
+                    'General stationary combustion excluding line tracing (at SFO)',
+                    'General stationary combustion (line tracing)',
                     'Fuel combustion by mobile equipment',
                     'Electricity generation',
-                    'General stationary combustion, other than non-compression and non-processing combustion',
-                    'General stationary non-compression and non-processing combustion',
+                    'General stationary combustion (compression and processing)',
+                    'General stationary combustion (other than compression and processing)',
                 ]
             ),
         )
@@ -373,10 +373,10 @@ class TestInitialData(TestCase):
             lfo_line_tracing_activities,
             sorted(
                 [
-                    'General stationary combustion solely for the purpose of line tracing',
-                    'General stationary non-compression and non-processing combustion',
-                    'Non-compression and non-processing activities that are oil and gas extraction and gas processing activities',
-                    'Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission',
+                    'General stationary combustion (line tracing)',
+                    'General stationary combustion (other than compression and processing)',
+                    'Oil & Gas extraction (other than compression and processing)',
+                    'Natural gas transmission (other than compression and processing)',
                 ]
             ),
         )

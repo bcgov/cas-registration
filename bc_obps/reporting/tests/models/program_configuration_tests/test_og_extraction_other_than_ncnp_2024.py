@@ -5,7 +5,7 @@ from .base_program_configuration_test import BaseProgramConfigurationTest
 class OGExtractionOtherThanNonCompressionNonProcessing2024Test(BaseProgramConfigurationTest, TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.activity_name = "Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
+        cls.activity_name = "Oil & Gas extraction (compression and processing)"
         cls.year = 2024
         cls.config_element_count = 140
         cls.config = {

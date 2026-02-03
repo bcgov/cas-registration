@@ -7,7 +7,7 @@ from reporting.models.configuration_element import ConfigurationElement
 
 class GSCNonCompressionNonProcessing2024Test(TestCase):
     def testDataExists(self):
-        activity = Activity.objects.get(name='General stationary non-compression and non-processing combustion')
+        activity = Activity.objects.get(name='General stationary combustion (other than compression and processing)')
         config = Configuration.objects.get(slug='2024')
 
         config_elements = ConfigurationElement.objects.filter(

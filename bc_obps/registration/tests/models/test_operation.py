@@ -51,9 +51,19 @@ class OperationModelTest(BaseTestCase):
 
         cls.test_object.activities.set(
             [
-                Activity.objects.create(name="test", applicable_to=Activity.Applicability.ALL, slug="test", weight=100),
                 Activity.objects.create(
-                    name="test2", applicable_to=Activity.Applicability.LFO, slug="test2", weight=200
+                    name="test",
+                    applicable_to=Activity.Applicability.ALL,
+                    slug="test",
+                    regulated_name="test regulated name",
+                    weight=100,
+                ),
+                Activity.objects.create(
+                    name="test2",
+                    applicable_to=Activity.Applicability.LFO,
+                    slug="test2",
+                    regulated_name="test2 regulated name",
+                    weight=200,
                 ),
             ]
         )

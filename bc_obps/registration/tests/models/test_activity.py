@@ -10,6 +10,7 @@ class ActivityModelTest(BaseTestCase):
             ("name", "name", 1000, None),
             ("applicable_to", "applicable to", None, None),
             ("slug", "slug", 50, None),
+            ("regulated_name", "regulated name", 1000, None),
             ("weight", "weight", None, None),
             ("operations", "operation", None, None),
             ("configuration_elements", "configuration element", None, None),
@@ -18,5 +19,9 @@ class ActivityModelTest(BaseTestCase):
             ("reportrawactivitydata_records", "report raw activity data", None, 0),
         ]
         cls.test_object = Activity.objects.create(
-            name="test activity", applicable_to=Activity.Applicability.ALL, slug="test_activity", weight=100.0
+            name="test activity",
+            applicable_to=Activity.Applicability.ALL,
+            slug="test_activity",
+            regulated_name="test regulated name",
+            weight=100.0,
         )
