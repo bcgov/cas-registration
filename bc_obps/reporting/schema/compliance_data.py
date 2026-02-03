@@ -4,8 +4,6 @@ from ninja import Schema
 
 
 class RegulatoryValueSchema(Schema):
-    reduction_factor: Decimal
-    tightening_rate: Decimal
     initial_compliance_period: int
     compliance_period: int
 
@@ -17,6 +15,8 @@ class ReportProductComplianceSchema(Schema):
     emission_intensity: Decimal
     allocated_industrial_process_emissions: float
     allocated_compliance_emissions: float
+    reduction_factor: Decimal
+    tightening_rate: Decimal
 
 
 class ComplianceDataSchemaOut(Schema):

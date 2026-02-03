@@ -20,8 +20,6 @@ interface Props {
     excess_emissions: string;
     credited_emissions: string;
     regulatory_values: {
-      reduction_factor: string;
-      tightening_rate: string;
       initial_compliance_period: string;
       compliance_period: string;
     };
@@ -33,6 +31,8 @@ interface Props {
       emission_intensity: string;
       allocated_industrial_process_emissions: string;
       allocated_compliance_emissions: string;
+      reduction_factor: string;
+      tightening_rate: string;
     }[];
     reporting_year: number;
   };

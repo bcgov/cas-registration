@@ -23,8 +23,6 @@ const mockSummaryData = {
   excess_emissions: "5000.5",
   credited_emissions: "6000.75",
   regulatory_values: {
-    reduction_factor: "7000.1",
-    tightening_rate: "8000.2",
     initial_compliance_period: "2024",
     compliance_period: "2024",
   },
@@ -32,6 +30,8 @@ const mockSummaryData = {
     {
       name: "Pucks",
       customUnit: "Goals",
+      reduction_factor: "7000.1",
+      tightening_rate: "8000.2",
       annual_production: "11000.5",
       apr_dec_production: "12000.6",
       emission_intensity: "13000.7",
@@ -83,8 +83,6 @@ describe("ComplianceSummaryForm", () => {
       />,
     );
 
-    expect(screen.getByLabelText("Reduction factor").value).toBe("7,000.1");
-    expect(screen.getByLabelText("Tightening rate").value).toBe("8,000.2");
     expect(screen.getByLabelText("Initial compliance period").value).toBe(
       "2024",
     );
@@ -99,6 +97,8 @@ describe("ComplianceSummaryForm", () => {
       />,
     );
 
+    expect(screen.getByLabelText("Reduction factor").value).toBe("7,000.1");
+    expect(screen.getByLabelText("Tightening rate").value).toBe("8,000.2");
     expect(screen.getByLabelText("Annual production").value).toBe("11,000.5");
     expect(
       screen.getByLabelText("Production-weighted average emission intensity")
@@ -169,8 +169,6 @@ describe("ComplianceSummaryForm", () => {
       excess_emissions: "5000.5",
       credited_emissions: "6000.75",
       regulatory_values: {
-        reduction_factor: "7000.1",
-        tightening_rate: "8000.2",
         initial_compliance_period: "2025",
         compliance_period: "2025",
       },
@@ -178,6 +176,8 @@ describe("ComplianceSummaryForm", () => {
         {
           name: "Pucks",
           customUnit: "Goals",
+          reduction_factor: "7000.1",
+          tightening_rate: "8000.2",
           annual_production: "11000.5",
           // apr_dec_production should not exist for non-2024 years
           emission_intensity: "13000.7",
