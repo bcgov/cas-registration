@@ -7,6 +7,7 @@ from django.http import HttpRequest
 from registration.models.user_operator import UserOperator
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
+from registration.models.operator import Operator
 from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
 
 logger = logging.getLogger(__name__)
@@ -20,52 +21,52 @@ def is_access_granted(user_operator: UserOperator | None) -> bool:
     )
 
 
-def _validate_version_ownership_in_url(request: HttpRequest, version_id_param: str) -> bool:
-    # Validate that the requesting user has access to the operator associated with the report version in the URL
+def _validate_operator_ownership_in_url(
+    request: HttpRequest, id_param: str, get_operator: Callable[[str], object | None]
+) -> bool:
+    # Generic helper to validate operator ownership from URL parameters.
+    # Requires a function to get the operator from the URL parameter.
     if not request.resolver_match:
         logger.warning("No resolver_match attribute found on request.")
         return False
 
-    report_version_id = request.resolver_match.kwargs.get(version_id_param)
-    if not report_version_id:
-        logger.warning("No report_version_id found in request.")
+    obj_id = request.resolver_match.kwargs.get(id_param)
+    if not obj_id:
+        logger.warning(f"No {id_param} found in request.")
         return False
 
-    report_version = ReportVersion.objects.filter(pk=report_version_id).first()
-    if not report_version:
-        logger.warning("No report version found.")
+    operator = get_operator(obj_id)
+    if not operator:
         return False
 
     user_operator = UserOperator.objects.filter(
         user=request.current_user,  # type: ignore
-        operator=report_version.report.operator,
+        operator=operator,
     ).first()
 
     return is_access_granted(user_operator)
 
 
-def _validate_report_ownership_in_url(request: HttpRequest, report_id_param: str) -> bool:
-    # Validate that the requesting user has access to the operator associated with the report in the URL
-    if not request.resolver_match:
-        logger.warning("No resolver_match attribute found on request.")
-        return False
+def _validate_operator_owns_report_version_in_url(request: HttpRequest, version_id_param: str) -> bool:
+    def get_operator(version_id: str) -> Operator | None:
+        report_version = ReportVersion.objects.filter(pk=version_id).first()
+        if not report_version:
+            logger.warning("No report version found.")
+            return None
+        return report_version.report.operator
 
-    report_id = request.resolver_match.kwargs.get(report_id_param)
-    if not report_id:
-        logger.warning("No report_id found in request.")
-        return False
+    return _validate_operator_ownership_in_url(request, version_id_param, get_operator)
 
-    report = Report.objects.filter(pk=report_id).first()
-    if not report:
-        logger.warning("No report found.")
-        return False
 
-    user_operator = UserOperator.objects.filter(
-        user=request.current_user,  # type: ignore
-        operator=report.operator,
-    ).first()
+def _validate_operator_owns_report_in_url(request: HttpRequest, report_id_param: str) -> bool:
+    def get_operator(report_id: str) -> Operator | None:
+        report = Report.objects.filter(pk=report_id).first()
+        if not report:
+            logger.warning("No report found.")
+            return None
+        return report.operator
 
-    return is_access_granted(user_operator)
+    return _validate_operator_ownership_in_url(request, report_id_param, get_operator)
 
 
 def _validate_operation_ownership(request: HttpRequest) -> bool:
@@ -107,7 +108,7 @@ def check_version_ownership_in_url(
         if request.current_user.is_irc_user():  # type: ignore
             return True
 
-        return _validate_version_ownership_in_url(request, version_id_param)
+        return _validate_operator_owns_report_version_in_url(request, version_id_param)
 
     return validate_func
 
@@ -119,7 +120,7 @@ def check_report_ownership_in_url(
         # Internal users can access all reports
         if request.current_user.is_irc_user():  # type: ignore
             return True
-        return _validate_report_ownership_in_url(request, report_id_param)
+        return _validate_operator_owns_report_in_url(request, report_id_param)
 
     return validate_func
 
