@@ -1,4 +1,5 @@
 from uuid import UUID
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Case, When, Value, BooleanField
 from django.db import transaction
 from django.db.models import QuerySet
@@ -12,6 +13,7 @@ from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
+from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
 from service.report_version_service import ReportVersionService
 from service.facility_report_service import FacilityReportService, SaveFacilityReportData
 from typing import Any, List, Optional
@@ -53,22 +55,30 @@ class ReportService:
             raise UserError("A report already exists for this operation and year, unable to create a new one.")
 
         # Fetching report context
-        operation = (
-            Operation.objects.select_related("operator")
-            .prefetch_related("activities", "regulated_products")
-            .get(id=operation_id)
+        designated_operator_timeline = (
+            OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
+                operation_id=operation_id, reporting_year=reporting_year
+            )
         )
-        operator = operation.operator
+        if not designated_operator_timeline:
+            raise ObjectDoesNotExist(
+                f"Designated operator for reporting year {reporting_year} not found for operation {operation_id}."
+            )
+
+        operation = Operation.objects.prefetch_related("activities", "regulated_products").get(id=operation_id)
 
         # Creating report object
 
         report = Report.objects.create(
             operation=operation,
-            operator=operator,
+            operator=designated_operator_timeline.operator,
             reporting_year=ReportingYearDataAccessService.get_by_year(reporting_year),
         )
 
-        report_version = ReportVersionService.create_report_version(report)
+        report_version = ReportVersionService.create_report_version(
+            report, use_transferred_operation_handling=designated_operator_timeline.has_been_transferred
+        )
+
         return report_version.id
 
     @staticmethod

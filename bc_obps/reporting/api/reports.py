@@ -20,6 +20,7 @@ from ..schema.report_version import ReportVersionTypeIn, ReportVersionIn, Report
 from reporting.api.permissions import (
     approved_industry_user_report_version_composite_auth,
     approved_authorized_roles_report_version_composite_auth,
+    approved_industry_user_report_composite_auth,
 )
 from reporting.models import ReportingYear, ReportVersion
 
@@ -136,7 +137,7 @@ def delete_report_version(request: HttpRequest, version_id: int) -> Tuple[Litera
     response={200: int, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Creates a report version for an existing report.""",
-    auth=compose_auth(authorize("approved_industry_user"), check_operation_ownership()),
+    auth=approved_industry_user_report_composite_auth,
 )
 def create_report_version(
     request: HttpRequest, report_id: int, payload: CreateReportVersionIn

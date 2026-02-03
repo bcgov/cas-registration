@@ -97,7 +97,8 @@ class ReportingDashboardService:
         timeline = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(
             user=user, exclude_previously_owned=False
         ).filter(
-            Q(end_date__year=reporting_year + 1) | Q(end_date__year__isnull=True, start_date__year__lte=reporting_year)
+            Q(end_date__year__gt=reporting_year) | Q(end_date__year__isnull=True),
+            start_date__year__lte=reporting_year,
         )
         operations_for_reporting_year = Operation.objects.filter(
             id__in=timeline.values_list('operation_id', flat=True),

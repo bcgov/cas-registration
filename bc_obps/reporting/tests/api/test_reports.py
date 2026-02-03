@@ -1,3 +1,4 @@
+from django.utils import timezone
 import json
 from typing import Any
 from unittest.mock import patch, MagicMock
@@ -10,7 +11,7 @@ from registration.models.operation import Operation
 from registration.tests.utils.bakers import operation_baker, operator_baker
 from registration.utils import custom_reverse_lazy
 from reporting.models import Report, ReportVersion
-from reporting.tests.utils.bakers import report_baker, reporting_year_baker
+from reporting.tests.utils.bakers import report_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
@@ -37,11 +38,9 @@ class TestReportsEndpoint(CommonTestSetup):
         )
 
     def test_error_if_no_operation_exists(self):
-        reporting_year = reporting_year_baker()
-
         request_data = {
             "operation_id": "00000000-0000-0000-0000-000000000000",
-            "reporting_year": reporting_year.reporting_year,
+            "reporting_year": 2024,
         }
         response = self.send_authorized_post_request(request_data)
 
@@ -49,22 +48,35 @@ class TestReportsEndpoint(CommonTestSetup):
 
     def test_error_if_no_reporting_year_exists(self):
         operation = operation_baker()
+        baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=operation.operator,
+            start_date=timezone.datetime(2024, 1, 1).date(),
+            end_date=None,
+        )
 
-        request_data = {"operation_id": str(operation.id), "reporting_year": 2000}
+        request_data = {"operation_id": str(operation.id), "reporting_year": 2111}
         response = self.send_authorized_post_request(request_data, operation)
 
         assert response.status_code == 404
         assert response.json()["message"] == "Not Found"
 
     def test_error_if_report_exists(self):
-        report = report_baker()
+        report = report_baker(reporting_year_id=2024)
+        baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=report.operation,
+            operator=report.operation.operator,
+            start_date=timezone.datetime(2022, 1, 1).date(),
+            end_date=None,
+        )
 
         request_data = {
             "operation_id": str(report.operation.id),
-            "reporting_year": report.reporting_year.reporting_year,
+            "reporting_year": 2024,
         }
         response = self.send_authorized_post_request(request_data, report.operation)
-
         assert response.status_code == 400
         assert (
             response.json()["message"]
@@ -72,15 +84,26 @@ class TestReportsEndpoint(CommonTestSetup):
         )
 
     def test_creates_report_and_returns_http_created(self):
-        operation = operation_baker()
-        reporting_year = reporting_year_baker()
+        user_operator = baker.make_recipe(
+            'registration.tests.utils.user_operator',
+            role='admin',
+            status='Approved',
+        )
+        operation = operation_baker(operator_id=user_operator.operator_id)
+        baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=user_operator.operator,
+            start_date=timezone.datetime(2022, 1, 1).date(),
+            end_date=None,
+        )
 
         assert Report.objects.count() == 0
         assert ReportVersion.objects.count() == 0
 
         request_data = {
             "operation_id": str(operation.id),
-            "reporting_year": reporting_year.reporting_year,
+            "reporting_year": 2024,
         }
         response = self.send_authorized_post_request(request_data, operation)
 
@@ -158,7 +181,7 @@ class TestReportsEndpoint(CommonTestSetup):
     def test_create_report_version_validates_operation_ownership(self):
         with (
             patch("common.permissions.check_permission_for_role") as mock_check_permissions,
-            patch("reporting.api.permissions._validate_operation_ownership") as mock_validate_operation_ownership,
+            patch("reporting.api.permissions._validate_report_ownership_in_url") as mock_validate_operation_ownership,
         ):
             mock_check_permissions.return_value = True
 
@@ -172,8 +195,14 @@ class TestReportsEndpoint(CommonTestSetup):
     def test_returns_data_as_provided_by_create_report_version(
         self, mock_get_report_by_id: MagicMock, mock_create_report_version: MagicMock
     ):
+        user_operator = baker.make_recipe(
+            'registration.tests.utils.user_operator',
+            role='admin',
+            status='Approved',
+        )
+        operation = operation_baker(operator_id=user_operator.operator_id)
         # Arrange: create report and report version
-        report = baker.make_recipe("reporting.tests.utils.report")
+        report = baker.make_recipe("reporting.tests.utils.report", operation=operation, operator=user_operator.operator)
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report=report)
 
         # Set up the expected responses from the service methods
@@ -183,10 +212,10 @@ class TestReportsEndpoint(CommonTestSetup):
 
         # Act: make a POST request to the endpoint
         request_data = {
-            "operation_id": str(report.operation.id),
+            "operation_id": str(operation.id),
         }
         url = custom_reverse_lazy("create_report_version", kwargs={'report_id': report.id})
-        response = self.send_authorized_post_request(request_data, report.operation, url)
+        response = self.send_authorized_post_request(request_data, operation, url)
 
         # Assert: Check the response status and data
         assert response.status_code == 200

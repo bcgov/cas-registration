@@ -1,6 +1,7 @@
 from django.db import transaction
 
 from registration.models import Operation
+from registration.models.contact import Contact
 from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
 from service.data_access_service.facility_service import FacilityDataAccessService
@@ -23,6 +24,7 @@ class ReportVersionService:
     def create_report_version(
         report: Report,
         report_type: str = "Annual Report",
+        use_transferred_operation_handling: bool = False,
     ) -> ReportVersion:
         # Creating draft version
         report_version = ReportVersion.objects.create(report=report, report_type=report_type)
@@ -42,12 +44,19 @@ class ReportVersionService:
             report_version=report_version,
             registration_purpose=operation.registration_purpose or 'OBPS Regulated Operation',
         )
+        # Special handling for report where the operation has been transferred
+        if use_transferred_operation_handling:
+            contacts = Contact.objects.filter(operator=operator, business_role="Operation Representative")
+            selected_representative_state = False
+        else:
+            contacts = operation.contacts.all()
+            selected_representative_state = True
 
-        for contact in operation.contacts.all():
+        for contact in contacts:
             ReportOperationRepresentative.objects.create(
                 report_version=report_version,
                 representative_name=contact.get_full_name(),
-                selected_for_report=True,
+                selected_for_report=selected_representative_state,
             )
         report_operation.activities.add(*list(operation.activities.all()))
         report_operation.regulated_products.add(*list(operation.regulated_products.all()))
