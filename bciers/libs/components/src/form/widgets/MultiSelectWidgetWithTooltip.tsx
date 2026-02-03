@@ -8,6 +8,7 @@ import {
   MenuItem,
   TextField,
   Tooltip,
+  Zoom,
 } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import {
@@ -56,7 +57,7 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
 
   const options = mapOptionsWithTooltips(fieldSchema);
 
-  // Track the currently highlighted option for keyboard accessibility
+  // // Track the currently highlighted option for keyboard accessibility
   const [highlightedOption, setHighlightedOption] =
     useState<OptionWithTooltip | null>(null);
 
@@ -71,17 +72,16 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
     if (!isValue) {
       onChange([]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const placeholder = uiSchema?.["ui:placeholder"]
     ? `${uiSchema["ui:placeholder"]}...`
     : "";
 
-  // Optional prefix for tooltips (e.g., "Regulatory name: ")
+  // Optional prefix for tooltips (e.g.: "Regulatory name: ")
   const tooltipPrefix = uiSchema?.["ui:tooltipPrefix"] as string | undefined;
 
-  // Helper to render tooltip content with optional prefix
+  // Helper to render tooltip with optional prefix
   const renderTooltipContent = (tooltipText: string) => {
     if (tooltipPrefix) {
       return (
@@ -110,11 +110,11 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
     height: "auto",
     maxWidth: "150px",
     "& .MuiChip-label": {
-      whiteSpace: "normal",
-      wordBreak: "break-word",
-      overflowWrap: "break-word",
-      display: "block",
-      padding: ".5rem",
+      whiteSpace: "normal", // Allows text wrapping
+      wordBreak: "break-word", // Breaks long words if needed
+      overflowWrap: "break-word", // Ensures proper word breaks
+      display: "block", // Forces multiline wrapping
+      padding: ".5rem", // Spaces to match the design document
     },
   };
 
@@ -165,14 +165,9 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
         getTagProps: AutocompleteRenderGetTagProps,
       ) => {
         return renderOptions.map((option: OptionWithTooltip, index: number) => {
-          const tagProps = getTagProps({ index });
+          const { key, ...tagProps } = getTagProps({ index });
           const chip = (
-            <Chip
-              {...tagProps}
-              key={option.id}
-              label={option.label}
-              sx={chipStyle}
-            />
+            <Chip key={key} label={option.label} {...tagProps} sx={chipStyle} />
           );
           if (option.tooltip) {
             return (
@@ -180,6 +175,20 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
                 key={option.id}
                 title={renderTooltipContent(option.tooltip)}
                 placement="top"
+                arrow
+                slots={{
+                  transition: Zoom,
+                }}
+                PopperProps={{
+                  modifiers: [
+                    {
+                      name: "offset",
+                      options: {
+                        offset: [0, -10],
+                      },
+                    },
+                  ],
+                }}
               >
                 {chip}
               </Tooltip>
@@ -207,13 +216,17 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
               title={renderTooltipContent(option.tooltip)}
               placement="right"
               open={isHighlighted}
-              disableHoverListener
+              disableHoverListener={true}
+              arrow
+              slots={{
+                transition: Zoom,
+              }}
               PopperProps={{
                 modifiers: [
                   {
                     name: "offset",
                     options: {
-                      offset: [0, -4],
+                      offset: [0, -7],
                     },
                   },
                 ],
