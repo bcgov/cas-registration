@@ -51,6 +51,7 @@ django-stubs = {extras = ["compatible-mypy"], version = "^5.0.0"}
 types-requests = "^2.31.0.20240406"
 pytest-xdist = "^3.6.1"
 django-querycount = "^0.8.3"
+syrupy = "^4.8.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

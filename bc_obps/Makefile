@@ -128,6 +128,11 @@ pythontests_coverage:
 	$(POETRY_RUN) $(PYTEST) --cov=. --cov-config=.coveragerc --cov-report=term-missing --no-cov-on-fail
 
 
+.PHONY: update_email_snapshots
+update_email_snapshots: ## update email template snapshot baselines after intentional changes
+update_email_snapshots:
+	$(POETRY_RUN) $(PYTEST) common/tests/email_snapshots/ --snapshot-update
+
 .PHONY: pythontests_parallel
 pythontests_parallel: ## run Python tests in parallel for faster execution
 pythontests_parallel:
