@@ -74,10 +74,11 @@ class ReportService:
             operator=designated_operator_timeline.operator,
             reporting_year=ReportingYearDataAccessService.get_by_year(reporting_year),
         )
-        if designated_operator_timeline.has_been_transferred:
-            report_version = ReportVersionService.create_report_version(report, use_transferred_operation_handling=True)
-        else:
-            report_version = ReportVersionService.create_report_version(report)
+
+        report_version = ReportVersionService.create_report_version(
+            report, use_transferred_operation_handling=designated_operator_timeline.has_been_transferred
+        )
+
         return report_version.id
 
     @staticmethod

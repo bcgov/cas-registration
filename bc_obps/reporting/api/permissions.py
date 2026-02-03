@@ -21,6 +21,7 @@ def is_access_granted(user_operator: UserOperator | None) -> bool:
 
 
 def _validate_version_ownership_in_url(request: HttpRequest, version_id_param: str) -> bool:
+    # Validate that the requesting user has access to the operator associated with the report version in the URL
     if not request.resolver_match:
         logger.warning("No resolver_match attribute found on request.")
         return False
@@ -44,6 +45,7 @@ def _validate_version_ownership_in_url(request: HttpRequest, version_id_param: s
 
 
 def _validate_report_ownership_in_url(request: HttpRequest, report_id_param: str) -> bool:
+    # Validate that the requesting user has access to the operator associated with the report in the URL
     if not request.resolver_match:
         logger.warning("No resolver_match attribute found on request.")
         return False
