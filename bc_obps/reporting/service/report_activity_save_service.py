@@ -22,6 +22,7 @@ from reporting.service.emission_category_mapping_service import (
     EmissionCategoryMappingService,
 )
 from reporting.models.report_raw_activity_data import ReportRawActivityData
+from common.exceptions import UserError
 
 
 class ReportActivitySaveService:
@@ -110,11 +111,11 @@ class ReportActivitySaveService:
         )
 
         if json_base_schema.has_unit and "units" not in source_type_data:
-            raise ValueError(f"Source type {source_type_slug} is expecting unit data")
+            raise UserError(f"Source type {source_type_slug} is expecting unit data")
         elif not json_base_schema.has_unit and json_base_schema.has_fuel and "fuels" not in source_type_data:
-            raise ValueError(f"Source type {source_type_slug} is expecting fuel data")
+            raise UserError(f"Source type {source_type_slug} is expecting fuel data")
         elif not json_base_schema.has_unit and not json_base_schema.has_fuel and "emissions" not in source_type_data:
-            raise ValueError(f"Source type {source_type_slug} is expecting emission data")
+            raise UserError(f"Source type {source_type_slug} is expecting emission data")
 
         report_source_type, _ = ReportSourceType.objects.update_or_create(
             id=source_type_data.get("id"),
@@ -161,9 +162,9 @@ class ReportActivitySaveService:
         report_unit_type = unit_data.get("type", ReportUnit.ReportUnitType.UNIT)
 
         if report_source_type.activity_source_type_base_schema.has_fuel and "fuels" not in unit_data:
-            raise ValueError("Unit is expecting fuel data")
+            raise UserError("Unit is expecting fuel data")
         elif not report_source_type.activity_source_type_base_schema.has_fuel and "emissions" not in unit_data:
-            raise ValueError("Unit is expecting emissions data")
+            raise UserError("Unit is expecting emissions data")
 
         # Update record if id was provided, create otherwise
         report_unit, _ = ReportUnit.objects.update_or_create(
@@ -209,7 +210,7 @@ class ReportActivitySaveService:
         fuel_type = FuelType.objects.get(name=fuel_data["fuelType"]["fuelName"])
 
         if "emissions" not in fuel_data:
-            raise ValueError("Fuel is expecting emission data")
+            raise UserError("Fuel is expecting emission data")
 
         report_fuel, _ = ReportFuel.objects.update_or_create(
             id=report_fuel_id,
@@ -251,7 +252,7 @@ class ReportActivitySaveService:
 
         report_emission_id = emission_data.get("id")
         if "methodology" not in emission_data:
-            raise ValueError("Emission is expecting methodology data")
+            raise UserError("Emission is expecting methodology data")
 
         report_emission, _ = ReportEmission.objects.update_or_create(
             id=report_emission_id,

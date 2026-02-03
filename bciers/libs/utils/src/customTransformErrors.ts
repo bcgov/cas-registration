@@ -23,7 +23,51 @@ const customTransformErrors = (
   errors: RJSFValidationError[],
   customFormatsErrorMessages: { [key: string]: string },
 ) => {
-  return errors.map((error) => {
+  // Filter out redundant methodology validation errors
+  // When gas type is selected but methodology is empty/invalid, the schema generates
+  // multiple oneOf/enum errors. We filter these out to show only clean, user-friendly errors.
+
+  const filteredErrors = errors.filter((error) => {
+    // Filter out oneOf errors related to methodology/gasType dependencies
+    // These appear when methodology is blank after selecting a gas type
+    if (
+      error.name === "oneOf" &&
+      error.message === "must match exactly one schema in oneOf"
+    ) {
+      // Filter out oneOf errors at the emission level
+      if (error.property?.match(/\.emissions\.\d+$/)) {
+        return false;
+      }
+      // Filter out oneOf errors at the methodology level
+      if (error.property?.match(/\.emissions\.\d+\.methodology$/)) {
+        return false;
+      }
+    }
+
+    // Filter out gas type enum errors ONLY from oneOf branches
+    // These appear when a gas type IS selected but methodology is blank
+    // Keep the top-level enum error (when gas type is not selected at all)
+    if (
+      error.name === "enum" &&
+      error.property?.match(/\.emissions\.\d+\.gasType$/) &&
+      error.schemaPath?.includes("/oneOf/")
+    ) {
+      return false;
+    }
+
+    // Filter out ALL methodology enum errors
+    // The custom validator will add the proper "Select a Methodology" error when gas type is selected
+    if (
+      error.name === "enum" &&
+      error.property?.match(/\.emissions\.\d+\.methodology\.methodology$/)
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+  return filteredErrors.map((error) => {
     // custom messages for specific properties
     if (error?.property) {
       if (error.message === "must be equal to constant") {
@@ -91,9 +135,9 @@ const customTransformErrors = (
     }
     // custom messages for general errors
     if (error?.name === "enum") {
-      console.log("enum error", error);
+      // Gas type and methodology enum errors for emissions are filtered out above
+      // So this only applies to other enum fields
       if (error?.property?.includes("gasType")) {
-        // leave the default message for now
         error.message = "Select a gas type";
       } else {
         // for enum errors, the field name is in the error.stack, not the error.message

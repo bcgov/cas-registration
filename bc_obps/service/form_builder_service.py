@@ -178,10 +178,8 @@ def handle_gas_types(
                             "enum": [],
                         }
                     },
-                    "required": ["methodology"],
                 },
             },
-            "required": ["methodology"],
         }
 
         # Append the gas type schema to the oneOf branch

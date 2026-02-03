@@ -458,4 +458,256 @@ describe("customTransformErrors", () => {
     expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
     expect(transformedErrors[0].message).toBe(customFormatsErrorMessages.phone);
   });
+
+  // Emissions, methodology and gas type filtering tests
+  describe("emissions methodology and gas type filtering", () => {
+    it("filters out oneOf errors at the emission level", () => {
+      const oneOfEmissionError = [
+        {
+          name: "oneOf",
+          property:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0",
+          message: "must match exactly one schema in oneOf",
+          params: { passingSchemas: null },
+          stack:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0 must match exactly one schema in oneOf",
+          schemaPath:
+            "#/properties/sourceTypes/properties/gscFuelOrWasteLinearFacilitiesUsefulEnergy/properties/units/items/properties/fuels/items/properties/emissions/items/dependencies/gasType/oneOf",
+        },
+      ];
+
+      const transformedErrors = customTransformErrors(
+        oneOfEmissionError,
+        customFormatsErrorMessages,
+      );
+
+      expect(transformedErrors).toHaveLength(0);
+    });
+
+    it("filters out oneOf errors at the methodology level", () => {
+      const oneOfMethodologyError = [
+        {
+          name: "oneOf",
+          property:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.methodology",
+          message: "must match exactly one schema in oneOf",
+          params: { passingSchemas: null },
+          stack:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.methodology must match exactly one schema in oneOf",
+          schemaPath:
+            "#/properties/sourceTypes/properties/gscFuelOrWasteLinearFacilitiesUsefulEnergy/properties/units/items/properties/fuels/items/properties/emissions/items/dependencies/gasType/oneOf/0/properties/methodology/dependencies/methodology/oneOf",
+        },
+      ];
+
+      const transformedErrors = customTransformErrors(
+        oneOfMethodologyError,
+        customFormatsErrorMessages,
+      );
+
+      expect(transformedErrors).toHaveLength(0);
+    });
+
+    it("filters out gas type enum errors from oneOf branches", () => {
+      const gasTypeOneOfError = [
+        {
+          name: "enum",
+          property:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.gasType",
+          message: "Select a gas type",
+          params: { allowedValues: ["CH4"] },
+          stack:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.gasType must be equal to one of the allowed values",
+          schemaPath:
+            "#/properties/sourceTypes/properties/gscFuelOrWasteLinearFacilitiesUsefulEnergy/properties/units/items/properties/fuels/items/properties/emissions/items/dependencies/gasType/oneOf/1/properties/gasType/enum",
+        },
+      ];
+
+      const transformedErrors = customTransformErrors(
+        gasTypeOneOfError,
+        customFormatsErrorMessages,
+      );
+
+      expect(transformedErrors).toHaveLength(0);
+    });
+
+    it("keeps gas type enum errors NOT from oneOf branches (top-level required)", () => {
+      const gasTypeRequiredError = [
+        {
+          name: "enum",
+          property:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.gasType",
+          message: "must be equal to one of the allowed values",
+          params: { allowedValues: ["CO2", "CH4", "N2O"] },
+          stack: "'Gas Type' must be equal to one of the allowed values",
+          schemaPath:
+            "#/properties/sourceTypes/properties/gscFuelOrWasteLinearFacilitiesUsefulEnergy/properties/units/items/properties/fuels/items/properties/emissions/items/properties/gasType/enum",
+        },
+      ];
+
+      const transformedErrors = customTransformErrors(
+        gasTypeRequiredError,
+        customFormatsErrorMessages,
+      );
+
+      expect(transformedErrors).toHaveLength(1);
+      expect(transformedErrors[0].message).toBe("Select a gas type");
+    });
+
+    it("filters out ALL methodology enum errors", () => {
+      const methodologyEnumErrors = [
+        {
+          name: "enum",
+          property:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.methodology.methodology",
+          message: "Select an option",
+          params: { allowedValues: ["CEMS"] },
+          stack:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.methodology.methodology must be equal to one of the allowed values",
+          schemaPath:
+            "#/properties/sourceTypes/properties/gscFuelOrWasteLinearFacilitiesUsefulEnergy/properties/units/items/properties/fuels/items/properties/emissions/items/dependencies/gasType/oneOf/0/properties/methodology/dependencies/methodology/oneOf/0/properties/methodology/enum",
+        },
+        {
+          name: "enum",
+          property:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.methodology.methodology",
+          message: "Select a Methodology",
+          params: {
+            allowedValues: [
+              "CEMS",
+              "Replacement Methodology",
+              "Alternative Parameter Measurement Methodology",
+            ],
+          },
+          stack: "'Methodology' must be equal to one of the allowed values",
+          schemaPath:
+            "#/properties/sourceTypes/properties/gscFuelOrWasteLinearFacilitiesUsefulEnergy/properties/units/items/properties/fuels/items/properties/emissions/items/dependencies/gasType/oneOf/0/properties/methodology/properties/methodology/enum",
+        },
+      ];
+
+      const transformedErrors = customTransformErrors(
+        methodologyEnumErrors,
+        customFormatsErrorMessages,
+      );
+
+      expect(transformedErrors).toHaveLength(0);
+    });
+
+    it("filters multiple error types simultaneously", () => {
+      const mixedErrors = [
+        // oneOf at emission level - should be filtered
+        {
+          name: "oneOf",
+          property:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0",
+          message: "must match exactly one schema in oneOf",
+          params: { passingSchemas: null },
+          stack:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0 must match exactly one schema in oneOf",
+          schemaPath:
+            "#/properties/sourceTypes/properties/gscFuelOrWasteLinearFacilitiesUsefulEnergy/properties/units/items/properties/fuels/items/properties/emissions/items/dependencies/gasType/oneOf",
+        },
+        // Gas type from oneOf - should be filtered
+        {
+          name: "enum",
+          property:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.gasType",
+          message: "Select a gas type",
+          params: { allowedValues: ["CH4"] },
+          stack:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.gasType must be equal to one of the allowed values",
+          schemaPath:
+            "#/properties/sourceTypes/properties/gscFuelOrWasteLinearFacilitiesUsefulEnergy/properties/units/items/properties/fuels/items/properties/emissions/items/dependencies/gasType/oneOf/1/properties/gasType/enum",
+        },
+        // Methodology enum - should be filtered
+        {
+          name: "enum",
+          property:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.methodology.methodology",
+          message: "Select an option",
+          params: { allowedValues: ["CEMS"] },
+          stack:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.methodology.methodology must be equal to one of the allowed values",
+          schemaPath:
+            "#/properties/sourceTypes/properties/gscFuelOrWasteLinearFacilitiesUsefulEnergy/properties/units/items/properties/fuels/items/properties/emissions/items/dependencies/gasType/oneOf/0/properties/methodology/dependencies/methodology/oneOf/0/properties/methodology/enum",
+        },
+        // Fuel Name required - should be kept
+        {
+          name: "required",
+          property:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.fuelType.fuelName",
+          message: "must have required property 'fuelName'",
+          params: { missingProperty: "fuelName" },
+          stack: "must have required property 'Fuel Name'",
+          schemaPath:
+            "#/properties/sourceTypes/properties/gscFuelOrWasteLinearFacilitiesUsefulEnergy/properties/units/items/properties/fuels/items/properties/fuelType/required",
+        },
+        // Emission amount required - should be kept
+        {
+          name: "required",
+          property:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.emissions.0.emission",
+          message: "must have required property 'emission'",
+          params: { missingProperty: "emission" },
+          stack: "must have required property 'Emission'",
+          schemaPath:
+            "#/properties/sourceTypes/properties/gscFuelOrWasteLinearFacilitiesUsefulEnergy/properties/units/items/properties/fuels/items/properties/emissions/items/required",
+        },
+      ];
+
+      const transformedErrors = customTransformErrors(
+        mixedErrors,
+        customFormatsErrorMessages,
+      );
+
+      // Should keep only the 2 required field errors
+      expect(transformedErrors).toHaveLength(2);
+      expect(transformedErrors[0].message).toBe("fuelName is required");
+      expect(transformedErrors[1].message).toBe("emission is required");
+    });
+
+    it("does not filter oneOf errors for non-emission properties", () => {
+      const oneOfNonEmissionError = [
+        {
+          name: "oneOf",
+          property: ".section1.registration_purpose",
+          message: "must match exactly one schema in oneOf",
+          params: { passingSchemas: null },
+          stack:
+            ".section1.registration_purpose must match exactly one schema in oneOf",
+          schemaPath:
+            "#/properties/section1/dependencies/registration_purpose/oneOf",
+        },
+      ];
+
+      const transformedErrors = customTransformErrors(
+        oneOfNonEmissionError,
+        customFormatsErrorMessages,
+      );
+
+      expect(transformedErrors).toHaveLength(1);
+    });
+
+    it("does not filter enum errors for non-methodology properties", () => {
+      const fuelNameEnumError = [
+        {
+          name: "enum",
+          property:
+            ".sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units.0.fuels.0.fuelType.fuelName",
+          message: "must be equal to one of the allowed values",
+          params: { allowedValues: ["Natural Gas", "Propane"] },
+          stack: "'Fuel Name' must be equal to one of the allowed values",
+          schemaPath:
+            "#/properties/sourceTypes/properties/gscFuelOrWasteLinearFacilitiesUsefulEnergy/properties/units/items/properties/fuels/items/properties/fuelType/properties/fuelName/enum",
+        },
+      ];
+
+      const transformedErrors = customTransformErrors(
+        fuelNameEnumError,
+        customFormatsErrorMessages,
+      );
+
+      expect(transformedErrors).toHaveLength(1);
+      expect(transformedErrors[0].message).toBe("Select a Fuel Name");
+    });
+  });
 });

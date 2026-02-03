@@ -10,6 +10,7 @@ from reporting.tests.service.test_report_activity_save_service.infrastructure im
     TestInfrastructure,
 )
 from model_bakery.baker import make_recipe, make
+from common.exceptions import UserError
 
 
 class TestSaveReportFuel(TestCase):
@@ -53,7 +54,7 @@ class TestSaveReportFuel(TestCase):
                 report_unit,
                 {"fuelType": {"fuelName": "fuelThatDoesntExist"}},
             )
-        with pytest.raises(ValueError, match="Fuel is expecting emission data"):
+        with pytest.raises(UserError, match="Fuel is expecting emission data"):
             service_under_test.save_fuel(
                 report_source_type,
                 report_unit,
