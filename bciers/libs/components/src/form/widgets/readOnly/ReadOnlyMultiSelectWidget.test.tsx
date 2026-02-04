@@ -1,9 +1,9 @@
 import { render } from "@testing-library/react";
 import FormBase from "@bciers/components/form/FormBase";
 import {
-  multiSelectFieldSchema,
-  multiSelectFieldUiSchema,
-} from "../MultiSelectWidget.test";
+  multiSelectWithTooltipFieldSchema as multiSelectFieldSchema,
+  multiSelectWithTooltipFieldUiSchema as multiSelectFieldUiSchema,
+} from "../MultiSelectWidgetWithTooltip.test";
 
 describe("RJSF ReadOnlyMultiSelectWidget", () => {
   it("should render a multi select field when formData is provided", async () => {
