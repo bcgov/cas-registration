@@ -59,12 +59,15 @@ class ReportService:
             OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
                 operation_id=operation_id, reporting_year=reporting_year
             )
+        )
         if not designated_operator_timeline:
             raise ObjectDoesNotExist(
                 f"Designated operator for reporting year {reporting_year} not found for operation {operation_id}."
             )
 
-        operation = Operation.objects.prefetch_related("activities", "regulated_products", "opted_in_operation").get(id=operation_id)
+        operation = Operation.objects.prefetch_related("activities", "regulated_products", "opted_in_operation").get(
+            id=operation_id
+        )
 
         # Creating report object
 
