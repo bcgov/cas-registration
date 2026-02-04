@@ -351,11 +351,9 @@ class ComplianceService:
 
         # Get reduction_factor and tightening_rate from the first product (all products have the same values for now)
         reduction_factor = (
-            compliance_data_to_save.products[0].reduction_factor if compliance_data_to_save.products else None
+            compliance_data_to_save.products[0].reduction_factor if compliance_data_to_save.products else 0
         )
-        tightening_rate = (
-            compliance_data_to_save.products[0].tightening_rate if compliance_data_to_save.products else None
-        )
+        tightening_rate = compliance_data_to_save.products[0].tightening_rate if compliance_data_to_save.products else 0
 
         compliance_summary_record, _ = ReportComplianceSummary.objects.update_or_create(
             id=compliance_summary_record_id,
