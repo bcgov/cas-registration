@@ -9,7 +9,7 @@ def add_product(apps, schema_monitor):
     '''
     RegulatedProduct = apps.get_model('registration', 'RegulatedProduct')
     RegulatedProduct.objects.create(
-        name="Pulp and paper: lime revovery kiln",
+        name="Pulp and paper: lime recovery kiln",
         unit="Tonnes dry recovered lime (calcium oxide)",
         is_regulated=True,
     )
@@ -17,7 +17,7 @@ def add_product(apps, schema_monitor):
 
 def reverse_add_product(apps, schema_monitor):
     RegulatedProduct = apps.get_model('registration', 'RegulatedProduct')
-    RegulatedProduct.objects.filter(name="Pulp and paper: lime revovery kiln").delete()
+    RegulatedProduct.objects.filter(name="Pulp and paper: lime recovery kiln").delete()
 
 
 class Migration(migrations.Migration):
