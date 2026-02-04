@@ -1,3 +1,16 @@
+# [5.1.0](https://github.com/bcgov/cas-registration/compare/5.0.1...5.1.0) (2026-02-04)
+
+### Bug Fixes
+
+- fix overlapping records in elicensing interest rate task ([a5e3ef6](https://github.com/bcgov/cas-registration/commit/a5e3ef6fbfe224657e2c169ce2afb71e3431d5b5))
+- keep analyst suggestion editable after non-final submission ([b9b5464](https://github.com/bcgov/cas-registration/commit/b9b5464af07bed60f5343444711eb52d9cc25a9e))
+- Update dockerfile with Seperh's fix to get favicon on dev and prod ([f7216d7](https://github.com/bcgov/cas-registration/commit/f7216d772005156e801d6b0139389e9929be93a7))
+
+### Features
+
+- seed 2025 compliance period ([0fc09ca](https://github.com/bcgov/cas-registration/commit/0fc09ca2958c16f37ee6cbd9bd7d1db9a94bc401))
+- user friendly activity names ([48ed56c](https://github.com/bcgov/cas-registration/commit/48ed56c620c726fe8da66afccffa798adf5ac357))
+
 ## [5.0.1](https://github.com/bcgov/cas-registration/compare/5.0.0...5.0.1) (2026-01-27)
 
 ### Bug Fixes
