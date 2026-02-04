@@ -60,6 +60,14 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.excess_emissions == Decimal('49232.7564')
         assert result.credited_emissions == 0
 
+        # Verify that each product has reduction_factor and tightening_rate populated
+        for product in result.products:
+            assert product.reduction_factor is not None
+            assert product.tightening_rate is not None
+            # For this test data, all products should have the same NAICS-based values
+            assert product.reduction_factor == Decimal('0.6500')
+            assert product.tightening_rate == Decimal('0.0100')
+
     def test_apr_dec_used_for_2024_summary(self):
         # Explicit test that 2024 uses Apr-Dec scaled allocations for compliance
         build_data = ComplianceTestInfrastructure.build()

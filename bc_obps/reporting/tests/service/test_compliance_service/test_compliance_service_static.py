@@ -22,14 +22,25 @@ class TestComplianceSummaryService(TestCase):
         Report.objects.filter(pk=report_version_2.report_id).update(reporting_year_id=2024)
 
         ## TESTS ##
-        # Test service function returns correct values
-        regulatory_values_1 = ComplianceService.get_regulatory_values_by_naics_code(report_version_1.id)
-        regulatory_values_2 = ComplianceService.get_regulatory_values_by_naics_code(report_version_2.id)
+        # Test service function returns correct values (returns tuple of RegulatoryValues, reduction_factor, tightening_rate)
+        regulatory_values_1, reduction_factor_1, tightening_rate_1 = (
+            ComplianceService.get_regulatory_values_by_naics_code(report_version_1.id)
+        )
+        regulatory_values_2, reduction_factor_2, tightening_rate_2 = (
+            ComplianceService.get_regulatory_values_by_naics_code(report_version_2.id)
+        )
 
-        assert regulatory_values_1.reduction_factor == Decimal("0.6500")
-        assert regulatory_values_1.tightening_rate == Decimal("0.0100")
-        assert regulatory_values_2.reduction_factor == Decimal("0.9000")
-        assert regulatory_values_2.tightening_rate == Decimal("0.0100")
+        # Test reduction_factor and tightening_rate are returned correctly
+        assert reduction_factor_1 == Decimal("0.6500")
+        assert tightening_rate_1 == Decimal("0.0100")
+        assert reduction_factor_2 == Decimal("0.9000")
+        assert tightening_rate_2 == Decimal("0.0100")
+
+        # Test RegulatoryValues object contains period information
+        assert regulatory_values_1.initial_compliance_period == 2024
+        assert regulatory_values_1.compliance_period == 2024
+        assert regulatory_values_2.initial_compliance_period == 2024
+        assert regulatory_values_2.compliance_period == 2024
 
     def test_get_emissions_attributable_for_reporting(self):
         ## SETUP ##

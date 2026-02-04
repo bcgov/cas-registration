@@ -34,8 +34,6 @@ export const complianceSummarySchema2024: RJSFSchema = {
       type: "object",
       title: "Regulatory values",
       properties: {
-        reduction_factor: { type: "number", title: "Reduction factor" },
-        tightening_rate: { type: "number", title: "Tightening rate" },
         initial_compliance_period: {
           type: "string",
           title: "Initial compliance period",
@@ -55,6 +53,8 @@ export const complianceSummarySchema2024: RJSFSchema = {
           name: {
             type: "number",
           },
+          reduction_factor: { type: "number", title: "Reduction factor" },
+          tightening_rate: { type: "number", title: "Tightening rate" },
           annual_production: {
             type: "number",
             title: "Annual production",
@@ -133,6 +133,12 @@ export const complianceSummaryUiSchema2024 = {
     items: {
       name: {
         "ui:widget": "hidden",
+      },
+      reduction_factor: {
+        "ui:options": {},
+      },
+      tightening_rate: {
+        "ui:options": {},
       },
       annual_production: {
         "ui:options": {

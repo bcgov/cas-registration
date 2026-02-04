@@ -19,8 +19,6 @@ from dataclasses import dataclass
 
 @dataclass
 class RegulatoryValues:
-    reduction_factor: Decimal
-    tightening_rate: Decimal
     initial_compliance_period: int
     compliance_period: int
 
@@ -34,6 +32,8 @@ class ReportProductComplianceData:
     emission_intensity: Decimal
     allocated_industrial_process_emissions: Decimal
     allocated_compliance_emissions: Decimal
+    reduction_factor: Decimal
+    tightening_rate: Decimal
 
 
 @dataclass
@@ -58,7 +58,12 @@ class ComplianceService:
     """
 
     @staticmethod
-    def get_regulatory_values_by_naics_code(report_version_id: int) -> RegulatoryValues:
+    def get_regulatory_values_by_naics_code(report_version_id: int) -> tuple[RegulatoryValues, Decimal, Decimal]:
+        """
+        Returns a tuple of (RegulatoryValues, reduction_factor, tightening_rate)
+        RegulatoryValues contains only the period information (global to the report)
+        reduction_factor and tightening_rate are returned separately to be applied per product
+        """
         data = ReportVersion.objects.select_related("report__operation").get(pk=report_version_id)
         naics_code_id = data.report.operation.naics_code_id
         compliance_year = data.report.reporting_year.reporting_year
@@ -68,11 +73,13 @@ class ComplianceService:
             valid_to__gte=data.report.reporting_year.reporting_window_end,
         )
 
-        return RegulatoryValues(
-            reduction_factor=regulatory_values.reduction_factor,
-            tightening_rate=regulatory_values.tightening_rate,
-            initial_compliance_period=2024,
-            compliance_period=compliance_year,
+        return (
+            RegulatoryValues(
+                initial_compliance_period=2024,
+                compliance_period=compliance_year,
+            ),
+            regulatory_values.reduction_factor,
+            regulatory_values.tightening_rate,
         )
 
     @staticmethod
@@ -195,7 +202,10 @@ class ComplianceService:
             pk=report_version_id
         )
 
-        naics_data = ComplianceService.get_regulatory_values_by_naics_code(report_version_id)
+        # Get regulatory values (periods are global, but RF/TR will be applied per product)
+        naics_data, reduction_factor, tightening_rate = ComplianceService.get_regulatory_values_by_naics_code(
+            report_version_id
+        )
         registration_purpose = report_version_record.report_operation.registration_purpose
         ##### Don't use schemas, use classes or dicts
         compliance_product_list: List[ReportProductComplianceData] = []
@@ -257,8 +267,8 @@ class ComplianceService:
                 production_for_emission_limit=production_for_limit,
                 allocated_industrial_process=Decimal(industrial_process),
                 allocated_for_compliance=Decimal(allocated_for_compliance),
-                tightening_rate=naics_data.tightening_rate,
-                reduction_factor=naics_data.reduction_factor,
+                tightening_rate=tightening_rate,
+                reduction_factor=reduction_factor,
                 compliance_period=naics_data.compliance_period,
             )
 
@@ -279,6 +289,8 @@ class ComplianceService:
                     emission_intensity=ei,
                     allocated_industrial_process_emissions=industrial_process,
                     allocated_compliance_emissions=Decimal(allocated_compliance_emissions_value),
+                    reduction_factor=reduction_factor,
+                    tightening_rate=tightening_rate,
                 )
             )
 
@@ -336,6 +348,13 @@ class ComplianceService:
         report_version_record = ReportVersion.objects.get(id=report_version_id)
         if ReportComplianceSummary.objects.filter(report_version_id=report_version_id).exists():
             compliance_summary_record_id = ReportComplianceSummary.objects.get(report_version_id=report_version_id).id
+
+        # Get reduction_factor and tightening_rate from the first product (all products have the same values for now)
+        reduction_factor = (
+            compliance_data_to_save.products[0].reduction_factor if compliance_data_to_save.products else 0
+        )
+        tightening_rate = compliance_data_to_save.products[0].tightening_rate if compliance_data_to_save.products else 0
+
         compliance_summary_record, _ = ReportComplianceSummary.objects.update_or_create(
             id=compliance_summary_record_id,
             report_version=report_version_record,
@@ -350,8 +369,8 @@ class ComplianceService:
                 "emissions_limit": ComplianceService.round(compliance_data_to_save.emissions_limit),
                 "excess_emissions": ComplianceService.round(compliance_data_to_save.excess_emissions),
                 "credited_emissions": ComplianceService.round(compliance_data_to_save.credited_emissions),
-                "reduction_factor": compliance_data_to_save.regulatory_values.reduction_factor,
-                "tightening_rate": compliance_data_to_save.regulatory_values.tightening_rate,
+                "reduction_factor": reduction_factor,
+                "tightening_rate": tightening_rate,
                 "initial_compliance_period": compliance_data_to_save.regulatory_values.initial_compliance_period,
                 "compliance_period": compliance_data_to_save.regulatory_values.compliance_period,
             },
