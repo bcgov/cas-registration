@@ -541,7 +541,7 @@ describe("OperationReviewForm Component", () => {
         screen.getByText(
           /If this is a chemical pulp mill that recovered lime by kiln/,
         ),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
 
     await renderWithProductIds([43]);
@@ -550,7 +550,7 @@ describe("OperationReviewForm Component", () => {
         screen.getByText(
           /If this is a chemical pulp mill that recovered lime by kiln/,
         ),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
   });
 });
