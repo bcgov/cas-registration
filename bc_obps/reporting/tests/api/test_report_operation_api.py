@@ -39,7 +39,7 @@ class TestReportOperationDataApi(CommonTestSetup):
             "facility_id": self.facility_report.facility_id,
             "operation_type": self.operation.type,
         }
-        self.activities = [{"id": 1, "name": "Activity 1", "applicable_to": "TypeA"}]
+        self.activities = [{"id": 1, "name": "Activity 1", "applicable_to": "all"}]
         self.products = [{"id": 1, "name": "Product A", "is_regulated": True, "unit": "TypeA"}]
         self.reporting_year = MagicMock()
         self.reporting_year.reporting_year = 2024
@@ -52,7 +52,7 @@ class TestReportOperationDataApi(CommonTestSetup):
         mock_get_report_operation_data.return_value = {
             "report_operation": self.report_operation,
             "facility_id": self.facility_report["facility_id"],
-            "all_activities": self.activities,
+            "applicable_activities": self.activities,
             "all_regulated_products": self.products,
             "all_representatives": self.report_operation["report_operation_representatives"],
             "report_type": self.report_operation["operation_report_type"],
@@ -76,7 +76,7 @@ class TestReportOperationDataApi(CommonTestSetup):
         assert response.status_code == 200
         response_json = response.json()
         assert response_json["report_operation"]["operation_name"] == self.report_operation["operation_name"]
-        assert response_json["all_activities"] == self.activities
+        assert response_json["applicable_activities"] == self.activities
         assert response_json["all_regulated_products"] == self.products
         assert response_json["report_type"] == self.report_operation["operation_report_type"]
         assert response_json["reporting_year"] == self.reporting_year.reporting_year
@@ -121,7 +121,7 @@ class TestReportOperationDataApi(CommonTestSetup):
         mock_update.return_value = {
             "report_operation": self.report_operation,
             "facility_id": self.facility_report["facility_id"],
-            "all_activities": self.activities,
+            "applicable_activities": self.activities,
             "all_regulated_products": self.products,
             "all_representatives": self.report_operation["report_operation_representatives"],
             "report_type": self.report_operation["operation_report_type"],

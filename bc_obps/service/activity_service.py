@@ -3,6 +3,7 @@ from reporting.models import Configuration, ConfigurationElement
 from typing import List, Dict, Any
 from registration.models import Activity
 from uuid import UUID
+from reporting.models.report_version import ReportVersion
 from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
 
 
@@ -27,6 +28,19 @@ class ActivityService:
     def get_all_activities(cls) -> List[Dict[str, Any]]:
         # Fetch activities and sort by weight
         activities = Activity.objects.all().order_by('weight', 'name').values("id", "name", "applicable_to")
+        return [dict(activity) for activity in activities]
+
+    @classmethod
+    def get_applicable_activities(cls, version_id: int) -> List[Dict[str, Any]]:
+        operation_type = (
+            ReportVersion.objects.select_related('report__operation').get(id=version_id).report.operation.type
+        )
+        applicable_to = ['all', operation_type]
+        activities = (
+            Activity.objects.filter(applicable_to__in=applicable_to)
+            .order_by('weight', 'name')
+            .values("id", "name", "applicable_to")
+        )
         return [dict(activity) for activity in activities]
 
     @classmethod

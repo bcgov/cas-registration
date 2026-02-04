@@ -1,6 +1,7 @@
 import pytest
 from model_bakery import baker
 from registration.models import Operation
+from registration.models.activity import Activity
 from reporting.service.report_operation_service import ReportOperationService
 
 pytestmark = pytest.mark.django_db
@@ -9,7 +10,9 @@ pytestmark = pytest.mark.django_db
 class TestReportOperationService:
     def setup_method(self):
         self.operator = baker.make_recipe("registration.tests.utils.operator")
-        self.operation = baker.make_recipe("registration.tests.utils.operation", operator=self.operator)
+        self.operation = baker.make_recipe(
+            "registration.tests.utils.operation", operator=self.operator, type=Operation.Types.LFO
+        )
         self.report_version = baker.make_recipe(
             "reporting.tests.utils.report_version",
             report=baker.make_recipe("reporting.tests.utils.report", operation=self.operation),
@@ -26,7 +29,6 @@ class TestReportOperationService:
             report_version=self.report_version,
             selected_for_report=True,
         )
-        self.activity = baker.make_recipe("registration.tests.utils.activity")
         self.regulated_product = baker.make_recipe("registration.tests.utils.regulated_product")
         self.facility_report = baker.make_recipe(
             "reporting.tests.utils.facility_report", report_version=self.report_version
@@ -67,7 +69,10 @@ class TestReportOperationService:
         result = ReportOperationService.get_report_operation_data_by_version_id(self.report_version.id)
         assert result["report_operation"]["id"] == self.report_operation.id
         assert result["facility_id"] is not None
-        assert any(act["id"] == self.activity.id for act in result["all_activities"])
+        assert all(
+            act["id"] != Activity.objects.filter(applicable_to=Operation.Types.SFO)
+            for act in result["applicable_activities"]
+        )
         assert self.regulated_product in list(result["all_regulated_products"])
         assert self.representative in result["all_representatives"]
         assert result["report_type"] == "Annual Report"

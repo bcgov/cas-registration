@@ -17,7 +17,7 @@ class ReportOperationService:
     @classmethod
     def get_report_operation_data_by_version_id(cls, version_id: int) -> dict:
         report_operation = cls.get_report_operation_by_version_id(version_id)
-        all_activities = ActivityService.get_all_activities()
+        applicable_activities = ActivityService.get_applicable_activities(version_id)
         regulated_products = RegulatedProductDataAccessService.get_regulated_products()
         reporting_year = ReportingYearService.get_reporting_year_by_version_id(version_id)
         purpose = report_operation["registration_purpose"]
@@ -26,7 +26,7 @@ class ReportOperationService:
         return {
             "report_operation": report_operation,
             "facility_id": facility_id,
-            "all_activities": all_activities,
+            "applicable_activities": applicable_activities,
             "all_regulated_products": regulated_products,
             "all_representatives": report_operation.get("report_operation_representatives", []),
             "report_type": report_operation.get("operation_report_type"),
