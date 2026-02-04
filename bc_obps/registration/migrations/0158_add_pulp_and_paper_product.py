@@ -23,7 +23,7 @@ def reverse_add_product(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0156_activity_display_and_regulated_name'),
+        ('registration', '0157_V5_1_0'),
     ]
 
     operations = [
