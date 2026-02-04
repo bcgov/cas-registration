@@ -235,7 +235,7 @@ export const editTransferUISchema: UiSchema = {
       "ui:widget": "ReadOnlyWidget",
     },
     facilities: {
-      "ui:widget": "MultiSelectWidget",
+      "ui:widget": "MultiSelectWidgetWithTooltip",
       "ui:placeholder": "Select facilities",
     },
     to_operation: {

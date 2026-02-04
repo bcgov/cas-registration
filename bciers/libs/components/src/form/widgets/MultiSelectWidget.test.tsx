@@ -158,7 +158,7 @@ describe("RJSF MultiSelectWidget", () => {
         schema={multiSelectFieldSchema}
         uiSchema={{
           multiSelectTestField: {
-            "ui:widget": "MultiSelectWidget",
+            "ui:widget": "MultiSelectWidgetWithTooltip",
             "ui:placeholder": "Select regulated products",
           },
         }}

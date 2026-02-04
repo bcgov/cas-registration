@@ -297,7 +297,7 @@ export const sfoUiSchema: UiSchema = {
   "ui:order": sharedUIOrder,
   ...sharedUiSchema,
   // visit_names: {
-  //   "ui:widget": "MultiSelectWidget",
+  //   "ui:widget": "MultiSelectWidgetWithTooltip",
   //   "ui:placeholder": "Select site visited",
   // },
   // visit_types: {
@@ -417,7 +417,7 @@ export const lfoUiSchema: UiSchema = {
   // visit_names: {
   //   // TEMPORARY: hidden to support #607
   //   "ui:widget": "hidden",
-  //   // "ui:widget": "MultiSelectWidget",
+  //   // "ui:widget": "MultiSelectWidgetWithTooltip",
   //   "ui:placeholder": "Select site visited",
   // },
   // visit_types: {

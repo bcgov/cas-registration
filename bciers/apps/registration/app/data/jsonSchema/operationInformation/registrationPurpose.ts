@@ -186,7 +186,7 @@ export const registrationPurposeUISchema: UiSchema = {
     "ui:widget": "ComboBox",
   },
   regulated_products: {
-    "ui:widget": "MultiSelectWidget",
+    "ui:widget": "MultiSelectWidgetWithTooltip",
     "ui:placeholder": "Select Regulated Product",
   },
   activities: {

@@ -298,7 +298,7 @@ export const registrationInformationUiSchema: UiSchema = {
     "ui:widget": "SelectWidget",
   },
   operation_representatives: {
-    "ui:widget": "MultiSelectWidget",
+    "ui:widget": "MultiSelectWidgetWithTooltip",
   },
   regulated_operation_preface: {
     "ui:classNames": "text-bc-bg-blue text-lg",
@@ -311,7 +311,7 @@ export const registrationInformationUiSchema: UiSchema = {
     "ui:tooltipPrefix": "Regulatory name: ",
   },
   regulated_products: {
-    "ui:widget": "MultiSelectWidget",
+    "ui:widget": "MultiSelectWidgetWithTooltip",
     "ui:placeholder": "Select Regulated Product",
   },
   opted_out_operation: {

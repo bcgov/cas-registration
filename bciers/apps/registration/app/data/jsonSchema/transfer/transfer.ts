@@ -215,7 +215,7 @@ export const transferUISchema: UiSchema = {
     "ui:placeholder": "Select the operation",
   },
   facilities: {
-    "ui:widget": "MultiSelectWidget",
+    "ui:widget": "MultiSelectWidgetWithTooltip",
     "ui:placeholder": "Select facilities",
   },
   to_operation: {
