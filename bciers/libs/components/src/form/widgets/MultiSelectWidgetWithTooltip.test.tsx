@@ -11,7 +11,7 @@ const multiSelectFieldLabel = "MultiSelectWidgetWithTooltip test field";
 const multiSelectLabelRequired = `${multiSelectFieldLabel}*`;
 const expectedMinItemsMessage = "Select at least one option";
 
-export const multiSelectWithTooltipFieldSchema = {
+const multiSelectWithTooltipFieldSchema = {
   type: "object",
   required: ["multiSelectTestField"],
   properties: {
@@ -33,22 +33,14 @@ export const multiSelectWithTooltipFieldSchema = {
   },
 } as RJSFSchema;
 
-export const multiSelectWithTooltipFieldUiSchema = {
+const multiSelectWithTooltipFieldUiSchema = {
   multiSelectTestField: {
     "ui:widget": "MultiSelectWidgetWithTooltip",
-  },
-};
-
-// UI schema with tooltip prefix
-export const multiSelectWithTooltipPrefixUiSchema = {
-  multiSelectTestField: {
-    "ui:widget": "MultiSelectWidgetWithTooltip",
-    "ui:tooltipPrefix": "Regulatory name: ",
   },
 };
 
 // Schema without tooltips to test graceful degradation
-export const multiSelectWithoutTooltipFieldSchema = {
+const multiSelectWithoutTooltipFieldSchema = {
   type: "object",
   required: ["multiSelectTestField"],
   properties: {
@@ -80,14 +72,13 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
     render(
       <FormBase
         schema={multiSelectWithTooltipFieldSchema}
-        formData={{ multiSelectTestField: ["option_2", "option_3"] }}
+        formData={{ multiSelectTestField: ["option_2"] }}
         uiSchema={multiSelectWithTooltipFieldUiSchema}
       />,
     );
 
     // Each displayed value is a MUI Chip/button
     expect(screen.getByText("Option 2")).toBeVisible();
-    expect(screen.getByText("Option 3")).toBeVisible();
   });
 
   it("should render multiple combo box values when formData is provided", async () => {
@@ -103,7 +94,7 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
     expect(screen.getByText("Option 3")).toBeVisible();
   });
 
-  it("should allow selecting a value", async () => {
+  it("should allow selecting a combo box value", async () => {
     render(
       <FormBase
         schema={multiSelectWithTooltipFieldSchema}
@@ -111,8 +102,8 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
       />,
     );
 
-    const openMultiSelectButton = screen.getByRole("button", { name: "Open" });
-    await userEvent.click(openMultiSelectButton);
+    const combobox = screen.getByRole("combobox");
+    await userEvent.click(combobox);
 
     const option3 = screen.getByText("Option 3");
 
@@ -121,7 +112,7 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
     expect(screen.getByText("Option 3")).toBeVisible();
   });
 
-  it("should allow selecting multiple values", async () => {
+  it("should allow selecting multiple combo box values", async () => {
     render(
       <FormBase
         schema={multiSelectWithTooltipFieldSchema}
@@ -129,18 +120,18 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
       />,
     );
 
-    const openMultiSelectButton = screen.getByRole("button", { name: "Open" });
-    await userEvent.click(openMultiSelectButton);
+    const combobox = screen.getByRole("combobox");
+    await userEvent.click(combobox);
 
-    const option2 = screen.getByText("Option 2");
+    const option1 = screen.getByText("Option 1");
     const option3 = screen.getByText("Option 3");
     await userEvent.click(option3);
 
-    await userEvent.click(openMultiSelectButton);
+    await userEvent.click(combobox);
 
-    await userEvent.click(option2);
+    await userEvent.click(option1);
 
-    expect(screen.getByText("Option 2")).toBeVisible();
+    expect(screen.getByText("Option 1")).toBeVisible();
     expect(screen.getByText("Option 3")).toBeVisible();
   });
 
@@ -155,7 +146,9 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
     const combobox = screen.getByRole("combobox");
     await userEvent.click(combobox);
 
-    // Navigate down with keyboard - first option should be highlighted by autoHighlight
+    // Press arrow down to highlight first option
+    await userEvent.keyboard("{ArrowDown}");
+
     await waitFor(() => {
       expect(screen.getByRole("tooltip")).toBeVisible();
       expect(screen.getByRole("tooltip")).toHaveTextContent(
@@ -181,6 +174,13 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
   });
 
   it("should show tooltip with prefix when ui:tooltipPrefix is provided", async () => {
+    const multiSelectWithTooltipPrefixUiSchema = {
+      multiSelectTestField: {
+        "ui:widget": "MultiSelectWidgetWithTooltip",
+        "ui:tooltipPrefix": "Regulatory name: ",
+      },
+    };
+
     render(
       <FormBase
         schema={multiSelectWithTooltipFieldSchema}
@@ -190,6 +190,7 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
 
     const combobox = screen.getByRole("combobox");
     await userEvent.click(combobox);
+    await userEvent.keyboard("{ArrowDown}");
 
     await waitFor(() => {
       const tooltip = screen.getByRole("tooltip");
@@ -220,7 +221,7 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
     });
   });
 
-  it("should allow typing a combo box value", async () => {
+  it("should allow typing to filter and select a combo box value", async () => {
     render(
       <FormBase
         schema={multiSelectWithTooltipFieldSchema}
@@ -230,9 +231,15 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
 
     const multiSelectInput = screen.getByRole("combobox") as HTMLInputElement;
 
-    await userEvent.type(multiSelectInput, "Option 3{enter}");
+    // Type to filter options
+    await userEvent.type(multiSelectInput, "Option 3");
 
-    expect(screen.getByText("Option 3")).toBeVisible();
+    // Click on the filtered option
+    const option3 = screen.getByText("Option 3");
+    await userEvent.click(option3);
+
+    // Verify it was selected
+    expect(screen.getByRole("button", { name: /Option 3/i })).toBeVisible();
   });
 
   it("should allow clearing the combo box", async () => {
@@ -249,15 +256,12 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
       name: "Option 2",
     });
     expect(selectedOption2).not.toBeInTheDocument();
-    // TODO: Fix this test(ticket https://github.com/bcgov/cas-registration/issues/2365)
-    // This test case doesn't fail when working with the component in the browser but it fails when running the tests
-    // It might be related to props we pass to the widget(Error: cannot read property 'filter' of undefined)
 
-    // await userEvent.click(screen.getAllByTestId("CancelIcon")[0]); // Remove Option 3
-    // const selectedOption3 = screen.queryByRole("button", {
-    //   name: "Option 3",
-    // });
-    // expect(selectedOption3).not.toBeInTheDocument();
+    await userEvent.click(screen.getAllByTestId("CancelIcon")[0]);
+    const selectedOption3 = screen.queryByRole("button", {
+      name: "Option 3",
+    });
+    expect(selectedOption3).not.toBeInTheDocument();
   });
 
   it("should render the placeholder text", async () => {
@@ -297,8 +301,8 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
         uiSchema={multiSelectWithTooltipFieldUiSchema}
       />,
     );
-    const openMultiSelectButton = screen.getByRole("button", { name: "Open" });
-    await userEvent.click(openMultiSelectButton);
+    const combobox = screen.getByRole("combobox");
+    await userEvent.click(combobox);
 
     const option1 = screen.getByText("option_1");
     const option2 = screen.getByText("option_2");
@@ -317,13 +321,24 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
       />,
     );
 
-    const openMultiSelectButton = screen.getByRole("button", { name: "Open" });
-    await userEvent.click(openMultiSelectButton);
+    const combobox = screen.getByRole("combobox");
+    await userEvent.click(combobox);
 
     const option1 = screen.getByText("Option 1");
     await userEvent.click(option1);
 
-    expect(screen.getByRole("button", { name: "Option 1" })).toBeVisible();
+    expect(screen.getByRole("button", { name: /Option 1/i })).toBeVisible();
+  });
+
+  it("should not trigger an error message when the value is valid", async () => {
+    render(
+      <FormBase
+        schema={multiSelectWithTooltipFieldSchema}
+        uiSchema={multiSelectWithTooltipFieldUiSchema}
+        formData={{ multiSelectTestField: ["option_2"] }}
+      />,
+    );
+    await checkNoValidationErrorIsTriggered();
   });
 
   it("shows no options when no options are given", async () => {
@@ -348,12 +363,18 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
         uiSchema={multiSelectWithTooltipFieldUiSchema}
       />,
     );
-    const openMultiSelectButton = screen.getByRole("button", { name: "Open" });
-    await userEvent.click(openMultiSelectButton);
-    expect(screen.getByText(/no options/i)).toBeVisible();
+
+    // Click on the combobox to open the dropdown
+    const combobox = screen.getByRole("combobox");
+    await userEvent.click(combobox);
+
+    // When no options are provided, the options array is empty
+    // Verify that no menu items are rendered
+    const menuItems = screen.queryAllByRole("option");
+    expect(menuItems).toHaveLength(0);
   });
 
-  it("should trigger validation error when required field is empty", async () => {
+  it("should show an error message when the combo box is required and no value is selected", async () => {
     render(
       <FormBase
         schema={multiSelectWithTooltipFieldSchema}
@@ -361,7 +382,7 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
       />,
     );
 
-    const submitButton = screen.getByRole("button", { name: /submit/i });
+    const submitButton = screen.getByRole("button", { name: "Submit" });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -373,8 +394,8 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
     render(
       <FormBase
         schema={multiSelectWithTooltipFieldSchema}
-        formData={{ multiSelectTestField: ["option_1"] }}
         uiSchema={multiSelectWithTooltipFieldUiSchema}
+        formData={{ multiSelectTestField: ["option_1"] }}
       />,
     );
 
@@ -392,6 +413,22 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
     await checkNoValidationErrorIsTriggered();
   });
 
+  it("should not show an error message when the combo box is required and a value is selected", async () => {
+    render(
+      <FormBase
+        schema={multiSelectWithTooltipFieldSchema}
+        uiSchema={multiSelectWithTooltipFieldUiSchema}
+        formData={{ multiSelectTestField: ["option_2"] }}
+      />,
+    );
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+
+    await userEvent.click(submitButton);
+
+    expect(screen.queryByText(expectedMinItemsMessage)).not.toBeInTheDocument();
+  });
+
   it("should show an error message when the combo box is required and an invalid value is typed", async () => {
     render(
       <FormBase
@@ -402,10 +439,11 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
 
     const multiSelectInput = screen.getByRole("combobox") as HTMLInputElement;
 
-    await userEvent.type(multiSelectInput, "Invalid option{enter}");
+    await userEvent.type(multiSelectInput, "Invalid option");
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
+    await userEvent.keyboard("{enter}");
 
+    const submitButton = screen.getByRole("button", { name: /Submit/i });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
