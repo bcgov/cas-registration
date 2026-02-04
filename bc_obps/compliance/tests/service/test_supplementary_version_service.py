@@ -48,6 +48,7 @@ DECREASED_OBLIGATION_HANDLER_PATH = svc("DecreasedObligationHandler.handle")
 # Sub-base for DecreasedObligationHandler
 DEC_OBL = svc("DecreasedObligationHandler")
 FIND_NEWEST_UNPAID_ANCHOR_PATH = f"{DEC_OBL}._find_newest_unpaid_anchor_along_chain"
+FIND_NEWEST_NON_VOID_PRIOR_INVOICES = f"{DEC_OBL}._find_newest_non_void_prior_invoices"
 SUPERCEDED_VERSION_HANDLER_PATH = svc("SupercedeVersionHandler.can_handle")
 HANDLE_OBLIGATION_INTEGRATION_PATH = svc("ElicensingObligationService.handle_obligation_integration")
 CREATE_COMPLIANCE_OBLIGATION_PATH = svc("ComplianceObligationService.create_compliance_obligation")
@@ -231,6 +232,12 @@ def mock_get_rate():
 @pytest.fixture
 def mock_find_newest_unpaid_anchor():
     with patch(FIND_NEWEST_UNPAID_ANCHOR_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_find_newest_non_void_prior_invoices():
+    with patch(FIND_NEWEST_NON_VOID_PRIOR_INVOICES) as mock:
         yield mock
 
 
@@ -1278,6 +1285,63 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
 
         res.refresh_from_db()
         assert res.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+
+    def test_handle__no_unpaid_invoices__prior_cash_on_previous_crv__no_prior_invoices_edgecase(
+        self,
+        mock_find_newest_non_void_prior_invoices,
+        mock_find_newest_unpaid_anchor,
+        mock_get_rate,
+        mock_collect_unpaid,
+        mock_sum_already_applied,
+        mock_fallback_invoice_filter,
+        mock_sum_invoice_cash,
+        run_on_commit_immediately,
+    ):
+        """
+        Scenario: there are NO unpaid invoices (anchor=None), but prior CRV had CASH payments.
+        - invoices == [], refund_pool > 0, anchor_crv_id falls back to previous_compliance_version.id
+        - fallback queries invoices for that CRV but finds nothing
+        - fallback calls _find_newest_non_void_prior_invoices
+        """
+        mock_get_rate.return_value = Decimal("80.00")
+        mock_sum_already_applied.return_value = ZERO_DECIMAL
+        mock_find_newest_unpaid_anchor.return_value = None  # -> invoices == []
+        mock_collect_unpaid.return_value = []  # explicit
+        mock_sum_invoice_cash.return_value = Decimal("2000.00")  # CASH present
+
+        mock_fallback_invoice_filter.return_value = (
+            ElicensingInvoice.objects.none()
+        )  # no previous_invoices found in fallback
+
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            prev = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('900.0000'),
+                credited_emissions=0,
+                report_version=self.report_version_1,
+            )
+        new = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('600.0000'),
+            credited_emissions=0,
+            report_version=self.report_version_2,
+        )
+        report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        # create the previous CRV that ties `prev` to this `report`
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=report,
+            report_compliance_summary=prev,
+        )
+
+        # Act
+        DecreasedObligationHandler.handle(report, new, prev, version_count=2)
+
+        # ▶▶ EXTENDED from above previous test:
+        # mock_fallback_invoice_filter retuns [] which means this edgecase must be called
+        mock_find_newest_non_void_prior_invoices.assert_called_once()
 
     # handle one invoice\no payment
     def test_handle__partial_refund_invoice_no_payment__adjustment_not_met_no_void(
