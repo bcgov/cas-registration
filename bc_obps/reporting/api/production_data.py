@@ -1,6 +1,7 @@
 from typing import List, Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
+from reporting.models.report_operation import ReportOperation
 from common.api.utils import get_current_user_guid
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.models.report_product import ReportProduct
@@ -54,4 +55,10 @@ def load_production_data(request: HttpRequest, version_id: int, facility_id: UUI
     )
     allowed_products = ReportProductService.get_allowed_products(version_id)
 
-    return 200, {"report_products": report_products, "allowed_products": allowed_products}
+    report_operation = ReportOperation.objects.get(report_version_id=version_id)
+
+    return 200, {
+        "report_products": report_products,
+        "allowed_products": allowed_products,
+        "operation_opted_out_final_reporting_year": report_operation.operation_opted_out_final_reporting_year,
+    }

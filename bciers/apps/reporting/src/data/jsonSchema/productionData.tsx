@@ -213,7 +213,7 @@ export const buildProductionDataUiSchema = (
 ) => {
   switch (reporting_year) {
     case 2024:
-      return productionDataUiSchema2024;
+      return productionDataUiSchema2024();
     case 2025:
       return productionDataUiSchema2025(is_opted_out);
     default:

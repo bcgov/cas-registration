@@ -24,7 +24,6 @@ from ..router import router
     auth=approved_industry_user_report_version_composite_auth,
 )
 def get_production_form_data(request: HttpRequest, version_id: int, facility_id: UUID) -> Tuple[Literal[200], dict]:
-
     report_products = (
         ReportProduct.objects.filter(
             facility_report__facility_id=facility_id, report_version_id=version_id, product__is_regulated=True
@@ -33,16 +32,12 @@ def get_production_form_data(request: HttpRequest, version_id: int, facility_id:
         .all()
     )
     allowed_products = ReportProductService.get_allowed_products(version_id)
-
     report_operation = ReportOperation.objects.get(report_version_id=version_id)
-    operation_opted_out_final_reporting_year = report_operation.operation_opted_out_final_reporting_year
 
     payload = {
         "report_products": report_products,
         "allowed_products": allowed_products,
-        "operation_opted_out_final_reporting_year": operation_opted_out_final_reporting_year,
+        "operation_opted_out_final_reporting_year": report_operation.operation_opted_out_final_reporting_year,
     }
-
     response = FormResponseBuilder(version_id).payload(payload).facility_data(facility_id).build()
-
     return 200, response

@@ -20,6 +20,7 @@ async function getProductionData(
     payload: {
       report_products: ProductData[];
       allowed_products: Product[];
+      operation_opted_out_final_reporting_year: number | null;
     };
   }>);
 

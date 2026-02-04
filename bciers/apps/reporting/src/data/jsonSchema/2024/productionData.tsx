@@ -123,52 +123,54 @@ export const buildProductionDataSchema2024 = (
   } as RJSFSchema;
 };
 
-export const productionDataUiSchema2024: UiSchema = {
-  "ui:FieldTemplate": FieldTemplate,
-  "ui:classNames": "form-heading-label",
-  product_selection_title: {
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:classNames": "mt-2 mb-5 emission-array-header",
-  },
-  product_selection: {
-    "ui:widget": "checkboxes",
-    "ui:options": {
-      label: false,
-    },
-  },
-  production_data: {
+export const productionDataUiSchema2024 = (): UiSchema => {
+  return {
     "ui:FieldTemplate": FieldTemplate,
-    "ui:ArrayFieldTemplate": ArrayFieldTemplate,
-    "ui:options": {
-      addable: false,
-      removable: false,
-      label: false,
+    "ui:classNames": "form-heading-label",
+    product_selection_title: {
+      "ui:FieldTemplate": TitleOnlyFieldTemplate,
+      "ui:classNames": "mt-2 mb-5 emission-array-header",
     },
-    items: {
-      "ui:order": [
-        "product_id",
-        "product_name",
-        "unit",
-        "annual_production",
-        "production_data_apr_dec",
-        "production_methodology",
-        "production_methodology_description",
-        "*",
-      ],
-      product_id: {
-        "ui:widget": "hidden",
+    product_selection: {
+      "ui:widget": "checkboxes",
+      "ui:options": {
+        label: false,
       },
-      product_name: {
-        "ui:FieldTemplate": FieldTemplate,
-        "ui:widget": ProductionDataTitleWidget,
-        "ui:classNames": "emission-array-header",
-        "ui:options": {
-          label: false,
+    },
+    production_data: {
+      "ui:FieldTemplate": FieldTemplate,
+      "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+      "ui:options": {
+        addable: false,
+        removable: false,
+        label: false,
+      },
+      items: {
+        "ui:order": [
+          "product_id",
+          "product_name",
+          "unit",
+          "annual_production",
+          "production_data_apr_dec",
+          "production_methodology",
+          "production_methodology_description",
+          "*",
+        ],
+        product_id: {
+          "ui:widget": "hidden",
+        },
+        product_name: {
+          "ui:FieldTemplate": FieldTemplate,
+          "ui:widget": ProductionDataTitleWidget,
+          "ui:classNames": "emission-array-header",
+          "ui:options": {
+            label: false,
+          },
+        },
+        unit: {
+          "ui:widget": ReadOnlyWidget,
         },
       },
-      unit: {
-        "ui:widget": ReadOnlyWidget,
-      },
     },
-  },
+  };
 };
