@@ -1,8 +1,8 @@
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import {
-  FieldSchema,
-  mapOptions,
-} from "@bciers/components/form/widgets/MultiSelectWidget";
+  FieldSchemaWithTooltip as FieldSchema,
+  mapOptionsWithTooltips as mapOptions,
+} from "@bciers/components/form/widgets/MultiSelectWidgetWithTooltip";
 import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";

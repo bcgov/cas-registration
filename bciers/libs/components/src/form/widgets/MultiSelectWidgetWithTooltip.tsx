@@ -15,13 +15,17 @@ import {
   DARK_GREY_BG_COLOR,
   BC_GOV_SEMANTICS_RED,
 } from "@bciers/styles/colors";
-import { Option, FieldSchema } from "./MultiSelectWidget";
 
-interface OptionWithTooltip extends Option {
+export interface OptionWithTooltip {
+  id: string | number;
+  label: string | number;
   tooltip?: string;
 }
 
-export interface FieldSchemaWithTooltip extends FieldSchema {
+export interface FieldSchemaWithTooltip {
+  enum: Array<string | number>;
+  enumNames?: Array<string | number>;
+  type: string;
   enumTooltips?: Array<string>;
 }
 

@@ -1,8 +1,8 @@
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import {
-  FieldSchema,
-  mapOptions,
-} from "@bciers/components/form/widgets/MultiSelectWidget";
+  FieldSchemaWithTooltip,
+  mapOptionsWithTooltips,
+} from "@bciers/components/form/widgets/MultiSelectWidgetWithTooltip";
 
 const ReadOnlyMultiSelectWidget: React.FC<WidgetProps> = ({
   id,
@@ -10,8 +10,8 @@ const ReadOnlyMultiSelectWidget: React.FC<WidgetProps> = ({
   schema,
   uiSchema,
 }) => {
-  const fieldSchema = schema.items as FieldSchema;
-  const options = mapOptions(fieldSchema);
+  const fieldSchema = schema.items as FieldSchemaWithTooltip;
+  const options = mapOptionsWithTooltips(fieldSchema);
   const selectedOptions = options.filter((option) => value.includes(option.id));
   const displayInline = uiSchema?.["ui:inline"];
   const separator = displayInline ? ", " : ",\n";

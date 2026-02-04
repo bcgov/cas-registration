@@ -11,7 +11,7 @@ const multiSelectFieldLabel = "MultiSelectWidgetWithTooltip test field";
 const multiSelectLabelRequired = `${multiSelectFieldLabel}*`;
 const expectedMinItemsMessage = "Select at least one option";
 
-const multiSelectWithTooltipFieldSchema = {
+export const multiSelectWithTooltipFieldSchema = {
   type: "object",
   required: ["multiSelectTestField"],
   properties: {
@@ -33,7 +33,7 @@ const multiSelectWithTooltipFieldSchema = {
   },
 } as RJSFSchema;
 
-const multiSelectWithTooltipFieldUiSchema = {
+export const multiSelectWithTooltipFieldUiSchema = {
   multiSelectTestField: {
     "ui:widget": "MultiSelectWidgetWithTooltip",
   },
