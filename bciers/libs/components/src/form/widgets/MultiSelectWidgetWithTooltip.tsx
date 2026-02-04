@@ -62,10 +62,14 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
     useState<OptionWithTooltip | null>(null);
 
   const handleChange = (
-    e: React.ChangeEvent<object>,
-    option: Array<OptionWithTooltip>,
+    e: React.SyntheticEvent,
+    selectedOptions: Array<string | OptionWithTooltip>,
   ) => {
-    onChange(option.map((o: OptionWithTooltip) => o.id));
+    // Filter out any string values (free-form input) and only keep OptionWithTooltip objects
+    const validOptions = selectedOptions.filter(
+      (option): option is OptionWithTooltip => typeof option !== "string",
+    );
+    onChange(validOptions.map((option: OptionWithTooltip) => option.id));
   };
 
   useEffect(() => {
@@ -130,8 +134,8 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
       disabled={disabled || readonly}
       disablePortal
       multiple
+      freeSolo
       filterSelectedOptions
-      autoHighlight
       options={options}
       value={
         isValue
@@ -153,7 +157,12 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
       onHighlightChange={(event, option) => {
         setHighlightedOption(option as OptionWithTooltip | null);
       }}
-      getOptionLabel={(option: OptionWithTooltip) => String(option.label)}
+      getOptionLabel={(option: string | OptionWithTooltip) => {
+        if (typeof option === "string") {
+          return option;
+        }
+        return String(option.label);
+      }}
       renderInput={(params) => (
         <TextField
           {...params}
@@ -216,7 +225,6 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
               title={renderTooltipContent(option.tooltip)}
               placement="right"
               open={isHighlighted}
-              disableHoverListener={true}
               arrow
               slots={{
                 transition: Zoom,
