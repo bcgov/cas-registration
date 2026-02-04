@@ -11,7 +11,7 @@ import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import { useRouter } from "next/navigation";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
-import { FrontEndRoles } from "@bciers/utils/src/enums";
+import { AnalystSuggestion, FrontEndRoles } from "@bciers/utils/src/enums";
 import { actionHandler } from "@bciers/actions";
 import FormAlerts from "@bciers/components/form/FormAlerts";
 import SubmitButton from "@bciers/components/button/SubmitButton";
@@ -43,8 +43,10 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
   );
   const isFinalAnalystSuggestion =
     hasPriorAnalystSubmission &&
-    (formData?.analyst_suggestion === "Ready to approve" ||
-      formData?.analyst_suggestion === "Requiring supplementary report");
+    (initialFormData?.analyst_suggestion ===
+      AnalystSuggestion.READY_TO_APPROVE ||
+      initialFormData?.analyst_suggestion ===
+        AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT);
 
   const handleFormChange = (
     e: IChangeEvent<RequestIssuanceComplianceSummaryData>,

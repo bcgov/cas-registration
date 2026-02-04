@@ -386,4 +386,32 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
       );
     });
   });
+
+  it("keeps form editable when prior submission had non-final suggestion", () => {
+    const formDataWithPriorSubmission = {
+      ...mockFormData,
+      analyst_suggestion:
+        AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID,
+      analyst_submitted_date: "2023-01-01",
+      analyst_submitted_by: "Test User",
+    };
+
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={formDataWithPriorSubmission}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    const readyToApproveOption = screen.getByRole("radio", {
+      name: "Ready to approve",
+    });
+    expect(readyToApproveOption).not.toBeDisabled();
+
+    fireEvent.click(readyToApproveOption);
+    expect(readyToApproveOption).not.toBeDisabled();
+
+    const analystComment = screen.getByRole("textbox");
+    expect(analystComment).not.toBeDisabled();
+  });
 });
