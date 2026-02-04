@@ -1,0 +1,59 @@
+{
+  "name": "Pulp and paper production",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "The unique identifier for this activity"
+    },
+    "biogenicIndustrialProcessEmissions": {
+      "type": "object",
+      "title": "Biogenic Industrial Process Emissions",
+      "properties": {
+        "hasBiogenicEmissions": {
+          "type": "boolean",
+          "title": "Does this mill utilize a lime recovery kiln?",
+          "description": "Indicates whether the facility has biogenic industrial process emissions that need to be split between products"
+        },
+        "chemicalPulpPercentage": {
+          "type": "number",
+          "title": "Chemical pulp amount (percentage)",
+          "description": "Percentage of industrial process emissions allocated to chemical pulp product",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "limeKilnRecoveryPercentage": {
+          "type": "number",
+          "title": "Lime recovered by kiln amount (percentage)",
+          "description": "Percentage of industrial process emissions allocated to lime kiln recovery product",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "carbonates": {
+      "type": "array",
+      "title": "Carbonate",
+      "items": {
+        "title": "Carbonate",
+        "type": "object",
+        "properties": {
+          "carbonateName": {
+            "type": "string",
+            "title": "Carbonate Name"
+          },
+          "annualAmount": {
+            "type": "number",
+            "title": "Annual Amount (t)",
+            "minimum": 0
+          },
+          "purityOfCarbonate": {
+            "type": "number",
+            "title": "Purity Of Carbonate (Weight Fraction)",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

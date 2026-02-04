@@ -255,3 +255,61 @@ class EmissionCategoryService:
         overlapping_records = woody_biomass_overlap_records.union(other_biomass_overlap_records)
         total_overlapping_emissions = overlapping_records.aggregate(emission_sum=Sum('emission'))
         return total_overlapping_emissions['emission_sum'] or Decimal(0)
+
+    @classmethod
+    def get_pulp_and_paper_biogenic_emissions_split(cls, report_version_id: int, product_name: str) -> Decimal:
+        """
+        For 2025+, get the split percentage of biogenic emissions for pulp and paper products.
+        Returns the percentage (as a decimal 0-100) to apply to the overlapping biogenic emissions.
+
+        Args:
+            report_version_id: The report version ID
+            product_name: The product name ('Pulp and paper: chemical pulp' or 'Lime at 94.5% CaO and lime kiln dust')
+
+        Returns:
+            The percentage to apply to biogenic emissions (0-100)
+        """
+        from reporting.models.report_activity import ReportActivity
+        from registration.models.activity import Activity
+
+        # Get the Pulp and Paper Production activity data
+        try:
+            activity = Activity.objects.get(name='Pulp and paper production')
+            report_activity = ReportActivity.objects.get(report_version_id=report_version_id, activity=activity)
+
+            json_data = report_activity.json_data or {}
+
+            # Check for 2025+ nested structure
+            biogenic_data = json_data.get('biogenicIndustrialProcessEmissions', {})
+            has_biogenic_emissions = biogenic_data.get('hasBiogenicEmissions', False)
+
+            # Fall back to 2024 structure if nested structure not found
+            if not biogenic_data and 'hasBiogenicEmissions' in json_data:
+                has_biogenic_emissions = json_data.get('hasBiogenicEmissions', False)
+                biogenic_data = json_data
+
+            if not has_biogenic_emissions:
+                # For facilities without the split or pre-2025 reports,
+                # all biogenic emissions go to chemical pulp
+                if product_name == 'Pulp and paper: chemical pulp':
+                    return Decimal('100')
+                else:
+                    return Decimal('0')
+
+            # Get the appropriate percentage based on product
+            if product_name == 'Pulp and paper: chemical pulp':
+                percentage = biogenic_data.get('chemicalPulpPercentage', 100)
+            elif product_name == 'Lime at 94.5% CaO and lime kiln dust':
+                percentage = biogenic_data.get('limeKilnRecoveryPercentage', 0)
+            else:
+                # Unknown product, default to 0
+                percentage = 0
+
+            return Decimal(str(percentage))
+
+        except ReportActivity.DoesNotExist:
+            # No activity data found, default to all emissions to chemical pulp
+            if product_name == 'Pulp and paper: chemical pulp':
+                return Decimal('100')
+            else:
+                return Decimal('0')

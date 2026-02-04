@@ -4,7 +4,7 @@ import gscNonCompressionNonProcessingUiSchema from "./gscNonCompressionNonProces
 import gscOtherThanNonCompression from "./gscOtherThanNonCompression";
 import gscUiSchema from "./gscUiSchema";
 import hydrogenProduction from "./hydrogenProduction";
-import pulpAndPaperUiSchema from "./pulpAndPaperUiSchema";
+import pulpAndPaperUiSchema from "./2025/pulpAndPaperUiSchema";
 import refineryFuelGasUiSchema from "./refineryFuelGasUiSchema";
 import openPitCoalMining from "@reporting/src/app/components/activities/uiSchemas/openPitCoalMining";
 import storageOfPetroleumProductsUiSchema from "./storageOfPetroleumProductsUiSchema";

@@ -355,9 +355,16 @@ def build_schema(
         .distinct("source_type__id")
     )
 
-    # Except if no valid config elements are found
+    # If no valid config elements are found, return the activity schema with a message
     if not valid_config_elements:
-        raise Exception(f"No valid source_types found for activity_id {activity} & configuration {config_id}")
+        # Return just the activity schema without source types
+        rjsf_schema["properties"]["noSourceTypesMessage"] = {
+            "type": "string",
+            "title": "Notice",
+            "default": f"No valid source types configured for this activity (ID: {activity}) and reporting period (Config: {config_id}). Please contact support if you believe this is an error.",
+            "readOnly": True,
+        }
+        return json.dumps({"schema": rjsf_schema})
     # If only one config element is found, the source type is mandatory & should be added to the schema
     elif valid_config_elements.count() == 1:
         first_valid_config_elements: Optional[ConfigurationElement] = valid_config_elements.first()
