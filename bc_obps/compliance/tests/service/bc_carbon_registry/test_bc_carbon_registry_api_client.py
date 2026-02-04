@@ -545,7 +545,7 @@ class TestBCCarbonRegistryAPIClient:
         assert len(result["entities"]) == 0
         mock_request.assert_called_once()
 
-    def test_list_all_units_success(self, authenticated_client):
+    def test_list_all_units_holding_account_success(self, authenticated_client):
         # Arrange
         client, mock_request = authenticated_client
         mock_response = Mock(
@@ -597,6 +597,63 @@ class TestBCCarbonRegistryAPIClient:
             ]
         )
         mock_request.assert_called_once()
+        # Verify the payload uses accountId, accountTypeCode REGULATED_OPERATION, and stateCode ACTIVE
+        call_kwargs = mock_request.call_args
+        payload = call_kwargs.kwargs.get("json") or call_kwargs[1].get("json")
+        filter_model = payload["searchFilter"]["filterModel"]
+        assert "accountId" in filter_model
+        assert "subAccountId" not in filter_model
+        assert filter_model["accountTypeCode"]["columnFilters"][0]["filter"] == "REGULATED_OPERATION"
+        assert filter_model["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE"
+        assert filter_model["stateCode"]["columnFilters"][0]["type"] == "equals"
+
+    def test_list_all_units_sub_account_success(self, authenticated_client):
+        # Arrange
+        client, mock_request = authenticated_client
+        mock_response = Mock(
+            status_code=200,
+            json=lambda: {
+                "totalEntities": 2,
+                "totalPages": 1,
+                "numberOfElements": 2,
+                "first": True,
+                "last": True,
+                "entities": [
+                    {
+                        "id": MOCK_FIFTEEN_DIGIT_STRING,
+                        "entityId": MOCK_FIFTEEN_DIGIT_INT,
+                        "standardId": MOCK_FIFTEEN_DIGIT_INT,
+                        "standardName": "Test Standard",
+                        "accountId": MOCK_FIFTEEN_DIGIT_INT,
+                        "accountName": "Test Sub Account",
+                        "projectId": MOCK_FIFTEEN_DIGIT_INT,
+                        "holdingQuantity": 3.0,
+                        "serialNo": "BC-BCE-IN-104000000037027-01032025-30032025-16414-16752-SPG",
+                        "unitMeasurementName": "tCO2e",
+                        "unitType": "BCO",
+                        "className": "BCO",
+                    }
+                ],
+            },
+        )
+        mock_request.return_value = mock_response
+        # Act
+        result = client.list_all_units(
+            account_id="456", vintage_year=2022, limit=10, start=0, account_type="sub_account"
+        )
+        # Assert
+        assert result["totalEntities"] == 2
+        assert len(result["entities"]) == 1
+        mock_request.assert_called_once()
+        # Verify the payload uses subAccountId, accountTypeCode COMPLIANCE_SUB_ACCOUNT, and stateCode ACTIVE,RETIRED
+        call_kwargs = mock_request.call_args
+        payload = call_kwargs.kwargs.get("json") or call_kwargs[1].get("json")
+        filter_model = payload["searchFilter"]["filterModel"]
+        assert "subAccountId" in filter_model
+        assert "accountId" not in filter_model
+        assert filter_model["accountTypeCode"]["columnFilters"][0]["filter"] == "COMPLIANCE_SUB_ACCOUNT"
+        assert filter_model["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE,RETIRED"
+        assert filter_model["stateCode"]["columnFilters"][0]["type"] == "in"
 
     def test_list_all_units_invalid_params(self, setup, caplog):
         # Arrange
