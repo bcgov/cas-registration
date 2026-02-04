@@ -161,6 +161,8 @@ export default function OperationReviewForm({
     setPendingChangeReportType(undefined);
   };
 
+  // Regulated product IDs 16 and 43 are the Pulp and paper: chemical pulp
+  // and Pulp and paper: lime recovery kiln, respectively
   const selectedProductIds: number[] = formDataState.regulated_products;
   const displayPulpAndPaperHelpText =
     (selectedProductIds.includes(16) && !selectedProductIds.includes(43)) ||
