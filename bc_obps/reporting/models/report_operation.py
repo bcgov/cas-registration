@@ -39,7 +39,7 @@ class ReportOperation(TimeStampedModel):
     )
     operation_bcghgid = models.CharField(
         max_length=1000,
-        db_comment="The BCGHGH ID of the operation",
+        db_comment="The BCGHG ID of the operation",
         blank=True,
         null=True,
     )
@@ -51,6 +51,9 @@ class ReportOperation(TimeStampedModel):
     )
     registration_purpose = models.CharField(
         max_length=1000, db_comment="The Registration purpose of the operation", default='OBPS Regulated Operation'
+    )
+    operation_opted_out_final_reporting_year = models.IntegerField(
+        db_comment="The last year an operation will report for, if it has opted out of BCIERS", blank=True, null=True
     )
 
     # We don't create a backwards relation since this is a registration model

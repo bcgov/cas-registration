@@ -45,6 +45,13 @@ class OptedInOperationDetail(TimeStampedModel):
         null=True,
         db_comment="Will the operator notify the Director as soon as possible if this operation ceases to meet any of the criteria for the designation of the operation as a reporting operation and a regulated operation?",
     )
+    final_reporting_year = models.ForeignKey(
+        "reporting.ReportingYear",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        db_comment="The final reporting year an opted-out operation is expected to report for, if applicable.",
+    )
     history = HistoricalRecords(
         table_name='erc_history"."opted_in_operation_detail_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),

@@ -37,7 +37,8 @@ def get_operation(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200
     auth=authorize("approved_authorized_roles"),
 )
 def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
-    return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
+    operation = OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
+    return 200, operation
 
 
 ##### PUT ######

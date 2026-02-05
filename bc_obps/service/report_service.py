@@ -65,7 +65,9 @@ class ReportService:
                 f"Designated operator for reporting year {reporting_year} not found for operation {operation_id}."
             )
 
-        operation = Operation.objects.prefetch_related("activities", "regulated_products").get(id=operation_id)
+        operation = Operation.objects.prefetch_related("activities", "regulated_products", "opted_in_operation").get(
+            id=operation_id
+        )
 
         # Creating report object
 

@@ -7,11 +7,12 @@ import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
 
-export const buildProductionDataSchema2024 = (
+export const buildProductionDataSchema2025 = (
   compliance_period_start: string,
   compliance_period_end: string,
   product_selection: string[],
   facility_type: string,
+  is_opted_out: boolean,
 ) => {
   const productionMethodology = ["Small Aggregate", "Medium Facility"].includes(
     facility_type,
@@ -19,7 +20,7 @@ export const buildProductionDataSchema2024 = (
     ? ["Not Applicable", "OBPS Calculator", "other"]
     : ["OBPS Calculator", "other"];
 
-  return {
+  const schema = {
     type: "object",
     title: "Production Data",
     properties: {
@@ -31,8 +32,7 @@ export const buildProductionDataSchema2024 = (
         type: "array",
         items: {
           type: "string",
-          // Only include enum if there are products available (enum must have at least 1 item)
-          ...(product_selection.length > 0 && { enum: product_selection }),
+          enum: product_selection,
         },
         uniqueItems: true,
       },
@@ -47,11 +47,7 @@ export const buildProductionDataSchema2024 = (
     definitions: {
       productionDataItem: {
         type: "object",
-        required: [
-          "annual_production",
-          "production_data_apr_dec",
-          "production_methodology",
-        ],
+        required: ["annual_production", "production_methodology"],
         properties: {
           product_id: {
             type: "number",
@@ -69,11 +65,6 @@ export const buildProductionDataSchema2024 = (
           },
           annual_production: {
             title: "Annual Production",
-            type: "number",
-            minimum: 0,
-          },
-          production_data_apr_dec: {
-            title: "Production data for Apr 1 - Dec 31, 2024",
             type: "number",
             minimum: 0,
           },
@@ -104,6 +95,9 @@ export const buildProductionDataSchema2024 = (
             minimum: 0,
           },
         },
+        dependencies: {
+          is_opted_out: ["production_data_jan_mar"],
+        },
         allOf: [
           {
             if: { properties: { production_methodology: { const: "other" } } },
@@ -121,56 +115,73 @@ export const buildProductionDataSchema2024 = (
       },
     },
   } as RJSFSchema;
+
+  // conditionally add Jan-Mar production data field for opted-out operations
+  if (is_opted_out) {
+    const productionDataItem = schema.definitions
+      ?.productionDataItem as RJSFSchema;
+
+    // protection in case productionDataItem is undefined
+    productionDataItem.properties ??= {};
+    productionDataItem.required ??= [];
+
+    productionDataItem.properties.production_data_jan_mar_2025 = {
+      title: "Production data for Jan 1 - Mar 31, 2025",
+      type: "number",
+      minimum: 0,
+    };
+    productionDataItem.required!.push("production_data_jan_mar_2025");
+  }
+
+  return schema;
 };
 
-export const productionDataUiSchema2024 = (): UiSchema => {
-  return {
+export const productionDataUiSchema2025 = (isOptedOut: boolean): UiSchema => ({
+  "ui:FieldTemplate": FieldTemplate,
+  "ui:classNames": "form-heading-label",
+  product_selection_title: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:classNames": "mt-2 mb-5 emission-array-header",
+  },
+  product_selection: {
+    "ui:widget": "checkboxes",
+    "ui:options": {
+      label: false,
+    },
+  },
+  production_data: {
     "ui:FieldTemplate": FieldTemplate,
-    "ui:classNames": "form-heading-label",
-    product_selection_title: {
-      "ui:FieldTemplate": TitleOnlyFieldTemplate,
-      "ui:classNames": "mt-2 mb-5 emission-array-header",
+    "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:options": {
+      addable: false,
+      removable: false,
+      label: false,
     },
-    product_selection: {
-      "ui:widget": "checkboxes",
-      "ui:options": {
-        label: false,
+    items: {
+      "ui:order": [
+        "product_id",
+        "product_name",
+        "unit",
+        "annual_production",
+        ...(isOptedOut ? ["production_data_jan_mar_2025"] : []),
+        "production_methodology",
+        "production_methodology_description",
+        "*",
+      ],
+      product_id: {
+        "ui:widget": "hidden",
       },
-    },
-    production_data: {
-      "ui:FieldTemplate": FieldTemplate,
-      "ui:ArrayFieldTemplate": ArrayFieldTemplate,
-      "ui:options": {
-        addable: false,
-        removable: false,
-        label: false,
-      },
-      items: {
-        "ui:order": [
-          "product_id",
-          "product_name",
-          "unit",
-          "annual_production",
-          "production_data_apr_dec",
-          "production_methodology",
-          "production_methodology_description",
-          "*",
-        ],
-        product_id: {
-          "ui:widget": "hidden",
-        },
-        product_name: {
-          "ui:FieldTemplate": FieldTemplate,
-          "ui:widget": ProductionDataTitleWidget,
-          "ui:classNames": "emission-array-header",
-          "ui:options": {
-            label: false,
-          },
-        },
-        unit: {
-          "ui:widget": ReadOnlyWidget,
+      product_name: {
+        "ui:FieldTemplate": FieldTemplate,
+        "ui:widget": ProductionDataTitleWidget,
+        "ui:classNames": "emission-array-header",
+        "ui:options": {
+          label: false,
         },
       },
+      unit: {
+        "ui:widget": ReadOnlyWidget,
+      },
     },
-  };
-};
+  },
+});

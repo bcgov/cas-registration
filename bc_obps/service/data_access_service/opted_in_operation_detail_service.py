@@ -21,3 +21,16 @@ class OptedInOperationDataAccessService:
         )
         updated_opted_in_operation_detail_instance.save()
         return updated_opted_in_operation_detail_instance
+
+    @classmethod
+    def update_opted_in_final_reporting_year(
+        cls, opted_in_operation_detail_id: int, final_reporting_year: int | None
+    ) -> OptedInOperationDetail:
+        """
+        Updates the final reporting year of an OptedInOperationDetail instance (for opted-in operations that are opting out).
+        If final_reporting_year is None, clears the field.
+        """
+        opted_in_operation_detail = OptedInOperationDetail.objects.get(id=opted_in_operation_detail_id)
+        opted_in_operation_detail.final_reporting_year_id = final_reporting_year
+        opted_in_operation_detail.save()
+        return opted_in_operation_detail

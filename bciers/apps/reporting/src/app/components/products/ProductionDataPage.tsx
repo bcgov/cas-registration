@@ -25,12 +25,18 @@ export default async function ProductionDataPage({
 
   const facilityType = response.facility_data.facility_type;
 
+  const reportingYear = response.report_data.reporting_year;
+  const isOptedOut =
+    (response.report_operation.operation_opted_out_final_reporting_year ?? 0) <=
+    reportingYear;
+
   const schema: any = buildProductionDataSchema(
     response.report_data.reporting_year,
     "Jan 1",
     "Dec 31",
     allowedProductNames,
     facilityType,
+    isOptedOut,
   );
 
   const tasklistData = await getReportInformationTasklist(
@@ -70,7 +76,7 @@ export default async function ProductionDataPage({
       report_version_id={version_id}
       facility_id={facility_id}
       facilityType={facilityType}
-      reportingYear={response.report_data.reporting_year}
+      reportingYear={reportingYear}
       allowedProducts={allowedProducts}
       initialData={response.payload.report_products}
       schema={schema}
@@ -79,6 +85,7 @@ export default async function ProductionDataPage({
       overlappingIndustrialProcessEmissions={
         overlappingIndustrialProcessEmissions
       }
+      isOptedOut={isOptedOut}
     />
   );
 }

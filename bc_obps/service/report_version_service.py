@@ -31,6 +31,10 @@ class ReportVersionService:
         # Pre-populating data to the draft version
         operation = report.operation
         operator = report.operator
+        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION and operation.opted_in_operation:
+            operation_opted_out_final_reporting_year = operation.opted_in_operation.final_reporting_year_id
+        else:
+            operation_opted_out_final_reporting_year = None
 
         report_operation = ReportOperation.objects.create(
             operator_legal_name=operator.legal_name,
@@ -43,6 +47,7 @@ class ReportVersionService:
             ),
             report_version=report_version,
             registration_purpose=operation.registration_purpose or 'OBPS Regulated Operation',
+            operation_opted_out_final_reporting_year=operation_opted_out_final_reporting_year,
         )
         # Special handling for report where the operation has been transferred
         if use_transferred_operation_handling:

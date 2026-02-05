@@ -1,4 +1,5 @@
 from model_bakery.baker import make_recipe
+from registration.models import Operation
 from registration.models.regulated_product import RegulatedProduct
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
@@ -137,3 +138,20 @@ class TestReportProductV2Endpoints(CommonTestSetup):
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_production_form_data", facility_id="uuid")
+
+    def test_get_returns_operation_opted_out_final_reporting_year_when_set(self):
+        """
+        Test that when an operation's registration purpose is 'Opted-in Operation' and it has a
+        set final_reporting_year of 2025, the payload includes 'operation_opted_out_final_reporting_year' == 2025.
+        """
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.facility_report.report_version.report.operator
+        )
+        # Set the operation_opted_out_final_reporting_year on the report_operation
+        self.report_operation.operation_opted_out_final_reporting_year = 2025
+        self.report_operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
+        self.report_operation.save()
+
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
+
+        assert response.json()['payload']['operation_opted_out_final_reporting_year'] == 2025

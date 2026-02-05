@@ -119,6 +119,15 @@ class OperationInformationInUpdate(OperationInformationIn):
 
 
 class OptedInOperationDetailOut(ModelSchema):
+    final_reporting_year: Optional[int] = None
+
+    @staticmethod
+    def resolve_final_reporting_year(obj: OptedInOperationDetail) -> Optional[int]:
+        """
+        Extract the year integer from the final_reporting_year ForeignKey.
+        """
+        return obj.final_reporting_year_id
+
     class Meta:
         model = OptedInOperationDetail
         fields = [
@@ -144,6 +153,13 @@ class OptedInOperationDetailIn(OptedInOperationDetailOut):
     meets_notification_to_director_on_criteria_change: bool = Field(...)
 
 
+class OptedOutOperationDetailIn(Schema):
+    """Schema for updating final_reporting_year only.
+    Accepts final_reporting_year as an integer from the frontend."""
+
+    final_reporting_year: Optional[int] = None
+
+
 class OperationOut(ModelSchema):
     naics_code_id: Optional[int] = Field(None, alias="naics_code.id")
     secondary_naics_code_id: Optional[int] = Field(None, alias="secondary_naics_code.id")
@@ -156,6 +172,7 @@ class OperationOut(ModelSchema):
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
     opted_in_operation: Optional[OptedInOperationDetailOut] = None
+    opted_out_operation: Optional[int] = None
     date_of_first_shipment: Optional[str] = None
     new_entrant_application: Optional[str] = None
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
@@ -183,6 +200,15 @@ class OperationOut(ModelSchema):
             user: User = request.current_user
             if user.is_irc_user():
                 return obj.operator
+        return None
+
+    @staticmethod
+    def resolve_opted_out_operation(obj: Operation) -> Optional[int]:
+        """
+        Extract final_reporting_year from opted_in_operation to use as opted_out_operation
+        """
+        if obj.opted_in_operation:
+            return obj.opted_in_operation.final_reporting_year_id
         return None
 
     class Meta:

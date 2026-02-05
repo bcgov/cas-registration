@@ -50,6 +50,7 @@ export interface OperationInformationFormData {
   regulated_products?: number[];
   forcasted_emmisions?: string;
   opted_in_operation?: OptedInOperationFormData;
+  opted_out_operation?: number;
 }
 
 export interface OperationInformationPartialFormData {
@@ -75,4 +76,6 @@ export interface OperationInformationPartialFormData {
   forcasted_emmisions?: string;
   status?: string;
   new_entrant_application?: string;
+  opted_in_operation?: OptedInOperationFormData;
+  opted_out_operation?: number;
 }

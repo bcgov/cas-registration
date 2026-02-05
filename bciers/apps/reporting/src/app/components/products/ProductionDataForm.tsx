@@ -18,6 +18,7 @@ interface Props {
   navigationInformation: NavigationInformation;
   isPulpAndPaper: boolean;
   overlappingIndustrialProcessEmissions: number;
+  isOptedOut: boolean;
 }
 
 const ProductionDataForm: React.FC<Props> = ({
@@ -31,6 +32,7 @@ const ProductionDataForm: React.FC<Props> = ({
   navigationInformation,
   isPulpAndPaper,
   overlappingIndustrialProcessEmissions,
+  isOptedOut = false,
 }) => {
   const initialFormData = {
     product_selection: initialData.map((i) => i.product_name),
@@ -99,7 +101,7 @@ const ProductionDataForm: React.FC<Props> = ({
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
       schema={schema}
-      uiSchema={buildProductionDataUiSchema(reportingYear)}
+      uiSchema={buildProductionDataUiSchema(reportingYear, isOptedOut)}
       formData={formData}
       baseUrl={"#"}
       cancelUrl={"#"}

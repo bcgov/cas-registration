@@ -2,6 +2,7 @@ from django.utils import timezone
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
 from reporting.models.reporting_year import ReportingYear
+from typing import List
 
 
 class ReportingYearService:
@@ -10,6 +11,18 @@ class ReportingYearService:
         now = timezone.now()
 
         return ReportingYear.objects.get(reporting_window_start__lte=now, reporting_window_end__gte=now)
+
+    @classmethod
+    def get_all_reporting_years(cls, exclude_past: bool = False) -> List[ReportingYear]:
+        """
+        Returns list of all ReportingYear objects in database, or only the ReportingYears that haven't already closed.
+        @param exclude_past (optional, boolean) - will exclude from the returned list ReportingYears that have already ended.
+        """
+        if exclude_past:
+            current_year = cls.get_current_reporting_year()
+            resp = list(ReportingYear.objects.filter(reporting_year__gte=current_year.reporting_year))
+            return resp
+        return list(ReportingYear.objects.all())
 
     @classmethod
     def is_reporting_open(cls, reporting_year: ReportingYear) -> bool:

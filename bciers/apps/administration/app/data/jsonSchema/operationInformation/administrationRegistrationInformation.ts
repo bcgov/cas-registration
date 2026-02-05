@@ -6,6 +6,7 @@ import {
   getContacts,
   getRegistrationPurposes,
   getReportingActivities,
+  getReportingYears,
 } from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
 
@@ -32,6 +33,19 @@ export const createAdministrationRegistrationInformationSchema =
     }[] = await getReportingActivities();
     if (reportingActivities && "error" in reportingActivities)
       throw new Error("Failed to retrieve reporting activities information");
+    // fetch valid reporting years for OptedOutOperation dropdown
+    const validReportingYears: { reporting_year: number }[] =
+      // NOTE: getReportingYears() includes optional query param exclude_past.
+      // Not using it immediately due to timing of opt-out feature rollout relative to reporting year,
+      // but will be able to make use of this feature in the future to simplify the dropdown list
+      await getReportingYears();
+    if (validReportingYears && "error" in validReportingYears)
+      throw new Error("Failed to retrieve reporting years");
+
+    const reportingYearsDropdownOptions = validReportingYears.map((year) => ({
+      const: year.reporting_year,
+      title: `${String(year.reporting_year)} reporting year`,
+    }));
 
     const reportingActivitiesSchema: RJSFSchema = {
       type: "array",
@@ -88,6 +102,7 @@ export const createAdministrationRegistrationInformationSchema =
       dependencies: {
         registration_purpose: {
           oneOf: [
+            // OBPS REGULATED OPERATION
             {
               properties: {
                 registration_purpose: {
@@ -107,6 +122,7 @@ export const createAdministrationRegistrationInformationSchema =
               },
               required: ["regulated_products", "activities"],
             },
+            // REPORTING OPERATION
             {
               properties: {
                 registration_purpose: {
@@ -123,6 +139,7 @@ export const createAdministrationRegistrationInformationSchema =
               },
               required: ["activities"],
             },
+            // POTENTIAL REPORTING OPERATION
             {
               properties: {
                 registration_purpose: {
@@ -139,6 +156,7 @@ export const createAdministrationRegistrationInformationSchema =
               },
               required: ["activities"],
             },
+            // NEW ENTRANT
             {
               properties: {
                 registration_purpose: {
@@ -166,6 +184,7 @@ export const createAdministrationRegistrationInformationSchema =
                 "new_entrant_application",
               ],
             },
+            // OPTED-IN & OPTED-OUT
             {
               properties: {
                 registration_purpose: {
@@ -176,6 +195,11 @@ export const createAdministrationRegistrationInformationSchema =
                 },
                 activities: {
                   ...reportingActivitiesSchema,
+                },
+                opted_out_operation: {
+                  title: "Year that final report is expected",
+                  type: ["number", "null"],
+                  anyOf: reportingYearsDropdownOptions,
                 },
                 opted_in_preface: {
                   // Not an actual field, just used to display a message
@@ -228,6 +252,7 @@ export const createAdministrationRegistrationInformationSchema =
                 "opted_in_operation",
               ],
             },
+            // ELECTRICITY IMPORT OPERATION (EIO)
             {
               properties: {
                 registration_purpose: {
@@ -249,6 +274,11 @@ export const registrationInformationUiSchema: UiSchema = {
     "regulated_operation_preface",
     "regulated_products",
     "reporting_activities",
+    // fields for opted-in (or opted-out) operations only
+    "opted_out_operation",
+    "opted_in_preface",
+    "opted_in_operation",
+    // fields for New Entrant operations only
     "new_entrant_preface",
     "new_entrant_application",
   ],
@@ -272,10 +302,19 @@ export const registrationInformationUiSchema: UiSchema = {
     "ui:widget": "MultiSelectWidget",
     "ui:placeholder": "Select Regulated Product",
   },
+  opted_out_operation: {
+    "ui:widget": "OptedOutOperationWidget",
+    "ui:options": {
+      label: false,
+    },
+  },
   opted_in_preface: {
     "ui:classNames": "text-bc-bg-blue text-lg",
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": "Opted-In Operation",
+  },
+  opted_in_operation: {
+    "ui:FieldTemplate": SectionFieldTemplate,
   },
   new_entrant_preface: {
     "ui:classNames": "text-bc-bg-blue text-lg",

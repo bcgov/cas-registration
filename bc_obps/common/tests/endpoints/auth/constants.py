@@ -398,6 +398,7 @@ ENDPOINTS = {
     "all_roles": [
         {"method": "get", "endpoint_name": "get_reporting_year"},
         {"method": "put", "endpoint_name": "update_user_profile"},
+        {"method": "get", "endpoint_name": "get_all_reporting_years"},
     ],
     "industry_user": [
         {
@@ -658,6 +659,11 @@ ENDPOINTS = {
             "method": "delete",
             "endpoint_name": "delete_facility_bcghg_id",
             "kwargs": {"facility_id": MOCK_UUID},
+        },
+        {
+            "method": "put",
+            "endpoint_name": "operation_registration_update_final_reporting_year",
+            "kwargs": {"operation_id": MOCK_UUID},
         },
     ],
     "cas_director_analyst_and_industry_admin_user": [

@@ -10,6 +10,10 @@ import {
   buildProductionDataSchema2024,
   productionDataUiSchema2024,
 } from "./2024/productionData";
+import {
+  buildProductionDataSchema2025,
+  productionDataUiSchema2025,
+} from "./2025/productionData";
 
 const buildProductionDataSchemaDefault = (
   compliance_period_start: string,
@@ -23,7 +27,7 @@ const buildProductionDataSchemaDefault = (
     ? ["Not Applicable", "OBPS Calculator", "other"]
     : ["OBPS Calculator", "other"];
 
-  return {
+  const schema: RJSFSchema = {
     type: "object",
     title: "Production Data",
     properties: {
@@ -60,7 +64,7 @@ const buildProductionDataSchemaDefault = (
           product_name: {
             title: "Name",
             type: "string",
-            value: "custom value",
+            default: "custom value",
           },
           unit: {
             title: "Unit",
@@ -115,7 +119,9 @@ const buildProductionDataSchemaDefault = (
         ],
       },
     },
-  } as RJSFSchema;
+  };
+
+  return schema;
 };
 
 export const buildProductionDataSchema = (
@@ -124,23 +130,35 @@ export const buildProductionDataSchema = (
   compliance_period_end: string,
   product_selection: string[],
   facility_type: string,
+  is_2025_last_reporting_year: boolean = false,
 ) => {
-  if (reporting_year === 2024)
-    return buildProductionDataSchema2024(
-      compliance_period_start,
-      compliance_period_end,
-      product_selection,
-      facility_type,
-    );
-  return buildProductionDataSchemaDefault(
-    compliance_period_start,
-    compliance_period_end,
-    product_selection,
-    facility_type,
-  );
+  switch (reporting_year) {
+    case 2024:
+      return buildProductionDataSchema2024(
+        compliance_period_start,
+        compliance_period_end,
+        product_selection,
+        facility_type,
+      );
+    case 2025:
+      return buildProductionDataSchema2025(
+        compliance_period_start,
+        compliance_period_end,
+        product_selection,
+        facility_type,
+        is_2025_last_reporting_year,
+      );
+    default:
+      return buildProductionDataSchemaDefault(
+        compliance_period_start,
+        compliance_period_end,
+        product_selection,
+        facility_type,
+      );
+  }
 };
 
-const productionDataUiSchemaDefault: UiSchema = {
+const productionDataUiSchemaDefault = (): UiSchema => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   product_selection_title: {
@@ -187,11 +205,18 @@ const productionDataUiSchemaDefault: UiSchema = {
       },
     },
   },
-};
+});
 
-export const buildProductionDataUiSchema = (reporting_year: number) => {
-  if (reporting_year === 2024) {
-    return productionDataUiSchema2024;
+export const buildProductionDataUiSchema = (
+  reporting_year: number,
+  is_opted_out: boolean,
+) => {
+  switch (reporting_year) {
+    case 2024:
+      return productionDataUiSchema2024();
+    case 2025:
+      return productionDataUiSchema2025(is_opted_out);
+    default:
+      return productionDataUiSchemaDefault();
   }
-  return productionDataUiSchemaDefault;
 };

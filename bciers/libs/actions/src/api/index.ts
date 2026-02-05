@@ -20,3 +20,4 @@ export { default as fetchOperationsPageData } from "./fetchOperationsPageData";
 export { default as handleInteralAccessRequest } from "./handleInternalAccessRequest";
 export { default as getInternalAccessRequests } from "./getInteralAccessRequests";
 export { default as getReportingYear } from "./getReportingYear";
+export { default as getReportingYears } from "./getReportingYears";
