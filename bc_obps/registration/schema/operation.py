@@ -153,8 +153,11 @@ class OptedInOperationDetailIn(OptedInOperationDetailOut):
     meets_notification_to_director_on_criteria_change: bool = Field(...)
 
 
-class OptedOutOperationDetailIn(OptedInOperationDetailOut):
-    final_reporting_year: Optional[int] = Field(None)
+class OptedOutOperationDetailIn(Schema):
+    """Schema for updating final_reporting_year only.
+    Accepts final_reporting_year as an integer from the frontend."""
+
+    final_reporting_year: Optional[int] = None
 
 
 class OperationOut(ModelSchema):
