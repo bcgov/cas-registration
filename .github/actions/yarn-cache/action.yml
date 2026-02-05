@@ -1,6 +1,6 @@
 name: "Yarn cache"
 description: "Cache Yarn dependencies"
-# Test run 2: yarn-only cache hit
+# Test run 3: yarn + NextJS cache miss
 runs:
   using: composite
   steps:
@@ -10,4 +10,8 @@ runs:
         path: |
           ~/.cache/yarn
           ./bciers/node_modules
-        key: ${{ runner.os }}-yarn-cache-${{ hashFiles('bciers/yarn.lock') }}-v2
+          ./bciers/apps/*/.next/cache
+          ./bciers/dist/*/.next/cache
+        key: ${{ runner.os }}-yarn-nextjs-${{ hashFiles('bciers/yarn.lock') }}-${{ hashFiles('bciers/**/*.{js,jsx,ts,tsx}') }}-v3
+        restore-keys: |
+          ${{ runner.os }}-yarn-nextjs-${{ hashFiles('bciers/yarn.lock') }}-
