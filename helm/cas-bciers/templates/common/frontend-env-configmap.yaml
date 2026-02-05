@@ -12,7 +12,6 @@ data:
   KEYCLOAK_TOKEN_URL: {{ .Values.dashboardFrontend.auth.keycloakAuthUrl }}{{ .Values.dashboardFrontend.auth.keycloakRealms }}{{ .Values.dashboardFrontend.auth.keycloakOidc }}/token
   KEYCLOAK_CLIENT_ID: {{ .Values.dashboardFrontend.auth.keycloakClientId }}
   NEXTAUTH_URL: https://{{ .Values.dashboardFrontend.route.host }}
-  NEXT_PUBLIC_GROWTHBOOK_CLIENT_KEY: {{ .Values.growthbook.clientKey }}
   NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL: {{ .Values.dashboardFrontend.auth.siteminderAuthUrl }}/clp-cgi/logoff.cgi?retnow=1&returl={{ .Values.dashboardFrontend.auth.keycloakAuthUrl}}{{ .Values.dashboardFrontend.auth.keycloakRealms }}{{ .Values.dashboardFrontend.auth.keycloakOidc}}/logout
   SITEMINDER_AUTH_URL: {{ .Values.dashboardFrontend.auth.siteminderAuthUrl }}
   SITEMINDER_LOGOUT_URL: {{ .Values.dashboardFrontend.auth.siteminderAuthUrl }}/clp-cgi/logoff.cgi

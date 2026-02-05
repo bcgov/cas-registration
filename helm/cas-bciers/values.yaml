@@ -217,9 +217,6 @@ terraform-bucket-provision:
     namespace_apps: '["bciers-attach"]' # Maximum of 13 characters
     workspace: bciers # This value is OPTIONAL, only set if required
 
-growthbook:
-  clientKey: ~
-
 download-dags:
   enabled: true
   airflowEndpoint: ~
