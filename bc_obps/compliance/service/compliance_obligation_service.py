@@ -7,8 +7,11 @@ from reporting.models.report_version import ReportVersion
 from django.db import transaction
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.models.compliance_period import CompliancePeriod
 from compliance.dataclass import ObligationData
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
+from zoneinfo import ZoneInfo
+from django.utils import timezone
 import logging
 
 logger = logging.getLogger(__name__)
@@ -18,6 +21,23 @@ class ComplianceObligationService:
     """
     Service for managing compliance obligations
     """
+
+    VANCOUVER_TZ = ZoneInfo("America/Vancouver")
+
+    @classmethod
+    def _should_send_notice_of_obligation_email(
+        cls,
+        compliance_report_version: ComplianceReportVersion,
+    ) -> bool:
+        """
+        Returns True if the 'Compliance Obligation Available to View' email
+        should be sent (i.e., obligation is created before invoice generation date).
+        """
+        today_vancouver = timezone.now().astimezone(cls.VANCOUVER_TZ).date()
+
+        compliance_period: CompliancePeriod = compliance_report_version.compliance_report.compliance_period
+
+        return today_vancouver < compliance_period.invoice_generation_date
 
     @classmethod
     @transaction.atomic
@@ -64,9 +84,18 @@ class ComplianceObligationService:
         )
 
         logger.info(f"Created compliance obligation {obligation.id} for report version {compliance_report_version_id}")
-        from compliance.tasks import retryable_send_notice_of_obligation_email
 
-        retryable_send_notice_of_obligation_email.execute(compliance_report_version_id)
+        # Only send "Obligation Available to View" if obligation is created BEFORE invoice generation date
+        if cls._should_send_notice_of_obligation_email(compliance_report_version):
+            from compliance.tasks import retryable_send_notice_of_obligation_email
+
+            retryable_send_notice_of_obligation_email.execute(compliance_report_version_id)
+        else:
+            logger.info(
+                "Skipping notice_of_obligation_email for report version %s (today >= invoice_generation_date=%s)",
+                compliance_report_version_id,
+                compliance_report_version.compliance_report.compliance_period.invoice_generation_date,
+            )
 
         return obligation
 

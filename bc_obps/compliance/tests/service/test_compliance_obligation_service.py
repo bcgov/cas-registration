@@ -6,6 +6,9 @@ from compliance.models import ComplianceObligation, ComplianceReportVersion
 from compliance.dataclass import ObligationData
 from django.core.exceptions import ValidationError
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
+from zoneinfo import ZoneInfo
+from django.utils import timezone
+from datetime import datetime
 import pytest
 from model_bakery import baker
 
@@ -39,12 +42,10 @@ class TestComplianceObligationService:
         assert "Cannot create a compliance obligation for an operation not regulated by BC OBPS" in error_msg
         assert "Operation ID:" in error_msg
 
-    @patch('compliance.tasks.retryable_send_notice_of_obligation_email')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_success(
         self,
         mock_get_rate,
-        mock_send_email,
     ):
         """Test successful creation of a compliance obligation"""
         # Set up mocks
@@ -63,7 +64,66 @@ class TestComplianceObligationService:
         assert result.penalty_status == ComplianceObligation.PenaltyStatus.NONE
         assert result.fee_date == date.today()
         mock_get_rate.assert_called_once_with(test_data.reporting_year)
+
+    @patch("compliance.tasks.retryable_send_notice_of_obligation_email")
+    @patch("compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year")
+    def test_create_compliance_obligation_sends_notice_email_before_invoice_generation_date(
+        self,
+        mock_get_rate,
+        mock_send_email,
+    ):
+        """
+        Email should be sent if obligation is created BEFORE the compliance period invoice_generation_date.
+        """
+        test_data = ComplianceTestHelper.build_test_data()
+        mock_get_rate.return_value = Decimal("50.00")
+
+        # Arrange: invoice generation date- Nov 1, 2026
+        compliance_period = test_data.compliance_report.compliance_period
+        compliance_period.invoice_generation_date = date(2026, 11, 1)
+        compliance_period.save()
+
+        # Arrange: "today" in Vancouver is October 3, 2026
+        vancouver = ZoneInfo("America/Vancouver")
+        fake_now = datetime(2026, 10, 3, 10, 0, tzinfo=vancouver)
+
+        with patch.object(timezone, "now", return_value=fake_now):
+            ComplianceObligationService.create_compliance_obligation(
+                compliance_report_version_id=test_data.compliance_report_version.id,
+                emissions_amount=Decimal("100.0"),
+            )
+
         mock_send_email.execute.assert_called_once_with(test_data.compliance_report_version.id)
+
+    @patch("compliance.tasks.retryable_send_notice_of_obligation_email")
+    @patch("compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year")
+    def test_create_compliance_obligation_does_not_send_notice_email_on_or_after_invoice_generation_date(
+        self,
+        mock_get_rate,
+        mock_send_email,
+    ):
+        """
+        Email should NOT be sent if obligation is created ON/AFTER the compliance period invoice_generation_date.
+        """
+        test_data = ComplianceTestHelper.build_test_data()
+        mock_get_rate.return_value = Decimal("50.00")
+
+        # Arrange: invoice generation date- Nov 1, 2026
+        compliance_period = test_data.compliance_report.compliance_period
+        compliance_period.invoice_generation_date = date(2026, 11, 1)
+        compliance_period.save()
+
+        # Arrange: "today" in Vancouver is Nov 2, 2026
+        vancouver = ZoneInfo("America/Vancouver")
+        fake_now = datetime(2026, 11, 2, 10, 0, tzinfo=vancouver)
+
+        with patch.object(timezone, "now", return_value=fake_now):
+            ComplianceObligationService.create_compliance_obligation(
+                compliance_report_version_id=test_data.compliance_report_version.id,
+                emissions_amount=Decimal("100.0"),
+            )
+
+        mock_send_email.execute.assert_not_called()
 
     @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
