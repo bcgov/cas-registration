@@ -1,6 +1,6 @@
 name: "Yarn cache"
 description: "Cache Yarn dependencies"
-# Test run 1: yarn-only cache miss
+# Test run 2: yarn-only cache hit
 runs:
   using: composite
   steps:
