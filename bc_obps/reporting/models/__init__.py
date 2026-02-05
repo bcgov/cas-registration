@@ -36,6 +36,7 @@ from .report_product import ReportProduct
 from .report_verification import ReportVerification
 from .report_verification_visit import ReportVerificationVisit
 from .report_attachment import ReportAttachment
+from .naics_regulatory_override import NaicsRegulatoryOverride
 from .naics_regulatory_value import NaicsRegulatoryValue
 from .product_emission_intensity import ProductEmissionIntensity
 from .report_emission_allocation import ReportEmissionAllocation
@@ -85,6 +86,7 @@ __all__ = [
     "ReportVerification",
     "ReportVerificationVisit",
     "ReportAttachment",
+    "NaicsRegulatoryOverride",
     "NaicsRegulatoryValue",
     "ProductEmissionIntensity",
     "ReportOperationRepresentative",
