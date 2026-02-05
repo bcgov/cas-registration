@@ -22,7 +22,7 @@ MIDDLEWARE = [
 ]
 ```
 
-> **Note:** This package is hardcoded to be used only when `DEBUG = True`. It will not function in production environments where `DEBUG` is `None`.
+> **Note:** This package is controlled by the `ENABLE_QUERY_COUNT` environment variable. It is disabled by default. To enable it, add `ENABLE_QUERY_COUNT=True` to your `.env` file.
 
 ## Configuration
 

@@ -58,7 +58,7 @@ else:
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG")
+DEBUG = os.environ.get("DEBUG") == "True"
 BYPASS_ROLE_ASSIGNMENT = os.environ.get("BYPASS_ROLE_ASSIGNMENT", False) == "True"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")
@@ -131,7 +131,9 @@ if DEBUG:  # DEV only apps
     INSTALLED_APPS.append("silk")
     MIDDLEWARE.insert(0, "silk.middleware.SilkyMiddleware")
     SILKY_META = True
-    # DJANGO QUERY COUNT
+
+# DJANGO QUERY COUNT (opt-in, disabled by default)
+if os.environ.get("ENABLE_QUERY_COUNT") == "True":
     MIDDLEWARE.append("querycount.middleware.QueryCountMiddleware")
 
 ROOT_URLCONF = "bc_obps.urls"
