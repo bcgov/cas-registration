@@ -28,5 +28,5 @@ class TestAssociatedData(TestCase):
         regulated_products_count = RegulatedProduct.objects.filter(is_regulated=True).count()
         not_regulated_products_count = RegulatedProduct.objects.filter(is_regulated=False).count()
 
-        self.assertEqual(regulated_products_count, 37)
+        self.assertEqual(regulated_products_count, 38)
         self.assertEqual(not_regulated_products_count, 3)

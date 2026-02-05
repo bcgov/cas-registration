@@ -1,6 +1,9 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
+import {
+  TitleOnlyFieldTemplate,
+  FieldHelpTemplate,
+} from "@bciers/components/form/fields";
 import {
   purposeNote,
   reportTypeHelperText,
@@ -240,9 +243,9 @@ export const buildOperationReviewUiSchema = (
       label: { style: { verticalAlign: "top" } },
     },
     "ui:placeholder": "Regulated products",
+    "ui:FieldHelpTemplate": FieldHelpTemplate,
     uniqueItems: true,
   },
-
   operation_representative_name: {
     "ui:widget": "MultiSelectWidget",
     "ui:options": {

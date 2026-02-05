@@ -4,6 +4,7 @@ import {
   waitFor,
   fireEvent,
   act,
+  cleanup,
 } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { describe, expect, it, beforeEach, vi } from "vitest";
@@ -348,8 +349,8 @@ describe("OperationReviewForm Component", () => {
         version_id={1}
         navigationInformation={dummyNavigationInformation}
         schema={schemaWithSync}
-        allActivities={[]}
-        allRegulatedProducts={[]}
+        allActivities={activities}
+        allRegulatedProducts={regulatedProducts}
         reportType={reportType}
         reportingYear={2024}
         facilityId={`1234`}
@@ -365,7 +366,7 @@ describe("OperationReviewForm Component", () => {
     const syncButton = screen.getByRole("button", {
       name: /Sync latest data from Administration/i,
     });
-    fireEvent.click(syncButton);
+    act(() => fireEvent.click(syncButton));
 
     await waitFor(() => {
       expect(
@@ -384,8 +385,8 @@ describe("OperationReviewForm Component", () => {
         version_id={1}
         navigationInformation={dummyNavigationInformation}
         schema={schema}
-        allActivities={[]}
-        allRegulatedProducts={[]}
+        allActivities={activities}
+        allRegulatedProducts={regulatedProducts}
         reportType={reportType}
         reportingYear={2024}
         facilityId={`1234`}
@@ -462,5 +463,94 @@ describe("OperationReviewForm Component", () => {
         /Any edits to operation information made here will only apply to this report/i,
       ),
     ).toBeInTheDocument();
+  });
+
+  it("displays a help text when either chemical pulp / lime recovery kiln are selected, but not both", async () => {
+    async function renderWithProductIds(productIds: number[]) {
+      const allRegulatedProducts = [
+        { id: 1, name: "Product 1", unit: "BCRCT", is_regulated: true },
+        { id: 16, name: "chemical pulp", unit: "BCRCT", is_regulated: true },
+        {
+          id: 43,
+          name: "lime recovery kiln",
+          is_regulated: true,
+        },
+      ];
+      const fd = {
+        ...formData,
+        regulated_products: productIds,
+        operation_report_type: "Annual Report",
+      };
+      const schema = buildOperationReviewSchema(
+        fd,
+        2024,
+        activities,
+        allRegulatedProducts,
+        allRepresentatives,
+        "Annual Report",
+        true,
+        true,
+        true,
+        false,
+      );
+
+      cleanup();
+      render(
+        <OperationReviewForm
+          formData={fd}
+          version_id={1}
+          navigationInformation={dummyNavigationInformation}
+          schema={schema}
+          allActivities={activities}
+          allRegulatedProducts={allRegulatedProducts}
+          reportType={"Annual Report"}
+          reportingYear={2024}
+          facilityId={`1234`}
+          allRepresentatives={allRepresentatives}
+          isSyncAllowed={false}
+        />,
+      );
+
+      // Wait for RJSF to render the "oneOf"
+      await waitFor(() => {
+        expect(screen.getByText(/Reporting activities/)).toBeVisible();
+      });
+    }
+
+    await renderWithProductIds([1]);
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          /If this is a chemical pulp mill that recovered lime by kiln/,
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    await renderWithProductIds([1, 16, 43]);
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          /If this is a chemical pulp mill that recovered lime by kiln/,
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    await renderWithProductIds([1, 16]);
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /If this is a chemical pulp mill that recovered lime by kiln/,
+        ),
+      ).toBeVisible();
+    });
+
+    await renderWithProductIds([43]);
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /If this is a chemical pulp mill that recovered lime by kiln/,
+        ),
+      ).toBeVisible();
+    });
   });
 });
