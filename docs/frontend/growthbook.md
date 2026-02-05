@@ -1,6 +1,7 @@
 # Growthbook
 
-Documentation on how to implement a growthbook feature flag for our NextJS application.
+Documentation on how to implement a growthbook feature flag for our NextJS application.<br/>
+**NOTE**: The Growthbook package has been removed as it was not being used. This documentation has been left here in case the package is re-added in the future.
 
 ## Client Key
 
