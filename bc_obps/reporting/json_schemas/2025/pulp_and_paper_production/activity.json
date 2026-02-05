@@ -1,0 +1,89 @@
+{
+  "name": "Pulp and paper production",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "The unique identifier for this activity"
+    },
+    "biogenicIndustrialProcessEmissions": {
+      "type": "object",
+      "title": "Biogenic Industrial Process Emissions",
+      "properties": {
+        "doesUtilizeLimeRecoveryKiln": {
+          "type": "boolean",
+          "title": "Does this mill utilize a lime recovery kiln?"
+        }
+      },
+      "dependencies": {
+        "doesUtilizeLimeRecoveryKiln": {
+          "oneOf": [
+            {
+              "properties": {
+                "doesUtilizeLimeRecoveryKiln": { "const": false }
+              }
+            },
+            {
+              "properties": {
+                "doesUtilizeLimeRecoveryKiln": { "const": true },
+                "scheduleC": {
+                  "type": "object",
+                  "title": "Enter the proportion of industrial process emissions that are biogenic (emissions from biomass listed in",
+                  "properties": {
+                    "chemicalPulpAmount": {
+                      "type": "number",
+                      "title": "Chemical pulp amount (percentage)",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "limeRecoveredByKilnAmount": {
+                      "type": "number",
+                      "title": "Lime recovered by kiln amount (percentage)",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "totalAllocated": {
+                      "type": "number",
+                      "title": "Total allocated",
+                      "readOnly": true,
+                      "default": 0,
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "chemicalPulpAmount",
+                    "limeRecoveredByKilnAmount"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "carbonates": {
+      "type": "array",
+      "title": "Carbonates",
+      "items": {
+        "title": "Carbonates",
+        "type": "object",
+        "properties": {
+          "carbonateName": {
+            "type": "string",
+            "title": "Carbonate Name"
+          },
+          "annualAmount": {
+            "type": "number",
+            "title": "Annual Amount (t)",
+            "minimum": 0
+          },
+          "purityOfCarbonate": {
+            "type": "number",
+            "title": "Purity Of Carbonate (Weight Fraction)",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

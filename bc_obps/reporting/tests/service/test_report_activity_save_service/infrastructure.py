@@ -83,8 +83,8 @@ class TestInfrastructure:
         t.activity = Activity.objects.get(slug=activity_slug)
         t.activity_json_schema = ActivityJsonSchema.objects.get(
             activity=t.activity,
-            valid_from=t.configuration,
-            valid_to=t.configuration,
+            valid_from__valid_from__lte=valid_date,
+            valid_to__valid_to__gte=valid_date,
         )
 
         return t
@@ -104,8 +104,8 @@ class TestInfrastructure:
         t.activity = Activity.objects.get(slug="gsc_non_compression")
         t.activity_json_schema = ActivityJsonSchema.objects.get(
             activity=t.activity,
-            valid_from=t.configuration,
-            valid_to=t.configuration,
+            valid_from__valid_from__lte=valid_date,
+            valid_to__valid_to__gte=valid_date,
         )
         return t
 

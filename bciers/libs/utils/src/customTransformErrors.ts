@@ -23,6 +23,7 @@ const customTransformErrors = (
   errors: RJSFValidationError[],
   customFormatsErrorMessages: { [key: string]: string },
 ) => {
+  console.log("Original errors from AJV validation:", errors);
   // Filter out redundant methodology validation errors
   // When gas type is selected but methodology is empty/invalid, the schema generates
   // multiple oneOf/enum errors. We filter these out to show only clean, user-friendly errors.
@@ -40,6 +41,9 @@ const customTransformErrors = (
       }
       // Filter out oneOf errors at the methodology level
       if (error.property?.match(/\.emissions\.\d+\.methodology$/)) {
+        return false;
+      }
+      if (error.property?.match(/\.biogenicIndustrialProcessEmissions$/)) {
         return false;
       }
     }
@@ -151,6 +155,15 @@ const customTransformErrors = (
     }
     if (error?.name === "minItems") {
       error.message = `Select at least one option`;
+      return error;
+    }
+    // Only show the 0-100 message for biogenicIndustrialProcessEmissions fields
+    if (
+      (error?.name === "minimum" || error?.name === "maximum") &&
+      (error.property?.includes("biogenicIndustrialProcessEmissions") ||
+        error.schemaPath?.includes("biogenicIndustrialProcessEmissions"))
+    ) {
+      error.message = "Please enter a value between 0-100";
       return error;
     }
     if (error?.message === "must be number") {
