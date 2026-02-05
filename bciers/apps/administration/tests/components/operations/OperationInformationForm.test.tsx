@@ -945,13 +945,10 @@ describe("the OperationInformationForm component", () => {
           name: /Operation Representative(s)*/i,
         },
       );
-      const openOperationReps = operationRepresentativesComboBoxInput
-        .parentElement?.children[1]?.children[0] as HTMLInputElement;
-      await userEvent.click(openOperationReps);
-      await userEvent.type(
-        operationRepresentativesComboBoxInput,
-        "Jack King{enter}",
-      );
+
+      await userEvent.click(operationRepresentativesComboBoxInput);
+      const representativeOption = await screen.getByText(/Jack King/i);
+      await userEvent.click(representativeOption);
 
       const saveButton = screen.getByRole("button", {
         name: /save/i,
