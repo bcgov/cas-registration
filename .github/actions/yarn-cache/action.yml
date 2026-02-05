@@ -9,8 +9,4 @@ runs:
         path: |
           ~/.cache/yarn
           ./bciers/node_modules
-          ./bciers/apps/*/.next/cache
-          ./bciers/dist/*/.next/cache
-        key: ${{ runner.os }}-yarn-nextjs-${{ hashFiles('bciers/yarn.lock') }}-${{ hashFiles('bciers/**/*.{js,jsx,ts,tsx}') }}-v3
-        restore-keys: |
-          ${{ runner.os }}-yarn-nextjs-${{ hashFiles('bciers/yarn.lock') }}-
+        key: ${{ runner.os }}-yarn-cache-${{ hashFiles('bciers/yarn.lock') }}-v2
