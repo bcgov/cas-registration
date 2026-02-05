@@ -1,5 +1,5 @@
 import { actionHandler } from "../actions";
-import { ProductData } from "../../../types/src/form/productionData";
+import { ProductData } from "@bciers/types/form/productionData";
 
 async function postProductionData(
   report_version_id: number,

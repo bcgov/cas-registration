@@ -7,10 +7,8 @@ import OperationsActionCell from "@bciers/components/datagrid/cells/operations/O
 import OperationFacilitiesActionCell from "apps/administration/app/components/operations/cells/OperationFacilitiesActionCell";
 import operationColumns from "@/administration/app/components/datagrid/models/operations/operationColumns";
 import operationGroupColumns from "@/administration/app/components/datagrid/models/operations/operationGroupColumns";
-import {
-  OperationRow,
-  OperationsSearchParams,
-} from "@/administration/app/components/operations/types";
+import { OperationRow } from "@/administration/app/components/operations/types";
+import { OperationsSearchParams } from "@bciers/types/operations";
 import { fetchOperationsPageData } from "@bciers/actions/api";
 
 const OperationsDataGrid = ({

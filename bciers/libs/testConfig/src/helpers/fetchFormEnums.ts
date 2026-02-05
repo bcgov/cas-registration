@@ -1,12 +1,12 @@
 import {
   getBusinessStructures,
+  getContacts,
   getCurrentUsersOperations,
   getNaicsCodes,
   getRegistrationPurposes,
   getRegulatedProducts,
   getReportingActivities,
 } from "@bciers/testConfig/mocks";
-import { getContacts } from "@/administration/tests/components/contacts/mocks";
 import { Apps } from "@bciers/utils/src/enums";
 
 const fetchFormEnums = (app: Apps) => {

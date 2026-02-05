@@ -1,7 +1,6 @@
 const fetchContactsPageData = vi.fn();
 const getContact = vi.fn();
 const getUserOperatorUsers = vi.fn();
-const getContacts = vi.fn();
 
 vi.mock(
   "apps/administration/app/components/contacts/fetchContactsPageData",
@@ -21,8 +20,4 @@ vi.mock(
   }),
 );
 
-vi.mock("@bciers/actions/api/getContacts", () => ({
-  default: getContacts,
-}));
-
-export { fetchContactsPageData, getContact, getUserOperatorUsers, getContacts };
+export { fetchContactsPageData, getContact, getUserOperatorUsers };

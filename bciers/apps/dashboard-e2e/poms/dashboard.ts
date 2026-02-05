@@ -5,7 +5,7 @@
  */
 import { Page, expect } from "@playwright/test";
 // ☰ Enums
-import { AppRoute } from "@/administration-e2e/utils/enums";
+import { AppRoute } from "@bciers/e2e/utils/enums";
 import { linkIsVisible } from "@bciers/e2e/utils/helpers";
 
 export class DashboardPOM {

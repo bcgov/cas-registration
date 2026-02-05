@@ -33,18 +33,8 @@ class Command(BaseCommand):
             f'{fixture_base_dir}/partner_operator.json',
         ]
 
-        workflow_fixtures = {
-            "cas_admin": [
-                f'{fixture_base_dir}/address.json',
-                f'{fixture_base_dir}/user.json',
-                f'{fixture_base_dir}/contact.json',
-                f'{fixture_base_dir}/bc_obps_regulated_operation.json',
-                f'{fixture_base_dir}/bc_greenhouse_gas_id.json',
-                f'{fixture_base_dir}/operator.json',
-                f'{fixture_base_dir}/operation.json',
-                f'{fixture_base_dir}/user_operator.json',
-            ],
-        }
+        # We can add dedicated fixtures for each workflow here
+        workflow_fixtures = {}
 
         if 'workflow' in options and options['workflow'] in workflow_fixtures:
             fixtures = workflow_fixtures[options['workflow']]
