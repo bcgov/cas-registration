@@ -7,10 +7,9 @@ import {
   getStorageStateForRole,
 } from "@bciers/e2e/utils/helpers";
 
-// Only merge Happo if we're in CI or if API keys are present
+// Only merge Happo if API keys are present (they are empty during nightly builds)
 const isHappoEnabled =
-  process.env.CI === "true" ||
-  (process.env.HAPPO_API_KEY && process.env.HAPPO_API_SECRET);
+  !!process.env.HAPPO_API_KEY && !!process.env.HAPPO_API_SECRET;
 
 const test = isHappoEnabled
   ? mergeTests(baseTest, happoTest)
