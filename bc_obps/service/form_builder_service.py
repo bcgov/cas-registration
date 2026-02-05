@@ -339,7 +339,6 @@ def build_schema(
 ) -> str:
     activity_obj = Activity.objects.filter(id=activity).only("name").first()
     activity_name = activity_obj.name if activity_obj else f"Activity {activity}"
-
     # Check if the activity schema exists
     activity_schema_exists = ActivityJsonSchema.objects.filter(
         activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id

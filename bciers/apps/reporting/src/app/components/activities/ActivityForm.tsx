@@ -10,8 +10,14 @@ import debounce from "lodash.debounce";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import setNestedErrorForCustomValidate from "@bciers/utils/src/setCustomValidateErrors";
 import { findPathsWithNegativeNumbers } from "@bciers/utils/src/findInObject";
-import { calculateMobileAnnualAmount } from "@bciers/utils/src/customReportingActivityFormCalculations";
-import { validateEmissionsMethodology } from "@bciers/utils/src/activityFormValidators";
+import {
+  calculateMobileAnnualAmount,
+  calculateBiogenicTotalAllocated,
+} from "@bciers/utils/src/customReportingActivityFormCalculations";
+import {
+  validateBiogenicTotalAllocated,
+  validateEmissionsMethodology,
+} from "@bciers/utils/src/activityFormValidators";
 import { NavigationInformation } from "../taskList/types";
 import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
 import { Dict } from "@bciers/types/dictionary";
@@ -38,6 +44,7 @@ interface Props {
     chemical_formula: string;
     cas_number: string;
   };
+  reportingYear: number;
 }
 
 // 🧩 Main component
@@ -51,6 +58,7 @@ export default function ActivityForm({
   initialJsonSchema,
   initialSelectedSourceTypeIds,
   gasTypes,
+  reportingYear,
 }: Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as string[]);
@@ -82,6 +90,9 @@ export default function ActivityForm({
     if (formData?.sourceTypes) {
       validateEmissionsMethodology(formData.sourceTypes, errors);
     }
+
+    // Validate biogenic industrial process emissions total allocated
+    validateBiogenicTotalAllocated(formData, errors);
 
     return errors;
   };
@@ -117,7 +128,12 @@ export default function ActivityForm({
     if (c.formData?.sourceTypes?.mobileFuelCombustionPartOfFacility)
       calculateMobileAnnualAmount(c.formData);
 
-    setFormState(c.formData);
+    // Calculate total allocated for biogenic industrial process emissions
+    if (c.formData?.biogenicIndustrialProcessEmissions)
+      calculateBiogenicTotalAllocated(c.formData);
+
+    // Use structuredClone to create a deep copy to ensure React detects nested changes
+    setFormState(structuredClone(c.formData));
   };
 
   // 🛠️ Function to submit user form data to API
@@ -193,7 +209,7 @@ export default function ActivityForm({
       fields={CUSTOM_FIELDS}
       noSaveButton={isFallbackSchema}
       formData={formState}
-      uiSchema={getUiSchema(currentActivity.slug)}
+      uiSchema={getUiSchema(currentActivity.slug, reportingYear)}
       onChange={debounce(handleFormChange, 200) as (data: object) => void}
       errors={errorList}
       backUrl={navigationInformation.backUrl}
@@ -202,6 +218,7 @@ export default function ActivityForm({
       formContext={{
         gasTypes,
       }}
+      omitExtraData={true}
       buttonText={isFallbackSchema ? "Continue" : "Save and Continue"}
     />
   );

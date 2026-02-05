@@ -25,6 +25,7 @@ import petroleumRefiningUiSchema from "./petroleumRefiningUiSchema";
 import leadProductionUiSchema from "./leadProductionUiSchema";
 import fallbackUiSchema from "./fallbackUiSchema";
 import electricityTransmissionUiSchema from "./electricityTransmissionUiSchema";
+import pulpAndPaperUiSchema2025 from "@reporting/src/app/components/activities/uiSchemas/2025/pulpAndPaperUiSchema";
 
 type UiSchemaMap = {
   [key: string]: any;
@@ -71,6 +72,17 @@ export const uiSchemaMap: UiSchemaMap = {
   electricity_transmission: electricityTransmissionUiSchema,
 };
 
-export const getUiSchema = (slug: string) => {
+export const getUiSchema = (slug: string, reportingYear?: number) => {
+  // Use 2025+ schemas for specific activities based on reporting year
+  if (reportingYear && reportingYear >= 2025) {
+    switch (slug) {
+      case "pulp_and_paper":
+        return pulpAndPaperUiSchema2025;
+      // Add more 2025+ schemas here as they are created
+      default:
+        break;
+    }
+  }
+
   return uiSchemaMap[slug];
 };

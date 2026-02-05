@@ -48,7 +48,7 @@ const TextWidget: React.FC<WidgetProps> = ({
   };
 
   const handleNumberChange = (val: number | null) => {
-    onChange(val);
+    onChange(val === null ? undefined : val);
   };
 
   const isError = rawErrors && rawErrors.length > 0;

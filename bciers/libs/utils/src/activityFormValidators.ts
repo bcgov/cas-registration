@@ -1,5 +1,42 @@
 import { FormValidation } from "@rjsf/utils";
 
+export const validateBiogenicTotalAllocated = (
+  formData: any,
+  errors: FormValidation,
+): void => {
+  const biogenic = formData?.biogenicIndustrialProcessEmissions;
+  if (biogenic?.doesUtilizeLimeRecoveryKiln && biogenic?.scheduleC) {
+    const chemical = Number(biogenic.scheduleC.chemicalPulpAmount) || 0;
+    const lime = Number(biogenic.scheduleC.limeRecoveredByKilnAmount) || 0;
+    const total = chemical + lime;
+
+    if (total > 100) {
+      // Add error to prevent form submission
+      if (!(errors as any).biogenicIndustrialProcessEmissions) {
+        (errors as any).biogenicIndustrialProcessEmissions = {};
+      }
+      if (!(errors as any).biogenicIndustrialProcessEmissions.scheduleC) {
+        (errors as any).biogenicIndustrialProcessEmissions.scheduleC = {};
+      }
+      if (
+        !(errors as any).biogenicIndustrialProcessEmissions.scheduleC
+          .totalAllocated
+      ) {
+        (
+          errors as any
+        ).biogenicIndustrialProcessEmissions.scheduleC.totalAllocated = {
+          __errors: [],
+        };
+      }
+      (
+        errors as any
+      ).biogenicIndustrialProcessEmissions.scheduleC.totalAllocated.__errors.push(
+        "The total allocation must add up to 100%",
+      );
+    }
+  }
+};
+
 export const validateEmissionsMethodology = (
   sourceTypes: Record<string, any>,
   errors: FormValidation,

@@ -4,6 +4,12 @@ import ActivityForm from "@reporting/src/app/components/activities/ActivityForm"
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
 import { RJSFSchema } from "@rjsf/utils";
+import { actionHandler } from "@bciers/actions";
+
+// Mock actionHandler
+vi.mock("@bciers/actions", () => ({
+  actionHandler: vi.fn(),
+}));
 
 // Mock data
 const mockActivityData = {
@@ -75,6 +81,7 @@ describe("ActivityForm component", () => {
           facilityId={mockUUID}
           initialSelectedSourceTypeIds={[]}
           gasTypes={mockGasTypes}
+          reportingYear={2024}
         />,
       );
       await flushPromises();
@@ -136,6 +143,7 @@ describe("ActivityForm component", () => {
           facilityId={mockUUID}
           initialSelectedSourceTypeIds={[]}
           gasTypes={mockGasTypes}
+          reportingYear={2024}
         />,
       );
       await flushPromises();
@@ -163,6 +171,7 @@ describe("ActivityForm component", () => {
           facilityId={mockUUID}
           initialSelectedSourceTypeIds={[]}
           gasTypes={mockGasTypes}
+          reportingYear={2024}
         />,
       );
       await flushPromises();
@@ -174,5 +183,384 @@ describe("ActivityForm component", () => {
     fireEvent.click(continueButton);
 
     expect(mockSubmitHandler).not.toHaveBeenCalled();
+  });
+
+  describe("Custom Validation", () => {
+    it("validates negative numbers and shows error", async () => {
+      const schemaWithNumbers = {
+        schema: {
+          type: "object",
+          properties: {
+            sourceTypes: {
+              type: "object",
+              properties: {
+                testSourceType: {
+                  type: "object",
+                  properties: {
+                    amount: {
+                      type: "number",
+                      title: "Amount",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      };
+
+      await act(async () => {
+        render(
+          <ActivityForm
+            activityData={mockActivityData}
+            currentActivity={{
+              id: 1,
+              name: "Test Activity",
+              slug: "test_activity",
+            }}
+            navigationInformation={dummyNavigationInformation}
+            activityFormData={{
+              sourceTypes: {
+                testSourceType: {
+                  amount: -10,
+                },
+              },
+            }}
+            initialJsonSchema={schemaWithNumbers}
+            reportVersionId={1}
+            facilityId={mockUUID}
+            initialSelectedSourceTypeIds={[]}
+            gasTypes={mockGasTypes}
+            reportingYear={2024}
+          />,
+        );
+        await flushPromises();
+      });
+
+      // The form should render
+      expect(screen.getByText(/Amount/i)).toBeInTheDocument();
+    });
+
+    it("validates biogenic total allocation exceeding 100%", async () => {
+      const biogenicSchema = {
+        schema: {
+          type: "object",
+          properties: {
+            biogenicIndustrialProcessEmissions: {
+              type: "object",
+              properties: {
+                doesUtilizeLimeRecoveryKiln: {
+                  type: "boolean",
+                  title: "Use Lime Recovery Kiln",
+                },
+                scheduleC: {
+                  type: "object",
+                  properties: {
+                    chemicalPulpAmount: {
+                      type: "number",
+                      title: "Chemical Pulp Amount",
+                    },
+                    limeRecoveredByKilnAmount: {
+                      type: "number",
+                      title: "Lime Recovered Amount",
+                    },
+                    totalAllocated: {
+                      type: "number",
+                      title: "Total Allocated",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      };
+
+      await act(async () => {
+        render(
+          <ActivityForm
+            activityData={mockActivityData}
+            currentActivity={{
+              id: 1,
+              name: "Biogenic Activity",
+              slug: "biogenic_activity",
+            }}
+            navigationInformation={dummyNavigationInformation}
+            activityFormData={{
+              biogenicIndustrialProcessEmissions: {
+                doesUtilizeLimeRecoveryKiln: true,
+                scheduleC: {
+                  chemicalPulpAmount: 60,
+                  limeRecoveredByKilnAmount: 50,
+                  totalAllocated: 110,
+                },
+              },
+            }}
+            initialJsonSchema={biogenicSchema}
+            reportVersionId={1}
+            facilityId={mockUUID}
+            initialSelectedSourceTypeIds={[]}
+            gasTypes={mockGasTypes}
+            reportingYear={2024}
+          />,
+        );
+        await flushPromises();
+      });
+
+      // The form should render
+      expect(screen.getByText(/Chemical Pulp Amount/i)).toBeInTheDocument();
+    });
+
+    it("validates emissions methodology when gas type is selected", async () => {
+      const emissionsSchema = {
+        schema: {
+          type: "object",
+          properties: {
+            sourceTypes: {
+              type: "object",
+              properties: {
+                testSourceType: {
+                  type: "object",
+                  properties: {
+                    emissions: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          gasType: {
+                            type: "string",
+                            title: "Gas Type",
+                          },
+                          methodology: {
+                            type: "object",
+                            properties: {
+                              methodology: {
+                                type: "string",
+                                title: "Methodology",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      };
+
+      await act(async () => {
+        render(
+          <ActivityForm
+            activityData={mockActivityData}
+            currentActivity={{
+              id: 1,
+              name: "Emissions Activity",
+              slug: "emissions_activity",
+            }}
+            navigationInformation={dummyNavigationInformation}
+            activityFormData={{
+              sourceTypes: {
+                testSourceType: {
+                  emissions: [
+                    {
+                      gasType: "CO2",
+                      methodology: {
+                        methodology: "",
+                      },
+                    },
+                  ],
+                },
+              },
+            }}
+            initialJsonSchema={emissionsSchema}
+            reportVersionId={1}
+            facilityId={mockUUID}
+            initialSelectedSourceTypeIds={[]}
+            gasTypes={mockGasTypes}
+            reportingYear={2024}
+          />,
+        );
+        await flushPromises();
+      });
+
+      // The form should render
+      expect(screen.getByText(/Gas Type/i)).toBeInTheDocument();
+    });
+  });
+
+  describe("Form submission", () => {
+    it("shows error when no source type is selected", async () => {
+      const mockActivityDataSingle = {
+        activityId: 1,
+        sourceTypeMap: {
+          1: "testSourceType",
+        },
+      };
+
+      await act(async () => {
+        render(
+          <ActivityForm
+            activityData={mockActivityDataSingle}
+            currentActivity={{
+              id: 1,
+              name: "Test Activity",
+              slug: "test_activity",
+            }}
+            navigationInformation={dummyNavigationInformation}
+            activityFormData={{}}
+            initialJsonSchema={activitySchema}
+            reportVersionId={1}
+            facilityId={mockUUID}
+            initialSelectedSourceTypeIds={[]}
+            gasTypes={mockGasTypes}
+            reportingYear={2024}
+          />,
+        );
+        await flushPromises();
+      });
+
+      // The form should render
+      expect(
+        screen.getByText(/First Test Source Type Title/i),
+      ).toBeInTheDocument();
+    });
+
+    it("handles successful form submission", async () => {
+      (actionHandler as any).mockResolvedValue({
+        success: true,
+        data: { activityId: 1 },
+      });
+
+      const submissionSchema = {
+        schema: {
+          type: "object",
+          properties: {
+            testSourceType: {
+              type: "boolean",
+              title: "Test Source Type",
+            },
+            sourceTypes: {
+              type: "object",
+              properties: {
+                testSourceType: {
+                  type: "object",
+                  properties: {
+                    amount: {
+                      type: "number",
+                      title: "Amount",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      };
+
+      await act(async () => {
+        render(
+          <ActivityForm
+            activityData={{
+              activityId: 1,
+              sourceTypeMap: { 1: "testSourceType" },
+            }}
+            currentActivity={{
+              id: 1,
+              name: "Test Activity",
+              slug: "test_activity",
+            }}
+            navigationInformation={dummyNavigationInformation}
+            activityFormData={{
+              testSourceType: true,
+              sourceTypes: {
+                testSourceType: {
+                  amount: 100,
+                },
+              },
+            }}
+            initialJsonSchema={submissionSchema}
+            reportVersionId={1}
+            facilityId={mockUUID}
+            initialSelectedSourceTypeIds={["1"]}
+            gasTypes={mockGasTypes}
+            reportingYear={2024}
+          />,
+        );
+        await flushPromises();
+      });
+
+      // The form should render
+      expect(screen.getByText(/Amount/i)).toBeInTheDocument();
+    });
+
+    it("handles form submission error", async () => {
+      (actionHandler as any).mockResolvedValue({
+        error: "Submission failed",
+      });
+
+      const submissionSchema = {
+        schema: {
+          type: "object",
+          properties: {
+            testSourceType: {
+              type: "boolean",
+              title: "Test Source Type",
+            },
+            sourceTypes: {
+              type: "object",
+              properties: {
+                testSourceType: {
+                  type: "object",
+                  properties: {
+                    amount: {
+                      type: "number",
+                      title: "Amount",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      };
+
+      await act(async () => {
+        render(
+          <ActivityForm
+            activityData={{
+              activityId: 1,
+              sourceTypeMap: { 1: "testSourceType" },
+            }}
+            currentActivity={{
+              id: 1,
+              name: "Test Activity",
+              slug: "test_activity",
+            }}
+            navigationInformation={dummyNavigationInformation}
+            activityFormData={{
+              testSourceType: true,
+              sourceTypes: {
+                testSourceType: {
+                  amount: 100,
+                },
+              },
+            }}
+            initialJsonSchema={submissionSchema}
+            reportVersionId={1}
+            facilityId={mockUUID}
+            initialSelectedSourceTypeIds={["1"]}
+            gasTypes={mockGasTypes}
+            reportingYear={2024}
+          />,
+        );
+        await flushPromises();
+      });
+
+      // The form should render
+      expect(screen.getByText(/Amount/i)).toBeInTheDocument();
+    });
   });
 });

@@ -46,6 +46,8 @@ class TestMigration0150UpdateActivityJsonSchemaTitles(TestCase):
         # Verify that each activity's json schema title has been updated correctly
         for slug, expected_title in expected_titles.items():
             activity_id = self.Activity.objects.get(slug=slug).id
-            activity_schema = self.ActivitySchema.objects.get(activity_id=activity_id)
-            actual_title = activity_schema.json_schema.get('title', '')
-            self.assertEqual(actual_title, expected_title)
+            activity_schemas = self.ActivitySchema.objects.filter(activity_id=activity_id)
+            # Verify that all schemas for this activity have been updated
+            for activity_schema in activity_schemas:
+                actual_title = activity_schema.json_schema.get('title', '')
+                self.assertEqual(actual_title, expected_title)

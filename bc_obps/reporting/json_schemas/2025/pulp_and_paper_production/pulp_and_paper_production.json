@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "title": "Emissions",
+  "default": { "emissions": [{}] },
+  "properties": {
+    "emissions": {
+      "type": "array",
+      "title": "Emissions",
+      "items": {
+        "title": "Emission",
+        "type": "object",
+        "properties": {
+          "gasType": {
+            "type": "string",
+            "title": "Gas Type",
+            "enum": []
+          },
+          "emission": {
+            "title": "Emission",
+            "type": "number",
+            "minimum": 0
+          },
+          "equivalentEmission": {
+            "title": "Equivalent Emission",
+            "type": "number",
+            "readOnly": true,
+            "description": "Computed upon saving"
+          }
+        }
+      }
+    }
+  }
+}

@@ -16,3 +16,26 @@ export const calculateMobileAnnualAmount = (formData: any) => {
     fuel["annualFuelAmount"] = total; // Apply total
   }
 };
+
+export const calculateBiogenicTotalAllocated = (formData: any) => {
+  const biogenic = formData?.biogenicIndustrialProcessEmissions;
+
+  if (!biogenic) return;
+
+  // Only calculate if lime recovery kiln is used and scheduleC exists
+  if (biogenic.doesUtilizeLimeRecoveryKiln && biogenic.scheduleC) {
+    // Initialize totalAllocated if it doesn't exist
+    if (biogenic.scheduleC.totalAllocated === undefined) {
+      biogenic.scheduleC.totalAllocated = 0;
+    }
+
+    const chemical = Number(biogenic.scheduleC.chemicalPulpAmount) || 0;
+    const lime = Number(biogenic.scheduleC.limeRecoveredByKilnAmount) || 0;
+
+    // Update the total field automatically
+    biogenic.scheduleC.totalAllocated = chemical + lime;
+  } else if (biogenic.scheduleC) {
+    // Set to 0 when not using lime recovery kiln
+    biogenic.scheduleC.totalAllocated = 0;
+  }
+};
