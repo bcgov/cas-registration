@@ -1,7 +1,6 @@
 from registration.schema import OptedInOperationDetailIn
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.utils import update_model_instance
-from service.data_access_service.reporting_year import ReportingYearDataAccessService
 
 
 class OptedInOperationDataAccessService:
@@ -32,10 +31,6 @@ class OptedInOperationDataAccessService:
         If final_reporting_year is None, clears the field.
         """
         opted_in_operation_detail = OptedInOperationDetail.objects.get(id=opted_in_operation_detail_id)
-        if final_reporting_year is not None:
-            reporting_year = ReportingYearDataAccessService.get_by_year(final_reporting_year)
-            opted_in_operation_detail.final_reporting_year = reporting_year
-        else:
-            opted_in_operation_detail.final_reporting_year = None
+        opted_in_operation_detail.final_reporting_year_id = final_reporting_year
         opted_in_operation_detail.save()
         return opted_in_operation_detail

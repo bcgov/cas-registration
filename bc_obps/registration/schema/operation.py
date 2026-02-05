@@ -126,7 +126,7 @@ class OptedInOperationDetailOut(ModelSchema):
         """
         Extract the year integer from the final_reporting_year ForeignKey.
         """
-        return obj.final_reporting_year.reporting_year if obj.final_reporting_year else None
+        return obj.final_reporting_year_id
 
     class Meta:
         model = OptedInOperationDetail
@@ -207,8 +207,8 @@ class OperationOut(ModelSchema):
         """
         Extract final_reporting_year from opted_in_operation to use as opted_out_operation
         """
-        if obj.opted_in_operation and obj.opted_in_operation.final_reporting_year:
-            return obj.opted_in_operation.final_reporting_year.reporting_year
+        if obj.opted_in_operation:
+            return obj.opted_in_operation.final_reporting_year_id
         return None
 
     class Meta:
