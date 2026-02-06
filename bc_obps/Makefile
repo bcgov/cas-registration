@@ -100,7 +100,6 @@ loadfixtures: ## add fixtures to the database
 loadfixtures:
 	$(POETRY_RUN) python $(MANAGE_PY) load_fixtures $(ARGS)
 	$(POETRY_RUN) python $(MANAGE_PY) load_reporting_fixtures $(ARGS)
-	# $(POETRY_RUN) python $(MANAGE_PY) load_compliance_fixtures $(ARGS) # TODO: add compliance fixtures separately
 
 .PHONY: reset_db
 reset_db: ## drop and recreate the db
@@ -158,6 +157,11 @@ mypy: ## We can use --show-traceback to show the full traceback in case of an er
 load_test_data: ## Load test data into the database
 load_test_data:
 	$(POETRY_RUN) python $(MANAGE_PY) load_test_data
+
+.PHONY: load_reporting_test_data
+load_reporting_test_data: ## Load reporting test data into the database
+load_reporting_test_data:
+	$(POETRY_RUN) python $(MANAGE_PY) load_reporting_test_data
 
 .PHONY: prepare_backend
 prepare_backend: ## Install dependencies, reset the database, and run the server
