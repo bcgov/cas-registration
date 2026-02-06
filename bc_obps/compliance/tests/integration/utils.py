@@ -1,5 +1,8 @@
+import uuid
+from django.utils import timezone
 from decimal import Decimal
 from model_bakery.baker import make_recipe
+from common.lib import pgtrigger
 from compliance.models import (
     ComplianceChargeRate,
     ComplianceEarnedCredit,
@@ -7,10 +10,14 @@ from compliance.models import (
     CompliancePeriod,
     ComplianceReport,
     ComplianceReportVersion,
+    ElicensingClientOperator,
+    ElicensingInvoice,
+    ElicensingLineItem,
 )
 from compliance.signals.consumers import handle_report_submission
 from registration.models import Operation
 from reporting.models import ReportVersion, ReportingYear
+from compliance.dataclass import RefreshWrapperReturn
 
 
 HANDLE_OBLIGATION_INTEGRATION = (
@@ -18,10 +25,18 @@ HANDLE_OBLIGATION_INTEGRATION = (
     ".ElicensingObligationService.handle_obligation_integration"
 )
 SEND_OBLIGATION_EMAIL = "compliance.tasks.retryable_send_notice_of_obligation_email"
+SEND_OBLIGATION_MET_EMAIL = "compliance.tasks.retryable_notice_of_obligation_met_email"
 SEND_EARNED_CREDITS_EMAIL = "compliance.service.earned_credits_service.retryable_send_notice_of_earned_credits_email"
 SEND_NO_OBLIGATION_EMAIL = (
     "compliance.service.compliance_report_version_service"
     ".retryable_send_notice_of_no_obligation_no_earned_credits_email"
+)
+REFRESH_DATA = (
+    "compliance.service.elicensing.elicensing_data_refresh_service"
+    ".ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
+)
+CREATE_PENALTY_INVOICE = (
+    "compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice"
 )
 
 
@@ -70,6 +85,52 @@ class ComplianceIntegrationTestBase:
         )
         obligation.compliance_report_version.save(update_fields=["status"])
 
+    @staticmethod
+    def fake_handle_obligation_post_invoice(obligation_id, compliance_period):
+        """Mock for handle_obligation_integration when invoice date HAS been reached.
+
+        Creates a real ElicensingInvoice + LineItem in the DB, links to the obligation,
+        and sets CRV status to OBLIGATION_NOT_MET.
+        """
+        obligation = ComplianceObligation.objects.get(id=obligation_id)
+        operator = obligation.compliance_report_version.compliance_report.report.operator
+        client_operator, _ = ElicensingClientOperator.objects.get_or_create(
+            operator=operator,
+            defaults={"client_object_id": 12345, "client_guid": uuid.uuid4()},
+        )
+        invoice = ElicensingInvoice.objects.create(
+            elicensing_client_operator=client_operator,
+            invoice_number=f"INV-{uuid.uuid4().hex[:8]}",
+            due_date=compliance_period.compliance_deadline,
+            outstanding_balance=obligation.fee_amount_dollars,
+            invoice_fee_balance=obligation.fee_amount_dollars,
+            invoice_interest_balance=Decimal("0.00"),
+            is_void=False,
+            last_refreshed=timezone.now(),
+        )
+        ElicensingLineItem.objects.create(
+            object_id=obligation_id,
+            guid=uuid.uuid4(),
+            elicensing_invoice=invoice,
+            line_item_type=ElicensingLineItem.LineItemType.FEE,
+            fee_date=compliance_period.compliance_deadline,
+            base_amount=obligation.fee_amount_dollars,
+        )
+        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+            obligation.elicensing_invoice = invoice
+            obligation.save(update_fields=["elicensing_invoice"])
+        obligation.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        obligation.compliance_report_version.save(update_fields=["status"])
+
+    @staticmethod
+    def fake_refresh(compliance_report_version_id, *args, **kwargs):
+        """Mock for refresh_data_wrapper_by_compliance_report_version_id.
+
+        Returns the actual invoice from DB without calling the eLicensing API.
+        """
+        obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
+        return RefreshWrapperReturn(data_is_fresh=True, invoice=obligation.elicensing_invoice)
+
     # ------------------------------------------------------------------
     # Initial report helpers
     # ------------------------------------------------------------------
@@ -107,6 +168,17 @@ class ComplianceIntegrationTestBase:
         assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
         initial_obligation = ComplianceObligation.objects.get(compliance_report_version=self.initial_crv)
         assert initial_obligation.elicensing_invoice is None
+
+    def _create_initial_report_with_obligation_post_invoice(self, excess_emissions):
+        """Fire signal for initial report -> obligation with invoice linked.
+
+        After: self.initial_crv has status OBLIGATION_NOT_MET,
+               self.initial_obligation has elicensing_invoice set.
+        """
+        self._fire_initial_report(excess_emissions, Decimal("0"))
+        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        self.initial_obligation = ComplianceObligation.objects.get(compliance_report_version=self.initial_crv)
+        assert self.initial_obligation.elicensing_invoice is not None
 
     def _create_initial_report_with_earned_credits(self, credited_emissions):
         """Fire signal for initial report -> earned credits.
