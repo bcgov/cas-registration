@@ -138,5 +138,28 @@ jobs:
       - name: Run Migrations
         run: make migrate
         working-directory: ./bc_obps
-      - run: make load_test_data
+      - name: Load test registration fixtures
+        run: make load_test_data
+        working-directory: ./bc_obps
+      - name: Load test reporting fixtures
+        run: make load_reporting_test_data
+        working-directory: ./bc_obps
+
+  check-dev-data:
+    runs-on: ubuntu-latest
+    if: inputs.backend_has_changes == 'true'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            bc_obps/
+            .github/
+            .tool-versions
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup-backend
+      - name: Run Migrations
+        run: make migrate
+        working-directory: ./bc_obps
+      - name: Load dev fixtures
+        run: make loadfixtures
         working-directory: ./bc_obps
