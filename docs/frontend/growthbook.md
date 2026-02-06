@@ -32,7 +32,6 @@ import {
   GrowthBookProvider
 } from "@growthbook/growthbook-react";
 import { useMemo, useEffect, useState } from "react";
-import { env } from 'next-runtime-env';
 
 const CLIENT_KEY = env('NEXT_PUBLIC_GROWTHBOOK_CLIENT_KEY')
 const growthbook_clientPage = new GrowthBook({
