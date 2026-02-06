@@ -114,8 +114,8 @@ jobs:
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
           E2E_NEW_USER_STORAGE_STATE: ${{ secrets.E2E_NEW_USER_STORAGE_STATE}}
           # Happo env vars are only used when not running on a schedule (e.g., nightly builds)
-          HAPPO_API_KEY: ${{ github.event_name == 'schedule' && '' || secrets.HAPPO_API_KEY }}
-          HAPPO_API_SECRET: ${{ github.event_name == 'schedule' && '' || secrets.HAPPO_API_SECRET }}
+          HAPPO_API_KEY: ${{ github.event_name != 'schedule' && secrets.HAPPO_API_KEY || '' }}
+          HAPPO_API_SECRET: ${{ github.event_name != 'schedule' && secrets.HAPPO_API_SECRET || '' }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
         run: DEBUG=pw:api yarn nx run "$NX_PROJECT":${{ github.event_name == 'schedule' && 'e2e' || 'e2e:ci' }} -- --project=chromium
