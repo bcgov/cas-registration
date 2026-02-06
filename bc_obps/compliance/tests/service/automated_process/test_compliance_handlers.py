@@ -381,6 +381,52 @@ class TestObligationPaidHandler:
         mock_create_penalty.assert_not_called()
         mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
 
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_late_submission_penalty")
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty")
+    @patch("compliance.service.automated_process.compliance_handlers.has_outstanding_penalty")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_penalty_due_email")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_email")
+    def test_handle_executes_penalty_due_email_when_outstanding_penalty_exists(
+        self,
+        mock_retryable_notice_of_obligation_met_email,
+        mock_retryable_notice_of_obligation_met_penalty_due_email,
+        mock_has_outstanding_penalty,
+        mock_create_penalty,
+        mock_create_late_penalty,
+    ):
+        # Arrange
+        mock_has_outstanding_penalty.return_value = True
+
+        # Act
+        self.handler.handle(self.invoice)
+
+        # Assert
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+        mock_retryable_notice_of_obligation_met_penalty_due_email.execute.assert_called_once_with(self.obligation.id)
+
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_late_submission_penalty")
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty")
+    @patch("compliance.service.automated_process.compliance_handlers.has_outstanding_penalty")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_penalty_due_email")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_email")
+    def test_handle_executes_penalty_due_email_when_no_outstanding_penalty_exists(
+        self,
+        mock_retryable_notice_of_obligation_met_email,
+        mock_retryable_notice_of_obligation_met_penalty_due_email,
+        mock_has_outstanding_penalty,
+        mock_create_penalty,
+        mock_create_late_penalty,
+    ):
+        # Arrange
+        mock_has_outstanding_penalty.return_value = False
+
+        # Act
+        self.handler.handle(self.invoice)
+
+        # Assert
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+        mock_retryable_notice_of_obligation_met_penalty_due_email.execute.assert_not_called()
+
 
 class TestComplianceHandlerManager:
     def setup_method(self):
