@@ -9,6 +9,7 @@ from reporting.tests.service.test_report_activity_save_service.infrastructure im
     TestInfrastructure,
 )
 from model_bakery.baker import make_recipe, make
+from common.exceptions import UserError
 
 
 class TestSaveReportUnit(TestCase):
@@ -38,7 +39,7 @@ class TestSaveReportUnit(TestCase):
             test_infrastructure.user.user_guid,
         )
 
-        with pytest.raises(ValueError, match="Unit is expecting fuel data"):
+        with pytest.raises(UserError, match="Unit is expecting fuel data"):
             service_under_test.save_unit(report_source_type, {"key": True})
 
         return_value = service_under_test.save_unit(
@@ -87,7 +88,7 @@ class TestSaveReportUnit(TestCase):
             test_infrastructure.user.user_guid,
         )
 
-        with pytest.raises(ValueError, match="Unit is expecting emissions data"):
+        with pytest.raises(UserError, match="Unit is expecting emissions data"):
             service_under_test.save_unit(report_source_type, {"key": True})
 
         return_value = service_under_test.save_unit(

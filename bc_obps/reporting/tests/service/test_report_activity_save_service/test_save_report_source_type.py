@@ -11,6 +11,7 @@ from reporting.tests.service.test_report_activity_save_service.infrastructure im
     TestInfrastructure,
 )
 from model_bakery.baker import make_recipe, make
+from common.exceptions import UserError
 
 
 class TestSaveReportSourceType(TestCase):
@@ -38,7 +39,7 @@ class TestSaveReportSourceType(TestCase):
         with pytest.raises(SourceType.DoesNotExist):
             service_under_test.save_source_type(report_activity, "thisIsNotAValidSourceTypeSlug", {"test": 123})
 
-        with pytest.raises(ValueError, match="Source type sourceTypeWithUnit is expecting unit data"):
+        with pytest.raises(UserError, match="Source type sourceTypeWithUnit is expecting unit data"):
             service_under_test.save_source_type(report_activity, "sourceTypeWithUnit", {"test": 123})
 
         return_value = service_under_test.save_source_type(
@@ -182,7 +183,7 @@ class TestSaveReportSourceType(TestCase):
             test_infrastructure.user.user_guid,
         )
 
-        with pytest.raises(ValueError, match="Source type sourceTypeWithFuel is expecting fuel data"):
+        with pytest.raises(UserError, match="Source type sourceTypeWithFuel is expecting fuel data"):
             service_under_test.save_source_type(report_activity, "sourceTypeWithFuel", {"test": 123})
 
         return_value = service_under_test.save_source_type(
@@ -230,7 +231,7 @@ class TestSaveReportSourceType(TestCase):
         )
 
         with pytest.raises(
-            ValueError,
+            UserError,
             match="Source type sourceTypeWithoutFuelOrUnit is expecting emission data",
         ):
             service_under_test.save_source_type(report_activity, "sourceTypeWithoutFuelOrUnit", {"test": 123})
