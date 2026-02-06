@@ -82,7 +82,6 @@
     "mui-tel-input": "^6.0.1",
     "next": "16.1.5",
     "next-auth": "^5.0.0-beta.30",
-    "next-runtime-env": "^3.3.0",
     "pg": "^8.11.3",
     "postcss": "8.4.38",
     "react": "^19.2.3",

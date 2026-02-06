@@ -1,7 +1,6 @@
 import "@bciers/styles/globals.css";
 import type { Metadata, Viewport } from "next";
 import type { Session } from "next-auth";
-import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import CssBaseline from "@mui/material/CssBaseline";
 import SessionProvider from "@bciers/components/auth/SessionProvider";
@@ -68,9 +67,7 @@ export default async function RootLayout({
       {
         //👇️ Used to mark the root element where Next.js will mount the client-side React application
       }
-      <head>
-        <PublicEnvScript />
-      </head>
+      <head></head>
       <body id="__next">
         <SessionProvider
           // 👇 Notice that the basePath to the auth management site
