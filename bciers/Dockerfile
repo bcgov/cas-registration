@@ -1,5 +1,5 @@
 # Install dependencies only when needed
-FROM docker.io/node:24.11.1 AS deps
+FROM docker.io/node:24.11.1-alpine AS deps
 WORKDIR /usr/src/app
 COPY ./package.json .
 RUN corepack enable
@@ -9,7 +9,7 @@ RUN echo 'nodeLinker: "node-modules"' >> ./.yarnrc.yml
 RUN yarn install
 
 # Production image, copy all the files and run next
-FROM docker.io/node:24.11.1 AS runner
+FROM docker.io/node:24.11.1-alpine AS runner
 
 # nx/nextjs builds some files into subfolders based on project name. For a unified container, we supply the project name as a path.
 ARG application_path
