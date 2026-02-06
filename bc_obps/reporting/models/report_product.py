@@ -2,6 +2,7 @@ import typing
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
+from registration.models.operation import Operation
 from registration.models.regulated_product import RegulatedProduct
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.facility_report import FacilityReport
@@ -43,6 +44,11 @@ class ReportProduct(TimeStampedModel):
     )
     annual_production = models.FloatField(
         db_comment="The total annual production for the product, expressed in the unit of this same model."
+    )
+    production_data_jan_mar = models.FloatField(
+        db_comment="The total production amount for January to March period, expressed in the unit of this same model. This should only be relevant to reporting year 2025.",
+        blank=True,
+        null=True,
     )
     production_data_apr_dec = models.FloatField(
         db_comment="The total production amount for April to December period, expressed in the unit of this same model.",
@@ -116,4 +122,13 @@ class ReportProduct(TimeStampedModel):
         """
         if self.report_version.report.reporting_year_id == 2024 and self.production_data_apr_dec is None:
             raise ValidationError("Apr-Dec production data needs to be reported for reporting year 2024.")
+        elif (
+            self.report_version.report.reporting_year_id == 2025
+            and self.report_version.report.operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
+            and self.report_version.report.operation.opted_in_operation.final_reporting_year_id == 2025
+            and self.production_data_jan_mar is None
+        ):
+            raise ValidationError(
+                "Opted-in operations whose final reporting year is 2025 must report Jan-Mar production data for reporting year 2025."
+            )
         super().save(*args, **kwargs)
