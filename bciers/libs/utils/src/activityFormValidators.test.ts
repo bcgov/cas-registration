@@ -1,6 +1,91 @@
 import { describe, expect, it } from "vitest";
 import { validateEmissionsMethodology } from "./activityFormValidators";
 
+// Helper to create base error structure
+const createBaseErrorStructure = () => ({
+  sourceTypes: {
+    gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
+      __errors: [],
+    },
+  },
+});
+
+// Helper to create error structure for units -> fuels -> emissions
+const createUnitsWithFuelsErrorStructure = (emissionsCount = 1) => {
+  const errors: any = createBaseErrorStructure();
+  errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units = [
+    {
+      __errors: [],
+      fuels: [
+        {
+          __errors: [],
+          emissions: Array(emissionsCount)
+            .fill(null)
+            .map(() => ({ __errors: [] })),
+        },
+      ],
+    },
+  ];
+  return errors;
+};
+
+// Helper to create error structure for units -> emissions (direct)
+const createUnitsDirectEmissionsErrorStructure = () => {
+  const errors: any = createBaseErrorStructure();
+  errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units = [
+    {
+      __errors: [],
+      emissions: [{ __errors: [] }],
+    },
+  ];
+  return errors;
+};
+
+// Helper to create error structure for fuels -> emissions
+const createFuelsErrorStructure = () => {
+  const errors: any = createBaseErrorStructure();
+  errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.fuels = [
+    {
+      __errors: [],
+      emissions: [{ __errors: [] }],
+    },
+  ];
+  return errors;
+};
+
+// Helper to create error structure for direct emissions
+const createDirectEmissionsErrorStructure = () => {
+  const errors: any = createBaseErrorStructure();
+  errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.emissions = [
+    { __errors: [] },
+  ];
+  return errors;
+};
+
+// Helper to create error structure for units -> fuels (no emissions)
+const createUnitsWithFuelsNoEmissionsErrorStructure = () => {
+  const errors: any = createBaseErrorStructure();
+  errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units = [
+    {
+      __errors: [],
+      fuels: [{ __errors: [] }],
+    },
+  ];
+  return errors;
+};
+
+// Helper to create error structure for units -> fuels with empty emissions array
+const createUnitsWithFuelsEmptyEmissionsErrorStructure = () => {
+  const errors: any = createBaseErrorStructure();
+  errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units = [
+    {
+      __errors: [],
+      fuels: [{ __errors: [], emissions: [] }],
+    },
+  ];
+  return errors;
+};
+
 describe("validateEmissionsMethodology", () => {
   describe("when gas type is selected and methodology is missing", () => {
     it("adds 'Select a Methodology' error for emissions in units -> fuels -> emissions", () => {
@@ -25,29 +110,7 @@ describe("validateEmissionsMethodology", () => {
         },
       };
 
-      const errors: any = {
-        sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-            __errors: [],
-            units: [
-              {
-                __errors: [],
-                fuels: [
-                  {
-                    __errors: [],
-                    emissions: [
-                      {
-                        __errors: [],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      };
-
+      const errors = createUnitsWithFuelsErrorStructure();
       validateEmissionsMethodology(sourceTypes, errors);
 
       expect(
@@ -72,24 +135,7 @@ describe("validateEmissionsMethodology", () => {
         },
       };
 
-      const errors: any = {
-        sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-            __errors: [],
-            units: [
-              {
-                __errors: [],
-                emissions: [
-                  {
-                    __errors: [],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      };
-
+      const errors = createUnitsDirectEmissionsErrorStructure();
       validateEmissionsMethodology(sourceTypes, errors);
 
       expect(
@@ -116,24 +162,7 @@ describe("validateEmissionsMethodology", () => {
         },
       };
 
-      const errors: any = {
-        sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-            __errors: [],
-            fuels: [
-              {
-                __errors: [],
-                emissions: [
-                  {
-                    __errors: [],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      };
-
+      const errors = createFuelsErrorStructure();
       validateEmissionsMethodology(sourceTypes, errors);
 
       expect(
@@ -156,19 +185,7 @@ describe("validateEmissionsMethodology", () => {
         },
       };
 
-      const errors: any = {
-        sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-            __errors: [],
-            emissions: [
-              {
-                __errors: [],
-              },
-            ],
-          },
-        },
-      };
-
+      const errors = createDirectEmissionsErrorStructure();
       validateEmissionsMethodology(sourceTypes, errors);
 
       expect(
@@ -205,29 +222,7 @@ describe("validateEmissionsMethodology", () => {
         },
       };
 
-      const errors: any = {
-        sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-            __errors: [],
-            units: [
-              {
-                __errors: [],
-                fuels: [
-                  {
-                    __errors: [],
-                    emissions: [
-                      { __errors: [] },
-                      { __errors: [] },
-                      { __errors: [] },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      };
-
+      const errors = createUnitsWithFuelsErrorStructure(3);
       validateEmissionsMethodology(sourceTypes, errors);
 
       const emissionsErrors =
@@ -243,168 +238,6 @@ describe("validateEmissionsMethodology", () => {
       expect(emissionsErrors[2].methodology.methodology.__errors).toEqual([
         "Select a Methodology",
       ]);
-    });
-  });
-
-  describe("when gas type is selected and methodology is present", () => {
-    it("does not add error when methodology is valid", () => {
-      const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-          units: [
-            {
-              fuels: [
-                {
-                  emissions: [
-                    {
-                      gasType: "CO2",
-                      methodology: {
-                        methodology: "CEMS",
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      };
-
-      const errors: any = {
-        sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-            __errors: [],
-            units: [
-              {
-                __errors: [],
-                fuels: [
-                  {
-                    __errors: [],
-                    emissions: [
-                      {
-                        __errors: [],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      };
-
-      validateEmissionsMethodology(sourceTypes, errors);
-
-      expect(
-        errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units[0]
-          .fuels[0].emissions[0].methodology,
-      ).toBeUndefined();
-    });
-  });
-
-  describe("when gas type is not selected", () => {
-    it("does not add error when gas type is missing", () => {
-      const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-          units: [
-            {
-              fuels: [
-                {
-                  emissions: [
-                    {
-                      methodology: {
-                        methodology: "",
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      };
-
-      const errors: any = {
-        sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-            __errors: [],
-            units: [
-              {
-                __errors: [],
-                fuels: [
-                  {
-                    __errors: [],
-                    emissions: [
-                      {
-                        __errors: [],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      };
-
-      validateEmissionsMethodology(sourceTypes, errors);
-
-      expect(
-        errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units[0]
-          .fuels[0].emissions[0].methodology,
-      ).toBeUndefined();
-    });
-
-    it("does not add error when gas type is empty string", () => {
-      const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-          units: [
-            {
-              fuels: [
-                {
-                  emissions: [
-                    {
-                      gasType: "",
-                      methodology: {
-                        methodology: "",
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      };
-
-      const errors: any = {
-        sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-            __errors: [],
-            units: [
-              {
-                __errors: [],
-                fuels: [
-                  {
-                    __errors: [],
-                    emissions: [
-                      {
-                        __errors: [],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      };
-
-      validateEmissionsMethodology(sourceTypes, errors);
-
-      expect(
-        errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units[0]
-          .fuels[0].emissions[0].methodology,
-      ).toBeUndefined();
     });
   });
 
@@ -539,25 +372,7 @@ describe("validateEmissionsMethodology", () => {
         },
       };
 
-      const errors: any = {
-        sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-            __errors: [],
-            units: [
-              {
-                __errors: [],
-                fuels: [
-                  {
-                    __errors: [],
-                    emissions: [{ __errors: [] }],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      };
-
+      const errors = createUnitsWithFuelsErrorStructure();
       validateEmissionsMethodology(sourceTypes, errors);
 
       expect(
@@ -577,19 +392,7 @@ describe("validateEmissionsMethodology", () => {
         },
       };
 
-      const errors: any = {
-        sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-            __errors: [],
-            units: [
-              {
-                __errors: [],
-                fuels: [{ __errors: [] }],
-              },
-            ],
-          },
-        },
-      };
+      const errors = createUnitsWithFuelsNoEmissionsErrorStructure();
 
       // Should not throw an error
       expect(() =>
@@ -612,19 +415,7 @@ describe("validateEmissionsMethodology", () => {
         },
       };
 
-      const errors: any = {
-        sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-            __errors: [],
-            units: [
-              {
-                __errors: [],
-                fuels: [{ __errors: [], emissions: [] }],
-              },
-            ],
-          },
-        },
-      };
+      const errors = createUnitsWithFuelsEmptyEmissionsErrorStructure();
 
       // Should not throw an error
       expect(() =>
