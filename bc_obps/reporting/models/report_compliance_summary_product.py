@@ -52,6 +52,20 @@ class ReportComplianceSummaryProduct(TimeStampedModel):
         decimal_places=4,
         max_digits=20,
     )
+    reduction_factor_override = models.DecimalField(
+        db_comment="Override value from the ReportComplianceSummary's reduction factor, if applicable",
+        decimal_places=4,
+        max_digits=10,
+        null=True,
+        blank=True,
+    )
+    tightening_rate_override = models.DecimalField(
+        db_comment="Override value from the ReportComplianceSummary's reduction factor, if applicable",
+        decimal_places=4,
+        max_digits=10,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         db_table_comment = (
