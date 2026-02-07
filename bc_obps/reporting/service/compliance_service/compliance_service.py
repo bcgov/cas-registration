@@ -3,11 +3,11 @@ from reporting.models.report_product_emission_allocation import (
     ReportProductEmissionAllocation,
 )
 from reporting.models.report_product import ReportProduct
-from reporting.models import NaicsRegulatoryValue, ReportVersion
+from reporting.models import ReportVersion
 from reporting.models.product_emission_intensity import ProductEmissionIntensity
 from reporting.models.emission_category import EmissionCategory
-from reporting.service.emission_category_service import EmissionCategoryService
-from reporting.service.compliance_service_parameters import resolve_compliance_parameters
+from reporting.service.compliance_service.industrial_process import compute_industrial_process_emissions
+from reporting.service.compliance_service.parameters import resolve_compliance_parameters
 from reporting.models import ReportComplianceSummary, ReportComplianceSummaryProduct
 from registration.models import RegulatedProduct
 from decimal import Decimal
@@ -16,11 +16,11 @@ from typing import Dict, List
 from django.db import transaction
 from dataclasses import dataclass
 
-
-@dataclass
-class RegulatoryValues:
-    initial_compliance_period: int
-    compliance_period: int
+from reporting.service.compliance_service.regulatory_values import (
+    RegulatoryValues,
+    get_industry_regulatory_values,
+    get_product_regulatory_values,
+)
 
 
 @dataclass
@@ -32,8 +32,8 @@ class ReportProductComplianceData:
     emission_intensity: Decimal
     allocated_industrial_process_emissions: Decimal
     allocated_compliance_emissions: Decimal
-    reduction_factor: Decimal
-    tightening_rate: Decimal
+    reduction_factor_override: Decimal
+    tightening_rate_override: Decimal
 
 
 @dataclass
@@ -56,31 +56,6 @@ class ComplianceService:
     """
     Service that fetches the data & performs the calculations necessary for the compliance summary
     """
-
-    @staticmethod
-    def get_regulatory_values_by_naics_code(report_version_id: int) -> tuple[RegulatoryValues, Decimal, Decimal]:
-        """
-        Returns a tuple of (RegulatoryValues, reduction_factor, tightening_rate)
-        RegulatoryValues contains only the period information (global to the report)
-        reduction_factor and tightening_rate are returned separately to be applied per product
-        """
-        data = ReportVersion.objects.select_related("report__operation").get(pk=report_version_id)
-        naics_code_id = data.report.operation.naics_code_id
-        compliance_year = data.report.reporting_year.reporting_year
-        regulatory_values = NaicsRegulatoryValue.objects.get(
-            naics_code_id=naics_code_id,
-            valid_from__lte=data.report.reporting_year.reporting_window_start,
-            valid_to__gte=data.report.reporting_year.reporting_window_end,
-        )
-
-        return (
-            RegulatoryValues(
-                initial_compliance_period=2024,
-                compliance_period=compliance_year,
-            ),
-            regulatory_values.reduction_factor,
-            regulatory_values.tightening_rate,
-        )
 
     @staticmethod
     def get_emissions_attributable_for_reporting(report_version_id: int) -> Decimal:
@@ -203,10 +178,9 @@ class ComplianceService:
         )
 
         # Get regulatory values (periods are global, but RF/TR will be applied per product)
-        naics_data, reduction_factor, tightening_rate = ComplianceService.get_regulatory_values_by_naics_code(
-            report_version_id
-        )
+        industry_regulatory_values = get_industry_regulatory_values(report_version_record)
         registration_purpose = report_version_record.report_operation.registration_purpose
+
         ##### Don't use schemas, use classes or dicts
         compliance_product_list: List[ReportProductComplianceData] = []
         total_allocated_reporting_only = Decimal(0)
@@ -225,28 +199,13 @@ class ComplianceService:
         )
         # Iterate on all products reported (by product ID)
         for rp in report_products:
+            product_regulatory_values = get_product_regulatory_values(report_version_record, rp.product_id)
             ei = ProductEmissionIntensity.objects.get(
                 product_id=rp.product_id
                 # TEMPORAL CHECKS
             ).product_weighted_average_emission_intensity
-            industrial_process = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
-                report_version_id, rp.product_id, [3]
-            )  # ID=3 is Industrial Emissions category
 
-            # Handle Pulp & Paper specific edge case:
-            # Subtract the sum of emissions that were categorized as industrial_process & (woody_biomass or other_excluded_biomass) from
-            # the industrial_process emission total attributed to the product "Pulp and paper: chemical pulp".
-            if (
-                rp.report_version.report.operation.naics_code
-                and rp.report_version.report.operation.naics_code.naics_code.startswith("322")
-                and rp.product.name == "Pulp and paper: chemical pulp"
-            ):
-                overlapping_industrial_process_emissions = (
-                    EmissionCategoryService.get_industrial_process_excluded_biomass_overlap_by_report_version(
-                        report_version_id
-                    )
-                )
-                industrial_process = industrial_process - overlapping_industrial_process_emissions
+            industrial_process = compute_industrial_process_emissions(rp)
 
             production_totals = ComplianceService.get_report_product_aggregated_totals(report_version_id, rp.product_id)
             allocated = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
@@ -262,14 +221,15 @@ class ComplianceService:
                 resolve_compliance_parameters(use_apr_dec, allocated_for_compliance, production_totals)
             )
 
+            # Compute emissions limit with the product-specific regulatory values
             product_emission_limit = ComplianceService.calculate_product_emission_limit(
                 pwaei=ei,
                 production_for_emission_limit=production_for_limit,
                 allocated_industrial_process=Decimal(industrial_process),
                 allocated_for_compliance=Decimal(allocated_for_compliance),
-                tightening_rate=tightening_rate,
-                reduction_factor=reduction_factor,
-                compliance_period=naics_data.compliance_period,
+                tightening_rate=product_regulatory_values.tightening_rate,
+                reduction_factor=product_regulatory_values.reduction_factor,
+                compliance_period=product_regulatory_values.compliance_period,
             )
 
             # Add individual product amounts to totals
@@ -289,8 +249,8 @@ class ComplianceService:
                     emission_intensity=ei,
                     allocated_industrial_process_emissions=industrial_process,
                     allocated_compliance_emissions=Decimal(allocated_compliance_emissions_value),
-                    reduction_factor=reduction_factor,
-                    tightening_rate=tightening_rate,
+                    reduction_factor_override=product_regulatory_values.reduction_factor,
+                    tightening_rate_override=product_regulatory_values.tightening_rate,
                 )
             )
 
@@ -333,7 +293,7 @@ class ComplianceService:
             emissions_limit=round(emissions_limit_total, 4),
             excess_emissions=round(excess_emissions, 4),
             credited_emissions=round(credited_emissions, 4),
-            regulatory_values=naics_data,
+            regulatory_values=industry_regulatory_values,
             products=compliance_product_list,
             reporting_year=report_version_record.report.reporting_year_id,
         )

@@ -1,7 +1,7 @@
 import unittest
 from decimal import Decimal
 
-from reporting.service.compliance_service_parameters import resolve_compliance_parameters
+from reporting.service.compliance_service.parameters import resolve_compliance_parameters
 
 
 class TestResolveComplianceParameters(unittest.TestCase):
