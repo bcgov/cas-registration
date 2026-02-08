@@ -378,9 +378,6 @@ export class OperatorPOM {
     });
 
     await this.buttonSelectOperator.click();
-    // Wait for navigation to the confirm page to complete.
-    // On slow CI, the next assertion can run before the page has navigated.
-    await this.page.waitForURL(/select-operator\/confirm/);
   }
 
   async triggerErrorsFieldFormat() {

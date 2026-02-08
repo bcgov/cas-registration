@@ -163,6 +163,9 @@ test.describe("External User", () => {
       OperatorE2EValue.SEARCH_LEGAL_NAME,
       "Bravo Technologies - has parTNER operator - name from admin",
     );
+    // Wait for navigation to the confirm page after selecting the operator.
+    // On slow CI the declined message check can run before navigation completes.
+    await selectOperatorPage.page.waitForURL(/select-operator\/confirm/);
 
     await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
     await linkIsVisible(
