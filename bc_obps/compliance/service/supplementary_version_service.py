@@ -485,6 +485,7 @@ class DecreasedObligationHandler:
         if fully_paid_obligation and refund_pool > ZERO_DECIMAL:
             # Prefer using precomputed per-invoice 'paid' when available.
             has_cash = any((inv.get("paid") or ZERO_DECIMAL) > ZERO_DECIMAL for inv in invoices)
+            # TODO; There's the case where a supplementary report is decreasing before voiding
 
             # Fallback when there are NO invoices but we have an anchor_crv_id
             if not has_cash and not invoices and anchor_crv_id:
@@ -498,6 +499,13 @@ class DecreasedObligationHandler:
                         ).prefetch_related("elicensing_payments"),
                     )
                 )
+
+                # Edge case check if supp CRV is created and anchor_crv_id is still attached to original obligation
+                if not prior_invoices:
+                    prior_invoices = DecreasedObligationHandler._find_newest_non_void_prior_invoices(
+                        anchor_crv_id, prior_invoices
+                    )
+
                 cash_total = ZERO_DECIMAL
                 for _inv in prior_invoices:
                     cash_total += DecreasedObligationHandler._sum_invoice_cash_payments(_inv)
@@ -576,6 +584,46 @@ class DecreasedObligationHandler:
                     return ComplianceReportVersion.objects.get(id=crv_id)
 
         return None
+
+    @staticmethod
+    def _find_newest_non_void_prior_invoices(
+        anchor_crv_id: int,
+        prior_invoices: QuerySet[ElicensingInvoice],
+    ) -> QuerySet[ElicensingInvoice]:
+        """
+        Find most recent non-void invoices linked to obligations on the given CRV id,
+        if it is void it will go to the previous in the CRV chain.
+        """
+
+        pointer_crv_id: Optional[int] = anchor_crv_id
+
+        while not prior_invoices and pointer_crv_id:
+            pointer_crv_id = ComplianceReportVersion.objects.get(id=pointer_crv_id).previous_version_id
+            if pointer_crv_id:
+                prior_invoices = ElicensingInvoice.objects.filter(
+                    compliance_obligation__compliance_report_version_id=pointer_crv_id
+                ).prefetch_related(
+                    Prefetch(
+                        "elicensing_line_items",
+                        queryset=ElicensingLineItem.objects.filter(
+                            line_item_type=ElicensingLineItem.LineItemType.FEE
+                        ).prefetch_related("elicensing_payments"),
+                    )
+                )
+                # can't find any more prior invoices, break out of loop
+                if not prior_invoices:
+                    break
+
+                # check if invoices we're looking at are all void, if so go back another link
+                still_supp = True
+                for inv in prior_invoices:
+                    if not inv.is_void:
+                        still_supp = False
+
+                if still_supp:
+                    prior_invoices = ElicensingInvoice.objects.none()
+
+        return prior_invoices
 
     @staticmethod
     def _collect_unpaid_obligations_for_crv_chain_newest_first(anchor: ComplianceReportVersion) -> List[Dict]:
