@@ -32,8 +32,6 @@ ENTRYPOINT ["dumb-init", "--"]
 ENV NODE_ENV production
 ENV PORT 3000
 WORKDIR /usr/src/app
-COPY --from=deps /usr/src/app/node_modules node_modules
-COPY --from=deps /usr/src/app/package.json package.json
 COPY ./.next/standalone .
 COPY ./public ./apps/${application_path}/public
 COPY ./.next/static ./dist/${application_path}/.next/static
