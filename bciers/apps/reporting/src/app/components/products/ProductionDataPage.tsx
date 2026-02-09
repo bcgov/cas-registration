@@ -26,9 +26,11 @@ export default async function ProductionDataPage({
   const facilityType = response.facility_data.facility_type;
 
   const reportingYear = response.report_data.reporting_year;
-  const isOptedOut =
-    (response.report_operation.operation_opted_out_final_reporting_year ?? 0) <=
-    reportingYear;
+  const isOptedOut = Boolean(
+    response.payload.operation_opted_out_final_reporting_year &&
+      response.payload.operation_opted_out_final_reporting_year <=
+        reportingYear,
+  );
 
   const schema: any = buildProductionDataSchema(
     response.report_data.reporting_year,

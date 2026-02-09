@@ -182,9 +182,6 @@ describe("The Production Data component", () => {
       report_data: {
         reporting_year: 2025,
       },
-      report_operation: {
-        operation_opted_out_final_reporting_year: 2025,
-      },
       payload: {
         allowed_products: [],
         report_products: [
@@ -193,6 +190,7 @@ describe("The Production Data component", () => {
             unit: "tonnes of tests",
           },
         ],
+        operation_opted_out_final_reporting_year: 2025,
       },
     });
 
