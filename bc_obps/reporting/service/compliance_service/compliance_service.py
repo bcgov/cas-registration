@@ -1,3 +1,4 @@
+import dataclasses
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_product_emission_allocation import (
     ReportProductEmissionAllocation,
@@ -19,7 +20,7 @@ from dataclasses import dataclass
 from reporting.service.compliance_service.regulatory_values import (
     RegulatoryValues,
     get_industry_regulatory_values,
-    get_product_regulatory_values,
+    get_product_regulatory_values_override,
 )
 
 
@@ -44,7 +45,7 @@ class ComplianceData:
     emissions_limit: Decimal
     excess_emissions: Decimal
     credited_emissions: Decimal
-    regulatory_values: RegulatoryValues
+    industry_regulatory_values: RegulatoryValues
     products: List[ReportProductComplianceData]
     reporting_year: int
 
@@ -199,7 +200,7 @@ class ComplianceService:
         )
         # Iterate on all products reported (by product ID)
         for rp in report_products:
-            product_regulatory_values = get_product_regulatory_values(report_version_record, rp.product_id)
+            product_regulatory_values = get_product_regulatory_values_override(report_version_record, rp.product_id)
             ei = ProductEmissionIntensity.objects.get(
                 product_id=rp.product_id
                 # TEMPORAL CHECKS
@@ -227,9 +228,17 @@ class ComplianceService:
                 production_for_emission_limit=production_for_limit,
                 allocated_industrial_process=Decimal(industrial_process),
                 allocated_for_compliance=Decimal(allocated_for_compliance),
-                tightening_rate=product_regulatory_values.tightening_rate,
-                reduction_factor=product_regulatory_values.reduction_factor,
-                compliance_period=product_regulatory_values.compliance_period,
+                tightening_rate=(
+                    product_regulatory_values.tightening_rate
+                    if product_regulatory_values
+                    else industry_regulatory_values.tightening_rate
+                ),
+                reduction_factor=(
+                    product_regulatory_values.reduction_factor
+                    if product_regulatory_values
+                    else industry_regulatory_values.tightening_rate
+                ),
+                compliance_period=industry_regulatory_values.compliance_period,
             )
 
             # Add individual product amounts to totals
@@ -293,7 +302,7 @@ class ComplianceService:
             emissions_limit=round(emissions_limit_total, 4),
             excess_emissions=round(excess_emissions, 4),
             credited_emissions=round(credited_emissions, 4),
-            regulatory_values=industry_regulatory_values,
+            industry_regulatory_values=industry_regulatory_values,
             products=compliance_product_list,
             reporting_year=report_version_record.report.reporting_year_id,
         )
@@ -309,12 +318,6 @@ class ComplianceService:
         if ReportComplianceSummary.objects.filter(report_version_id=report_version_id).exists():
             compliance_summary_record_id = ReportComplianceSummary.objects.get(report_version_id=report_version_id).id
 
-        # Get reduction_factor and tightening_rate from the first product (all products have the same values for now)
-        reduction_factor = (
-            compliance_data_to_save.products[0].reduction_factor if compliance_data_to_save.products else 0
-        )
-        tightening_rate = compliance_data_to_save.products[0].tightening_rate if compliance_data_to_save.products else 0
-
         compliance_summary_record, _ = ReportComplianceSummary.objects.update_or_create(
             id=compliance_summary_record_id,
             report_version=report_version_record,
@@ -329,10 +332,7 @@ class ComplianceService:
                 "emissions_limit": ComplianceService.round(compliance_data_to_save.emissions_limit),
                 "excess_emissions": ComplianceService.round(compliance_data_to_save.excess_emissions),
                 "credited_emissions": ComplianceService.round(compliance_data_to_save.credited_emissions),
-                "reduction_factor": reduction_factor,
-                "tightening_rate": tightening_rate,
-                "initial_compliance_period": compliance_data_to_save.regulatory_values.initial_compliance_period,
-                "compliance_period": compliance_data_to_save.regulatory_values.compliance_period,
+                **dataclasses.asdict(compliance_data_to_save.industry_regulatory_values),
             },
         )
         for product_data_to_save in compliance_data_to_save.products:
@@ -360,6 +360,8 @@ class ComplianceService:
                     "allocated_compliance_emissions": ComplianceService.round(
                         product_data_to_save.allocated_compliance_emissions
                     ),
+                    "reduction_factor_override": 0,
+                    "tightening_rate_override": 0,
                 },
             )
 

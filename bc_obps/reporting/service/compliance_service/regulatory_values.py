@@ -14,6 +14,12 @@ class RegulatoryValues:
     tightening_rate: Decimal
 
 
+@dataclass
+class RegulatoryValuesOverride:
+    reduction_factor_override: Decimal | None
+    tightening_rate_override: Decimal | None
+
+
 def get_industry_regulatory_values(report_version: ReportVersion) -> RegulatoryValues:
     """
     Returns the regulatory values setup for the industry, for a specific report version.
@@ -35,7 +41,9 @@ def get_industry_regulatory_values(report_version: ReportVersion) -> RegulatoryV
     )
 
 
-def get_product_regulatory_values(report_version: ReportVersion, regulated_product_id: int) -> RegulatoryValues:
+def get_product_regulatory_values_override(
+    report_version: ReportVersion, regulated_product_id: int
+) -> RegulatoryValues | None:
     """
     Returns the product-specific regulatory values, defaulting to the industry values if no exception exists.
     """
@@ -54,4 +62,4 @@ def get_product_regulatory_values(report_version: ReportVersion, regulated_produ
             tightening_rate=regulatory_values_overrides.tightening_rate,
         )
     except NaicsRegulatoryOverride.DoesNotExist:
-        return get_industry_regulatory_values(report_version)
+        return None
