@@ -20,6 +20,9 @@ class BiogenicEmissionsSplit:
 
 def retrieve_pulp_and_paper_biogenic_emissions_split(report_version_id: int) -> BiogenicEmissionsSplit:
     logger.error("Biogenic emissions split should be retrieved from the database instead.")
+    """
+    TODO: When #965 is implemented, update fetching that data from the ReportActivity record.
+    """
     return BiogenicEmissionsSplit(chemical_pulp_ratio=Decimal('0.4'), lime_recovery_kilm_ratio=Decimal('0.6'))
 
 
