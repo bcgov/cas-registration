@@ -41,6 +41,8 @@ describe("The ProductionDataForm component", () => {
         facilityType={"Small Aggregate"}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
       />,
     );
 
@@ -61,6 +63,8 @@ describe("The ProductionDataForm component", () => {
         facilityType={""}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
       />,
     );
 
@@ -102,6 +106,8 @@ describe("The ProductionDataForm component", () => {
         facilityType={""}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
       />,
     );
 
@@ -160,6 +166,8 @@ describe("The ProductionDataForm component", () => {
         facilityType={""}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
       />,
     );
 
@@ -195,5 +203,55 @@ describe("The ProductionDataForm component", () => {
         },
       ],
     });
+  });
+
+  it("includes production_data_jan_mar_2025 field when reportingYear is 2025 and isOptedOut is true", async () => {
+    render(
+      <ProductionDataForm
+        allowedProducts={[{ product_id: 2025, product_name: "test" }]}
+        initialData={[]}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={""}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        reportingYear={2025}
+        isOptedOut={true}
+      />,
+    );
+
+    // Verify that the uiSchema includes the production_data_jan_mar_2025 field in the item order
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+    expect(calledProps.uiSchema).toBeDefined();
+    expect(calledProps.uiSchema.production_data.items["ui:order"]).toContain(
+      "production_data_jan_mar_2025",
+    );
+  });
+
+  it("does not include production_data_jan_mar_2025 field when reportingYear is 2025 but isOptedOut is false", async () => {
+    render(
+      <ProductionDataForm
+        allowedProducts={[{ product_id: 2025, product_name: "test" }]}
+        initialData={[]}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={""}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        reportingYear={2025}
+        isOptedOut={false}
+      />,
+    );
+
+    // Verify that the uiSchema does not include the production_data_jan_mar_2025 field in the item order
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+    expect(calledProps.uiSchema).toBeDefined();
+    expect(
+      calledProps.uiSchema.production_data.items["ui:order"],
+    ).not.toContain("production_data_jan_mar_2025");
   });
 });
