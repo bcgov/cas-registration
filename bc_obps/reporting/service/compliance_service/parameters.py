@@ -1,9 +1,7 @@
 from decimal import Decimal
 from typing import Dict, Tuple, cast
 
-
-def _round4(value: Decimal) -> Decimal:
-    return Decimal(value).quantize(Decimal("0.0001"), rounding="ROUND_HALF_UP")
+from reporting.service.compliance_service.compliance_service import ComplianceService
 
 
 def resolve_compliance_parameters(
@@ -24,10 +22,10 @@ def resolve_compliance_parameters(
         # If no annual production, prorated allocation is zero to avoid division-by-zero
         allocated_for_compliance_2024 = Decimal(0) if annual == 0 else (allocated_for_compliance / annual) * apr_dec
         production_for_limit = apr_dec
-        allocated_compliance_emissions_value = _round4(allocated_for_compliance_2024)
+        allocated_compliance_emissions_value = ComplianceService.round(allocated_for_compliance_2024)
     else:
         allocated_for_compliance_2024 = Decimal(0)
         production_for_limit = annual
-        allocated_compliance_emissions_value = _round4(allocated_for_compliance)
+        allocated_compliance_emissions_value = ComplianceService.round(allocated_for_compliance)
 
     return production_for_limit, allocated_for_compliance_2024, allocated_compliance_emissions_value
