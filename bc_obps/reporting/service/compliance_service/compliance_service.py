@@ -1,4 +1,3 @@
-import dataclasses
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_product_emission_allocation import (
     ReportProductEmissionAllocation,
@@ -33,8 +32,25 @@ class ReportProductComplianceData:
     emission_intensity: Decimal
     allocated_industrial_process_emissions: Decimal
     allocated_compliance_emissions: Decimal
-    reduction_factor_override: Decimal
-    tightening_rate_override: Decimal
+    reduction_factor_override: Decimal | None
+    tightening_rate_override: Decimal | None
+
+    def as_record_defaults(self) -> dict[str, Decimal | None]:
+        return {
+            "annual_production": ComplianceService.round(self.annual_production),
+            "apr_dec_production": ComplianceService.round(self.apr_dec_production),
+            "emission_intensity": ComplianceService.round(self.emission_intensity),
+            "allocated_industrial_process_emissions": ComplianceService.round(
+                self.allocated_industrial_process_emissions
+            ),
+            "allocated_compliance_emissions": ComplianceService.round(self.allocated_compliance_emissions),
+            "reduction_factor_override": (
+                ComplianceService.round(self.reduction_factor_override) if self.reduction_factor_override else None
+            ),
+            "tightening_rate_override": (
+                ComplianceService.round(self.tightening_rate_override) if self.tightening_rate_override else None
+            ),
+        }
 
 
 @dataclass
@@ -48,6 +64,22 @@ class ComplianceData:
     industry_regulatory_values: RegulatoryValues
     products: List[ReportProductComplianceData]
     reporting_year: int
+
+    def as_record_defaults(self) -> dict[str, Decimal | int]:
+        return {
+            "emissions_attributable_for_reporting": ComplianceService.round(self.emissions_attributable_for_reporting),
+            "reporting_only_emissions": ComplianceService.round(self.reporting_only_emissions),
+            "emissions_attributable_for_compliance": ComplianceService.round(
+                self.emissions_attributable_for_compliance
+            ),
+            "emissions_limit": ComplianceService.round(self.emissions_limit),
+            "excess_emissions": ComplianceService.round(self.excess_emissions),
+            "credited_emissions": ComplianceService.round(self.credited_emissions),
+            "initial_compliance_period": self.industry_regulatory_values.compliance_period,
+            "compliance_period": self.industry_regulatory_values.compliance_period,
+            "reduction_factor": ComplianceService.round(self.industry_regulatory_values.reduction_factor),
+            "tightening_rate": ComplianceService.round(self.industry_regulatory_values.tightening_rate),
+        }
 
 
 REPORTING_ONLY_CATEGORY_IDS = [10, 11, 12, 2, 7]
@@ -200,7 +232,9 @@ class ComplianceService:
         )
         # Iterate on all products reported (by product ID)
         for rp in report_products:
-            product_regulatory_values = get_product_regulatory_values_override(report_version_record, rp.product_id)
+            product_regulatory_values_override = get_product_regulatory_values_override(
+                report_version_record, rp.product_id
+            )
             ei = ProductEmissionIntensity.objects.get(
                 product_id=rp.product_id
                 # TEMPORAL CHECKS
@@ -222,21 +256,20 @@ class ComplianceService:
                 resolve_compliance_parameters(use_apr_dec, allocated_for_compliance, production_totals)
             )
 
-            # Compute emissions limit with the product-specific regulatory values
+            # Compute emissions limit with the product-specific regulatory values,
+            # Defaulting to industry regulatory values otherwise
             product_emission_limit = ComplianceService.calculate_product_emission_limit(
                 pwaei=ei,
                 production_for_emission_limit=production_for_limit,
                 allocated_industrial_process=Decimal(industrial_process),
                 allocated_for_compliance=Decimal(allocated_for_compliance),
                 tightening_rate=(
-                    product_regulatory_values.tightening_rate
-                    if product_regulatory_values
-                    else industry_regulatory_values.tightening_rate
+                    product_regulatory_values_override.tightening_rate_override
+                    or industry_regulatory_values.tightening_rate
                 ),
                 reduction_factor=(
-                    product_regulatory_values.reduction_factor
-                    if product_regulatory_values
-                    else industry_regulatory_values.tightening_rate
+                    product_regulatory_values_override.reduction_factor_override
+                    or industry_regulatory_values.tightening_rate
                 ),
                 compliance_period=industry_regulatory_values.compliance_period,
             )
@@ -258,8 +291,8 @@ class ComplianceService:
                     emission_intensity=ei,
                     allocated_industrial_process_emissions=industrial_process,
                     allocated_compliance_emissions=Decimal(allocated_compliance_emissions_value),
-                    reduction_factor_override=product_regulatory_values.reduction_factor,
-                    tightening_rate_override=product_regulatory_values.tightening_rate,
+                    reduction_factor_override=product_regulatory_values_override.reduction_factor_override,
+                    tightening_rate_override=product_regulatory_values_override.tightening_rate_override,
                 )
             )
 
@@ -297,11 +330,11 @@ class ComplianceService:
         # Craft return object with all data
         return_object = ComplianceData(
             emissions_attributable_for_reporting=attributable_for_reporting_total,
-            reporting_only_emissions=round(Decimal(total_allocated_reporting_only), 4),
-            emissions_attributable_for_compliance=round(total_allocated_for_compliance_used, 4),
-            emissions_limit=round(emissions_limit_total, 4),
-            excess_emissions=round(excess_emissions, 4),
-            credited_emissions=round(credited_emissions, 4),
+            reporting_only_emissions=ComplianceService.round(total_allocated_reporting_only),
+            emissions_attributable_for_compliance=ComplianceService.round(total_allocated_for_compliance_used),
+            emissions_limit=ComplianceService.round(emissions_limit_total),
+            excess_emissions=ComplianceService.round(excess_emissions),
+            credited_emissions=ComplianceService.round(credited_emissions),
             industry_regulatory_values=industry_regulatory_values,
             products=compliance_product_list,
             reporting_year=report_version_record.report.reporting_year_id,
@@ -321,19 +354,7 @@ class ComplianceService:
         compliance_summary_record, _ = ReportComplianceSummary.objects.update_or_create(
             id=compliance_summary_record_id,
             report_version=report_version_record,
-            defaults={
-                "emissions_attributable_for_reporting": ComplianceService.round(
-                    compliance_data_to_save.emissions_attributable_for_reporting
-                ),
-                "reporting_only_emissions": ComplianceService.round(compliance_data_to_save.reporting_only_emissions),
-                "emissions_attributable_for_compliance": ComplianceService.round(
-                    compliance_data_to_save.emissions_attributable_for_compliance
-                ),
-                "emissions_limit": ComplianceService.round(compliance_data_to_save.emissions_limit),
-                "excess_emissions": ComplianceService.round(compliance_data_to_save.excess_emissions),
-                "credited_emissions": ComplianceService.round(compliance_data_to_save.credited_emissions),
-                **dataclasses.asdict(compliance_data_to_save.industry_regulatory_values),
-            },
+            defaults=compliance_data_to_save.as_record_defaults(),
         )
         for product_data_to_save in compliance_data_to_save.products:
             product_data_id = None
@@ -350,19 +371,7 @@ class ComplianceService:
                 report_version=report_version_record,
                 report_compliance_summary=compliance_summary_record,
                 product=RegulatedProduct.objects.get(id=product_data_to_save.product_id),
-                defaults={
-                    "annual_production": ComplianceService.round(product_data_to_save.annual_production),
-                    "apr_dec_production": ComplianceService.round(product_data_to_save.apr_dec_production),
-                    "emission_intensity": ComplianceService.round(product_data_to_save.emission_intensity),
-                    "allocated_industrial_process_emissions": ComplianceService.round(
-                        product_data_to_save.allocated_industrial_process_emissions
-                    ),
-                    "allocated_compliance_emissions": ComplianceService.round(
-                        product_data_to_save.allocated_compliance_emissions
-                    ),
-                    "reduction_factor_override": 0,
-                    "tightening_rate_override": 0,
-                },
+                defaults=product_data_to_save.as_record_defaults(),
             )
 
     @staticmethod

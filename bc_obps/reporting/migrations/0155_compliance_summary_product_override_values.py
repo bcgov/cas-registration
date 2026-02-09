@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0153_populate_naics_regulatory_override'),
+        ('reporting', '0154_populate_naics_regulatory_override'),
     ]
 
     operations = [
