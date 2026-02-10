@@ -182,7 +182,7 @@ This guide will help you set up the frontend development environment for the CAS
 ### Required Tools
 
 1. **Node.js**
-   - Version: 24.11.1 (as specified in `.tool-versions`)
+   - Version: 24.13.0 (as specified in `.tool-versions`)
    - Required for running the JavaScript/TypeScript codebase
 
 2. **Package Manager**
@@ -220,23 +220,23 @@ This guide will help you set up the frontend development environment for the CAS
 3. **Install Node.js**
 
    ```bash
-   asdf install nodejs 24.11.1
+   asdf install nodejs 24.13.0
    ```
 
 4. **Set Node.js version globally or locally**
    ```bash
-   asdf global nodejs 24.11.1  # for global setting
+   asdf global nodejs 24.13.0  # for global setting
    # OR
-   asdf local nodejs 24.11.1   # for project-specific setting
+   asdf local nodejs 24.13.0   # for project-specific setting
    ```
 
 ### Alternative Method (Without asdf)
 
-1. **Install Node.js 24.11.1**
+1. **Install Node.js 24.13.0**
    - Using nvm:
      ```bash
-     nvm install 24.11.1
-     nvm use 24.11.1
+     nvm install 24.13.0
+     nvm use 24.13.0
      ```
    - Or download directly from [Node.js website](https://nodejs.org/)
 
@@ -370,7 +370,7 @@ The shared libraries are automatically available to all applications in the mono
 
 ### Prerequisites
 
-- Node.js 24.11.1 (managed by asdf)
+- Node.js 24.13.0 (managed by asdf)
 - Yarn (via Node's Corepack)
 - Nx CLI (installed via project dependencies)
 
@@ -441,7 +441,7 @@ yarn nx run coam:test   # Run tests
      ```bash
      node --version
      ```
-   - Should output: v24.11.1
+   - Should output: v24.13.0
 
 2. **Yarn issues**
    - Clear yarn cache:
@@ -463,11 +463,11 @@ yarn nx run coam:test   # Run tests
 
 ## Additional Resources
 
-- [Node.js Documentation](https://nodejs.org/docs/v24.11.1/api/)
+- [Node.js Documentation](https://nodejs.org/docs/v24.13.0/api/)
 - [Yarn Documentation](https://yarnpkg.com/getting-started)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Nx Documentation](https://nx.dev/getting-started/intro)
 
 ---
 
-_Last updated: February 3, 2025_
+_Last updated: February 10, 2026_
