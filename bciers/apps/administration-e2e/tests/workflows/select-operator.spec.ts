@@ -35,6 +35,9 @@ test.describe("Test select operator paths", () => {
       OperatorE2EValue.SEARCH_LEGAL_NAME,
       "Bravo Technologies - has parTNER operator - name from admin",
     );
+    // Wait for navigation to the confirm page after selecting the operator.
+    // On slow CI, acceptOperator() can run before navigation completes.
+    await page.waitForURL(/select-operator\/confirm/);
 
     await happoScreenshot(pageContent, {
       component: "Select operator form",
