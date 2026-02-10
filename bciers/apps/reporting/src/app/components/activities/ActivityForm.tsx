@@ -160,17 +160,12 @@ export default function ActivityForm({
       ...filteredData,
       sourceTypes: selectedSourceTypeDataReduced,
     };
-
-    const response = await actionHandler(
-      `reporting/report-version/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`,
-      "POST",
-      "",
-      {
-        body: JSON.stringify({
-          activity_data: submittedData,
-        }),
-      },
-    );
+    const endpoint = `reporting/report-version/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`;
+    const response = await actionHandler(endpoint, "POST", endpoint, {
+      body: JSON.stringify({
+        activity_data: submittedData,
+      }),
+    });
 
     if (response.error) {
       setErrorList([getValidationErrorMessage(response.error)]);

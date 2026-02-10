@@ -66,7 +66,7 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
         operation_id: operationId,
       },
     ];
-    const response = await actionHandler(endpoint, method, "", {
+    const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(body),
     });
     if (!response || response?.error) {

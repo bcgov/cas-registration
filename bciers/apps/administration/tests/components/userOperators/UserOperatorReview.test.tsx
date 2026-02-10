@@ -55,7 +55,7 @@ describe("UserOperatorReview component", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/user-operators/1b06e328-715d-4642-b403-3392256d7344/status",
         "PATCH",
-        "",
+        "registration/user-operators/1b06e328-715d-4642-b403-3392256d7344/status",
         {
           body: JSON.stringify({ role: "admin", status: "Approved" }),
         },
@@ -91,7 +91,7 @@ describe("UserOperatorReview component", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/user-operators/1b06e328-715d-4642-b403-3392256d7344/status",
         "PATCH",
-        "",
+        "registration/user-operators/1b06e328-715d-4642-b403-3392256d7344/status",
         {
           body: JSON.stringify({ role: "admin", status: "Declined" }),
         },

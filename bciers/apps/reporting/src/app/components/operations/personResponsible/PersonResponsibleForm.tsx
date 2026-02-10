@@ -152,7 +152,7 @@ const PersonResponsibleForm = ({
       ...componentState.contactToSubmit,
     };
 
-    const response = await actionHandler(endpoint, method, "", {
+    const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
 

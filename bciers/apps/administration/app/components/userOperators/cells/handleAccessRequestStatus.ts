@@ -6,16 +6,13 @@ export default async function handleAccessRequestStatus(
   statusUpdate: Status,
   roleUpdate: UserOperatorRoles,
 ) {
-  const response = await actionHandler(
-    `registration/user-operators/${userOperatorId}/status`,
-    "PATCH",
-    "",
-    {
-      body: JSON.stringify({
-        role: roleUpdate,
-        status: statusUpdate,
-      }),
-    },
-  );
+  const endpoint = `registration/user-operators/${userOperatorId}/status`;
+  const pathToRevalidate = "/users-and-access-requests";
+  const response = await actionHandler(endpoint, "PATCH", pathToRevalidate, {
+    body: JSON.stringify({
+      role: roleUpdate,
+      status: statusUpdate,
+    }),
+  });
   return response;
 }
