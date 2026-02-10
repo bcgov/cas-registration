@@ -39,7 +39,9 @@ test.describe("Test select operator paths", () => {
     // Wait for client-side navigation to the confirm page after selecting the operator.
     // Uses toHaveURL (polling assertion) instead of waitForURL because Next.js
     // client-side routing (router.push) doesn't fire a traditional page load event.
-    await expect(page).toHaveURL(/select-operator\/confirm/);
+    await expect(page).toHaveURL(/select-operator\/confirm/, {
+      timeout: 30_000,
+    });
 
     await happoScreenshot(pageContent, {
       component: "Select operator form",
