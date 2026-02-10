@@ -44,6 +44,7 @@ const defaultProps = {
   operationId: "002d5a9e-32a6-4191-938c-2c02bfec592d" as UUID,
   setFacilityFormIsSubmitting: vi.fn(),
   onSuccess: vi.fn(),
+  step: 2,
 };
 
 const currentYear = new Date().getFullYear();
@@ -92,7 +93,7 @@ describe("the NewLfoFacilityForm component", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/facilities",
         "POST",
-        "",
+        "/registration/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d/2",
         {
           body: JSON.stringify([
             {

@@ -7,6 +7,6 @@ export async function getUpdatedFacilityReportDetails(
   return actionHandler(
     `reporting/report-version/${reportVersionId}/facility-report/${facilityId}/update`,
     "PUT",
-    "",
+    `reporting/reports/${reportVersionId}/facilities/${facilityId}/review-facility-information`,
   );
 }

@@ -6,6 +6,6 @@ export async function getUpdatedReportOperationDetails(
   return actionHandler(
     `reporting/report-version/${reportVersionId}/report-operation`,
     "PATCH",
-    "",
+    `reporting/reports/${reportVersionId}/review-operation-information`,
   );
 }

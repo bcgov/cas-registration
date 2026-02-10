@@ -20,6 +20,7 @@ import {
 interface NewLfoFacilityFormProps
   extends Omit<FormPropsWithTheme<any>, "schema" | "uiSchema"> {
   operationId: UUID;
+  step: number;
   formData: FacilityInformationFormData;
   setFacilityFormIsSubmitting: (facilityFormIsSubmitting: boolean) => void;
   onSuccess?: (createdFacility: any) => void;
@@ -29,6 +30,7 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
   const {
     formData,
     operationId,
+    step,
     setFacilityFormIsSubmitting,
     onSuccess, // 📌 Callback to update parent grid data
   } = props;
@@ -66,9 +68,14 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
         operation_id: operationId,
       },
     ];
-    const response = await actionHandler(endpoint, method, "", {
-      body: JSON.stringify(body),
-    });
+    const response = await actionHandler(
+      endpoint,
+      method,
+      `/registration/register-an-operation/${operationId}/${step}`,
+      {
+        body: JSON.stringify(body),
+      },
+    );
     if (!response || response?.error) {
       setError(response.error);
       return { error: response.error };

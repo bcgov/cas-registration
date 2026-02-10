@@ -362,11 +362,11 @@ export default function FacilityEmissionAllocationForm({
               ),
             ],
     };
-
     const endpoint = `reporting/report-version/${version_id}/facilities/${facility_id}/allocate-emissions`;
+    const pathToRevalidate = `/reporting/reports/${version_id}/facilities/${facility_id}/allocation-of-emissions`;
     const payload = safeJsonParse(JSON.stringify(transformedPayload));
 
-    const response = await actionHandler(endpoint, "POST", "", {
+    const response = await actionHandler(endpoint, "POST", pathToRevalidate, {
       body: JSON.stringify(payload),
     });
 

@@ -134,7 +134,7 @@ describe("the FacilitySfoForm component", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/facilities",
         "POST",
-        "",
+        "/registration/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d/2",
         {
           body: JSON.stringify([
             {

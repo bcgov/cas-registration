@@ -9,7 +9,7 @@ export async function createReportVersion(
   const payload = JSON.stringify({
     operation_id: operationId,
   });
-  const response = await actionHandler(
+  return await actionHandler(
     endpoint,
     method,
     "reporting/reports/current-reports",
@@ -17,5 +17,4 @@ export async function createReportVersion(
       body: payload,
     },
   );
-  return response;
 }

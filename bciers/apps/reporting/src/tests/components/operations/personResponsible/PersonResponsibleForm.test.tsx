@@ -70,6 +70,7 @@ const defaultProps = {
   contacts: mockContacts,
   personResponsible: mockPersonResponsible,
   schema: personResponsibleSchema,
+  initialContactId: 0,
 };
 
 describe("PersonResponsibleForm component", () => {

@@ -36,7 +36,7 @@ const RegistrationSubmissionForm = ({
     const response = await actionHandler(
       `registration/operations/${operation}/registration/submission`,
       "PATCH",
-      "",
+      "/administration/operations",
       {
         body: JSON.stringify({
           ...e.formData,

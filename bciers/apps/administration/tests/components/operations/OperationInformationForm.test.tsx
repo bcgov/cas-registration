@@ -438,7 +438,7 @@ describe("the OperationInformationForm component", () => {
     expect(actionHandler).toHaveBeenCalledWith(
       `registration/operations/${operationId}/registration/opted-in-operation-detail`,
       "PUT",
-      "",
+      "registration/register-an-operation/8be4c7aa-6ab3-4aad-9206-0ef914fea063/1`",
       {
         body: JSON.stringify({
           meets_section_3_emissions_requirements: false,

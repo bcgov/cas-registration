@@ -76,7 +76,8 @@ export default function OperationReviewForm({
   const saveHandler = async () => {
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/report-operation`;
-    const response = await actionHandler(endpoint, method, "", {
+    const pathToRevalidate = `reporting/report-version/${version_id}/review-operation-information`;
+    const response = await actionHandler(endpoint, method, pathToRevalidate, {
       body: JSON.stringify(formDataState),
     });
 

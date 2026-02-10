@@ -118,6 +118,8 @@ describe("ChangeReviewForm", () => {
         change_type: "modified",
       },
     ],
+    registrationPurpose: "",
+    displayChanges: false,
   };
 
   beforeEach(() => {
@@ -139,7 +141,7 @@ describe("ChangeReviewForm", () => {
       expect(mockActionHandler).toHaveBeenCalledWith(
         "reporting/report-version/123",
         "POST",
-        "reporting/report-version/123",
+        "reporting/reports/123/review-changes",
         expect.any(Object),
       );
       expect(mockRouterPush).toHaveBeenCalledWith("/continue");
