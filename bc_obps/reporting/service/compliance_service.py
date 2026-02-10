@@ -236,8 +236,15 @@ class ComplianceService:
         compliance_product_list: List[ReportProductComplianceData] = []
         total_allocated_reporting_only = Decimal(0)
         total_allocated_for_compliance_default = Decimal(0)
-        total_allocated_for_compliance_2024 = Decimal(0)
+        total_allocated_for_compliance_prorated_year = Decimal(0)
         emissions_limit_total = Decimal(0)
+
+        # Determine which production period to use for compliance calculations (i.e., the full year or a portion of the year)
+        production_period = ComplianceService.get_production_period(
+            report_version_id,
+            Operation.Purposes(report_version_record.report_operation.registration_purpose),
+            report_version_record.report_operation.operation_opted_out_final_reporting_year or 0,
+        )
 
         report_products = (
             ReportProduct.objects.order_by("product_id")
@@ -278,15 +285,10 @@ class ComplianceService:
             allocated_reporting_only = ComplianceService.get_reporting_only_allocated(report_version_id, rp.product_id)
             allocated_for_compliance = allocated - allocated_reporting_only
 
-            production_period = ComplianceService.get_production_period(
-                report_version_id,
-                Operation.Purposes(report_version_record.report_operation.registration_purpose),
-                report_version_record.report_operation.operation_opted_out_final_reporting_year or 0,
-            )
-
             # If this compliance period is 2024, use Apr-Dec production for allocations and limits.
             # Otherwise use full-year production and full-year allocated emissions.
-            production_for_limit, allocated_for_compliance_2024, allocated_compliance_emissions_value = (
+            # Calculate prorated_allocated limit (if applicable), depending on reporting year and operation criteria.
+            production_for_limit, prorated_allocated, allocated_compliance_emissions_value = (
                 resolve_compliance_parameters(production_period, allocated_for_compliance, production_totals)
             )
 
@@ -304,7 +306,7 @@ class ComplianceService:
             total_allocated_reporting_only += allocated_reporting_only
             # Accumulate into the default (full-year) allocated total
             total_allocated_for_compliance_default += allocated_for_compliance
-            total_allocated_for_compliance_2024 += allocated_for_compliance_2024
+            total_allocated_for_compliance_prorated_year += prorated_allocated
             emissions_limit_total += product_emission_limit
 
             # Add product to list of products
@@ -343,12 +345,13 @@ class ComplianceService:
             excess_emissions = Decimal(0)
             credited_emissions = Decimal(0)
         else:
-            # Select which allocated total to use for compliance comparisons: Apr-Dec 2024 window or default full-year total
-            total_allocated_for_compliance_used = (
-                total_allocated_for_compliance_2024
-                if production_period == "apr_dec"
-                else total_allocated_for_compliance_default
-            )
+            # Select which allocated total to use for compliance comparisons
+            if production_period == "annual":
+                total_allocated_for_compliance_used = total_allocated_for_compliance_default
+            else:
+                # production_period is "jan_mar" or "apr_dec"
+                total_allocated_for_compliance_used = total_allocated_for_compliance_prorated_year
+
             if total_allocated_for_compliance_used > emissions_limit_total:
                 excess_emissions = total_allocated_for_compliance_used - emissions_limit_total
                 credited_emissions = Decimal(0)
