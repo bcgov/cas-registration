@@ -22,8 +22,8 @@ def resolve_compliance_parameters(
         allocated_for_compliance: Allocated emissions for compliance (full-year)
         production_totals: Dict with "annual_amount", "apr_dec", "jan_mar" keys
 
-    Returns a tuple: (production_for_limit, allocated_for_compliance_2024, allocated_compliance_emissions_value)
-    - production_for_limit: Decimal used for emission limit calculation (apr-dec or annual)
+    Returns a tuple: (production_for_limit, prorated_allocated, allocated_compliance_emissions_value)
+    - production_for_limit: Decimal used for emission limit calculation (jan-mar, apr-dec, or annual)
     - prorated_allocated: Decimal the prorated allocated emissions for a partial year (0 if not using a partial year)
     - allocated_compliance_emissions_value: Decimal rounded to 4 dp used for product-level reporting
     """
@@ -34,9 +34,11 @@ def resolve_compliance_parameters(
         prorated_allocated = Decimal(0)
     elif production_period == "apr_dec":
         apr_dec = Decimal(production_totals.get("apr_dec") or 0)
+        production_for_limit = apr_dec
         prorated_allocated = Decimal(0) if annual == 0 else (allocated_for_compliance / annual) * apr_dec
     elif production_period == "jan_mar":
         jan_mar = Decimal(production_totals.get("jan_mar") or 0)
+        production_for_limit = jan_mar
         prorated_allocated = Decimal(0) if annual == 0 else (allocated_for_compliance / annual) * jan_mar
     else:
         raise ValueError(f"Invalid production period: {production_period}")
