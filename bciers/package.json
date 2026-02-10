@@ -19,6 +19,8 @@
     "compliance:test": "nx run compliance:test",
     "components:test": "nx run components:test",
     "utils:test": "nx run utils:test",
+    "build-all": "nx run-many -t build -p administration,compliance,dashboard,registration,reporting",
+    "start-all": "nx run-many -t start:local -p administration,compliance,dashboard,registration,reporting",
     "dev-all": "nx run-many -t dev -p dashboard,administration,registration,reporting,compliance --maxParallel=5",
     "dev": "nx dev reporting",
     "dash": "nx dev dashboard -p 3000",
