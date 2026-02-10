@@ -1,13 +1,4 @@
-# Install dependencies only when needed
-FROM docker.io/node:24.11.1-alpine AS deps
-WORKDIR /usr/src/app
-COPY ./package.json .
-RUN corepack enable
-RUN yarn set version 4.2.0
-# Force Yarn to use standard node-modules folder
-RUN echo 'nodeLinker: "node-modules"' >> ./.yarnrc.yml
-RUN yarn install
-
+# Dependencies built by Nx build
 # Production image, copy all the files and run next
 FROM docker.io/node:24.11.1-alpine AS runner
 
