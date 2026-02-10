@@ -28,6 +28,14 @@
         "dev": false
       }
     },
+    "start:local": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "registration:build",
+        "port": 4000,
+        "dev": false
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {}

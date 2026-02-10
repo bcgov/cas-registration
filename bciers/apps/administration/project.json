@@ -18,6 +18,14 @@
         "dev": false
       }
     },
+    "start:local": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "administration:build",
+        "port": 4001,
+        "dev": false
+      }
+    },
     "build": {
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
