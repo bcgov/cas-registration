@@ -1,6 +1,6 @@
 # Dependencies built by Nx build
 # Production image, copy all the files and run next
-FROM docker.io/node:24.13.0-alpine AS runner
+FROM dhi.io/node:24.13.0-alpine3.23 AS runner
 
 # nx/nextjs builds some files into subfolders based on project name. For a unified container, we supply the project name as a path.
 ARG application_path
