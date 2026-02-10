@@ -3,7 +3,9 @@ import Loading from "@bciers/components/loading/SkeletonGrid";
 import Header from "@/administration/app/components/facilities/FacilitiesHeader";
 import Page from "@/administration/app/components/facilities/FacilitiesPage";
 
-export default defaultPageFactory(Page, {
-  fallback: <Loading />,
-  header: Header,
-});
+export default function FacilitiesPageFactory() {
+  return defaultPageFactory(Page, {
+    fallback: <Loading />,
+    header: Header,
+  });
+}

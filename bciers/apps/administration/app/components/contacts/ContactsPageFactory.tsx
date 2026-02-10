@@ -3,7 +3,9 @@ import Loading from "@bciers/components/loading/SkeletonGrid";
 import Header from "@/administration/app/components/contacts/ContactsHeader";
 import Page from "@/administration/app/components/contacts/ContactsPage";
 
-export default defaultPageFactory(Page, {
-  fallback: <Loading />,
-  header: Header,
-});
+export default function ContactsPageFactory() {
+  return defaultPageFactory(Page, {
+    fallback: <Loading />,
+    header: Header,
+  });
+}
