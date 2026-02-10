@@ -52,7 +52,7 @@ services:
       - backend
     network_mode: host
     healthcheck:
-      test: curl --fail http://localhost:3000/ || exit 1
+      test: wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
       interval: 10s
       timeout: 10s
       retries: 20
@@ -75,7 +75,7 @@ services:
       - backend
     network_mode: host
     healthcheck:
-      test: curl --fail http://localhost:4001/admin/ || exit 1
+      test: wget --no-verbose --tries=1 --spider http://localhost:4001/admin/ || exit 1
       interval: 10s
       timeout: 10s
       retries: 20
@@ -98,7 +98,7 @@ services:
       - backend
     network_mode: host
     healthcheck:
-      test: curl --fail http://localhost:7000/compliance/ || exit 1
+      test: wget --no-verbose --tries=1 --spider http://localhost:7000/compliance/ || exit 1
       interval: 10s
       timeout: 10s
       retries: 20
@@ -121,7 +121,7 @@ services:
       - backend
     network_mode: host
     healthcheck:
-      test: curl --fail http://localhost:4000/registration/ || exit 1
+      test: wget --no-verbose --tries=1 --spider http://localhost:4000/registration/ || exit 1
       interval: 10s
       timeout: 10s
       retries: 20
@@ -144,7 +144,7 @@ services:
       - backend
     network_mode: host
     healthcheck:
-      test: curl --fail http://localhost:5000/health/ || exit 1
+      test: wget --no-verbose --tries=1 --spider http://localhost:5000/health/ || exit 1
       interval: 10s
       timeout: 10s
       retries: 20
