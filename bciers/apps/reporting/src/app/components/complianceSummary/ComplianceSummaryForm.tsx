@@ -27,6 +27,7 @@ interface Props {
       name: string;
       customUnit: string;
       annual_production: string;
+      jan_mar_production?: string;
       apr_dec_production?: string;
       emission_intensity: string;
       allocated_industrial_process_emissions: string;
