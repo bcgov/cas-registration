@@ -1,15 +1,6 @@
-# Install dependencies only when needed
-FROM docker.io/node:24.11.1 AS deps
-WORKDIR /usr/src/app
-COPY ./package.json .
-RUN corepack enable
-RUN yarn set version 4.2.0
-# Force Yarn to use standard node-modules folder
-RUN echo 'nodeLinker: "node-modules"' >> ./.yarnrc.yml
-RUN yarn install
-
+# Dependencies built by Nx build
 # Production image, copy all the files and run next
-FROM docker.io/node:24.11.1 AS runner
+FROM dhi.io/node:24.13.0-alpine3.23 AS runner
 
 # nx/nextjs builds some files into subfolders based on project name. For a unified container, we supply the project name as a path.
 ARG application_path
@@ -32,8 +23,6 @@ ENTRYPOINT ["dumb-init", "--"]
 ENV NODE_ENV production
 ENV PORT 3000
 WORKDIR /usr/src/app
-COPY --from=deps /usr/src/app/node_modules node_modules
-COPY --from=deps /usr/src/app/package.json package.json
 COPY ./.next/standalone .
 COPY ./public ./apps/${application_path}/public
 COPY ./.next/static ./dist/${application_path}/.next/static
