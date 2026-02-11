@@ -2,9 +2,7 @@ from decimal import Decimal
 from django.test import TestCase
 from model_bakery.baker import make_recipe
 from reporting.models.emission_category import EmissionCategory
-from reporting.service.compliance_service.industrial_process import (
-    get_allocated_emissions_by_report_product_emission_category,
-)
+from reporting.service.compliance_service.industrial_process import compute_industrial_process_emissions
 
 
 class TestIndustrialProcess(TestCase):
@@ -13,48 +11,41 @@ class TestIndustrialProcess(TestCase):
     This ensures Naics Regulatory overrides are applied properly when necessary
     """
 
-    def test_get_allocated_emissions_by_report_product_emission_category(self):
+    def test_retrieve_biogenic_emissions_split(self):
+
+        raise NotImplementedError("Test will be implemented when #965 is done")
+
+    def test_compute_industrial_process_emissions(self):
         ## SETUP ##
         emission_allocation = make_recipe(
             "reporting.tests.utils.report_emission_allocation",
         )
-        allocation_1 = make_recipe(
+        product_emission_allocation_no_pnp = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             report_version=emission_allocation.report_version,
-            emission_category=EmissionCategory.objects.get(pk=1),
-            allocated_quantity=Decimal("1000.0001"),
-        )
-        allocation_2 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
-            report_version=emission_allocation.report_version,
-            emission_category=EmissionCategory.objects.get(pk=1),
-            report_product=allocation_1.report_product,
-            allocated_quantity=Decimal("2000.0002"),
-        )
-        allocation_3 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
-            report_version=emission_allocation.report_version,
-            emission_category=EmissionCategory.objects.get(pk=3),
+            emission_category=EmissionCategory.objects.get(category_name='Industrial process emissions'),
             allocated_quantity=Decimal("6000.0006"),
         )
-        allocation_4 = make_recipe(
+        product_emission_allocation_chemical_pulp = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             report_version=emission_allocation.report_version,
-            emission_category=EmissionCategory.objects.get(pk=12),
-            report_product=allocation_3.report_product,
-            allocated_quantity=Decimal("500.0005"),
+            emission_category=EmissionCategory.objects.get(category_name='Industrial process emissions'),
+            allocated_quantity=Decimal("6000.0006"),
+        )
+        product_emission_allocation_lime_recovered_by_kiln = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_version=emission_allocation.report_version,
+            emission_category=EmissionCategory.objects.get(category_name='Industrial process emissions'),
+            allocated_quantity=Decimal("6000.0006"),
         )
 
         ## TESTS ##
-        allocated_to_flaring_for_test = get_allocated_emissions_by_report_product_emission_category(
-            allocation_1.report_version_id, allocation_1.report_product.product_id, [1]
+        industrial_process_no_pnp = compute_industrial_process_emissions(product_emission_allocation_no_pnp)
+        industrial_process_chem_pulp = compute_industrial_process_emissions(product_emission_allocation_chemical_pulp)
+        industrial_process_lime_recov_by_kiln = compute_industrial_process_emissions(
+            product_emission_allocation_lime_recovered_by_kiln
         )
-        allocated_to_industrial_for_test = get_allocated_emissions_by_report_product_emission_category(
-            allocation_3.report_version_id, allocation_3.report_product.product_id, [3]
-        )
-        allocated_to_excluded_non_biomass_for_test = get_allocated_emissions_by_report_product_emission_category(
-            allocation_4.report_version_id, allocation_4.report_product.product_id, [12]
-        )
-        assert allocated_to_flaring_for_test == allocation_1.allocated_quantity + allocation_2.allocated_quantity
-        assert allocated_to_industrial_for_test == allocation_3.allocated_quantity
-        assert allocated_to_excluded_non_biomass_for_test == allocation_4.allocated_quantity
+
+        assert industrial_process_no_pnp == Decimal(123)
+        assert industrial_process_chem_pulp == Decimal(3456)
+        assert industrial_process_lime_recov_by_kiln == Decimal(3456)
