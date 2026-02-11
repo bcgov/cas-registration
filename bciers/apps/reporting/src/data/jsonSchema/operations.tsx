@@ -122,7 +122,7 @@ export const buildOperationReviewSchema = (
               },
               ...(showActivities && {
                 activities: {
-                  title: "Reporting Activities",
+                  title: "Reporting activities",
                   type: "array",
                   minItems: 1,
                   default: [],
