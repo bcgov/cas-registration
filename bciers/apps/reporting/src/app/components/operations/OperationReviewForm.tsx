@@ -20,6 +20,11 @@ import SnackBar from "@bciers/components/form/components/SnackBar";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
 import { operationRepresentativeLink } from "@reporting/src/data/jsonSchema/reviewOperationInformationText";
+import {
+  Activity,
+  RegulatedProduct,
+  ReportOperationRepresentative,
+} from "./types";
 
 interface Props {
   formData: any;
@@ -28,9 +33,9 @@ interface Props {
   navigationInformation: NavigationInformation;
   reportType: string;
   reportingYear: number;
-  allActivities: any[];
-  allRegulatedProducts: any[];
-  allRepresentatives: any[];
+  allActivities: Activity[];
+  allRegulatedProducts: RegulatedProduct[];
+  allRepresentatives: ReportOperationRepresentative[];
   facilityId: string;
   isSyncAllowed: boolean;
 }
