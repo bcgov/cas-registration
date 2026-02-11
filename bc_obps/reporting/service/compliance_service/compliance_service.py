@@ -1,13 +1,18 @@
 from reporting.models.report_emission import ReportEmission
-from reporting.models.report_product_emission_allocation import (
-    ReportProductEmissionAllocation,
-)
 from reporting.models.report_product import ReportProduct
 from reporting.models import ReportVersion
 from reporting.models.product_emission_intensity import ProductEmissionIntensity
 from reporting.models.emission_category import EmissionCategory
-from reporting.service.compliance_service.industrial_process import compute_industrial_process_emissions
-from reporting.service.compliance_service.parameters import resolve_compliance_parameters
+from reporting.service.compliance_service.emission_allocation import (
+    get_emissions_from_only_funny_category_13,
+    get_fog_emissions,
+    get_reporting_only_allocated,
+)
+from reporting.service.compliance_service.industrial_process import (
+    compute_industrial_process_emissions,
+    get_allocated_emissions_by_report_product_emission_category,
+)
+from reporting.service.compliance_service.parameters import ComplianceParameters
 from reporting.models import ReportComplianceSummary, ReportComplianceSummaryProduct
 from registration.models import RegulatedProduct
 from decimal import Decimal
@@ -37,18 +42,18 @@ class ReportProductComplianceData:
 
     def as_record_defaults(self) -> dict[str, Decimal | None]:
         return {
-            "annual_production": ComplianceService.round(self.annual_production),
-            "apr_dec_production": ComplianceService.round(self.apr_dec_production),
-            "emission_intensity": ComplianceService.round(self.emission_intensity),
-            "allocated_industrial_process_emissions": ComplianceService.round(
+            "annual_production": ComplianceParameters.round(self.annual_production),
+            "apr_dec_production": ComplianceParameters.round(self.apr_dec_production),
+            "emission_intensity": ComplianceParameters.round(self.emission_intensity),
+            "allocated_industrial_process_emissions": ComplianceParameters.round(
                 self.allocated_industrial_process_emissions
             ),
-            "allocated_compliance_emissions": ComplianceService.round(self.allocated_compliance_emissions),
+            "allocated_compliance_emissions": ComplianceParameters.round(self.allocated_compliance_emissions),
             "reduction_factor_override": (
-                ComplianceService.round(self.reduction_factor_override) if self.reduction_factor_override else None
+                ComplianceParameters.round(self.reduction_factor_override) if self.reduction_factor_override else None
             ),
             "tightening_rate_override": (
-                ComplianceService.round(self.tightening_rate_override) if self.tightening_rate_override else None
+                ComplianceParameters.round(self.tightening_rate_override) if self.tightening_rate_override else None
             ),
         }
 
@@ -67,22 +72,21 @@ class ComplianceData:
 
     def as_record_defaults(self) -> dict[str, Decimal | int]:
         return {
-            "emissions_attributable_for_reporting": ComplianceService.round(self.emissions_attributable_for_reporting),
-            "reporting_only_emissions": ComplianceService.round(self.reporting_only_emissions),
-            "emissions_attributable_for_compliance": ComplianceService.round(
+            "emissions_attributable_for_reporting": ComplianceParameters.round(
+                self.emissions_attributable_for_reporting
+            ),
+            "reporting_only_emissions": ComplianceParameters.round(self.reporting_only_emissions),
+            "emissions_attributable_for_compliance": ComplianceParameters.round(
                 self.emissions_attributable_for_compliance
             ),
-            "emissions_limit": ComplianceService.round(self.emissions_limit),
-            "excess_emissions": ComplianceService.round(self.excess_emissions),
-            "credited_emissions": ComplianceService.round(self.credited_emissions),
+            "emissions_limit": ComplianceParameters.round(self.emissions_limit),
+            "excess_emissions": ComplianceParameters.round(self.excess_emissions),
+            "credited_emissions": ComplianceParameters.round(self.credited_emissions),
             "initial_compliance_period": self.industry_regulatory_values.compliance_period,
             "compliance_period": self.industry_regulatory_values.compliance_period,
-            "reduction_factor": ComplianceService.round(self.industry_regulatory_values.reduction_factor),
-            "tightening_rate": ComplianceService.round(self.industry_regulatory_values.tightening_rate),
+            "reduction_factor": ComplianceParameters.round(self.industry_regulatory_values.reduction_factor),
+            "tightening_rate": ComplianceParameters.round(self.industry_regulatory_values.tightening_rate),
         }
-
-
-REPORTING_ONLY_CATEGORY_IDS = [10, 11, 12, 2, 7]
 
 
 class ComplianceService:
@@ -114,19 +118,6 @@ class ComplianceService:
         }
 
     @staticmethod
-    def get_allocated_emissions_by_report_product_emission_category(
-        report_version_id: int, product_id: int, emission_category_ids: List[int]
-    ) -> Decimal:
-        records = ReportProductEmissionAllocation.objects.filter(
-            report_version_id=report_version_id,
-            report_product__product_id=product_id,
-            emission_category_id__in=emission_category_ids,
-        )
-        allocated_to_category_sum = records.aggregate(production_sum=Sum("allocated_quantity"))
-
-        return allocated_to_category_sum["production_sum"] or Decimal("0")
-
-    @staticmethod
     def get_report_product_aggregated_totals(report_version_id: int, product_id: int) -> Dict[str, Decimal]:
         records = ReportProduct.objects.filter(
             report_version_id=report_version_id,
@@ -139,43 +130,6 @@ class ComplianceService:
             "annual_amount": product_annual_amount_sum["production_sum"] or Decimal("0"),
             "apr_dec": apr_dec_sum["production_sum"] or Decimal("0"),
         }
-
-    @staticmethod
-    def get_reporting_only_allocated(report_version_id: int, product_id: int) -> Decimal:
-        # CO2 emissions from excluded woody biomass, Other emissions from excluded biomass, Emissions from excluded non-biomass, Fugitive emissions, Venting emissions — non-useful
-        reporting_only_allocated = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
-            report_version_id, product_id, REPORTING_ONLY_CATEGORY_IDS
-        )
-        return reporting_only_allocated
-
-    @staticmethod
-    def get_emissions_from_only_funny_category_13(report_version_id: int) -> Decimal:
-        """
-        We need to total up the emissions associated with category 13 without double-counting
-        (i.e. the ones that are not already under 10,11,12 fuel_excluded)
-        and subtract them from the total attributable for compliance,
-        since they're not based on a single product and therefore are not allocated anywhere.
-        """
-        records = ReportEmission.objects_with_decimal_emissions.filter(
-            report_version_id=report_version_id,
-            emission_categories__id=13,
-        ).exclude(
-            emission_categories__id__in=[10, 11, 12],
-        )
-        return records.aggregate(emission_total=Sum("emission"))["emission_total"] or Decimal("0")
-
-    @staticmethod
-    def get_fog_emissions(report_version_id: int) -> Decimal:
-        fog_allocation_records = ReportProductEmissionAllocation.objects.filter(
-            report_version_id=report_version_id,
-            report_product__product__name="Fat, oil and grease collection, refining and storage",
-        ).exclude(
-            emission_category_id__in=REPORTING_ONLY_CATEGORY_IDS
-        )  # Exclude emissions allocated to fog from excluded categories (otherwise we're double counting the excluded emissions)
-        fog_allocated_amount = fog_allocation_records.aggregate(allocated_sum=Sum("allocated_quantity"))[
-            "allocated_sum"
-        ] or Decimal("0")
-        return fog_allocated_amount
 
     @staticmethod
     def calculate_product_emission_limit(
@@ -243,17 +197,19 @@ class ComplianceService:
             industrial_process = compute_industrial_process_emissions(rp)
 
             production_totals = ComplianceService.get_report_product_aggregated_totals(report_version_id, rp.product_id)
-            allocated = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
+            allocated = get_allocated_emissions_by_report_product_emission_category(
                 report_version_id,
                 rp.product_id,
                 list(EmissionCategory.objects.filter(category_type="basic").values_list("id", flat=True)),
             )
-            allocated_reporting_only = ComplianceService.get_reporting_only_allocated(report_version_id, rp.product_id)
+            allocated_reporting_only = get_reporting_only_allocated(report_version_id, rp.product_id)
             allocated_for_compliance = allocated - allocated_reporting_only
             # If this compliance period is 2024, use Apr-Dec production for allocations and limits.
             # Otherwise use full-year production and full-year allocated emissions.
             production_for_limit, allocated_for_compliance_2024, allocated_compliance_emissions_value = (
-                resolve_compliance_parameters(use_apr_dec, allocated_for_compliance, production_totals)
+                ComplianceParameters.resolve_compliance_parameters(
+                    use_apr_dec, allocated_for_compliance, production_totals
+                )
             )
 
             # Compute emissions limit with the product-specific regulatory values,
@@ -297,13 +253,11 @@ class ComplianceService:
             )
 
         # Emissions allocated to funny category and no other than basic
-        total_allocated_to_only_category_13 = ComplianceService.get_emissions_from_only_funny_category_13(
-            report_version_id
-        )
+        total_allocated_to_only_category_13 = get_emissions_from_only_funny_category_13(report_version_id)
         total_allocated_reporting_only += total_allocated_to_only_category_13
 
         # Fog emissions must also be allocated to an unregulated product
-        total_allocated_to_fog = ComplianceService.get_fog_emissions(report_version_id)
+        total_allocated_to_fog = get_fog_emissions(report_version_id)
         total_allocated_reporting_only += total_allocated_to_fog
 
         # Get attributable emission total
@@ -330,11 +284,11 @@ class ComplianceService:
         # Craft return object with all data
         return_object = ComplianceData(
             emissions_attributable_for_reporting=attributable_for_reporting_total,
-            reporting_only_emissions=ComplianceService.round(total_allocated_reporting_only),
-            emissions_attributable_for_compliance=ComplianceService.round(total_allocated_for_compliance_used),
-            emissions_limit=ComplianceService.round(emissions_limit_total),
-            excess_emissions=ComplianceService.round(excess_emissions),
-            credited_emissions=ComplianceService.round(credited_emissions),
+            reporting_only_emissions=ComplianceParameters.round(total_allocated_reporting_only),
+            emissions_attributable_for_compliance=ComplianceParameters.round(total_allocated_for_compliance_used),
+            emissions_limit=ComplianceParameters.round(emissions_limit_total),
+            excess_emissions=ComplianceParameters.round(excess_emissions),
+            credited_emissions=ComplianceParameters.round(credited_emissions),
             industry_regulatory_values=industry_regulatory_values,
             products=compliance_product_list,
             reporting_year=report_version_record.report.reporting_year_id,
@@ -373,10 +327,3 @@ class ComplianceService:
                 product=RegulatedProduct.objects.get(id=product_data_to_save.product_id),
                 defaults=product_data_to_save.as_record_defaults(),
             )
-
-    @staticmethod
-    def round(value: Decimal | float) -> Decimal:
-        """
-        Round the value to 4 decimal places for compliance calculations.
-        """
-        return Decimal(value).quantize(Decimal("0.0001"), rounding="ROUND_HALF_UP")

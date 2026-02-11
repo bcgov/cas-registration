@@ -27,6 +27,7 @@ def get_industry_regulatory_values(report_version: ReportVersion) -> RegulatoryV
     """
     naics_code_id = report_version.report.operation.naics_code_id
     compliance_year = report_version.report.reporting_year.reporting_year
+
     regulatory_values = NaicsRegulatoryValue.objects.get(
         naics_code_id=naics_code_id,
         valid_from__lte=report_version.report.reporting_year.reporting_window_start,

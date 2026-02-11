@@ -2,7 +2,9 @@ from dataclasses import dataclass
 from decimal import Decimal
 import logging
 from reporting.models.report_product import ReportProduct
-from reporting.service.compliance_service import ComplianceService
+from reporting.service.compliance_service.emission_allocation import (
+    get_allocated_emissions_by_report_product_emission_category,
+)
 from reporting.service.emission_category_service import EmissionCategoryService
 
 logger = logging.getLogger(__name__)
@@ -28,7 +30,7 @@ def retrieve_pulp_and_paper_biogenic_emissions_split(report_version_id: int) -> 
 
 def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
 
-    industrial_process = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
+    industrial_process = get_allocated_emissions_by_report_product_emission_category(
         rp.report_version.id, rp.product_id, [3]
     )  # ID=3 is Industrial Emissions category
 
