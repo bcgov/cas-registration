@@ -9,7 +9,7 @@ from service.email.email_service import GHG_REGULATOR_EMAIL, EmailService
 from service.email.utils import Recipient
 import logging
 from django.conf import settings
-
+from compliance.service.penalty.queries import sum_outstanding_penalty_balance
 
 from service.data_access_service.email_template_service import EmailNotificationTemplateService
 
@@ -218,6 +218,33 @@ def send_notice_of_obligation_met_email(obligation_id: int) -> None:
     obligation = ComplianceObligation.objects.get(id=obligation_id)
     template = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Met')
     email_context = _prepare_obligation_context(obligation)
+
+    _send_email_to_operators_approved_users_or_raise(
+        obligation.compliance_report_version.compliance_report.report.operator, template, email_context
+    )
+
+
+def send_notice_of_obligation_met_penalty_due_email(obligation_id: int) -> None:
+    """
+    Sends an email to every operator's industry user when their obligation is met but has an outstanding penalty.
+
+    Args:
+        obligation_id: The id of the obligation instance for which to send notification emails.
+    """
+    obligation = ComplianceObligation.objects.get(id=obligation_id)
+    crv = obligation.compliance_report_version
+    template = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Met Penalty Due')
+
+    # Sum outstanding balances for all non-void penalty invoices
+    penalty_amount = sum_outstanding_penalty_balance(obligation.compliance_penalties.all())
+
+    email_context = {
+        "operator_legal_name": crv.report_compliance_summary.report_version.report_operation.operator_legal_name,
+        "operation_name": crv.report_compliance_summary.report_version.report_operation.operation_name,
+        "compliance_year": crv.compliance_report.report.reporting_year.reporting_year,
+        "compliance_deadline": crv.compliance_report.compliance_period.compliance_deadline.strftime("%B %d, %Y"),
+        "penalty_amount": f"{penalty_amount:,.2f}",
+    }
 
     _send_email_to_operators_approved_users_or_raise(
         obligation.compliance_report_version.compliance_report.report.operator, template, email_context

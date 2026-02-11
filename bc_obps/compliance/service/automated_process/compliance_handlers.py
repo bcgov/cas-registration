@@ -8,7 +8,7 @@ from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.compliance_penalty import CompliancePenalty
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.service.compliance_obligation_service import ComplianceObligationService
-
+from compliance.service.penalty.queries import has_outstanding_penalty
 
 logger = logging.getLogger(__name__)
 
@@ -115,7 +115,10 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         Update compliance status to OBLIGATION_FULLY_MET
         and create penalties if the invoice is overdue.
         """
-        from compliance.tasks import retryable_notice_of_obligation_met_email
+        from compliance.tasks import (
+            retryable_notice_of_obligation_met_email,
+            retryable_notice_of_obligation_met_penalty_due_email,
+        )
 
         obligation = invoice.compliance_obligation
         compliance_report_version = obligation.compliance_report_version
@@ -145,6 +148,9 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         if effective_deadline < timezone.now().date() and final_transaction_date > effective_deadline:  # type: ignore [operator]
             PenaltyCalculationService.create_penalty(obligation, effective_deadline)
             logger.info(f"Created penalties for obligation {obligation.obligation_id}")
+        # After penalties may have been created (late submission and/or overdue)
+        if has_outstanding_penalty(obligation.compliance_penalties.all()):
+            retryable_notice_of_obligation_met_penalty_due_email.execute(obligation.id)
 
 
 class ComplianceHandlerManager:

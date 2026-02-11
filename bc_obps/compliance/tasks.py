@@ -11,6 +11,7 @@ from compliance.emails import (
     send_notice_of_penalty_accrual_email,
     send_reminder_of_obligation_due_email,
     send_notice_of_obligation_met_email,
+    send_notice_of_obligation_met_penalty_due_email,
     send_supplementary_report_submitted_after_deadline,
 )
 from task_scheduler.service.retry_task.factories import create_retryable
@@ -80,6 +81,12 @@ retryable_send_reminder_of_obligation_due_email = create_retryable(
 retryable_notice_of_obligation_met_email = create_retryable(
     func=send_notice_of_obligation_met_email,
     tag="obligation_met_email_notifications",
+    max_retries=5,
+    retry_delay_minutes=10,
+)
+retryable_notice_of_obligation_met_penalty_due_email = create_retryable(
+    func=send_notice_of_obligation_met_penalty_due_email,
+    tag="obligation_met_penalty_due_email_notifications",
     max_retries=5,
     retry_delay_minutes=10,
 )

@@ -552,3 +552,15 @@ class PenaltyCalculationService:
         )
 
         return penalty_record
+
+    @staticmethod
+    def has_outstanding_penalty(obligation: ComplianceObligation) -> bool:
+        """
+        Return True if the obligation has at least one non-void penalty invoice
+        with a positive outstanding balance.
+        """
+        return obligation.compliance_penalties.filter(
+            elicensing_invoice__isnull=False,
+            elicensing_invoice__is_void=False,
+            elicensing_invoice__outstanding_balance__gt=Decimal("0.00"),
+        ).exists()

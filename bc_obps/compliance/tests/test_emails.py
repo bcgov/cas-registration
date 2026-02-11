@@ -20,6 +20,7 @@ from compliance.emails import (
     send_supplementary_report_submitted_after_deadline,
     send_reminder_of_obligation_due_email,
     send_notice_of_obligation_met_email,
+    send_notice_of_obligation_met_penalty_due_email,
     send_notice_of_penalty_accrual_email,
 )
 
@@ -547,6 +548,105 @@ class TestSendNotifications:
 
         # Call the function with the obligcation id
         send_notice_of_obligation_met_email(obligation.id)
+        mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
+            approved_user_operator.operator,
+            template_instance,
+            expected_context,
+        )
+
+    @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
+    def test_obligation_met_penalty_due_email(self, mock_send_email_to_operators_approved_users_or_raise):
+
+        # admin user
+        approved_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator',
+        )
+
+        # Create mock data
+        report = baker.make_recipe("reporting.tests.utils.report", operator=approved_user_operator.operator)
+        compliance_report = baker.make_recipe("compliance.tests.utils.compliance_report", report=report)
+
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report=report)
+        report_operation = baker.make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
+        report_compliance_summary = baker.make_recipe(
+            "compliance.tests.utils.report_compliance_summary", report_version=report_version
+        )
+
+        crv = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=compliance_report,
+            report_compliance_summary=report_compliance_summary,
+        )
+
+        # Obligation + its (paid) obligation invoice
+        obligation_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            outstanding_balance=Decimal("0.00"),
+            is_void=False,
+        )
+        obligation = baker.make_recipe(
+            "compliance.tests.utils.compliance_obligation",
+            compliance_report_version=crv,
+            elicensing_invoice=obligation_invoice,
+        )
+
+        # Penalty invoices: 2 outstanding (count), 1 void (exclude), 1 zero (exclude)
+        penalty_invoice_1 = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            outstanding_balance=Decimal("100.00"),
+            is_void=False,
+        )
+        penalty_invoice_2 = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            outstanding_balance=Decimal("250.25"),
+            is_void=False,
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            outstanding_balance=Decimal("999.99"),
+            is_void=True,  # excluded
+        )
+        penalty_invoice_zero = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            outstanding_balance=Decimal("0.00"),  # excluded
+            is_void=False,
+        )
+
+        # Create penalty records linked to the obligation + their invoices
+        baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            compliance_obligation=obligation,
+            elicensing_invoice=penalty_invoice_1,
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            compliance_obligation=obligation,
+            elicensing_invoice=penalty_invoice_2,
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            compliance_obligation=obligation,
+            elicensing_invoice=penalty_invoice_zero,
+        )
+
+        # Template + expected context
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            "Notice of Obligation Met Penalty Due"
+        )
+
+        expected_penalty_amount = Decimal("100.00") + Decimal("250.25")  # void + zero excluded by query
+        expected_context = {
+            "operator_legal_name": report_operation.operator_legal_name,
+            "operation_name": report_operation.operation_name,
+            "compliance_year": report.reporting_year.reporting_year,
+            "compliance_deadline": compliance_report.compliance_period.compliance_deadline.strftime("%B %d, %Y"),
+            "penalty_amount": f"{expected_penalty_amount:,.2f}",
+        }
+
+        # Act
+        send_notice_of_obligation_met_penalty_due_email(obligation.id)
+
+        # Assert
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
