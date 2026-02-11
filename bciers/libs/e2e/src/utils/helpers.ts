@@ -85,6 +85,11 @@ export async function fillDropdownByLabel(
 
 export async function checkAllRadioButtons(page: Page) {
   const radioButtons = page.getByRole("radio", { name: "Yes" });
+  // Wait for at least one radio button to be visible before counting.
+  // count() returns immediately without waiting for elements to appear,
+  // so in production builds it can return 0 if the
+  // form hasn't fully rendered yet.
+  await expect(radioButtons.first()).toBeVisible();
   const count = await radioButtons.count();
 
   for (let i = 0; i < count; i++) {

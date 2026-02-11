@@ -377,6 +377,11 @@ export class OperatorPOM {
       timeout: 10_000,
     });
 
+    // Wait for any pending network requests (e.g. debounced autocomplete
+    // server action) to settle before submitting.
+    // eslint-disable-next-line playwright/no-networkidle
+    await this.page.waitForLoadState("networkidle");
+
     await this.buttonSelectOperator.click();
   }
 

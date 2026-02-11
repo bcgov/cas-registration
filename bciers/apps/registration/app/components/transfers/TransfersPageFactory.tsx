@@ -3,7 +3,9 @@ import Loading from "@bciers/components/loading/SkeletonGrid";
 import Header from "@/registration/app/components/transfers/TransfersHeader";
 import Page from "@/registration/app/components/transfers/TransfersPage";
 
-export default defaultPageFactory(Page, {
-  fallback: <Loading />,
-  header: Header,
-});
+export default function TransfersPageFactory() {
+  return defaultPageFactory(Page, {
+    fallback: <Loading />,
+    header: Header,
+  });
+}
