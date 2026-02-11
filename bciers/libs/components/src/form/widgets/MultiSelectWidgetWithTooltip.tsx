@@ -139,6 +139,7 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
       disablePortal
       multiple
       freeSolo
+      forcePopupIcon
       filterSelectedOptions
       options={options}
       value={
