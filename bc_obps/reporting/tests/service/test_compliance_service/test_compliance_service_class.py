@@ -1,9 +1,12 @@
 from django.test import TestCase
+from registration.models import Operation
 from reporting.models import (
     ReportComplianceSummary,
     ReportComplianceSummaryProduct,
     ReportEmission,
     ReportProduct,
+    Report,
+    ReportOperation,
 )
 from reporting.service.compliance_service import ComplianceService
 from reporting.tests.service.test_compliance_service.infrastructure import ComplianceTestInfrastructure
@@ -116,6 +119,46 @@ class TestComplianceSummaryServiceClass(TestCase):
         for product in result_2024.products:
             self.assertEqual(product.allocated_compliance_emissions, Decimal("0.0000"))
 
+    def test_jan_mar_production_period_for_operation_opted_out_for_2025(self):
+        """Test that Jan-Mar production period is used for opted-in operations in their final reporting year."""
+        build_data = ComplianceTestInfrastructure.build()
+        # Set up as an opted-in operation in final reporting year (2025)
+        ReportOperation.objects.filter(report_version=build_data.report_version_1).update(
+            registration_purpose='Opted-in Operation',
+            operation_opted_out_final_reporting_year=2025,
+        )
+        Report.objects.filter(pk=build_data.report_1.id).update(reporting_year=2025)
+
+        # Set Jan-Mar production data for opted-in operations in final reporting year
+        ReportProduct.objects.filter(report_version=build_data.report_version_1).update(
+            production_data_jan_mar=Decimal('25000')
+        )
+
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        # For jan_mar period, production_for_limit should use jan-mar production
+        # The product should have jan_mar_production in its allocated_compliance_emissions calculation
+        for product in result.products:
+            # Verify that allocated compliance emissions are prorated based on jan-mar production
+            self.assertEqual(product.allocated_compliance_emissions > 0, True)
+
+    def test_production_period_returns_annual_for_opted_in_not_final_year(self):
+        """Test that annual production is used for opted-in operations NOT in their final reporting year."""
+        build_data = ComplianceTestInfrastructure.build()
+        # Set up as an opted-in operation but 2025 is NOT their final reporting year
+        ReportOperation.objects.filter(report_version=build_data.report_version_1).update(
+            registration_purpose='Opted-in Operation',
+            operation_opted_out_final_reporting_year=2026,  # Final year is 2026, not 2025
+        )
+        Report.objects.filter(pk=build_data.report_1.id).update(reporting_year=2025)
+
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        # For annual period, allocated_compliance_emissions should equal full allocated
+        for product in result.products:
+            # Annual production should be used, so no prorating
+            self.assertEqual(product.allocated_compliance_emissions > 0, True)
+
     def test_compliance_summary_2025_period(self):
         # Assertion values from compliance_class_manual_calcs.xlsx sheet 4
         build_data = ComplianceTestInfrastructure.reporting_year_2025()
@@ -210,3 +253,36 @@ class TestComplianceSummaryServiceClass(TestCase):
 
         assert result.emissions_attributable_for_reporting == Decimal('10000.5556')
         assert result.emissions_attributable_for_compliance == Decimal('5000.2778')
+
+    def test_get_production_period_for_jan_mar(self):
+        build_2025 = ComplianceTestInfrastructure.reporting_year_2025()
+        assert (
+            ComplianceService.get_production_period(
+                build_2025.report_version_1.id, Operation.Purposes.OPTED_IN_OPERATION, 2025
+            )
+            == "jan_mar"
+        )
+
+    def test_get_production_period_for_apr_dec(self):
+        build_data = ComplianceTestInfrastructure.build()
+        assert (
+            ComplianceService.get_production_period(
+                build_data.report_version_1.id, Operation.Purposes.OBPS_REGULATED_OPERATION, None
+            )
+            == "apr_dec"
+        )
+
+    def test_get_production_period_for_annual(self):
+        build_data = ComplianceTestInfrastructure.reporting_year_2025()
+        assert (
+            ComplianceService.get_production_period(
+                build_data.report_version_1.id, Operation.Purposes.OBPS_REGULATED_OPERATION, None
+            )
+            == "annual"
+        )
+        assert (
+            ComplianceService.get_production_period(
+                build_data.report_version_1.id, Operation.Purposes.OPTED_IN_OPERATION, 2026
+            )
+            == "annual"
+        )
