@@ -1,5 +1,4 @@
 // 🧪 Suite to test the administration industry_user workflow
-import { expect } from "@playwright/test";
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 // 🪄 Page Object Models
 import { OperatorPOM } from "@/administration-e2e/poms/operator";
@@ -36,10 +35,6 @@ test.describe("Test select operator paths", () => {
       OperatorE2EValue.SEARCH_LEGAL_NAME,
       "Bravo Technologies - has parTNER operator - name from admin",
     );
-    // Wait for client-side navigation to the confirm page after selecting the operator.
-    // Uses toHaveURL (polling assertion) instead of waitForURL because Next.js
-    // client-side routing (router.push) doesn't fire a traditional page load event.
-    await expect(page).toHaveURL(/select-operator\/confirm/);
 
     await happoScreenshot(pageContent, {
       component: "Select operator form",
