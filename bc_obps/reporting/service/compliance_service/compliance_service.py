@@ -142,6 +142,7 @@ class ComplianceService:
         compliance_period: int,
         initial_compliance_period: int = 2024,
     ) -> Decimal:
+
         # Handle divide by 0 error if allocated_for_compliance is 0
         industrial_process_compliance_allocated_division = Decimal("0")
         if allocated_for_compliance > 0:
@@ -225,7 +226,7 @@ class ComplianceService:
                 ),
                 reduction_factor=(
                     product_regulatory_values_override.reduction_factor_override
-                    or industry_regulatory_values.tightening_rate
+                    or industry_regulatory_values.reduction_factor
                 ),
                 compliance_period=industry_regulatory_values.compliance_period,
             )
