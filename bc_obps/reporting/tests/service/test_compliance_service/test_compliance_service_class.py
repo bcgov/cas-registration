@@ -62,11 +62,11 @@ class TestComplianceSummaryServiceClass(TestCase):
 
         # Verify that each product has reduction_factor and tightening_rate populated
         for product in result.products:
-            assert product.reduction_factor is not None
-            assert product.tightening_rate is not None
-            # For this test data, all products should have the same NAICS-based values
-            assert product.reduction_factor == Decimal('0.6500')
-            assert product.tightening_rate == Decimal('0.0100')
+            assert product.reduction_factor_override is None
+            assert product.tightening_rate_override is None
+
+        assert result.industry_regulatory_values.reduction_factor == Decimal('0.6500')
+        assert result.industry_regulatory_values.tightening_rate == Decimal('0.0100')
 
     def test_apr_dec_used_for_2024_summary(self):
         # Explicit test that 2024 uses Apr-Dec scaled allocations for compliance
@@ -202,6 +202,10 @@ class TestComplianceSummaryServiceClass(TestCase):
         )
         for idx, p in enumerate(report_compliance_product_records):
             assert p.annual_production == updated_result.products[idx].annual_production
+
+    def test_compliance_summary_with_regulatory_override(self):
+        # Sheet 6
+        raise NotImplementedError("test needs implementation")
 
     def test_compliance_summary_rounding(self):
         build_data = ComplianceTestInfrastructure.decimal_places()
