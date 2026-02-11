@@ -2,6 +2,8 @@ from datetime import date, timedelta
 from typing import Any
 from django.utils import timezone
 from model_bakery import baker
+from reporting.models.naics_regulatory_override import NaicsRegulatoryOverride
+from reporting.models.naics_regulatory_value import NaicsRegulatoryValue
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_person_responsible import ReportPersonResponsible
@@ -326,4 +328,16 @@ report_attachment_confirmation = Recipe(
     report_version=foreign_key(report_version),
     confirm_supplementary_required_attachments_uploaded=True,
     confirm_supplementary_existing_attachments_relevant=True,
+)
+
+naics_regulatory_value = Recipe(
+    NaicsRegulatoryValue,
+    valid_from=date(1000, 1, 1),
+    valid_to=date(3000, 1, 1),
+)
+
+naics_regulatory_override = Recipe(
+    NaicsRegulatoryOverride,
+    valid_from=date(1000, 1, 1),
+    valid_to=date(3000, 1, 1),
 )
