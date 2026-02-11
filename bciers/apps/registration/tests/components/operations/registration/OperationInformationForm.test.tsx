@@ -280,12 +280,14 @@ describe("the OperationInformationForm component", () => {
       const regulatedProductsInput = screen.getByPlaceholderText(
         /select regulated product.../i,
       );
-      await userEvent.click(regulatedProductsInput);
+      const openProductsDropdown = regulatedProductsInput?.parentElement
+        ?.children[1]?.children[0] as HTMLInputElement;
+      await userEvent.click(openProductsDropdown);
       const product1 = screen.getByText(
         "BC-specific refinery complexity throughput",
       );
       await userEvent.click(product1);
-      await userEvent.click(regulatedProductsInput);
+      await userEvent.click(openProductsDropdown);
       const product2 = screen.getByText("Cement equivalent");
       await userEvent.click(product2);
 
@@ -293,7 +295,10 @@ describe("the OperationInformationForm component", () => {
       const reportingActivitiesInput = screen.getByPlaceholderText(
         /select reporting activity.../i,
       );
-      await userEvent.click(reportingActivitiesInput);
+
+      const openActivitiesDropdown = reportingActivitiesInput?.parentElement
+        ?.children[1]?.children[0] as HTMLInputElement;
+      await userEvent.click(openActivitiesDropdown);
       const activityOption = screen.getByText("Cement production");
       await userEvent.click(activityOption);
 
