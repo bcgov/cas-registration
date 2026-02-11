@@ -465,14 +465,14 @@ describe("OperationReviewForm Component", () => {
     ).toBeInTheDocument();
   });
 
-  it("displays a help text when either chemical pulp / lime recovery kiln are selected, but not both", async () => {
+  it("displays a help text when either chemical pulp / lime recovered by kiln are selected, but not both", async () => {
     async function renderWithProductIds(productIds: number[]) {
       const allRegulatedProducts = [
         { id: 1, name: "Product 1", unit: "BCRCT", is_regulated: true },
         { id: 16, name: "chemical pulp", unit: "BCRCT", is_regulated: true },
         {
           id: 43,
-          name: "lime recovery kiln",
+          name: "lime recovered by kiln",
           is_regulated: true,
         },
       ];

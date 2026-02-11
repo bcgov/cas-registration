@@ -144,7 +144,7 @@ class TestInitialData(TestCase):
                 'Processing sour gas - oil equivalent',
                 'Processing sweet gas - oil equivalent',
                 'Pulp and paper: chemical pulp',
-                'Pulp and paper: lime recovery kiln',
+                'Pulp and paper: lime recovered by kiln',
                 'Pulp and paper: non-chemical pulp',
                 'Pulp and paper: paper (except newsprint and tissue paper)',
                 'Pulp and paper: tissue Paper',
