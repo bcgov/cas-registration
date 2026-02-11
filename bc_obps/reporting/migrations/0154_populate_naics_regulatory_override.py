@@ -41,7 +41,7 @@ def revert_lime_recovery_kiln_override(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0152_create_naics_regulatory_override_table'),
+        ('reporting', '0153_create_naics_regulatory_override_table'),
     ]
 
     operations = [migrations.RunPython(insert_lime_recovery_kiln_override, revert_lime_recovery_kiln_override)]
