@@ -5,12 +5,14 @@ from .earned_credits import (
     EarnedCreditsDirectorApproveScenario,
 )
 from .submit_report import SubmitReportScenario
+from .reporting_year import GetReportingYearScenario
 
 
 SCENARIO_HANDLERS: Dict[str, ScenarioHandler] = {
     "submit_report": SubmitReportScenario(),
     "earned_credits_request_issuance": EarnedCreditsRequestIssuanceScenario(),
     "earned_credits_director_approve": EarnedCreditsDirectorApproveScenario(),
+    "reporting_year": GetReportingYearScenario(),
 }
 
 
@@ -20,4 +22,5 @@ __all__ = [
     "SubmitReportScenario",
     "EarnedCreditsRequestIssuanceScenario",
     "EarnedCreditsDirectorApproveScenario",
+    "GetReportingYearScenario",
 ]
