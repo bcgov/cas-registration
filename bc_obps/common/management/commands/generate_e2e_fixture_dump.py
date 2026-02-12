@@ -1,5 +1,5 @@
 import os
-import subprocess
+import subprocess  # nosec B404
 import urllib.parse
 from django.conf import settings
 from django.core.management import call_command
@@ -21,7 +21,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self._load_fixtures()
         raw_sql = self._run_pg_dump()
-        cleaned_sql = self._strip_comments_and_blank_lines(raw_sql)
+        cleaned_sql = self._clean_pg_dump_output(raw_sql)
         self._write_dump_file(cleaned_sql)
         self.stdout.write(self.style.SUCCESS(f"SQL dump written to {OUTPUT_PATH}"))
 
@@ -59,16 +59,36 @@ class Command(BaseCommand):
                 cmd += ['--exclude-table-data', f'{schema}.{table}_history']
         cmd.append(db_url)
 
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        # Force UTC so timestamps are consistent across machines with different timezones
+        env = {**os.environ, 'PGTZ': 'UTC'}
+        result = subprocess.run(cmd, capture_output=True, text=True, env=env)  # nosec B603
         if result.returncode != 0:
             raise RuntimeError(f"pg_dump failed: {result.stderr}")
         return result.stdout
 
     @staticmethod
-    def _strip_comments_and_blank_lines(raw_output):
-        """Remove pg_dump comment lines and collapse consecutive blank lines."""
+    def _clean_pg_dump_output(raw_output):
+        """Remove comments, collapse blank lines, and sort INSERTs for deterministic output.
+
+        pg_dump doesn't guarantee row ordering within tables, so the same data
+        can produce different output on different machines. Sorting INSERT lines
+        makes the dump reproducible across environments.
+        """
         lines = [line for line in raw_output.splitlines() if not line.startswith("--")]
-        return "\n".join(line for i, line in enumerate(lines) if line.strip() or (i > 0 and lines[i - 1].strip()))
+        collapsed = [line for i, line in enumerate(lines) if line.strip() or (i > 0 and lines[i - 1].strip())]
+
+        # Sort INSERT statements so output is deterministic regardless of DB physical storage order
+        insert_lines = sorted(line for line in collapsed if line.startswith("INSERT INTO"))
+        result = []
+        inserts_placed = False
+        for line in collapsed:
+            if line.startswith("INSERT INTO"):
+                if not inserts_placed:
+                    result.extend(insert_lines)
+                    inserts_placed = True
+            else:
+                result.append(line)
+        return "\n".join(result)
 
     def _write_dump_file(self, pg_dump_sql):
         """Assemble and write the final dump: header + truncate + data."""
