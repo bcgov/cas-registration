@@ -1,6 +1,7 @@
 from django.core.files.storage import default_storage
 from django.db import transaction
 from django.forms import model_to_dict
+from django.utils import timezone
 from typing import Optional
 import copy
 from reporting.models import (
@@ -31,14 +32,52 @@ from reporting.models import (
 from reporting.service.emission_category_mapping_service import (
     EmissionCategoryMappingService,
 )
+from service.report_version_service import ReportVersionService
 
 
 class ReportSupplementaryVersionService:
     @staticmethod
     @transaction.atomic
+    def create_or_clone_report_version(report_version_id: int) -> ReportVersion:
+        """
+        Creates either a supplementary report version or a new blank report version based on:
+        - Registration purpose changes
+        - Operator changes (operation transfer)
+        - Reporting year (past vs current/future)
+
+        Args:
+            report_version_id: The report version ID to create a new version from
+
+        Returns:
+            New ReportVersion instance (either supplementary or blank)
+        """
+        report_version = ReportVersion.objects.select_related(
+            "report__operation", "report__reporting_year", "report_operation"
+        ).get(id=report_version_id)
+
+        operation = report_version.report.operation
+        report_operation = report_version.report_operation
+
+        # Check if creating supplementary version
+        operator_changed = operation.operator_id != report_version.report.operator_id
+        registration_purpose_changed = operation.registration_purpose != report_operation.registration_purpose
+        is_past_year = report_version.report.reporting_year.reporting_year < timezone.now().year
+
+        # Create supplementary if: same purpose OR operator changed OR past year
+        if not registration_purpose_changed or operator_changed or is_past_year:
+            return ReportSupplementaryVersionService.create_report_supplementary_version(report_version_id)
+
+        # Otherwise create new blank version
+        return ReportVersionService.create_report_version(report_version.report)
+
+    @staticmethod
+    @transaction.atomic
     def create_report_supplementary_version(report_version_id: int) -> ReportVersion:
         """
         Creates a new report version for a given report version ID cloning related data.
+
+        This method determines whether to create a supplementary version based on the current version
+        or based on a previous version with matching registration purpose when the operator has changed.
 
         Args:
             report_version_id: The report version ID
@@ -46,25 +85,59 @@ class ReportSupplementaryVersionService:
         Returns:
             New ReportVersion instance
         """
-        # Get the existing report version
-        report_version = ReportVersion.objects.get(id=report_version_id)
+        # Get the existing report version with related data
+        report_version = ReportVersion.objects.select_related(
+            "report__operation", "report__operator", "report_operation"
+        ).get(id=report_version_id)
+
+        operation = report_version.report.operation
+        operation_registration_purpose = operation.registration_purpose
+        current_operator_id = operation.operator_id
+        report_operator_id = report_version.report.operator_id
+        report_operation_registration_purpose = report_version.report_operation.registration_purpose
+
+        # Determine if operator has changed (operation transferred to a new operator)
+        operator_changed = current_operator_id != report_operator_id
+
+        # Determine if registration purpose has changed
+        registration_purpose_changed = operation_registration_purpose != report_operation_registration_purpose
+
+        # Determine which version to clone from
+        version_to_clone_id = report_version_id
+
+        if registration_purpose_changed and operator_changed:
+            # Find the latest submitted report version with matching registration purpose for this operation
+            latest_matching_version = ReportVersion.objects.filter(
+                report__operation=operation,
+                status=ReportVersion.ReportVersionStatus.Submitted,
+                is_latest_submitted=True,
+                report_operation__registration_purpose=operation_registration_purpose,
+            ).first()
+
+            if latest_matching_version:
+                # Clone from the matching version instead
+                version_to_clone_id = latest_matching_version.id
+
+        # Get the version to clone (might be the original or the matching version)
+        source_version = ReportVersion.objects.get(id=version_to_clone_id)
+
         # Create a new report version as a Draft
         new_report_version = ReportVersion.objects.create(
             report=report_version.report,
-            report_type=report_version.report_type,
+            report_type=source_version.report_type,
             status=ReportVersion.ReportVersionStatus.Draft,
             is_latest_submitted=False,
         )
-        # Clone related data
-        ReportSupplementaryVersionService.clone_report_version_operation(report_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_representatives(report_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_person_responsible(report_version, new_report_version)
-        ReportSupplementaryVersionService.clone_electricity_import_data(report_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_additional_data(report_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_new_entrant_data(report_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_verification(report_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_attachments(report_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_facilities(report_version, new_report_version)
+        # Clone related data from the source version
+        ReportSupplementaryVersionService.clone_report_version_operation(source_version, new_report_version)
+        ReportSupplementaryVersionService.clone_report_version_representatives(source_version, new_report_version)
+        ReportSupplementaryVersionService.clone_report_version_person_responsible(source_version, new_report_version)
+        ReportSupplementaryVersionService.clone_electricity_import_data(source_version, new_report_version)
+        ReportSupplementaryVersionService.clone_report_version_additional_data(source_version, new_report_version)
+        ReportSupplementaryVersionService.clone_report_version_new_entrant_data(source_version, new_report_version)
+        ReportSupplementaryVersionService.clone_report_version_verification(source_version, new_report_version)
+        ReportSupplementaryVersionService.clone_report_version_attachments(source_version, new_report_version)
+        ReportSupplementaryVersionService.clone_report_version_facilities(source_version, new_report_version)
         ReportSupplementaryVersionService.reapply_emission_categories(new_report_version)
         # Return the newly created report version
         return new_report_version
