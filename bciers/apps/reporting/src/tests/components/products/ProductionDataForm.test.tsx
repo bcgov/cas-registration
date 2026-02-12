@@ -205,7 +205,7 @@ describe("The ProductionDataForm component", () => {
     });
   });
 
-  it("includes production_data_jan_mar_2025 field when reportingYear is 2025 and isOptedOut is true", async () => {
+  it("includes production_data_jan_mar field when reportingYear is 2025 and isOptedOut is true", async () => {
     render(
       <ProductionDataForm
         allowedProducts={[{ product_id: 2025, product_name: "test" }]}
@@ -226,11 +226,11 @@ describe("The ProductionDataForm component", () => {
     const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
     expect(calledProps.uiSchema).toBeDefined();
     expect(calledProps.uiSchema.production_data.items["ui:order"]).toContain(
-      "production_data_jan_mar_2025",
+      "production_data_jan_mar",
     );
   });
 
-  it("does not include production_data_jan_mar_2025 field when reportingYear is 2025 but isOptedOut is false", async () => {
+  it("does not include production_data_jan_mar field when reportingYear is 2025 but isOptedOut is false", async () => {
     render(
       <ProductionDataForm
         allowedProducts={[{ product_id: 2025, product_name: "test" }]}
@@ -252,6 +252,6 @@ describe("The ProductionDataForm component", () => {
     expect(calledProps.uiSchema).toBeDefined();
     expect(
       calledProps.uiSchema.production_data.items["ui:order"],
-    ).not.toContain("production_data_jan_mar_2025");
+    ).not.toContain("production_data_jan_mar");
   });
 });
