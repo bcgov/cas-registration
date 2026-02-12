@@ -84,17 +84,6 @@ jobs:
         run: npx playwright install chromium
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
-      - name: 🔄 Generate e2e fixture dump
-        env:
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_NAME: registration
-          DB_PORT: 5432
-          DB_HOST: localhost
-          ENVIRONMENT: local
-        working-directory: ./bc_obps
-        run: poetry run python manage.py generate_e2e_fixture_dump
-
       - name: 🎭 Run Playwright Tests
         env:
           NX_PROJECT: ${{ inputs.nx_project }}

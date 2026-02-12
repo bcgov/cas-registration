@@ -38,7 +38,7 @@ def setup(request: HttpRequest) -> HttpResponse:
     if settings.CI == 'true' or settings.ENVIRONMENT == 'local':
         cache.clear()  # clear cache to avoid stale data (specifically for the current_user_middleware.py middleware)
         try:
-            if settings.ENVIRONMENT == 'local' and _dump_is_stale():
+            if _dump_is_stale():
                 call_command('generate_e2e_fixture_dump')
             with RlsManager.bypass_rls(), pgtrigger.ignore():
                 with open(FIXTURE_DUMP_PATH, 'r') as f:
