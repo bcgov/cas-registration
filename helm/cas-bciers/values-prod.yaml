@@ -35,10 +35,10 @@ administrationFrontend:
 
   resources:
     limits:
-      memory: 512Mi
+      memory: 384Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 192Mi
 
   autoscaling:
     enabled: true
@@ -60,10 +60,10 @@ registrationFrontend:
 
   resources:
     limits:
-      memory: 256Mi
+      memory: 384Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 192Mi
 
   autoscaling:
     enabled: true
@@ -85,10 +85,10 @@ reportingFrontend:
 
   resources:
     limits:
-      memory: 256Mi
+      memory: 384Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 192Mi
 
   autoscaling:
     enabled: true
@@ -110,10 +110,10 @@ complianceFrontend:
 
   resources:
     limits:
-      memory: 256Mi
+      memory: 384Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 192Mi
 
 dashboardFrontend:
   replicaCount: 2
@@ -133,10 +133,10 @@ dashboardFrontend:
 
   resources:
     limits:
-      memory: 256Mi
+      memory: 384Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 192Mi
 
   autoscaling:
     enabled: true
