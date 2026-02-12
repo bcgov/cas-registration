@@ -174,4 +174,5 @@ docker-compose.yml
 bc_obps/db.sql
 
 # Generated e2e fixture dump (regenerated locally and in CI)
-bc_obps/common/fixtures/e2e/e2e_fixture_dump.sql
+bc_obps/common/fixtures/e2e/e2e_fixture_dump.dump
+bc_obps/common/fixtures/e2e/e2e_fixture_dump.date
