@@ -55,7 +55,7 @@ class TestResolveComplianceParameters(unittest.TestCase):
         self.assertEqual(prorated_allocated, Decimal("0"))
         self.assertEqual(allocated_value, Decimal("0.0000"))
 
-    def test_non_apr_dec_uses_full_year_and_rounds_allocated(self):
+    def test_annual_period_uses_full_year_and_rounds_allocated(self):
         production_totals = {"annual_amount": Decimal("2000"), "apr_dec": Decimal("100")}
         allocated = Decimal("123.45678")
         production_for_limit, prorated_allocated, allocated_value = resolve_compliance_parameters(
