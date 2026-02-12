@@ -1,6 +1,8 @@
 import os
 import subprocess  # nosec B404
 import urllib.parse
+from datetime import date
+
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
@@ -8,11 +10,7 @@ from django.db import connection
 from common.management.commands.truncate_dev_data_tables import TABLES_WITH_PRODUCTION_DATA, SCHEMAS
 
 OUTPUT_PATH = os.path.join(settings.BASE_DIR, 'common', 'fixtures', 'e2e', 'e2e_fixture_dump.sql')
-
-HEADER = (
-    "-- Auto-generated e2e fixture dump. Do not edit manually.\n"
-    "-- Regenerate with: python manage.py generate_e2e_fixture_dump\n\n"
-)
+DATE_PREFIX = "-- Generated on: "
 
 
 class Command(BaseCommand):
@@ -59,44 +57,29 @@ class Command(BaseCommand):
                 cmd += ['--exclude-table-data', f'{schema}.{table}_history']
         cmd.append(db_url)
 
-        # Force UTC so timestamps are consistent across machines with different timezones
-        env = {**os.environ, 'PGTZ': 'UTC'}
-        result = subprocess.run(cmd, capture_output=True, text=True, env=env)  # nosec B603
+        result = subprocess.run(cmd, capture_output=True, text=True)  # nosec B603
         if result.returncode != 0:
             raise RuntimeError(f"pg_dump failed: {result.stderr}")
         return result.stdout
 
     @staticmethod
     def _clean_pg_dump_output(raw_output):
-        """Remove comments, collapse blank lines, and sort INSERTs for deterministic output.
-
-        pg_dump doesn't guarantee row ordering within tables, so the same data
-        can produce different output on different machines. Sorting INSERT lines
-        makes the dump reproducible across environments.
-        """
+        """Remove pg_dump comment lines and collapse consecutive blank lines."""
         lines = [line for line in raw_output.splitlines() if not line.startswith("--")]
-        collapsed = [line for i, line in enumerate(lines) if line.strip() or (i > 0 and lines[i - 1].strip())]
-
-        # Sort INSERT statements so output is deterministic regardless of DB physical storage order
-        insert_lines = sorted(line for line in collapsed if line.startswith("INSERT INTO"))
-        result = []
-        inserts_placed = False
-        for line in collapsed:
-            if line.startswith("INSERT INTO"):
-                if not inserts_placed:
-                    result.extend(insert_lines)
-                    inserts_placed = True
-            else:
-                result.append(line)
-        return "\n".join(result)
+        return "\n".join(line for i, line in enumerate(lines) if line.strip() or (i > 0 and lines[i - 1].strip()))
 
     def _write_dump_file(self, pg_dump_sql):
         """Assemble and write the final dump: header + truncate + data."""
+        header = (
+            f"{DATE_PREFIX}{date.today().isoformat()}\n"
+            "-- Auto-generated e2e fixture dump. Do not edit manually.\n"
+            "-- Regenerate with: python manage.py generate_e2e_fixture_dump\n\n"
+        )
         truncate_sql = self._build_truncate_sql()
 
         os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
         with open(OUTPUT_PATH, 'w') as f:
-            f.write(HEADER)
+            f.write(header)
             f.write(truncate_sql)
             f.write(pg_dump_sql)
 
