@@ -35,7 +35,7 @@ SCHEMAS = ["erc", "erc_history"]
 
 
 class Command(BaseCommand):
-    def handle(self, *args, **options):
+    def handle(self, *args: object, **options: object) -> None:
         for schema in SCHEMAS:
             with connection.cursor() as cursor:
                 cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = %s;", [schema])

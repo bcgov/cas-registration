@@ -15,20 +15,20 @@ DATE_FILE_PATH = os.path.join(settings.BASE_DIR, 'common', 'fixtures', 'e2e', 'e
 class Command(BaseCommand):
     help = 'Generate a pg_dump of e2e fixture data in custom format.'
 
-    def handle(self, *args, **options):
+    def handle(self, *args: object, **options: object) -> None:
         self._load_fixtures()
         self._run_pg_dump()
         self._write_date_file()
         self.stdout.write(self.style.SUCCESS(f"Dump written to {OUTPUT_PATH}"))
 
-    def _load_fixtures(self):
+    def _load_fixtures(self) -> None:
         self.stdout.write("Step 1/3: Truncating dev data tables...")
         call_command('truncate_dev_data_tables')
         self.stdout.write("Step 2/3: Loading fixtures via Django ORM...")
         call_command('load_fixtures')
         call_command('load_reporting_fixtures')
 
-    def _run_pg_dump(self):
+    def _run_pg_dump(self) -> None:
         """Snapshot the current DB state as a custom-format dump."""
         self.stdout.write("Step 3/3: Dumping fixture data with pg_dump...")
 
@@ -62,7 +62,7 @@ class Command(BaseCommand):
             raise RuntimeError(f"pg_dump failed: {result.stderr.decode()}")
 
     @staticmethod
-    def _write_date_file():
+    def _write_date_file() -> None:
         """Write today's date to a companion file for staleness checks."""
         with open(DATE_FILE_PATH, 'w') as f:
             f.write(date.today().isoformat())

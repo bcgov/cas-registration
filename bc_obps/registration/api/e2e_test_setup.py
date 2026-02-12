@@ -4,13 +4,11 @@ import urllib.parse
 from datetime import date
 from django.conf import settings
 from django.core.management import call_command
-from django.db import connection
 from django.http import HttpRequest, HttpResponse
 from django.core.cache import cache
 from registration.constants import MISC_TAGS
 from registration.api.router import router
 from common.management.commands.generate_e2e_fixture_dump import OUTPUT_PATH, DATE_FILE_PATH
-from common.management.commands.truncate_dev_data_tables import TABLES_WITH_PRODUCTION_DATA, SCHEMAS
 
 
 def _dump_is_stale() -> bool:
@@ -20,22 +18,6 @@ def _dump_is_stale() -> bool:
     with open(DATE_FILE_PATH, 'r') as f:
         dump_date = f.read().strip()
     return dump_date != date.today().isoformat()
-
-
-def _truncate_fixture_tables() -> None:
-    """Truncate all non-production tables before restoring the dump."""
-    tables = []
-    with connection.cursor() as cursor:
-        for schema in SCHEMAS:
-            cursor.execute(
-                "SELECT tablename FROM pg_tables WHERE schemaname = %s ORDER BY tablename;",
-                [schema],
-            )
-            for (tablename,) in cursor.fetchall():
-                if tablename not in TABLES_WITH_PRODUCTION_DATA:
-                    tables.append(f"{schema}.{tablename}")
-        if tables:
-            cursor.execute(f"TRUNCATE TABLE {', '.join(tables)} RESTART IDENTITY CASCADE;")
 
 
 def _run_pg_restore() -> None:
@@ -79,7 +61,7 @@ def setup(request: HttpRequest) -> HttpResponse:
         try:
             if _dump_is_stale():
                 call_command('generate_e2e_fixture_dump')
-            _truncate_fixture_tables()
+            call_command('truncate_dev_data_tables')
             _run_pg_restore()
             return HttpResponse("Test setup complete.", status=200)
         except Exception as e:
