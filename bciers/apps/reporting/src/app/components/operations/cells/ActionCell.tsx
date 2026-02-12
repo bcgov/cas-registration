@@ -70,8 +70,8 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
       router.push(`${newReportVersionId}/review-operation-information`);
   };
 
-  // Show "Available Soon" for all actions if reporting is not open
-  if (!isReportingOpen) {
+  // Show "Available Soon" for all actions if reporting is not open or row is restricted
+  if (!isReportingOpen || row.restricted) {
     return (
       <div
         style={{

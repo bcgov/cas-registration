@@ -210,4 +210,33 @@ describe("operationColumns function", () => {
     expect(screen.getByText("Available Soon")).toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
+
+  it("shows 'Available Soon' when row is restricted even if reporting is open", () => {
+    const columns: GridColDef[] = operationColumns(true);
+
+    const row = {
+      id: "3",
+      bcghg_id: "12111130003",
+      operation_name: "Restricted Operation",
+      report_id: null,
+      report_version_id: null,
+      report_status: null,
+      restricted: true,
+    };
+
+    const params = {
+      row,
+      value: row.report_version_id,
+    };
+
+    function WrapperComponent() {
+      const cell = columns[5].renderCell;
+
+      return <div>{cell(params)}</div>;
+    }
+
+    render(<WrapperComponent />);
+    expect(screen.getByText("Available Soon")).toBeVisible();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
 });

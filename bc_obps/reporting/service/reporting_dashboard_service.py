@@ -1,6 +1,7 @@
 from uuid import UUID
 
-from django.db.models import OuterRef, QuerySet, Value, F, Subquery, Case, When, Q, CharField
+from django.conf import settings
+from django.db.models import OuterRef, QuerySet, Value, F, Subquery, Case, When, Q, CharField, BooleanField
 from django.db.models.functions import Concat, Coalesce
 from ninja import Query
 from registration.models.operation import Operation
@@ -104,6 +105,10 @@ class ReportingDashboardService:
             id__in=timeline.values_list('operation_id', flat=True),
         )
 
+        # Get restricted NAICS codes from settings
+        restricted_naics_codes = [
+            code.strip() for code in settings.RESTRICTED_NAICS_CODES_FOR_REPORTING.split(",") if code.strip()
+        ]
         queryset = (
             operations_for_reporting_year.filter(
                 status=Operation.Statuses.REGISTERED
@@ -127,6 +132,12 @@ class ReportingDashboardService:
                         ).values("operation_name")[:1]
                     ),
                     F("name"),
+                ),
+                # Check if operation's NAICS code is in restricted list
+                restricted=Case(
+                    When(naics_code__naics_code__in=restricted_naics_codes, then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField(),
                 ),
                 # we have different statuses on the frontend than in the db, so we need to create a custom sort key
                 report_status_sort_key=cls.report_status_sort_key,

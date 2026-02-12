@@ -20,6 +20,7 @@ class ReportingDashboardOperationOut(ModelSchema):
     operation_name: Optional[str] = None
     report_updated_at: Optional[datetime] = None
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
+    restricted: bool = False
 
     class Meta:
         model = Operation
