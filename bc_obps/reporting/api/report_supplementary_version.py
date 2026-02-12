@@ -7,7 +7,6 @@ from service.report_version_service import ReportVersionService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
-from ..models import ReportVersion, ReportOperation
 
 
 @router.get(
@@ -34,17 +33,5 @@ def is_supplementary_report_version(request: HttpRequest, version_id: int) -> Tu
     auth=approved_industry_user_report_version_composite_auth,
 )
 def create_report_supplementary_version(request: HttpRequest, version_id: int) -> Tuple[Literal[201], int]:
-    # Get registration_purpose from Operation
-    report_version = ReportVersion.objects.select_related("report__operation").get(id=version_id)
-    operation_registration_purpose = report_version.report.operation.registration_purpose
-
-    # Get registration_purpose from ReportOperation
-    report_operation = ReportOperation.objects.get(report_version_id=version_id)
-    report_operation_registration_purpose = report_operation.registration_purpose
-
-    if operation_registration_purpose == report_operation_registration_purpose:
-        new_version = ReportSupplementaryVersionService.create_report_supplementary_version(version_id)
-    else:
-        new_version = ReportVersionService.create_report_version(report_version.report)
-
+    new_version = ReportSupplementaryVersionService.create_or_clone_report_version(version_id)
     return 201, new_version.id

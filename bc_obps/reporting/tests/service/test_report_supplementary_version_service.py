@@ -173,6 +173,153 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             "The new report version should not be marked as the latest submitted version.",
         )
 
+    def test_create_or_clone_same_purpose_no_operator_change(self):
+        """Test that when purpose hasn't changed and operator hasn't changed, supplementary version is created."""
+        # Setup: same purpose, same operator
+        operation = self.old_report_version.report.operation
+        operation.registration_purpose = Operation.Purposes.OBPS_REGULATED_OPERATION
+        operation.save()
+
+        self.old_report_version.report.operator = operation.operator
+        self.old_report_version.report.save()
+
+        # Delete the draft version created in setUp to avoid constraint violation
+        self.new_report_version.delete()
+
+        # Act
+        new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
+
+        # Assert: Should clone data (supplementary version)
+        self.assertEqual(new_version.report, self.old_report_version.report)
+        self.assertIsNotNone(ReportOperation.objects.filter(report_version=new_version).first())
+
+    def test_create_or_clone_operator_changed_creates_supplementary(self):
+        """Test that when operator has changed (transfer), supplementary version is created regardless of purpose."""
+        # Setup: different operator (transfer scenario)
+        # Store the old operator before we change it
+        operation = self.old_report_version.report.operation
+        old_operator = operation.operator
+
+        # Create new operator and transfer the operation to it
+        new_operator = make_recipe("registration.tests.utils.operator")
+        operation.operator = new_operator
+        operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
+        operation.save()
+
+        # Old report still has old operator (simulating it was created before the transfer)
+        self.old_report_version.report.operator = old_operator
+        self.old_report_version.report.save()
+
+        # Delete the draft version created in setUp to avoid constraint violation
+        self.new_report_version.delete()
+
+        # Act
+        new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
+
+        # Assert: Should create supplementary version even though purpose changed
+        self.assertEqual(new_version.report, self.old_report_version.report)
+        self.assertIsNotNone(ReportOperation.objects.filter(report_version=new_version).first())
+
+    def test_create_or_clone_purpose_changed_past_year_creates_supplementary(self):
+        """Test that for past years with purpose change, supplementary version is created."""
+        # Setup: different purpose, past year
+        from django.utils import timezone
+
+        operation = self.old_report_version.report.operation
+        operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
+        operation.save()
+
+        # Set to past year
+        self.old_report_version.report.reporting_year.reporting_year = timezone.now().year - 1
+        self.old_report_version.report.reporting_year.save()
+
+        # Same operator
+        self.old_report_version.report.operator = operation.operator
+        self.old_report_version.report.save()
+
+        # Delete the draft version created in setUp to avoid constraint violation
+        self.new_report_version.delete()
+
+        # Act
+        new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
+
+        # Assert: Should create supplementary version for past year
+        self.assertEqual(new_version.report, self.old_report_version.report)
+        self.assertIsNotNone(ReportOperation.objects.filter(report_version=new_version).first())
+
+    def test_create_or_clone_purpose_changed_current_year_creates_blank(self):
+        """Test that for current/future years with purpose change, blank version is created."""
+        # Setup: different purpose, current year, same operator
+        from django.utils import timezone
+
+        operation = self.old_report_version.report.operation
+        operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
+        operation.save()
+
+        # Set to current year
+        self.old_report_version.report.reporting_year.reporting_year = timezone.now().year
+        self.old_report_version.report.reporting_year.save()
+
+        # Same operator
+        self.old_report_version.report.operator = operation.operator
+        self.old_report_version.report.save()
+
+        # Act
+        with patch('service.report_version_service.ReportVersionService.create_report_version') as mock_create:
+            self.new_report_version.delete()
+            mock_create.return_value = make_recipe(
+                'reporting.tests.utils.report_version',
+                report=self.old_report_version.report,
+                status=ReportVersion.ReportVersionStatus.Draft,
+            )
+            new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
+
+            # Assert: Should create blank version
+            mock_create.assert_called_once_with(self.old_report_version.report)
+            self.assertEqual(new_version.report, self.old_report_version.report)
+
+    def test_create_supplementary_finds_matching_purpose_on_operator_change(self):
+        """Test that when operator changes and purpose changes, it finds a version with matching purpose to clone."""
+        # Setup: Create a previous version with matching purpose
+        operation = self.old_report_version.report.operation
+        old_operator = operation.operator
+
+        # Create new operator
+        new_operator = make_recipe("registration.tests.utils.operator")
+
+        # Create a previous report version with the new purpose
+        previous_matching_version = make_recipe(
+            'reporting.tests.utils.report_version',
+            report__operation=self.old_report_version.report.operation,
+            status=ReportVersion.ReportVersionStatus.Submitted,
+            is_latest_submitted=True,
+        )
+        make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=previous_matching_version,
+            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
+        )
+
+        # Update operation to have new operator and new purpose
+        operation.operator = new_operator
+        operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
+        operation.save()
+
+        # Old report has different operator (the old one before transfer)
+        self.old_report_version.report.operator = old_operator
+        self.old_report_version.report.save()
+
+        # Delete the draft version created in setUp to avoid constraint violation
+        self.new_report_version.delete()
+
+        # Act
+        new_version = ReportSupplementaryVersionService.create_report_supplementary_version(self.old_report_version.id)
+
+        # Assert: Should clone from the matching version
+        self.assertEqual(new_version.report, self.old_report_version.report)
+        new_operation = ReportOperation.objects.get(report_version=new_version)
+        self.assertEqual(new_operation.registration_purpose, Operation.Purposes.OPTED_IN_OPERATION)
+
     def test_clone_report_version_operation(self):
         """
         Test that the cloning method for ReportOperation correctly duplicates
