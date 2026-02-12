@@ -228,7 +228,21 @@ jobs:
           echo "Reported status for ${{ github.run_id }} to Airflow $dag_run_id with status ${{env.status}}"
       - name: Create failed build issue
         uses: jayqi/failed-build-issue-action@940568ce50eeef3f31a920614cefcc6102d2f930 # v1.3.0
-        if: failure()
+        if: |-
+          ${{
+          needs.test-code.result == 'failure'
+          || needs.test-backend.result == 'failure'
+          || needs.test-administration-e2e.result == 'failure'
+          || needs.test-registration-e2e.result == 'failure'
+          || needs.test-dashboard-e2e.result == 'failure'
+          || needs.test-compliance-e2e.result == 'failure'
+          || needs.build-compliance-e2e.result == 'failure'
+          || needs.build-dashboard.result == 'failure'
+          || needs.zap-owasp.result == 'failure'
+          || needs.schemaspy.result == 'failure'
+          || needs.trivy.result == 'failure'
+          || needs.codeql.result == 'failure'
+          }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           label-name: "nightly failed"
