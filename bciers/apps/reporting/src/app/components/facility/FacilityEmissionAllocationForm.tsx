@@ -131,17 +131,29 @@ const validateFormData = (
       industrialEmissionAllocations?.products?.find(
         (p) => p.product_name === "Pulp and paper: chemical pulp",
       );
+    const limeRecoveredByKilnAllocation =
+      industrialEmissionAllocations?.products?.find(
+        (p) => p.product_name === "Pulp and paper: lime recovered by kiln",
+      );
     if (!chemicalPulpAllocation)
       newErrors.push(
         "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
       );
+    else if (!limeRecoveredByKilnAllocation)
+      newErrors.push(
+        "Missing Product: 'Pulp and paper: lime recovered by kiln'. Please add the product on the operation review page",
+      );
     else if (
-      chemicalPulpAllocation.allocated_quantity -
+      // overlapping industrial process emissions are necessarily allocated to either of these products,
+      // we can give the user an early warning if they didn't allocate enough at this stage
+      chemicalPulpAllocation.allocated_quantity +
+        limeRecoveredByKilnAllocation.allocated_quantity -
         overlappingIndustrialProcessEmissions <
       0
     )
       newErrors.push(
-        "Invalid allocation: Industrial Process quantity allocated to product 'Pulp and paper: chemical pulp' is too low",
+        `Invalid allocation: Industrial Process quantity allocated betwen 'Pulp and paper:
+        chemical pulp' and 'Pulp and paper: lime recovered by kiln' is too low`,
       );
   }
 
