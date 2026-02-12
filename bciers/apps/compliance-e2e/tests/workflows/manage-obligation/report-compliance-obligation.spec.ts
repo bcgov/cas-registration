@@ -10,6 +10,9 @@ import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summaries";
 import { ManageObligationTaskListPOM } from "@/compliance-e2e/poms/manage-obligation/tasklist";
 import { PaymentInstructionsPOM } from "@/compliance-e2e/poms/manage-obligation/payment-instructions";
+
+import { ComplianceSetupPOM } from "@/compliance-e2e/poms/compliance-setup";
+
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 
 // 👤 run test using the storageState for role UserRole.INDUSTRY_USER_ADMIN
@@ -22,6 +25,11 @@ test.describe("Test compliance report version manage obligation flow", () => {
     request,
     happoScreenshot,
   }) => {
+    // PRECONDITIONS:
+    // Prime invoice_generation_date DB state
+    const complianceSetupPOM = new ComplianceSetupPOM(page);
+    await complianceSetupPOM.openInvoiceGenerationDate(true);
+
     const gridReportingReports = new CurrentReportsPOM(page);
 
     // Submit obligation report with stub attached after form is filled
