@@ -37,6 +37,8 @@ export class CurrentReportsPOM {
 
   async route() {
     await this.page.goto(this.url);
+
+    await waitForGridReady(this.page, { timeout: 30_000 });
   }
 
   // ✅ "Submit Report" button (from Sign-off form)
@@ -165,7 +167,6 @@ export class CurrentReportsPOM {
 
   // Start a supplementary report with given reportId
   async startSupplementaryReportById(reportId: string | number) {
-    await waitForGridReady(this.page, { timeout: 30_000 });
     // grab row and click more button
     const row = this.page.locator(`[role="row"][data-id="${reportId}"]`);
     await row.locator('[data-field="more"] button').click();

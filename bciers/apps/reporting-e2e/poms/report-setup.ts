@@ -1,7 +1,7 @@
 import { Page } from "@playwright/test";
 import { pool } from "@bciers/e2e/utils/pool";
 
-export class ReportsPOM {
+export class ReportSetUpPOM {
   readonly page: Page;
 
   constructor(page: Page) {
