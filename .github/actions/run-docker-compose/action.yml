@@ -46,6 +46,29 @@ runs:
 
       shell: bash
 
+    - name: Download Docker image artifacts
+      uses: actions/download-artifact@v4
+      with:
+        pattern: docker-image-*
+        path: /tmp/docker-images
+      continue-on-error: true
+
+    - name: Load Docker images from artifacts
+      shell: bash
+      run: |
+        if [ -d /tmp/docker-images ]; then
+          for f in /tmp/docker-images/*/docker-image-*.tar.gz; do
+            if [ -f "$f" ]; then
+              echo "Loading $f..."
+              gunzip -c "$f" | docker load
+            fi
+          done
+          echo "Loaded images:"
+          docker images --format "{{.Repository}}:{{.Tag}}" | head -20
+        else
+          echo "No image artifacts found, will pull from registry."
+        fi
+
     - name: Start services with Docker Compose and wait for them to be ready
       working-directory: ./bciers
       run: |

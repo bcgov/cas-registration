@@ -92,3 +92,14 @@ runs:
       run: |
         rm -rf /tmp/.buildx-cache
         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+    - name: Export image for e2e tests
+      shell: bash
+      run: |
+        docker pull ${{ inputs.image_url }}:${{ github.sha }}
+        docker save ${{ inputs.image_url }}:${{ github.sha }} | gzip > /tmp/docker-image-${{ inputs.project }}.tar.gz
+    - name: Upload image artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: docker-image-${{ inputs.project }}
+        path: /tmp/docker-image-${{ inputs.project }}.tar.gz
+        retention-days: 1
