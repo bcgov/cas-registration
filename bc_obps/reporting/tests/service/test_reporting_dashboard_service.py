@@ -1,6 +1,7 @@
 from unittest.mock import AsyncMock, patch, MagicMock
 import pytest
 from registration.models.operation import Operation
+from registration.models.naics_code import NaicsCode
 from model_bakery.baker import make_recipe
 from reporting.models.report_operation import ReportOperation
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
@@ -22,6 +23,9 @@ from model_bakery import baker
 @pytest.mark.django_db
 class TestReportingDashboardService:
     @patch(
+        "reporting.service.reporting_dashboard_service.settings.RESTRICTED_NAICS_CODES_FOR_REPORTING", "211110,212220"
+    )
+    @patch(
         "service.data_access_service.operation_designated_operator_timeline_service.OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user"
     )
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
@@ -38,12 +42,25 @@ class TestReportingDashboardService:
 
         year = reporting_year_baker(reporting_year=5091)
 
+        # Create NAICS codes for testing - one restricted, one not
+        restricted_naics = baker.make(
+            NaicsCode, naics_code="211110", naics_description="Oil and gas extraction", is_regulated=True
+        )
+        unrestricted_naics = baker.make(
+            NaicsCode, naics_code="111110", naics_description="Soybean farming", is_regulated=True
+        )
+
         operations = baker.make_recipe(
             'registration.tests.utils.operation',
             status=Operation.Statuses.REGISTERED,
             operator=user_operator.operator,
             _quantity=5,
         )
+
+        # Assign NAICS codes to operations
+        operations[0].naics_code = restricted_naics
+        operations[1].naics_code = unrestricted_naics
+        operations[2].naics_code = unrestricted_naics
 
         # set up timeline records
         for operation in operations:
@@ -97,6 +114,7 @@ class TestReportingDashboardService:
         assert op0_result["report_id"] == r0.id
         assert op0_result["report_version_id"] == latest_r0_revision.id
         assert op0_result["report_status"] == latest_r0_revision.status
+        assert op0_result["restricted"] is True  # Has restricted NAICS code 211110
 
         # Test operation with single version
         rep3_result = result_dict[str(operations[1].id)]
@@ -105,6 +123,7 @@ class TestReportingDashboardService:
         assert rep3_result["report_id"] == r1.id
         assert rep3_result["report_version_id"] == r1.report_versions.first().id
         assert rep3_result["report_status"] == r1.report_versions.first().status
+        assert rep3_result["restricted"] is False  # Has unrestricted NAICS code 111110
 
         # Test operation with no report
         op2_result = result_dict[str(operations[2].id)]
@@ -113,6 +132,7 @@ class TestReportingDashboardService:
         assert op2_result["report_id"] is None
         assert op2_result["report_version_id"] is None
         assert op2_result["report_status"] is None
+        assert op2_result["restricted"] is False  # Has unrestricted NAICS code 111110
 
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_get_past_reports_for_reporting_dashboard(
@@ -608,3 +628,104 @@ class TestReportingDashboardService:
         assert operation.id in list(queryset_2025_new_user.values_list("id", flat=True))
         # assert new_user doesn't get results for operations from other operators
         assert queryset_2025_new_user.count() == 1
+
+    @patch(
+        "reporting.service.reporting_dashboard_service.settings.RESTRICTED_NAICS_CODES_FOR_REPORTING",
+        "211110,212220,213111",
+    )
+    @patch(
+        "service.data_access_service.operation_designated_operator_timeline_service.OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user"
+    )
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_restricted_naics_code_field(
+        self,
+        mock_get_by_guid: MagicMock | AsyncMock,
+        get_operation_timeline_for_user: MagicMock | AsyncMock,
+    ):
+        """Test that the restricted field is correctly set based on NAICS codes"""
+        user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        mock_get_by_guid.return_value = user_operator.user
+        get_operation_timeline_for_user.side_effect = (
+            lambda user, exclude_previously_owned=False: OperationDesignatedOperatorTimeline.objects.all()
+        )
+
+        reporting_year_baker(reporting_year=5091)
+
+        # Create various NAICS codes
+        restricted_naics_1 = baker.make(
+            NaicsCode, naics_code="211110", naics_description="Oil and gas extraction", is_regulated=True
+        )
+        restricted_naics_2 = baker.make(
+            NaicsCode, naics_code="212220", naics_description="Gold ore mining", is_regulated=True
+        )
+        unrestricted_naics = baker.make(
+            NaicsCode, naics_code="111110", naics_description="Soybean farming", is_regulated=True
+        )
+
+        # Create operations with different NAICS codes
+        operation_restricted_1 = baker.make_recipe(
+            'registration.tests.utils.operation',
+            status=Operation.Statuses.REGISTERED,
+            operator=user_operator.operator,
+            naics_code=restricted_naics_1,
+            name="Restricted Operation 1",
+        )
+        operation_restricted_2 = baker.make_recipe(
+            'registration.tests.utils.operation',
+            status=Operation.Statuses.REGISTERED,
+            operator=user_operator.operator,
+            naics_code=restricted_naics_2,
+            name="Restricted Operation 2",
+        )
+        operation_unrestricted = baker.make_recipe(
+            'registration.tests.utils.operation',
+            status=Operation.Statuses.REGISTERED,
+            operator=user_operator.operator,
+            naics_code=unrestricted_naics,
+            name="Unrestricted Operation",
+        )
+        operation_no_naics = baker.make_recipe(
+            'registration.tests.utils.operation',
+            status=Operation.Statuses.REGISTERED,
+            operator=user_operator.operator,
+            naics_code=None,
+            name="No NAICS Operation",
+        )
+
+        # Set up timeline records for all operations
+        for operation in [operation_restricted_1, operation_restricted_2, operation_unrestricted, operation_no_naics]:
+            baker.make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operation=operation,
+                start_date="5090-01-01 01:46:20.789146",
+                end_date="5092-12-31 23:59:59.000000",
+                operator=user_operator.operator,
+            )
+
+        result = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            user_operator.user.user_guid, 5091, filters=ReportingDashboardOperationFilterSchema()
+        ).values()
+        result_list = list(result)
+        result_dict = {str(item["id"]): item for item in result_list}
+
+        assert len(result_list) == 4
+
+        # Operation with restricted NAICS code 211110 should have restricted=True
+        restricted_1_result = result_dict[str(operation_restricted_1.id)]
+        assert restricted_1_result["restricted"] is True
+        assert restricted_1_result["name"] == "Restricted Operation 1"
+
+        # Operation with restricted NAICS code 212220 should have restricted=True
+        restricted_2_result = result_dict[str(operation_restricted_2.id)]
+        assert restricted_2_result["restricted"] is True
+        assert restricted_2_result["name"] == "Restricted Operation 2"
+
+        # Operation with unrestricted NAICS code should have restricted=False
+        unrestricted_result = result_dict[str(operation_unrestricted.id)]
+        assert unrestricted_result["restricted"] is False
+        assert unrestricted_result["name"] == "Unrestricted Operation"
+
+        # Operation with no NAICS code should have restricted=False
+        no_naics_result = result_dict[str(operation_no_naics.id)]
+        assert no_naics_result["restricted"] is False
+        assert no_naics_result["name"] == "No NAICS Operation"
