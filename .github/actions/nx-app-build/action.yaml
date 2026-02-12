@@ -27,6 +27,9 @@ inputs:
     description: "Extra tag to use for the image (e.g. nightly, latest)"
     required: false
     default: latest
+  artifact_name:
+    description: "Name for the exported artifact (must be unique within the workflow run)"
+    required: false
 
 runs:
   using: composite
@@ -96,10 +99,10 @@ runs:
       shell: bash
       run: |
         docker pull ${{ inputs.image_url }}:${{ github.sha }}
-        docker save ${{ inputs.image_url }}:${{ github.sha }} | gzip > /tmp/docker-image-${{ inputs.project }}.tar.gz
+        docker save ${{ inputs.image_url }}:${{ github.sha }} | gzip > /tmp/docker-image-${{ inputs.artifact_name || inputs.project }}.tar.gz
     - name: Upload image artifact
       uses: actions/upload-artifact@v4
       with:
-        name: docker-image-${{ inputs.project }}
-        path: /tmp/docker-image-${{ inputs.project }}.tar.gz
+        name: docker-image-${{ inputs.artifact_name || inputs.project }}
+        path: /tmp/docker-image-${{ inputs.artifact_name || inputs.project }}.tar.gz
         retention-days: 1
