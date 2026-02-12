@@ -84,6 +84,25 @@ jobs:
         run: npx playwright install chromium
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
+      - name: 🔍 Verify e2e fixture dump is up to date
+        env:
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          DB_NAME: registration
+          DB_PORT: 5432
+          DB_HOST: localhost
+          ENVIRONMENT: local
+        working-directory: ./bc_obps
+        run: |
+          cp common/fixtures/e2e/e2e_fixture_dump.sql /tmp/committed_dump.sql
+          poetry run python manage.py generate_e2e_fixture_dump
+          if ! diff -q common/fixtures/e2e/e2e_fixture_dump.sql /tmp/committed_dump.sql > /dev/null 2>&1; then
+            echo "::error::e2e_fixture_dump.sql is out of date. Run: cd bc_obps && python manage.py generate_e2e_fixture_dump"
+            diff common/fixtures/e2e/e2e_fixture_dump.sql /tmp/committed_dump.sql | head -30
+            exit 1
+          fi
+          echo "✅ e2e fixture dump is up to date"
+
       - name: 🎭 Run Playwright Tests
         env:
           NX_PROJECT: ${{ inputs.nx_project }}

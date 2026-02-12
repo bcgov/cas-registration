@@ -2,7 +2,6 @@ import {
   Page,
   expect,
   Locator,
-  APIResponse,
   chromium,
   firefox,
   webkit,
@@ -292,24 +291,13 @@ export async function openNewBrowserContextAs(role: string) {
   return newPage;
 }
 
-// 🛠️ Function: calls api to seed database with data for workflow tests
-export async function setupTestEnvironment(
-  workFlow?: string,
-  truncateOnly?: boolean,
-) {
-  const browser = await getBrowser();
-  const context = await browser.newContext();
-  const url = workFlow
-    ? `${baseUrlSetup}?workflow=${workFlow}`
-    : truncateOnly
-      ? `${baseUrlSetup}?truncate_only=true`
-      : baseUrlSetup;
+// 🛠️ Function: calls api to reset the e2e test database using a pre-generated SQL dump
+export async function setupTestEnvironment() {
+  const response = await fetch(baseUrlSetup);
+  const text = await response.text();
 
-  const response: APIResponse = await context.request.get(url);
-
-  // Wait for the response and check for success status text and code (e.g., 200)
-  expect(await response.text()).toBe(MessageTextResponse.SETUP_SUCCESS);
-  expect(response.status()).toBe(200);
+  expect(text).toBe(MessageTextResponse.SETUP_SUCCESS);
+  expect(response.status).toBe(200);
 }
 
 export async function waitForElementToStabilize(page: Page, element: string) {

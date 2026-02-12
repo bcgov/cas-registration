@@ -21,9 +21,6 @@ class Command(BaseCommand):
     help = 'Load fixtures for the reporting application'
     fixture_base_dir = 'reporting/fixtures/mock'
 
-    def add_arguments(self, parser):
-        parser.add_argument('workflow', nargs='?', type=str, help='Name of the workflow')
-
     def handle(self, *args, **options):
 
         fixtures = [
@@ -35,8 +32,7 @@ class Command(BaseCommand):
             call_command('loaddata', fixture)
 
         self.stdout.write(self.style.SUCCESS(f"Creating Reports from {self.fixture_base_dir}/report.json"))
-        workflow = options.get('workflow')
-        self.load_reports(workflow)
+        self.load_reports()
 
         # Load any additional fixtures you need *after* reports exist
         extra = [
@@ -59,7 +55,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"Loading additional report fixture: {fixture}"))
             call_command('loaddata', fixture)
 
-    def load_reports(self, workflow):
+    def load_reports(self):
         reports_fixture = f'{self.fixture_base_dir}/report.json'
         with open(reports_fixture) as f:
             reports = json.load(f)
