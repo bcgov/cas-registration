@@ -16,7 +16,6 @@ interface ActionCellProps extends GridRenderCellParams {
 }
 
 const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
-  console.log("Rendering ActionCell for row:", row);
   const reportId = row?.report_id;
   const [reportVersionId, setReportVersionId] = React.useState<
     string | undefined

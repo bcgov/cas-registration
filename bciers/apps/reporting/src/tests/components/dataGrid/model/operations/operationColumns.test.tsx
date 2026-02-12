@@ -236,7 +236,7 @@ describe("operationColumns function", () => {
     }
 
     render(<WrapperComponent />);
-    expect(screen.getByText("Available Soon")).toBeInTheDocument();
+    expect(screen.getByText("Available Soon")).toBeVisible();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });
