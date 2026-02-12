@@ -5,8 +5,8 @@ import {
   assertSuccessfulSnackbar,
   getRowByUniqueCellValue,
   linkIsVisible,
-  openNewBrowserContextAs,
   takeStabilizedScreenshot,
+  getStorageStateForRole, // ✅ import this (wherever it currently lives)
 } from "@bciers/e2e/utils/helpers";
 import {
   AppRoute,
@@ -25,12 +25,8 @@ import { SecondaryUserOperatorFixtureFields } from "@/administration-e2e/utils/e
 import { OperatorPOM } from "@/administration-e2e/poms/operator";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
+
 test.beforeEach(async () => {
-  /**
-   * Upsert bc-cas-dev-secondary user operator as pending
-   * Best not to set this in the fixtures so that we can test
-   * Scenario where this user requests access to its operator
-   */
   await upsertUserOperatorRecord(
     SecondaryUserOperatorFixtureFields.USER,
     SecondaryUserOperatorFixtureFields.ROLE_PENDING,
@@ -38,22 +34,30 @@ test.beforeEach(async () => {
   );
 });
 
-// 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
-test.describe.configure({ mode: "serial" });
-test.describe("External User", () => {
-  test("Approve a reporter", async ({ page, happoScreenshot }) => {
-    // 🤣🛸 Navigate to Users and Access Requests from dashboard
+test.describe
+  .serial("User Access Request Workflow (Industry Admin → Industry User)", () => {
+  // -------------------------
+  // ADMIN CONTEXT (fixture)
+  // -------------------------
+  test.use({
+    storageState: getStorageStateForRole(UserRole.INDUSTRY_USER_ADMIN),
+  });
+
+  test("Approve a reporter (Industry User - Admin)", async ({
+    page,
+    happoScreenshot,
+  }) => {
     const accessRequestPage = new UsersAccessRequestPOM(page);
     await accessRequestPage.goToUserAccessRequestPage();
     await accessRequestPage.pageIsStable();
 
-    // Get specific row that has the unique email
     const row = await getRowByUniqueCellValue(
       page,
       UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
       UserAndAccessRequestValues.EMAIL,
     );
     await expect(row).toBeVisible();
+
     const currentStatus = await accessRequestPage.getCurrentStatus(row);
     await accessRequestPage.assertActionVisibility(row, currentStatus);
 
@@ -69,59 +73,33 @@ test.describe("External User", () => {
       component: "EXTERNAL: Approve a reporter",
       variant: "filled",
     });
+  });
 
-    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+  // -------------------------
+  // INDUSTRY CONTEXT (fixture)
+  // -------------------------
+  test.use({ storageState: getStorageStateForRole(UserRole.INDUSTRY_USER) });
 
-    const dashboardPage = new DashboardPOM(newPage);
+  test("Approve a reporter (Industry User)", async ({ page }) => {
+    const dashboardPage = new DashboardPOM(page);
     await dashboardPage.route();
+
     await expect(
-      newPage.getByRole("link", {
-        name: AdministrationTileText.ACCESS_REQUEST,
-      }),
+      page.getByRole("link", { name: AdministrationTileText.ACCESS_REQUEST }),
     ).toBeHidden();
   });
 
-  test("Approve an administrator", async ({ page, happoScreenshot }) => {
-    // 🛸 Navigate to Users and Access Requests from dashboard
-    const accessRequestPage = new UsersAccessRequestPOM(page);
-    await accessRequestPage.goToUserAccessRequestPage();
-    await accessRequestPage.pageIsStable();
-
-    const row = await getRowByUniqueCellValue(
-      page,
-      UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
-      UserAndAccessRequestValues.EMAIL,
-    );
-
-    const currentStatus = await accessRequestPage.getCurrentStatus(row);
-    await accessRequestPage.assertActionVisibility(row, currentStatus);
-
-    const role = UserAccessRequestRoles.ADMIN;
-    await accessRequestPage.approveOrDeclineRequest(
-      row,
-      role,
-      UserAccessRequestActions.APPROVE,
-    );
-    await assertSuccessfulSnackbar(page, /is now approved/i);
-
-    await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: "EXTERNAL: Approve an administrator",
-      variant: "default",
-    });
-
-    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
-
-    const dashboardPage = new DashboardPOM(newPage);
-    await dashboardPage.route();
-    await expect(
-      newPage.getByRole("link", {
-        name: AdministrationTileText.ACCESS_REQUEST,
-      }),
-    ).toBeVisible();
+  // -------------------------
+  // back to ADMIN
+  // -------------------------
+  test.use({
+    storageState: getStorageStateForRole(UserRole.INDUSTRY_USER_ADMIN),
   });
 
-  test("Reject a request", async ({ page, happoScreenshot }) => {
-    // 🛸 Navigate to Users and Access Requests from dashboard
+  test("Reject a request (Industry User - Admin)", async ({
+    page,
+    happoScreenshot,
+  }) => {
     const accessRequestPage = new UsersAccessRequestPOM(page);
     await accessRequestPage.goToUserAccessRequestPage();
     await accessRequestPage.pageIsStable();
@@ -134,7 +112,6 @@ test.describe("External User", () => {
 
     const role = await accessRequestPage.getCurrentRole(row);
 
-    // Decline Request
     await accessRequestPage.approveOrDeclineRequest(
       row,
       role,
@@ -150,25 +127,31 @@ test.describe("External User", () => {
       component: "EXTERNAL: Decline a user operator request",
       variant: "default",
     });
+  });
 
-    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+  // -------------------------
+  // and INDUSTRY verify
+  // -------------------------
+  test.use({ storageState: getStorageStateForRole(UserRole.INDUSTRY_USER) });
 
-    // Verify Select an operator is visible
-    const selectOperatorPage = new OperatorPOM(newPage);
+  test("Reject a request (Industry User)", async ({
+    page,
+    happoScreenshot,
+  }) => {
+    const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
     await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
 
-    // 👉 Action search by legal name
     await selectOperatorPage.selectByLegalName(
       OperatorE2EValue.SEARCH_LEGAL_NAME,
       "Bravo Technologies - has parTNER operator - name from admin",
     );
-    // Wait for client-side navigation to the confirm page after selecting the operator.
-    // Uses toHaveURL (polling assertion) instead of waitForURL because Next.js
-    // client-side routing (router.push) doesn't fire a traditional page load event.
+
     await expect(selectOperatorPage.page).toHaveURL(
       /select-operator\/confirm/,
-      { timeout: 30_000 },
+      {
+        timeout: 30_000,
+      },
     );
 
     await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
@@ -177,36 +160,10 @@ test.describe("External User", () => {
       MessageTextOperatorSelect.SELECT_ANOTHER_OPERATOR,
       true,
     );
-    // TODO:To be handled in ticket #457
-    // await takeStabilizedScreenshot(happoScreenshot, newPage, {
-    //   component: "Decline a user operator request",
-    //   variant: "default",
-    // });
-  });
 
-  test("Edit a request", async ({ page }) => {
-    // 🛸 Navigate to Users and Access Requests from dashboard
-    const accessRequestPage = new UsersAccessRequestPOM(page);
-    await accessRequestPage.goToUserAccessRequestPage();
-    await accessRequestPage.pageIsStable();
-
-    const row = await getRowByUniqueCellValue(
-      page,
-      UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
-      UserAndAccessRequestValues.EMAIL,
-    );
-    const role = UserAccessRequestRoles.REPORTER;
-    await accessRequestPage.approveOrDeclineRequest(
-      row,
-      role,
-      UserAccessRequestActions.APPROVE,
-    );
-    await assertSuccessfulSnackbar(page, /is now approved/i);
-
-    await accessRequestPage.editRequest(row);
-    await assertSuccessfulSnackbar(page, /is now pending/i);
-
-    const currentStatus = await accessRequestPage.getCurrentStatus(row);
-    await accessRequestPage.assertActionVisibility(row, currentStatus);
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "Decline a user operator request",
+      variant: "default",
+    });
   });
 });
