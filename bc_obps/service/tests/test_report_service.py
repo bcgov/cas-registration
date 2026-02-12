@@ -345,12 +345,20 @@ class TestReportService(TestCase):
         self.assertIsNotNone(retrieved_data)
         self.assertEqual(retrieved_data["registration_purpose"], self.report_operation.registration_purpose)
 
-    def test_deletes_child_report_product_records_on_product_set_change(self):
+    def test_deletes_child_report_product_records_on_product_set_change_for_lfo(self):
+        """
+        Test that for Linear Facilities Operation, updating regulated products
+        prunes report product data for each facility report.
+        """
         operator = baker.make_recipe('registration.tests.utils.operator')
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
         report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
         report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report_operation = baker.make_recipe(
+            'reporting.tests.utils.report_operation',
+            report_version=report_version,
+            operation_type='Linear Facilities Operation',
+        )
         report_operation.regulated_products.set([1, 2, 3])
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
         report_product_1 = baker.make_recipe(
@@ -376,7 +384,7 @@ class TestReportService(TestCase):
             operator_legal_name="Updated Legal Name",
             operator_trade_name="Updated Trade Name",
             operation_name="Updated Operation Name",
-            operation_type="Updated Operation Type",
+            operation_type="Linear Facilities Operation",
             operation_bcghgid="Updated BC GHID",
             bc_obps_regulated_operation_id="Updated Regulated Operation ID",
             activities=[18, 14],
@@ -394,34 +402,28 @@ class TestReportService(TestCase):
         assert not ReportProduct.objects.filter(id=report_product_2.id).exists()
         assert not ReportProduct.objects.filter(id=report_product_3.id).exists()
 
-    def test_lfo_does_not_update_facility_activities_if_facility_already_has_activities(self):
+    def test_save_report_operation_updates_facility_report_for_all_operation_types(self):
         """
-        Test that for LFOs, when a facility already has activities,
-        updating operation-level activities does NOT modify the facility's activities.
-        This prevents overwriting user-selected activities at the facility level.
+        Test that updating operation-level data also updates the facility report
+        for all operation types (both LFO and SFO).
         """
         operator = baker.make_recipe('registration.tests.utils.operator')
-        operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
+        operation = operation_baker(type=Operation.Types.SFO, operator_id=operator.id)
         report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
         report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
         report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
         report_operation.activities.set([1, 2, 3])
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
         facility_report.activities.set([1, 2, 3])
-        report_activity = baker.make_recipe(
-            'reporting.tests.utils.report_activity',
-            facility_report=facility_report,
-            activity_id=2,
-        )
 
         data = ReportOperationIn(
             operator_legal_name="Updated Legal Name",
             operator_trade_name="Updated Trade Name",
             operation_name="Updated Operation Name",
-            operation_type="Linear Facilities Operation",
+            operation_type="Single Facility Operation",
             operation_bcghgid="Updated BC GHID",
             bc_obps_regulated_operation_id="Updated Regulated Operation ID",
-            activities=[1, 18, 14],
+            activities=[18, 14],
             regulated_products=[1],
             operation_representative_name=[1, 2],
             operation_report_type="New Report Type",
@@ -431,34 +433,63 @@ class TestReportService(TestCase):
         ReportService.save_report_operation(report_version.id, data)
 
         facility_report.refresh_from_db()
+        report_operation.refresh_from_db()
 
-        # Activities should NOT be updated since facility already had activities
-        assert facility_report.activities.count() == 3
+        # Verify facility report is updated with operation-level activities
+        assert facility_report.activities.count() == 2
         self.assertQuerySetEqual(
             facility_report.activities.all(),
-            Activity.objects.filter(id__in=[1, 2, 3]),
+            Activity.objects.filter(id__in=[18, 14]),
             ordered=False,
         )
-        self.assertQuerySetEqual(
-            facility_report.reportactivity_records.all(),
-            [report_activity],
-            ordered=False,
-        )
+        # Verify facility name is updated from operation name
+        assert facility_report.facility_name == "Updated Operation Name"
 
-    def test_lfo_sets_initial_activities_for_facility_without_activities(self):
+    def test_save_report_operation_updates_all_facility_reports_for_lfo(self):
         """
-        Test that for LFOs, when a facility has no activities yet,
-        updating operation-level activities DOES set the facility's activities.
-        This allows initial setup of activities.
+        Test that updating operation-level data for Linear Facilities Operation
+        sets activities and prunes regulated products for all facility reports.
         """
         operator = baker.make_recipe('registration.tests.utils.operator')
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
         report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
         report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report_operation = baker.make_recipe(
+            'reporting.tests.utils.report_operation',
+            report_version=report_version,
+            operation_type='Linear Facilities Operation',
+        )
         report_operation.activities.set([1, 2, 3])
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
-        # Facility has NO activities initially
+        report_operation.regulated_products.set([1, 2, 3])
+
+        # Create multiple facility reports for LFO
+        facility_report_1 = baker.make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
+        facility_report_1.activities.set([1, 2, 3])
+        facility_report_2 = baker.make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
+        facility_report_2.activities.set([1, 2, 3])
+        facility_report_3 = baker.make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
+        facility_report_3.activities.set([1, 2, 3])
+
+        # Create report products for each facility
+        for facility in [facility_report_1, facility_report_2, facility_report_3]:
+            baker.make_recipe(
+                'reporting.tests.utils.report_product',
+                report_version=report_version,
+                facility_report=facility,
+                product_id=1,
+            )
+            baker.make_recipe(
+                'reporting.tests.utils.report_product',
+                report_version=report_version,
+                facility_report=facility,
+                product_id=2,
+            )
+            baker.make_recipe(
+                'reporting.tests.utils.report_product',
+                report_version=report_version,
+                facility_report=facility,
+                product_id=3,
+            )
 
         data = ReportOperationIn(
             operator_legal_name="Updated Legal Name",
@@ -476,12 +507,20 @@ class TestReportService(TestCase):
 
         ReportService.save_report_operation(report_version.id, data)
 
-        facility_report.refresh_from_db()
+        facility_report_1.refresh_from_db()
+        facility_report_2.refresh_from_db()
+        facility_report_3.refresh_from_db()
+        report_operation.refresh_from_db()
 
-        # Activities SHOULD be set since facility had no activities before
-        assert facility_report.activities.count() == 2
-        self.assertQuerySetEqual(
-            facility_report.activities.all(),
-            Activity.objects.filter(id__in=[18, 14]),
-            ordered=False,
-        )
+        # Verify all facility reports have activities replaced (old [1,2,3] removed, new [18,14] set)
+        for facility in [facility_report_1, facility_report_2, facility_report_3]:
+            assert facility.activities.count() == 2
+            self.assertQuerySetEqual(
+                facility.activities.all(),
+                Activity.objects.filter(id__in=[18, 14]),
+                ordered=False,
+            )
+            # Verify only products in the updated list remain
+            assert ReportProduct.objects.filter(facility_report=facility, product_id=1).exists()
+            assert not ReportProduct.objects.filter(facility_report=facility, product_id=2).exists()
+            assert not ReportProduct.objects.filter(facility_report=facility, product_id=3).exists()
