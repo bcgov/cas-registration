@@ -58,7 +58,10 @@ def _run_pg_restore() -> None:
     ]
 
     result = subprocess.run(cmd, capture_output=True, text=True)  # nosec B603
-    if result.returncode != 0:
+    # pg_restore returns non-zero even for non-fatal warnings (e.g. unrecognized
+    # SET parameters from a newer pg_dump version). Only raise if the error is
+    # not an "errors ignored on restore" warning.
+    if result.returncode != 0 and "errors ignored on restore" not in result.stderr:
         raise RuntimeError(f"pg_restore failed: {result.stderr}")
 
 
