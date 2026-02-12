@@ -6,6 +6,7 @@ import {
   GridActionText,
 } from "@/compliance-e2e/utils/enums";
 import { REVIEW_OBLIGATION_URL_PATTERN } from "@/compliance-e2e/utils/constants";
+import { ReportsPOM } from "@/reporting-e2e/poms/reports";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summaries";
 import { ManageObligationTaskListPOM } from "@/compliance-e2e/poms/manage-obligation/tasklist";
@@ -22,6 +23,10 @@ test.describe("Test compliance report version manage obligation flow", () => {
     request,
     happoScreenshot,
   }) => {
+    // Prime reporting-year DB state (open or closed) BEFORE any navigation that relies on it
+    const reports = new ReportsPOM(page);
+    await reports.primeReportingYear(true);
+
     const gridReportingReports = new CurrentReportsPOM(page);
 
     // Submit obligation report with stub attached after form is filled

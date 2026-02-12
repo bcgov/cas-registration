@@ -13,6 +13,7 @@ import {
   SUBMISSION_SUCCESS_TEXT,
 } from "@/reporting-e2e/utils/constants";
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
+import { waitForGridReady } from "@bciers/e2e/utils/helpers";
 
 export class CurrentReportsPOM {
   readonly page: Page;
@@ -32,6 +33,10 @@ export class CurrentReportsPOM {
     await expect(checkbox).toBeVisible();
     await checkbox.check();
     await expect(checkbox).toBeChecked();
+  }
+
+  async route() {
+    await this.page.goto(this.url);
   }
 
   // ✅ "Submit Report" button (from Sign-off form)
@@ -156,5 +161,16 @@ export class CurrentReportsPOM {
       isEioFlow,
       apiContext,
     );
+  }
+
+  // Start a supplementary report with given reportId
+  async startSupplementaryReportById(reportId: string | number) {
+    await waitForGridReady(this.page, { timeout: 30_000 });
+    // grab row and click more button
+    const row = this.page.locator(`[role="row"][data-id="${reportId}"]`);
+    await row.locator('[data-field="more"] button').click();
+    // wait for dialog
+    const dialogBox = this.page.getByRole("dialog", { name: "Confirmation" });
+    await expect(dialogBox).toBeVisible();
   }
 }
