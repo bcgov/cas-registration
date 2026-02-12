@@ -23,6 +23,7 @@ import {
   tableColumnNamesAreCorrect,
 } from "@bciers/e2e/utils/helpers";
 import { AdministrationTileText } from "@/dashboard-e2e/utils/enums";
+import { waitForGridReady } from "@bciers/e2e/utils/helpers";
 
 export class UsersAccessRequestPOM {
   readonly page: Page;
@@ -153,6 +154,7 @@ export class UsersAccessRequestPOM {
         name: AdministrationTileText.ACCESS_REQUEST,
       }),
     ).toBeVisible();
+    await waitForGridReady(this.page, { timeout: 30_000 });
     await stabilizeGrid(this.page, 6);
     await tableColumnNamesAreCorrect(
       this.page,

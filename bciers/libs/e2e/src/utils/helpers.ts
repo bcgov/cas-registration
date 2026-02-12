@@ -8,7 +8,7 @@ import {
   webkit,
   Browser,
 } from "@playwright/test";
-import { baseUrlSetup } from "@bciers/e2e/utils/constants";
+import { GRID_ROOT, baseUrlSetup } from "@bciers/e2e/utils/constants";
 import { DataTestID, MessageTextResponse } from "@bciers/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
 import path from "node:path";
@@ -318,24 +318,40 @@ export async function waitForElementToStabilize(page: Page, element: string) {
   await el?.waitForElementState("stable");
 }
 
+export async function waitForVisualStability(page: Page, timeoutMs = 5_000) {
+  await page.waitForLoadState("domcontentloaded", { timeout: timeoutMs });
+  await page.locator("html").waitFor({ state: "attached", timeout: timeoutMs });
+  await page.waitForTimeout(150);
+}
+
 // This function can be used instead of `happoScreenshot` directly when experiencing flaky screenshots. It waits for the page to be stable before taking a screenshot.
 export async function takeStabilizedScreenshot(
   happoScreenshot: any,
   page: Page,
   happoArgs: { component: string; variant: string; targets?: string[] },
 ) {
-  // Skip Happo screenshots if Happo is not enabled (e.g., running locally without API keys)
-  if (!happoScreenshot) {
-    return;
-  }
+  if (!happoScreenshot) return;
+
   const { component, variant, targets } = happoArgs;
   const pageContent = page.locator("html");
-  await waitForElementToStabilize(page, "html"); // <-- match the screenshot target
-  await happoScreenshot(pageContent, {
-    component,
-    variant,
-    targets,
-  });
+
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      await waitForVisualStability(page);
+      await happoScreenshot(pageContent, { component, variant, targets });
+      return;
+    } catch (e: any) {
+      const msg = String(e?.message ?? e);
+      const isDetached =
+        msg.includes("Frame has been detached") ||
+        msg.includes("Execution context was destroyed"); // same root cause
+
+      if (attempt === 2 || !isDetached) throw e;
+
+      // Let the navigation/refresh finish
+      await page.waitForTimeout(250);
+    }
+  }
 }
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
@@ -524,4 +540,28 @@ export function getCrvIdFromUrl({ url }: { url: string }): number {
 
   if (!match) throw new Error(`Could not extract crvId from URL: ${url}`);
   return Number(match[1]);
+}
+
+export async function waitForGridReady(
+  page: Page,
+  options?: { timeout?: number },
+): Promise<void> {
+  const timeout = options?.timeout ?? 30_000;
+
+  await expect(async () => {
+    const rootCount = await page.locator(GRID_ROOT).count();
+    expect(rootCount).toBeGreaterThan(0);
+
+    const grid = page.locator(GRID_ROOT);
+    await expect(grid).toBeVisible();
+
+    const progressbar = grid.locator('[role="progressbar"]');
+    const anyCell = grid.locator('[role="gridcell"]').first();
+
+    if ((await progressbar.count()) > 0) {
+      await expect(progressbar).toBeHidden();
+    }
+
+    await expect(anyCell).toBeVisible();
+  }).toPass({ timeout });
 }

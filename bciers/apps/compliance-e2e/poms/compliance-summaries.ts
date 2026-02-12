@@ -8,6 +8,7 @@ import {
   COMPLIANCE_SUMMARIES_BASE_PATH,
   COMPLIANCE_SUMMARIES_TAB,
 } from "@/compliance-e2e/utils/constants";
+import { waitForGridReady } from "@bciers/e2e/utils/helpers";
 
 type RouteOptions = {
   timeout?: number;
@@ -96,40 +97,6 @@ export class ComplianceSummariesPOM {
     }).toPass({ timeout });
   }
 
-  /**
-   * Wait until the grid is actually "ready":
-   * - GRID_ROOT exists
-   * - root + role=grid visible
-   * - (optional) progressbar/spinner is gone
-   * - at least one gridcell exists
-   *
-   * Tolerates re-mounts (e.g. HMR) with re-check of counts on every attempt
-   */
-  private async waitForGridReady(options?: {
-    timeout?: number;
-  }): Promise<void> {
-    const timeout = options?.timeout ?? 30_000;
-
-    await expect(async () => {
-      const rootCount = await this.page.locator(GRID_ROOT).count();
-      expect(rootCount).toBeGreaterThan(0);
-
-      await expect(this.gridRoot()).toBeVisible();
-
-      const grid = this.grid();
-      const progressbar = grid.locator('[role="progressbar"]');
-      const anyCell = grid.locator('[role="gridcell"]').first();
-
-      await expect(grid).toBeVisible();
-
-      if ((await progressbar.count()) > 0) {
-        await expect(progressbar).toBeHidden();
-      }
-
-      await expect(anyCell).toBeVisible();
-    }).toPass({ timeout });
-  }
-
   // -----------------
   // Actions
   // -----------------
@@ -174,11 +141,11 @@ export class ComplianceSummariesPOM {
     }
 
     // Finally: grid hydration
-    await this.waitForGridReady({ timeout });
+    await waitForGridReady(this.page, { timeout });
   }
 
   async getRowByOperationName(operationName: string): Promise<Locator> {
-    await this.waitForGridReady({ timeout: 30_000 });
+    await waitForGridReady(this.page, { timeout: 30_000 });
 
     await expect(async () => {
       const row = this.grid()
