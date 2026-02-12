@@ -285,8 +285,6 @@ class ComplianceService:
             allocated_reporting_only = ComplianceService.get_reporting_only_allocated(report_version_id, rp.product_id)
             allocated_for_compliance = allocated - allocated_reporting_only
 
-            # If this compliance period is 2024, use Apr-Dec production for allocations and limits.
-            # Otherwise use full-year production and full-year allocated emissions.
             # Calculate prorated_allocated limit (if applicable), depending on reporting year and operation criteria.
             production_for_limit, prorated_allocated, allocated_compliance_emissions_value = (
                 resolve_compliance_parameters(production_period, allocated_for_compliance, production_totals)
