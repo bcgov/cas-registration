@@ -1,15 +1,22 @@
 from common.tests.utils.helpers import BaseTestCase
+from django.db.models import Count
 from reporting.models import ProductEmissionIntensity
 from registration.models import RegulatedProduct
 from django.test import TestCase
 
 
 class TestInitialData(TestCase):
-    def test_all_products_have_emission_intensity(self):
-        product_list = RegulatedProduct.objects.all().values_list('id', flat=True)
-        missing_records = ProductEmissionIntensity.objects.all().exclude(id__in=product_list).count()
-
-        self.assertEqual(missing_records, 0)
+    def test_all_regulated_products_have_emission_intensity(self):
+        """
+        Assert that every regulated product has at least one ProductEmissionIntensity record defined
+        """
+        assert (
+            not RegulatedProduct.objects.prefetch_related("productemissionintensity")
+            .filter(is_regulated=True)
+            .annotate(emission_intensity_count=Count("productemissionintensity"))
+            .filter(emission_intensity_count=0)
+            .exists()
+        )
 
 
 class EmissionCategoryModelTest(BaseTestCase):

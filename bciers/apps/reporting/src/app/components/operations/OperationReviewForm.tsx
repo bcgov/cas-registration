@@ -162,7 +162,7 @@ export default function OperationReviewForm({
   };
 
   // Regulated product IDs 16 and 43 are the Pulp and paper: chemical pulp
-  // and Pulp and paper: lime recovery kiln, respectively
+  // and Pulp and paper: lime recovered by kiln, respectively
   const selectedProductIds: number[] = formDataState.regulated_products;
   const displayPulpAndPaperHelpText =
     (selectedProductIds.includes(16) && !selectedProductIds.includes(43)) ||
@@ -207,7 +207,7 @@ export default function OperationReviewForm({
             regulated_products: {
               ...uiSchema.regulated_products,
               "ui:help": `If this is a chemical pulp mill that recovered lime by kiln,
-                select both 'Pulp and paper: chemical pulp' and 'Pulp and paper: lime recovery kiln'`,
+                select both 'Pulp and paper: chemical pulp' and 'Pulp and paper: lime recovered by kiln'`,
             },
           }),
         }}
