@@ -81,7 +81,7 @@ class InitialComplianceEarnedCredit(BaseComplianceTestInfrastructure):
             'compliance.tests.utils.compliance_earned_credit',
             compliance_report_version=self.compliance_report_version,
             bccr_trading_name='test',
-            bccr_holding_account_id='test'
+            bccr_holding_account_id='test',
         )
         self.report_compliance_summary.credited_emissions = Decimal('100')
 
