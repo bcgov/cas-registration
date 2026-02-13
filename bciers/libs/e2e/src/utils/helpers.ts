@@ -8,7 +8,7 @@ import {
   webkit,
   Browser,
 } from "@playwright/test";
-import { baseUrlSetup } from "@bciers/e2e/utils/constants";
+import { baseUrlSetup, GRID_ROOT } from "@bciers/e2e/utils/constants";
 import { DataTestID, MessageTextResponse } from "@bciers/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
 import path from "node:path";
@@ -524,4 +524,37 @@ export function getCrvIdFromUrl({ url }: { url: string }): number {
 
   if (!match) throw new Error(`Could not extract crvId from URL: ${url}`);
   return Number(match[1]);
+}
+
+/**
+ * Wait until the grid is actually "ready":
+ * - GRID_ROOT exists
+ * - root + role=grid visible
+ * - (optional) progressbar/spinner is gone
+ * - at least one gridcell exists
+ *
+ * Tolerates re-mounts (e.g. HMR) with re-check of counts on every attempt
+ */
+export async function waitForGridReady(
+  page: Page,
+  options?: { timeout?: number },
+): Promise<void> {
+  const timeout = options?.timeout ?? 30_000;
+
+  await expect(async () => {
+    const rootCount = await page.locator(GRID_ROOT).count();
+    expect(rootCount).toBeGreaterThan(0);
+
+    const grid = page.locator(GRID_ROOT);
+    await expect(grid).toBeVisible();
+
+    const progressbar = grid.locator('[role="progressbar"]');
+    const anyCell = grid.locator('[role="gridcell"]').first();
+
+    if ((await progressbar.count()) > 0) {
+      await expect(progressbar).toBeHidden();
+    }
+
+    await expect(anyCell).toBeVisible();
+  }).toPass({ timeout });
 }

@@ -1,27 +1,35 @@
 import { APIRequestContext, Locator, Page, expect } from "@playwright/test";
 import {
   AppRoutes,
+  FacilityIDs,
   ReportIDs,
   ReportRoutes,
   SignOffCheckboxLabel,
 } from "@/reporting-e2e/utils/enums";
 import {
-  SIGN_OFF_SUBMIT_BUTTON_TEXT,
   SIGN_OFF_SIGNATURE_LABEL,
   TEST_SIGNATURE_NAME,
   SIGN_OFF_REPORT_SCENARIO,
   SUBMISSION_SUCCESS_TEXT,
+  REASON_FOR_CHANGE_LABEL,
+  SIGN_OFF_SUBMIT_BUTTON_TEXT,
 } from "@/reporting-e2e/utils/constants";
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
+import { clickButton, waitForGridReady } from "@bciers/e2e/utils/helpers";
 
 export class CurrentReportsPOM {
   readonly page: Page;
 
   readonly url: string =
     process.env.E2E_BASEURL + AppRoutes.GRID_REPORTING_CURRENT_REPORTS;
-
   constructor(page: Page) {
     this.page = page;
+  }
+
+  async route() {
+    await this.page.goto(this.url);
+
+    await waitForGridReady(this.page, { timeout: 30_000 });
   }
 
   // 🔧 helper: tick a checkbox by enum label
@@ -51,9 +59,77 @@ export class CurrentReportsPOM {
     return `${this.url}/${reportId}/${ReportRoutes.SUBMISSION}`;
   }
 
+  // 🔗 Initial URL for this version_id report
+  getReviewOperationInfoUrl(reportId: string | number): string {
+    return `${this.url}/${reportId}/${ReportRoutes.REVIEW_OPERATION_INFORMATION}`;
+  }
+
+  // 🔗 Production Data page URL for this version_id report
+  getProductionDataUrl(reportId: string | number, facilityId: string): string {
+    return `${this.url}/${reportId}/${ReportRoutes.FACILITIES}/${facilityId}/${ReportRoutes.PRODUCTION_DATA}`;
+  }
+
   // Navigate to the sign-off route for this report id
   async gotoSignOff(reportId: string | number) {
     await this.page.goto(this.getSignOffUrl(reportId));
+  }
+
+  // Navigate to the production data route for this report id and facility id
+  async gotoProductionData(reportId: string | number, facilityId: string) {
+    await this.page.goto(this.getProductionDataUrl(reportId, facilityId));
+  }
+
+  // Navigate to the review changes page
+  async gotoReviewChanges(reportId: string | number) {
+    // /reporting/reports/ (reportId) /review-changes
+  }
+
+  // Navigate to the attachments page
+  async gotoAttachments(reportId: string | number) {
+    // /reporting/reports/ (reportId) /attachments
+  }
+
+  // fill all required fields in production data page 
+  async fillProductionData(amount: number) {
+    // fill all required fields in production data page
+  }
+
+  // fill review changes box with whatever
+  async fillReviewChangesBoxAndSave() {
+    const reasonInput = this.page.getByLabel(
+      new RegExp(REASON_FOR_CHANGE_LABEL),
+    );
+    await expect(reasonInput).toBeVisible();
+    await reasonInput.fill(TEST_SIGNATURE_NAME);
+    await expect(this.submitButton).toBeEnabled();
+    await this.submitButton.click();
+    // wait for next page?
+  }
+
+  // check attachaments checkboxes for supplementary reports
+  // async checkAttachmentsChecksAndSave() {
+  //   await this.checkCheckboxByEnum(SignOffCheckboxLabel.NEW_UPLOADS);
+  //   await this.checkCheckboxByEnum(SignOffCheckboxLabel.PREVIOUS_RELEVANT);
+  //   await expect(this.submitButton).toBeEnabled();
+  //   await this.submitButton.click();
+  //   // wait for next page?
+  // }
+
+
+  // Start a supplementary report with given reportId
+  async startSupplementaryReportById(reportId: string | number) {
+    // grab row and click more button
+    const row = this.page.locator(`[role="row"][data-id="${reportId}"]`);
+    row.click()
+    const button = row.locator('[data-field="more"]');
+    button.click();
+    await this.page.getByRole('menuitem', { name: 'Create supplementary report' }).click();
+  
+    // wait for dialog
+    const dialogBox = this.page.getByRole('dialog', { name: 'Confirmation' });
+    await expect(dialogBox).toBeVisible();
+    // create new supp report and wait for review-operation-page to load
+    await clickButton(this.page, /create supplementary report/i, {waitForUrl: new RegExp(this.getReviewOperationInfoUrl(reportId))});
   }
 
   /**
@@ -90,6 +166,9 @@ export class CurrentReportsPOM {
     await expect(this.submitButton).toBeEnabled();
   }
 
+  async completeExtraSignOffFieldsForSupplementaryReport() {
+  }
+
   /**
    * Generic flow: submit any report by id.
    *
@@ -103,9 +182,11 @@ export class CurrentReportsPOM {
     reportId: string | number,
     isEioFlow = false,
     apiContext: APIRequestContext,
+    isSupplementary: boolean = false,
   ) {
     await this.gotoSignOff(reportId);
 
+    if (isSupplementary) await this.completeExtraSignOffFieldsForSupplementaryReport();
     await this.completeSignOffRequiredFields(isEioFlow);
     // 🔌 Attach stub API
     await attachE2EStubEndpoint(
@@ -156,5 +237,20 @@ export class CurrentReportsPOM {
       isEioFlow,
       apiContext,
     );
+  }
+
+  // Wrappers for submitting a supplementary report
+  async submitSupplementaryReportObligation(
+    isEioFlow = false,
+    apiContext?: APIRequestContext,
+  ) {
+    await this.startSupplementaryReportById(ReportIDs.OBLIGATION_NOT_MET);
+    await this.gotoProductionData(ReportIDs.OBLIGATION_NOT_MET, FacilityIDs.OBLIGATION_NOT_MET);
+    await this.fillProductionData(20000);
+    await this.gotoReviewChanges(ReportIDs.OBLIGATION_NOT_MET);
+    await this.fillReviewChangesBoxAndSave();
+    await this.gotoAttachments(ReportIDs.OBLIGATION_NOT_MET);
+    // await this.checkAttachmentsChecksAndSave();
+    await this.submitReportById(ReportIDs.OBLIGATION_NOT_MET, isEioFlow, apiContext, true);
   }
 }
