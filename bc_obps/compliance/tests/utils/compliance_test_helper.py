@@ -80,6 +80,8 @@ class InitialComplianceEarnedCredit(BaseComplianceTestInfrastructure):
         self.compliance_earned_credit = make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
             compliance_report_version=self.compliance_report_version,
+            bccr_trading_name='test',
+            bccr_holding_account_id='test'
         )
         self.report_compliance_summary.credited_emissions = Decimal('100')
 
@@ -180,6 +182,7 @@ class ComplianceTestHelper:
                 else:
                     t = InitialComplianceObligation(reporting_year)
                 t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+                t.compliance_report_version.save()
                 t.report_compliance_summary.excess_emissions = Decimal('100')
                 t.report_compliance_summary.save()
                 if create_invoice_data:
@@ -191,6 +194,7 @@ class ComplianceTestHelper:
                 else:
                     t = InitialComplianceObligation(reporting_year)
                 t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+                t.compliance_report_version.save()
                 t.report_compliance_summary.excess_emissions = Decimal('100')
                 t.report_compliance_summary.save()
                 if create_invoice_data:
@@ -205,6 +209,7 @@ class ComplianceTestHelper:
                 t.compliance_report_version.status = (
                     ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
                 )
+                t.compliance_report_version.save()
                 t.report_compliance_summary.excess_emissions = Decimal('100')
                 t.report_compliance_summary.save()
 
@@ -215,6 +220,8 @@ class ComplianceTestHelper:
                     t = InitialComplianceEarnedCredit(reporting_year)
                 t.report_compliance_summary.credited_emissions = Decimal('100')
                 t.report_compliance_summary.save()
+                t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+                t.compliance_report_version.save()
 
             case ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS:
                 if previous_data:
