@@ -140,6 +140,7 @@ class ComplianceTestHelper:
             "compliance.tests.utils.elicensing_invoice",
             due_date=data.compliance_report_version.compliance_report.compliance_period.compliance_deadline,
             outstanding_balance=Decimal("1000.00"),
+            invoice_fee_balance=Decimal("1000.00"),
             invoice_interest_balance=Decimal("0.00"),
         )
         data.fee = make_recipe(
@@ -148,6 +149,7 @@ class ComplianceTestHelper:
             base_amount=Decimal("1000.00"),
         )
         data.compliance_obligation.elicensing_invoice = data.invoice
+        data.compliance_obligation.save()
 
     @classmethod
     def build_test_data(
@@ -179,6 +181,7 @@ class ComplianceTestHelper:
                     t = InitialComplianceObligation(reporting_year)
                 t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
                 t.report_compliance_summary.excess_emissions = Decimal('100')
+                t.report_compliance_summary.save()
                 if create_invoice_data:
                     cls.generate_invoice_data(t)
 
@@ -189,6 +192,7 @@ class ComplianceTestHelper:
                     t = InitialComplianceObligation(reporting_year)
                 t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
                 t.report_compliance_summary.excess_emissions = Decimal('100')
+                t.report_compliance_summary.save()
                 if create_invoice_data:
                     cls.generate_invoice_data(t)
                     t.invoice.outstanding_balance = Decimal('0')
@@ -202,6 +206,7 @@ class ComplianceTestHelper:
                     ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
                 )
                 t.report_compliance_summary.excess_emissions = Decimal('100')
+                t.report_compliance_summary.save()
 
             case ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS:
                 if previous_data:
@@ -209,6 +214,7 @@ class ComplianceTestHelper:
                 else:
                     t = InitialComplianceEarnedCredit(reporting_year)
                 t.report_compliance_summary.credited_emissions = Decimal('100')
+                t.report_compliance_summary.save()
 
             case ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS:
                 if previous_data:
@@ -222,5 +228,6 @@ class ComplianceTestHelper:
                 else:
                     t = BaseComplianceTestInfrastructure(reporting_year)
                 t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+                t.compliance_report_version.save()
 
         return t
