@@ -49,6 +49,7 @@ def mock_get_rate():
     with patch(GET_RATE_FOR_YEAR_PATH) as mock:
         yield mock
 
+
 # --- No-op filters stub used by the service in tests ---
 class _NoopFilters:
     """Minimal stub that satisfies the service's filters argument."""
@@ -116,14 +117,18 @@ class TestComplianceDashboardService:
     ):
         user_operator = make_recipe('registration.tests.utils.approved_user_operator')
 
-        test_data_1 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS)
+        test_data_1 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
         test_data_1.operation.operator = user_operator.operator
         test_data_1.report.operator = user_operator.operator
         test_data_1.operation.save()
         test_data_1.report.save()
 
         # # Create a separate operation, report and compliance report for the previous version
-        test_data_2 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS)
+        test_data_2 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
         test_data_2.operation.operator = user_operator.operator
         test_data_2.operation.save()
         test_data_2.operation.refresh_from_db()
@@ -144,7 +149,6 @@ class TestComplianceDashboardService:
         assert result.first() == test_data_1.compliance_report_version
         assert result.last() == test_data_2.compliance_report_version
 
-    
     def test_get_compliance_report_versions_for_dashboard_excludes_versions_correctly(self):
 
         current_operator = make_recipe('registration.tests.utils.operator')
@@ -201,13 +205,20 @@ class TestComplianceDashboardService:
         assert xferred_test_data.compliance_report_version not in active_result  # explicit ownership-check
 
     def test_get_compliance_report_versions_for_dashboard_excludes_supplementary_reports_with_no_obligation_and_no_credits(
-        self
+        self,
     ):
-        test_data_1 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS)
+        test_data_1 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
         # Create a supplementary report with no obligation or earned credits
-        ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS, previous_data=test_data_1)
-        
-        user_operator = make_recipe("registration.tests.utils.approved_user_operator", operator=test_data_1.operation.operator)
+        ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+            previous_data=test_data_1,
+        )
+
+        user_operator = make_recipe(
+            "registration.tests.utils.approved_user_operator", operator=test_data_1.operation.operator
+        )
 
         result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
             user_guid=user_operator.user.user_guid,
@@ -226,11 +237,15 @@ class TestComplianceDashboardService:
         """Test that CAS director can see all compliance report versions while industry users can only see their own"""
 
         cas_director = make_recipe('registration.tests.utils.cas_director')
-        
+
         test_data_1 = ComplianceTestHelper.build_test_data()
         test_data_2 = ComplianceTestHelper.build_test_data()
-        approved_user_operator_1 = make_recipe('registration.tests.utils.approved_user_operator', operator=test_data_1.operation.operator)
-        approved_user_operator_2 = make_recipe('registration.tests.utils.approved_user_operator', operator=test_data_2.operation.operator)
+        approved_user_operator_1 = make_recipe(
+            'registration.tests.utils.approved_user_operator', operator=test_data_1.operation.operator
+        )
+        approved_user_operator_2 = make_recipe(
+            'registration.tests.utils.approved_user_operator', operator=test_data_2.operation.operator
+        )
 
         # Test CAS director can see all compliance report versions
         cas_director_result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
@@ -318,10 +333,14 @@ class TestComplianceDashboardService:
         mock_refresh,
         mock_get_rate,
     ):
-        
-        test_data = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True)
+
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
+        )
         # --- User & operator
-        user_operator = make_recipe("registration.tests.utils.approved_user_operator", operator=test_data.operation.operator)
+        user_operator = make_recipe(
+            "registration.tests.utils.approved_user_operator", operator=test_data.operation.operator
+        )
 
         # --- Mocks
         mock_get_rate.return_value = Decimal("2.00")
@@ -356,8 +375,12 @@ class TestComplianceDashboardService:
     ):
         """Test that the service sets calculated fields correctly for compliance report versions"""
 
-        test_data_1 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True)
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator', operator=test_data_1.operation.operator)
+        test_data_1 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
+        )
+        approved_user_operator = make_recipe(
+            'registration.tests.utils.approved_user_operator', operator=test_data_1.operation.operator
+        )
         mock_get_rate.return_value = Decimal("2.00")
 
         result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
@@ -419,28 +442,36 @@ class TestComplianceDashboardService:
         user_operator = make_recipe('registration.tests.utils.approved_user_operator')
 
         # 1 - not met
-        test_data_1 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET)
+        test_data_1 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        )
         test_data_1.operation.operator = user_operator.operator
         test_data_1.report.operator = user_operator.operator
         test_data_1.operation.save()
         test_data_1.report.save()
 
         # # 2 - met
-        test_data_2 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET)
+        test_data_2 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
         test_data_2.operation.operator = user_operator.operator
         test_data_2.report.operator = user_operator.operator
         test_data_2.operation.save()
         test_data_2.report.save()
 
         # # 3 - pending invoice creation
-        test_data_3 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION)
+        test_data_3 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
+        )
         test_data_3.operation.operator = user_operator.operator
         test_data_3.report.operator = user_operator.operator
         test_data_3.operation.save()
         test_data_3.report.save()
 
         # # 4 - not requested
-        test_data_4 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS)
+        test_data_4 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
         test_data_4.operation.operator = user_operator.operator
         test_data_4.report.operator = user_operator.operator
         test_data_4.compliance_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
@@ -448,11 +479,12 @@ class TestComplianceDashboardService:
         test_data_4.operation.save()
         test_data_4.report.save()
 
-
         print("ISSUANCE STATUS: ", test_data_4.compliance_earned_credit.issuance_status)
 
         # # 5 - issuance requested
-        test_data_5 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS)
+        test_data_5 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
         test_data_5.operation.operator = user_operator.operator
         test_data_5.report.operator = user_operator.operator
         test_data_5.compliance_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
@@ -461,7 +493,9 @@ class TestComplianceDashboardService:
         test_data_5.report.save()
 
         # # 6 - approved
-        test_data_6 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS)
+        test_data_6 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
         test_data_6.operation.operator = user_operator.operator
         test_data_6.report.operator = user_operator.operator
         test_data_6.compliance_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.APPROVED
@@ -470,7 +504,9 @@ class TestComplianceDashboardService:
         test_data_6.report.save()
 
         # # 7 - declined
-        test_data_7 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS)
+        test_data_7 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
         test_data_7.operation.operator = user_operator.operator
         test_data_7.report.operator = user_operator.operator
         test_data_7.compliance_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.DECLINED
@@ -479,7 +515,9 @@ class TestComplianceDashboardService:
         test_data_7.report.save()
 
         # # 8 - changes required
-        test_data_8 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS)
+        test_data_8 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
         test_data_8.operation.operator = user_operator.operator
         test_data_8.report.operator = user_operator.operator
         test_data_8.compliance_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED
@@ -488,7 +526,9 @@ class TestComplianceDashboardService:
         test_data_8.report.save()
 
         # # 9 - earned credits
-        test_data_9 = ComplianceTestHelper.build_test_data(crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS)
+        test_data_9 = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
         test_data_9.operation.operator = user_operator.operator
         test_data_9.report.operator = user_operator.operator
         test_data_9.operation.save()
@@ -521,5 +561,3 @@ class TestComplianceDashboardService:
         assert result[7].display_status == "Earned credits - changes required"
         assert result[8].id == test_data_9.compliance_report_version.id
         assert result[8].display_status == "Earned credits"
-
-
