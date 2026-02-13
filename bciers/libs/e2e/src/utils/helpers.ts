@@ -49,6 +49,9 @@ export async function clickButton(
   const root = inForm ? page.locator("form") : page;
   const button = root.getByRole("button", { name });
 
+  await expect(button).toBeVisible({ timeout: 30_000 });
+  await expect(button).toBeEnabled({ timeout: 30_000 });
+
   if (waitForUrl) {
     await Promise.all([page.waitForURL(waitForUrl), button.click()]);
   } else {
@@ -557,4 +560,28 @@ export async function waitForGridReady(
 
     await expect(anyCell).toBeVisible();
   }).toPass({ timeout });
+}
+
+export async function getGridRowByText(
+  page: Page,
+  rowText: string | RegExp,
+): Promise<Locator> {
+  await waitForGridReady(page, { timeout: 30_000 });
+
+  const grid = page.locator(GRID_ROOT).first().locator('[role="grid"]').first();
+  const row = grid.getByRole("row").filter({ hasText: rowText }).first();
+
+  await expect(async () => {
+    const matchingRowCount = await row.count();
+    const totalRowCount = await grid.getByRole("row").count();
+
+    expect(totalRowCount).toBeGreaterThan(0);
+    expect(matchingRowCount).toBeGreaterThan(0);
+    await expect(row).toBeVisible();
+
+    const cellCount = await row.locator('[role="gridcell"]').count();
+    expect(cellCount).toBeGreaterThan(0);
+  }).toPass({ timeout: 30_000 });
+
+  return row;
 }

@@ -6,7 +6,6 @@ import {
 } from "@/compliance-e2e/utils/enums";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summaries";
-import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 import { ComplianceSetupPOM } from "@/compliance-e2e/poms/compliance-setup";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
 
@@ -22,12 +21,11 @@ test.describe("Test supplementary compliance report version flow", () => {
     // PRECONDITIONS:
     // Prime invoice_generation_date DB state
     const complianceSetupPOM = new ComplianceSetupPOM(page);
-    await complianceSetupPOM.openInvoiceGenerationDate(true);
+    await complianceSetupPOM.primeInvoiceGenerationGate("open");
     // Prime reporting_year DB state
     const reportSetUpPOM = new ReportSetUpPOM(page);
-    await reportSetUpPOM.primeReportingYear(true);
+    await reportSetUpPOM.primeReportingYear("open");
 
-    // STEP 1:
     // Submit the initial report obligation
     const gridReportingReports = new CurrentReportsPOM(page);
     await gridReportingReports.submitReportObligation(false, request);
@@ -40,10 +38,8 @@ test.describe("Test supplementary compliance report version flow", () => {
       ComplianceDisplayStatus.OBLIGATION_NOT_MET,
     );
 
-    // STEP 2:
-    // Submit the supplementary report that decreases and voids 
-    const gridReportingReports2 = new CurrentReportsPOM(page);
-    await gridReportingReports2.route();
-    await gridReportingReports2.submitSupplementaryReportObligation(false, request);
+    // Submit the supplementary report that decreases and voids
+    await gridReportingReports.route();
+    await gridReportingReports.submitSupplementaryReportObligation(request);
   });
 });

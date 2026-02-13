@@ -1,6 +1,8 @@
 import { Page } from "@playwright/test";
 import { pool } from "@bciers/e2e/utils/pool";
 
+export type ReportingYearState = "open" | "closed";
+
 export class ReportSetUpPOM {
   readonly page: Page;
 
@@ -8,12 +10,18 @@ export class ReportSetUpPOM {
     this.page = page;
   }
 
-  async primeReportingYear(isOpen: boolean) {
+  /**
+   * Prime reporting-year "open" state by setting report_open_date to be:
+   *  - "open"   → yesterday  → reporting open
+   *  - "closed" → far future → reporting closed
+   */
+  async primeReportingYear(state: ReportingYearState) {
     const reportingYear = new Date().getFullYear() - 1;
 
-    const reportOpenDate = isOpen
-      ? new Date(Date.now() - 24 * 60 * 60 * 1000) // yesterday => open
-      : new Date(Date.now() + 50 * 365 * 24 * 60 * 60 * 1000); // far future => closed
+    const reportOpenDate =
+      state === "open"
+        ? new Date(Date.now() - 24 * 60 * 60 * 1000) // yesterday => open
+        : new Date(Date.now() + 50 * 365 * 24 * 60 * 60 * 1000); // far future => closed
 
     const res = await pool.query({
       text: `
@@ -27,10 +35,19 @@ export class ReportSetUpPOM {
 
     if (res.rowCount !== 1) {
       throw new Error(
-        `PrimeReportingYear: expected 1 row for reporting_year=${reportingYear}, got ${res.rowCount}`,
+        `primeReportingYear: expected 1 row for reporting_year=${reportingYear}, got ${res.rowCount}`,
       );
     }
 
     return res.rows[0];
+  }
+
+  /**
+   * Backwards-compatible boolean alias
+   * true  → "open"
+   * false → "closed"
+   */
+  async primeReportingYearBoolean(isOpen: boolean) {
+    return this.primeReportingYear(isOpen ? "open" : "closed");
   }
 }
