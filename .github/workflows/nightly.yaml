@@ -26,10 +26,6 @@ jobs:
     uses: ./.github/workflows/build-compliance.yaml
     with:
       special_build_tag: nightly
-  build-compliance-e2e:
-    uses: ./.github/workflows/build-compliance-e2e.yaml
-    with:
-      special_build_tag: nightly
   build-dashboard:
     uses: ./.github/workflows/build-dashboard.yaml
     with:
@@ -145,7 +141,6 @@ jobs:
         test-registration-e2e,
         test-dashboard-e2e,
         test-compliance-e2e,
-        build-compliance-e2e,
         build-dashboard,
         zap-owasp,
         schemaspy,
@@ -161,7 +156,6 @@ jobs:
         && needs.test-registration-e2e.result == 'success'
         && needs.test-dashboard-e2e.result == 'success'
         && needs.test-compliance-e2e.result == 'success'
-        && needs.build-compliance-e2e.result == 'success'
         && needs.build-dashboard.result == 'success'
         && needs.zap-owasp.result == 'success'
         && needs.schemaspy.result == 'success'
