@@ -6,6 +6,7 @@ from reporting.models import (
     ReportProduct,
 )
 from reporting.service.compliance_service import ComplianceService
+from reporting.service.compliance_service.compliance_service import ComplianceData
 from reporting.tests.service.test_compliance_service.infrastructure import ComplianceTestInfrastructure
 from decimal import Decimal
 
@@ -203,9 +204,12 @@ class TestComplianceSummaryServiceClass(TestCase):
         for idx, p in enumerate(report_compliance_product_records):
             assert p.annual_production == updated_result.products[idx].annual_production
 
-    def test_compliance_summary_with_regulatory_override(self):
+    def test_compliance_summary_with_pulp_and_paper_regulatory_override(self):
         # Sheet 6
-        raise NotImplementedError("test needs implementation")
+        build_data = ComplianceTestInfrastructure.build_pulp_and_paper_2025()
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        assert result == ComplianceData()
 
     def test_compliance_summary_rounding(self):
         build_data = ComplianceTestInfrastructure.decimal_places()
