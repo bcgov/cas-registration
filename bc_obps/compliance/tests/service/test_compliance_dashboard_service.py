@@ -522,3 +522,4 @@ class TestComplianceDashboardService:
         assert result[8].id == test_data_9.compliance_report_version.id
         assert result[8].display_status == "Earned credits"
 
+
