@@ -479,8 +479,6 @@ class TestComplianceDashboardService:
         test_data_4.operation.save()
         test_data_4.report.save()
 
-        print("ISSUANCE STATUS: ", test_data_4.compliance_earned_credit.issuance_status)
-
         # # 5 - issuance requested
         test_data_5 = ComplianceTestHelper.build_test_data(
             crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
