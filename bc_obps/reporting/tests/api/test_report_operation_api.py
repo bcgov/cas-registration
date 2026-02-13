@@ -106,6 +106,26 @@ class TestReportOperationDataApi(CommonTestSetup):
 
         assert response_json["all_representatives"] == self.report_operation["report_operation_representatives"]
 
+    @patch(
+        "reporting.service.report_operation_service.ReportOperationService.get_report_operation_activities_by_version_id"
+    )
+    def test_returns_report_operation_activity_data(self, mock_get_activities):
+        """Test GET /report-version/{version_id}/report-operation-activities returns activities list"""
+        expected_activities = [
+            {"id": 1, "name": "Activity 1", "applicable_to": "TypeA"},
+            {"id": 2, "name": "Activity 2", "applicable_to": "TypeB"},
+        ]
+
+        # Patch the service method to return our expected activities
+        mock_get_activities.return_value = expected_activities
+        endpoint = custom_reverse_lazy(
+            "get_report_operation_activities_by_version_id",
+            kwargs={"version_id": self.report_version.id},
+        )
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint)
+        assert response.status_code == 200
+        assert response.json() == expected_activities
+
     @patch("reporting.service.report_facilities_service.ReportFacilitiesService.get_all_facilities_for_review")
     @patch("reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed")
     @patch("reporting.service.report_operation_service.ReportOperationService.update_report_operation")

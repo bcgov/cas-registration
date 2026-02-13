@@ -13,6 +13,7 @@ from reporting.api.permissions import (
     approved_authorized_roles_report_version_composite_auth,
 )
 from ..schema.report_operation import (
+    ActivitySchema,
     ReportOperationDataSchema,
     ReportOperationIn,
     ReportOperationOut,
@@ -46,6 +47,17 @@ def get_report_operation_data(request: HttpRequest, version_id: int) -> dict:
 )
 def get_report_operation_by_version_id(request: HttpRequest, version_id: int) -> dict:
     return ReportOperationService.get_report_operation_by_version_id(version_id)
+
+
+@router.get(
+    "/report-version/{version_id}/report-operation-activities",
+    response={200: list[ActivitySchema], custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Takes report_version_id  and returns a list of activities associated with the report operation.""",
+    auth=approved_authorized_roles_report_version_composite_auth,
+)
+def get_report_operation_activities_by_version_id(request: HttpRequest, version_id: int) -> list:
+    return ReportOperationService.get_report_operation_activities_by_version_id(version_id)
 
 
 """

@@ -528,6 +528,11 @@ ENDPOINTS = {
             "endpoint_name": "get_report_operation_by_version_id",
             "kwargs": {"version_id": MOCK_INT},
         },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_operation_activities_by_version_id",
+            "kwargs": {"version_id": MOCK_INT},
+        },
         {"method": "get", "endpoint_name": "build_form_schema"},
         {"method": "get", "endpoint_name": "get_dashboard_operations_list"},
         {"method": "get", "endpoint_name": "get_dashboard_reports_list"},
