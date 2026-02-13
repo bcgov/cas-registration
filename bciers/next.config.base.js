@@ -3,6 +3,7 @@ const { withSentryConfig } = require("@sentry/nextjs");
 const path = require("node:path");
 
 const baseConfig = {
+  poweredByHeader: false,
   reactStrictMode: true,
   output: "standalone",
   turbopack: {
@@ -54,6 +55,23 @@ const baseConfig = {
         source: "/reports",
         destination: "/reports/current-reports",
         permanent: true,
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains;",
+          },
+        ],
       },
     ];
   },
