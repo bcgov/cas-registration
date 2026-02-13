@@ -261,7 +261,8 @@ class TestReportEmissionAllocationService(TestCase):
 
         # Iterate through allocations and expected data for field-wise validation
         for allocation, expected in zip(
-            report_product_emission_allocations.order_by('report_product__product_id'), expected_data
+            report_product_emission_allocations.order_by('report_product__product_id', 'emission_category_id'),
+            expected_data,
         ):
             self.assertEqual(
                 allocation.report_version_id, expected["report_version_id"], "Mismatched report version ID"
