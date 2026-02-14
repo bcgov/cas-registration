@@ -156,6 +156,7 @@ class ComplianceService:
                 * (compliance_period - initial_compliance_period)
             )
         )
+
         return product_emission_limit
 
     @staticmethod
@@ -230,6 +231,8 @@ class ComplianceService:
                 ),
                 compliance_period=industry_regulatory_values.compliance_period,
             )
+
+            print(f'-Emission Limit for {rp.product.name}: {product_emission_limit}.   - Total {emissions_limit_total}')
 
             # Add individual product amounts to totals
             total_allocated_reporting_only += allocated_reporting_only

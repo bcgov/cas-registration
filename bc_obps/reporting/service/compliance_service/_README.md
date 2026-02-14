@@ -13,7 +13,7 @@ Tightening rate and reduction factor to compute emissions limit is the one of th
 
 # After:
 
-There are 2 products that can include industrial process: ("Pulp and paper: chemical pulp", "Pulp and paper: lime recovery kiln")
+There are 2 products that can include industrial process: ("Pulp and paper: chemical pulp", "Pulp and paper: lime recovered by kiln")
 
 - Math for each product:
   - A = all industrial emissions allocated to "<product>"

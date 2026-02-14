@@ -299,7 +299,7 @@ class ComplianceTestInfrastructure:
         t.operation_1 = make_recipe(
             'registration.tests.utils.operation',
             name='test sfo',
-            naics_code=NaicsCode.objects.get(pk=1),
+            naics_code=NaicsCode.objects.get(naics_code='322112'),
             type='Single Facility Operation',
         )
         t.report_1 = make_recipe(
@@ -317,35 +317,37 @@ class ComplianceTestInfrastructure:
             report_version=t.report_version_1,
             gas_type_id=1,
             json_data={"equivalentEmission": 10000.0001},
-            emission_categories=[EmissionCategory.objects.get(pk=5)],  # GSC
         )
-        t.report_emission_1 = make_recipe(
+        # GSC
+        t.report_emission_1.emission_categories.set([5])
+
+        t.report_emission_2 = make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=t.report_version_1,
             gas_type_id=1,
             json_data={"equivalentEmission": 20000.9988},
-            emission_categories=[
-                EmissionCategory.objects.get(pk=3)
-            ],  # Industrial process only (special methodology case for pulp and paper)
         )
-        t.report_emission_1 = make_recipe(
+        # Industrial process only (special methodology case for pulp and paper)
+        t.report_emission_2.emission_categories.set([3])
+
+        t.report_emission_3 = make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=t.report_version_1,
             gas_type_id=1,
             json_data={"equivalentEmission": 10000.05},
-            emission_categories=EmissionCategory.objects.filter(
-                id__in=[3, 10]
-            ),  # Industrial process + woody biomass (default for pulp and paper)
         )
-        t.report_emission_1 = make_recipe(
+        # Industrial process + woody biomass (default for pulp and paper)
+        t.report_emission_3.emission_categories.set([3, 10])
+
+        t.report_emission_4 = make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=t.report_version_1,
             gas_type_id=1,
             json_data={"equivalentEmission": 500},
-            emission_categories=EmissionCategory.objects.filter(
-                id__in=[5, 12]
-            ),  # GSC + excluded non-biomass (reporting only)
+            emission_categories=EmissionCategory.objects.filter(id__in=[5, 12]),
         )
+        # GSC + excluded biomass (reporting only)
+        t.report_emission_4.emission_categories.set([5, 11])
 
         t.report_product_1 = make_recipe(
             "reporting.tests.utils.report_product",
@@ -377,6 +379,14 @@ class ComplianceTestInfrastructure:
             emission_category=EmissionCategory.objects.get(pk=3),  # Industrial Process
             allocated_quantity=Decimal('10000.048'),
         )
+        t.allocation_1_2 = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
+            report_version=t.report_version_1,
+            report_product=t.report_product_1,
+            emission_category=EmissionCategory.objects.get(pk=5),  # GSC (both taxable and excluded)
+            allocated_quantity=Decimal('2100'),
+        )
         t.allocation_2 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             report_emission_allocation=t.report_emission_allocation,
@@ -385,13 +395,21 @@ class ComplianceTestInfrastructure:
             report_product=t.report_product_2,
             allocated_quantity=Decimal('20001.0008'),
         )
+        t.allocation_2_2 = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
+            report_version=t.report_version_1,
+            emission_category=EmissionCategory.objects.get(pk=5),  # GSC (both taxable and excluded)
+            report_product=t.report_product_2,
+            allocated_quantity=Decimal('2100'),
+        )
         t.allocation_3 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
-            emission_category=EmissionCategory.objects.get(pk=5),  # GSC
+            emission_category=EmissionCategory.objects.get(pk=5),  # GSC (both taxable and excluded)
             report_product=t.report_product_3,
-            allocated_quantity=Decimal('6000.0001'),
+            allocated_quantity=Decimal('6300.0001'),
         )
         t.allocation_4 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
@@ -414,7 +432,7 @@ class ComplianceTestInfrastructure:
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             report_product=t.report_product_3,
-            emission_category=EmissionCategory.objects.get(pk=11),  # Other excl biomass
+            emission_category=EmissionCategory.objects.get(pk=11),  # Other excl biomass from GSC emission 4
             allocated_quantity=Decimal('300'),
         )
 

@@ -10,13 +10,13 @@ def insert_lime_recovery_kiln_override(apps, schema_monitor):
     NaicsRegulatoryOverride = apps.get_model('reporting', 'NaicsRegulatoryOverride')
 
     lime_recovery_kiln_naics = NaicsCode.objects.get(naics_code='322112')
-    lime_recovery_kiln_product = RegulatedProduct.objects.get(name='Pulp and paper: lime recovery kiln')
+    lime_recovery_kiln_product = RegulatedProduct.objects.get(name='Pulp and paper: lime recovered by kiln')
 
     NaicsRegulatoryOverride.objects.create(
         naics_code=lime_recovery_kiln_naics,
         regulated_product=lime_recovery_kiln_product,
         reduction_factor=Decimal('0.9'),
-        tightening_rate=Decimal('0.1'),
+        tightening_rate=Decimal('0.01'),
         valid_from='2025-01-01',
         valid_to='9999-12-31',
     )
@@ -28,7 +28,7 @@ def revert_lime_recovery_kiln_override(apps, schema_monitor):
     NaicsRegulatoryOverride = apps.get_model('reporting', 'NaicsRegulatoryOverride')
 
     lime_recovery_kiln_naics = NaicsCode.objects.get(naics_code='322112')
-    lime_recovery_kiln_product = RegulatedProduct.objects.get(name='Pulp and paper: lime recovery kiln')
+    lime_recovery_kiln_product = RegulatedProduct.objects.get(name='Pulp and paper: lime recovered by kiln')
 
     NaicsRegulatoryOverride.objects.filter(
         naics_code=lime_recovery_kiln_naics,

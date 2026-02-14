@@ -1,3 +1,4 @@
+import dataclasses
 from django.test import TestCase
 from reporting.models import (
     ReportComplianceSummary,
@@ -6,7 +7,6 @@ from reporting.models import (
     ReportProduct,
 )
 from reporting.service.compliance_service import ComplianceService
-from reporting.service.compliance_service.compliance_service import ComplianceData
 from reporting.tests.service.test_compliance_service.infrastructure import ComplianceTestInfrastructure
 from decimal import Decimal
 
@@ -209,7 +209,66 @@ class TestComplianceSummaryServiceClass(TestCase):
         build_data = ComplianceTestInfrastructure.build_pulp_and_paper_2025()
         result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
 
-        assert result == ComplianceData()
+        assert dataclasses.asdict(result) == {}
+
+        assert result.excess_emissions == Decimal('22639.5047')
+        assert result.credited_emissions == 0
+        assert result.emissions_attributable_for_compliance == Decimal('30000.9989')
+        assert result.emissions_attributable_for_reporting == Decimal('10500.05')
+        assert result.emissions_limit == Decimal('7361.4942')
+
+        #           + {
+        #   +     'credited_emissions': Decimal('0.0000'),
+        #   +     'emissions_attributable_for_compliance': Decimal('25500.9989'),
+        #   +     'emissions_attributable_for_reporting': Decimal('40501.0489'),
+        #   +     'emissions_limit': Decimal('7635.3632'),
+        #   +     'excess_emissions': Decimal('17865.6357'),
+        #   +     'industry_regulatory_values': {
+        #   +         'compliance_period': 2025,
+        #   +         'initial_compliance_period': 2024,
+        #   +         'reduction_factor': Decimal('0.6500'),
+        #   +         'tightening_rate': Decimal('0.0100'),
+        #   +     },
+        #   +     'products': [
+        #   +         {
+        #   +             'allocated_compliance_emissions': Decimal('5700.0001'),
+        #   +             'allocated_industrial_process_emissions': Decimal('0'),
+        #   +             'annual_production': 200.0,
+        #   +             'apr_dec_production': Decimal('0'),
+        #   +             'emission_intensity': Decimal('1.0700'),
+        #   +             'name': 'Chemicals: pure hydrogen peroxide',
+        #   +             'product_id': 3,
+        #   +             'reduction_factor_override': None,
+        #   +             'tightening_rate_override': None,
+        #   +         },
+        #   +         {
+        #   +             'allocated_compliance_emissions': Decimal('5900.0280'),
+        #   +             'allocated_industrial_process_emissions': Decimal('10000.0480'),
+        #   +             'annual_production': 10000.0,
+        #   +             'apr_dec_production': Decimal('0'),
+        #   +             'emission_intensity': Decimal('0.3177'),
+        #   +             'name': 'Pulp and paper: chemical pulp',
+        #   +             'product_id': 16,
+        #   +             'reduction_factor_override': None,
+        #   +             'tightening_rate_override': None,
+        #   +         },
+        #   +         {
+        #   +             'allocated_compliance_emissions': Decimal('13900.9708'),
+        #   +             'allocated_industrial_process_emissions': Decimal('20001.0008'),
+        #   +             'annual_production': 15000.0,
+        #   +             'apr_dec_production': Decimal('0'),
+        #   +             'emission_intensity': Decimal('0.3822'),
+        #   +             'name': 'Pulp and paper: lime recovered by kiln',
+        #   +             'product_id': 43,
+        #   +             'reduction_factor_override': Decimal('0.9000'),
+        #   +             'tightening_rate_override': Decimal('0.1000'),
+        #   +         },
+        #   +     ],
+        #   +     'reporting_only_emissions': Decimal('10500.0500'),
+        #   +     'reporting_year': 2025,
+        #   + }
+
+        assert dataclasses.asdict(result) == {}
 
     def test_compliance_summary_rounding(self):
         build_data = ComplianceTestInfrastructure.decimal_places()
