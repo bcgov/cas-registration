@@ -51,6 +51,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             operation_type=Operation.Types.SFO,
             operation_bcghgid="A fake BC GHG ID",
             bc_obps_regulated_operation_id="123456789",
+            registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,
             regulated_products=[self.old_regulated_product],
             activities=[self.old_activity],
         )
@@ -264,8 +265,9 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.old_report_version.report.operator = operation.operator
         self.old_report_version.report.save()
 
-        # Act
-        with patch('service.report_version_service.ReportVersionService.create_report_version') as mock_create:
+        with patch(
+            'reporting.service.report_supplementary_version_service.ReportVersionService.create_report_version'
+        ) as mock_create:
             self.new_report_version.delete()
             mock_create.return_value = make_recipe(
                 'reporting.tests.utils.report_version',
@@ -274,51 +276,31 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             )
             new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
 
-            # Assert: Should create blank version
             mock_create.assert_called_once_with(self.old_report_version.report)
             self.assertEqual(new_version.report, self.old_report_version.report)
 
-    def test_create_supplementary_finds_matching_purpose_on_operator_change(self):
-        """Test that when operator changes and purpose changes, it finds a version with matching purpose to clone."""
-        # Setup: Create a previous version with matching purpose
+    def test_create_or_clone_operator_changed_purpose_changed_creates_supplementary_with_same_details(self):
+        """Test that when operator and purpose both change, supplementary version is created cloning the submitted version's details."""
         operation = self.old_report_version.report.operation
         old_operator = operation.operator
 
-        # Create new operator
         new_operator = make_recipe("registration.tests.utils.operator")
-
-        # Create a previous report version with the new purpose
-        previous_matching_version = make_recipe(
-            'reporting.tests.utils.report_version',
-            report__operation=self.old_report_version.report.operation,
-            status=ReportVersion.ReportVersionStatus.Submitted,
-            is_latest_submitted=True,
-        )
-        make_recipe(
-            "reporting.tests.utils.report_operation",
-            report_version=previous_matching_version,
-            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
-        )
-
-        # Update operation to have new operator and new purpose
-        operation.operator = new_operator
         operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
+        operation.operator = new_operator
         operation.save()
 
-        # Old report has different operator (the old one before transfer)
         self.old_report_version.report.operator = old_operator
         self.old_report_version.report.save()
 
-        # Delete the draft version created in setUp to avoid constraint violation
         self.new_report_version.delete()
 
-        # Act
-        new_version = ReportSupplementaryVersionService.create_report_supplementary_version(self.old_report_version.id)
+        new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
 
-        # Assert: Should clone from the matching version
         self.assertEqual(new_version.report, self.old_report_version.report)
+        self.assertEqual(new_version.status, ReportVersion.ReportVersionStatus.Draft)
+
         new_operation = ReportOperation.objects.get(report_version=new_version)
-        self.assertEqual(new_operation.registration_purpose, Operation.Purposes.OPTED_IN_OPERATION)
+        self.assertEqual(new_operation.registration_purpose, Operation.Purposes.OBPS_REGULATED_OPERATION)
 
     def test_clone_report_version_operation(self):
         """
