@@ -48,7 +48,7 @@ describe("ComplianceUnitsGrid", () => {
   });
 
   it("renders the grid with compliance units data", () => {
-    render(<ComplianceUnitsGrid value={mockValue} />);
+    render(<ComplianceUnitsGrid formContext={{reportingYear: 2025}} value={mockValue} />);
 
     const alertNote = screen.getByRole("alert");
     expect(alertNote).toBeVisible();
@@ -101,7 +101,7 @@ describe("ComplianceUnitsGrid", () => {
   });
 
   it("navigates to apply compliance units page when button is clicked", () => {
-    render(<ComplianceUnitsGrid value={mockValue} />);
+    render(<ComplianceUnitsGrid formContext={{reportingYear: 2025}} value={mockValue} />);
 
     const applyButton = screen.getByRole("button", {
       name: "Apply Compliance Units",
@@ -114,7 +114,7 @@ describe("ComplianceUnitsGrid", () => {
   });
 
   it("renders BCCR link with correct attributes", () => {
-    render(<ComplianceUnitsGrid value={mockValue} />);
+    render(<ComplianceUnitsGrid formContext={{reportingYear: 2025}} value={mockValue} />);
 
     const bccrLink = screen.getByRole("link", {
       name: "B.C. Carbon Registry (BCCR)",
@@ -137,11 +137,18 @@ describe("ComplianceUnitsGrid", () => {
       },
     };
 
-    render(<ComplianceUnitsGrid value={mockValueWithoutApply} />);
+    render(<ComplianceUnitsGrid formContext={{reportingYear: 2025}} value={mockValueWithoutApply} />);
 
     const applyButton = screen.queryByRole("button", {
       name: "Apply Compliance Units",
     });
     expect(applyButton).not.toBeInTheDocument();
+  });
+
+  it("renders the helper text explaining inherited compliance units in the compliance grid", () => {
+    render(<ComplianceUnitsGrid formContext={{reportingYear: 2025}} value={mockValue} />);
+
+    const paragraphElement = screen.getByText(/All compliance units transferred to the compliance sub-account to meet this operation's obligation/i); // Using a regex for a flexible match
+    expect(paragraphElement).toBeInTheDocument();
   });
 });
