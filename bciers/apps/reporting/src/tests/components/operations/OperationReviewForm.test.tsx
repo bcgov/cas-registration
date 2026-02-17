@@ -54,7 +54,7 @@ const formData = {
   registration_purpose: "Test Purpose",
   operation_bcghgid: "23219990004",
   bc_obps_regulated_operation_id: "24-0015",
-  activities: [1],
+  activities: [1, 2],
   regulated_products: [1],
   operation_representative_name: [69, 70],
   operation_report_type: "Simple Report",
@@ -100,20 +100,21 @@ describe("OperationReviewForm Component", () => {
     mockActionHandler.mockResolvedValue(true); // Mock successful action handler
   });
 
-  const renderForm = () => {
+  const renderForm = (activitiesWithData: number[] = []) => {
     render(
       <OperationReviewForm
         formData={formData}
         version_id={1}
         navigationInformation={dummyNavigationInformation}
         schema={schema}
-        allActivities={[]}
-        allRegulatedProducts={[]}
+        allActivities={activities}
+        allRegulatedProducts={regulatedProducts}
         reportType={reportType}
         reportingYear={2024}
         facilityId={`1234`}
         allRepresentatives={allRepresentatives}
         isSyncAllowed={false}
+        activitiesWithData={activitiesWithData}
       />,
     );
   };
@@ -283,6 +284,116 @@ describe("OperationReviewForm Component", () => {
     expect(reportTypeSelectAfterCancel).toHaveValue("Simple Report");
   });
 
+  describe("Activity deselection modal", () => {
+    it("does not show modal when deselecting an activity without data", async () => {
+      // Activity 2 has no data (activitiesWithData only contains activity 1)
+      renderForm([1]);
+
+      const activitiesField = screen.getByTestId("root_activities");
+      const activity2Checkbox = activitiesField.querySelector(
+        'input[value="2"]',
+      ) as HTMLElement;
+
+      act(() => {
+        fireEvent.click(activity2Checkbox);
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/Are you sure you want to remove this activity/i),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it("shows modal when deselecting an activity that has data", async () => {
+      // Activity 1 has data
+      renderForm([1]);
+
+      const activitiesField = screen.getByTestId("root_activities");
+      const activity1Checkbox = activitiesField.querySelector(
+        'input[value="1"]',
+      ) as HTMLElement;
+
+      act(() => {
+        fireEvent.click(activity1Checkbox);
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Are you sure you want to remove this activity/i, {
+            exact: false,
+          }),
+        ).toBeVisible();
+      });
+
+      expect(screen.getByText(/Confirmation/i)).toBeVisible();
+    });
+
+    it("removes the activity when confirming deselection", async () => {
+      renderForm([1]);
+
+      const activitiesField = screen.getByTestId("root_activities");
+      const activity1Checkbox = activitiesField.querySelector(
+        'input[value="1"]',
+      ) as HTMLInputElement;
+
+      act(() => {
+        fireEvent.click(activity1Checkbox);
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Are you sure you want to remove this activity/i, {
+            exact: false,
+          }),
+        ).toBeVisible();
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: /Remove Activity/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/Are you sure you want to remove this activity/i),
+        ).not.toBeInTheDocument();
+      });
+
+      // Checkbox should now be unchecked
+      expect(activity1Checkbox).not.toBeChecked();
+    });
+
+    it("keeps the activity selected when cancelling deselection", async () => {
+      renderForm([1]);
+
+      const activitiesField = screen.getByTestId("root_activities");
+      const activity1Checkbox = activitiesField.querySelector(
+        'input[value="1"]',
+      ) as HTMLInputElement;
+
+      act(() => {
+        fireEvent.click(activity1Checkbox);
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Are you sure you want to remove this activity/i, {
+            exact: false,
+          }),
+        ).toBeVisible();
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/Are you sure you want to remove this activity/i),
+        ).not.toBeInTheDocument();
+      });
+
+      // Checkbox should still be checked since state was not updated
+      expect(activity1Checkbox).toBeChecked();
+    });
+  });
+
   it("shows an error message when no operation representative exists", async () => {
     render(
       <OperationReviewForm
@@ -297,6 +408,7 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={[]}
         isSyncAllowed={false}
+        activitiesWithData={[]}
       />,
     );
 
@@ -356,6 +468,7 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={[]}
         isSyncAllowed={true}
+        activitiesWithData={[]}
       />,
     );
 
@@ -392,6 +505,7 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={allRepresentatives}
         isSyncAllowed={false}
+        activitiesWithData={[]}
       />,
     );
 
@@ -442,6 +556,7 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={allRepresentatives}
         isSyncAllowed={true}
+        activitiesWithData={[]}
       />,
     );
 
@@ -508,6 +623,7 @@ describe("OperationReviewForm Component", () => {
           facilityId={`1234`}
           allRepresentatives={allRepresentatives}
           isSyncAllowed={false}
+          activitiesWithData={[]}
         />,
       );
 

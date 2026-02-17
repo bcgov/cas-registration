@@ -11,6 +11,7 @@ from service.facility_report_service import FacilityReportService
 
 from service.reporting_year_service import ReportingYearService
 from reporting.service.sync_validation_service import SyncValidationService
+from reporting.models import ReportActivity
 
 
 class ReportOperationService:
@@ -23,6 +24,12 @@ class ReportOperationService:
         purpose = report_operation["registration_purpose"]
         facility_id = FacilityReportService.get_facility_report_by_version_id(version_id)
         is_sync_allowed = SyncValidationService.is_sync_allowed(version_id)
+        # Fetch distinct activity IDs that have report data for this report version.
+        activities_with_data = list(
+            ReportActivity.objects.filter(facility_report__report_version_id=version_id)
+            .values_list("activity_id", flat=True)
+            .distinct()
+        )
         return {
             "report_operation": report_operation,
             "facility_id": facility_id,
@@ -48,6 +55,7 @@ class ReportOperationService:
             ],
             "reporting_year": reporting_year.reporting_year,
             "is_sync_allowed": is_sync_allowed,
+            "selected_activities": activities_with_data,
         }
 
     @classmethod
