@@ -1,10 +1,11 @@
 from unittest import mock
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core.exceptions import ObjectDoesNotExist
 from model_bakery import baker
 from model_bakery.baker import make_recipe
 
-from registration.models import RegulatedProduct, Activity, Operation
+from registration.models import RegulatedProduct, Activity, Operation, NaicsCode
+from common.exceptions import UserError
 from registration.tests.utils.bakers import (
     bc_obps_regulated_operation_baker,
     operation_baker,
@@ -59,6 +60,95 @@ class TestReportService(TestCase):
             str(exception_context.exception),
             "A report already exists for this operation and year, unable to create a new one.",
         )
+
+    @override_settings(RESTRICTED_NAICS_CODES_FOR_REPORTING="111110,211110,312120")
+    def test_throws_if_operation_has_restricted_naics_code(self):
+        # Create a restricted NAICS code
+        restricted_naics = baker.make(
+            NaicsCode, naics_code="211110", naics_description="Oil and gas extraction", is_regulated=True
+        )
+
+        # Create operator and operation with restricted NAICS code
+        operator = operator_baker({"trade_name": "test_trade_name"})
+        operation = operation_baker(
+            operator_id=operator.id,
+            type=Operation.Types.SFO,
+            status=Operation.Statuses.REGISTERED,
+        )
+        # Assign restricted NAICS code after creation
+        operation.naics_code = restricted_naics
+        operation.save()
+
+        # Create reporting year and timeline
+        reporting_year_baker(reporting_year=2030)
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operator=operator,
+            operation=operation,
+            start_date="2029-01-01",
+            end_date=None,
+        )
+
+        # Test that creating a report raises UserError for restricted NAICS code
+        with self.assertRaises(UserError) as exception_context:
+            ReportService.create_report(operation.id, reporting_year=2030)
+
+        self.assertEqual(
+            str(exception_context.exception),
+            "Reporting window is not open for your industry yet. Please check back later.",
+        )
+
+    @override_settings(RESTRICTED_NAICS_CODES_FOR_REPORTING="111110,312120")
+    def test_creates_report_with_non_restricted_naics_code(self):
+        # Create a non-restricted NAICS code
+        non_restricted_naics = baker.make(
+            NaicsCode,
+            naics_code="211110",  # Not in the restricted list
+            naics_description="Oil and gas extraction",
+            is_regulated=True,
+        )
+
+        with (
+            mock.patch(
+                "service.data_access_service.report_service.ReportDataAccessService.report_exists"
+            ) as mock_report_data_access_service_report_exists,
+            mock.patch(
+                "service.data_access_service.facility_service.FacilityDataAccessService.get_current_facilities_by_operation"
+            ) as mock_facility_data_access_service_get_current_facilities_by_operation,
+        ):
+            mock_facilities = baker.make_recipe('registration.tests.utils.facility', _quantity=1)
+            mock_report_data_access_service_report_exists.return_value = False
+            mock_facility_data_access_service_get_current_facilities_by_operation.return_value = mock_facilities
+
+            # Create operator and operation with non-restricted NAICS code
+            operator = operator_baker({"trade_name": "test_trade_name"})
+            operation = operation_baker(
+                operator_id=operator.id,
+                type=Operation.Types.SFO,
+                status=Operation.Statuses.REGISTERED,
+                bc_obps_regulated_operation=bc_obps_regulated_operation_baker(),
+            )
+            # Assign non-restricted NAICS code after creation
+            operation.naics_code = non_restricted_naics
+            operation.save()
+
+            # Create reporting year and timeline
+            reporting_year_baker(reporting_year=2031)
+            make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operator=operator,
+                operation=operation,
+                start_date="2030-01-01",
+                end_date=None,
+            )
+
+            # Test that creating a report succeeds for non-restricted NAICS code
+            report_version_id = ReportService.create_report(operation.id, reporting_year=2031)
+
+            # Verify the report was created successfully
+            self.assertIsNotNone(report_version_id)
+            report = ReportVersion.objects.get(pk=report_version_id).report
+            self.assertEqual(report.operation.id, operation.id)
 
     def test_creates_report_with_right_data(self):
         with (
