@@ -11,10 +11,10 @@ import { ComplianceAppliedUnitsSummary } from "@/compliance/src/app/types";
 
 export const ComplianceUnitsGrid = ({
   value,
-  formContext
+  formContext,
 }: {
   value: ComplianceAppliedUnitsSummary;
-  formContext: {reportingYear: number};
+  formContext: { reportingYear: number };
 }) => {
   // Destructure to camelCase variable names
   const {
@@ -47,8 +47,13 @@ export const ComplianceUnitsGrid = ({
         to meet up to 50% of the compliance obligation below. The remaining
         balance must be met with monetary payment(s).
       </AlertNote>
-      <p>All compliance units transferred to the compliance sub-account to meet this operation's obligation for the {formContext.reportingYear} compliance period, 
-        or any additional obligations for the {formContext.reportingYear} compliance year due to supplementary reports, are listed below.</p>
+      <p>
+        All compliance units transferred to the compliance sub-account to meet
+        this operation's obligation for the {formContext.reportingYear}{" "}
+        compliance period, or any additional obligations for the{" "}
+        {formContext.reportingYear} compliance year due to supplementary
+        reports, are listed below.
+      </p>
       <DataGrid
         columns={columns}
         initialData={appliedComplianceUnits}
