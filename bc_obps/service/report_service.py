@@ -1,4 +1,5 @@
 from uuid import UUID
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Case, When, Value, BooleanField
 from django.db import transaction
@@ -68,6 +69,13 @@ class ReportService:
         operation = Operation.objects.prefetch_related("activities", "regulated_products", "opted_in_operation").get(
             id=operation_id
         )
+
+        # Check if operation's NAICS code is restricted
+        restricted_naics_codes = [
+            code.strip() for code in settings.RESTRICTED_NAICS_CODES_FOR_REPORTING.split(",") if code.strip()
+        ]
+        if operation.naics_code and operation.naics_code.naics_code in restricted_naics_codes:
+            raise UserError("Reporting window is not open for your industry yet. Please check back later.")
 
         # Creating report object
 

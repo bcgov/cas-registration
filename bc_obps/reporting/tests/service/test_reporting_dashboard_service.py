@@ -1,5 +1,6 @@
 from unittest.mock import AsyncMock, patch, MagicMock
 import pytest
+from django.test import override_settings
 from registration.models.operation import Operation
 from registration.models.naics_code import NaicsCode
 from model_bakery.baker import make_recipe
@@ -22,9 +23,6 @@ from model_bakery import baker
 
 @pytest.mark.django_db
 class TestReportingDashboardService:
-    @patch(
-        "reporting.service.reporting_dashboard_service.settings.RESTRICTED_NAICS_CODES_FOR_REPORTING", "211110,212220"
-    )
     @patch(
         "service.data_access_service.operation_designated_operator_timeline_service.OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user"
     )
@@ -98,41 +96,49 @@ class TestReportingDashboardService:
         r1_version1_id = ReportService.create_report(operations[1].id, year.reporting_year)
         r1 = ReportVersion.objects.get(pk=r1_version1_id).report
 
-        result = ReportingDashboardService.get_operations_for_reporting_dashboard(
-            user_operator.user.user_guid, 5091, sort_field, sort_order, filters
-        ).values()
-        result_list = list(result)
-        assert len(result_list) == 3
+        # Apply restricted NAICS codes setting for the dashboard service call
+        with override_settings(RESTRICTED_NAICS_CODES_FOR_REPORTING="211110,212220"):
+            result = ReportingDashboardService.get_operations_for_reporting_dashboard(
+                user_operator.user.user_guid, 5091, sort_field, sort_order, filters
+            ).values()
+            result_list = list(result)
+            assert len(result_list) == 3
 
-        # Create dictionaries for easy lookup by operation ID
-        result_dict = {str(item["id"]): item for item in result_list}
+            # Create dictionaries for easy lookup by operation ID
+            result_dict = {str(item["id"]): item for item in result_list}
 
-        # Test operation with multiple versions
-        op0_result = result_dict[str(operations[0].id)]
-        assert op0_result["name"] == operations[0].name
-        assert op0_result["bcghg_id_id"] == (operations[0].bcghg_id.id if operations[0].bcghg_id is not None else None)
-        assert op0_result["report_id"] == r0.id
-        assert op0_result["report_version_id"] == latest_r0_revision.id
-        assert op0_result["report_status"] == latest_r0_revision.status
-        assert op0_result["restricted"] is True  # Has restricted NAICS code 211110
+            # Test operation with multiple versions
+            op0_result = result_dict[str(operations[0].id)]
+            assert op0_result["name"] == operations[0].name
+            assert op0_result["bcghg_id_id"] == (
+                operations[0].bcghg_id.id if operations[0].bcghg_id is not None else None
+            )
+            assert op0_result["report_id"] == r0.id
+            assert op0_result["report_version_id"] == latest_r0_revision.id
+            assert op0_result["report_status"] == latest_r0_revision.status
+            assert op0_result["restricted"] is True  # Has restricted NAICS code 211110
 
-        # Test operation with single version
-        rep3_result = result_dict[str(operations[1].id)]
-        assert rep3_result["name"] == operations[1].name
-        assert rep3_result["bcghg_id_id"] == (operations[1].bcghg_id.id if operations[0].bcghg_id is not None else None)
-        assert rep3_result["report_id"] == r1.id
-        assert rep3_result["report_version_id"] == r1.report_versions.first().id
-        assert rep3_result["report_status"] == r1.report_versions.first().status
-        assert rep3_result["restricted"] is False  # Has unrestricted NAICS code 111110
+            # Test operation with single version
+            rep3_result = result_dict[str(operations[1].id)]
+            assert rep3_result["name"] == operations[1].name
+            assert rep3_result["bcghg_id_id"] == (
+                operations[1].bcghg_id.id if operations[0].bcghg_id is not None else None
+            )
+            assert rep3_result["report_id"] == r1.id
+            assert rep3_result["report_version_id"] == r1.report_versions.first().id
+            assert rep3_result["report_status"] == r1.report_versions.first().status
+            assert rep3_result["restricted"] is False  # Has unrestricted NAICS code 111110
 
-        # Test operation with no report
-        op2_result = result_dict[str(operations[2].id)]
-        assert op2_result["name"] == operations[2].name
-        assert op2_result["bcghg_id_id"] == (operations[2].bcghg_id.id if operations[0].bcghg_id is not None else None)
-        assert op2_result["report_id"] is None
-        assert op2_result["report_version_id"] is None
-        assert op2_result["report_status"] is None
-        assert op2_result["restricted"] is False  # Has unrestricted NAICS code 111110
+            # Test operation with no report
+            op2_result = result_dict[str(operations[2].id)]
+            assert op2_result["name"] == operations[2].name
+            assert op2_result["bcghg_id_id"] == (
+                operations[2].bcghg_id.id if operations[0].bcghg_id is not None else None
+            )
+            assert op2_result["report_id"] is None
+            assert op2_result["report_version_id"] is None
+            assert op2_result["report_status"] is None
+            assert op2_result["restricted"] is False  # Has unrestricted NAICS code 111110
 
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_get_past_reports_for_reporting_dashboard(
