@@ -8,8 +8,8 @@ EMAIL_BODY = '''
             <br>
             <p>Dear {{ operator_legal_name }},</p>
             <br>
-            <p>You can now view your compliance obligation for the {{ compliance_year }} compliance period in the BC Industrial Emissions Reporting System (BCIERS). This compliance obligation is based on the information submitted in <b>{{ operation_name }}</b>’s Annual Report for the {{ compliance_year }} compliance period. </p>
-            <p>On <b>{{ invoice_generation_date }}</b>, the Ministry will issue an invoice to <b>{{ operator_legal_name }}</b> based on <b>{{ operation_name }}</b>’s excess emissions for the {{ compliance_year }} compliance period multiplied by the applicable compliance charge rate. On {{ invoice_generation_date }}, you will receive payment instructions and have the option to use compliance units to meet part of your obligation. </p>
+            <p>You can now view your compliance obligation for the {{ compliance_year }} compliance period in the BC Industrial Emissions Reporting System (BCIERS). This compliance obligation is based on the information submitted in <b>{{ operation_name }}</b>'s Annual Report for the {{ compliance_year }} compliance period. </p>
+            <p>On <b>{{ invoice_generation_date }}</b>, the Ministry will issue an invoice to <b>{{ operator_legal_name }}</b> based on <b>{{ operation_name }}</b>'s excess emissions for the {{ compliance_year }} compliance period multiplied by the applicable compliance charge rate. On {{ invoice_generation_date }}, you will receive payment instructions and have the option to use compliance units to meet part of your obligation. </p>
             <p><b>Please note:</b> Payments cannot be made before you receive your invoice. Payments received after the payment deadline of {{ compliance_deadline }} will be subject to daily compounding penalties, as well as interest under the <em>Financial Administration Act</em> (FAA). We encourage you to make your monetary payment at least five business days in advance of the compliance obligation deadline to allow for payment processing time. </p>
             <p><em>Please do not reply to this email. This email is auto-generated and sent from an unmonitored address. If you have
               any questions, or need further assistance, please reach out to our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a>.</em>
@@ -50,6 +50,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             upsert_obligation_notice_email_template,
             reverse_obligation_notice_email_template,
-            elidable=True,
         )
     ]
