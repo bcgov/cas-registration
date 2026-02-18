@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import dataclasses
 from decimal import Decimal
 import logging
 from reporting.models.report_product import ReportProduct
@@ -32,7 +31,7 @@ def retrieve_pulp_and_paper_biogenic_emissions_split(report_version_id: int) -> 
 def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
 
     industrial_process = get_allocated_emissions_by_report_product_emission_category(
-        rp.report_version.id, rp.product_id, [3]
+        rp.report_version_id, rp.product_id, [3]
     )  # ID=3 is Industrial Emissions category
 
     # Handle Pulp & Paper specific edge case:
@@ -48,7 +47,7 @@ def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
 
     if (
         rp.report_version.report.operation.naics_code
-        and rp.report_version.report.operation.naics_code.naics_code.startswith("322")
+        and rp.report_version.report.operation.naics_code.naics_code.startswith("322112")
         and rp.product.name in ["Pulp and paper: chemical pulp", "Pulp and paper: lime recovered by kiln"]
     ):
         biogenic_emissions_split = retrieve_pulp_and_paper_biogenic_emissions_split(rp.report_version.id)
@@ -58,26 +57,16 @@ def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
             )
         )
 
-        print(f"{rp.product.name} biogenic split: {dataclasses.asdict(biogenic_emissions_split)}")
-        print(f"{rp.product.name} overlapping industrial process: {overlapping_industrial_process_emissions}")
-
         if rp.product.name == "Pulp and paper: chemical pulp":
-            print(
-                f"{rp.product.name} industrial process: {industrial_process - overlapping_industrial_process_emissions * biogenic_emissions_split.chemical_pulp_ratio}"
-            )
             return (
                 industrial_process
                 - overlapping_industrial_process_emissions * biogenic_emissions_split.chemical_pulp_ratio
             )
 
         if rp.product.name == "Pulp and paper: lime recovered by kiln":
-            print(
-                f"{rp.product.name} industrial process: {industrial_process - overlapping_industrial_process_emissions * biogenic_emissions_split.lime_recovery_kiln_ratio}"
-            )
             return (
                 industrial_process
                 - overlapping_industrial_process_emissions * biogenic_emissions_split.lime_recovery_kiln_ratio
             )
 
-    print(f"{rp.product.name} industrial process: {industrial_process}")
     return industrial_process
