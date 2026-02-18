@@ -18,9 +18,142 @@ from django.db import migrations, models
 import os
 import common.lib.pgtrigger as pgtrigger
 
-# Functions from the following migrations need manual copying.
-# Move them and any dependencies into this file, then update the
-# RunPython operations to refer to the local versions:
+
+# Moved from registration app
+def unregulated_regulatory_value_data(apps, schema_monitor):
+    """
+    Add data for non-regulated NAICS codes to erc.naics_regulatory_value
+    """
+    NaicsCode = apps.get_model('registration', 'NaicsCode')
+    NaicsRegulatoryValue = apps.get_model('reporting', 'NaicsRegulatoryValue')
+    NaicsRegulatoryValue.objects.bulk_create(
+        [
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=111412).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=111419).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221111).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221112).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221119).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221121).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221210).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221320).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221330).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=486110).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=493110).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=493190).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=562210).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=811199).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+        ]
+    )
+
+
+def reverse_unregulated_regulatory_value_data(apps, schema_monitor):
+    """
+    Remove data for non-regulated NAICS codes to erc.naics_regulatory_value
+    """
+    NaicsRegulatoryValue = apps.get_model('reporting', 'NaicsRegulatoryValue')
+    NaicsRegulatoryValue.objects.filter(
+        naics_code__naics_code__in=[
+            '111412',
+            '111419',
+            '221111',
+            '221112',
+            '221119',
+            '221121',
+            '221210',
+            '221320',
+            '221330',
+            '486110',
+            '493110',
+            '493190',
+            '562210',
+            '811199',
+        ]
+    ).delete()
+
 # reporting.migrations.0002_sourcetype
 def init_source_type_data(apps, schema_monitor):
     SourceType = apps.get_model('reporting', 'SourceType')
@@ -25823,27 +25956,7 @@ class Migration(migrations.Migration):
     replaces = [('reporting', '0001_initial'), ('reporting', '0002_sourcetype'), ('reporting', '0003_reportfacility_reportoperation'), ('reporting', '0004_V1_6_0'), ('reporting', '0005_delete_models'), ('reporting', '0006_V1_9_0'), ('reporting', '0007_reinit'), ('reporting', '0008_prod_data'), ('reporting', '0009_general_stationary_combustion_data'), ('reporting', '0010_combustion_for_line_tracing_data'), ('reporting', '0011_mobile_combustion_data'), ('reporting', '0012_gsc_other_than_non_compression'), ('reporting', '0013_refinery_fuel_gas_data'), ('reporting', '0014_carbonates_use'), ('reporting', '0015_gsc_non_compression_non_processing'), ('reporting', '0016_custom_methodology_schema'), ('reporting', '0017_hydrogen_production'), ('reporting', '0018_pulp_and_paper_production'), ('reporting', '0019_alter_reportactivity_json_data_and_more'), ('reporting', '0020_report_person_responsible'), ('reporting', '0021_report_additional_data'), ('reporting', '0022_emission_category_with_data'), ('reporting', '0023_emission_category_mapping_with_data'), ('reporting', '0024_open_pit_coal_mining'), ('reporting', '0025_report_raw_activity_data'), ('reporting', '0026_reportmethodology_methodology'), ('reporting', '0027_storage_of_petroleum_products'), ('reporting', '0028_gastype_cas_number_gwp_with_data'), ('reporting', '0029_remove_facilityreport_products_reportproduct_and_more'), ('reporting', '0030_report_non_attributable_emissions'), ('reporting', '0031_alter_reportemission_managers'), ('reporting', '0032_reportversion_report_type'), ('reporting', '0033_reportverification'), ('reporting', '0034_reportattachment_and_more'), ('reporting', '0035_reportproduct_production_methodology_changes'), ('reporting', '0036_aluminum_or_alumina_production_data'), ('reporting', '0037_naics_regulatory_value_with_data'), ('reporting', '0038_product_emission_intensity_with_data'), ('reporting', '0039_reportproductemissionallocation_and_more'), ('reporting', '0040_alter_reportproductemissionallocation_allocated_quantity'), ('reporting', '0041_reportnewentrant_reportnewentrantemission_and_more'), ('reporting', '0042_alter_reportverification_other_facility_coordinates_and_more'), ('reporting', '0043_alter_reportversion_status'), ('reporting', '0044_reportoperationrepresentative_and_more'), ('reporting', '0045_fix_incorrect_fkey_on_deletes'), ('reporting', '0046_reportunit_type'), ('reporting', '0047_reportemission_report_unit_and_more'), ('reporting', '0048_remove_activitysourcetypejsonschema_invalid_if_has_unit_and_no_fuel'), ('reporting', '0049_alter_gcs_add_CEMS'), ('reporting', '0050_remove_reportverification_other_facility_coordinates_and_more'), ('reporting', '0051_natural_gas_non_compression_configuration'), ('reporting', '0052_add_audit_triggers_to_timestamped_models'), ('reporting', '0053_natural_gas_other_than_non_compression_configuration'), ('reporting', '0054_facilityreport_is_completed'), ('reporting', '0055_liquefied_natural_gas'), ('reporting', '0056_delete_models_to_change_pkey'), ('reporting', '0057_recreate_models_with_id_as_pkey'), ('reporting', '0058_facilityreport_immutable_report_version_and_more'), ('reporting', '0059_og_extraction_non_compression_non_processing'), ('reporting', '0060_og_extraction_other_than_non_compression'), ('reporting', '0061_electricity_generation'), ('reporting', '0062_industrial_water_processing'), ('reporting', '0063_cement_production'), ('reporting', '0064_lime_manufacturing'), ('reporting', '0065_coal_storage'), ('reporting', '0066_zinc_production'), ('reporting', '0067_petroleum_refining'), ('reporting', '0068_lead_production'), ('reporting', '0069_rename_db_table_name_to_match_model'), ('reporting', '0070_reportoperation_registration_purpose'), ('reporting', '0071_alter_reportoperation_registration_purpose'), ('reporting', '0072_alter_reportverification_scope_of_verification_and_more'), ('reporting', '0073_V2_0_0'), ('reporting', '0074_V2_0_1'), ('reporting', '0075_remove_reportversion_immutable_report_version_and_more'), ('reporting', '0076_alter_configuration_element_petroleum_refining'), ('reporting', '0077_alter_activity_json_schema_petroleum_refining'), ('reporting', '0078_report_signoff'), ('reporting', '0079_V2_1_1'), ('reporting', '0080_V2_2_0'), ('reporting', '0081_not_applicable_methodology'), ('reporting', '0082_reportemissionallocation_and_more'), ('reporting', '0083_gsc_fuel_annual_weighted_carbon_content_unit'), ('reporting', '0084_V2_3_0'), ('reporting', '0085_remove_reportemissionallocation_unique_report_emission_allocation_and_more'), ('reporting', '0086_update_fugitive_sources_schema'), ('reporting', '0087_update_storage_of_petroleum_products_schema'), ('reporting', '0088_reportsignoff_acknowledgement_of_corrections_and_more'), ('reporting', '0089_reportattachment_status'), ('reporting', '0090_reload_cooling_units_json_schema'), ('reporting', '0091_V3_0_0'), ('reporting', '0092_report_compliance_summary_models'), ('reporting', '0093_populate_compliance_data_for_existing_reports'), ('reporting', '0094_reportattachmentconfirmation_and_more'), ('reporting', '0095_V3_1_0'), ('reporting', '0096_remove_facilityreport_set_created_audit_columns_and_more'), ('reporting', '0097_reportsignoff_acknowledgement_of_certification_and_more'), ('reporting', '0098_reportelectricityimportdata_and_more'), ('reporting', '0099_remove_reportelectricityimportdata_set_created_audit_columns_and_more'), ('reporting', '0100_update_gwp_perfluoroethane'), ('reporting', '0101_alter_reportverification_accredited_by_and_more'), ('reporting', '0102_V3_2_0'), ('reporting', '0103_remove_facilityreport_immutable_report_version_and_more'), ('reporting', '0104_reportversion_reason_for_change'), ('reporting', '0105_V3_2_1'), ('reporting', '0106_update_electricity_generation'), ('reporting', '0107_V3_3_0'), ('reporting', '0108_V3_4_1'), ('reporting', '0109_electricity_transmission'), ('reporting', '0110_remove_facilityreport_immutable_report_version_and_more'), ('reporting', '0111_V3_5_0'), ('reporting', '0112_V3_6_0'), ('reporting', '0113_V3_7_0'), ('reporting', '0114_V3_8_0'), ('reporting', '0115_V3_8_1'), ('reporting', '0116_V3_9_0'), ('reporting', '0117_V3_10_0'), ('reporting', '0118_update_equivalent_emission_type'), ('reporting', '0119_update_report_raw_activity_data_equivalent_emission'), ('reporting', '0120_V3_11_0'), ('reporting', '0121_V3_12_0'), ('reporting', '0122_V3_13_0'), ('reporting', '0123_cleanup_orphaned_raw_activity_data'), ('reporting', '0124_update_emission_category'), ('reporting', '0125_V3_14_0'), ('reporting', '0126_V3_15_0'), ('reporting', '0127_V3_16_0'), ('reporting', '0128_V3_17_1'), ('reporting', '0129_V3_18_0'), ('reporting', '0130_V3_19_0'), ('reporting', '0131_V3_20_0'), ('reporting', '0132_V4_0_0'), ('reporting', '0133_V4_0_1'), ('reporting', '0134_V4_1_0'), ('reporting', '0135_V4_2_0'), ('reporting', '0136_remove_facilityreport_set_updated_audit_columns_and_more'), ('reporting', '0137_V4_3_0'), ('reporting', '0138_reportingfield_field_display_title'), ('reporting', '0139_V4_4_0'), ('reporting', '0140_V4_5_0'), ('reporting', '0141_alter_reportproduct_production_data_apr_dec'), ('reporting', '0142_reportingyear_report_open_date'), ('reporting', '0143_populate_report_open_date'), ('reporting', '0144_V4_6_0'), ('reporting', '0145_V4_6_1'), ('reporting', '0146_V4_7_0'), ('reporting', '0147_V4_7_1'), ('reporting', '0148_V5_0_0')]
 
     dependencies = [
-        ('registration', '0018_alter_address_table_comment_and_more'),
-        ('registration', '0031_activity_model'),
-        ('registration', '0040_alter_facility_address_and_more'),
-        ('registration', '0045_V1_11_0'),
-        ('registration', '0046_V1_12_0'),
-        ('registration', '0048_bcobpsregulatedoperation_issued_by_and_more'),
-        ('registration', '0051_bcgreenhousegasid_historicalbcgreenhousegasid'),
-        ('registration', '0054_V1_13_0'),
-        ('registration', '0058_regulatedproduct_add_isregulated_and_unit'),
-        ('registration', '0061_remove_naics_code'),
-        ('registration', '0063_remove_historicaltransferevent_description_and_more'),
-        ('registration', '0068_V1_18_0'),
-        ('registration', '0069_V1_19_0'),
-        ('registration', '0072_alter_historicaloptedinoperationdetail_meets_producing_gger_schedule_a1_regulated_product_and_more'),
-        ('registration', '0076_alter_facility_type_alter_historicalfacility_type_and_more'),
-        ('registration', '0097_document_status_historicaldocument_status'),
-        ('registration', '0101_V2_2_0'),
-        ('registration', '0105_V2_3_0'),
-        ('registration', '0107_V3_0_0'),
-        ('registration', '0111_add_non_regulated_naics_codes'),
-        ('registration', '0115_fix_typo_in_regulated_product_name'),
+        ('registration', '0001_initial_squashed_0154_V5_0_0'),
     ]
 
     operations = [
@@ -27033,6 +27146,10 @@ class Migration(migrations.Migration):
                 'db_table_comment': 'This table contains the regulatory values that apply to a naics code within a set timeframe from where the values are valid and when the values are no longer valid.',
                 'constraints': [django.contrib.postgres.constraints.ExclusionConstraint(expressions=[(reporting.models.naics_regulatory_value.TsTzRange('valid_from', 'valid_to', django.contrib.postgres.fields.ranges.RangeBoundary()), '&&'), ('naics_code', '=')], name='exclude_overlapping_naics_regulatory_values_records_by_date_range')],
             },
+        ),
+        migrations.RunPython(
+            code=unregulated_regulatory_value_data,
+            reverse_code=reverse_unregulated_regulatory_value_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0037_naics_regulatory_value_with_data.init_naics_regulatory_value_data,
