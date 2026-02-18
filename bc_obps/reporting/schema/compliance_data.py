@@ -1,22 +1,23 @@
-from decimal import Decimal
-from typing import List
+from typing import List, Optional
 from ninja import Schema
 
 
 class RegulatoryValueSchema(Schema):
     initial_compliance_period: int
     compliance_period: int
+    reduction_factor: float
+    tightening_rate: float
 
 
 class ReportProductComplianceSchema(Schema):
     name: str
     annual_production: float
     apr_dec_production: float
-    emission_intensity: Decimal
+    emission_intensity: float
     allocated_industrial_process_emissions: float
     allocated_compliance_emissions: float
-    reduction_factor: Decimal
-    tightening_rate: Decimal
+    reduction_factor_override: Optional[float]
+    tightening_rate_override: Optional[float]
 
 
 class ComplianceDataSchemaOut(Schema):
@@ -26,6 +27,6 @@ class ComplianceDataSchemaOut(Schema):
     emissions_limit: float
     excess_emissions: float
     credited_emissions: float
-    regulatory_values: RegulatoryValueSchema
+    industry_regulatory_values: RegulatoryValueSchema
     products: List[ReportProductComplianceSchema]
     reporting_year: int

@@ -36,6 +36,8 @@ class ReportComplianceSummaryModelProductTest(BaseTestCase):
             ("emission_intensity", "emission intensity", None, None),
             ("allocated_industrial_process_emissions", "allocated industrial process emissions", None, None),
             ("allocated_compliance_emissions", "allocated compliance emissions", None, None),
+            ("reduction_factor_override", "reduction factor override", None, None),
+            ("tightening_rate_override", "tightening rate override", None, None),
         ]
 
     def test_immutable_after_report_version_submitted(self):
