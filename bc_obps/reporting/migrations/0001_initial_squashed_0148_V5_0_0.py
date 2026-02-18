@@ -19,7 +19,6 @@ from datetime import datetime
 from django.utils import timezone
 
 
-# reporting.migrations.0002_sourcetype
 def init_source_type_data(apps, schema_monitor):
     SourceType = apps.get_model('reporting', 'SourceType')
     SourceType.objects.bulk_create(
@@ -235,7 +234,6 @@ def reverse_init_source_type_data(apps, schema_monitor):
     SourceType = apps.get_model('reporting', 'SourceType')
     SourceType.objects.all().delete()
 
-# reporting.migrations.0008_prod_data
 def init_gas_type_data(apps, schema_monitor):
     GasType = apps.get_model('reporting', 'GasType')
     GasType.objects.bulk_create(
@@ -695,12 +693,7 @@ def reverse_init_reporting_field_data(apps, schema_monitor):
     ReportingField.objects.all().delete()
 
 # reporting.migrations.0009_general_stationary_combustion_data
-#### CONFIG DATA ####
-def init_configuration_element_data(apps, schema_monitor):
-    '''
-    Add initial data to erc.configuration_element
-    '''
-
+def init_configuration_element_data_general_stationary_combustion(apps, schema_monitor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     Activity = apps.get_model('registration', 'Activity')
     SourceType = apps.get_model('reporting', 'SourceType')
@@ -1204,10 +1197,7 @@ def init_configuration_element_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.configuration_element
-    '''
+def reverse_init_configuration_element_data_general_stationary_combustion(apps, schema_monitor):
     Configuration = apps.get_model('reporting', 'Configuration')
     ReportingActivity = apps.get_model('reporting', 'ReportingActivity')
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
@@ -1218,6 +1208,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
+
 
 def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     '''
@@ -2225,9 +2216,6 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
 def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
-    '''
-    Remove data from erc.configuration_element_reporting_fields
-    '''
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     Activity = apps.get_model('registration', 'Activity')
 
@@ -25371,8 +25359,8 @@ class Migration(migrations.Migration):
             reverse_code=reverse_init_reporting_field_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0009_general_stationary_combustion_data.init_configuration_element_data,
-            reverse_code=reporting.migrations.0009_general_stationary_combustion_data.reverse_init_configuration_element_data,
+            code=init_configuration_element_data_general_stationary_combustion,
+            reverse_code=reverse_init_configuration_element_data_general_stationary_combustion,
         ),
         migrations.RunPython(
             code=reporting.migrations.0009_general_stationary_combustion_data.init_configuration_element_reporting_fields_data,
