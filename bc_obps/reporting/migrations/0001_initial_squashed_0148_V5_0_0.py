@@ -19,140 +19,6 @@ import os
 import common.lib.pgtrigger as pgtrigger
 
 
-# Moved from registration app
-def unregulated_regulatory_value_data(apps, schema_monitor):
-    """
-    Add data for non-regulated NAICS codes to erc.naics_regulatory_value
-    """
-    NaicsCode = apps.get_model('registration', 'NaicsCode')
-    NaicsRegulatoryValue = apps.get_model('reporting', 'NaicsRegulatoryValue')
-    NaicsRegulatoryValue.objects.bulk_create(
-        [
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=111412).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=111419).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=221111).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=221112).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=221119).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=221121).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=221210).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=221320).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=221330).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=486110).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=493110).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=493190).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=562210).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-            NaicsRegulatoryValue(
-                naics_code_id=(NaicsCode.objects.get(naics_code=811199).id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
-        ]
-    )
-
-
-def reverse_unregulated_regulatory_value_data(apps, schema_monitor):
-    """
-    Remove data for non-regulated NAICS codes to erc.naics_regulatory_value
-    """
-    NaicsRegulatoryValue = apps.get_model('reporting', 'NaicsRegulatoryValue')
-    NaicsRegulatoryValue.objects.filter(
-        naics_code__naics_code__in=[
-            '111412',
-            '111419',
-            '221111',
-            '221112',
-            '221119',
-            '221121',
-            '221210',
-            '221320',
-            '221330',
-            '486110',
-            '493110',
-            '493190',
-            '562210',
-            '811199',
-        ]
-    ).delete()
 
 # reporting.migrations.0002_sourcetype
 def init_source_type_data(apps, schema_monitor):
@@ -14552,14 +14418,107 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 # reporting.migrations.0037_naics_regulatory_value_with_data
 def init_naics_regulatory_value_data(apps, schema_monitor):
-    '''
-    Add initial data to erc.naics_regulatory_value
-    '''
-
     NaicsCode = apps.get_model('registration', 'NaicsCode')
     NaicsRegulatoryValue = apps.get_model('reporting', 'NaicsRegulatoryValue')
     NaicsRegulatoryValue.objects.bulk_create(
-        [
+        [   NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=111412).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=111419).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221111).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221112).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221119).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221121).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221210).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221320).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=221330).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=486110).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=493110).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=493190).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=562210).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            NaicsRegulatoryValue(
+                naics_code_id=(NaicsCode.objects.get(naics_code=811199).id),
+                reduction_factor='0.65',
+                tightening_rate='0.01',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
             NaicsRegulatoryValue(
                 naics_code_id=(NaicsCode.objects.get(naics_code=211110).id),
                 reduction_factor='0.65',
@@ -14793,6 +14752,11 @@ def init_naics_regulatory_value_data(apps, schema_monitor):
             ),
         ]
     )
+    
+def reverse_init_naics_regulatory_value_data(apps, schema_monitor):
+    NaicsRegulatoryValue = apps.get_model('reporting', 'NaicsRegulatoryValue')
+    NaicsRegulatoryValue.objects.all().delete()
+
 # reporting.migrations.0038_product_emission_intensity_with_data
 def init_product_emission_intensity_data(apps, schema_monitor):
     '''
@@ -27148,11 +27112,8 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.RunPython(
-            code=unregulated_regulatory_value_data,
-            reverse_code=reverse_unregulated_regulatory_value_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0037_naics_regulatory_value_with_data.init_naics_regulatory_value_data,
+            code=init_naics_regulatory_value_data,
+            reverse_code=reverse_init_naics_regulatory_value_data,
         ),
         migrations.CreateModel(
             name='ProductEmissionIntensity',
