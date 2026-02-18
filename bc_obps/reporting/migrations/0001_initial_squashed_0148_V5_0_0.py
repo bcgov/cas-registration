@@ -509,10 +509,6 @@ def reverse_init_reporting_years(apps, schema_editor):
     ReportingYears.objects.all().delete()
 
 def init_reporting_field_data(apps, schema_monitor):
-    '''
-    Add initial data to erc.reporting_field
-    '''
-
     ReportingField = apps.get_model('reporting', 'ReportingField')
     ReportingField.objects.bulk_create(
         [
@@ -631,91 +627,72 @@ def init_reporting_field_data(apps, schema_monitor):
             ),
             ReportingField(
                 field_name='Unit-Fuel-N2O Site-specific EF', field_type='number', field_units='g/fuel units'
+            ),ReportingField(
+                field_name='Annual mass of carbonate type consumed (tonnes)', field_type='number', field_units=None
+            ),
+            ReportingField(
+                field_name='Fraction calcination achieved for each particular carbonate type (Weight factor)',
+                field_type='number',
+                field_units=None,
+            ),
+            ReportingField(field_name='Number of carbonate types', field_type='number', field_units=None),
+            ReportingField(
+                field_name='Annual mass of input carbonate type (tonnes)', field_type='number', field_units=None
+            ),
+            ReportingField(
+                field_name='Annual mass of output carbonate type (tonnes)', field_type='number', field_units=None
+            ),
+            ReportingField(field_name='Number of input carbonate types', field_type='number', field_units=None),
+            ReportingField(field_name='Number of output carbonate types', field_type='number', field_units=None),
+            ReportingField(field_name='Carbonate Name', field_type='string', field_units=None),
+            ReportingField(field_name='Annual Amount (t)', field_type='number', field_units=None),
+            ReportingField(field_name='Purity Of Carbonate (Weight Fraction)', field_type='number', field_units=None),
+            ReportingField(
+                field_name='Mass of spent liquor combusted (tonnes/year)', field_type='number', field_units=None
+            ),
+            ReportingField(field_name='Solids percentage by weight (%)', field_type='number', field_units=None),
+            ReportingField(
+                field_name='Annual high heat value of spent liquor solids (GJ/kg)',
+                field_type='number',
+                field_units=None,
+            ),
+            ReportingField(
+                field_name='Annual carbon content of spent liquor solids (% by weight)',
+                field_type='number',
+                field_units=None,
+            ),
+            ReportingField(
+                field_name='Make-up quantity of CaCO3 used (tonnes/year)',
+                field_type='number',
+                field_units=None,
+            ),
+            ReportingField(
+                field_name='Make-up quantity of Na2CO3 used (tonnes/year)',
+                field_type='number',
+                field_units=None,
+            ),
+            ReportingField(field_name='Is Woody Biomass', field_type='boolean', field_units=None),
+            ReportingField(
+                field_name='Average of quarterly chemical oxygen demand (kg/m3)',
+                field_type='number',
+                field_units=None,
+            ),
+            ReportingField(
+                field_name='Average of quarterly five-day biochemical oxygen demand (kg/m3)',
+                field_type='number',
+                field_units=None,
+            ),
+            ReportingField(
+                field_name='Average of quarterly nitrogen in effluent (kg/N m3)',
+                field_type='number',
+                field_units=None,
             ),
         ]
     )
 
 def reverse_init_reporting_field_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.reporting_field
-    '''
     ReportingField = apps.get_model('reporting', 'ReportingField')
-    ReportingField.objects.filter(
-        field_name__in=[
-            'Fuel Default High Heating Value',
-            'Fuel Annual Weighted Average High Heating Value',
-            'Unit-Fuel Annual Steam Generated',
-            'Boiler Ratio',
-            'Fuel Annual Weighted Average Carbon Content (weight fraction)',
-            'Description',
-            'Unit-Fuel Heat Input',
-            'Average of Quarterly chemical oxygen demand',
-            'Average of Quarterly five-day biochemical oxygen demand',
-            'Average of Quarterly Nitrogen in effluent',
-            'Measured conversion factor',
-            'Annual Weighted Average Carbon Content',
-            'Annual Weighted Average Molecular Weight',
-            'Molar Volume Conversion Factor',
-            'Sulphur Content in Baked Anodes',
-            'Ash Content in Baked Anodes',
-            'Emissions of benzene-soluble matter',
-            'Average binder (pitch) content in paste',
-            'Sulphur content in pitch',
-            'Ash content in pitch',
-            'Hydrogen content in pitch',
-            'Sulphur content in calcinated coke',
-            'Ash content in calcinated coke',
-            'Carbon in skimmed dust from Søderberg cells',
-            'Packing coke consumption per tonne of baked anode',
-            'Baked anode production',
-            'Ash content in packing coke',
-            'Sulphur content in packing coke',
-            'Green anode consumption',
-            'Pitch content in green anode',
-            'Recovered tar',
-            'Green coke feed',
-            'Humidity in green coke feed',
-            'Volatiles in green coke feed',
-            'Sulphur content in green coke feed',
-            'Calcinated coke produced',
-            'Under-calcinated coke produced',
-            'Coke dust emissions',
-            'Anode Effect minutes per cell-day',
-            'Anode Effect Frequency',
-            'Anode Effect Duration',
-            'Frequency and Duration Methodology',
-            'Slope Coefficient',
-            'Last Date of Slope Coefficients Measurement',
-            'Anode Effect Overvoltage Factor',
-            'Potline Overvoltage',
-            'Current Efficiency',
-            'Overvoltage Methodology',
-            'Overvoltage Emission Factor',
-            'Last Date of Overvoltage Emission Factor Measurement',
-            'Amount of raw material consumed (t)',
-            'Raw material organic carbon content (weight fraction)',
-            'Unit-Fuel-CO2 Default EF',
-            'Unit-Fuel-CO2 Default HHV-Default EF',
-            'Unit-Fuel-CO2 Measured HHV-Default EF',
-            'Unit-Fuel-CO2 Measured Steam-Default EF',
-            'Unit-Fuel-CO2 Measured Steam-Measured EF',
-            'Unit-Fuel-CO2 Site-specific EF',
-            'Unit-Fuel-CH4 Default EF',
-            'Unit-Fuel-CH4 Default HHV-Default EF',
-            'Unit-Fuel-CH4 Heat Input-Default EF',
-            'Unit-Fuel-CH4 Measured EF',
-            'Unit-Fuel-CH4 Measured HHV-Default EF',
-            'Unit-Fuel-CH4 Measured Steam-Default EF',
-            'Unit-Fuel-CH4 Site-specific EF',
-            'Unit-Fuel-N2O Default EF',
-            'Unit-Fuel-N2O Default HHV-Default EF',
-            'Unit-Fuel-N2O Heat Input-Default EF',
-            'Unit-Fuel-N2O Measured EF',
-            'Unit-Fuel-N2O Measured HHV-Default EF',
-            'Unit-Fuel-N2O Measured Steam-Default EF',
-            'Unit-Fuel-N2O Site-specific EF',
-        ]
-    ).delete()
+    ReportingField.objects.all().delete()
 
 # reporting.migrations.0009_general_stationary_combustion_data
 #### CONFIG DATA ####
@@ -7286,51 +7263,6 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
-def init_reporting_field_data(apps, schema_monitor):
-    '''
-    Add initial data to erc.reporting_field
-    '''
-
-    ReportingField = apps.get_model('reporting', 'ReportingField')
-    ReportingField.objects.bulk_create(
-        [
-            ReportingField(
-                field_name='Annual mass of carbonate type consumed (tonnes)', field_type='number', field_units=None
-            ),
-            ReportingField(
-                field_name='Fraction calcination achieved for each particular carbonate type (Weight factor)',
-                field_type='number',
-                field_units=None,
-            ),
-            ReportingField(field_name='Number of carbonate types', field_type='number', field_units=None),
-            ReportingField(
-                field_name='Annual mass of input carbonate type (tonnes)', field_type='number', field_units=None
-            ),
-            ReportingField(
-                field_name='Annual mass of output carbonate type (tonnes)', field_type='number', field_units=None
-            ),
-            ReportingField(field_name='Number of input carbonate types', field_type='number', field_units=None),
-            ReportingField(field_name='Number of output carbonate types', field_type='number', field_units=None),
-        ]
-    )
-
-def reverse_init_reporting_field_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.reporting_field
-    '''
-    ReportingField = apps.get_model('reporting', 'ReportingField')
-    ReportingField.objects.filter(
-        field_name__in=[
-            'Annual mass of carbonate type consumed (tonnes)'
-            'Fraction calcination achieved for each particular carbonate type (Weight factor)'
-            'Number of carbonate types'
-            'Annual mass of input carbonate type (tonnes)'
-            'Annual mass of output carbonate type (tonnes)'
-            'Number of input carbonate types'
-            'Number of output carbonate types'
-        ]
-    ).delete()
-
 def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     '''
     Add initial data to erc.activity_source_type_base_schema
@@ -10457,64 +10389,6 @@ def revere_init_configuration_element_data(apps, schema_monitor):
         activity_id=Activity.objects.get(name='Pulp and paper production').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).delete()
-
-def init_reporting_field_data(apps, schema_monitor):
-    '''
-    Add initial data to erc.reporting_field
-    '''
-
-    ReportingField = apps.get_model('reporting', 'ReportingField')
-    ReportingField.objects.bulk_create(
-        [
-            ReportingField(field_name='Carbonate Name', field_type='string', field_units=None),
-            ReportingField(field_name='Annual Amount (t)', field_type='number', field_units=None),
-            ReportingField(field_name='Purity Of Carbonate (Weight Fraction)', field_type='number', field_units=None),
-            ReportingField(
-                field_name='Mass of spent liquor combusted (tonnes/year)', field_type='number', field_units=None
-            ),
-            ReportingField(field_name='Solids percentage by weight (%)', field_type='number', field_units=None),
-            ReportingField(
-                field_name='Annual high heat value of spent liquor solids (GJ/kg)',
-                field_type='number',
-                field_units=None,
-            ),
-            ReportingField(
-                field_name='Annual carbon content of spent liquor solids (% by weight)',
-                field_type='number',
-                field_units=None,
-            ),
-            ReportingField(
-                field_name='Make-up quantity of CaCO3 used (tonnes/year)',
-                field_type='number',
-                field_units=None,
-            ),
-            ReportingField(
-                field_name='Make-up quantity of Na2CO3 used (tonnes/year)',
-                field_type='number',
-                field_units=None,
-            ),
-            ReportingField(field_name='Is Woody Biomass', field_type='boolean', field_units=None),
-        ]
-    )
-
-def reverse_init_reporting_field_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.reporting_field
-    '''
-    ReportingField = apps.get_model('reporting', 'ReportingField')
-    ReportingField.objects.filter(
-        field_name__in=[
-            'Carbonate Name',
-            'Annual Amount (t)',
-            'Purity Of Carbonate (Weight Fraction)',
-            'Mass of spent liquor combusted (tonnes/year)',
-            'Solids percentage by weight (%)',
-            'Annual high heat value of spent liquor solids (GJ/kg)',
-            'Annual carbon content of spent liquor solids (% by weight)',
-            'Make-up quantity of CaCO3 used (tonnes/year)',
-            'Make-up quantity of Na2CO3 used (tonnes/year)',
-        ]
     ).delete()
 
 def init_configuration_element_reporting_fields_data(apps, schema_monitor):
@@ -22906,48 +22780,6 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_to=Configuration.objects.get(valid_to='2099-12-31'),
     ).delete()
 
-
-def init_reporting_field_data(apps, schema_monitor):
-    '''
-    Add initial data to erc.reporting_field
-    '''
-
-    ReportingField = apps.get_model('reporting', 'ReportingField')
-    ReportingField.objects.bulk_create(
-        [
-            ReportingField(
-                field_name='Average of quarterly chemical oxygen demand (kg/m3)',
-                field_type='number',
-                field_units=None,
-            ),
-            ReportingField(
-                field_name='Average of quarterly five-day biochemical oxygen demand (kg/m3)',
-                field_type='number',
-                field_units=None,
-            ),
-            ReportingField(
-                field_name='Average of quarterly nitrogen in effluent (kg/N m3)',
-                field_type='number',
-                field_units=None,
-            ),
-        ]
-    )
-
-
-def reverse_init_reporting_field_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.reporting_field
-    '''
-    ReportingField = apps.get_model('reporting', 'ReportingField')
-    ReportingField.objects.filter(
-        field_name__in=[
-            'Average of quarterly chemical oxygen demand (kg/m3)',
-            'Average of quarterly five-day biochemical oxygen demand (kg/m3)',
-            'Average of quarterly nitrogen in effluent (kg/N m3)',
-        ]
-    ).delete()
-
-
 def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     '''
     Add initial data to erc.configuration_element_reporting_fields
@@ -25535,8 +25367,8 @@ class Migration(migrations.Migration):
             reverse_code=reverse_init_reporting_years,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0008_prod_data.init_reporting_field_data,
-            reverse_code=reporting.migrations.0008_prod_data.reverse_init_reporting_field_data,
+            code=init_reporting_field_data,
+            reverse_code=reverse_init_reporting_field_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0009_general_stationary_combustion_data.init_configuration_element_data,
@@ -25623,10 +25455,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0014_carbonates_use.reverse_init_configuration_element_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0014_carbonates_use.init_reporting_field_data,
-            reverse_code=reporting.migrations.0014_carbonates_use.reverse_init_reporting_field_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0014_carbonates_use.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0014_carbonates_use.reverse_init_configuration_element_reporting_fields_data,
         ),
@@ -25699,10 +25527,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0018_pulp_and_paper_production.init_configuration_element_data,
             reverse_code=reporting.migrations.0018_pulp_and_paper_production.revere_init_configuration_element_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0018_pulp_and_paper_production.init_reporting_field_data,
-            reverse_code=reporting.migrations.0018_pulp_and_paper_production.reverse_init_reporting_field_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0018_pulp_and_paper_production.init_configuration_element_reporting_fields_data,
@@ -27059,10 +26883,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0067_petroleum_refining.init_configuration_element_data,
             reverse_code=reporting.migrations.0067_petroleum_refining.reverse_init_configuration_element_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0067_petroleum_refining.init_reporting_field_data,
-            reverse_code=reporting.migrations.0067_petroleum_refining.reverse_init_reporting_field_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0067_petroleum_refining.init_configuration_element_reporting_fields_data,
@@ -28489,8 +28309,8 @@ class Migration(migrations.Migration):
             field=models.CharField(blank=True, db_comment='Optional display title for the field to be used in forms.', max_length=1000, null=True),
         ),
         migrations.RunPython(
-            code=reporting.migrations.0138_reportingfield_field_display_title.add_field_display_titles,
-            reverse_code=reporting.migrations.0138_reportingfield_field_display_title.reverse_add_field_display_titles,
+            code=add_field_display_titles,
+            reverse_code=reverse_add_field_display_titles,
         ),
         migrations.AlterField(
             model_name='reportproduct',
