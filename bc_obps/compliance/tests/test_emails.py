@@ -640,7 +640,7 @@ class TestSendNotifications:
             "operation_name": report_operation.operation_name,
             "compliance_year": report.reporting_year.reporting_year,
             "compliance_deadline": compliance_report.compliance_period.compliance_deadline.strftime("%B %d, %Y"),
-            "penalty_amount": f"{expected_penalty_amount:,.2f}",
+            "penalty_amount": f"${expected_penalty_amount:,.2f}",
         }
 
         # Act
