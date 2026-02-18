@@ -24,15 +24,41 @@ export enum ReportRoutes {
   REVIEW_OPERATION_INFORMATION = "review-operation-information",
   FACILITIES = "facilities",
   PRODUCTION_DATA = "production-data",
+  ALLOCATION_OF_EMISSIONS = "allocation-of-emissions",
+  REVIEW_CHANGES = "review-changes",
+  FINAL_REVIEW = "final-review",
+  ATTACHMENTS = "attachments",
 }
 
-// Minimal unique substrings for sign-off checkbox labels
+// Attachment checkboxes
+export enum AttachmentCheckboxLabel {
+  UPDATED_REQUIRED = "uploaded any attachments that are required to be updated",
+  STILL_RELEVANT = "previously uploaded attachments that have not been updated are still relevant",
+}
+
+// Sign-off checkboxes
 export enum SignOffCheckboxLabel {
-  COSTS = "will impact the compliance obligation of this operation",
-  ERRORS = "any errors, omissions, or misstatements provided in this report",
-  INFORMATION = "this information is being collected for the purpose of emission reporting",
+  /** Non-EIO: acknowledgement_of_review */
+  REVIEW = "I certify that I have reviewed the annual report",
+
+  /** EIO: acknowledgement_of_certification */
+  CERTIFICATION = "I have reviewed this report and certify that the amount of total emissions reported",
+
+  /** Shared across flows */
   RECORDS = "may require records from the Operator",
-  REVIEW = "I certify that I have",
+
+  /** Non-EIO */
+  INFORMATION = "this information is being collected for the purpose of emission reporting",
+  COSTS = "will impact the compliance obligation of this operation",
+
+  /** EIO */
+  ERRORS = "any errors, omissions, or misstatements provided in this report",
+
+  /** Supplementary */
+  NEW_VERSION = "I understand that, by submitting these changes, I am creating a new version of this annual report",
+
+  /** Supplementary + regulated */
+  CORRECTIONS = "the correction of any errors, omissions, or misstatements in the new submission",
 }
 
 export const OPERATION_NAMES = {

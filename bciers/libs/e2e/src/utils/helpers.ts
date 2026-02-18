@@ -33,6 +33,13 @@ export async function analyzeAccessibility(
   expect(accessibilityScanResults.violations).toEqual([]);
 }
 
+/**
+ * Clicks a button by accessible name and optionally waits for navigation.
+ * @param page - Playwright Page instance
+ * @param buttonText - Button accessible name or RegExp
+ * @param opts.inForm - Scope the button search to a <form> (default: false)
+ * @param opts.waitForUrl - RegExp to wait for after clicking (optional)
+ */
 export async function clickButton(
   page: Page,
   buttonText: string | RegExp,
@@ -40,7 +47,7 @@ export async function clickButton(
     inForm?: boolean; // default false
     waitForUrl?: RegExp;
   },
-) {
+): Promise<void> {
   const { inForm = false, waitForUrl } = opts ?? {};
 
   const name =
@@ -53,9 +60,126 @@ export async function clickButton(
   await expect(button).toBeEnabled({ timeout: 30_000 });
 
   if (waitForUrl) {
-    await Promise.all([page.waitForURL(waitForUrl), button.click()]);
+    // Use a lighter wait for SPA navigation
+    await Promise.all([
+      page.waitForURL((u) => waitForUrl.test(u.toString()), {
+        timeout: 30_000,
+        waitUntil: "domcontentloaded",
+      }),
+      button.click(),
+    ]);
   } else {
     await button.click();
+  }
+}
+
+export async function clickButton2(
+  page: Page,
+  buttonText: string | RegExp,
+  opts?: {
+    inForm?: boolean; // default false
+    waitForUrl?: RegExp;
+    debug?: boolean; // default false
+  },
+): Promise<void> {
+  const { inForm = false, waitForUrl, debug = true } = opts ?? {};
+
+  const name =
+    buttonText instanceof RegExp ? buttonText : new RegExp(buttonText, "i");
+
+  const root = inForm ? page.locator("form") : page;
+  const button = root.getByRole("button", { name });
+
+  const beforeUrl = page.url();
+
+  if (debug) {
+    console.log("🔎 clickButton: looking for", name);
+    console.log("📍 before URL:", beforeUrl);
+    console.log("⏳ waitForUrl:", waitForUrl?.toString() ?? "(none)");
+
+    // Helpful one-shot snapshots
+    const formCount = await page.locator("form").count();
+    console.log("🧾 form count:", formCount);
+
+    // Show candidate buttons in scope (form or page)
+    const scopedButtons = root.getByRole("button");
+    const texts = await scopedButtons.allTextContents().catch(() => []);
+    console.log(
+      "🔘 buttons in scope:",
+      texts.map((t) => t.trim()).filter(Boolean),
+    );
+  }
+
+  await expect(button).toBeVisible({ timeout: 30_000 });
+  await expect(button).toBeEnabled({ timeout: 30_000 });
+
+  // Capture basic error signals while we wait (only when debug=true)
+  const consoleErrors: string[] = [];
+  const requestFailures: string[] = [];
+
+  const onConsole = (msg: any) => {
+    if (msg.type?.() === "error")
+      consoleErrors.push(msg.text?.() ?? String(msg));
+  };
+  const onRequestFailed = (req: any) => {
+    requestFailures.push(
+      `${req.method?.()} ${req.url?.()} -> ${req.failure?.()?.errorText ?? "failed"}`,
+    );
+  };
+
+  if (debug) {
+    page.on("console", onConsole);
+    page.on("requestfailed", onRequestFailed);
+  }
+
+  try {
+    if (waitForUrl) {
+      await Promise.all([
+        page.waitForURL((u) => waitForUrl.test(u.toString()), {
+          timeout: 30_000,
+          waitUntil: "domcontentloaded", // lighter than "load"
+        }),
+        button.click(),
+      ]);
+    } else {
+      await button.click();
+    }
+  } catch (err) {
+    if (debug) {
+      const afterUrl = page.url();
+      console.log("❌ clickButton failed");
+      console.log("📍 after URL:", afterUrl);
+      console.log("🔁 url changed?", afterUrl !== beforeUrl);
+
+      if (waitForUrl) {
+        console.log("🧩 waitForUrl did not match:", waitForUrl.toString());
+      }
+
+      if (requestFailures.length) {
+        console.log("🌐 request failures:");
+        for (const f of requestFailures.slice(0, 10)) console.log("  -", f);
+      }
+
+      if (consoleErrors.length) {
+        console.log("🧨 console errors:");
+        for (const e of consoleErrors.slice(0, 10)) console.log("  -", e);
+      }
+
+      // Optional: screenshot on failure (comment in if you want)
+      // await page.screenshot({ path: "clickButton-failure.png", fullPage: true });
+    }
+
+    throw err;
+  } finally {
+    if (debug) {
+      page.off("console", onConsole);
+      page.off("requestfailed", onRequestFailed);
+    }
+  }
+
+  if (debug) {
+    console.log("✅ clickButton done");
+    console.log("📍 after URL:", page.url());
   }
 }
 
@@ -86,6 +210,55 @@ export async function fillDropdownByLabel(
   await input.fill(value);
 }
 
+export async function fillInputValueByLabel(
+  page: Page,
+  label: string | RegExp,
+  value: string | number,
+  opts?: {
+    blur?: "tab" | "enter" | "none"; // default "tab"
+  },
+): Promise<void> {
+  const { blur = "tab" } = opts ?? {};
+
+  const name = label instanceof RegExp ? label : new RegExp(label, "i");
+  const field = page.getByLabel(name);
+
+  await expect(field).toBeVisible({ timeout: 30_000 });
+  await expect(field).toBeEnabled({ timeout: 30_000 });
+
+  await field.click();
+  await field.press("Control+A");
+  await field.press("Backspace");
+
+  await field.fill(String(value));
+
+  if (blur === "tab") await field.press("Tab");
+  if (blur === "enter") await field.press("Enter");
+}
+
+export async function fillInputValueByLocator(
+  field: Locator,
+  value: string | number,
+  opts?: {
+    blur?: "tab" | "enter" | "none"; // default "tab"
+  },
+): Promise<void> {
+  const { blur = "tab" } = opts ?? {};
+
+  await expect(field).toBeVisible({ timeout: 30_000 });
+  await expect(field).toBeEnabled({ timeout: 30_000 });
+
+  // focus and clear field
+  await field.click();
+  await field.press("Control+A");
+  await field.press("Backspace");
+
+  await field.fill(String(value));
+
+  if (blur === "tab") await field.press("Tab");
+  if (blur === "enter") await field.press("Enter");
+}
+
 export async function checkAllRadioButtons(page: Page) {
   const radioButtons = page.getByRole("radio", { name: "Yes" });
   // Wait for at least one radio button to be visible before counting.
@@ -101,6 +274,24 @@ export async function checkAllRadioButtons(page: Page) {
       await radio.check();
     }
   }
+}
+
+export async function checkCheckboxByLabel(
+  page: Page,
+  label: string | RegExp,
+): Promise<void> {
+  const name = label instanceof RegExp ? label : new RegExp(label, "i");
+
+  const checkbox = page.getByRole("checkbox", { name });
+
+  await expect(checkbox).toBeVisible({ timeout: 30_000 });
+  await expect(checkbox).toBeEnabled({ timeout: 30_000 });
+
+  if (!(await checkbox.isChecked())) {
+    await checkbox.check();
+  }
+
+  await expect(checkbox).toBeChecked();
 }
 
 // 🛠️ Function: checks expected alert message

@@ -41,13 +41,4 @@ export class ReportSetUpPOM {
 
     return res.rows[0];
   }
-
-  /**
-   * Backwards-compatible boolean alias
-   * true  → "open"
-   * false → "closed"
-   */
-  async primeReportingYearBoolean(isOpen: boolean) {
-    return this.primeReportingYear(isOpen ? "open" : "closed");
-  }
 }

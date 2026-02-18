@@ -13,6 +13,7 @@ from .base import ScenarioHandler
 class SubmitReportScenario(ScenarioHandler):
     def execute(self, request: HttpRequest, data: ScenarioPayload) -> Dict[str, Any]:
         payload = data.payload or {}
+        supplementary = payload.get("supplementary") or {}
 
         report_version_id = payload.get("report_version_id") or data.compliance_report_version_id
         if report_version_id is None:
@@ -20,24 +21,42 @@ class SubmitReportScenario(ScenarioHandler):
 
         user_guid = extract_user_guid(request, payload)
 
-        from reporting.service.report_submission_service import ReportSubmissionService
-        from reporting.service.report_sign_off_service import ReportSignOffAcknowledgements, ReportSignOffData
+        from reporting.service.report_submission_service import (
+            ReportSubmissionService,
+        )
+        from reporting.service.report_sign_off_service import (
+            ReportSignOffAcknowledgements,
+            ReportSignOffData,
+        )
 
         if "signature" not in payload:
             raise ValueError("payload.signature is required")
         if "acknowledgement_of_records" not in payload:
             raise ValueError("payload.acknowledgement_of_records is required")
 
+        # Supplementary acknowledgements
+        acknowledgement_of_new_version = (
+            supplementary.get("acknowledgement_of_new_version")
+            if "supplementary" in payload
+            else payload.get("acknowledgement_of_new_version")
+        )
+        acknowledgement_of_corrections = (
+            supplementary.get("acknowledgement_of_corrections")
+            if "supplementary" in payload
+            else payload.get("acknowledgement_of_corrections")
+        )
+
+        # Match dataclass field order
         signoff = ReportSignOffData(
             acknowledgements=ReportSignOffAcknowledgements(
-                payload.get("acknowledgement_of_review"),
-                payload.get("acknowledgement_of_certification"),
-                payload["acknowledgement_of_records"],
-                payload.get("acknowledgement_of_information"),
-                payload.get("acknowledgement_of_possible_costs"),
-                payload.get("acknowledgement_of_errors"),
-                payload.get("acknowledgement_of_new_version"),
-                payload.get("acknowledgement_of_corrections"),
+                acknowledgement_of_review=payload.get("acknowledgement_of_review"),
+                acknowledgement_of_certification=payload.get("acknowledgement_of_certification"),
+                acknowledgement_of_records=payload["acknowledgement_of_records"],
+                acknowledgement_of_information=payload.get("acknowledgement_of_information"),
+                acknowledgement_of_possible_costs=payload.get("acknowledgement_of_possible_costs"),
+                acknowledgement_of_new_version=acknowledgement_of_new_version,
+                acknowledgement_of_corrections=acknowledgement_of_corrections,
+                acknowledgement_of_errors=payload.get("acknowledgement_of_errors"),
             ),
             signature=payload["signature"],
         )

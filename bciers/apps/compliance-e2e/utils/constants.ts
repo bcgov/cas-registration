@@ -12,6 +12,7 @@ export const NO_OBLIGATION_OR_CREDITS_ALERT_REGEX =
 
 // --- Obligation form ---
 export const INVOICE_NUMBER_FIELD = "#root_invoice_number";
+export const GENERATE_INVOICE_BUTTON_TEXT = "Generate Compliance Invoice";
 
 export const ISSUANCE_STATUS_FIELD =
   'xpath=//label[@for="root_issuance_status"]/../following-sibling::div//span';

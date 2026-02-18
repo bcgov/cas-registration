@@ -1,4 +1,4 @@
-import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
+import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   ComplianceOperations,
@@ -16,7 +16,7 @@ import { ComplianceSetupPOM } from "@/compliance-e2e/poms/compliance-setup";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 
 // 👤 run test using the storageState for role UserRole.INDUSTRY_USER_ADMIN
-const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
+const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
 
 test.describe.configure({ mode: "serial" });
 
@@ -26,28 +26,20 @@ test.describe("Test compliance report version manage obligation flow", () => {
     request,
     happoScreenshot,
   }) => {
-    // ------------------------------------------------------------------
     // PRECONDITIONS:
     // Prime invoice_generation_date DB state so integration is allowed
-    // ------------------------------------------------------------------
     const complianceSetupPOM = new ComplianceSetupPOM(page);
     await complianceSetupPOM.primeInvoiceGenerationGate("open");
 
-    // ------------------------------------------------------------------
     // Submit obligation report
-    // ------------------------------------------------------------------
     const reports = new CurrentReportsPOM(page);
     await reports.submitReportObligation(false, request);
 
-    // ------------------------------------------------------------------
     // Navigate to the compliance summaries grid
-    // ------------------------------------------------------------------
     const summaries = new ComplianceSummariesPOM(page);
     await summaries.route();
 
-    // ------------------------------------------------------------------
     // Assert the gate open for invoice integration
-    // ------------------------------------------------------------------
     await summaries.assertStatusForOperation(
       ComplianceOperations.OBLIGATION_NOT_MET,
       ComplianceDisplayStatus.OBLIGATION_NOT_MET,
@@ -59,9 +51,7 @@ test.describe("Test compliance report version manage obligation flow", () => {
       variant: "status: Obligation - not met",
     });
 
-    // ------------------------------------------------------------------
     // Assert the record has an invoice number related to this obligation
-    // ------------------------------------------------------------------
     await summaries.openActionForOperation({
       operationName: ComplianceOperations.OBLIGATION_NOT_MET,
       linkName: GridActionText.MANAGE_OBLIGATION,
@@ -86,28 +76,20 @@ test.describe("Test compliance report version manage obligation flow", () => {
     request,
     happoScreenshot,
   }) => {
-    // ------------------------------------------------------------------
     // PRECONDITIONS:
     // Prime invoice_generation_date DB state so integration is blocked
-    // ------------------------------------------------------------------
     const complianceSetupPOM = new ComplianceSetupPOM(page);
     await complianceSetupPOM.primeInvoiceGenerationGate("closed");
 
-    // ------------------------------------------------------------------
     // Submit obligation report
-    // ------------------------------------------------------------------
     const reports = new CurrentReportsPOM(page);
     await reports.submitReportObligation(false, request);
 
-    // ------------------------------------------------------------------
     // Navigate to the compliance summaries grid
-    // ------------------------------------------------------------------
     const summaries = new ComplianceSummariesPOM(page);
     await summaries.route();
 
-    // ------------------------------------------------------------------
     // Assert the gate blocked invoice integration
-    // ------------------------------------------------------------------
     await summaries.assertStatusForOperation(
       ComplianceOperations.OBLIGATION_NOT_MET,
       ComplianceDisplayStatus.PENDING_INVOICE_CREATION,
