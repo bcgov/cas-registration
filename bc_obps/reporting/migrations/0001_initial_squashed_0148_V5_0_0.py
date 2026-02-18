@@ -692,7 +692,6 @@ def reverse_init_reporting_field_data(apps, schema_monitor):
     ReportingField = apps.get_model('reporting', 'ReportingField')
     ReportingField.objects.all().delete()
 
-# reporting.migrations.0009_general_stationary_combustion_data
 def init_configuration_element_data_general_stationary_combustion(apps, schema_monitor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     Activity = apps.get_model('registration', 'Activity')
@@ -1209,11 +1208,7 @@ def reverse_init_configuration_element_data_general_stationary_combustion(apps, 
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
-
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
-    '''
-    Add initial data to erc.activity_source_type_base_schema
-    '''
+def init_configuration_element_reporting_fields_data_general_stationary_combustion(apps, schema_monitor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     Activity = apps.get_model('registration', 'Activity')
     SourceType = apps.get_model('reporting', 'SourceType')
@@ -2215,7 +2210,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data_general_stationary_combustion(apps, schema_monitor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     Activity = apps.get_model('registration', 'Activity')
 
@@ -25363,8 +25358,8 @@ class Migration(migrations.Migration):
             reverse_code=reverse_init_configuration_element_data_general_stationary_combustion,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0009_general_stationary_combustion_data.init_configuration_element_reporting_fields_data,
-            reverse_code=reporting.migrations.0009_general_stationary_combustion_data.reverse_init_configuration_element_reporting_fields_data,
+            code=init_configuration_element_reporting_fields_data_general_stationary_combustion,
+            reverse_code=reverse_init_configuration_element_reporting_fields_data_general_stationary_combustion,
         ),
         migrations.RunPython(
             code=reporting.migrations.0009_general_stationary_combustion_data.init_activity_schema_data,
