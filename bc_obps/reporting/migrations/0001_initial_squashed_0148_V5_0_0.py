@@ -15,7 +15,8 @@ import reporting.models.configuration
 import reporting.models.naics_regulatory_value
 import reporting.models.product_emission_intensity
 import common.lib.pgtrigger as pgtrigger
-
+from datetime import datetime
+from django.utils import timezone
 
 
 # reporting.migrations.0002_sourcetype
@@ -469,9 +470,6 @@ def reverse_init_methodology_data(apps, schema_monitor):
 
 
 def init_reporting_years(apps, schema_editor):
-    '''
-    Add initial year data to erc.reporting_year
-    '''
     ReportingYear = apps.get_model('reporting', 'ReportingYear')
     ReportingYear.objects.bulk_create(
         [
@@ -480,34 +478,35 @@ def init_reporting_years(apps, schema_editor):
                 reporting_window_start="2024-01-01 00:00:00.000 -08:00",
                 reporting_window_end="2024-12-31 23:59:59.999 -08:00",
                 report_due_date="2024-05-31 23:59:59.999 -07:00",
+                report_open_date=timezone.make_aware(datetime(2024, 3, 1, 0, 0, 0))
             ),
             ReportingYear(
                 reporting_year=2024,
                 reporting_window_start="2025-01-01 00:00:00.000 -08:00",
                 reporting_window_end="2025-12-31 23:59:59.999 -08:00",
                 report_due_date="2025-05-31 23:59:59.999 -07:00",
+                report_open_date=timezone.make_aware(datetime(2025, 3, 1, 0, 0, 0))
             ),
             ReportingYear(
                 reporting_year=2025,
                 reporting_window_start="2026-01-01 00:00:00.000 -08:00",
                 reporting_window_end="2026-12-31 23:59:59.999 -08:00",
                 report_due_date="2026-05-31 23:59:59.999 -07:00",
+                report_open_date=timezone.make_aware(datetime(2026, 3, 5, 0, 0, 0))
             ),
             ReportingYear(
                 reporting_year=2026,
                 reporting_window_start="2027-01-01 00:00:00.000 -08:00",
                 reporting_window_end="2027-12-31 23:59:59.999 -08:00",
                 report_due_date="2027-05-31 23:59:59.999 -07:00",
+                report_open_date=timezone.make_aware(datetime(2027, 3, 1, 0, 0, 0))
             ),
         ]
     )
 
 def reverse_init_reporting_years(apps, schema_editor):
-    '''
-    Remove initial year data from erc.reporting_year
-    '''
     ReportingYears = apps.get_model('reporting', 'ReportingYear')
-    ReportingYears.objects.filter(reporting_year__in=[2023, 2024, 2025, 2026]).delete()
+    ReportingYears.objects.all().delete()
 
 def init_reporting_field_data(apps, schema_monitor):
     '''
@@ -24893,36 +24892,6 @@ def add_field_display_titles(apps, schema_editor):
 def reverse_add_field_display_titles(apps, schema_editor):
     ReportingField = apps.get_model('reporting', 'ReportingField')
     ReportingField.objects.update(field_display_title=None)
-# reporting.migrations.0143_populate_report_open_date
-def populate_report_open_date(apps, schema_editor):
-    """
-    Populate report_open_date for existing reporting years.
-    """
-    ReportingYear = apps.get_model('reporting', 'ReportingYear')
-
-    reporting_year_2023 = ReportingYear.objects.get(reporting_year=2023)
-    reporting_year_2023.report_open_date = timezone.make_aware(datetime(2024, 3, 1, 0, 0, 0))
-    reporting_year_2023.save()
-
-    reporting_year_2024 = ReportingYear.objects.get(reporting_year=2024)
-    reporting_year_2024.report_open_date = timezone.make_aware(datetime(2025, 3, 1, 0, 0, 0))
-    reporting_year_2024.save()
-
-    reporting_year_2025 = ReportingYear.objects.get(reporting_year=2025)
-    reporting_year_2025.report_open_date = timezone.make_aware(datetime(2026, 3, 5, 0, 0, 0))
-    reporting_year_2025.save()
-
-    reporting_year_2026 = ReportingYear.objects.get(reporting_year=2026)
-    reporting_year_2026.report_open_date = timezone.make_aware(datetime(2027, 3, 1, 0, 0, 0))
-    reporting_year_2026.save()
-
-
-def reverse_populate_report_open_date(apps, schema_editor):
-    """
-    Reverse migration - set report_open_date to None for all reporting years.
-    """
-    ReportingYear = apps.get_model('reporting', 'ReportingYear')
-    ReportingYear.objects.all().update(report_open_date=None)
 
 class Migration(migrations.Migration):
 
@@ -25562,8 +25531,8 @@ class Migration(migrations.Migration):
             reverse_code=reverse_init_methodology_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0008_prod_data.init_reporting_years,
-            reverse_code=reporting.migrations.0008_prod_data.reverse_init_reporting_years,
+            code=init_reporting_years,
+            reverse_code=reverse_init_reporting_years,
         ),
         migrations.RunPython(
             code=reporting.migrations.0008_prod_data.init_reporting_field_data,
@@ -28532,9 +28501,5 @@ class Migration(migrations.Migration):
             model_name='reportingyear',
             name='report_open_date',
             field=models.DateTimeField(blank=True, db_comment='Date when reporting opens for that reporting year, defaults to March 1 of the year after the reporting year, UTC-based', null=True),
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0143_populate_report_open_date.populate_report_open_date,
-            reverse_code=reporting.migrations.0143_populate_report_open_date.reverse_populate_report_open_date,
         ),
     ]
