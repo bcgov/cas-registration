@@ -29,6 +29,7 @@ export const createRegistrationPurposeSchema = async () => {
     id: number;
     applicable_to: string;
     name: string;
+    regulated_name: string;
   }[] = await getReportingActivities();
   if (reportingActivities && "error" in reportingActivities)
     throw new Error("Failed to retrieve reporting activities information");
@@ -130,11 +131,25 @@ export const createRegistrationPurposeSchema = async () => {
                       id: number;
                       applicable_to: string;
                       name: string;
+                      regulated_name: string;
                     }) => activity.id,
                   ),
                   enumNames: reportingActivities.map(
-                    (activity: { applicable_to: string; name: string }) =>
-                      activity.name,
+                    (activity: {
+                      applicable_to: string;
+                      name: string;
+                      regulated_name: string;
+                    }) => activity.name,
+                  ),
+                  enumTooltips: reportingActivities.map(
+                    (activity: {
+                      applicable_to: string;
+                      name: string;
+                      regulated_name: string;
+                    }) =>
+                      activity.name != activity.regulated_name
+                        ? activity.regulated_name
+                        : "",
                   ),
                 },
               },
@@ -171,12 +186,13 @@ export const registrationPurposeUISchema: UiSchema = {
     "ui:widget": "ComboBox",
   },
   regulated_products: {
-    "ui:widget": "MultiSelectWidget",
+    "ui:widget": "MultiSelectWidgetWithTooltip",
     "ui:placeholder": "Select Regulated Product",
   },
   activities: {
-    "ui:widget": "MultiSelectWidget",
+    "ui:widget": "MultiSelectWidgetWithTooltip",
     "ui:placeholder": "Select Reporting Activity",
+    "ui:tooltipPrefix": "Regulatory name: ",
   },
   operation_preface: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,

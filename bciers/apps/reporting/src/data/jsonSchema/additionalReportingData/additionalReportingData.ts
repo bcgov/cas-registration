@@ -4,7 +4,7 @@ import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { CapturedEmmissionsInfo } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalMessage";
 import RadioWidget from "@bciers/components/form/widgets/RadioWidget";
-import MultiSelectWidget from "@bciers/components/form/widgets/MultiSelectWidget";
+import MultiSelectWidgetWithTooltip from "@bciers/components/form/widgets/MultiSelectWidgetWithTooltip";
 
 export const additionalReportingDataSchema: RJSFSchema = {
   type: "object",
@@ -135,7 +135,7 @@ export const additionalReportingDataUiSchema = {
       "ui:widget": RadioWidget,
     },
     capture_type: {
-      "ui:widget": MultiSelectWidget,
+      "ui:widget": MultiSelectWidgetWithTooltip,
       "ui:options": { style: { width: "100%", textAlign: "justify" } },
       "ui:placeholder": "Capture type",
     },

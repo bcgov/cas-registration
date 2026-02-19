@@ -14,14 +14,19 @@ import {
   ANNUAL_REPORT,
   SIMPLE_REPORT,
 } from "@reporting/src/app/utils/constants";
+import {
+  Activity,
+  RegulatedProduct,
+  ReportOperationRepresentative,
+} from "@reporting/src/app/components/operations/types";
 const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const buildOperationReviewSchema = (
   formDataState: any,
   reportingYear: number,
-  allActivities: any[],
-  allRegulatedProducts: any[],
-  allRepresentatives: any[],
+  allActivities: Activity[],
+  allRegulatedProducts: RegulatedProduct[],
+  allRepresentatives: ReportOperationRepresentative[],
   reportType: string,
   showRegulatedProducts: boolean,
   showBoroId: boolean,
@@ -58,7 +63,8 @@ export const buildOperationReviewSchema = (
         items: {
           type: "number",
           enum: allRepresentatives.map(
-            (representative: { id: number }) => representative.id,
+            (representative: ReportOperationRepresentative) =>
+              representative.id,
           ),
           enumNames: allRepresentatives.map(
             (representative: { representative_name: string }) =>
@@ -116,13 +122,37 @@ export const buildOperationReviewSchema = (
               },
               ...(showActivities && {
                 activities: {
-                  type: "array",
                   title: "Reporting activities",
+                  type: "array",
                   minItems: 1,
+                  default: [],
                   items: {
                     type: "number",
-                    enum: allActivities.map((activity) => activity.id),
-                    enumNames: allActivities.map((activity) => activity.name),
+                    enum: allActivities.map(
+                      (activity: {
+                        id: number;
+                        applicable_to: string;
+                        name: string;
+                        regulated_name: string;
+                      }) => activity.id,
+                    ),
+                    enumNames: allActivities.map(
+                      (activity: {
+                        applicable_to: string;
+                        name: string;
+                        regulated_name: string;
+                      }) => activity.name,
+                    ),
+                    enumTooltips: allActivities.map(
+                      (activity: {
+                        applicable_to: string;
+                        name: string;
+                        regulated_name: string;
+                      }) =>
+                        activity.name != activity.regulated_name
+                          ? activity.regulated_name
+                          : "",
+                    ),
                   },
                 },
               }),
@@ -228,16 +258,17 @@ export const buildOperationReviewUiSchema = (
   },
 
   activities: {
-    "ui:widget": "MultiSelectWidget",
+    "ui:widget": "MultiSelectWidgetWithTooltip",
     "ui:options": {
       ...commonUiOptions,
       label: { style: { verticalAlign: "top" } },
     },
     "ui:placeholder": "Reporting activities",
+    "ui:tooltipPrefix": "Regulatory name: ",
     uniqueItems: true,
   },
   regulated_products: {
-    "ui:widget": "MultiSelectWidget",
+    "ui:widget": "MultiSelectWidgetWithTooltip",
     "ui:options": {
       ...commonUiOptions,
       label: { style: { verticalAlign: "top" } },
@@ -247,7 +278,7 @@ export const buildOperationReviewUiSchema = (
     uniqueItems: true,
   },
   operation_representative_name: {
-    "ui:widget": "MultiSelectWidget",
+    "ui:widget": "MultiSelectWidgetWithTooltip",
     "ui:options": {
       ...commonUiOptions,
       label: { style: { verticalAlign: "top" } },

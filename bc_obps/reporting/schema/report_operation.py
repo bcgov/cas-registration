@@ -80,6 +80,7 @@ class ActivitySchema(Schema):
     id: int
     name: str
     applicable_to: str
+    regulated_name: str
 
 
 class ReportOperationDataSchema(Schema):

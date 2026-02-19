@@ -61,8 +61,18 @@ const formData = {
 };
 
 const activities = [
-  { id: 1, name: "Activity 1", applicable_to: "sfo" },
-  { id: 2, name: "Activity 2", applicable_to: "sfo" },
+  {
+    id: 1,
+    name: "Activity 1",
+    applicable_to: "sfo",
+    regulated_name: "Activity 1 Reg",
+  },
+  {
+    id: 2,
+    name: "Activity 2",
+    applicable_to: "sfo",
+    regulated_name: "Activity 2 Reg",
+  },
 ];
 
 const regulatedProducts = [
@@ -473,6 +483,7 @@ describe("OperationReviewForm Component", () => {
         {
           id: 43,
           name: "lime recovered by kiln",
+          unit: "BCRCT",
           is_regulated: true,
         },
       ];
