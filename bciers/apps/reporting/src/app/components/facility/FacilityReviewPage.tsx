@@ -2,10 +2,10 @@ import FacilityReviewForm from "./FacilityReviewForm";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { getFacilityReportDetails } from "@reporting/src/app/utils/getFacilityReportDetails";
-import { getAllActivities } from "@reporting/src/app/utils/getAllActivities";
 import { buildFacilitySchema } from "@reporting/src/data/jsonSchema/facilities";
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
+import { getReportOperationActivities } from "../../utils/getReportOperationActivities";
 
 export default async function FacilityReviewPage({
   version_id,
@@ -14,8 +14,8 @@ export default async function FacilityReviewPage({
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
 
   const facilityData = await getFacilityReportDetails(version_id, facility_id);
-  const activitiesData = await getAllActivities();
-  const selectedActivities = activitiesData.filter((item: { id: any }) =>
+  const activitiesData = await getReportOperationActivities(version_id);
+  const selectedActivities = activitiesData.filter((item: { id: number }) =>
     facilityData.activities.includes(item.id),
   );
 
@@ -33,7 +33,7 @@ export default async function FacilityReviewPage({
   const formData = {
     ...facilityData,
     activities: selectedActivities.map(
-      (activity: { name: any }) => activity.name,
+      (activity: { name: string }) => activity.name,
     ),
   };
   const isSyncAllowed = facilityData.is_sync_allowed ?? true;

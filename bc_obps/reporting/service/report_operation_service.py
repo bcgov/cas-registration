@@ -106,3 +106,11 @@ class ReportOperationService:
             "operation_report_status": report_version.status,
             "operation_id": report_operation.report_version.report.operation.id,
         }
+
+    @classmethod
+    def get_report_operation_activities_by_version_id(cls, report_version_id: int) -> list:
+        report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
+        report_operation_activities = report_operation.activities.order_by('weight', 'name').values(
+            "id", "name", "applicable_to"
+        )
+        return [dict(activity) for activity in report_operation_activities]

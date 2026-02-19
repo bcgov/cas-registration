@@ -10,4 +10,4 @@ class FacilityReportActivityDataOut(ModelSchema):
 
     class Meta:
         model = Activity
-        fields = ['id', 'name', 'slug']
+        fields = ['id', 'name', 'slug', 'applicable_to']

@@ -98,3 +98,12 @@ class TestReportOperationService:
         assert result["operation_report_status"] == self.report_version.status
         assert self.representative in result["report_operation_representatives"]
         assert self.representative.id in result["operation_representative_name"]
+
+    def test_get_report_operation_activities_by_version_id(self):
+        self.report_operation.activities.add(self.activity)
+        result = ReportOperationService.get_report_operation_activities_by_version_id(self.report_version.id)
+
+        assert len(result) == 1
+        assert result[0]["id"] == self.activity.id
+        assert result[0]["name"] == self.activity.name
+        assert result[0]["applicable_to"] == self.activity.applicable_to
