@@ -234,6 +234,210 @@ def reverse_init_source_type_data(apps, schema_editor):
     SourceType = apps.get_model('reporting', 'SourceType')
     SourceType.objects.all().delete()
 
+def init_activity_source_type_schema_data(apps, schema_editor):
+    """
+    Add all activity source type schema data.
+    Consolidated from 27 separate migration functions.
+    """
+    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
+    Activity = apps.get_model('registration', 'Activity')
+    SourceType = apps.get_model('reporting', 'SourceType')
+    Configuration = apps.get_model('reporting', 'Configuration')
+    valid_from = Configuration.objects.get(valid_from='2023-01-01')
+    valid_to = Configuration.objects.get(valid_to='2099-12-31')
+    cwd = os.getcwd()
+    
+    ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING = [
+        # GSC excluding line tracing
+        ('General stationary combustion excluding line tracing', 'gsc_excluding_line_tracing', 'with_useful_energy', 'General stationary combustion of fuel or waste with production of useful energy', False, False),
+        ('General stationary combustion excluding line tracing', 'gsc_excluding_line_tracing', 'without_useful_energy', 'General stationary combustion of waste without production of useful energy', False, False),
+        # GSC solely for line tracing
+        ('General stationary combustion solely for the purpose of line tracing', 'gsc_solely_for_line_tracing', 'with_useful_energy', 'General stationary combustion of fuel or waste with production of useful energy', False, False),
+        # Fuel combustion by mobile equipment
+        ('Fuel combustion by mobile equipment', 'fuel_combustion_mobile', 'combustion_by_equipment', 'Fuel combustion by mobile equipment that is part of the facility', False, False),
+        # GSC other than non-compression
+        ('General stationary combustion, other than non-compression and non-processing combustion', 'gsc_other_than_non_compression', 'with_useful_energy', 'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy', False, False),
+        ('General stationary combustion, other than non-compression and non-processing combustion', 'gsc_other_than_non_compression', 'without_useful_energy', 'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy', False, False),
+        ('General stationary combustion, other than non-compression and non-processing combustion', 'gsc_other_than_non_compression', 'field_gas_process_vent_gas_at_lfo', 'Field gas or process vent gas combustion at a linear facilities operation', False, False),
+        # Refinery fuel gas combustion
+        ('Refinery fuel gas combustion', 'refinery_fuel_gas', 'combustion_of_refinery_gas', 'Combustion of refinery fuel gas, still gas, flexigas or associated gas', False, False),
+        # Carbonate use
+        ('Carbonate use', 'carbonates_use', 'carbonates_use', 'Carbonates used but not consumed in other activities set out in column 2', False, False),
+        # GSC non-compression non-processing combustion
+        ('General stationary non-compression and non-processing combustion', 'gsc_non_compression_non_combustion', 'with_useful_energy', 'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy', False, False),
+        ('General stationary non-compression and non-processing combustion', 'gsc_non_compression_non_combustion', 'without_useful_energy', 'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy', False, False),
+        ('General stationary non-compression and non-processing combustion', 'gsc_non_compression_non_combustion', 'field_gas_process_vent_gas_at_lfo', 'Field gas or process vent gas combustion at a linear facilities operation', False, False),
+        # Hydrogen production
+        ('Hydrogen production', 'hydrogen_production', 'steam_reformation_or_gasification', 'Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock', False, False),
+        # Pulp and paper production
+        ('Pulp and paper production', 'pulp_and_paper_production', 'pulp_and_paper_production', 'Pulping and chemical recovery', False, False),
+        # Open pit coal mining
+        ('Open pit coal mining', 'open_pit_coal_mining', 'coal_exposed_during_mining', 'Coal when broken or exposed to the atmosphere during mining', False, False),
+        # Storage of petroleum products
+        ('Storage of petroleum products', 'storage_of_petroleum_products', 'above_ground_storage_tanks', 'Above-ground storage tanks', False, False),
+        # Aluminum or alumina production
+        ('Aluminum or alumina production', 'aluminum_production', 'anode_consumption_acbgcc', 'Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination', False, False),
+        ('Aluminum or alumina production', 'aluminum_production', 'anode_effects', 'Anode effects', False, False),
+        ('Aluminum or alumina production', 'aluminum_production', 'cover_gas_from_electrolysis', 'Cover gas from electrolysis cells', False, False),
+        # NG non-compression 
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '1_ng_pneumatic_high_bleed_device_venting', 'Natural gas pneumatic high bleed device venting', True, True),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '2_ng_pneumatic_pump_venting', 'Natural gas pneumatic pump venting', True, True),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '3_ng_pneumatic_low_bleed_device_venting', 'Natural gas pneumatic low bleed device venting', True, True),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '4_ng_pneumatic_intermittent_device_venting', 'Natural gas pneumatic intermittent bleed device venting', True, True),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '5_blowdown_venting', 'Blowdown venting', False, False),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '6_flare_stacks', 'Flare stacks', True, True),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '7_equipment_leaks_detected_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', True, False),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '8_population_count_sources', 'Population count sources', True, False),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '9_transmission_storage_tanks', 'Transmission storage tanks', False, False),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '10_other_venting_sources', 'Other venting sources', True, False),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '11_other_fugitive_sources', 'Other fugitive sources', True, False),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '12_third_party_line_hits_with_release_of_gas', 'Third party line hits with release of gas', True, False),
+        # NG other than non-compression 
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '1_ng_pneumatic_high_bleed_device_venting', 'Natural gas pneumatic high bleed device venting', True, True),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '2_ng_pneumatic_pump_venting', 'Natural gas pneumatic pump venting', True, True),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '3_ng_pneumatic_low_bleed_device_venting', 'Natural gas pneumatic low bleed device venting', True, True),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '4_ng_pneumatic_intermittent_device_venting', 'Natural gas pneumatic intermittent bleed device venting', True, True),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '5_blowdown_venting', 'Blowdown venting', False, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '6_flare_stacks', 'Flare stacks', True, True),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '7_centrifugal_compressor_venting', 'Centrifugal compressor venting', True, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '8_reciprocating_compressor_venting', 'Reciprocating compressor venting', True, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '9_equipment_leaks_detected_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', True, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '10_population_count_sources', 'Population count sources', True, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '11_transmission_storage_tanks', 'Transmission storage tanks', False, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '12_other_venting_sources', 'Other venting sources', True, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '13_other_fugitive_sources', 'Other fugitive sources', True, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '14_third_party_line_hits_with_release_of_gas', 'Third party line hits with release of gas', True, False),
+        # LNG activities 
+        ('LNG activities', 'lng_activities', '1_ng_pneumatic_high_bleed_device_venting', 'Natural gas pneumatic high bleed device venting', False, True),
+        ('LNG activities', 'lng_activities', '2_ng_pneumatic_pump_venting', 'Natural gas pneumatic pump venting', False, True),
+        ('LNG activities', 'lng_activities', '3_ng_pneumatic_low_bleed_device_venting', 'Natural gas pneumatic low bleed device venting', False, True),
+        ('LNG activities', 'lng_activities', '4_ng_pneumatic_intermittent_device_venting', 'Natural gas pneumatic intermittent bleed device venting', False, True),
+        ('LNG activities', 'lng_activities', '5_acid_gas_removal_venting_or_incineration', 'Acid gas removal venting or incineration', True, False),
+        ('LNG activities', 'lng_activities', '6_dehydrator_venting', 'Dehydrator venting', True, False),
+        ('LNG activities', 'lng_activities', '7_blowdown_venting', 'Blowdown venting', False, False),
+        ('LNG activities', 'lng_activities', '8_releases_from_tanks_used_for_storage', 'Releases from tanks used for storage, production or processing', True, False),
+        ('LNG activities', 'lng_activities', '9_flare_stacks', 'Flare stacks', True, True),
+        ('LNG activities', 'lng_activities', '10_centrifugal_compressor_venting', 'Centrifugal compressor venting', True, False),
+        ('LNG activities', 'lng_activities', '11_reciprocating_compressor_venting', 'Reciprocating compressor venting', True, False),
+        ('LNG activities', 'lng_activities', '12_equipment_leaks_detected_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', True, False),
+        ('LNG activities', 'lng_activities', '13_population_count_sources', 'Population count sources', True, False),
+        ('LNG activities', 'lng_activities', '14_transmission_storage_tanks', 'Transmission storage tanks', False, False),
+        ('LNG activities', 'lng_activities', '15_enhanced_oil_recovery_injection_pump_blowdowns', 'Enhanced oil recovery injection pump blowdowns', False, False),
+        ('LNG activities', 'lng_activities', '16_produced_water_dissolved_carbon_dioxide_methane', 'Produced water dissolved carbon dioxide and methane', False, False),
+        ('LNG activities', 'lng_activities', '17_enhanced_oil_recovery_produced_hydrocarbon_liquids', 'Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide', False, False),
+        ('LNG activities', 'lng_activities', '18_other_venting_sources', 'Other venting sources', True, False),
+        ('LNG activities', 'lng_activities', '19_other_fugitive_sources', 'Other fugitive sources', True, False),
+        ('LNG activities', 'lng_activities', '20_third_party_line_hits_with_release_of_gas', 'Third party line hits with release of gas', False, False),
+        # OG extraction non-compression 
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'associated_gas_flaring', 'Associated gas flaring', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'associated_gas_venting', 'Associated gas venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'blowdown_venting', 'Blowdown venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'dehydrator_venting', 'Dehydrator venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'drilling_flaring', 'Drilling flaring', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'drilling_venting', 'Drilling venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'equipment_leaks_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'flaring_stacks', 'Flaring stacks', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'hydraulic_fracturing_flaring', 'Hydraulic fracturing flaring', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'ng_high_bleed_venting', 'Natural gas pneumatic high bleed device venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'ng_intermittent_venting', 'Natural gas pneumatic intermittent bleed device venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'ng_low_bleed_venting', 'Natural gas pneumatic low bleed device venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'ng_pump_venting', 'Natural gas pneumatic pump venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'oil_recovery_injection_pump_blowdowns', 'Enhanced oil recovery injection pump blowdowns', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'oil_recovery_produced_hydrocarbon', 'Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'other_fugitive_sources', 'Other fugitive sources', True, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'other_venting_sources', 'Other venting sources', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'population_count_sources', 'Population count sources', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'produced_water_dissolved_co2', 'Produced water dissolved carbon dioxide and methane', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'releases_from_tanks_for_storage', 'Releases from tanks used for storage, production or processing', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'third_party_line_hits', 'Third party line hits with release of gas', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'transmission_storage_tanks', 'Transmission storage tanks', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'well_testing_flaring', 'Well testing flaring', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'well_testing_venting', 'Well testing venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'well_venting_liquid_unloading', 'Well venting for liquids unloading', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'well_venting_well_completion', 'Gas well venting during well completions and workovers with or without hydraulic fracturing', False, False),
+        # OG extraction other than NCNP 
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'ng_high_bleed_venting', 'Natural gas pneumatic high bleed device venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'ng_intermittent_venting', 'Natural gas pneumatic intermittent bleed device venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'ng_low_bleed_venting', 'Natural gas pneumatic low bleed device venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'ng_pump_venting', 'Natural gas pneumatic pump venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'acid_gas_removal_venting_or_incineration', 'Acid gas removal venting or incineration', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'dehydrator_venting', 'Dehydrator venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'blowdown_venting', 'Blowdown venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'releases_from_tanks_used_for_storage', 'Releases from tanks used for storage, production or processing', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'associated_gas_flaring', 'Associated gas flaring', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'associated_gas_venting', 'Associated gas venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'flaring_stacks', 'Flaring stacks', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'centrifugal_compressor_venting', 'Centrifugal compressor venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'reciprocating_compressor_venting', 'Reciprocating compressor venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'equipment_leaks_detected_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'population_count_sources', 'Population count sources', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'transmission_storage_tanks', 'Transmission storage tanks', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'enhanced_oil_recovery_injection_pump_blowdowns', 'Enhanced oil recovery injection pump blowdowns', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'produced_water_dissolved_carbon_dioxide_methane', 'Produced water dissolved carbon dioxide and methane', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'enhanced_oil_recovery_produced_hydrocarbon_liquids', 'Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'other_venting_sources', 'Other venting sources', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'other_fugitive_sources', 'Other fugitive sources', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'third_party_line_hits', 'Third party line hits with release of gas', False, False),
+        # Electricity generation
+        ('Electricity generation', 'electricity_generation', '1_fuel_combustion_electricity_gen', 'Fuel combustion for electricity generation', True, True),
+        ('Electricity generation', 'electricity_generation', '2_acid_gas_scrubbers_reagents', 'Acid gas scrubbers and acid gas reagents', False, False),
+        ('Electricity generation', 'electricity_generation', '3_cooling_units', 'Cooling units', False, False),
+        ('Electricity generation', 'electricity_generation', '4_geothermal_geyser_steam_fluids', 'Geothermal geyser steam or fluids', False, False),
+        ('Electricity generation', 'electricity_generation', '5_electrical_equipment_install_maint_decom', 'Installation, maintenance, operation and decommissioning of electrical equipment', False, False),
+        # Industrial wastewater processing
+        ('Industrial wastewater processing', 'industrial_water_processing', 'wastewater_processing_using_anaerobic', 'Industrial wastewater process using anaerobic digestion', False, False),
+        ('Industrial wastewater processing', 'industrial_water_processing', 'oil_water_separators', 'Oil-water separators', False, False),
+        # Cement production
+        ('Cement production', 'cement_production', 'calcination_of_lssso', 'Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material', False, False),
+        # Lime manufacturing
+        ('Lime manufacturing', 'lime_manufacturing', '1_calcination_of_carbonate', 'Calcination of carbonate materials in lime manufacturing', False, False),
+        # Coal storage
+        ('Coal storage at facilities that combust coal', 'coal_storage', '1_stored_coal_piles', 'Stored coal piles', False, False),
+        # Zinc production
+        ('Zinc production', 'zinc_production', '1_reducing agents', 'Use of reducing agents during zinc production', False, False),
+        # Petroleum refining 
+        ('Petroleum refining', 'petroleum_refining', '1_catalyst_regeneration', 'Catalyst regeneration', False, False),
+        ('Petroleum refining', 'petroleum_refining', '2_process_vents', 'Process vents', False, False),
+        ('Petroleum refining', 'petroleum_refining', '3_asphalt_production', 'Asphalt production', False, False),
+        ('Petroleum refining', 'petroleum_refining', '4_sulphur_recovery', 'Sulphur recovery', False, False),
+        ('Petroleum refining', 'petroleum_refining', '5_flares', 'Flares, the flare pilot, the combustion of purge gas and the destruction of low Btu gases', False, False),
+        ('Petroleum refining', 'petroleum_refining', '6_above_ground_storage_tanks', 'Above-ground storage tanks at refineries', False, False),
+        ('Petroleum refining', 'petroleum_refining', '7_oil_water_separators', 'Oil-water separators at refineries', False, False),
+        ('Petroleum refining', 'petroleum_refining', '8_equipment_leaks_at_refineries', 'Equipment leaks at refineries', False, False),
+        ('Petroleum refining', 'petroleum_refining', '9_wastewater_processing', 'Wastewater processing using anaerobic digestion at refineries', False, False),
+        ('Petroleum refining', 'petroleum_refining', '10_uncontrolled_blowdown_systems', 'Uncontrolled blowdown systems used at refineries', False, False),
+        ('Petroleum refining', 'petroleum_refining', '11_loading_operations', 'Loading operations at refineries and terminals', False, False),
+        ('Petroleum refining', 'petroleum_refining', '12_delayed_coking_units', 'Delayed coking units at refineries', False, False),
+        ('Petroleum refining', 'petroleum_refining', '13_coke_calcining', 'Coke calcining at refineries', False, False),
+        # Lead production
+        ('Lead production', 'lead_production', '1_reducing agents', 'Use of reducing agents during lead production', False, False),
+        # Electricity transmission
+        ('Electricity transmission', 'electricity_transmission', 'installation_maint_operation_electrical_equipment', 'Installation, maintenance, operation and decommissioning of electrical equipment', False, False),
+    ]
+
+    for activity_name, schema_dir, file_name, source_type_name, has_unit, has_fuel in ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING:
+        schema_path = f'{cwd}/reporting/json_schemas/2024/{schema_dir}/{file_name}.json'
+        with open(schema_path) as schema_file:
+            schema = json.load(schema_file)
+        ActivitySourceTypeSchema.objects.create(
+            activity=Activity.objects.get(name=activity_name),
+            source_type=SourceType.objects.get(name=source_type_name),
+            has_unit=has_unit,
+            has_fuel=has_fuel,
+            json_schema=schema,
+            valid_from=valid_from,
+            valid_to=valid_to,
+        )
+
+
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
+    """
+    Remove all activity source type schema data.
+    """
+    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
+    ActivitySourceTypeJsonSchema.objects.all().delete()
+
+
 def init_gas_type_data(apps, schema_editor):
     GasType = apps.get_model('reporting', 'GasType')
     GasType.objects.bulk_create(
@@ -2272,52 +2476,6 @@ def reverse_init_activity_schema_data(apps, schema_editor):
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
     ActivitySchema.objects.all().delete()
 
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/gsc_excluding_line_tracing/with_useful_energy.json') as gsc_st1:
-        schema1 = json.load(gsc_st1)
-    with open(f'{cwd}/reporting/json_schemas/2024/gsc_excluding_line_tracing/without_useful_energy.json') as gsc_st2:
-        schema2 = json.load(gsc_st2)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='General stationary combustion excluding line tracing').id,
-                source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
-                ).id,
-                json_schema=schema1,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='General stationary combustion excluding line tracing').id,
-                source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
-                ).id,
-                json_schema=schema2,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-        ]
-    )
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name='General stationary combustion excluding line tracing').id
-    ).delete()
-
 # reporting.migrations.0010_combustion_for_line_tracing_data
 #### CONFIG DATA ####
 def init_configuration_element_data(apps, schema_editor):
@@ -3240,46 +3398,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
         ).values_list('id', flat=True)
     ).delete()
 
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial schema data to erc.activity_source_type_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/gsc_solely_for_line_tracing/with_useful_energy.json') as gsc_st1:
-        schema1 = json.load(gsc_st1)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='General stationary combustion solely for the purpose of line tracing'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
-                ).id,
-                json_schema=schema1,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-        ]
-    )
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name='General stationary combustion solely for the purpose of line tracing').id
-    ).delete()
-
 # reporting.migrations.0011_mobile_combustion_data
 #### CONFIG DATA ####
 def init_configuration_element_data(apps, schema_editor):
@@ -3603,45 +3721,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
         configurationelement_id__in=ConfigurationElement.objects.filter(
             activity_id=Activity.objects.get(name='Fuel combustion by mobile equipment').id
         ).values_list('id', flat=True)
-    ).delete()
-
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial schema data to erc.activity_source_type_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/fuel_combustion_mobile/combustion_by_equipment.json') as mfuel_st:
-        schema = json.load(mfuel_st)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Fuel combustion by mobile equipment').id,
-                source_type_id=SourceType.objects.get(
-                    name='Fuel combustion by mobile equipment that is part of the facility'
-                ).id,
-                has_unit=False,
-                json_schema=schema,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-        ]
-    )
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name='Fuel combustion by mobile equipment').id
     ).delete()
 
 # reporting.migrations.0012_gsc_other_than_non_compression
@@ -6314,78 +6393,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
         ).values_list('id', flat=True)
     ).delete()
 
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial schema data to erc.activity_source_type_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/gsc_other_than_non_compression/with_useful_energy.json') as gsc_st1:
-        schema1 = json.load(gsc_st1)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/gsc_other_than_non_compression/without_useful_energy.json'
-    ) as gsc_st2:
-        schema2 = json.load(gsc_st2)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/gsc_other_than_non_compression/field_gas_process_vent_gas_at_lfo.json'
-    ) as gsc_st3:
-        schema3 = json.load(gsc_st3)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='General stationary combustion, other than non-compression and non-processing combustion'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
-                ).id,
-                json_schema=schema1,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='General stationary combustion, other than non-compression and non-processing combustion'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
-                ).id,
-                json_schema=schema2,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='General stationary combustion, other than non-compression and non-processing combustion'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Field gas or process vent gas combustion at a linear facilities operation'
-                ).id,
-                json_schema=schema3,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-        ]
-    )
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(
-            name='General stationary combustion, other than non-compression and non-processing combustion'
-        ).id
-    ).delete()
-
 # reporting.migrations.0013_refinery_fuel_gas_data
 #### CONFIG DATA ####
 def init_configuration_element_data(apps, schema_editor):
@@ -7035,45 +7042,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
         ).values_list('id', flat=True)
     ).delete()
 
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial schema data to erc.activity_source_type_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/refinery_fuel_gas/combustion_of_refinery_gas.json') as mfuel_st:
-        schema = json.load(mfuel_st)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
-                source_type_id=SourceType.objects.get(
-                    name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
-                ).id,
-                has_unit=False,
-                json_schema=schema,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-        ]
-    )
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id
-    ).delete()
-
 # reporting.migrations.0014_carbonates_use
 #### CONFIG DATA ####
 def init_configuration_element_data(apps, schema_editor):
@@ -7287,44 +7255,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
             activity_id=Activity.objects.get(name='Carbonate use').id
         ).values_list('id', flat=True)
     ).delete()
-
-#### SOURCE TYPE DATA ####
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/carbonates_use/carbonates_use.json') as carbonatesuse_st:
-        schema = json.load(carbonatesuse_st)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Carbonate use').id,
-                source_type_id=SourceType.objects.get(
-                    name='Carbonates used but not consumed in other activities set out in column 2'
-                ).id,
-                has_unit=False,
-                has_fuel=False,
-                json_schema=schema,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            )
-        ]
-    )
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(activity_id=Activity.objects.get(name='Carbonate use').id).delete()
 
 # reporting.migrations.0015_gsc_non_compression_non_processing
 #### CONFIG DATA ####
@@ -9759,78 +9689,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
         ).values_list('id', flat=True)
     ).delete()
 
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial schema data to erc.activity_source_type_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/gsc_non_compression_non_combustion/with_useful_energy.json'
-    ) as json_schema_file:
-        with_useful_energy_schema = json.load(json_schema_file)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/gsc_non_compression_non_combustion/without_useful_energy.json'
-    ) as json_schema_file:
-        without_useful_energy_schema = json.load(json_schema_file)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/gsc_non_compression_non_combustion/field_gas_process_vent_gas_at_lfo.json'
-    ) as json_schema_file:
-        field_gas_process_vent_gas_at_lfo_schema = json.load(json_schema_file)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='General stationary non-compression and non-processing combustion'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
-                ).id,
-                json_schema=with_useful_energy_schema,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='General stationary non-compression and non-processing combustion'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
-                ).id,
-                json_schema=without_useful_energy_schema,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='General stationary non-compression and non-processing combustion'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Field gas or process vent gas combustion at a linear facilities operation'
-                ).id,
-                json_schema=field_gas_process_vent_gas_at_lfo_schema,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-        ]
-    )
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id
-    ).delete()
-
 # reporting.migrations.0017_hydrogen_production
 #### CONFIG DATA ####
 def init_configuration_element_data(apps, schema_editor):
@@ -10023,48 +9881,6 @@ def reverse_init_custom_schema_data(apps, schema_editor):
     CutsomSchema = apps.get_model('reporting', 'CustomMethodologySchema')
     Activity = apps.get_model('registration', 'Activity')
     CutsomSchema.objects.filter(activity_id=Activity.objects.get(name='Hydrogen production').id).delete()
-
-#### SOURCE TYPE DATA ####
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/hydrogen_production/steam_reformation_or_gasification.json'
-    ) as hydrogen_prod:
-        schema = json.load(hydrogen_prod)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Hydrogen production').id,
-                source_type_id=SourceType.objects.get(
-                    name='Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock'
-                ).id,
-                has_unit=False,
-                has_fuel=False,
-                json_schema=schema,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            )
-        ]
-    )
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name='Hydrogen production').id
-    ).delete()
 
 # reporting.migrations.0018_pulp_and_paper_production
 #### CONFIG DATA ####
@@ -10498,46 +10314,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
         configurationelement_id__in=ConfigurationElement.objects.filter(
             activity_id=Activity.objects.get(name='Pulp and paper production').id,
         ).values_list('id', flat=True),
-    ).delete()
-
-#### SOURCE TYPE DATA ####
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/pulp_and_paper_production/pulp_and_paper_production.json'
-    ) as pulp_and_paper_production_st:
-        schema = json.load(pulp_and_paper_production_st)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Pulp and paper production').id,
-                source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
-                has_unit=False,
-                has_fuel=False,
-                json_schema=schema,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            )
-        ]
-    )
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name='Pulp and paper production').id
     ).delete()
 
 # reporting.migrations.0022_emission_category_with_data
@@ -12398,46 +12174,6 @@ def reverse_init_custom_schema_data(apps, schema_editor):
     Activity = apps.get_model('registration', 'Activity')
     CutsomSchema.objects.filter(activity_id=Activity.objects.get(name='Open pit coal mining').id).delete()
 
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial schema data to erc.activity_source_type_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/open_pit_coal_mining/coal_exposed_during_mining.json') as mfuel_st:
-        schema = json.load(mfuel_st)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Open pit coal mining').id,
-                source_type_id=SourceType.objects.get(
-                    name='Coal when broken or exposed to the atmosphere during mining'
-                ).id,
-                has_unit=False,
-                has_fuel=False,
-                json_schema=schema,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-        ]
-    )
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name='Open pit coal mining').id
-    ).delete()
-
 # reporting.migrations.0027_storage_of_petroleum_products
 def init_configuration_element_data(apps, schema_editor):
     '''
@@ -12562,47 +12298,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
         configurationelement_id__in=ConfigurationElement.objects.filter(
             activity_id=Activity.objects.get(name='Storage of petroleum products').id
         ).values_list('id', flat=True)
-    ).delete()
-
-#### SOURCE TYPE DATA ####
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/storage_of_petroleum_products/above_ground_storage_tanks.json'
-    ) as storage_of_petroleum:
-        schema = json.load(storage_of_petroleum)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Storage of petroleum products').id,
-                source_type_id=SourceType.objects.get(name='Above-ground storage tanks').id,
-                has_unit=False,
-                has_fuel=False,
-                json_schema=schema,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            )
-        ]
-    )
-
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name='Storage of petroleum products').id
     ).delete()
 
 # reporting.migrations.0028_gastype_cas_number_gwp_with_data
@@ -13370,70 +13065,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
             activity_id=Activity.objects.get(name='Aluminum or alumina production').id
         ).values_list('id', flat=True)
     ).delete()
-
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial schema data to erc.activity_source_type_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/aluminum_production/anode_consumption_acbgcc.json') as alum_st1:
-        schema1 = json.load(alum_st1)
-    with open(f'{cwd}/reporting/json_schemas/2024/aluminum_production/anode_effects.json') as alum_st2:
-        schema2 = json.load(alum_st2)
-    with open(f'{cwd}/reporting/json_schemas/2024/aluminum_production/cover_gas_from_electrolysis.json') as alum_st3:
-        schema3 = json.load(alum_st3)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
-                source_type_id=SourceType.objects.get(
-                    name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
-                ).id,
-                json_schema=schema1,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
-                source_type_id=SourceType.objects.get(name='Anode effects').id,
-                json_schema=schema2,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
-                source_type_id=SourceType.objects.get(name='Cover gas from electrolysis cells').id,
-                json_schema=schema3,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-        ]
-    )
-
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name='Aluminum or alumina production').id
-    ).delete()
-
 
 # reporting.migrations.0037_naics_regulatory_value_with_data
 def init_naics_regulatory_value_data(apps, schema_editor):
@@ -14491,93 +14122,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
-def init_activity_source_type_schema_data(apps, schema_editor):
-
-    cwd = os.getcwd()
-
-    # (json schema file name, source type name, has_unit, has_fuel)
-    st_schema_config = [
-        (
-            "1_ng_pneumatic_high_bleed_device_venting",
-            "Natural gas pneumatic high bleed device venting",
-            True,
-            True,
-        ),
-        (
-            "2_ng_pneumatic_pump_venting",
-            "Natural gas pneumatic pump venting",
-            True,
-            True,
-        ),
-        (
-            "3_ng_pneumatic_low_bleed_device_venting",
-            "Natural gas pneumatic low bleed device venting",
-            True,
-            True,
-        ),
-        (
-            "4_ng_pneumatic_intermittent_device_venting",
-            "Natural gas pneumatic intermittent bleed device venting",
-            True,
-            True,
-        ),
-        ("5_blowdown_venting", "Blowdown venting", False, False),
-        ("6_flare_stacks", "Flare stacks", True, True),
-        (
-            "7_equipment_leaks_detected_using_leak_detection",
-            "Equipment leaks detected using leak detection and leaker emission factor methods",
-            True,
-            False,
-        ),
-        ("8_population_count_sources", "Population count sources", True, False),
-        ("9_transmission_storage_tanks", "Transmission storage tanks", False, False),
-        ("10_other_venting_sources", "Other venting sources", True, False),
-        ("11_other_fugitive_sources", "Other fugitive sources", True, False),
-        (
-            "12_third_party_line_hits_with_release_of_gas",
-            "Third party line hits with release of gas",
-            True,
-            False,
-        ),
-    ]
-
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    for element in st_schema_config:
-        (file_name, st_name, has_unit, has_fuel) = element
-
-        with open(f"{cwd}/reporting/json_schemas/2024/ng_non_compression/{file_name}.json") as schema_file:
-            schema = json.load(schema_file)
-
-        ActivitySourceTypeSchema.objects.create(
-            activity=Activity.objects.get(
-                name="Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission"
-            ),
-            source_type=SourceType.objects.get(name=st_name),
-            has_unit=has_unit,
-            has_fuel=has_fuel,
-            json_schema=schema,
-            valid_from=Configuration.objects.get(valid_from="2023-01-01"),
-            valid_to=Configuration.objects.get(valid_to="2099-12-31"),
-        )
-
-
-def reverse_activity_source_type_schema_data(apps, schema_editor):
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    ActivitySourceTypeSchema.objects.filter(
-        activity=Activity.objects.get(
-            name="Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission"
-        ),
-        valid_from=Configuration.objects.get(valid_from="2023-01-01"),
-        valid_to=Configuration.objects.get(valid_to="2099-12-31"),
-    ).delete()
-
 # reporting.migrations.0053_natural_gas_other_than_non_compression_configuration
 #### CONFIG DATA ####
 
@@ -14981,105 +14525,6 @@ def reverse_activity_schema_data(apps, schema_editor):
 
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
-
-def init_activity_source_type_schema_data(apps, schema_editor):
-
-    cwd = os.getcwd()
-
-    # (json schema file name, source type name, has_unit, has_fuel)
-    st_schema_config = [
-        (
-            "1_ng_pneumatic_high_bleed_device_venting",
-            "Natural gas pneumatic high bleed device venting",
-            True,
-            True,
-        ),
-        (
-            "2_ng_pneumatic_pump_venting",
-            "Natural gas pneumatic pump venting",
-            True,
-            True,
-        ),
-        (
-            "3_ng_pneumatic_low_bleed_device_venting",
-            "Natural gas pneumatic low bleed device venting",
-            True,
-            True,
-        ),
-        (
-            "4_ng_pneumatic_intermittent_device_venting",
-            "Natural gas pneumatic intermittent bleed device venting",
-            True,
-            True,
-        ),
-        ("5_blowdown_venting", "Blowdown venting", False, False),
-        ("6_flare_stacks", "Flare stacks", True, True),
-        (
-            "7_centrifugal_compressor_venting",
-            "Centrifugal compressor venting",
-            True,
-            False,
-        ),
-        (
-            "8_reciprocating_compressor_venting",
-            "Reciprocating compressor venting",
-            True,
-            False,
-        ),
-        (
-            "9_equipment_leaks_detected_using_leak_detection",
-            "Equipment leaks detected using leak detection and leaker emission factor methods",
-            True,
-            False,
-        ),
-        ("10_population_count_sources", "Population count sources", True, False),
-        ("11_transmission_storage_tanks", "Transmission storage tanks", False, False),
-        ("12_other_venting_sources", "Other venting sources", True, False),
-        ("13_other_fugitive_sources", "Other fugitive sources", True, False),
-        (
-            "14_third_party_line_hits_with_release_of_gas",
-            "Third party line hits with release of gas",
-            True,
-            False,
-        ),
-    ]
-
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    for element in st_schema_config:
-        (file_name, st_name, has_unit, has_fuel) = element
-
-        with open(f"{cwd}/reporting/json_schemas/2024/ng_other_than_non_compression/{file_name}.json") as schema_file:
-            schema = json.load(schema_file)
-
-        ActivitySourceTypeSchema.objects.create(
-            activity=Activity.objects.get(
-                name="Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities"
-            ),
-            source_type=SourceType.objects.get(name=st_name),
-            has_unit=has_unit,
-            has_fuel=has_fuel,
-            json_schema=schema,
-            valid_from=Configuration.objects.get(valid_from="2023-01-01"),
-            valid_to=Configuration.objects.get(valid_to="2099-12-31"),
-        )
-
-
-def reverse_activity_source_type_schema_data(apps, schema_editor):
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    ActivitySourceTypeSchema.objects.filter(
-        activity=Activity.objects.get(
-            name="Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities"
-        ),
-        valid_from=Configuration.objects.get(valid_from="2023-01-01"),
-        valid_to=Configuration.objects.get(valid_to="2099-12-31"),
-    ).delete()
 
 # reporting.migrations.0055_liquefied_natural_gas
 #### CONFIG DATA ####
@@ -15588,132 +15033,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
 
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
-
-def init_activity_source_type_schema_data(apps, schema_editor):
-
-    cwd = os.getcwd()
-
-    # (json schema file name, source type name, has_unit, has_fuel)
-    st_schema_config = [
-        (
-            "1_ng_pneumatic_high_bleed_device_venting",
-            "Natural gas pneumatic high bleed device venting",
-            False,
-            True,
-        ),
-        (
-            "2_ng_pneumatic_pump_venting",
-            "Natural gas pneumatic pump venting",
-            False,
-            True,
-        ),
-        (
-            "3_ng_pneumatic_low_bleed_device_venting",
-            "Natural gas pneumatic low bleed device venting",
-            False,
-            True,
-        ),
-        (
-            "4_ng_pneumatic_intermittent_device_venting",
-            "Natural gas pneumatic intermittent bleed device venting",
-            False,
-            True,
-        ),
-        (
-            "5_acid_gas_removal_venting_or_incineration",
-            "Acid gas removal venting or incineration",
-            True,
-            False,
-        ),
-        ("6_dehydrator_venting", "Dehydrator venting", True, False),
-        ("7_blowdown_venting", "Blowdown venting", False, False),
-        (
-            "8_releases_from_tanks_used_for_storage",
-            "Releases from tanks used for storage, production or processing",
-            True,
-            False,
-        ),
-        ("9_flare_stacks", "Flare stacks", True, True),
-        (
-            "10_centrifugal_compressor_venting",
-            "Centrifugal compressor venting",
-            True,
-            False,
-        ),
-        (
-            "11_reciprocating_compressor_venting",
-            "Reciprocating compressor venting",
-            True,
-            False,
-        ),
-        (
-            "12_equipment_leaks_detected_using_leak_detection",
-            "Equipment leaks detected using leak detection and leaker emission factor methods",
-            True,
-            False,
-        ),
-        ("13_population_count_sources", "Population count sources", True, False),
-        ("14_transmission_storage_tanks", "Transmission storage tanks", False, False),
-        (
-            "15_enhanced_oil_recovery_injection_pump_blowdowns",
-            "Enhanced oil recovery injection pump blowdowns",
-            False,
-            False,
-        ),
-        (
-            "16_produced_water_dissolved_carbon_dioxide_methane",
-            "Produced water dissolved carbon dioxide and methane",
-            False,
-            False,
-        ),
-        (
-            "17_enhanced_oil_recovery_produced_hydrocarbon_liquids",
-            "Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide",
-            False,
-            False,
-        ),
-        ("18_other_venting_sources", "Other venting sources", True, False),
-        ("19_other_fugitive_sources", "Other fugitive sources", True, False),
-        (
-            "20_third_party_line_hits_with_release_of_gas",
-            "Third party line hits with release of gas",
-            False,
-            False,
-        ),
-    ]
-
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    for element in st_schema_config:
-        (file_name, st_name, has_unit, has_fuel) = element
-
-        with open(f"{cwd}/reporting/json_schemas/2024/lng_activities/{file_name}.json") as schema_file:
-            schema = json.load(schema_file)
-
-        ActivitySourceTypeSchema.objects.create(
-            activity=Activity.objects.get(name="LNG activities"),
-            source_type=SourceType.objects.get(name=st_name),
-            has_unit=has_unit,
-            has_fuel=has_fuel,
-            json_schema=schema,
-            valid_from=Configuration.objects.get(valid_from="2023-01-01"),
-            valid_to=Configuration.objects.get(valid_to="2099-12-31"),
-        )
-
-
-def reverse_activity_source_type_schema_data(apps, schema_editor):
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    ActivitySourceTypeSchema.objects.filter(
-        activity=Activity.objects.get(name="LNG activities"),
-        valid_from=Configuration.objects.get(valid_from="2023-01-01"),
-        valid_to=Configuration.objects.get(valid_to="2099-12-31"),
-    ).delete()
 
 # reporting.migrations.0059_og_extraction_non_compression_non_processing
 def init_configuration_element_data(apps, schema_editor):
@@ -17883,399 +17202,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
         ).values_list("id", flat=True)
     ).delete()
 
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Add initial schema data to erc.activity_source_type_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/associated_gas_flaring.json") as og_st1:
-        schema1 = json.load(og_st1)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/associated_gas_venting.json") as og_st2:
-        schema2 = json.load(og_st2)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/blowdown_venting.json") as og_st3:
-        schema3 = json.load(og_st3)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/dehydrator_venting.json") as og_st4:
-        schema4 = json.load(og_st4)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/drilling_flaring.json") as og_st5:
-        schema5 = json.load(og_st5)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/drilling_venting.json") as og_st6:
-        schema6 = json.load(og_st6)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/equipment_leaks_using_leak_detection.json"
-    ) as og_st7:
-        schema7 = json.load(og_st7)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/flaring_stacks.json") as og_st8:
-        schema8 = json.load(og_st8)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/hydraulic_fracturing_flaring.json"
-    ) as og_st9:
-        schema9 = json.load(og_st9)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/ng_high_bleed_venting.json") as og_st10:
-        schema10 = json.load(og_st10)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/ng_intermittent_venting.json"
-    ) as og_st11:
-        schema11 = json.load(og_st11)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/ng_low_bleed_venting.json") as og_st12:
-        schema12 = json.load(og_st12)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/ng_pump_venting.json") as og_st13:
-        schema13 = json.load(og_st13)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/oil_recovery_injection_pump_blowdowns.json"
-    ) as og_st14:
-        schema14 = json.load(og_st14)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/oil_recovery_produced_hydrocarbon.json"
-    ) as og_st15:
-        schema15 = json.load(og_st15)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/other_fugitive_sources.json"
-    ) as og_st16:
-        schema16 = json.load(og_st16)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/other_venting_sources.json") as og_st17:
-        schema17 = json.load(og_st17)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/population_count_sources.json"
-    ) as og_st18:
-        schema18 = json.load(og_st18)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/produced_water_dissolved_co2.json"
-    ) as og_st19:
-        schema19 = json.load(og_st19)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/releases_from_tanks_for_storage.json"
-    ) as og_st20:
-        schema20 = json.load(og_st20)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/third_party_line_hits.json") as og_st21:
-        schema21 = json.load(og_st21)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/transmission_storage_tanks.json"
-    ) as og_st22:
-        schema22 = json.load(og_st22)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/well_testing_flaring.json") as og_st23:
-        schema23 = json.load(og_st23)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/well_testing_venting.json") as og_st24:
-        schema24 = json.load(og_st24)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/well_venting_liquid_unloading.json"
-    ) as og_st25:
-        schema25 = json.load(og_st25)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/well_venting_well_completion.json"
-    ) as og_st26:
-        schema26 = json.load(og_st26)
-
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Associated gas flaring").id,
-                json_schema=schema1,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Associated gas venting").id,
-                json_schema=schema2,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Blowdown venting").id,
-                json_schema=schema3,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Dehydrator venting").id,
-                json_schema=schema4,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Drilling flaring").id,
-                json_schema=schema5,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Drilling venting").id,
-                json_schema=schema6,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name="Equipment leaks detected using leak detection and leaker emission factor methods"
-                ).id,
-                json_schema=schema7,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Flaring stacks").id,
-                json_schema=schema8,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Hydraulic fracturing flaring").id,
-                json_schema=schema9,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Natural gas pneumatic high bleed device venting").id,
-                json_schema=schema10,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name="Natural gas pneumatic intermittent bleed device venting"
-                ).id,
-                json_schema=schema11,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Natural gas pneumatic low bleed device venting").id,
-                json_schema=schema12,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Natural gas pneumatic pump venting").id,
-                json_schema=schema13,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Enhanced oil recovery injection pump blowdowns").id,
-                json_schema=schema14,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name="Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide"
-                ).id,
-                json_schema=schema15,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Other fugitive sources").id,
-                json_schema=schema16,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=True,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Other venting sources").id,
-                json_schema=schema17,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Population count sources").id,
-                json_schema=schema18,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Produced water dissolved carbon dioxide and methane").id,
-                json_schema=schema19,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name="Releases from tanks used for storage, production or processing"
-                ).id,
-                json_schema=schema20,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Third party line hits with release of gas").id,
-                json_schema=schema21,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Transmission storage tanks").id,
-                json_schema=schema22,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Well testing flaring").id,
-                json_schema=schema23,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Well testing venting").id,
-                json_schema=schema24,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Well venting for liquids unloading").id,
-                json_schema=schema25,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name="Gas well venting during well completions and workovers with or without hydraulic fracturing"
-                ).id,
-                json_schema=schema26,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-        ]
-    )
-
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Remove initial data from erc.base_schema
-    """
-    ActivitySourceTypeJsonSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(
-            name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-        ).id
-    ).delete()
-
 # reporting.migrations.0060_og_extraction_other_than_non_compression
 def init_configuration_element_data(apps, schema_editor):
     """
@@ -18794,340 +17720,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
                 name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
             ).id
         ).values_list("id", flat=True)
-    ).delete()
-
-
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Add initial schema data to erc.activity_source_type_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/ng_high_bleed_venting.json") as og_st1:
-        schema1 = json.load(og_st1)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/ng_intermittent_venting.json"
-    ) as og_st2:
-        schema2 = json.load(og_st2)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/ng_low_bleed_venting.json") as og_st3:
-        schema3 = json.load(og_st3)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/ng_pump_venting.json") as og_st4:
-        schema4 = json.load(og_st4)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/acid_gas_removal_venting_or_incineration.json"
-    ) as og_st5:
-        schema5 = json.load(og_st5)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/dehydrator_venting.json") as og_st6:
-        schema6 = json.load(og_st6)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/blowdown_venting.json") as og_st7:
-        schema7 = json.load(og_st7)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/releases_from_tanks_used_for_storage.json"
-    ) as og_st8:
-        schema8 = json.load(og_st8)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/associated_gas_flaring.json") as og_st9:
-        schema9 = json.load(og_st9)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/associated_gas_venting.json"
-    ) as og_st10:
-        schema10 = json.load(og_st10)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/flaring_stacks.json") as og_st11:
-        schema11 = json.load(og_st11)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/centrifugal_compressor_venting.json"
-    ) as og_st12:
-        schema12 = json.load(og_st12)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/reciprocating_compressor_venting.json"
-    ) as og_st13:
-        schema13 = json.load(og_st13)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/equipment_leaks_detected_using_leak_detection.json"
-    ) as og_st14:
-        schema14 = json.load(og_st14)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/population_count_sources.json"
-    ) as og_st15:
-        schema15 = json.load(og_st15)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/transmission_storage_tanks.json"
-    ) as og_st16:
-        schema16 = json.load(og_st16)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/enhanced_oil_recovery_injection_pump_blowdowns.json"
-    ) as og_st17:
-        schema17 = json.load(og_st17)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/produced_water_dissolved_carbon_dioxide_methane.json"
-    ) as og_st18:
-        schema18 = json.load(og_st18)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/enhanced_oil_recovery_produced_hydrocarbon_liquids.json"
-    ) as og_st19:
-        schema19 = json.load(og_st19)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/other_venting_sources.json") as og_st20:
-        schema20 = json.load(og_st20)
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/other_fugitive_sources.json"
-    ) as og_st21:
-        schema21 = json.load(og_st21)
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/third_party_line_hits.json") as og_st22:
-        schema22 = json.load(og_st22)
-
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Natural gas pneumatic high bleed device venting").id,
-                json_schema=schema1,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name="Natural gas pneumatic intermittent bleed device venting"
-                ).id,
-                json_schema=schema2,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Natural gas pneumatic low bleed device venting").id,
-                json_schema=schema3,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Natural gas pneumatic pump venting").id,
-                json_schema=schema4,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Acid gas removal venting or incineration").id,
-                json_schema=schema5,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Dehydrator venting").id,
-                json_schema=schema6,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Blowdown venting").id,
-                json_schema=schema7,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name="Releases from tanks used for storage, production or processing"
-                ).id,
-                json_schema=schema8,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Associated gas flaring").id,
-                json_schema=schema9,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Associated gas venting").id,
-                json_schema=schema10,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Flaring stacks").id,
-                json_schema=schema11,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Centrifugal compressor venting").id,
-                json_schema=schema12,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Reciprocating compressor venting").id,
-                json_schema=schema13,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name="Equipment leaks detected using leak detection and leaker emission factor methods"
-                ).id,
-                json_schema=schema14,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Population count sources").id,
-                json_schema=schema15,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Transmission storage tanks").id,
-                json_schema=schema16,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Enhanced oil recovery injection pump blowdowns").id,
-                json_schema=schema17,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Produced water dissolved carbon dioxide and methane").id,
-                json_schema=schema18,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name="Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide"
-                ).id,
-                json_schema=schema19,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Other venting sources").id,
-                json_schema=schema20,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Other fugitive sources").id,
-                json_schema=schema21,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-                ).id,
-                source_type_id=SourceType.objects.get(name="Third party line hits with release of gas").id,
-                json_schema=schema22,
-                valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-                valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-        ]
-    )
-
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Remove initial data from erc.base_schema
-    """
-    ActivitySourceTypeJsonSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(
-            name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-        ).id
     ).delete()
 
 
@@ -19697,64 +18289,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
-def init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Add activity source type schema data to erc.activity_source_type_schema
-    """
-
-    cwd = os.getcwd()
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Iterate through the source type schema configuration json
-    for element in CONFIG_SOURCE_TYPE_SCHEMA:
-        (file_name, st_name, has_unit, has_fuel) = element
-
-        with open(f"{cwd}/{JSON_SCHEMAS_PATH}/{file_name}.json") as schema_file:
-            schema = json.load(schema_file)
-
-        ActivitySourceTypeSchema.objects.create(
-            activity=activity,
-            source_type=SourceType.objects.get(name=st_name),
-            has_unit=has_unit,
-            has_fuel=has_fuel,
-            json_schema=schema,
-            valid_from=valid_from,
-            valid_to=valid_to,
-        )
-
-
-def reverse_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Remove Activity SourceType schema data
-    """
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Delete the schema
-    ActivitySourceTypeSchema.objects.filter(
-        activity=activity,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    ).delete()
-
 # reporting.migrations.0062_industrial_water_processing
 #### CONFIG DATA ####
 
@@ -20041,62 +18575,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
         ).values_list('id', flat=True)
     ).delete()
 
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial schema data to erc.activity_source_type_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/industrial_water_processing/wastewater_processing_using_anaerobic.json'
-    ) as json_schema_file:
-        using_anaerobic = json.load(json_schema_file)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/industrial_water_processing/oil_water_separators.json'
-    ) as json_schema_file:
-        oil_water_separators = json.load(json_schema_file)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-                source_type_id=SourceType.objects.get(
-                    name='Industrial wastewater process using anaerobic digestion'
-                ).id,
-                json_schema=using_anaerobic,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-                source_type_id=SourceType.objects.get(name='Oil-water separators').id,
-                json_schema=oil_water_separators,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-        ]
-    )
-
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name='Industrial wastewater processing').id
-    ).delete()
-
 # reporting.migrations.0063_cement_production
 #### CONFIG DATA ####
 
@@ -20319,46 +18797,6 @@ def reverse_init_custom_schema_data(apps, schema_editor):
     CustomSchema = apps.get_model('reporting', 'CustomMethodologySchema')
     Activity = apps.get_model('registration', 'Activity')
     CustomSchema.objects.filter(activity_id=Activity.objects.get(name='Cement production').id).delete()
-
-
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Add initial schema data to erc.activity_source_type_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/cement_production/calcination_of_lssso.json') as cement_st1:
-        schema1 = json.load(cement_st1)
-
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySourceTypeSchema.objects.bulk_create(
-        [
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(name='Cement production').id,
-                source_type_id=SourceType.objects.get(
-                    name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
-                ).id,
-                json_schema=schema1,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-                has_unit=False,
-                has_fuel=False,
-            ),
-        ]
-    )
-
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(activity_id=Activity.objects.get(name='Cement production').id).delete()
 
 
 # reporting.migrations.0064_lime_manufacturing
@@ -20604,65 +19042,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
 
 
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
-
-
-def init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Add activity source type schema data to erc.activity_source_type_json_schema
-    """
-
-    cwd = os.getcwd()
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Iterate through the source type schema configuration json
-    for element in CONFIG_SOURCE_TYPE_SCHEMA:
-        (file_name, st_name, has_unit, has_fuel) = element
-
-        with open(f"{cwd}/{JSON_SCHEMAS_PATH}/{file_name}.json") as schema_file:
-            schema = json.load(schema_file)
-
-        ActivitySourceTypeSchema.objects.create(
-            activity=activity,
-            source_type=SourceType.objects.get(name=st_name),
-            has_unit=has_unit,
-            has_fuel=has_fuel,
-            json_schema=schema,
-            valid_from=valid_from,
-            valid_to=valid_to,
-        )
-
-
-def reverse_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Remove Activity SourceType schema data
-    """
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Delete the schema
-    ActivitySourceTypeSchema.objects.filter(
-        activity=activity,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    ).delete()
 
 
 #### CUSTOM SCHEMAS ####
@@ -20972,65 +19351,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
-def init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Add activity source type schema data to erc.activity_source_type_json_schema
-    """
-
-    cwd = os.getcwd()
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Iterate through the source type schema configuration json
-    for element in CONFIG_SOURCE_TYPE_SCHEMA:
-        (file_name, st_name, has_unit, has_fuel) = element
-
-        with open(f"{cwd}/{JSON_SCHEMAS_PATH}/{file_name}.json") as schema_file:
-            schema = json.load(schema_file)
-
-        ActivitySourceTypeSchema.objects.create(
-            activity=activity,
-            source_type=SourceType.objects.get(name=st_name),
-            has_unit=has_unit,
-            has_fuel=has_fuel,
-            json_schema=schema,
-            valid_from=valid_from,
-            valid_to=valid_to,
-        )
-
-
-def reverse_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Remove Activity SourceType schema data
-    """
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Delete the schema
-    ActivitySourceTypeSchema.objects.filter(
-        activity=activity,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    ).delete()
-
-
 #### CUSTOM SCHEMAS ####
 
 
@@ -21336,65 +19656,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
 
 
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
-
-
-def init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Add activity source type schema data to erc.activity_source_type_json_schema
-    """
-
-    cwd = os.getcwd()
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Iterate through the source type schema configuration json
-    for element in CONFIG_SOURCE_TYPE_SCHEMA:
-        (file_name, st_name, has_unit, has_fuel) = element
-
-        with open(f"{cwd}/{JSON_SCHEMAS_PATH}/{file_name}.json") as schema_file:
-            schema = json.load(schema_file)
-
-        ActivitySourceTypeSchema.objects.create(
-            activity=activity,
-            source_type=SourceType.objects.get(name=st_name),
-            has_unit=has_unit,
-            has_fuel=has_fuel,
-            json_schema=schema,
-            valid_from=valid_from,
-            valid_to=valid_to,
-        )
-
-
-def reverse_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Remove Activity SourceType schema data
-    """
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Delete the schema
-    ActivitySourceTypeSchema.objects.filter(
-        activity=activity,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    ).delete()
 
 
 #### CUSTOM SCHEMAS ####
@@ -22103,65 +20364,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
         ).values_list('id', flat=True)
     ).delete()
 
-def init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Add activity source type schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name="Petroleum refining")
-    valid_from = Configuration.objects.get(valid_from="2023-01-01")
-    valid_to = Configuration.objects.get(valid_to="2099-12-31")
-
-    # Iterate through the source type schema configuration json
-    for element in CONFIG_SOURCE_TYPE_SCHEMA:
-        (file_name, st_name, has_unit, has_fuel) = element
-
-        with open(f"{cwd}/reporting/json_schemas/2024/petroleum_refining/{file_name}.json") as schema_file:
-            schema = json.load(schema_file)
-
-        ActivitySourceTypeSchema.objects.create(
-            activity=activity,
-            source_type=SourceType.objects.get(name=st_name),
-            has_unit=has_unit,
-            has_fuel=has_fuel,
-            json_schema=schema,
-            valid_from=valid_from,
-            valid_to=valid_to,
-        )
-
-
-def reverse_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Remove Activity SourceType schema data
-    """
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name="Petroleum refining")
-    valid_from = Configuration.objects.get(valid_from="2023-01-01")
-    valid_to = Configuration.objects.get(valid_to="2099-12-31")
-
-    # Delete the schema
-    ActivitySourceTypeSchema.objects.filter(
-        activity=activity,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    ).delete()
-
-
 # reporting.migrations.0068_lead_production
 #### ACTIVITY RULES ####
 
@@ -22406,65 +20608,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
-def init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Add activity source type schema data to erc.activity_source_type_json_schema
-    """
-
-    cwd = os.getcwd()
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Iterate through the source type schema configuration json
-    for element in CONFIG_SOURCE_TYPE_SCHEMA:
-        (file_name, st_name, has_unit, has_fuel) = element
-
-        with open(f"{cwd}/{JSON_SCHEMAS_PATH}/{file_name}.json") as schema_file:
-            schema = json.load(schema_file)
-
-        ActivitySourceTypeSchema.objects.create(
-            activity=activity,
-            source_type=SourceType.objects.get(name=st_name),
-            has_unit=has_unit,
-            has_fuel=has_fuel,
-            json_schema=schema,
-            valid_from=valid_from,
-            valid_to=valid_to,
-        )
-
-
-def reverse_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Remove Activity SourceType schema data
-    """
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Delete the schema
-    ActivitySourceTypeSchema.objects.filter(
-        activity=activity,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    ).delete()
-
-
 #### CUSTOM SCHEMAS ####
 
 
@@ -22638,39 +20781,6 @@ VALID_TO = "2099-12-31"
 JSON_SCHEMAS_PATH = "reporting/json_schemas/2024/electricity_generation"
 
 
-def init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Add activity source type schema data to erc.activity_source_type_schema
-    """
-
-    cwd = os.getcwd()
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    with open(f"{cwd}/{JSON_SCHEMAS_PATH}/3_cooling_units.json") as schema_file:
-        schema = json.load(schema_file)
-
-    ActivitySourceTypeSchema.objects.filter(
-        activity=activity, source_type=SourceType.objects.get(name="Cooling units")
-    ).update(
-        activity=activity,
-        source_type=SourceType.objects.get(name="Cooling units"),
-        has_unit=False,
-        has_fuel=False,
-        json_schema=schema,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    )
-# reporting.migrations.0093_populate_compliance_data_for_existing_reports
 def populate_compliance_data_for_existing_reports(apps, schema_editor):
     """
     Persist compliance summary data for submitted report versions
@@ -22895,45 +21005,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor
         configurationelement_id__in=ConfigurationElement.objects.filter(
             activity_id=Activity.objects.get(name="Electricity transmission").id
         ).values_list("id", flat=True)
-    ).delete()
-
-# SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Add initial schema data to erc.activity_source_type_schema
-    """
-
-    cwd = os.getcwd()
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/electricity_transmission/installation_maint_operation_electrical_equipment.json"
-    ) as og_st1:
-        schema1 = json.load(og_st1)
-
-    ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    SourceType = apps.get_model("reporting", "SourceType")
-    Configuration = apps.get_model("reporting", "Configuration")
-    ActivitySourceTypeSchema.objects.create(
-        activity_id=Activity.objects.get(name="Electricity transmission").id,
-        source_type_id=SourceType.objects.get(
-            name="Installation, maintenance, operation and decommissioning of electrical equipment"
-        ).id,
-        json_schema=schema1,
-        valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-        valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-        has_unit=False,
-        has_fuel=False,
-    )
-
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Remove initial data from erc.base_schema
-    """
-    ActivitySourceTypeJsonSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name="Electricity transmission").id
     ).delete()
 
 # reporting.migrations.0118_update_equivalent_emission_type
@@ -24473,8 +22544,8 @@ class Migration(migrations.Migration):
             reverse_code=reverse_init_activity_schema_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0009_general_stationary_combustion_data.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0009_general_stationary_combustion_data.reverse_init_activity_source_type_schema_data,
+            code=init_activity_source_type_schema_data,
+            reverse_code=reverse_init_activity_source_type_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0010_combustion_for_line_tracing_data.init_configuration_element_data,
@@ -24485,20 +22556,12 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0010_combustion_for_line_tracing_data.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0010_combustion_for_line_tracing_data.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0010_combustion_for_line_tracing_data.reverse_init_activity_source_type_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0011_mobile_combustion_data.init_configuration_element_data,
             reverse_code=reporting.migrations.0011_mobile_combustion_data.reverse_init_configuration_element_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0011_mobile_combustion_data.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0011_mobile_combustion_data.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0011_mobile_combustion_data.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0011_mobile_combustion_data.reverse_init_activity_source_type_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0012_gsc_other_than_non_compression.init_configuration_element_data,
@@ -24509,20 +22572,12 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0012_gsc_other_than_non_compression.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0012_gsc_other_than_non_compression.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0012_gsc_other_than_non_compression.reverse_init_activity_source_type_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0013_refinery_fuel_gas_data.init_configuration_element_data,
             reverse_code=reporting.migrations.0013_refinery_fuel_gas_data.reverse_init_configuration_element_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0013_refinery_fuel_gas_data.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0013_refinery_fuel_gas_data.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0013_refinery_fuel_gas_data.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0013_refinery_fuel_gas_data.reverse_init_activity_source_type_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0014_carbonates_use.init_configuration_element_data,
@@ -24533,20 +22588,12 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0014_carbonates_use.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0014_carbonates_use.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0014_carbonates_use.reverse_init_activity_source_type_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0015_gsc_non_compression_non_processing.init_configuration_element_data,
             reverse_code=reporting.migrations.0015_gsc_non_compression_non_processing.reverse_init_configuration_element_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0015_gsc_non_compression_non_processing.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0015_gsc_non_compression_non_processing.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0015_gsc_non_compression_non_processing.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0015_gsc_non_compression_non_processing.reverse_init_activity_source_type_schema_data,
         ),
         migrations.CreateModel(
             name='CustomMethodologySchema',
@@ -24583,20 +22630,12 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0017_hydrogen_production.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0017_hydrogen_production.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0017_hydrogen_production.reverse_init_activity_source_type_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0018_pulp_and_paper_production.init_configuration_element_data,
             reverse_code=reporting.migrations.0018_pulp_and_paper_production.revere_init_configuration_element_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0018_pulp_and_paper_production.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0018_pulp_and_paper_production.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0018_pulp_and_paper_production.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0018_pulp_and_paper_production.reverse_init_activity_source_type_schema_data,
         ),
         migrations.AlterField(
             model_name='reportactivity',
@@ -24751,10 +22790,6 @@ class Migration(migrations.Migration):
             code=reporting.migrations.0024_open_pit_coal_mining.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0024_open_pit_coal_mining.reverse_init_configuration_element_reporting_fields_data,
         ),
-        migrations.RunPython(
-            code=reporting.migrations.0024_open_pit_coal_mining.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0024_open_pit_coal_mining.reverse_init_activity_source_type_schema_data,
-        ),
         migrations.CreateModel(
             name='ReportRawActivityData',
             fields=[
@@ -24786,10 +22821,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0027_storage_of_petroleum_products.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0027_storage_of_petroleum_products.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0027_storage_of_petroleum_products.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0027_storage_of_petroleum_products.reverse_init_activity_source_type_schema_data,
         ),
         migrations.AddField(
             model_name='gastype',
@@ -24924,10 +22955,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0036_aluminum_or_alumina_production_data.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0036_aluminum_or_alumina_production_data.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0036_aluminum_or_alumina_production_data.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0036_aluminum_or_alumina_production_data.reverse_init_activity_source_type_schema_data,
         ),
         django.contrib.postgres.operations.BtreeGistExtension(
         ),
@@ -25230,10 +23257,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0051_natural_gas_non_compression_configuration.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0051_natural_gas_non_compression_configuration.reverse_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0051_natural_gas_non_compression_configuration.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0051_natural_gas_non_compression_configuration.reverse_activity_source_type_schema_data,
         ),
         migrations.AlterField(
             model_name='facilityreport',
@@ -25542,10 +23565,6 @@ class Migration(migrations.Migration):
             code=reporting.migrations.0053_natural_gas_other_than_non_compression_configuration.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0053_natural_gas_other_than_non_compression_configuration.reverse_configuration_element_reporting_fields_data,
         ),
-        migrations.RunPython(
-            code=reporting.migrations.0053_natural_gas_other_than_non_compression_configuration.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0053_natural_gas_other_than_non_compression_configuration.reverse_activity_source_type_schema_data,
-        ),
         migrations.AddField(
             model_name='facilityreport',
             name='is_completed',
@@ -25558,10 +23577,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0055_liquefied_natural_gas.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0055_liquefied_natural_gas.reverse_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0055_liquefied_natural_gas.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0055_liquefied_natural_gas.reverse_activity_source_type_schema_data,
         ),
         migrations.DeleteModel(
             name='ReportAdditionalData',
@@ -25771,20 +23786,12 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0059_og_extraction_non_compression_non_processing.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0059_og_extraction_non_compression_non_processing.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0059_og_extraction_non_compression_non_processing.reverse_init_activity_source_type_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0060_og_extraction_other_than_non_compression.init_configuration_element_data,
             reverse_code=reporting.migrations.0060_og_extraction_other_than_non_compression.reverse_init_configuration_element_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0060_og_extraction_other_than_non_compression.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0060_og_extraction_other_than_non_compression.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0060_og_extraction_other_than_non_compression.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0060_og_extraction_other_than_non_compression.reverse_init_activity_source_type_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0061_electricity_generation.init_update_gas_type_data,
@@ -25803,20 +23810,12 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0061_electricity_generation.reverse_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0061_electricity_generation.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0061_electricity_generation.reverse_activity_source_type_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0062_industrial_water_processing.init_configuration_element_data,
             reverse_code=reporting.migrations.0062_industrial_water_processing.reverse_init_configuration_element_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0062_industrial_water_processing.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0062_industrial_water_processing.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0062_industrial_water_processing.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0062_industrial_water_processing.reverse_init_activity_source_type_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0063_cement_production.init_custom_schema_data,
@@ -25831,10 +23830,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0063_cement_production.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0063_cement_production.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0063_cement_production.reverse_init_activity_source_type_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0064_lime_manufacturing.init_custom_schema_data,
             reverse_code=reporting.migrations.0064_lime_manufacturing.reverse_custom_schema_data,
         ),
@@ -25845,10 +23840,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0064_lime_manufacturing.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0064_lime_manufacturing.reverse_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0064_lime_manufacturing.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0064_lime_manufacturing.reverse_activity_source_type_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0065_coal_storage.init_custom_schema_data,
@@ -25863,10 +23854,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0065_coal_storage.reverse_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0065_coal_storage.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0065_coal_storage.reverse_activity_source_type_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0066_zinc_production.init_custom_schema_data,
             reverse_code=reporting.migrations.0066_zinc_production.reverse_custom_schema_data,
         ),
@@ -25879,20 +23866,12 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0066_zinc_production.reverse_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0066_zinc_production.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0066_zinc_production.reverse_activity_source_type_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0067_petroleum_refining.init_configuration_element_data,
             reverse_code=reporting.migrations.0067_petroleum_refining.reverse_init_configuration_element_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0067_petroleum_refining.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0067_petroleum_refining.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0067_petroleum_refining.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0067_petroleum_refining.reverse_activity_source_type_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0068_lead_production.init_custom_schema_data,
@@ -25905,10 +23884,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0068_lead_production.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0068_lead_production.reverse_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0068_lead_production.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0068_lead_production.reverse_activity_source_type_schema_data,
         ),
         pgtrigger.migrations.RemoveTrigger(
             model_name='reportverificationvisit',
@@ -26165,10 +24140,6 @@ class Migration(migrations.Migration):
             model_name='reportattachment',
             name='status',
             field=models.CharField(choices=[('Unscanned', 'Unscanned'), ('Clean', 'Clean'), ('Quarantined', 'Quarantined')], default='Unscanned', max_length=100),
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0090_reload_cooling_units_json_schema.init_activity_source_type_schema_data,
-            reverse_code=migrations.RunPython.noop,
         ),
         migrations.CreateModel(
             name='ReportComplianceSummary',
@@ -26826,10 +24797,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0109_electricity_transmission.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0109_electricity_transmission.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0109_electricity_transmission.init_activity_source_type_schema_data,
-            reverse_code=reporting.migrations.0109_electricity_transmission.reverse_init_activity_source_type_schema_data,
         ),
         pgtrigger.migrations.RemoveTrigger(
             model_name='facilityreport',
