@@ -11,7 +11,7 @@ import uuid
 from django.db import migrations, models
 
 
-def init_app_role_data(apps, schema_monitor):
+def init_app_role_data(apps, schema_editor):
     AppRole = apps.get_model('registration', 'AppRole')
     AppRole.objects.bulk_create(
         [
@@ -43,12 +43,12 @@ def init_app_role_data(apps, schema_monitor):
     )
 
 
-def reverse_init_app_role_data(apps, schema_monitor):
+def reverse_init_app_role_data(apps, schema_editor):
     AppRole = apps.get_model('registration', 'AppRole')
     AppRole.objects.filter(role_name__in=['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user', 'cas_director', 'cas_view_only']).delete()
 
 
-def init_business_role_data(apps, schema_monitor):
+def init_business_role_data(apps, schema_editor):
     BusinessRole = apps.get_model('registration', 'BusinessRole')
     BusinessRole.objects.bulk_create(
         [
@@ -72,7 +72,7 @@ def init_business_role_data(apps, schema_monitor):
     )
 
 
-def reverse_init_business_role_data(apps, schema_monitor):
+def reverse_init_business_role_data(apps, schema_editor):
     BusinessRole = apps.get_model('registration', 'BusinessRole')
     BusinessRole.objects.filter(
         role_name__in=[
@@ -84,7 +84,7 @@ def reverse_init_business_role_data(apps, schema_monitor):
     ).delete()
 
 
-def init_business_structure_data(apps, schema_monitor):
+def init_business_structure_data(apps, schema_editor):
     BusinessStructure = apps.get_model('registration', 'BusinessStructure')
     BusinessStructure.objects.bulk_create(
         [
@@ -99,7 +99,7 @@ def init_business_structure_data(apps, schema_monitor):
     )
 
 
-def reverse_init_business_structure_data(apps, schema_monitor):
+def reverse_init_business_structure_data(apps, schema_editor):
     BusinessStructure = apps.get_model('registration', 'BusinessStructure')
     BusinessStructure.objects.filter(
         name__in=[
@@ -114,7 +114,7 @@ def reverse_init_business_structure_data(apps, schema_monitor):
     ).delete()
 
 
-def init_document_type_data(apps, schema_monitor):
+def init_document_type_data(apps, schema_editor):
     DocumentType = apps.get_model('registration', 'DocumentType')
     DocumentType.objects.create(name='new_entrant_application')
     DocumentType.objects.bulk_create(
@@ -134,7 +134,7 @@ def init_document_type_data(apps, schema_monitor):
     )
 
 
-def reverse_init_document_type_data(apps, schema_monitor):
+def reverse_init_document_type_data(apps, schema_editor):
     DocumentType = apps.get_model('registration', 'DocumentType')
     DocumentType.objects.filter(
         name__in=[
@@ -153,7 +153,7 @@ def reverse_init_document_type_data(apps, schema_monitor):
     ).delete()
 
 
-def init_naics_code_data(apps, schema_monitor):
+def init_naics_code_data(apps, schema_editor):
     NaicsCode = apps.get_model('registration', 'NaicsCode')
     NaicsCode.objects.bulk_create(
         [
@@ -219,7 +219,7 @@ def init_naics_code_data(apps, schema_monitor):
     )
 
 
-def reverse_init_naics_code_data(apps, schema_monitor):
+def reverse_init_naics_code_data(apps, schema_editor):
     NaicsCode = apps.get_model('registration', 'NaicsCode')
     NaicsCode.objects.filter(
         naics_code__in=[
@@ -274,7 +274,7 @@ def reverse_init_naics_code_data(apps, schema_monitor):
     ).delete()
 
 
-def init_regulated_product_data(apps, schema_monitor):
+def init_regulated_product_data(apps, schema_editor):
     RegulatedProduct = apps.get_model('registration', 'RegulatedProduct')
     RegulatedProduct.objects.bulk_create(
         [
@@ -319,7 +319,7 @@ def init_regulated_product_data(apps, schema_monitor):
     )
 
 
-def reverse_init_regulated_product_data(apps, schema_monitor):
+def reverse_init_regulated_product_data(apps, schema_editor):
     RegulatedProduct = apps.get_model('registration', 'RegulatedProduct')
     RegulatedProduct.objects.filter(
         name__in=[
@@ -364,20 +364,45 @@ def reverse_init_regulated_product_data(apps, schema_monitor):
     ).delete()
 
 
-def init_activity_data(apps, schema_monitor):
+def init_activity_data(apps, schema_editor):
     Activity = apps.get_model('registration', 'Activity')
     Activity.objects.bulk_create(
         [
             # SFO activities
             Activity(name='Fuel combustion by mobile equipment', applicable_to='Single Facility Operation', slug='fuel_combustion_by_mobile', weight=500),
             # LFO activities
-            Activity(name='General stationary combustion, other than non-compression and non-processing combustion', applicable_to='Linear Facilities Operation', slug='gsc_other_than_non_compression', weight=300),
+            Activity(
+                name='General stationary combustion, other than non-compression and non-processing combustion',
+                applicable_to='Linear Facilities Operation',
+                slug='gsc_other_than_non_compression',
+                weight=300,
+            ),
             Activity(name='General stationary non-compression and non-processing combustion', applicable_to='Linear Facilities Operation', slug='gsc_non_compression', weight=400),
             Activity(name='Electricity transmission', applicable_to='Linear Facilities Operation', slug='electricity_transmission', weight=9999),
-            Activity(name='Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', applicable_to='Linear Facilities Operation', slug='og_activities_other_than_non_compression', weight=9999),
-            Activity(name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', applicable_to='Linear Facilities Operation', slug='og_activities_non_compression', weight=9999),
-            Activity(name='Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', applicable_to='Linear Facilities Operation', slug='natural_gas_activities_other_than_non_compression', weight=9999),
-            Activity(name='Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', applicable_to='Linear Facilities Operation', slug='natural_gas_activities_non_compression', weight=9999),
+            Activity(
+                name='Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities',
+                applicable_to='Linear Facilities Operation',
+                slug='og_activities_other_than_non_compression',
+                weight=9999,
+            ),
+            Activity(
+                name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities',
+                applicable_to='Linear Facilities Operation',
+                slug='og_activities_non_compression',
+                weight=9999,
+            ),
+            Activity(
+                name='Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities',
+                applicable_to='Linear Facilities Operation',
+                slug='natural_gas_activities_other_than_non_compression',
+                weight=9999,
+            ),
+            Activity(
+                name='Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission',
+                applicable_to='Linear Facilities Operation',
+                slug='natural_gas_activities_non_compression',
+                weight=9999,
+            ),
             Activity(name='LNG activities', applicable_to='Linear Facilities Operation', slug='lng_activities', weight=9999),
             # All activities
             Activity(name='General stationary combustion excluding line tracing', applicable_to='all', slug='gsc_excluding_line_tracing', weight=100),
@@ -411,7 +436,7 @@ def init_activity_data(apps, schema_monitor):
     )
 
 
-def reverse_init_activity_data(apps, schema_monitor):
+def reverse_init_activity_data(apps, schema_editor):
     Activity = apps.get_model('registration', 'Activity')
     Activity.objects.all().delete()
 
@@ -499,6 +524,7 @@ def reverse_add_unregulated_products(apps, schema_editor):
     RegulatedProduct.objects.filter(
         name='Refineries line tracing',
     ).delete()
+
 
 class Migration(migrations.Migration):
 

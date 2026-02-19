@@ -19,7 +19,7 @@ from datetime import datetime
 from django.utils import timezone
 
 
-def init_source_type_data(apps, schema_monitor):
+def init_source_type_data(apps, schema_editor):
     SourceType = apps.get_model('reporting', 'SourceType')
     SourceType.objects.bulk_create(
         [
@@ -230,11 +230,11 @@ def init_source_type_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_source_type_data(apps, schema_monitor):
+def reverse_init_source_type_data(apps, schema_editor):
     SourceType = apps.get_model('reporting', 'SourceType')
     SourceType.objects.all().delete()
 
-def init_gas_type_data(apps, schema_monitor):
+def init_gas_type_data(apps, schema_editor):
     GasType = apps.get_model('reporting', 'GasType')
     GasType.objects.bulk_create(
         [
@@ -250,19 +250,19 @@ def init_gas_type_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_gas_type_data(apps, schema_monitor):
+def reverse_init_gas_type_data(apps, schema_editor):
     GasType = apps.get_model('reporting', 'GasType')
     GasType.objects.all().delete()
 
-def init_configuration_data(apps, schema_monitor):
+def init_configuration_data(apps, schema_editor):
     Configuration = apps.get_model('reporting', 'Configuration')
     Configuration.objects.bulk_create([Configuration(slug='2024', valid_from='2023-01-01', valid_to='2099-12-31')])
 
-def reverse_init_configuration_data(apps, schema_monitor):
+def reverse_init_configuration_data(apps, schema_editor):
     Configuration = apps.get_model('reporting', 'Configuration')
     Configuration.objects.all().delete()
 
-def init_fuel_type_data(apps, schema_monitor):
+def init_fuel_type_data(apps, schema_editor):
     FuelType = apps.get_model('reporting', 'FuelType')
     FuelType.objects.bulk_create(
         [
@@ -341,11 +341,11 @@ def init_fuel_type_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_fuel_type_data(apps, schema_monitor):
+def reverse_init_fuel_type_data(apps, schema_editor):
     FuelType = apps.get_model('reporting', 'FuelType')
     FuelType.objects.all().delete()
 
-def init_methodology_data(apps, schema_monitor):
+def init_methodology_data(apps, schema_editor):
     Methodology = apps.get_model('reporting', 'Methodology')
     Methodology.objects.bulk_create(
         [
@@ -461,7 +461,7 @@ def init_methodology_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_methodology_data(apps, schema_monitor):
+def reverse_init_methodology_data(apps, schema_editor):
     Methodology = apps.get_model('reporting', 'Methodology')
     Methodology.objects.all().delete()
 
@@ -504,7 +504,7 @@ def reverse_init_reporting_years(apps, schema_editor):
     ReportingYears = apps.get_model('reporting', 'ReportingYear')
     ReportingYears.objects.all().delete()
 
-def init_reporting_field_data(apps, schema_monitor):
+def init_reporting_field_data(apps, schema_editor):
     ReportingField = apps.get_model('reporting', 'ReportingField')
     ReportingField.objects.bulk_create(
         [
@@ -686,11 +686,11 @@ def init_reporting_field_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_reporting_field_data(apps, schema_monitor):
+def reverse_init_reporting_field_data(apps, schema_editor):
     ReportingField = apps.get_model('reporting', 'ReportingField')
     ReportingField.objects.all().delete()
 
-def init_configuration_element_data_general_stationary_combustion(apps, schema_monitor):
+def init_configuration_element_data_general_stationary_combustion(apps, schema_editor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     Activity = apps.get_model('registration', 'Activity')
     SourceType = apps.get_model('reporting', 'SourceType')
@@ -1194,7 +1194,7 @@ def init_configuration_element_data_general_stationary_combustion(apps, schema_m
         ]
     )
 
-def reverse_init_configuration_element_data_general_stationary_combustion(apps, schema_monitor):
+def reverse_init_configuration_element_data_general_stationary_combustion(apps, schema_editor):
     Configuration = apps.get_model('reporting', 'Configuration')
     ReportingActivity = apps.get_model('reporting', 'ReportingActivity')
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
@@ -1206,7 +1206,7 @@ def reverse_init_configuration_element_data_general_stationary_combustion(apps, 
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
-def init_configuration_element_reporting_fields_data_general_stationary_combustion(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data_general_stationary_combustion(apps, schema_editor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     Activity = apps.get_model('registration', 'Activity')
     SourceType = apps.get_model('reporting', 'SourceType')
@@ -2208,7 +2208,7 @@ def init_configuration_element_reporting_fields_data_general_stationary_combusti
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
-def reverse_init_configuration_element_reporting_fields_data_general_stationary_combustion(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data_general_stationary_combustion(apps, schema_editor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     Activity = apps.get_model('registration', 'Activity')
 
@@ -2268,12 +2268,12 @@ def init_activity_schema_data(apps, schema_editor):
             valid_to=valid_to,
         )
 
-def reverse_init_activity_schema_data(apps, schema_monitor):
+def reverse_init_activity_schema_data(apps, schema_editor):
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
     ActivitySchema.objects.all().delete()
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
 
     cwd = os.getcwd()
     with open(f'{cwd}/reporting/json_schemas/2024/gsc_excluding_line_tracing/with_useful_energy.json') as gsc_st1:
@@ -2308,7 +2308,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -2320,7 +2320,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 # reporting.migrations.0010_combustion_for_line_tracing_data
 #### CONFIG DATA ####
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -2628,7 +2628,7 @@ def init_configuration_element_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -2639,7 +2639,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_source_type_base_schema
     '''
@@ -3225,7 +3225,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove data from erc.configuration_element_reporting_fields
     '''
@@ -3241,7 +3241,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial schema data to erc.activity_source_type_schema
     '''
@@ -3270,7 +3270,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -3282,7 +3282,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 # reporting.migrations.0011_mobile_combustion_data
 #### CONFIG DATA ####
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -3422,7 +3422,7 @@ def init_configuration_element_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -3435,7 +3435,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_source_type_base_schema
     '''
@@ -3592,7 +3592,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove data from erc.configuration_element_reporting_fields
     '''
@@ -3606,7 +3606,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial schema data to erc.activity_source_type_schema
     '''
@@ -3634,7 +3634,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -3646,7 +3646,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 # reporting.migrations.0012_gsc_other_than_non_compression
 #### CONFIG DATA ####
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -4547,7 +4547,7 @@ def init_configuration_element_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -4562,7 +4562,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_source_type_base_schema
     '''
@@ -6299,7 +6299,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove data from erc.configuration_element_reporting_fields
     '''
@@ -6315,7 +6315,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial schema data to erc.activity_source_type_schema
     '''
@@ -6374,7 +6374,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -6388,7 +6388,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 # reporting.migrations.0013_refinery_fuel_gas_data
 #### CONFIG DATA ####
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -6608,7 +6608,7 @@ def init_configuration_element_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -6621,7 +6621,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_source_type_base_schema
     '''
@@ -7022,7 +7022,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove data from erc.configuration_element_reporting_fields
     '''
@@ -7036,7 +7036,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial schema data to erc.activity_source_type_schema
     '''
@@ -7064,7 +7064,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -7076,7 +7076,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 # reporting.migrations.0014_carbonates_use
 #### CONFIG DATA ####
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -7134,7 +7134,7 @@ def init_configuration_element_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -7147,7 +7147,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_source_type_base_schema
     '''
@@ -7275,7 +7275,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element_reporting_fields
     '''
@@ -7289,7 +7289,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 #### SOURCE TYPE DATA ####
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_schema
     '''
@@ -7318,7 +7318,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -7328,7 +7328,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 # reporting.migrations.0015_gsc_non_compression_non_processing
 #### CONFIG DATA ####
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -8229,7 +8229,7 @@ def init_configuration_element_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -8244,7 +8244,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_source_type_base_schema
     '''
@@ -9746,7 +9746,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove data from erc.configuration_element_reporting_fields
     '''
@@ -9760,7 +9760,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial schema data to erc.activity_source_type_schema
     '''
@@ -9821,7 +9821,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -9833,7 +9833,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 # reporting.migrations.0017_hydrogen_production
 #### CONFIG DATA ####
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -9902,7 +9902,7 @@ def init_configuration_element_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -9963,7 +9963,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_editor):
         ReportingField.objects.get(field_name='Description', field_units__isnull=True)
     )
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element_reporting_fields
     '''
@@ -10016,7 +10016,7 @@ def init_custom_schema_data(apps, schema_editor):
         valid_to=valid_to,
     )
 
-def reverse_init_custom_schema_data(apps, schema_monitor):
+def reverse_init_custom_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -10025,7 +10025,7 @@ def reverse_init_custom_schema_data(apps, schema_monitor):
     CutsomSchema.objects.filter(activity_id=Activity.objects.get(name='Hydrogen production').id).delete()
 
 #### SOURCE TYPE DATA ####
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_schema
     '''
@@ -10056,7 +10056,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -10068,7 +10068,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 # reporting.migrations.0018_pulp_and_paper_production
 #### CONFIG DATA ####
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -10176,7 +10176,7 @@ def init_configuration_element_data(apps, schema_monitor):
         ]
     )
 
-def revere_init_configuration_element_data(apps, schema_monitor):
+def revere_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -10189,7 +10189,7 @@ def revere_init_configuration_element_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element_reporting_fields
     '''
@@ -10487,7 +10487,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Is Woody Biomass', field_units__isnull=True),
     )
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element_reporting_fields
     '''
@@ -10501,7 +10501,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 #### SOURCE TYPE DATA ####
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_schema
     '''
@@ -10530,7 +10530,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -10541,7 +10541,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
     ).delete()
 
 # reporting.migrations.0022_emission_category_with_data
-def init_emission_category_data(apps, schema_monitor):
+def init_emission_category_data(apps, schema_editor):
     '''
     Add initial data to erc.emission_category
     '''
@@ -10574,7 +10574,7 @@ def init_emission_category_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_emission_category_data(apps, schema_monitor):
+def reverse_init_emission_category_data(apps, schema_editor):
     '''
     Remove initial data from erc.emission_category
     '''
@@ -10582,7 +10582,7 @@ def reverse_init_emission_category_data(apps, schema_monitor):
     EmissionCategory.objects.all().delete()
 
 # reporting.migrations.0023_emission_category_mapping_with_data
-def init_emission_category_mapping_data(apps, schema_monitor):
+def init_emission_category_mapping_data(apps, schema_editor):
     '''
     Add initial data to erc.emission_category_mapping
     '''
@@ -12230,7 +12230,7 @@ def init_emission_category_mapping_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_emission_category_mapping_data(apps, schema_monitor):
+def reverse_init_emission_category_mapping_data(apps, schema_editor):
     '''
     Remove initial data from erc.emission_category_mapping
     '''
@@ -12239,7 +12239,7 @@ def reverse_init_emission_category_mapping_data(apps, schema_monitor):
 
 # reporting.migrations.0024_open_pit_coal_mining
 #### CONFIG DATA ####
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -12296,7 +12296,7 @@ def init_configuration_element_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -12309,7 +12309,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_source_type_base_schema
     '''
@@ -12339,7 +12339,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove data from erc.configuration_element_reporting_fields
     '''
@@ -12390,7 +12390,7 @@ def init_custom_schema_data(apps, schema_editor):
         valid_to=valid_to,
     )
 
-def reverse_init_custom_schema_data(apps, schema_monitor):
+def reverse_init_custom_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -12399,7 +12399,7 @@ def reverse_init_custom_schema_data(apps, schema_monitor):
     CutsomSchema.objects.filter(activity_id=Activity.objects.get(name='Open pit coal mining').id).delete()
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial schema data to erc.activity_source_type_schema
     '''
@@ -12428,7 +12428,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         ]
     )
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -12439,7 +12439,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
     ).delete()
 
 # reporting.migrations.0027_storage_of_petroleum_products
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -12490,7 +12490,7 @@ def init_configuration_element_data(apps, schema_monitor):
     )
 
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -12551,7 +12551,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_editor):
     )
 
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element_reporting_fields
     '''
@@ -12565,7 +12565,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 #### SOURCE TYPE DATA ####
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_schema
     '''
@@ -12595,7 +12595,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     )
 
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -12606,7 +12606,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
     ).delete()
 
 # reporting.migrations.0028_gastype_cas_number_gwp_with_data
-def init_gas_type_gwp_cas_number_values(apps, schema_monitor):
+def init_gas_type_gwp_cas_number_values(apps, schema_editor):
     '''
     Update erc.gas_type with gwp values & cas_number
     '''
@@ -12671,7 +12671,7 @@ def init_gas_type_gwp_cas_number_values(apps, schema_monitor):
 #### CONFIG DATA ####
 
 
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -12841,7 +12841,7 @@ def init_configuration_element_data(apps, schema_monitor):
     )
 
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -12855,7 +12855,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ).delete()
 
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_source_type_base_schema
     '''
@@ -13358,7 +13358,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove data from erc.configuration_element_reporting_fields
     '''
@@ -13372,7 +13372,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial schema data to erc.activity_source_type_schema
     '''
@@ -13424,7 +13424,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     )
 
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -13436,7 +13436,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 
 # reporting.migrations.0037_naics_regulatory_value_with_data
-def init_naics_regulatory_value_data(apps, schema_monitor):
+def init_naics_regulatory_value_data(apps, schema_editor):
     NaicsCode = apps.get_model('registration', 'NaicsCode')
     NaicsRegulatoryValue = apps.get_model('reporting', 'NaicsRegulatoryValue')
     NaicsRegulatoryValue.objects.bulk_create(
@@ -13772,12 +13772,12 @@ def init_naics_regulatory_value_data(apps, schema_monitor):
         ]
     )
     
-def reverse_init_naics_regulatory_value_data(apps, schema_monitor):
+def reverse_init_naics_regulatory_value_data(apps, schema_editor):
     NaicsRegulatoryValue = apps.get_model('reporting', 'NaicsRegulatoryValue')
     NaicsRegulatoryValue.objects.all().delete()
 
 # reporting.migrations.0038_product_emission_intensity_with_data
-def init_product_emission_intensity_data(apps, schema_monitor):
+def init_product_emission_intensity_data(apps, schema_editor):
     '''
     Add initial data to erc.product_emission_intensity
     '''
@@ -14011,7 +14011,7 @@ def init_product_emission_intensity_data(apps, schema_monitor):
         ]
     )
 # reporting.migrations.0049_alter_gcs_add_CEMS
-def add_configuration_element_data(apps, schema_monitor):
+def add_configuration_element_data(apps, schema_editor):
     '''
     Add additional data to erc.configuration_element
     '''
@@ -14147,7 +14147,7 @@ def add_configuration_element_data(apps, schema_monitor):
 #### CONFIG DATA ####
 
 
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Activity = apps.get_model("registration", "Activity")
     SourceType = apps.get_model("reporting", "SourceType")
@@ -14423,7 +14423,7 @@ def init_configuration_element_data(apps, schema_monitor):
     )
 
 
-def reverse_configuration_element_data(apps, schema_monitor):
+def reverse_configuration_element_data(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Activity = apps.get_model("registration", "Activity")
     Configuration = apps.get_model("reporting", "Configuration")
@@ -14442,7 +14442,7 @@ def reverse_configuration_element_data(apps, schema_monitor):
 #### CONFIGURATION ELEMENTS REPORTING FIELDS DATA ####
 
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Configuration = apps.get_model("reporting", "Configuration")
     Activity = apps.get_model("registration", "Activity")
@@ -14468,7 +14468,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         element.reporting_fields.add(ReportingField.objects.get(field_name="Description", field_units__isnull=True))
 
 
-def reverse_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Configuration = apps.get_model("reporting", "Configuration")
     Activity = apps.get_model("registration", "Activity")
@@ -14491,7 +14491,7 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_monitor):
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
 
     cwd = os.getcwd()
 
@@ -14565,7 +14565,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         )
 
 
-def reverse_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_activity_source_type_schema_data(apps, schema_editor):
     ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
     Activity = apps.get_model("registration", "Activity")
     Configuration = apps.get_model("reporting", "Configuration")
@@ -14582,7 +14582,7 @@ def reverse_activity_source_type_schema_data(apps, schema_monitor):
 #### CONFIG DATA ####
 
 
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Activity = apps.get_model("registration", "Activity")
     SourceType = apps.get_model("reporting", "SourceType")
@@ -14900,7 +14900,7 @@ def init_configuration_element_data(apps, schema_monitor):
     )
 
 
-def reverse_configuration_element_data(apps, schema_monitor):
+def reverse_configuration_element_data(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Activity = apps.get_model("registration", "Activity")
     Configuration = apps.get_model("reporting", "Configuration")
@@ -14919,7 +14919,7 @@ def reverse_configuration_element_data(apps, schema_monitor):
 #### CONFIGURATION ELEMENTS REPORTING FIELDS DATA ####
 
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Configuration = apps.get_model("reporting", "Configuration")
     Activity = apps.get_model("registration", "Activity")
@@ -14945,7 +14945,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         element.reporting_fields.add(ReportingField.objects.get(field_name="Description", field_units__isnull=True))
 
 
-def reverse_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Configuration = apps.get_model("reporting", "Configuration")
     Activity = apps.get_model("registration", "Activity")
@@ -14965,7 +14965,7 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_monitor):
         element.reporting_fields.clear()
 
 
-def reverse_activity_schema_data(apps, schema_monitor):
+def reverse_activity_schema_data(apps, schema_editor):
     Activity = apps.get_model("registration", "Activity")
     ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
     Configuration = apps.get_model("reporting", "Configuration")
@@ -14982,7 +14982,7 @@ def reverse_activity_schema_data(apps, schema_monitor):
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
 
     cwd = os.getcwd()
 
@@ -15068,7 +15068,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         )
 
 
-def reverse_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_activity_source_type_schema_data(apps, schema_editor):
     ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
     Activity = apps.get_model("registration", "Activity")
     Configuration = apps.get_model("reporting", "Configuration")
@@ -15085,7 +15085,7 @@ def reverse_activity_source_type_schema_data(apps, schema_monitor):
 #### CONFIG DATA ####
 
 
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Activity = apps.get_model("registration", "Activity")
     SourceType = apps.get_model("reporting", "SourceType")
@@ -15527,7 +15527,7 @@ def init_configuration_element_data(apps, schema_monitor):
     )
 
 
-def reverse_configuration_element_data(apps, schema_monitor):
+def reverse_configuration_element_data(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Activity = apps.get_model("registration", "Activity")
     Configuration = apps.get_model("reporting", "Configuration")
@@ -15544,7 +15544,7 @@ def reverse_configuration_element_data(apps, schema_monitor):
 #### CONFIGURATION ELEMENTS REPORTING FIELDS DATA ####
 
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Configuration = apps.get_model("reporting", "Configuration")
     Activity = apps.get_model("registration", "Activity")
@@ -15568,7 +15568,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         element.reporting_fields.add(ReportingField.objects.get(field_name="Description", field_units__isnull=True))
 
 
-def reverse_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Configuration = apps.get_model("reporting", "Configuration")
     Activity = apps.get_model("registration", "Activity")
@@ -15589,7 +15589,7 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_monitor):
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
 
     cwd = os.getcwd()
 
@@ -15704,7 +15704,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         )
 
 
-def reverse_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_activity_source_type_schema_data(apps, schema_editor):
     ActivitySourceTypeSchema = apps.get_model("reporting", "ActivitySourceTypeJsonSchema")
     Activity = apps.get_model("registration", "Activity")
     Configuration = apps.get_model("reporting", "Configuration")
@@ -15716,7 +15716,7 @@ def reverse_activity_source_type_schema_data(apps, schema_monitor):
     ).delete()
 
 # reporting.migrations.0059_og_extraction_non_compression_non_processing
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     """
     Add initial data to erc.configuration_element
     """
@@ -17828,7 +17828,7 @@ def init_configuration_element_data(apps, schema_monitor):
     )
 
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     """
     Remove initial data from erc.configuration_element
     """
@@ -17844,7 +17844,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ).delete()
 
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     """
     Add initial data to erc.activity_source_type_base_schema
     """
@@ -17868,7 +17868,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         config.reporting_fields.add(ReportingField.objects.get(field_name="Description", field_units__isnull=True))
 
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     """
     Remove data from erc.configuration_element_reporting_fields
     """
@@ -17884,7 +17884,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     """
     Add initial schema data to erc.activity_source_type_schema
     """
@@ -18264,7 +18264,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     )
 
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     """
     Remove initial data from erc.base_schema
     """
@@ -18277,7 +18277,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
     ).delete()
 
 # reporting.migrations.0060_og_extraction_other_than_non_compression
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     """
     Add initial data to erc.configuration_element
     """
@@ -18741,7 +18741,7 @@ def init_configuration_element_data(apps, schema_monitor):
     )
 
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     """
     Remove initial data from erc.configuration_element
     """
@@ -18757,7 +18757,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ).delete()
 
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     """
     Add initial data to erc.activity_source_type_base_schema
     """
@@ -18781,7 +18781,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         config.reporting_fields.add(ReportingField.objects.get(field_name="Description", field_units__isnull=True))
 
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     """
     Remove data from erc.configuration_element_reporting_fields
     """
@@ -18798,7 +18798,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
 
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     """
     Add initial schema data to erc.activity_source_type_schema
     """
@@ -19118,7 +19118,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     )
 
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     """
     Remove initial data from erc.base_schema
     """
@@ -19697,7 +19697,7 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     """
     Add activity source type schema data to erc.activity_source_type_schema
     """
@@ -19733,7 +19733,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         )
 
 
-def reverse_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_activity_source_type_schema_data(apps, schema_editor):
     """
     Remove Activity SourceType schema data
     """
@@ -19759,7 +19759,7 @@ def reverse_activity_source_type_schema_data(apps, schema_monitor):
 #### CONFIG DATA ####
 
 
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -19888,7 +19888,7 @@ def init_configuration_element_data(apps, schema_monitor):
     )
 
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -19902,7 +19902,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ).delete()
 
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_source_type_base_schema
     '''
@@ -20028,7 +20028,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove data from erc.configuration_element_reporting_fields
     '''
@@ -20042,7 +20042,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial schema data to erc.activity_source_type_schema
     '''
@@ -20087,7 +20087,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     )
 
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -20101,7 +20101,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 #### CONFIG DATA ####
 
 
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -20181,7 +20181,7 @@ def init_configuration_element_data(apps, schema_monitor):
     )
 
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -20195,7 +20195,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ).delete()
 
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Add initial data to erc.activity_source_type_base_schema
     '''
@@ -20260,7 +20260,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove data from erc.configuration_element_reporting_fields
     '''
@@ -20312,7 +20312,7 @@ def init_custom_schema_data(apps, schema_editor):
     )
 
 
-def reverse_init_custom_schema_data(apps, schema_monitor):
+def reverse_init_custom_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -20322,7 +20322,7 @@ def reverse_init_custom_schema_data(apps, schema_monitor):
 
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Add initial schema data to erc.activity_source_type_schema
     '''
@@ -20352,7 +20352,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     )
 
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     '''
     Remove initial data from erc.base_schema
     '''
@@ -20606,7 +20606,7 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     """
     Add activity source type schema data to erc.activity_source_type_json_schema
     """
@@ -20642,7 +20642,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         )
 
 
-def reverse_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_activity_source_type_schema_data(apps, schema_editor):
     """
     Remove Activity SourceType schema data
     """
@@ -20972,7 +20972,7 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     """
     Add activity source type schema data to erc.activity_source_type_json_schema
     """
@@ -21008,7 +21008,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         )
 
 
-def reverse_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_activity_source_type_schema_data(apps, schema_editor):
     """
     Remove Activity SourceType schema data
     """
@@ -21338,7 +21338,7 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     """
     Add activity source type schema data to erc.activity_source_type_json_schema
     """
@@ -21374,7 +21374,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         )
 
 
-def reverse_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_activity_source_type_schema_data(apps, schema_editor):
     """
     Remove Activity SourceType schema data
     """
@@ -21542,7 +21542,7 @@ CONFIG_SOURCE_TYPE_SCHEMA = [
     ),
 ]
 
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element
     '''
@@ -21995,7 +21995,7 @@ def init_configuration_element_data(apps, schema_monitor):
     )
 
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element
     '''
@@ -22008,7 +22008,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_to=Configuration.objects.get(valid_to='2099-12-31'),
     ).delete()
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Add initial data to erc.configuration_element_reporting_fields
     '''
@@ -22090,7 +22090,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     )
 
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     '''
     Remove initial data from erc.configuration_element_reporting_fields
     '''
@@ -22103,7 +22103,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
         ).values_list('id', flat=True)
     ).delete()
 
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     """
     Add activity source type schema data to erc.activity_schema
     """
@@ -22139,7 +22139,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         )
 
 
-def reverse_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_activity_source_type_schema_data(apps, schema_editor):
     """
     Remove Activity SourceType schema data
     """
@@ -22406,7 +22406,7 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     """
     Add activity source type schema data to erc.activity_source_type_json_schema
     """
@@ -22442,7 +22442,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         )
 
 
-def reverse_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_activity_source_type_schema_data(apps, schema_editor):
     """
     Remove Activity SourceType schema data
     """
@@ -22566,7 +22566,7 @@ def update_activity_source_type_json_schema_and_configuration_elements(apps, sch
 # reporting.migrations.0081_not_applicable_methodology
 #### ADDITIONAL METHODOLOGIES ####
 # reporting.migrations.0083_gsc_fuel_annual_weighted_carbon_content_unit
-def update_unit(apps, schema_monitor):
+def update_unit(apps, schema_editor):
     ReportingField = apps.get_model("reporting", "ReportingField")
 
     ReportingField.objects.filter(field_name="Fuel Annual Weighted Average Carbon Content (weight fraction)").update(
@@ -22574,7 +22574,7 @@ def update_unit(apps, schema_monitor):
     )
 
 
-def reverse_unit(apps, schema_monitor):
+def reverse_unit(apps, schema_editor):
     ReportingField = apps.get_model("reporting", "ReportingField")
 
     ReportingField.objects.filter(field_name="Fuel Annual Weighted Average Carbon Content (weight fraction)").update(
@@ -22582,7 +22582,7 @@ def reverse_unit(apps, schema_monitor):
     )
 
 # reporting.migrations.0086_update_fugitive_sources_schema
-def reload_other_fugitive_sources_schema(apps, schema_monitor):
+def reload_other_fugitive_sources_schema(apps, schema_editor):
     """
     The "other fugitives sources" schema for 2024 has had some updates in the source sub-type name.
     We just reload it in the right ActivitySourceTypeSchema records
@@ -22638,7 +22638,7 @@ VALID_TO = "2099-12-31"
 JSON_SCHEMAS_PATH = "reporting/json_schemas/2024/electricity_generation"
 
 
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     """
     Add activity source type schema data to erc.activity_source_type_schema
     """
@@ -22671,7 +22671,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         valid_to=valid_to,
     )
 # reporting.migrations.0093_populate_compliance_data_for_existing_reports
-def populate_compliance_data_for_existing_reports(apps, schema_monitor):
+def populate_compliance_data_for_existing_reports(apps, schema_editor):
     """
     Persist compliance summary data for submitted report versions
     """
@@ -22814,7 +22814,7 @@ def reverse_init_additional_gas_type_data(apps, schema_editor):
     GasType.objects.filter(chemical_formula__in=chemical_formulas).delete()
 
 
-def init_configuration_element_data(apps, schema_monitor):
+def init_configuration_element_data(apps, schema_editor):
     """
     Add initial data to erc.configuration_element
     """
@@ -22848,7 +22848,7 @@ def init_configuration_element_data(apps, schema_monitor):
     )
 
 
-def reverse_init_configuration_element_data(apps, schema_monitor):
+def reverse_init_configuration_element_data(apps, schema_editor):
     """
     Remove initial data from erc.configuration_element
     """
@@ -22862,7 +22862,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ).delete()
 
 
-def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_editor):
     """
     Add initial data to erc.activity_source_type_base_schema
     """
@@ -22884,7 +22884,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         config.reporting_fields.add(ReportingField.objects.get(field_name="Description", field_units__isnull=True))
 
 
-def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_editor):
     """
     Remove data from erc.configuration_element_reporting_fields
     """
@@ -22898,7 +22898,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 # SOURCE TYPE
-def init_activity_source_type_schema_data(apps, schema_monitor):
+def init_activity_source_type_schema_data(apps, schema_editor):
     """
     Add initial schema data to erc.activity_source_type_schema
     """
@@ -22926,7 +22926,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     )
 
 
-def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
     """
     Remove initial data from erc.base_schema
     """
@@ -22937,7 +22937,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
     ).delete()
 
 # reporting.migrations.0118_update_equivalent_emission_type
-def reload_schemas_with_equivalent_emissions(apps, schema_monitor):
+def reload_schemas_with_equivalent_emissions(apps, schema_editor):
     """
     We've changed the type of equivalent emissions from string to number in all 2024 schemas. We reload it in the ActivitySourceTypeJsonSchema records
     """
@@ -23711,7 +23711,7 @@ def cleanup_orphaned_raw_activity_data(apps, schema_editor):
     else:
         print("No orphaned ReportRawActivityData records found")
 # reporting.migrations.0124_update_emission_category
-def update_emission_category_mapping_data(apps, schema_monitor):
+def update_emission_category_mapping_data(apps, schema_editor):
     '''
     Add missing emission category mappings for "General stationary non-compression and non-processing combustion" activity
     and "Emissions from line tracing and non-processing and non-compression activities" emission category
@@ -23749,7 +23749,7 @@ def update_emission_category_mapping_data(apps, schema_monitor):
     )
 
 
-def reverse_update_emission_category_mapping_data(apps, schema_monitor):
+def reverse_update_emission_category_mapping_data(apps, schema_editor):
     '''
     Remove data added by update_emission_category_mapping_data migration
     '''
