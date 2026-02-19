@@ -3,7 +3,6 @@ export { default as InlineArrayFieldTemplate } from "./InlineArrayFieldTemplate"
 export { default as PlacesAssignedFieldTemplate } from "./PlacesAssignedFieldTemplate";
 export { default as FieldHelpTemplate } from "./FieldHelpTemplate";
 export { default as FieldTemplate } from "./FieldTemplate";
-export { default as GreyBoxWithLinkFieldTemplate } from "./GreyBoxWithLinkFieldTemplate";
 export { default as FieldTemplateFullWidth } from "./FieldTemplateFullWidth";
 export { default as FieldTemplateWithSubmitButton } from "./FieldTemplateWithSubmitButton";
 export { default as GroupTitleFieldTemplate } from "./GroupTitleFieldTemplate";

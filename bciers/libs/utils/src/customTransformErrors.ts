@@ -18,12 +18,14 @@ const LATITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR =
   "Latitude of largest point of emissions must be between -90 and 90";
 const LONGITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR =
   "Longitude of largest point of emissions must be between -180 and 180";
-
+const BIOGENIC_PERCENTAGE_FIELDS = [
+  ".biogenicIndustrialProcessEmissions.biogenicEmissionsSplit.chemicalPulpPercentage",
+  ".biogenicIndustrialProcessEmissions.biogenicEmissionsSplit.limeRecoveredByKilnPercentage",
+];
 const customTransformErrors = (
   errors: RJSFValidationError[],
   customFormatsErrorMessages: { [key: string]: string },
 ) => {
-  console.log("Original errors from AJV validation:", errors);
   // Filter out redundant methodology validation errors
   // When gas type is selected but methodology is empty/invalid, the schema generates
   // multiple oneOf/enum errors. We filter these out to show only clean, user-friendly errors.
@@ -160,11 +162,19 @@ const customTransformErrors = (
     // Only show the 0-100 message for biogenicIndustrialProcessEmissions fields
     if (
       (error?.name === "minimum" || error?.name === "maximum") &&
-      (error.property?.includes("biogenicIndustrialProcessEmissions") ||
-        error.schemaPath?.includes("biogenicIndustrialProcessEmissions"))
+      error.property != null &&
+      BIOGENIC_PERCENTAGE_FIELDS.includes(error.property)
     ) {
       error.message = "Please enter a value between 0-100";
       return error;
+    }
+
+    if (
+      error.message === "must be >= 0" &&
+      error.property ===
+        ".biogenicIndustrialProcessEmissions.biogenicEmissionsSplit.totalAllocated"
+    ) {
+      error.message = "The total allocation must add up to 100%";
     }
     if (error?.message === "must be number") {
       error.message = `Enter numbers only`;

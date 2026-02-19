@@ -72,17 +72,9 @@ export const uiSchemaMap: UiSchemaMap = {
   electricity_transmission: electricityTransmissionUiSchema,
 };
 
-export const getUiSchema = (slug: string, reportingYear?: number) => {
+export const getUiSchema = (slug: string, reportingYear: number) => {
   // Use 2025+ schemas for specific activities based on reporting year
-  if (reportingYear && reportingYear >= 2025) {
-    switch (slug) {
-      case "pulp_and_paper":
-        return pulpAndPaperUiSchema2025;
-      // Add more 2025+ schemas here as they are created
-      default:
-        break;
-    }
-  }
-
+  if (slug === "pulp_and_paper" && reportingYear >= 2025)
+    return pulpAndPaperUiSchema2025;
   return uiSchemaMap[slug];
 };

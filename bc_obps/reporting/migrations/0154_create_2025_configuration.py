@@ -37,7 +37,7 @@ def reverse_create_2025_configuration(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0152_report_operation_final_reporting_year'),
+        ('reporting', '0153_V5_2_0'),
     ]
 
     operations = [

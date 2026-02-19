@@ -87,7 +87,7 @@ def reverse_init_pulp_and_paper_2025_schemas(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0155_update_activity_schemas_for_2025'),
+        ('reporting', '0156_update_activity_schemas_for_2025'),
     ]
 
     operations = [

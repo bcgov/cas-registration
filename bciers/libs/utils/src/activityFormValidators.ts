@@ -1,42 +1,46 @@
 import { FormValidation } from "@rjsf/utils";
+import { sumWithPrecision } from "@reporting/src/app/utils/numberUtils";
 
 export const validateBiogenicTotalAllocated = (
   formData: any,
   errors: FormValidation,
 ): void => {
   const biogenic = formData?.biogenicIndustrialProcessEmissions;
-  if (biogenic?.doesUtilizeLimeRecoveryKiln && biogenic?.scheduleC) {
-    const chemical = Number(biogenic.scheduleC.chemicalPulpAmount) || 0;
-    const lime = Number(biogenic.scheduleC.limeRecoveredByKilnAmount) || 0;
-    const total = chemical + lime;
+  if (
+    !biogenic?.doesUtilizeLimeRecoveryKiln ||
+    !biogenic?.biogenicEmissionsSplit
+  )
+    return;
 
-    if (total > 100) {
-      // Add error to prevent form submission
-      if (!(errors as any).biogenicIndustrialProcessEmissions) {
-        (errors as any).biogenicIndustrialProcessEmissions = {};
-      }
-      if (!(errors as any).biogenicIndustrialProcessEmissions.scheduleC) {
-        (errors as any).biogenicIndustrialProcessEmissions.scheduleC = {};
-      }
-      if (
-        !(errors as any).biogenicIndustrialProcessEmissions.scheduleC
-          .totalAllocated
-      ) {
-        (
-          errors as any
-        ).biogenicIndustrialProcessEmissions.scheduleC.totalAllocated = {
-          __errors: [],
-        };
-      }
-      (
-        errors as any
-      ).biogenicIndustrialProcessEmissions.scheduleC.totalAllocated.__errors.push(
-        "The total allocation must add up to 100%",
-      );
-    }
+  const split = biogenic.biogenicEmissionsSplit;
+  const hasAnyValue =
+    split.chemicalPulpPercentage != null ||
+    split.limeRecoveredByKilnPercentage != null;
+
+  if (!hasAnyValue) return;
+
+  const total = sumWithPrecision(
+    Number(split.chemicalPulpPercentage) || 0,
+    Number(split.limeRecoveredByKilnPercentage) || 0,
+  );
+
+  if (total !== 100) {
+    addBiogenicTotalAllocatedError(errors);
   }
 };
 
+const addBiogenicTotalAllocatedError = (errors: FormValidation): void => {
+  const e = errors as any;
+
+  e.biogenicIndustrialProcessEmissions ??= {};
+  e.biogenicIndustrialProcessEmissions.biogenicEmissionsSplit ??= {};
+  e.biogenicIndustrialProcessEmissions.biogenicEmissionsSplit.totalAllocated ??=
+    { __errors: [] };
+
+  e.biogenicIndustrialProcessEmissions.biogenicEmissionsSplit.totalAllocated.__errors.push(
+    "The total allocation must add up to 100%",
+  );
+};
 export const validateEmissionsMethodology = (
   sourceTypes: Record<string, any>,
   errors: FormValidation,

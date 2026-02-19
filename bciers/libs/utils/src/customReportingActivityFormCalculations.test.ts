@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, test } from "vitest";
 import {
   calculateMobileAnnualAmount,
   calculateBiogenicTotalAllocated,
@@ -7,9 +7,9 @@ import {
 interface BiogenicFormData {
   biogenicIndustrialProcessEmissions?: {
     doesUtilizeLimeRecoveryKiln?: boolean;
-    scheduleC?: {
-      chemicalPulpAmount?: number | string | null;
-      limeRecoveredByKilnAmount?: number | string | null;
+    biogenicEmissionsSplit?: {
+      chemicalPulpPercentage?: number | string | null;
+      limeRecoveredByKilnPercentage?: number | string | null;
       totalAllocated?: number;
     };
   } | null;
@@ -63,217 +63,94 @@ describe("customReportingActivityFormCalculations", () => {
 
 describe("calculateBiogenicTotalAllocated", () => {
   describe("when lime recovery kiln is utilized", () => {
-    it("calculates total allocation correctly with both values", () => {
-      const formData: BiogenicFormData = {
-        biogenicIndustrialProcessEmissions: {
-          doesUtilizeLimeRecoveryKiln: true,
-          scheduleC: {
-            chemicalPulpAmount: 60,
-            limeRecoveredByKilnAmount: 40,
+    test.each([
+      // [description, chemicalPulpPercentage, limeRecoveredByKilnPercentage, expectedTotal]
+      ["both values provided", 60, 40, 100],
+      ["only chemical pulp amount", 75, null, 75],
+      ["only lime recovered percentage", undefined, 50, 50],
+      ["string values", "30", "70", 100],
+      ["decimal values (33.33 + 66.67)", 33.33, 66.67, 100],
+      ["both null/undefined", null, undefined, 0],
+      ["partial values (40 + 35)", 40, 35, 75],
+      ["existing totalAllocated is overwritten", 40, 35, 75],
+    ])(
+      "%s",
+      (
+        _name,
+        chemicalPulpPercentage,
+        limeRecoveredByKilnPercentage,
+        expectedTotal,
+      ) => {
+        const formData: BiogenicFormData = {
+          biogenicIndustrialProcessEmissions: {
+            doesUtilizeLimeRecoveryKiln: true,
+            biogenicEmissionsSplit: {
+              chemicalPulpPercentage,
+              limeRecoveredByKilnPercentage,
+              totalAllocated: 999, // always set to confirm it gets overwritten
+            },
           },
-        },
-      };
+        };
 
-      calculateBiogenicTotalAllocated(formData);
+        calculateBiogenicTotalAllocated(formData);
 
-      expect(
-        formData.biogenicIndustrialProcessEmissions?.scheduleC?.totalAllocated,
-      ).toBe(100);
-    });
-
-    it("calculates total allocation with only chemical pulp amount", () => {
-      const formData: BiogenicFormData = {
-        biogenicIndustrialProcessEmissions: {
-          doesUtilizeLimeRecoveryKiln: true,
-          scheduleC: {
-            chemicalPulpAmount: 75,
-            limeRecoveredByKilnAmount: null,
-          },
-        },
-      };
-
-      calculateBiogenicTotalAllocated(formData);
-
-      expect(
-        formData.biogenicIndustrialProcessEmissions?.scheduleC?.totalAllocated,
-      ).toBe(75);
-    });
-
-    it("calculates total allocation with only lime recovered amount", () => {
-      const formData: BiogenicFormData = {
-        biogenicIndustrialProcessEmissions: {
-          doesUtilizeLimeRecoveryKiln: true,
-          scheduleC: {
-            chemicalPulpAmount: undefined,
-            limeRecoveredByKilnAmount: 50,
-          },
-        },
-      };
-
-      calculateBiogenicTotalAllocated(formData);
-
-      expect(
-        formData.biogenicIndustrialProcessEmissions?.scheduleC?.totalAllocated,
-      ).toBe(50);
-    });
-
-    it("handles string values correctly", () => {
-      const formData: BiogenicFormData = {
-        biogenicIndustrialProcessEmissions: {
-          doesUtilizeLimeRecoveryKiln: true,
-          scheduleC: {
-            chemicalPulpAmount: "30",
-            limeRecoveredByKilnAmount: "70",
-          },
-        },
-      };
-
-      calculateBiogenicTotalAllocated(formData);
-
-      expect(
-        formData.biogenicIndustrialProcessEmissions?.scheduleC?.totalAllocated,
-      ).toBe(100);
-    });
-
-    it("handles decimal values correctly", () => {
-      const formData: BiogenicFormData = {
-        biogenicIndustrialProcessEmissions: {
-          doesUtilizeLimeRecoveryKiln: true,
-          scheduleC: {
-            chemicalPulpAmount: 33.33,
-            limeRecoveredByKilnAmount: 66.67,
-          },
-        },
-      };
-
-      calculateBiogenicTotalAllocated(formData);
-
-      expect(
-        formData.biogenicIndustrialProcessEmissions?.scheduleC?.totalAllocated,
-      ).toBe(100);
-    });
-
-    it("sets total to 0 when both values are null or undefined", () => {
-      const formData: BiogenicFormData = {
-        biogenicIndustrialProcessEmissions: {
-          doesUtilizeLimeRecoveryKiln: true,
-          scheduleC: {
-            chemicalPulpAmount: null,
-            limeRecoveredByKilnAmount: undefined,
-          },
-        },
-      };
-
-      calculateBiogenicTotalAllocated(formData);
-
-      expect(
-        formData.biogenicIndustrialProcessEmissions?.scheduleC?.totalAllocated,
-      ).toBe(0);
-    });
-
-    it("initializes totalAllocated if it doesn't exist", () => {
-      const formData: BiogenicFormData = {
-        biogenicIndustrialProcessEmissions: {
-          doesUtilizeLimeRecoveryKiln: true,
-          scheduleC: {
-            chemicalPulpAmount: 50,
-            limeRecoveredByKilnAmount: 30,
-          },
-        },
-      };
-
-      calculateBiogenicTotalAllocated(formData);
-
-      expect(
-        formData.biogenicIndustrialProcessEmissions?.scheduleC?.totalAllocated,
-      ).toBe(80);
-    });
+        expect(
+          formData.biogenicIndustrialProcessEmissions?.biogenicEmissionsSplit
+            ?.totalAllocated,
+        ).toBe(expectedTotal);
+      },
+    );
   });
 
   describe("when lime recovery kiln is not utilized", () => {
-    it("sets total to 0 when doesUtilizeLimeRecoveryKiln is false", () => {
-      const formData: BiogenicFormData = {
-        biogenicIndustrialProcessEmissions: {
+    test.each([
+      [
+        "doesUtilizeLimeRecoveryKiln is false",
+        {
           doesUtilizeLimeRecoveryKiln: false,
-          scheduleC: {
-            chemicalPulpAmount: 60,
-            limeRecoveredByKilnAmount: 40,
+          biogenicEmissionsSplit: {
+            chemicalPulpPercentage: 60,
+            limeRecoveredByKilnPercentage: 40,
             totalAllocated: 100,
           },
         },
-      };
-
-      calculateBiogenicTotalAllocated(formData);
-
-      expect(
-        formData.biogenicIndustrialProcessEmissions?.scheduleC?.totalAllocated,
-      ).toBe(0);
-    });
-
-    it("sets total to 0 when doesUtilizeLimeRecoveryKiln is undefined", () => {
-      const formData: BiogenicFormData = {
-        biogenicIndustrialProcessEmissions: {
-          scheduleC: {
-            chemicalPulpAmount: 60,
-            limeRecoveredByKilnAmount: 40,
+      ],
+      [
+        "doesUtilizeLimeRecoveryKiln is undefined",
+        {
+          biogenicEmissionsSplit: {
+            chemicalPulpPercentage: 60,
+            limeRecoveredByKilnPercentage: 40,
             totalAllocated: 100,
           },
         },
-      };
+      ],
+    ])(
+      "%s — totalAllocated is removed",
+      (_name, biogenicIndustrialProcessEmissions) => {
+        const formData: BiogenicFormData = {
+          biogenicIndustrialProcessEmissions,
+        };
 
-      calculateBiogenicTotalAllocated(formData);
+        calculateBiogenicTotalAllocated(formData);
 
-      expect(
-        formData.biogenicIndustrialProcessEmissions?.scheduleC?.totalAllocated,
-      ).toBe(0);
-    });
+        expect(
+          formData.biogenicIndustrialProcessEmissions?.biogenicEmissionsSplit
+            ?.totalAllocated,
+        ).toBeUndefined();
+      },
+    );
   });
 
   describe("edge cases", () => {
-    it("does nothing when biogenicIndustrialProcessEmissions is missing", () => {
-      const formData: BiogenicFormData = {};
-
-      // Should not throw an error
+    test.each([
+      ["biogenicIndustrialProcessEmissions is missing", {}],
+      [
+        "biogenicIndustrialProcessEmissions is null",
+        { biogenicIndustrialProcessEmissions: null },
+      ],
+    ])("does nothing when %s", (_name, formData) => {
       expect(() => calculateBiogenicTotalAllocated(formData)).not.toThrow();
-    });
-
-    it("does nothing when biogenicIndustrialProcessEmissions is null", () => {
-      const formData: BiogenicFormData = {
-        biogenicIndustrialProcessEmissions: null,
-      };
-
-      // Should not throw an error
-      expect(() => calculateBiogenicTotalAllocated(formData)).not.toThrow();
-    });
-
-    it("does nothing when scheduleC is missing but lime kiln is used", () => {
-      const formData: BiogenicFormData = {
-        biogenicIndustrialProcessEmissions: {
-          doesUtilizeLimeRecoveryKiln: true,
-        },
-      };
-
-      // Should not throw an error
-      expect(() => calculateBiogenicTotalAllocated(formData)).not.toThrow();
-    });
-
-    it("updates existing totalAllocated value", () => {
-      const formData: BiogenicFormData = {
-        biogenicIndustrialProcessEmissions: {
-          doesUtilizeLimeRecoveryKiln: true,
-          scheduleC: {
-            chemicalPulpAmount: 40,
-            limeRecoveredByKilnAmount: 35,
-            totalAllocated: 999, // Old value should be overwritten
-          },
-        },
-      };
-
-      calculateBiogenicTotalAllocated(formData);
-
-      expect(
-        formData.biogenicIndustrialProcessEmissions?.scheduleC?.totalAllocated,
-      ).toBe(75);
     });
   });
 });

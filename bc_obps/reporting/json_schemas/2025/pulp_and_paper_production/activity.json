@@ -26,17 +26,17 @@
             {
               "properties": {
                 "doesUtilizeLimeRecoveryKiln": { "const": true },
-                "scheduleC": {
+                "biogenicEmissionsSplit": {
                   "type": "object",
                   "title": "Enter the proportion of industrial process emissions that are biogenic (emissions from biomass listed in",
                   "properties": {
-                    "chemicalPulpAmount": {
+                    "chemicalPulpPercentage": {
                       "type": "number",
                       "title": "Chemical pulp amount (percentage)",
                       "minimum": 0,
                       "maximum": 100
                     },
-                    "limeRecoveredByKilnAmount": {
+                    "limeRecoveredByKilnPercentage": {
                       "type": "number",
                       "title": "Lime recovered by kiln amount (percentage)",
                       "minimum": 0,
@@ -51,8 +51,8 @@
                     }
                   },
                   "required": [
-                    "chemicalPulpAmount",
-                    "limeRecoveredByKilnAmount"
+                    "chemicalPulpPercentage",
+                    "limeRecoveredByKilnPercentage"
                   ]
                 }
               }

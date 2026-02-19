@@ -44,7 +44,7 @@ def reverse_update_activity_schemas(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0154_update_configuration_elements_for_2025'),
+        ('reporting', '0155_update_configuration_elements_for_2025'),
     ]
 
     operations = [
