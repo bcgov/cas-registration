@@ -234,210 +234,6 @@ def reverse_init_source_type_data(apps, schema_editor):
     SourceType = apps.get_model('reporting', 'SourceType')
     SourceType.objects.all().delete()
 
-def init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Add all activity source type schema data.
-    Consolidated from 27 separate migration functions.
-    """
-    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    valid_from = Configuration.objects.get(valid_from='2023-01-01')
-    valid_to = Configuration.objects.get(valid_to='2099-12-31')
-    cwd = os.getcwd()
-    
-    ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING = [
-        # GSC excluding line tracing
-        ('General stationary combustion excluding line tracing', 'gsc_excluding_line_tracing', 'with_useful_energy', 'General stationary combustion of fuel or waste with production of useful energy', False, False),
-        ('General stationary combustion excluding line tracing', 'gsc_excluding_line_tracing', 'without_useful_energy', 'General stationary combustion of waste without production of useful energy', False, False),
-        # GSC solely for line tracing
-        ('General stationary combustion solely for the purpose of line tracing', 'gsc_solely_for_line_tracing', 'with_useful_energy', 'General stationary combustion of fuel or waste with production of useful energy', False, False),
-        # Fuel combustion by mobile equipment
-        ('Fuel combustion by mobile equipment', 'fuel_combustion_mobile', 'combustion_by_equipment', 'Fuel combustion by mobile equipment that is part of the facility', False, False),
-        # GSC other than non-compression
-        ('General stationary combustion, other than non-compression and non-processing combustion', 'gsc_other_than_non_compression', 'with_useful_energy', 'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy', False, False),
-        ('General stationary combustion, other than non-compression and non-processing combustion', 'gsc_other_than_non_compression', 'without_useful_energy', 'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy', False, False),
-        ('General stationary combustion, other than non-compression and non-processing combustion', 'gsc_other_than_non_compression', 'field_gas_process_vent_gas_at_lfo', 'Field gas or process vent gas combustion at a linear facilities operation', False, False),
-        # Refinery fuel gas combustion
-        ('Refinery fuel gas combustion', 'refinery_fuel_gas', 'combustion_of_refinery_gas', 'Combustion of refinery fuel gas, still gas, flexigas or associated gas', False, False),
-        # Carbonate use
-        ('Carbonate use', 'carbonates_use', 'carbonates_use', 'Carbonates used but not consumed in other activities set out in column 2', False, False),
-        # GSC non-compression non-processing combustion
-        ('General stationary non-compression and non-processing combustion', 'gsc_non_compression_non_combustion', 'with_useful_energy', 'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy', False, False),
-        ('General stationary non-compression and non-processing combustion', 'gsc_non_compression_non_combustion', 'without_useful_energy', 'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy', False, False),
-        ('General stationary non-compression and non-processing combustion', 'gsc_non_compression_non_combustion', 'field_gas_process_vent_gas_at_lfo', 'Field gas or process vent gas combustion at a linear facilities operation', False, False),
-        # Hydrogen production
-        ('Hydrogen production', 'hydrogen_production', 'steam_reformation_or_gasification', 'Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock', False, False),
-        # Pulp and paper production
-        ('Pulp and paper production', 'pulp_and_paper_production', 'pulp_and_paper_production', 'Pulping and chemical recovery', False, False),
-        # Open pit coal mining
-        ('Open pit coal mining', 'open_pit_coal_mining', 'coal_exposed_during_mining', 'Coal when broken or exposed to the atmosphere during mining', False, False),
-        # Storage of petroleum products
-        ('Storage of petroleum products', 'storage_of_petroleum_products', 'above_ground_storage_tanks', 'Above-ground storage tanks', False, False),
-        # Aluminum or alumina production
-        ('Aluminum or alumina production', 'aluminum_production', 'anode_consumption_acbgcc', 'Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination', False, False),
-        ('Aluminum or alumina production', 'aluminum_production', 'anode_effects', 'Anode effects', False, False),
-        ('Aluminum or alumina production', 'aluminum_production', 'cover_gas_from_electrolysis', 'Cover gas from electrolysis cells', False, False),
-        # NG non-compression 
-        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '1_ng_pneumatic_high_bleed_device_venting', 'Natural gas pneumatic high bleed device venting', True, True),
-        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '2_ng_pneumatic_pump_venting', 'Natural gas pneumatic pump venting', True, True),
-        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '3_ng_pneumatic_low_bleed_device_venting', 'Natural gas pneumatic low bleed device venting', True, True),
-        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '4_ng_pneumatic_intermittent_device_venting', 'Natural gas pneumatic intermittent bleed device venting', True, True),
-        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '5_blowdown_venting', 'Blowdown venting', False, False),
-        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '6_flare_stacks', 'Flare stacks', True, True),
-        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '7_equipment_leaks_detected_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', True, False),
-        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '8_population_count_sources', 'Population count sources', True, False),
-        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '9_transmission_storage_tanks', 'Transmission storage tanks', False, False),
-        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '10_other_venting_sources', 'Other venting sources', True, False),
-        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '11_other_fugitive_sources', 'Other fugitive sources', True, False),
-        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '12_third_party_line_hits_with_release_of_gas', 'Third party line hits with release of gas', True, False),
-        # NG other than non-compression 
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '1_ng_pneumatic_high_bleed_device_venting', 'Natural gas pneumatic high bleed device venting', True, True),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '2_ng_pneumatic_pump_venting', 'Natural gas pneumatic pump venting', True, True),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '3_ng_pneumatic_low_bleed_device_venting', 'Natural gas pneumatic low bleed device venting', True, True),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '4_ng_pneumatic_intermittent_device_venting', 'Natural gas pneumatic intermittent bleed device venting', True, True),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '5_blowdown_venting', 'Blowdown venting', False, False),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '6_flare_stacks', 'Flare stacks', True, True),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '7_centrifugal_compressor_venting', 'Centrifugal compressor venting', True, False),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '8_reciprocating_compressor_venting', 'Reciprocating compressor venting', True, False),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '9_equipment_leaks_detected_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', True, False),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '10_population_count_sources', 'Population count sources', True, False),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '11_transmission_storage_tanks', 'Transmission storage tanks', False, False),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '12_other_venting_sources', 'Other venting sources', True, False),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '13_other_fugitive_sources', 'Other fugitive sources', True, False),
-        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '14_third_party_line_hits_with_release_of_gas', 'Third party line hits with release of gas', True, False),
-        # LNG activities 
-        ('LNG activities', 'lng_activities', '1_ng_pneumatic_high_bleed_device_venting', 'Natural gas pneumatic high bleed device venting', False, True),
-        ('LNG activities', 'lng_activities', '2_ng_pneumatic_pump_venting', 'Natural gas pneumatic pump venting', False, True),
-        ('LNG activities', 'lng_activities', '3_ng_pneumatic_low_bleed_device_venting', 'Natural gas pneumatic low bleed device venting', False, True),
-        ('LNG activities', 'lng_activities', '4_ng_pneumatic_intermittent_device_venting', 'Natural gas pneumatic intermittent bleed device venting', False, True),
-        ('LNG activities', 'lng_activities', '5_acid_gas_removal_venting_or_incineration', 'Acid gas removal venting or incineration', True, False),
-        ('LNG activities', 'lng_activities', '6_dehydrator_venting', 'Dehydrator venting', True, False),
-        ('LNG activities', 'lng_activities', '7_blowdown_venting', 'Blowdown venting', False, False),
-        ('LNG activities', 'lng_activities', '8_releases_from_tanks_used_for_storage', 'Releases from tanks used for storage, production or processing', True, False),
-        ('LNG activities', 'lng_activities', '9_flare_stacks', 'Flare stacks', True, True),
-        ('LNG activities', 'lng_activities', '10_centrifugal_compressor_venting', 'Centrifugal compressor venting', True, False),
-        ('LNG activities', 'lng_activities', '11_reciprocating_compressor_venting', 'Reciprocating compressor venting', True, False),
-        ('LNG activities', 'lng_activities', '12_equipment_leaks_detected_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', True, False),
-        ('LNG activities', 'lng_activities', '13_population_count_sources', 'Population count sources', True, False),
-        ('LNG activities', 'lng_activities', '14_transmission_storage_tanks', 'Transmission storage tanks', False, False),
-        ('LNG activities', 'lng_activities', '15_enhanced_oil_recovery_injection_pump_blowdowns', 'Enhanced oil recovery injection pump blowdowns', False, False),
-        ('LNG activities', 'lng_activities', '16_produced_water_dissolved_carbon_dioxide_methane', 'Produced water dissolved carbon dioxide and methane', False, False),
-        ('LNG activities', 'lng_activities', '17_enhanced_oil_recovery_produced_hydrocarbon_liquids', 'Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide', False, False),
-        ('LNG activities', 'lng_activities', '18_other_venting_sources', 'Other venting sources', True, False),
-        ('LNG activities', 'lng_activities', '19_other_fugitive_sources', 'Other fugitive sources', True, False),
-        ('LNG activities', 'lng_activities', '20_third_party_line_hits_with_release_of_gas', 'Third party line hits with release of gas', False, False),
-        # OG extraction non-compression 
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'associated_gas_flaring', 'Associated gas flaring', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'associated_gas_venting', 'Associated gas venting', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'blowdown_venting', 'Blowdown venting', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'dehydrator_venting', 'Dehydrator venting', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'drilling_flaring', 'Drilling flaring', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'drilling_venting', 'Drilling venting', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'equipment_leaks_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'flaring_stacks', 'Flaring stacks', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'hydraulic_fracturing_flaring', 'Hydraulic fracturing flaring', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'ng_high_bleed_venting', 'Natural gas pneumatic high bleed device venting', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'ng_intermittent_venting', 'Natural gas pneumatic intermittent bleed device venting', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'ng_low_bleed_venting', 'Natural gas pneumatic low bleed device venting', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'ng_pump_venting', 'Natural gas pneumatic pump venting', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'oil_recovery_injection_pump_blowdowns', 'Enhanced oil recovery injection pump blowdowns', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'oil_recovery_produced_hydrocarbon', 'Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'other_fugitive_sources', 'Other fugitive sources', True, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'other_venting_sources', 'Other venting sources', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'population_count_sources', 'Population count sources', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'produced_water_dissolved_co2', 'Produced water dissolved carbon dioxide and methane', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'releases_from_tanks_for_storage', 'Releases from tanks used for storage, production or processing', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'third_party_line_hits', 'Third party line hits with release of gas', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'transmission_storage_tanks', 'Transmission storage tanks', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'well_testing_flaring', 'Well testing flaring', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'well_testing_venting', 'Well testing venting', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'well_venting_liquid_unloading', 'Well venting for liquids unloading', False, False),
-        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'well_venting_well_completion', 'Gas well venting during well completions and workovers with or without hydraulic fracturing', False, False),
-        # OG extraction other than NCNP 
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'ng_high_bleed_venting', 'Natural gas pneumatic high bleed device venting', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'ng_intermittent_venting', 'Natural gas pneumatic intermittent bleed device venting', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'ng_low_bleed_venting', 'Natural gas pneumatic low bleed device venting', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'ng_pump_venting', 'Natural gas pneumatic pump venting', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'acid_gas_removal_venting_or_incineration', 'Acid gas removal venting or incineration', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'dehydrator_venting', 'Dehydrator venting', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'blowdown_venting', 'Blowdown venting', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'releases_from_tanks_used_for_storage', 'Releases from tanks used for storage, production or processing', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'associated_gas_flaring', 'Associated gas flaring', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'associated_gas_venting', 'Associated gas venting', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'flaring_stacks', 'Flaring stacks', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'centrifugal_compressor_venting', 'Centrifugal compressor venting', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'reciprocating_compressor_venting', 'Reciprocating compressor venting', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'equipment_leaks_detected_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'population_count_sources', 'Population count sources', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'transmission_storage_tanks', 'Transmission storage tanks', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'enhanced_oil_recovery_injection_pump_blowdowns', 'Enhanced oil recovery injection pump blowdowns', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'produced_water_dissolved_carbon_dioxide_methane', 'Produced water dissolved carbon dioxide and methane', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'enhanced_oil_recovery_produced_hydrocarbon_liquids', 'Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'other_venting_sources', 'Other venting sources', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'other_fugitive_sources', 'Other fugitive sources', False, False),
-        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'third_party_line_hits', 'Third party line hits with release of gas', False, False),
-        # Electricity generation
-        ('Electricity generation', 'electricity_generation', '1_fuel_combustion_electricity_gen', 'Fuel combustion for electricity generation', True, True),
-        ('Electricity generation', 'electricity_generation', '2_acid_gas_scrubbers_reagents', 'Acid gas scrubbers and acid gas reagents', False, False),
-        ('Electricity generation', 'electricity_generation', '3_cooling_units', 'Cooling units', False, False),
-        ('Electricity generation', 'electricity_generation', '4_geothermal_geyser_steam_fluids', 'Geothermal geyser steam or fluids', False, False),
-        ('Electricity generation', 'electricity_generation', '5_electrical_equipment_install_maint_decom', 'Installation, maintenance, operation and decommissioning of electrical equipment', False, False),
-        # Industrial wastewater processing
-        ('Industrial wastewater processing', 'industrial_water_processing', 'wastewater_processing_using_anaerobic', 'Industrial wastewater process using anaerobic digestion', False, False),
-        ('Industrial wastewater processing', 'industrial_water_processing', 'oil_water_separators', 'Oil-water separators', False, False),
-        # Cement production
-        ('Cement production', 'cement_production', 'calcination_of_lssso', 'Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material', False, False),
-        # Lime manufacturing
-        ('Lime manufacturing', 'lime_manufacturing', '1_calcination_of_carbonate', 'Calcination of carbonate materials in lime manufacturing', False, False),
-        # Coal storage
-        ('Coal storage at facilities that combust coal', 'coal_storage', '1_stored_coal_piles', 'Stored coal piles', False, False),
-        # Zinc production
-        ('Zinc production', 'zinc_production', '1_reducing agents', 'Use of reducing agents during zinc production', False, False),
-        # Petroleum refining 
-        ('Petroleum refining', 'petroleum_refining', '1_catalyst_regeneration', 'Catalyst regeneration', False, False),
-        ('Petroleum refining', 'petroleum_refining', '2_process_vents', 'Process vents', False, False),
-        ('Petroleum refining', 'petroleum_refining', '3_asphalt_production', 'Asphalt production', False, False),
-        ('Petroleum refining', 'petroleum_refining', '4_sulphur_recovery', 'Sulphur recovery', False, False),
-        ('Petroleum refining', 'petroleum_refining', '5_flares', 'Flares, the flare pilot, the combustion of purge gas and the destruction of low Btu gases', False, False),
-        ('Petroleum refining', 'petroleum_refining', '6_above_ground_storage_tanks', 'Above-ground storage tanks at refineries', False, False),
-        ('Petroleum refining', 'petroleum_refining', '7_oil_water_separators', 'Oil-water separators at refineries', False, False),
-        ('Petroleum refining', 'petroleum_refining', '8_equipment_leaks_at_refineries', 'Equipment leaks at refineries', False, False),
-        ('Petroleum refining', 'petroleum_refining', '9_wastewater_processing', 'Wastewater processing using anaerobic digestion at refineries', False, False),
-        ('Petroleum refining', 'petroleum_refining', '10_uncontrolled_blowdown_systems', 'Uncontrolled blowdown systems used at refineries', False, False),
-        ('Petroleum refining', 'petroleum_refining', '11_loading_operations', 'Loading operations at refineries and terminals', False, False),
-        ('Petroleum refining', 'petroleum_refining', '12_delayed_coking_units', 'Delayed coking units at refineries', False, False),
-        ('Petroleum refining', 'petroleum_refining', '13_coke_calcining', 'Coke calcining at refineries', False, False),
-        # Lead production
-        ('Lead production', 'lead_production', '1_reducing agents', 'Use of reducing agents during lead production', False, False),
-        # Electricity transmission
-        ('Electricity transmission', 'electricity_transmission', 'installation_maint_operation_electrical_equipment', 'Installation, maintenance, operation and decommissioning of electrical equipment', False, False),
-    ]
-
-    for activity_name, schema_dir, file_name, source_type_name, has_unit, has_fuel in ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING:
-        schema_path = f'{cwd}/reporting/json_schemas/2024/{schema_dir}/{file_name}.json'
-        with open(schema_path) as schema_file:
-            schema = json.load(schema_file)
-        ActivitySourceTypeSchema.objects.create(
-            activity=Activity.objects.get(name=activity_name),
-            source_type=SourceType.objects.get(name=source_type_name),
-            has_unit=has_unit,
-            has_fuel=has_fuel,
-            json_schema=schema,
-            valid_from=valid_from,
-            valid_to=valid_to,
-        )
-
-
-def reverse_init_activity_source_type_schema_data(apps, schema_editor):
-    """
-    Remove all activity source type schema data.
-    """
-    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    ActivitySourceTypeJsonSchema.objects.all().delete()
-
-
 def init_gas_type_data(apps, schema_editor):
     GasType = apps.get_model('reporting', 'GasType')
     GasType.objects.bulk_create(
@@ -2475,6 +2271,203 @@ def init_activity_schema_data(apps, schema_editor):
 def reverse_init_activity_schema_data(apps, schema_editor):
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
     ActivitySchema.objects.all().delete()
+
+
+def init_activity_source_type_schema_data(apps, schema_editor):
+    ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
+    Activity = apps.get_model('registration', 'Activity')
+    SourceType = apps.get_model('reporting', 'SourceType')
+    Configuration = apps.get_model('reporting', 'Configuration')
+    valid_from = Configuration.objects.get(valid_from='2023-01-01')
+    valid_to = Configuration.objects.get(valid_to='2099-12-31')
+    cwd = os.getcwd()
+    
+    ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING = [
+        # GSC excluding line tracing
+        ('General stationary combustion excluding line tracing', 'gsc_excluding_line_tracing', 'with_useful_energy', 'General stationary combustion of fuel or waste with production of useful energy', False, False),
+        ('General stationary combustion excluding line tracing', 'gsc_excluding_line_tracing', 'without_useful_energy', 'General stationary combustion of waste without production of useful energy', False, False),
+        # GSC solely for line tracing
+        ('General stationary combustion solely for the purpose of line tracing', 'gsc_solely_for_line_tracing', 'with_useful_energy', 'General stationary combustion of fuel or waste with production of useful energy', False, False),
+        # Fuel combustion by mobile equipment
+        ('Fuel combustion by mobile equipment', 'fuel_combustion_mobile', 'combustion_by_equipment', 'Fuel combustion by mobile equipment that is part of the facility', False, False),
+        # GSC other than non-compression
+        ('General stationary combustion, other than non-compression and non-processing combustion', 'gsc_other_than_non_compression', 'with_useful_energy', 'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy', False, False),
+        ('General stationary combustion, other than non-compression and non-processing combustion', 'gsc_other_than_non_compression', 'without_useful_energy', 'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy', False, False),
+        ('General stationary combustion, other than non-compression and non-processing combustion', 'gsc_other_than_non_compression', 'field_gas_process_vent_gas_at_lfo', 'Field gas or process vent gas combustion at a linear facilities operation', False, False),
+        # Refinery fuel gas combustion
+        ('Refinery fuel gas combustion', 'refinery_fuel_gas', 'combustion_of_refinery_gas', 'Combustion of refinery fuel gas, still gas, flexigas or associated gas', False, False),
+        # Carbonate use
+        ('Carbonate use', 'carbonates_use', 'carbonates_use', 'Carbonates used but not consumed in other activities set out in column 2', False, False),
+        # GSC non-compression non-processing combustion
+        ('General stationary non-compression and non-processing combustion', 'gsc_non_compression_non_combustion', 'with_useful_energy', 'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy', False, False),
+        ('General stationary non-compression and non-processing combustion', 'gsc_non_compression_non_combustion', 'without_useful_energy', 'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy', False, False),
+        ('General stationary non-compression and non-processing combustion', 'gsc_non_compression_non_combustion', 'field_gas_process_vent_gas_at_lfo', 'Field gas or process vent gas combustion at a linear facilities operation', False, False),
+        # Hydrogen production
+        ('Hydrogen production', 'hydrogen_production', 'steam_reformation_or_gasification', 'Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock', False, False),
+        # Pulp and paper production
+        ('Pulp and paper production', 'pulp_and_paper_production', 'pulp_and_paper_production', 'Pulping and chemical recovery', False, False),
+        # Open pit coal mining
+        ('Open pit coal mining', 'open_pit_coal_mining', 'coal_exposed_during_mining', 'Coal when broken or exposed to the atmosphere during mining', False, False),
+        # Storage of petroleum products
+        ('Storage of petroleum products', 'storage_of_petroleum_products', 'above_ground_storage_tanks', 'Above-ground storage tanks', False, False),
+        # Aluminum or alumina production
+        ('Aluminum or alumina production', 'aluminum_production', 'anode_consumption_acbgcc', 'Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination', False, False),
+        ('Aluminum or alumina production', 'aluminum_production', 'anode_effects', 'Anode effects', False, False),
+        ('Aluminum or alumina production', 'aluminum_production', 'cover_gas_from_electrolysis', 'Cover gas from electrolysis cells', False, False),
+        # NG non-compression 
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '1_ng_pneumatic_high_bleed_device_venting', 'Natural gas pneumatic high bleed device venting', True, True),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '2_ng_pneumatic_pump_venting', 'Natural gas pneumatic pump venting', True, True),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '3_ng_pneumatic_low_bleed_device_venting', 'Natural gas pneumatic low bleed device venting', True, True),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '4_ng_pneumatic_intermittent_device_venting', 'Natural gas pneumatic intermittent bleed device venting', True, True),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '5_blowdown_venting', 'Blowdown venting', False, False),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '6_flare_stacks', 'Flare stacks', True, True),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '7_equipment_leaks_detected_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', True, False),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '8_population_count_sources', 'Population count sources', True, False),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '9_transmission_storage_tanks', 'Transmission storage tanks', False, False),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '10_other_venting_sources', 'Other venting sources', True, False),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '11_other_fugitive_sources', 'Other fugitive sources', True, False),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression', '12_third_party_line_hits_with_release_of_gas', 'Third party line hits with release of gas', True, False),
+        # NG other than non-compression 
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '1_ng_pneumatic_high_bleed_device_venting', 'Natural gas pneumatic high bleed device venting', True, True),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '2_ng_pneumatic_pump_venting', 'Natural gas pneumatic pump venting', True, True),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '3_ng_pneumatic_low_bleed_device_venting', 'Natural gas pneumatic low bleed device venting', True, True),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '4_ng_pneumatic_intermittent_device_venting', 'Natural gas pneumatic intermittent bleed device venting', True, True),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '5_blowdown_venting', 'Blowdown venting', False, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '6_flare_stacks', 'Flare stacks', True, True),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '7_centrifugal_compressor_venting', 'Centrifugal compressor venting', True, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '8_reciprocating_compressor_venting', 'Reciprocating compressor venting', True, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '9_equipment_leaks_detected_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', True, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '10_population_count_sources', 'Population count sources', True, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '11_transmission_storage_tanks', 'Transmission storage tanks', False, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '12_other_venting_sources', 'Other venting sources', True, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '13_other_fugitive_sources', 'Other fugitive sources', True, False),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression', '14_third_party_line_hits_with_release_of_gas', 'Third party line hits with release of gas', True, False),
+        # LNG activities 
+        ('LNG activities', 'lng_activities', '1_ng_pneumatic_high_bleed_device_venting', 'Natural gas pneumatic high bleed device venting', False, True),
+        ('LNG activities', 'lng_activities', '2_ng_pneumatic_pump_venting', 'Natural gas pneumatic pump venting', False, True),
+        ('LNG activities', 'lng_activities', '3_ng_pneumatic_low_bleed_device_venting', 'Natural gas pneumatic low bleed device venting', False, True),
+        ('LNG activities', 'lng_activities', '4_ng_pneumatic_intermittent_device_venting', 'Natural gas pneumatic intermittent bleed device venting', False, True),
+        ('LNG activities', 'lng_activities', '5_acid_gas_removal_venting_or_incineration', 'Acid gas removal venting or incineration', True, False),
+        ('LNG activities', 'lng_activities', '6_dehydrator_venting', 'Dehydrator venting', True, False),
+        ('LNG activities', 'lng_activities', '7_blowdown_venting', 'Blowdown venting', False, False),
+        ('LNG activities', 'lng_activities', '8_releases_from_tanks_used_for_storage', 'Releases from tanks used for storage, production or processing', True, False),
+        ('LNG activities', 'lng_activities', '9_flare_stacks', 'Flare stacks', True, True),
+        ('LNG activities', 'lng_activities', '10_centrifugal_compressor_venting', 'Centrifugal compressor venting', True, False),
+        ('LNG activities', 'lng_activities', '11_reciprocating_compressor_venting', 'Reciprocating compressor venting', True, False),
+        ('LNG activities', 'lng_activities', '12_equipment_leaks_detected_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', True, False),
+        ('LNG activities', 'lng_activities', '13_population_count_sources', 'Population count sources', True, False),
+        ('LNG activities', 'lng_activities', '14_transmission_storage_tanks', 'Transmission storage tanks', False, False),
+        ('LNG activities', 'lng_activities', '15_enhanced_oil_recovery_injection_pump_blowdowns', 'Enhanced oil recovery injection pump blowdowns', False, False),
+        ('LNG activities', 'lng_activities', '16_produced_water_dissolved_carbon_dioxide_methane', 'Produced water dissolved carbon dioxide and methane', False, False),
+        ('LNG activities', 'lng_activities', '17_enhanced_oil_recovery_produced_hydrocarbon_liquids', 'Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide', False, False),
+        ('LNG activities', 'lng_activities', '18_other_venting_sources', 'Other venting sources', True, False),
+        ('LNG activities', 'lng_activities', '19_other_fugitive_sources', 'Other fugitive sources', True, False),
+        ('LNG activities', 'lng_activities', '20_third_party_line_hits_with_release_of_gas', 'Third party line hits with release of gas', False, False),
+        # OG extraction non-compression 
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'associated_gas_flaring', 'Associated gas flaring', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'associated_gas_venting', 'Associated gas venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'blowdown_venting', 'Blowdown venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'dehydrator_venting', 'Dehydrator venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'drilling_flaring', 'Drilling flaring', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'drilling_venting', 'Drilling venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'equipment_leaks_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'flaring_stacks', 'Flaring stacks', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'hydraulic_fracturing_flaring', 'Hydraulic fracturing flaring', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'ng_high_bleed_venting', 'Natural gas pneumatic high bleed device venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'ng_intermittent_venting', 'Natural gas pneumatic intermittent bleed device venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'ng_low_bleed_venting', 'Natural gas pneumatic low bleed device venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'ng_pump_venting', 'Natural gas pneumatic pump venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'oil_recovery_injection_pump_blowdowns', 'Enhanced oil recovery injection pump blowdowns', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'oil_recovery_produced_hydrocarbon', 'Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'other_fugitive_sources', 'Other fugitive sources', True, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'other_venting_sources', 'Other venting sources', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'population_count_sources', 'Population count sources', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'produced_water_dissolved_co2', 'Produced water dissolved carbon dioxide and methane', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'releases_from_tanks_for_storage', 'Releases from tanks used for storage, production or processing', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'third_party_line_hits', 'Third party line hits with release of gas', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'transmission_storage_tanks', 'Transmission storage tanks', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'well_testing_flaring', 'Well testing flaring', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'well_testing_venting', 'Well testing venting', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'well_venting_liquid_unloading', 'Well venting for liquids unloading', False, False),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression', 'well_venting_well_completion', 'Gas well venting during well completions and workovers with or without hydraulic fracturing', False, False),
+        # OG extraction other than NCNP 
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'ng_high_bleed_venting', 'Natural gas pneumatic high bleed device venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'ng_intermittent_venting', 'Natural gas pneumatic intermittent bleed device venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'ng_low_bleed_venting', 'Natural gas pneumatic low bleed device venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'ng_pump_venting', 'Natural gas pneumatic pump venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'acid_gas_removal_venting_or_incineration', 'Acid gas removal venting or incineration', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'dehydrator_venting', 'Dehydrator venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'blowdown_venting', 'Blowdown venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'releases_from_tanks_used_for_storage', 'Releases from tanks used for storage, production or processing', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'associated_gas_flaring', 'Associated gas flaring', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'associated_gas_venting', 'Associated gas venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'flaring_stacks', 'Flaring stacks', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'centrifugal_compressor_venting', 'Centrifugal compressor venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'reciprocating_compressor_venting', 'Reciprocating compressor venting', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'equipment_leaks_detected_using_leak_detection', 'Equipment leaks detected using leak detection and leaker emission factor methods', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'population_count_sources', 'Population count sources', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'transmission_storage_tanks', 'Transmission storage tanks', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'enhanced_oil_recovery_injection_pump_blowdowns', 'Enhanced oil recovery injection pump blowdowns', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'produced_water_dissolved_carbon_dioxide_methane', 'Produced water dissolved carbon dioxide and methane', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'enhanced_oil_recovery_produced_hydrocarbon_liquids', 'Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'other_venting_sources', 'Other venting sources', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'other_fugitive_sources', 'Other fugitive sources', False, False),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp', 'third_party_line_hits', 'Third party line hits with release of gas', False, False),
+        # Electricity generation
+        ('Electricity generation', 'electricity_generation', '1_fuel_combustion_electricity_gen', 'Fuel combustion for electricity generation', True, True),
+        ('Electricity generation', 'electricity_generation', '2_acid_gas_scrubbers_reagents', 'Acid gas scrubbers and acid gas reagents', False, False),
+        ('Electricity generation', 'electricity_generation', '3_cooling_units', 'Cooling units', False, False),
+        ('Electricity generation', 'electricity_generation', '4_geothermal_geyser_steam_fluids', 'Geothermal geyser steam or fluids', False, False),
+        ('Electricity generation', 'electricity_generation', '5_electrical_equipment_install_maint_decom', 'Installation, maintenance, operation and decommissioning of electrical equipment', False, False),
+        # Industrial wastewater processing
+        ('Industrial wastewater processing', 'industrial_water_processing', 'wastewater_processing_using_anaerobic', 'Industrial wastewater process using anaerobic digestion', False, False),
+        ('Industrial wastewater processing', 'industrial_water_processing', 'oil_water_separators', 'Oil-water separators', False, False),
+        # Cement production
+        ('Cement production', 'cement_production', 'calcination_of_lssso', 'Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material', False, False),
+        # Lime manufacturing
+        ('Lime manufacturing', 'lime_manufacturing', '1_calcination_of_carbonate', 'Calcination of carbonate materials in lime manufacturing', False, False),
+        # Coal storage
+        ('Coal storage at facilities that combust coal', 'coal_storage', '1_stored_coal_piles', 'Stored coal piles', False, False),
+        # Zinc production
+        ('Zinc production', 'zinc_production', '1_reducing agents', 'Use of reducing agents during zinc production', False, False),
+        # Petroleum refining 
+        ('Petroleum refining', 'petroleum_refining', '1_catalyst_regeneration', 'Catalyst regeneration', False, False),
+        ('Petroleum refining', 'petroleum_refining', '2_process_vents', 'Process vents', False, False),
+        ('Petroleum refining', 'petroleum_refining', '3_asphalt_production', 'Asphalt production', False, False),
+        ('Petroleum refining', 'petroleum_refining', '4_sulphur_recovery', 'Sulphur recovery', False, False),
+        ('Petroleum refining', 'petroleum_refining', '5_flares', 'Flares, the flare pilot, the combustion of purge gas and the destruction of low Btu gases', False, False),
+        ('Petroleum refining', 'petroleum_refining', '6_above_ground_storage_tanks', 'Above-ground storage tanks at refineries', False, False),
+        ('Petroleum refining', 'petroleum_refining', '7_oil_water_separators', 'Oil-water separators at refineries', False, False),
+        ('Petroleum refining', 'petroleum_refining', '8_equipment_leaks_at_refineries', 'Equipment leaks at refineries', False, False),
+        ('Petroleum refining', 'petroleum_refining', '9_wastewater_processing', 'Wastewater processing using anaerobic digestion at refineries', False, False),
+        ('Petroleum refining', 'petroleum_refining', '10_uncontrolled_blowdown_systems', 'Uncontrolled blowdown systems used at refineries', False, False),
+        ('Petroleum refining', 'petroleum_refining', '11_loading_operations', 'Loading operations at refineries and terminals', False, False),
+        ('Petroleum refining', 'petroleum_refining', '12_delayed_coking_units', 'Delayed coking units at refineries', False, False),
+        ('Petroleum refining', 'petroleum_refining', '13_coke_calcining', 'Coke calcining at refineries', False, False),
+        # Lead production
+        ('Lead production', 'lead_production', '1_reducing agents', 'Use of reducing agents during lead production', False, False),
+        # Electricity transmission
+        ('Electricity transmission', 'electricity_transmission', 'installation_maint_operation_electrical_equipment', 'Installation, maintenance, operation and decommissioning of electrical equipment', False, False),
+    ]
+
+    for activity_name, schema_dir, file_name, source_type_name, has_unit, has_fuel in ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING:
+        schema_path = f'{cwd}/reporting/json_schemas/2024/{schema_dir}/{file_name}.json'
+        with open(schema_path) as schema_file:
+            schema = json.load(schema_file)
+        ActivitySourceTypeSchema.objects.create(
+            activity=Activity.objects.get(name=activity_name),
+            source_type=SourceType.objects.get(name=source_type_name),
+            has_unit=has_unit,
+            has_fuel=has_fuel,
+            json_schema=schema,
+            valid_from=valid_from,
+            valid_to=valid_to,
+        )
+
+
+def reverse_init_activity_source_type_schema_data(apps, schema_editor):
+    ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
+    ActivitySourceTypeJsonSchema.objects.all().delete()
 
 # reporting.migrations.0010_combustion_for_line_tracing_data
 #### CONFIG DATA ####
