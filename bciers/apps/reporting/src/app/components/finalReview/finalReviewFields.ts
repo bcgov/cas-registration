@@ -258,6 +258,11 @@ export const complianceSummaryFields = (products: any[] = []) => {
           reporting_years: [2024],
         },
         {
+          label: "Production data for Jan 1 - Mar 31 2025",
+          key: `products.${index}.jan_mar_production`,
+          reporting_years: [2025],
+        },
+        {
           label: "Production-weighted average emission intensity",
           key: `products.${index}.emission_intensity`,
           unit: "tCO2e/production unit",
@@ -303,6 +308,10 @@ export const productionDataFields = (product: any) => [
   {
     label: "Production Data for Apr 1 - Dec 31 2024",
     key: "production_data_apr_dec",
+  },
+  {
+    label: "Production Data for Jan 1 - Mar 31 2025",
+    key: "production_data_jan_mar",
   },
   {
     label: "Production Quantification Methodology",
