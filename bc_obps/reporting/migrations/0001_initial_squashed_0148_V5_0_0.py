@@ -262,7 +262,6 @@ def reverse_init_configuration_data(apps, schema_monitor):
     Configuration = apps.get_model('reporting', 'Configuration')
     Configuration.objects.all().delete()
 
-
 def init_fuel_type_data(apps, schema_monitor):
     FuelType = apps.get_model('reporting', 'FuelType')
     FuelType.objects.bulk_create(
@@ -465,7 +464,6 @@ def init_methodology_data(apps, schema_monitor):
 def reverse_init_methodology_data(apps, schema_monitor):
     Methodology = apps.get_model('reporting', 'Methodology')
     Methodology.objects.all().delete()
-
 
 def init_reporting_years(apps, schema_editor):
     ReportingYear = apps.get_model('reporting', 'ReportingYear')
@@ -2220,32 +2218,59 @@ def reverse_init_configuration_element_reporting_fields_data_general_stationary_
         ).values_list('id', flat=True)
     ).delete()
 
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
 
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/gsc_excluding_line_tracing/activity.json') as gsc_st1:
-        schema = json.load(gsc_st1)
-
+def init_activity_schema_data(apps, schema_editor):
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
     Activity = apps.get_model('registration', 'Activity')
     Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name='General stationary combustion excluding line tracing').id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
+
+    valid_from = Configuration.objects.get(valid_from='2023-01-01')
+    valid_to = Configuration.objects.get(valid_to='2099-12-31')
+    cwd = os.getcwd()
+    
+    ACTIVITY_SCHEMA_MAPPING = [
+        ('General stationary combustion excluding line tracing', 'gsc_excluding_line_tracing'),
+        ('General stationary combustion solely for the purpose of line tracing', 'gsc_solely_for_line_tracing'),
+        ('Fuel combustion by mobile equipment', 'fuel_combustion_mobile'),
+        ('General stationary combustion, other than non-compression and non-processing combustion', 'gsc_other_than_non_compression'),
+        ('Refinery fuel gas combustion', 'refinery_fuel_gas'),
+        ('Carbonate use', 'carbonates_use'),
+        ('General stationary non-compression and non-processing combustion', 'gsc_non_compression_non_combustion'),
+        ('Hydrogen production', 'hydrogen_production'),
+        ('Pulp and paper production', 'pulp_and_paper_production'),
+        ('Open pit coal mining', 'open_pit_coal_mining'),
+        ('Storage of petroleum products', 'storage_of_petroleum_products'),
+        ('Aluminum or alumina production', 'aluminum_production'),
+        ('Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission', 'ng_non_compression'),
+        ('Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities', 'ng_other_than_non_compression'),
+        ('LNG activities', 'lng_activities'),
+        ('Non-compression and non-processing activities that are oil and gas extraction and gas processing activities', 'og_extraction_non_compression'),
+        ('Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities', 'og_extraction_other_than_ncnp'),
+        ('Electricity generation', 'electricity_generation'),
+        ('Industrial wastewater processing', 'industrial_water_processing'),
+        ('Cement production', 'cement_production'),
+        ('Lime manufacturing', 'lime_manufacturing'),
+        ('Coal storage at facilities that combust coal', 'coal_storage'),
+        ('Zinc production', 'zinc_production'),
+        ('Petroleum refining', 'petroleum_refining'),
+        ('Lead production', 'lead_production'),
+        ('Electricity transmission', 'electricity_transmission'),
+    ]
+
+    for activity_name, schema_slug in ACTIVITY_SCHEMA_MAPPING:
+        schema_path = f'{cwd}/reporting/json_schemas/2024/{schema_slug}/activity.json'
+        with open(schema_path) as schema_file:
+            schema = json.load(schema_file)
+        ActivitySchema.objects.create(
+            activity=Activity.objects.get(name=activity_name),
+            json_schema=schema,
+            valid_from=valid_from,
+            valid_to=valid_to,
+        )
 
 def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(
-        activity_id=Activity.objects.get(name='General stationary combustion excluding line tracing').id
-    ).delete()
+    ActivitySchema.objects.all().delete()
 
 # SOURCE TYPE
 def init_activity_source_type_schema_data(apps, schema_monitor):
@@ -3215,38 +3240,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
         ).values_list('id', flat=True)
     ).delete()
 
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/gsc_solely_for_line_tracing/activity.json') as gsc_st1:
-        schema = json.load(gsc_st1)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(
-            name='General stationary combustion solely for the purpose of line tracing'
-        ).id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(
-        activity_id=Activity.objects.get(name='General stationary combustion solely for the purpose of line tracing').id
-    ).delete()
-
 # SOURCE TYPE
 def init_activity_source_type_schema_data(apps, schema_monitor):
     '''
@@ -3610,36 +3603,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
         configurationelement_id__in=ConfigurationElement.objects.filter(
             activity_id=Activity.objects.get(name='Fuel combustion by mobile equipment').id
         ).values_list('id', flat=True)
-    ).delete()
-
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/fuel_combustion_mobile/activity.json') as mfuel:
-        schema = json.load(mfuel)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name='Fuel combustion by mobile equipment').id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(
-        activity_id=Activity.objects.get(name='Fuel combustion by mobile equipment').id
     ).delete()
 
 # SOURCE TYPE
@@ -6351,40 +6314,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
         ).values_list('id', flat=True)
     ).delete()
 
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/gsc_other_than_non_compression/activity.json') as gsc_st1:
-        schema = json.load(gsc_st1)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(
-            name='General stationary combustion, other than non-compression and non-processing combustion'
-        ).id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(
-        activity_id=Activity.objects.get(
-            name='General stationary combustion, other than non-compression and non-processing combustion'
-        ).id
-    ).delete()
-
 # SOURCE TYPE
 def init_activity_source_type_schema_data(apps, schema_monitor):
     '''
@@ -7106,34 +7035,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
         ).values_list('id', flat=True)
     ).delete()
 
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/refinery_fuel_gas/activity.json') as mfuel:
-        schema = json.load(mfuel)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id).delete()
-
 # SOURCE TYPE
 def init_activity_source_type_schema_data(apps, schema_monitor):
     '''
@@ -7386,34 +7287,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
             activity_id=Activity.objects.get(name='Carbonate use').id
         ).values_list('id', flat=True)
     ).delete()
-
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/carbonates_use/activity.json') as carbonatesuse:
-        schema = json.load(carbonatesuse)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name='Carbonate use').id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(activity_id=Activity.objects.get(name='Carbonate use').id).delete()
 
 #### SOURCE TYPE DATA ####
 def init_activity_source_type_schema_data(apps, schema_monitor):
@@ -9886,36 +9759,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
         ).values_list('id', flat=True)
     ).delete()
 
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/gsc_non_compression_non_combustion/activity.json') as gsc_st1:
-        schema = json.load(gsc_st1)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(
-        activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id
-    ).delete()
-
 # SOURCE TYPE
 def init_activity_source_type_schema_data(apps, schema_monitor):
     '''
@@ -10222,34 +10065,6 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
     ActivitySourceTypeJsonSchema.objects.filter(
         activity_id=Activity.objects.get(name='Hydrogen production').id
     ).delete()
-
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/hydrogen_production/activity.json') as mfuel:
-        schema = json.load(mfuel)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name='Hydrogen production').id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(activity_id=Activity.objects.get(name='Hydrogen production').id).delete()
 
 # reporting.migrations.0018_pulp_and_paper_production
 #### CONFIG DATA ####
@@ -10684,36 +10499,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
             activity_id=Activity.objects.get(name='Pulp and paper production').id,
         ).values_list('id', flat=True),
     ).delete()
-
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/pulp_and_paper_production/activity.json'
-    ) as pulp_and_paper_production:
-        schema = json.load(pulp_and_paper_production)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name='Pulp and paper production').id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(activity_id=Activity.objects.get(name='Pulp and paper production').id).delete()
 
 #### SOURCE TYPE DATA ####
 def init_activity_source_type_schema_data(apps, schema_monitor):
@@ -12613,34 +12398,6 @@ def reverse_init_custom_schema_data(apps, schema_monitor):
     Activity = apps.get_model('registration', 'Activity')
     CutsomSchema.objects.filter(activity_id=Activity.objects.get(name='Open pit coal mining').id).delete()
 
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/open_pit_coal_mining/activity.json') as mfuel:
-        schema = json.load(mfuel)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name='Open pit coal mining').id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(activity_id=Activity.objects.get(name='Open pit coal mining').id).delete()
-
 # SOURCE TYPE
 def init_activity_source_type_schema_data(apps, schema_monitor):
     '''
@@ -12806,37 +12563,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
             activity_id=Activity.objects.get(name='Storage of petroleum products').id
         ).values_list('id', flat=True)
     ).delete()
-
-
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/storage_of_petroleum_products/activity.json') as storageofpetroleum:
-        schema = json.load(storageofpetroleum)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name='Storage of petroleum products').id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(activity_id=Activity.objects.get(name='Storage of petroleum products').id).delete()
-
 
 #### SOURCE TYPE DATA ####
 def init_activity_source_type_schema_data(apps, schema_monitor):
@@ -13644,37 +13370,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
             activity_id=Activity.objects.get(name='Aluminum or alumina production').id
         ).values_list('id', flat=True)
     ).delete()
-
-
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/aluminum_production/activity.json') as alum:
-        schema = json.load(alum)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(activity_id=Activity.objects.get(name='Aluminum or alumina production').id).delete()
-
 
 # SOURCE TYPE
 def init_activity_source_type_schema_data(apps, schema_monitor):
@@ -14793,46 +14488,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_monitor):
         element.reporting_fields.clear()
 
 
-#### ACTIVITY SCHEMA ####
-
-
-def init_activity_schema_data(apps, schema_monitor):
-    """
-    Add initial schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/reporting/json_schemas/2024/ng_non_compression/activity.json") as ng_non_compression:
-        schema = json.load(ng_non_compression)
-
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    ActivitySchema.objects.create(
-        activity=Activity.objects.get(
-            name="Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission"
-        ),
-        json_schema=schema,
-        valid_from=Configuration.objects.get(valid_from="2023-01-01"),
-        valid_to=Configuration.objects.get(valid_to="2099-12-31"),
-    )
-
-
-def reverse_activity_schema_data(apps, schema_monitor):
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    ActivitySchema.objects.get(
-        activity=Activity.objects.get(
-            name="Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission"
-        ),
-        valid_from=Configuration.objects.get(valid_from="2023-01-01"),
-        valid_to=Configuration.objects.get(valid_to="2099-12-31"),
-    ).delete()
-
-
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
@@ -15308,34 +14963,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to=Configuration.objects.get(valid_to="2099-12-31"),
     ):
         element.reporting_fields.clear()
-
-
-#### ACTIVITY SCHEMA ####
-
-
-def init_activity_schema_data(apps, schema_monitor):
-    """
-    Add initial schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-    with open(
-        f"{cwd}/reporting/json_schemas/2024/ng_other_than_non_compression/activity.json"
-    ) as ng_other_than_non_compression:
-        schema = json.load(ng_other_than_non_compression)
-
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    ActivitySchema.objects.create(
-        activity=Activity.objects.get(
-            name="Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities"
-        ),
-        json_schema=schema,
-        valid_from=Configuration.objects.get(valid_from="2023-01-01"),
-        valid_to=Configuration.objects.get(valid_to="2099-12-31"),
-    )
 
 
 def reverse_activity_schema_data(apps, schema_monitor):
@@ -15957,42 +15584,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to=Configuration.objects.get(valid_to="2099-12-31"),
     ):
         element.reporting_fields.clear()
-
-
-#### ACTIVITY SCHEMA ####
-
-
-def init_activity_schema_data(apps, schema_monitor):
-    """
-    Add initial schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/reporting/json_schemas/2024/lng_activities/activity.json") as lng_activities:
-        schema = json.load(lng_activities)
-
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    ActivitySchema.objects.create(
-        activity=Activity.objects.get(name="LNG activities"),
-        json_schema=schema,
-        valid_from=Configuration.objects.get(valid_from="2023-01-01"),
-        valid_to=Configuration.objects.get(valid_to="2099-12-31"),
-    )
-
-
-def reverse_activity_schema_data(apps, schema_monitor):
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    ActivitySchema.objects.get(
-        activity=Activity.objects.get(name="LNG activities"),
-        valid_from=Configuration.objects.get(valid_from="2023-01-01"),
-        valid_to=Configuration.objects.get(valid_to="2099-12-31"),
-    ).delete()
 
 
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
@@ -18292,43 +17883,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
         ).values_list("id", flat=True)
     ).delete()
 
-
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    """
-    Add initial schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/activity.json") as gsc_st1:
-        schema = json.load(gsc_st1)
-
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(
-            name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-        ).id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-        valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-    )
-
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    """
-    Remove initial data from erc.base_schema
-    """
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySchema.objects.filter(
-        activity_id=Activity.objects.get(
-            name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
-        ).id
-    ).delete()
-
-
 # SOURCE TYPE
 def init_activity_source_type_schema_data(apps, schema_monitor):
     """
@@ -19243,42 +18797,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ).delete()
 
 
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    """
-    Add initial schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/reporting/json_schemas/2024/og_extraction_other_than_ncnp/activity.json") as gsc_st1:
-        schema = json.load(gsc_st1)
-
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(
-            name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-        ).id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-        valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-    )
-
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    """
-    Remove initial data from erc.base_schema
-    """
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySchema.objects.filter(
-        activity_id=Activity.objects.get(
-            name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
-        ).id
-    ).delete()
-
-
 # SOURCE TYPE
 def init_activity_source_type_schema_data(apps, schema_monitor):
     """
@@ -20176,59 +19694,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
     ).delete()
 
 
-#### ACTIVITY SCHEMA ####
-
-
-def init_activity_schema_data(apps, schema_monitor):
-    """
-    Add activity schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/{JSON_SCHEMAS_PATH}/activity.json") as activity_file:
-        schema = json.load(activity_file)
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Create activity schema
-    ActivitySchema.objects.create(
-        activity=activity,
-        json_schema=schema,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    )
-
-
-def reverse_activity_schema_data(apps, schema_monitor):
-    """
-    Remove Activity schema data
-    """
-    # Retrieve models from the app registry to interact with the database
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Delete the schema
-    ActivitySchema.objects.get(
-        activity=activity,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    ).delete()
-
-
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
@@ -20576,37 +20041,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
         ).values_list('id', flat=True)
     ).delete()
 
-
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/industrial_water_processing/activity.json') as waster_water:
-        schema = json.load(waster_water)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(activity_id=Activity.objects.get(name='Industrial wastewater processing').id).delete()
-
-
 # SOURCE TYPE
 def init_activity_source_type_schema_data(apps, schema_monitor):
     '''
@@ -20885,36 +20319,6 @@ def reverse_init_custom_schema_data(apps, schema_monitor):
     CustomSchema = apps.get_model('reporting', 'CustomMethodologySchema')
     Activity = apps.get_model('registration', 'Activity')
     CustomSchema.objects.filter(activity_id=Activity.objects.get(name='Cement production').id).delete()
-
-
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_schema
-    '''
-
-    cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/cement_production/activity.json') as cement:
-        schema = json.load(cement)
-
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name='Cement production').id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    )
-
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.base_schema
-    '''
-    ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
-    Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(activity_id=Activity.objects.get(name='Cement production').id).delete()
 
 
 # SOURCE TYPE
@@ -21196,59 +20600,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
             valid_from=valid_from,
             valid_to=valid_to,
         ).values_list("id", flat=True)
-    ).delete()
-
-
-#### ACTIVITY SCHEMA ####
-
-
-def init_activity_schema_data(apps, schema_editor):
-    """
-    Add activity schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/{JSON_SCHEMAS_PATH}/activity.json") as activity_file:
-        schema = json.load(activity_file)
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Create activity schema
-    ActivitySchema.objects.create(
-        activity=activity,
-        json_schema=schema,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    )
-
-
-def reverse_activity_schema_data(apps, schema_monitor):
-    """
-    Remove Activity schema data
-    """
-    # Retrieve models from the app registry to interact with the database
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Delete the schema
-    ActivitySchema.objects.get(
-        activity=activity,
-        valid_from=valid_from,
-        valid_to=valid_to,
     ).delete()
 
 
@@ -21618,59 +20969,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
     ).delete()
 
 
-#### ACTIVITY SCHEMA ####
-
-
-def init_activity_schema_data(apps, schema_editor):
-    """
-    Add activity schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/{JSON_SCHEMAS_PATH}/activity.json") as activity_file:
-        schema = json.load(activity_file)
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Create activity schema
-    ActivitySchema.objects.create(
-        activity=activity,
-        json_schema=schema,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    )
-
-
-def reverse_activity_schema_data(apps, schema_monitor):
-    """
-    Remove Activity schema data
-    """
-    # Retrieve models from the app registry to interact with the database
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Delete the schema
-    ActivitySchema.objects.get(
-        activity=activity,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    ).delete()
-
-
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
 
@@ -22034,59 +21332,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
             valid_from=valid_from,
             valid_to=valid_to,
         ).values_list("id", flat=True)
-    ).delete()
-
-
-#### ACTIVITY SCHEMA ####
-
-
-def init_activity_schema_data(apps, schema_editor):
-    """
-    Add activity schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/{JSON_SCHEMAS_PATH}/activity.json") as activity_file:
-        schema = json.load(activity_file)
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Create activity schema
-    ActivitySchema.objects.create(
-        activity=activity,
-        json_schema=schema,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    )
-
-
-def reverse_activity_schema_data(apps, schema_monitor):
-    """
-    Remove Activity schema data
-    """
-    # Retrieve models from the app registry to interact with the database
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Delete the schema
-    ActivitySchema.objects.get(
-        activity=activity,
-        valid_from=valid_from,
-        valid_to=valid_to,
     ).delete()
 
 
@@ -22858,60 +22103,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
         ).values_list('id', flat=True)
     ).delete()
 
-
-##### SCHEMA DATA #####
-
-
-def init_activity_schema_data(apps, schema_monitor):
-    """
-    Add activity schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/reporting/json_schemas/2024/petroleum_refining/activity.json") as activity_file:
-        schema = json.load(activity_file)
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name='Petroleum refining')
-    valid_from = Configuration.objects.get(valid_from='2023-01-01')
-    valid_to = Configuration.objects.get(valid_to='2099-12-31')
-
-    # Create activity schema
-    ActivitySchema.objects.create(
-        activity=activity,
-        json_schema=schema,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    )
-
-
-def reverse_activity_schema_data(apps, schema_monitor):
-    """
-    Remove Activity schema data
-    """
-    # Retrieve models from the app registry to interact with the database
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name='Petroleum refining')
-    valid_from = Configuration.objects.get(valid_from='2023-01-01')
-    valid_to = Configuration.objects.get(valid_to='2099-12-31')
-
-    # Delete the schema
-    ActivitySchema.objects.get(
-        activity=activity,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    ).delete()
-
-
 def init_activity_source_type_schema_data(apps, schema_monitor):
     """
     Add activity source type schema data to erc.activity_schema
@@ -23209,59 +22400,6 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
             valid_from=valid_from,
             valid_to=valid_to,
         ).values_list("id", flat=True)
-    ).delete()
-
-
-#### ACTIVITY SCHEMA ####
-
-
-def init_activity_schema_data(apps, schema_editor):
-    """
-    Add activity schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/{JSON_SCHEMAS_PATH}/activity.json") as activity_file:
-        schema = json.load(activity_file)
-
-    # Retrieve models from the app registry to interact with the database
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Create activity schema
-    ActivitySchema.objects.create(
-        activity=activity,
-        json_schema=schema,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    )
-
-
-def reverse_activity_schema_data(apps, schema_monitor):
-    """
-    Remove Activity schema data
-    """
-    # Retrieve models from the app registry to interact with the database
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Configuration = apps.get_model("reporting", "Configuration")
-
-    # Fetch the configuration constants
-    activity = Activity.objects.get(name=ACTIVITY)
-    valid_from = Configuration.objects.get(valid_from=VALID_FROM)
-    valid_to = Configuration.objects.get(valid_to=VALID_TO)
-
-    # Delete the schema
-    ActivitySchema.objects.get(
-        activity=activity,
-        valid_from=valid_from,
-        valid_to=valid_to,
     ).delete()
 
 
@@ -23758,37 +22896,6 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
             activity_id=Activity.objects.get(name="Electricity transmission").id
         ).values_list("id", flat=True)
     ).delete()
-
-
-#### SCHEMA DATA ####
-def init_activity_schema_data(apps, schema_monitor):
-    """
-    Add initial schema data to erc.activity_schema
-    """
-
-    cwd = os.getcwd()
-    with open(f"{cwd}/reporting/json_schemas/2024/electricity_transmission/activity.json") as gsc_st1:
-        schema = json.load(gsc_st1)
-
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    Configuration = apps.get_model("reporting", "Configuration")
-    ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(name="Electricity transmission").id,
-        json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
-        valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-    )
-
-
-def reverse_init_activity_schema_data(apps, schema_monitor):
-    """
-    Remove initial data from erc.base_schema
-    """
-    ActivitySchema = apps.get_model("reporting", "ActivityJsonSchema")
-    Activity = apps.get_model("registration", "Activity")
-    ActivitySchema.objects.filter(activity_id=Activity.objects.get(name="Electricity transmission").id).delete()
-
 
 # SOURCE TYPE
 def init_activity_source_type_schema_data(apps, schema_monitor):
@@ -25362,8 +24469,8 @@ class Migration(migrations.Migration):
             reverse_code=reverse_init_configuration_element_reporting_fields_data_general_stationary_combustion,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0009_general_stationary_combustion_data.init_activity_schema_data,
-            reverse_code=reporting.migrations.0009_general_stationary_combustion_data.reverse_init_activity_schema_data,
+            code=init_activity_schema_data,
+            reverse_code=reverse_init_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0009_general_stationary_combustion_data.init_activity_source_type_schema_data,
@@ -25378,10 +24485,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0010_combustion_for_line_tracing_data.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0010_combustion_for_line_tracing_data.init_activity_schema_data,
-            reverse_code=reporting.migrations.0010_combustion_for_line_tracing_data.reverse_init_activity_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0010_combustion_for_line_tracing_data.init_activity_source_type_schema_data,
             reverse_code=reporting.migrations.0010_combustion_for_line_tracing_data.reverse_init_activity_source_type_schema_data,
         ),
@@ -25392,10 +24495,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0011_mobile_combustion_data.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0011_mobile_combustion_data.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0011_mobile_combustion_data.init_activity_schema_data,
-            reverse_code=reporting.migrations.0011_mobile_combustion_data.reverse_init_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0011_mobile_combustion_data.init_activity_source_type_schema_data,
@@ -25410,10 +24509,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0012_gsc_other_than_non_compression.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0012_gsc_other_than_non_compression.init_activity_schema_data,
-            reverse_code=reporting.migrations.0012_gsc_other_than_non_compression.reverse_init_activity_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0012_gsc_other_than_non_compression.init_activity_source_type_schema_data,
             reverse_code=reporting.migrations.0012_gsc_other_than_non_compression.reverse_init_activity_source_type_schema_data,
         ),
@@ -25424,10 +24519,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0013_refinery_fuel_gas_data.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0013_refinery_fuel_gas_data.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0013_refinery_fuel_gas_data.init_activity_schema_data,
-            reverse_code=reporting.migrations.0013_refinery_fuel_gas_data.reverse_init_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0013_refinery_fuel_gas_data.init_activity_source_type_schema_data,
@@ -25442,10 +24533,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0014_carbonates_use.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0014_carbonates_use.init_activity_schema_data,
-            reverse_code=reporting.migrations.0014_carbonates_use.reverse_init_activity_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0014_carbonates_use.init_activity_source_type_schema_data,
             reverse_code=reporting.migrations.0014_carbonates_use.reverse_init_activity_source_type_schema_data,
         ),
@@ -25456,10 +24543,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0015_gsc_non_compression_non_processing.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0015_gsc_non_compression_non_processing.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0015_gsc_non_compression_non_processing.init_activity_schema_data,
-            reverse_code=reporting.migrations.0015_gsc_non_compression_non_processing.reverse_init_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0015_gsc_non_compression_non_processing.init_activity_source_type_schema_data,
@@ -25500,10 +24583,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0017_hydrogen_production.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0017_hydrogen_production.init_activity_schema_data,
-            reverse_code=reporting.migrations.0017_hydrogen_production.reverse_init_activity_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0017_hydrogen_production.init_activity_source_type_schema_data,
             reverse_code=reporting.migrations.0017_hydrogen_production.reverse_init_activity_source_type_schema_data,
         ),
@@ -25514,10 +24593,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0018_pulp_and_paper_production.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0018_pulp_and_paper_production.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0018_pulp_and_paper_production.init_activity_schema_data,
-            reverse_code=reporting.migrations.0018_pulp_and_paper_production.reverse_init_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0018_pulp_and_paper_production.init_activity_source_type_schema_data,
@@ -25677,10 +24752,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0024_open_pit_coal_mining.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0024_open_pit_coal_mining.init_activity_schema_data,
-            reverse_code=reporting.migrations.0024_open_pit_coal_mining.reverse_init_activity_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0024_open_pit_coal_mining.init_activity_source_type_schema_data,
             reverse_code=reporting.migrations.0024_open_pit_coal_mining.reverse_init_activity_source_type_schema_data,
         ),
@@ -25715,10 +24786,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0027_storage_of_petroleum_products.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0027_storage_of_petroleum_products.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0027_storage_of_petroleum_products.init_activity_schema_data,
-            reverse_code=reporting.migrations.0027_storage_of_petroleum_products.reverse_init_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0027_storage_of_petroleum_products.init_activity_source_type_schema_data,
@@ -25857,10 +24924,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0036_aluminum_or_alumina_production_data.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0036_aluminum_or_alumina_production_data.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0036_aluminum_or_alumina_production_data.init_activity_schema_data,
-            reverse_code=reporting.migrations.0036_aluminum_or_alumina_production_data.reverse_init_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0036_aluminum_or_alumina_production_data.init_activity_source_type_schema_data,
@@ -26167,10 +25230,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0051_natural_gas_non_compression_configuration.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0051_natural_gas_non_compression_configuration.reverse_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0051_natural_gas_non_compression_configuration.init_activity_schema_data,
-            reverse_code=reporting.migrations.0051_natural_gas_non_compression_configuration.reverse_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0051_natural_gas_non_compression_configuration.init_activity_source_type_schema_data,
@@ -26484,10 +25543,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0053_natural_gas_other_than_non_compression_configuration.reverse_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0053_natural_gas_other_than_non_compression_configuration.init_activity_schema_data,
-            reverse_code=reporting.migrations.0053_natural_gas_other_than_non_compression_configuration.reverse_activity_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0053_natural_gas_other_than_non_compression_configuration.init_activity_source_type_schema_data,
             reverse_code=reporting.migrations.0053_natural_gas_other_than_non_compression_configuration.reverse_activity_source_type_schema_data,
         ),
@@ -26503,10 +25558,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0055_liquefied_natural_gas.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0055_liquefied_natural_gas.reverse_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0055_liquefied_natural_gas.init_activity_schema_data,
-            reverse_code=reporting.migrations.0055_liquefied_natural_gas.reverse_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0055_liquefied_natural_gas.init_activity_source_type_schema_data,
@@ -26720,10 +25771,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0059_og_extraction_non_compression_non_processing.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0059_og_extraction_non_compression_non_processing.init_activity_schema_data,
-            reverse_code=reporting.migrations.0059_og_extraction_non_compression_non_processing.reverse_init_activity_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0059_og_extraction_non_compression_non_processing.init_activity_source_type_schema_data,
             reverse_code=reporting.migrations.0059_og_extraction_non_compression_non_processing.reverse_init_activity_source_type_schema_data,
         ),
@@ -26734,10 +25781,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0060_og_extraction_other_than_non_compression.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0060_og_extraction_other_than_non_compression.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0060_og_extraction_other_than_non_compression.init_activity_schema_data,
-            reverse_code=reporting.migrations.0060_og_extraction_other_than_non_compression.reverse_init_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0060_og_extraction_other_than_non_compression.init_activity_source_type_schema_data,
@@ -26760,10 +25803,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0061_electricity_generation.reverse_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0061_electricity_generation.init_activity_schema_data,
-            reverse_code=reporting.migrations.0061_electricity_generation.reverse_activity_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0061_electricity_generation.init_activity_source_type_schema_data,
             reverse_code=reporting.migrations.0061_electricity_generation.reverse_activity_source_type_schema_data,
         ),
@@ -26774,10 +25813,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0062_industrial_water_processing.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0062_industrial_water_processing.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0062_industrial_water_processing.init_activity_schema_data,
-            reverse_code=reporting.migrations.0062_industrial_water_processing.reverse_init_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0062_industrial_water_processing.init_activity_source_type_schema_data,
@@ -26796,10 +25831,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0063_cement_production.reverse_init_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0063_cement_production.init_activity_schema_data,
-            reverse_code=reporting.migrations.0063_cement_production.reverse_init_activity_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0063_cement_production.init_activity_source_type_schema_data,
             reverse_code=reporting.migrations.0063_cement_production.reverse_init_activity_source_type_schema_data,
         ),
@@ -26814,10 +25845,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0064_lime_manufacturing.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0064_lime_manufacturing.reverse_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0064_lime_manufacturing.init_activity_schema_data,
-            reverse_code=reporting.migrations.0064_lime_manufacturing.reverse_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0064_lime_manufacturing.init_activity_source_type_schema_data,
@@ -26836,10 +25863,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0065_coal_storage.reverse_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0065_coal_storage.init_activity_schema_data,
-            reverse_code=reporting.migrations.0065_coal_storage.reverse_activity_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0065_coal_storage.init_activity_source_type_schema_data,
             reverse_code=reporting.migrations.0065_coal_storage.reverse_activity_source_type_schema_data,
         ),
@@ -26856,10 +25879,6 @@ class Migration(migrations.Migration):
             reverse_code=reporting.migrations.0066_zinc_production.reverse_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(
-            code=reporting.migrations.0066_zinc_production.init_activity_schema_data,
-            reverse_code=reporting.migrations.0066_zinc_production.reverse_activity_schema_data,
-        ),
-        migrations.RunPython(
             code=reporting.migrations.0066_zinc_production.init_activity_source_type_schema_data,
             reverse_code=reporting.migrations.0066_zinc_production.reverse_activity_source_type_schema_data,
         ),
@@ -26870,10 +25889,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0067_petroleum_refining.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0067_petroleum_refining.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0067_petroleum_refining.init_activity_schema_data,
-            reverse_code=reporting.migrations.0067_petroleum_refining.reverse_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0067_petroleum_refining.init_activity_source_type_schema_data,
@@ -26890,10 +25905,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0068_lead_production.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0068_lead_production.reverse_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0068_lead_production.init_activity_schema_data,
-            reverse_code=reporting.migrations.0068_lead_production.reverse_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0068_lead_production.init_activity_source_type_schema_data,
@@ -27815,10 +26826,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=reporting.migrations.0109_electricity_transmission.init_configuration_element_reporting_fields_data,
             reverse_code=reporting.migrations.0109_electricity_transmission.reverse_init_configuration_element_reporting_fields_data,
-        ),
-        migrations.RunPython(
-            code=reporting.migrations.0109_electricity_transmission.init_activity_schema_data,
-            reverse_code=reporting.migrations.0109_electricity_transmission.reverse_init_activity_schema_data,
         ),
         migrations.RunPython(
             code=reporting.migrations.0109_electricity_transmission.init_activity_source_type_schema_data,
