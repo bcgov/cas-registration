@@ -232,8 +232,6 @@ class ComplianceService:
                 compliance_period=industry_regulatory_values.compliance_period,
             )
 
-            print(f'-Emission Limit for {rp.product.name}: {product_emission_limit}.   - Total {emissions_limit_total}')
-
             # Add individual product amounts to totals
             total_allocated_reporting_only += allocated_reporting_only
             # Accumulate into the default (full-year) allocated total
@@ -286,7 +284,6 @@ class ComplianceService:
                 credited_emissions = emissions_limit_total - total_allocated_for_compliance_used
 
         # Craft return object with all data
-        # TODO: update
         return_object = ComplianceData(
             emissions_attributable_for_reporting=attributable_for_reporting_total,
             reporting_only_emissions=round(total_allocated_reporting_only, 4),

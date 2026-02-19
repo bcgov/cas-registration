@@ -38,13 +38,6 @@ def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
     # Subtract the sum of emissions that were categorized as industrial_process & (woody_biomass or other_excluded_biomass) from
     # the industrial_process emission total attributed to the product "Pulp and paper: chemical pulp".
 
-    """
-    TODO
-    This is where we need to:
-    - for chemical pulp, take the (industrial process for chem pulp + lime recovery kikn) overlapping * percentage associated and remove from industrial process
-    - for lime recovered by kiln, take the overlapping * percentage associated and remove from industrial process
-    """
-
     if (
         rp.report_version.report.operation.naics_code
         and rp.report_version.report.operation.naics_code.naics_code.startswith("322112")
