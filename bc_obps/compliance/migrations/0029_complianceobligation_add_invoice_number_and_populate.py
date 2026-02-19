@@ -15,7 +15,7 @@ def populate_invoice_number_for_existing_obligation_records(apps, schema_editor)
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0027_V5_1_0'),
+        ('compliance', '0028_V5_2_0'),
     ]
 
     operations = [
