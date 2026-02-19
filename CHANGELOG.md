@@ -1,3 +1,17 @@
+# [5.2.0](https://github.com/bcgov/cas-registration/compare/5.1.0...5.2.0) (2026-02-19)
+
+### Bug Fixes
+
+- add error handling and encapsulate pgtrigger disable/enable logic in custom_migrate command ([02f1d65](https://github.com/bcgov/cas-registration/commit/02f1d6596c0a5d779c0a83ff966fdc18c7f9cbc0))
+- add merge_group sha to happo skip ([d304719](https://github.com/bcgov/cas-registration/commit/d304719d8b675be72dde3399a37dcaaab15d871e))
+- create manual handling supp decrease report if prev report increased emission with void + adjustment ([a48b5ce](https://github.com/bcgov/cas-registration/commit/a48b5cef49760583673764b14fdd33772797aa09))
+- remove next-runtime-env to resolve vulnerability ([b4d1c4a](https://github.com/bcgov/cas-registration/commit/b4d1c4a6fed3d1d62a1d013e54a483f97cce0efb)), closes [#195](https://github.com/bcgov/cas-registration/issues/195) [#196](https://github.com/bcgov/cas-registration/issues/196)
+- update broken bccr api - unit list ([86fc69f](https://github.com/bcgov/cas-registration/commit/86fc69f0f268a5680908c37fc2e931c9a165b245))
+
+### Features
+
+- adding new pulp and paper lime recovery kiln product ([994fea1](https://github.com/bcgov/cas-registration/commit/994fea1ab564d36eb4aa10fef687638623593bfe))
+
 # [5.1.0](https://github.com/bcgov/cas-registration/compare/5.0.1...5.1.0) (2026-02-04)
 
 ### Bug Fixes
