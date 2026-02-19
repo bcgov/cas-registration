@@ -1,3 +1,5 @@
+import { sumWithPrecision } from "@reporting/src/app/utils/numberUtils";
+
 export const calculateMobileAnnualAmount = (formData: any) => {
   const mobileUnit = formData?.sourceTypes?.mobileFuelCombustionPartOfFacility;
   if (!mobileUnit || !mobileUnit.fuels) return;
@@ -22,20 +24,18 @@ export const calculateBiogenicTotalAllocated = (formData: any) => {
 
   if (!biogenic) return;
 
-  // Only calculate if lime recovery kiln is used and scheduleC exists
-  if (biogenic.doesUtilizeLimeRecoveryKiln && biogenic.scheduleC) {
-    // Initialize totalAllocated if it doesn't exist
-    if (biogenic.scheduleC.totalAllocated === undefined) {
-      biogenic.scheduleC.totalAllocated = 0;
-    }
-
-    const chemical = Number(biogenic.scheduleC.chemicalPulpAmount) || 0;
-    const lime = Number(biogenic.scheduleC.limeRecoveredByKilnAmount) || 0;
-
-    // Update the total field automatically
-    biogenic.scheduleC.totalAllocated = chemical + lime;
-  } else if (biogenic.scheduleC) {
-    // Set to 0 when not using lime recovery kiln
-    biogenic.scheduleC.totalAllocated = 0;
+  if (biogenic.doesUtilizeLimeRecoveryKiln && biogenic.biogenicEmissionsSplit) {
+    const chemical =
+      Number(biogenic.biogenicEmissionsSplit.chemicalPulpPercentage) || 0;
+    const lime =
+      Number(biogenic.biogenicEmissionsSplit.limeRecoveredByKilnPercentage) ||
+      0;
+    biogenic.biogenicEmissionsSplit.totalAllocated = sumWithPrecision(
+      chemical,
+      lime,
+    );
+  } else if (biogenic.biogenicEmissionsSplit) {
+    // Kiln not utilized — clear any stale totalAllocated
+    delete biogenic.biogenicEmissionsSplit.totalAllocated;
   }
 };

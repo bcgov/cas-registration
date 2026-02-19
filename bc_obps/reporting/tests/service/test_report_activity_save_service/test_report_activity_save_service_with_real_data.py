@@ -17,7 +17,6 @@ from reporting.tests.service.test_report_activity_save_service.infrastructure im
     get_report_unit_by_index,
 )
 from django.core.exceptions import ValidationError
-from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
 
 
 class TestReportActivitySaveService(TestCase):
@@ -67,12 +66,11 @@ class TestReportActivitySaveService(TestCase):
 
         assert report_source_types.count() == 2
 
-        valid_date = get_report_valid_date_from_version_id(test_infrastructure.report_version.id)
         assert report_source_types[0].activity_source_type_base_schema == ActivitySourceTypeJsonSchema.objects.get(
             activity=Activity.objects.get(slug='gsc_non_compression'),
             source_type=SourceType.objects.get(json_key="gscFuelOrWasteLinearFacilitiesUsefulEnergy"),
-            valid_from__valid_from__lte=valid_date,
-            valid_to__valid_to__gte=valid_date,
+            valid_from__valid_from__lte=test_infrastructure.configuration.valid_from,
+            valid_to__valid_to__gte=test_infrastructure.configuration.valid_to,
         )
         assert report_source_types[0].source_type == SourceType.objects.get(
             json_key="gscFuelOrWasteLinearFacilitiesUsefulEnergy"
@@ -86,8 +84,8 @@ class TestReportActivitySaveService(TestCase):
         assert report_source_types[1].activity_source_type_base_schema == ActivitySourceTypeJsonSchema.objects.get(
             activity=Activity.objects.get(slug='gsc_non_compression'),
             source_type=SourceType.objects.get(json_key="fieldProcessVentGasLinearFacilities"),
-            valid_from__valid_from__lte=valid_date,
-            valid_to__valid_to__gte=valid_date,
+            valid_from__valid_from__lte=test_infrastructure.configuration.valid_from,
+            valid_to__valid_to__gte=test_infrastructure.configuration.valid_to,
         )
         assert report_source_types[1].source_type == SourceType.objects.get(
             json_key="fieldProcessVentGasLinearFacilities"

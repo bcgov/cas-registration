@@ -109,10 +109,11 @@ export default function ActivityForm({
   };
 
   const handleFormChange = async (c: { formData: Dict }) => {
-    const selectedSourceTypes = [];
+    const newFormData: Dict = { ...c.formData };
+    const selectedSourceTypes: string[] = [];
     // Checks for a change in source type selection & fetches the updated schema if they have changed.
     for (const [k, v] of Object.entries(sourceTypeMap)) {
-      if (c.formData[`${v}`]) selectedSourceTypes.push(k);
+      if (newFormData[`${v}`]) selectedSourceTypes.push(k);
     }
     if (!arrayEquals(selectedSourceTypes, selectedSourceTypeIds)) {
       const schemaData = await fetchSchemaData(selectedSourceTypes);
@@ -125,15 +126,14 @@ export default function ActivityForm({
     }
 
     // Add together quarterly amounts for Fuel Combustion by Mobile Equipment
-    if (c.formData?.sourceTypes?.mobileFuelCombustionPartOfFacility)
-      calculateMobileAnnualAmount(c.formData);
+    if (newFormData?.sourceTypes?.mobileFuelCombustionPartOfFacility)
+      calculateMobileAnnualAmount(newFormData);
 
     // Calculate total allocated for biogenic industrial process emissions
-    if (c.formData?.biogenicIndustrialProcessEmissions)
-      calculateBiogenicTotalAllocated(c.formData);
+    if (newFormData?.biogenicIndustrialProcessEmissions)
+      calculateBiogenicTotalAllocated(newFormData);
 
-    // Use structuredClone to create a deep copy to ensure React detects nested changes
-    setFormState(structuredClone(c.formData));
+    setFormState(newFormData);
   };
 
   // 🛠️ Function to submit user form data to API
