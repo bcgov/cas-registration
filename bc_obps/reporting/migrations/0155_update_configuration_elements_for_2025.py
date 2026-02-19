@@ -35,7 +35,7 @@ def reverse_update_configuration_elements(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0153_create_2025_configuration'),
+        ('reporting', '0154_create_2025_configuration'),
     ]
 
     operations = [

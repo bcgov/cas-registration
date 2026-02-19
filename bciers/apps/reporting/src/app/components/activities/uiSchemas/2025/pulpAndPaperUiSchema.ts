@@ -2,12 +2,11 @@ import MethodologyFieldTemplate from "@bciers/components/form/fields/Methodology
 import {
   FieldTemplate,
   InlineFieldTemplate,
-  GreyBoxWithLinkFieldTemplate,
 } from "@bciers/components/form/fields";
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import { RadioWidget } from "@bciers/components/form/widgets";
-import { sectionCUrl } from "@reporting/src/app/utils/constants";
+import BiogenicEmissionsSplitFieldTemplate from "@bciers/components/form/fields/BiogenicEmissionsSplitFieldTemplate";
 
 const pulpAndPaperUiSchema2025 = {
   "ui:FieldTemplate": FieldTemplate,
@@ -29,32 +28,25 @@ const pulpAndPaperUiSchema2025 = {
       label: true,
       title: "Biogenic Industrial Process Emissions",
     },
-    "ui:order": ["doesUtilizeLimeRecoveryKiln", "scheduleC"],
+    "ui:order": ["doesUtilizeLimeRecoveryKiln", "biogenicEmissionsSplit"],
     doesUtilizeLimeRecoveryKiln: {
       "ui:widget": RadioWidget,
       "ui:options": {
         inline: true,
       },
     },
-    scheduleC: {
-      "ui:FieldTemplate": GreyBoxWithLinkFieldTemplate,
-      "ui:options": {
-        label: true,
-        padding: "p-2",
-        bgColor: "#f2f2f2",
-        linkUrl: sectionCUrl,
-        linkText: "Schedule C)",
-      },
+    biogenicEmissionsSplit: {
+      "ui:FieldTemplate": BiogenicEmissionsSplitFieldTemplate,
       "ui:order": [
-        "chemicalPulpAmount",
-        "limeRecoveredByKilnAmount",
+        "chemicalPulpPercentage",
+        "limeRecoveredByKilnPercentage",
         "totalAllocated",
       ],
-      chemicalPulpAmount: {
+      chemicalPulpPercentage: {
         "ui:FieldTemplate": InlineFieldTemplate,
         "ui:emptyValue": undefined,
       },
-      limeRecoveredByKilnAmount: {
+      limeRecoveredByKilnPercentage: {
         "ui:FieldTemplate": InlineFieldTemplate,
         "ui:emptyValue": undefined,
       },

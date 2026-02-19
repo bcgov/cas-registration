@@ -1,36 +1,52 @@
 import { FormValidation } from "@rjsf/utils";
+import { sumWithPrecision } from "@reporting/src/app/utils/numberUtils";
 
 export const validateBiogenicTotalAllocated = (
   formData: any,
   errors: FormValidation,
 ): void => {
   const biogenic = formData?.biogenicIndustrialProcessEmissions;
-  if (biogenic?.doesUtilizeLimeRecoveryKiln && biogenic?.scheduleC) {
-    const chemical = Number(biogenic.scheduleC.chemicalPulpAmount) || 0;
-    const lime = Number(biogenic.scheduleC.limeRecoveredByKilnAmount) || 0;
-    const total = chemical + lime;
+  if (
+    biogenic?.doesUtilizeLimeRecoveryKiln &&
+    biogenic?.biogenicEmissionsSplit
+  ) {
+    const FLOATING_POINT_PRECISION_FACTOR = 10000;
 
-    if (total > 100) {
+    const chemical =
+      (Number(biogenic.biogenicEmissionsSplit.chemicalPulpPercentage) || 0) *
+      FLOATING_POINT_PRECISION_FACTOR;
+    const lime =
+      (Number(biogenic.biogenicEmissionsSplit.limeRecoveredByKilnPercentage) ||
+        0) * FLOATING_POINT_PRECISION_FACTOR;
+    const total = sumWithPrecision(chemical, lime);
+
+    if (total !== 100) {
       // Add error to prevent form submission
       if (!(errors as any).biogenicIndustrialProcessEmissions) {
         (errors as any).biogenicIndustrialProcessEmissions = {};
       }
-      if (!(errors as any).biogenicIndustrialProcessEmissions.scheduleC) {
-        (errors as any).biogenicIndustrialProcessEmissions.scheduleC = {};
-      }
       if (
-        !(errors as any).biogenicIndustrialProcessEmissions.scheduleC
-          .totalAllocated
+        !(errors as any).biogenicIndustrialProcessEmissions
+          .biogenicEmissionsSplit
       ) {
         (
           errors as any
-        ).biogenicIndustrialProcessEmissions.scheduleC.totalAllocated = {
-          __errors: [],
-        };
+        ).biogenicIndustrialProcessEmissions.biogenicEmissionsSplit = {};
+      }
+      if (
+        !(errors as any).biogenicIndustrialProcessEmissions
+          .biogenicEmissionsSplit.totalAllocated
+      ) {
+        (
+          errors as any
+        ).biogenicIndustrialProcessEmissions.biogenicEmissionsSplit.totalAllocated =
+          {
+            __errors: [],
+          };
       }
       (
         errors as any
-      ).biogenicIndustrialProcessEmissions.scheduleC.totalAllocated.__errors.push(
+      ).biogenicIndustrialProcessEmissions.biogenicEmissionsSplit.totalAllocated.__errors.push(
         "The total allocation must add up to 100%",
       );
     }
