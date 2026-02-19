@@ -96,44 +96,51 @@ class ElicensingObligationService:
             retryable_notice_of_supplementary_report_post_deadline_increases_emissions,
         )
 
+        # Validate the obligation exists
         obligation = ComplianceObligation.objects.get(id=obligation_id)
+
+        # Ensure client exists in eLicensing
+        client_operator = ElicensingOperatorService.sync_client_with_elicensing(
+            obligation.compliance_report_version.compliance_report.report.operator_id
+        )
+
+        # Create fee in eLicensing
+        fee_data = cls._map_obligation_to_fee_data(obligation)
+        fee_response = elicensing_api_client.create_fees(
+            client_operator.client_object_id, FeeCreationRequest(fees=[FeeCreationItem(**fee_data)])
+        )
+
+        # Create invoice in eLicensing
+        invoice_data = cls._map_obligation_to_invoice_data(obligation, fee_response.fees[0].feeObjectId)
+
+        vancouver_timezone = ZoneInfo("America/Vancouver")
+        obligation_created_date = obligation.created_at.astimezone(vancouver_timezone).date()  # type: ignore[union-attr]
+        # Set the invoice due date to 30 days past date of obligation creation if the compliance period's deadline has passed
+        if (
+            obligation_created_date
+            > obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
+        ):
+            invoice_data["paymentDueDate"] = (obligation_created_date + timedelta(days=30)).strftime("%Y-%m-%d")
+
+        # Only create an invoice in elicensing if obligation.invoice_number does not exist (invoice has not been created in elicensing)
+        # Guards against duplicate invoice creation when retrying this function due to a failure later in the execution chain
+        if not obligation.invoice_number:
+            invoice_response = elicensing_api_client.create_invoice(
+                client_operator.client_object_id, InvoiceCreationRequest(**invoice_data)
+            )
+            # Set obligation.invoice_number when invoice successfully created in elicensing
+            obligation.invoice_number = invoice_response.invoiceNumber
+            obligation.save()
+            obligation.refresh_from_db()
+
         try:
             with transaction.atomic():
-                # Validate the obligation exists
-                obligation = ComplianceObligation.objects.get(id=obligation_id)
-
-                # Ensure client exists in eLicensing
-                client_operator = ElicensingOperatorService.sync_client_with_elicensing(
-                    obligation.compliance_report_version.compliance_report.report.operator_id
-                )
-
-                # Create fee in eLicensing
-                fee_data = cls._map_obligation_to_fee_data(obligation)
-                fee_response = elicensing_api_client.create_fees(
-                    client_operator.client_object_id, FeeCreationRequest(fees=[FeeCreationItem(**fee_data)])
-                )
-
-                # Create invoice in eLicensing
-                invoice_data = cls._map_obligation_to_invoice_data(obligation, fee_response.fees[0].feeObjectId)
-
-                vancouver_timezone = ZoneInfo("America/Vancouver")
-                obligation_created_date = obligation.created_at.astimezone(vancouver_timezone).date()  # type: ignore[union-attr]
-                # Set the invoice due date to 30 days past date of obligation creation if the compliance period's deadline has passed
-                if (
-                    obligation_created_date
-                    > obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
-                ):
-                    invoice_data["paymentDueDate"] = (obligation_created_date + timedelta(days=30)).strftime("%Y-%m-%d")
-
-                invoice_response = elicensing_api_client.create_invoice(
-                    client_operator.client_object_id, InvoiceCreationRequest(**invoice_data)
-                )
 
                 # Create data in BCIERS database
                 ElicensingDataRefreshService.refresh_data_by_invoice(
-                    client_operator_id=client_operator.id, invoice_number=invoice_response.invoiceNumber
+                    client_operator_id=client_operator.id, invoice_number=obligation.invoice_number
                 )
-                invoice_record = ElicensingInvoice.objects.get(invoice_number=invoice_response.invoiceNumber)
+                invoice_record = ElicensingInvoice.objects.get(invoice_number=obligation.invoice_number)
                 obligation.elicensing_invoice = invoice_record
                 obligation.save()
 
