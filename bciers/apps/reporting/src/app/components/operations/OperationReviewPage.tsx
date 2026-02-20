@@ -48,6 +48,7 @@ export default async function OperationReviewPage({
       allRepresentatives={data.all_representatives}
       facilityId={data.facility_id}
       isSyncAllowed={isSyncAllowed}
+      activitiesWithData={data.selected_activities}
     />
   );
 }

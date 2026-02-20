@@ -38,6 +38,7 @@ interface Props {
   allRepresentatives: ReportOperationRepresentative[];
   facilityId: string;
   isSyncAllowed: boolean;
+  activitiesWithData: number[];
 }
 
 export default function OperationReviewForm({
@@ -52,9 +53,19 @@ export default function OperationReviewForm({
   allRepresentatives,
   facilityId,
   isSyncAllowed,
+  activitiesWithData,
 }: Props) {
-  const [pendingChangeReportType, setPendingChangeReportType] =
-    useState<string>();
+  type ModalConfig = {
+    title: string;
+    confirmText: string;
+    content: React.ReactNode;
+    onConfirm: () => void;
+    onCancel: () => void;
+  };
+
+  const [activeModal, setActiveModal] = useState<ModalConfig | undefined>();
+
+  const closeModal = () => setActiveModal(undefined);
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [pageSchema, setPageSchema] = useState(schema);
   const [hasReps, setHasReps] = useState(allRepresentatives.length > 0);
@@ -90,12 +101,80 @@ export default function OperationReviewForm({
 
   const onChangeHandler = (data: { formData: any }) => {
     const updatedFormData = data.formData;
+
     if (
       updatedFormData?.operation_report_type !== undefined &&
       updatedFormData?.operation_report_type !==
         formDataState?.operation_report_type
     ) {
-      setPendingChangeReportType(updatedFormData.operation_report_type);
+      setActiveModal({
+        title: "Confirmation",
+        confirmText: "Change report type",
+        content: (
+          <>
+            Are you sure you want to change your report type to{" "}
+            <strong>{updatedFormData.operation_report_type}</strong>? If you
+            proceed, all of the form data you have entered will be lost.
+          </>
+        ),
+        onConfirm: async () => {
+          const response = await actionHandler(
+            `reporting/report-version/${version_id}/change-report-type`,
+            "POST",
+            "",
+            {
+              body: JSON.stringify({
+                report_type: updatedFormData.operation_report_type,
+              }),
+            },
+          );
+          if (response && !response.error) {
+            router.push(`/reports/${response}/review-operation-information`);
+          } else {
+            setApiError("Failed to change the report type. Please try again.");
+          }
+          closeModal();
+        },
+        onCancel: () => {
+          setFormDataState(formData);
+          setApiError(null);
+          closeModal();
+        },
+      });
+      return;
+    }
+
+    // Detect deselected activities
+    const previousActivities: number[] = formDataState?.activities ?? [];
+    const updatedActivities: number[] = updatedFormData?.activities ?? [];
+
+    const deselectedActivities = previousActivities.filter(
+      (id) => !updatedActivities.includes(id),
+    );
+
+    if (deselectedActivities.length > 0) {
+      const deselectedWithData = deselectedActivities.find((id) =>
+        (activitiesWithData ?? []).includes(id),
+      );
+
+      if (deselectedWithData !== undefined) {
+        const previousState = formDataState;
+        setActiveModal({
+          title: "Confirmation",
+          confirmText: "Remove Activity",
+          content:
+            "Are you sure you want to remove this activity? If you proceed, all of the form data you have entered will be lost.",
+          onConfirm: () => {
+            setFormDataState(updatedFormData);
+            closeModal();
+          },
+          onCancel: () => {
+            setFormDataState({ ...previousState });
+            closeModal();
+          },
+        });
+        return;
+      }
     }
 
     setFormDataState(updatedFormData);
@@ -146,26 +225,6 @@ export default function OperationReviewForm({
     formData.operation_name,
   );
 
-  const confirmReportTypeChange = async () => {
-    const method = "POST";
-    const endpoint = `reporting/report-version/${version_id}/change-report-type`;
-    const response = await actionHandler(endpoint, method, "", {
-      body: JSON.stringify({ report_type: pendingChangeReportType }),
-    });
-
-    if (response && !response.error) {
-      router.push(`/reports/${response}/review-operation-information`);
-    } else {
-      setApiError("Failed to change the report type. Please try again.");
-    }
-  };
-
-  const cancelReportTypeChange = () => {
-    setFormDataState(formData);
-    setApiError(null);
-    setPendingChangeReportType(undefined);
-  };
-
   // Regulated product IDs 16 and 43 are the Pulp and paper: chemical pulp
   // and Pulp and paper: lime recovered by kiln, respectively
   const selectedProductIds: number[] = formDataState.regulated_products;
@@ -176,20 +235,16 @@ export default function OperationReviewForm({
   return (
     <>
       <SimpleModal
-        title="Confirmation"
-        open={pendingChangeReportType !== undefined}
-        onCancel={cancelReportTypeChange}
-        onConfirm={confirmReportTypeChange}
-        confirmText="Change report type"
+        title={activeModal?.title ?? ""}
+        open={activeModal !== undefined}
+        onCancel={activeModal?.onCancel ?? closeModal}
+        onConfirm={activeModal?.onConfirm ?? closeModal}
+        confirmText={activeModal?.confirmText}
       >
         {apiError ? (
           <div style={{ color: "red" }}>{apiError}</div>
         ) : (
-          <>
-            Are you sure you want to change your report type to{" "}
-            <strong>{pendingChangeReportType}</strong>? If you proceed, all of
-            the form data you have entered will be lost.
-          </>
+          activeModal?.content
         )}
       </SimpleModal>
       <MultiStepFormWithTaskList
