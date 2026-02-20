@@ -28,7 +28,6 @@
                 "doesUtilizeLimeRecoveryKiln": { "const": true },
                 "biogenicEmissionsSplit": {
                   "type": "object",
-                  "title": "Enter the proportion of industrial process emissions that are biogenic (emissions from biomass listed in",
                   "properties": {
                     "chemicalPulpPercentage": {
                       "type": "number",
