@@ -57,7 +57,7 @@
             "minimum": 0
           },
           "annualFuelAmount": {
-            "title": "Annual Fuel Amount",
+            "title": "Annual Fuel Amount (fuel unit)",
             "type": "number",
             "minimum": 0,
             "readOnly": true,
@@ -80,7 +80,7 @@
                   "minimum": 0
                 },
                 "equivalentEmission": {
-                  "title": "Equivalent Emission",
+                  "title": "Equivalent Emissions (tCO2e)",
                   "type": "number",
                   "readOnly": true,
                   "description": "Computed upon saving"
