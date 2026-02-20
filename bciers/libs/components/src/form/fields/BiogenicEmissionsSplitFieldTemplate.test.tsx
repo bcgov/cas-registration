@@ -2,7 +2,6 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { FieldTemplateProps } from "@rjsf/utils";
 import BiogenicEmissionsSplitFieldTemplate from "./BiogenicEmissionsSplitFieldTemplate";
-import { scheduleCUrl } from "@reporting/src/app/utils/constants";
 
 const buildProps = (
   overrides: Partial<FieldTemplateProps> = {},
@@ -34,7 +33,10 @@ describe("BiogenicEmissionsSplitFieldTemplate", () => {
     render(<BiogenicEmissionsSplitFieldTemplate {...buildProps()} />);
     const link = screen.getByRole("link", { name: "Schedule C" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", scheduleCUrl);
+    expect(link).toHaveAttribute(
+      "href",
+      "https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleC",
+    );
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
@@ -44,7 +46,9 @@ describe("BiogenicEmissionsSplitFieldTemplate", () => {
       <BiogenicEmissionsSplitFieldTemplate {...buildProps()} />,
     );
     const titleDiv = container.querySelector(".font-semibold");
-    expect(titleDiv?.textContent).toMatch(/Schedule C\s*\)\.$/);
+    expect(titleDiv?.textContent).toMatch(
+      /Enter the proportion of industrial process emissions that are biogenic \(emissions from biomass listed in Schedule C\)./,
+    );
   });
 
   it("renders children", () => {

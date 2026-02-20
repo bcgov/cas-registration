@@ -10,4 +10,4 @@ export const POTENTIAL_REPORTING_OPERATION = "Potential Reporting Operation";
 export const SIMPLE_REPORT = "Simple Report";
 export const ANNUAL_REPORT = "Annual Report";
 export const scheduleCUrl =
-  "https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#Schedulec";
+  "https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleC";

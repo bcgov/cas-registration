@@ -317,24 +317,13 @@ describe("validateEmissionsMethodology", () => {
 describe("validateBiogenicTotalAllocated", () => {
   describe("when lime recovery kiln is utilized", () => {
     test.each([
-      // [description, chemicalPulpPercentage, limeRecoveredByKilnPercentage, expectError]
-      ["total 110 (>100)", 60, 50, true],
-      ["total 101", 51, 50, true],
-      ["total 100 (exactly)", 60, 40, false],
-      ["total 70 (<100)", 30, 40, true],
-      ["string values summing >100", "60", "50", true],
-      ["null/undefined both resolve to 0", null, undefined, false],
-      ["floating point summing to 100 (33.33 + 66.67)", 33.33, 66.67, false],
-      ["floating point exceeding 100 (50.5 + 50.5)", 50.5, 50.5, true],
-      ["floating point under 100 (33.33 + 33.34)", 33.33, 33.34, true],
+      // [description, chemicalPulpPercentage, limeRecoveredByKilnPercentage]
+      ["total 100 (exactly)", 60, 40],
+      ["null/undefined both resolve to 0", null, undefined],
+      ["floating point summing to 100 (33.33 + 66.67)", 33.33, 66.67],
     ])(
-      "%s",
-      (
-        _name,
-        chemicalPulpPercentage,
-        limeRecoveredByKilnPercentage,
-        expectError,
-      ) => {
+      "no error reported for %s",
+      (_name, chemicalPulpPercentage, limeRecoveredByKilnPercentage) => {
         const formData: any = {
           biogenicIndustrialProcessEmissions: {
             doesUtilizeLimeRecoveryKiln: true,
@@ -348,14 +337,38 @@ describe("validateBiogenicTotalAllocated", () => {
         const errors: any = { __errors: [] };
         validateBiogenicTotalAllocated(formData, errors);
 
-        if (expectError) {
-          expect(
-            errors.biogenicIndustrialProcessEmissions.biogenicEmissionsSplit
-              .totalAllocated.__errors,
-          ).toContain("The total allocation must add up to 100%");
-        } else {
-          expect(errors.biogenicIndustrialProcessEmissions).toBeUndefined();
-        }
+        expect(errors.biogenicIndustrialProcessEmissions).toBeUndefined();
+      },
+    );
+
+    test.each([
+      // [description, chemicalPulpPercentage, limeRecoveredByKilnPercentage]
+      ["total 110 (>100)", 60, 50],
+      ["total 101", 51, 50],
+      ["total 70 (<100)", 30, 40],
+      ["string values summing >100", "60", "50"],
+      ["floating point exceeding 100 (50.5 + 50.5)", 50.5, 50.5],
+      ["floating point under 100 (33.33 + 33.34)", 33.33, 33.34],
+    ])(
+      "errors reported for %s",
+      (_name, chemicalPulpPercentage, limeRecoveredByKilnPercentage) => {
+        const formData: any = {
+          biogenicIndustrialProcessEmissions: {
+            doesUtilizeLimeRecoveryKiln: true,
+            biogenicEmissionsSplit: {
+              chemicalPulpPercentage,
+              limeRecoveredByKilnPercentage,
+            },
+          },
+        };
+
+        const errors: any = { __errors: [] };
+        validateBiogenicTotalAllocated(formData, errors);
+
+        expect(
+          errors.biogenicIndustrialProcessEmissions.biogenicEmissionsSplit
+            .totalAllocated.__errors,
+        ).toContain("The total allocation must add up to 100%");
       },
     );
   });
