@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from decimal import Decimal
 import logging
+from registration.models.activity import Activity
+from reporting.models.report_activity import ReportActivity
 from reporting.models.report_product import ReportProduct
 from reporting.service.compliance_service.emission_allocation import (
     get_allocated_emissions_by_report_product_emission_category,
@@ -21,11 +23,29 @@ class BiogenicEmissionsSplit:
 
 
 def retrieve_pulp_and_paper_biogenic_emissions_split(report_version_id: int) -> BiogenicEmissionsSplit:
-    logger.error("Biogenic emissions split should be retrieved from the database instead.")
-    """
-    TODO: When #965 is implemented, update fetching that data from the ReportActivity record.
-    """
-    return BiogenicEmissionsSplit(chemical_pulp_ratio=Decimal('0.4'), lime_recovery_kiln_ratio=Decimal('0.6'))
+    # return BiogenicEmissionsSplit(chemical_pulp_ratio=Decimal('0.4'), lime_recovery_kiln_ratio=Decimal('0.6'))
+
+    try:
+        report_activity = ReportActivity.objects.get(
+            report_version_id=report_version_id, activity=Activity.objects.get(slug='pulp_and_paper')
+        )
+    except ReportActivity.DoesNotExist:
+        raise ReportActivity.DoesNotExist(
+            'Under NAICS code 322112, there must be biogenic industrial process emission details reported under the "Pulp and Paper production" activity.'
+        )
+
+    try:
+        if not report_activity.json_data["biogenicIndustrialProcessEmissions"]["doesUtilizeLimeRecoveryKiln"]:
+            raise ValueError("When ")
+
+        split_data = report_activity.json_data["biogenicIndustrialProcessEmissions"]["biogenicEmissionsSplit"]
+        return BiogenicEmissionsSplit(
+            split_data["chemicalPulpPercentage"] / 100.0, split_data["limeRecoveredByKilnPercentage"] / 100.0
+        )
+
+    except KeyError:
+        # Issues with the format
+        raise KeyError("Biogenic industrial process emissions details reported under the Pulp and paper activity ")
 
 
 def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
