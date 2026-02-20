@@ -158,7 +158,7 @@ const OperationInformationForm = ({
     const response = await actionHandler(
       isCreating ? postEndpoint : putEndpoint,
       isCreating ? "POST" : "PUT",
-      "",
+      isCreating ? "POST" : "PUT",
       {
         body,
       },
