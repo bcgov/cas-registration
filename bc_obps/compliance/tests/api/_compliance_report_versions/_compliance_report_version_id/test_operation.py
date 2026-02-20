@@ -2,6 +2,7 @@ from unittest.mock import patch
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 
 VALIDATE_VERSION_OWNERSHIP_PATH = "compliance.api.permissions._validate_version_ownership_in_url"
 
@@ -16,30 +17,15 @@ class TestReportOperationByComplianceReportVersionEndpoint(CommonTestSetup):
 
     def test_successful_report_operation_retrieval(self):
         # Arrange
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
-        operation = make_recipe(
-            'registration.tests.utils.operation', name='admin name', operator=approved_user_operator.operator
+        test_data = ComplianceTestHelper.build_test_data()
+        approved_user_operator = make_recipe(
+            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
         )
-        report = make_recipe(
-            'reporting.tests.utils.report', operation=operation, operator=approved_user_operator.operator
-        )
-        report_version = make_recipe('reporting.tests.utils.report_version', report=report)
-
         # create the report_operation linked to the report_version
         make_recipe(
             'reporting.tests.utils.report_operation',
-            report_version=report_version,
+            report_version=test_data.report_version,
             operation_name='reporting name',
-        )
-
-        report_compliance_summary = make_recipe(
-            'reporting.tests.utils.report_compliance_summary', report_version=report_version
-        )
-        compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=report)
-        compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
         )
 
         # Act
@@ -48,7 +34,7 @@ class TestReportOperationByComplianceReportVersionEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            self._get_endpoint_url(compliance_report_version.id),
+            self._get_endpoint_url(test_data.compliance_report_version.id),
         )
         # Assert
         assert response.status_code == 200
