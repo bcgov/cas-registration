@@ -1114,6 +1114,7 @@ class TestElicensingObligationService:
         obligation.refresh_from_db()
 
         # Assert
+        mock_create_fees.assert_called_once()
         mock_create_invoice.assert_called_once()
         assert obligation.invoice_number == mock_invoice_response.invoiceNumber
         mock_refresh_by_invoice.assert_called_once()
@@ -1151,6 +1152,7 @@ class TestElicensingObligationService:
         obligation.refresh_from_db()
 
         # Assert
+        mock_create_fees.assert_not_called()
         mock_create_invoice.assert_not_called()
         assert obligation.invoice_number == mock_invoice_response.invoiceNumber
         mock_refresh_by_invoice.assert_called_once()
