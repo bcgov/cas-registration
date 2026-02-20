@@ -9,6 +9,7 @@ import { getReportInformationTasklist } from "@reporting/src/app/utils/getReport
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
 import { getAllGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
+import { getReportingYear } from "@bciers/actions/api";
 
 type DefaultSearchParams = Record<string, string | number | undefined>;
 
@@ -54,6 +55,7 @@ export default async function ActivityPage({
   if (activityData.error) {
     throw new Error("We couldn't find the activity data for this facility.");
   }
+  const reportingYear = await getReportingYear();
 
   const activityDataObject = safeJsonParse(activityData);
 
@@ -107,6 +109,7 @@ export default async function ActivityPage({
       initialJsonSchema={safeJsonParse(jsonSchema).schema}
       initialSelectedSourceTypeIds={sourceTypeIds}
       gasTypes={gasTypes}
+      reportingYear={reportingYear.reporting_year}
     />
   );
 }

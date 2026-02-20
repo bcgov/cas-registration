@@ -1,3 +1,5 @@
+import { sumWithPrecision } from "@reporting/src/app/utils/numberUtils";
+
 export const calculateMobileAnnualAmount = (formData: any) => {
   const mobileUnit = formData?.sourceTypes?.mobileFuelCombustionPartOfFacility;
   if (!mobileUnit || !mobileUnit.fuels) return;
@@ -14,5 +16,26 @@ export const calculateMobileAnnualAmount = (formData: any) => {
     if (fuel?.q4FuelAmount !== null && fuel?.q4FuelAmount !== undefined)
       total += fuel.q4FuelAmount;
     fuel["annualFuelAmount"] = total; // Apply total
+  }
+};
+
+export const calculateBiogenicTotalAllocated = (formData: any) => {
+  const biogenic = formData?.biogenicIndustrialProcessEmissions;
+
+  if (!biogenic) return;
+
+  if (biogenic.doesUtilizeLimeRecoveryKiln && biogenic.biogenicEmissionsSplit) {
+    const chemical =
+      Number(biogenic.biogenicEmissionsSplit.chemicalPulpPercentage) || 0;
+    const lime =
+      Number(biogenic.biogenicEmissionsSplit.limeRecoveredByKilnPercentage) ||
+      0;
+    biogenic.biogenicEmissionsSplit.totalAllocated = sumWithPrecision(
+      chemical,
+      lime,
+    );
+  } else if (biogenic.biogenicEmissionsSplit) {
+    // Kiln not utilized — clear any stale totalAllocated
+    delete biogenic.biogenicEmissionsSplit.totalAllocated;
   }
 };

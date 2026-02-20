@@ -1,19 +1,34 @@
-import { describe, expect, it } from "vitest";
-import { validateEmissionsMethodology } from "./activityFormValidators";
+import { describe, expect, it, test } from "vitest";
+import {
+  validateEmissionsMethodology,
+  validateBiogenicTotalAllocated,
+} from "./activityFormValidators";
+
+const SOURCE_KEY = "gscUsefulEnergy";
 
 // Helper to create base error structure
 const createBaseErrorStructure = () => ({
   sourceTypes: {
-    gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
+    [SOURCE_KEY]: {
       __errors: [],
     },
+  },
+});
+
+// Helper to create source types with a single emission nested under units -> fuels
+const createSourceTypesWithEmission = (
+  emission: object,
+  sourceKey = SOURCE_KEY,
+) => ({
+  [sourceKey]: {
+    units: [{ fuels: [{ emissions: [emission] }] }],
   },
 });
 
 // Helper to create error structure for units -> fuels -> emissions
 const createUnitsWithFuelsErrorStructure = (emissionsCount = 1) => {
   const errors: any = createBaseErrorStructure();
-  errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units = [
+  errors.sourceTypes[SOURCE_KEY].units = [
     {
       __errors: [],
       fuels: [
@@ -32,7 +47,7 @@ const createUnitsWithFuelsErrorStructure = (emissionsCount = 1) => {
 // Helper to create error structure for units -> emissions (direct)
 const createUnitsDirectEmissionsErrorStructure = () => {
   const errors: any = createBaseErrorStructure();
-  errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units = [
+  errors.sourceTypes[SOURCE_KEY].units = [
     {
       __errors: [],
       emissions: [{ __errors: [] }],
@@ -44,7 +59,7 @@ const createUnitsDirectEmissionsErrorStructure = () => {
 // Helper to create error structure for fuels -> emissions
 const createFuelsErrorStructure = () => {
   const errors: any = createBaseErrorStructure();
-  errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.fuels = [
+  errors.sourceTypes[SOURCE_KEY].fuels = [
     {
       __errors: [],
       emissions: [{ __errors: [] }],
@@ -56,16 +71,14 @@ const createFuelsErrorStructure = () => {
 // Helper to create error structure for direct emissions
 const createDirectEmissionsErrorStructure = () => {
   const errors: any = createBaseErrorStructure();
-  errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.emissions = [
-    { __errors: [] },
-  ];
+  errors.sourceTypes[SOURCE_KEY].emissions = [{ __errors: [] }];
   return errors;
 };
 
 // Helper to create error structure for units -> fuels (no emissions)
 const createUnitsWithFuelsNoEmissionsErrorStructure = () => {
   const errors: any = createBaseErrorStructure();
-  errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units = [
+  errors.sourceTypes[SOURCE_KEY].units = [
     {
       __errors: [],
       fuels: [{ __errors: [] }],
@@ -77,7 +90,7 @@ const createUnitsWithFuelsNoEmissionsErrorStructure = () => {
 // Helper to create error structure for units -> fuels with empty emissions array
 const createUnitsWithFuelsEmptyEmissionsErrorStructure = () => {
   const errors: any = createBaseErrorStructure();
-  errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units = [
+  errors.sourceTypes[SOURCE_KEY].units = [
     {
       __errors: [],
       fuels: [{ __errors: [], emissions: [] }],
@@ -89,49 +102,24 @@ const createUnitsWithFuelsEmptyEmissionsErrorStructure = () => {
 describe("validateEmissionsMethodology", () => {
   describe("when gas type is selected and methodology is missing", () => {
     it("adds 'Select a Methodology' error for emissions in units -> fuels -> emissions", () => {
-      const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-          units: [
-            {
-              fuels: [
-                {
-                  emissions: [
-                    {
-                      gasType: "CO2",
-                      methodology: {
-                        methodology: "",
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      };
+      const sourceTypes = createSourceTypesWithEmission({
+        gasType: "CO2",
+        methodology: { methodology: "" },
+      });
 
       const errors = createUnitsWithFuelsErrorStructure();
       validateEmissionsMethodology(sourceTypes, errors);
 
       expect(
-        errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units[0]
-          .fuels[0].emissions[0].methodology.methodology.__errors,
+        errors.sourceTypes[SOURCE_KEY].units[0].fuels[0].emissions[0]
+          .methodology.methodology.__errors,
       ).toEqual(["Select a Methodology"]);
     });
 
     it("adds 'Select a Methodology' error for emissions in units -> emissions", () => {
       const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-          units: [
-            {
-              emissions: [
-                {
-                  gasType: "CH4",
-                  methodology: {},
-                },
-              ],
-            },
-          ],
+        [SOURCE_KEY]: {
+          units: [{ emissions: [{ gasType: "CH4", methodology: {} }] }],
         },
       };
 
@@ -139,23 +127,18 @@ describe("validateEmissionsMethodology", () => {
       validateEmissionsMethodology(sourceTypes, errors);
 
       expect(
-        errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units[0]
-          .emissions[0].methodology.methodology.__errors,
+        errors.sourceTypes[SOURCE_KEY].units[0].emissions[0].methodology
+          .methodology.__errors,
       ).toEqual(["Select a Methodology"]);
     });
 
     it("adds 'Select a Methodology' error for emissions in fuels -> emissions", () => {
       const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
+        [SOURCE_KEY]: {
           fuels: [
             {
               emissions: [
-                {
-                  gasType: "N2O",
-                  methodology: {
-                    methodology: null,
-                  },
-                },
+                { gasType: "N2O", methodology: { methodology: null } },
               ],
             },
           ],
@@ -166,21 +149,16 @@ describe("validateEmissionsMethodology", () => {
       validateEmissionsMethodology(sourceTypes, errors);
 
       expect(
-        errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.fuels[0]
-          .emissions[0].methodology.methodology.__errors,
+        errors.sourceTypes[SOURCE_KEY].fuels[0].emissions[0].methodology
+          .methodology.__errors,
       ).toEqual(["Select a Methodology"]);
     });
 
     it("adds 'Select a Methodology' error for emissions directly under source type", () => {
       const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
+        [SOURCE_KEY]: {
           emissions: [
-            {
-              gasType: "CO2",
-              methodology: {
-                methodology: undefined,
-              },
-            },
+            { gasType: "CO2", methodology: { methodology: undefined } },
           ],
         },
       };
@@ -189,31 +167,22 @@ describe("validateEmissionsMethodology", () => {
       validateEmissionsMethodology(sourceTypes, errors);
 
       expect(
-        errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy
-          .emissions[0].methodology.methodology.__errors,
+        errors.sourceTypes[SOURCE_KEY].emissions[0].methodology.methodology
+          .__errors,
       ).toEqual(["Select a Methodology"]);
     });
 
     it("handles multiple emissions with different gas types", () => {
       const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
+        [SOURCE_KEY]: {
           units: [
             {
               fuels: [
                 {
                   emissions: [
-                    {
-                      gasType: "CO2",
-                      methodology: { methodology: "" },
-                    },
-                    {
-                      gasType: "CH4",
-                      methodology: { methodology: "" },
-                    },
-                    {
-                      gasType: "N2O",
-                      methodology: {},
-                    },
+                    { gasType: "CO2", methodology: { methodology: "" } },
+                    { gasType: "CH4", methodology: { methodology: "" } },
+                    { gasType: "N2O", methodology: {} },
                   ],
                 },
               ],
@@ -226,51 +195,29 @@ describe("validateEmissionsMethodology", () => {
       validateEmissionsMethodology(sourceTypes, errors);
 
       const emissionsErrors =
-        errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units[0]
-          .fuels[0].emissions;
+        errors.sourceTypes[SOURCE_KEY].units[0].fuels[0].emissions;
 
-      expect(emissionsErrors[0].methodology.methodology.__errors).toEqual([
-        "Select a Methodology",
-      ]);
-      expect(emissionsErrors[1].methodology.methodology.__errors).toEqual([
-        "Select a Methodology",
-      ]);
-      expect(emissionsErrors[2].methodology.methodology.__errors).toEqual([
-        "Select a Methodology",
-      ]);
+      emissionsErrors.forEach((emissionError: any) => {
+        expect(emissionError.methodology.methodology.__errors).toEqual([
+          "Select a Methodology",
+        ]);
+      });
     });
   });
 
   describe("when error path is missing", () => {
     it("handles missing error path gracefully", () => {
-      const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-          units: [
-            {
-              fuels: [
-                {
-                  emissions: [
-                    {
-                      gasType: "CO2",
-                      methodology: { methodology: "" },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      };
+      const sourceTypes = createSourceTypesWithEmission({
+        gasType: "CO2",
+        methodology: { methodology: "" },
+      });
 
       const errors: any = {
         sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-            __errors: [],
-          },
+          [SOURCE_KEY]: { __errors: [] },
         },
       };
 
-      // Should not throw an error
       expect(() =>
         validateEmissionsMethodology(sourceTypes, errors),
       ).not.toThrow();
@@ -280,31 +227,14 @@ describe("validateEmissionsMethodology", () => {
   describe("when handling multiple source types", () => {
     it("validates emissions across different source types", () => {
       const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-          units: [
-            {
-              fuels: [
-                {
-                  emissions: [
-                    {
-                      gasType: "CO2",
-                      methodology: { methodology: "" },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
+        ...createSourceTypesWithEmission(
+          { gasType: "CO2", methodology: { methodology: "" } },
+          SOURCE_KEY,
+        ),
         gscFuelOrWasteLinearFacilitiesWithoutUsefulEnergy: {
           fuels: [
             {
-              emissions: [
-                {
-                  gasType: "CH4",
-                  methodology: { methodology: "" },
-                },
-              ],
+              emissions: [{ gasType: "CH4", methodology: { methodology: "" } }],
             },
           ],
         },
@@ -312,28 +242,18 @@ describe("validateEmissionsMethodology", () => {
 
       const errors: any = {
         sourceTypes: {
-          gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
+          [SOURCE_KEY]: {
             __errors: [],
             units: [
               {
                 __errors: [],
-                fuels: [
-                  {
-                    __errors: [],
-                    emissions: [{ __errors: [] }],
-                  },
-                ],
+                fuels: [{ __errors: [], emissions: [{ __errors: [] }] }],
               },
             ],
           },
           gscFuelOrWasteLinearFacilitiesWithoutUsefulEnergy: {
             __errors: [],
-            fuels: [
-              {
-                __errors: [],
-                emissions: [{ __errors: [] }],
-              },
-            ],
+            fuels: [{ __errors: [], emissions: [{ __errors: [] }] }],
           },
         },
       };
@@ -341,8 +261,8 @@ describe("validateEmissionsMethodology", () => {
       validateEmissionsMethodology(sourceTypes, errors);
 
       expect(
-        errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units[0]
-          .fuels[0].emissions[0].methodology.methodology.__errors,
+        errors.sourceTypes[SOURCE_KEY].units[0].fuels[0].emissions[0]
+          .methodology.methodology.__errors,
       ).toEqual(["Select a Methodology"]);
       expect(
         errors.sourceTypes.gscFuelOrWasteLinearFacilitiesWithoutUsefulEnergy
@@ -353,74 +273,139 @@ describe("validateEmissionsMethodology", () => {
 
   describe("edge cases", () => {
     it("handles null methodology object", () => {
-      const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-          units: [
-            {
-              fuels: [
-                {
-                  emissions: [
-                    {
-                      gasType: "CO2",
-                      methodology: null,
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      };
+      const sourceTypes = createSourceTypesWithEmission({
+        gasType: "CO2",
+        methodology: null,
+      });
 
       const errors = createUnitsWithFuelsErrorStructure();
       validateEmissionsMethodology(sourceTypes, errors);
 
       expect(
-        errors.sourceTypes.gscFuelOrWasteLinearFacilitiesUsefulEnergy.units[0]
-          .fuels[0].emissions[0].methodology.methodology.__errors,
+        errors.sourceTypes[SOURCE_KEY].units[0].fuels[0].emissions[0]
+          .methodology.methodology.__errors,
       ).toEqual(["Select a Methodology"]);
     });
 
-    it("handles missing emissions array", () => {
-      const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-          units: [
-            {
-              fuels: [{}],
-            },
-          ],
+    test.each([
+      [
+        "handles missing emissions array",
+        {
+          [SOURCE_KEY]: {
+            units: [{ fuels: [{}] }],
+          },
         },
-      };
-
-      const errors = createUnitsWithFuelsNoEmissionsErrorStructure();
-
-      // Should not throw an error
+        createUnitsWithFuelsNoEmissionsErrorStructure(),
+      ],
+      [
+        "handles empty emissions array",
+        {
+          [SOURCE_KEY]: {
+            units: [{ fuels: [{ emissions: [] }] }],
+          },
+        },
+        createUnitsWithFuelsEmptyEmissionsErrorStructure(),
+      ],
+    ])("%s", (_name, sourceTypes, errors) => {
       expect(() =>
         validateEmissionsMethodology(sourceTypes, errors),
       ).not.toThrow();
     });
+  });
+});
 
-    it("handles empty emissions array", () => {
-      const sourceTypes = {
-        gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
-          units: [
-            {
-              fuels: [
-                {
-                  emissions: [],
-                },
-              ],
+describe("validateBiogenicTotalAllocated", () => {
+  describe("when lime recovery kiln is utilized", () => {
+    test.each([
+      // [description, chemicalPulpPercentage, limeRecoveredByKilnPercentage]
+      ["total 100 (exactly)", 60, 40],
+      ["null/undefined both resolve to 0", null, undefined],
+      ["floating point summing to 100 (33.33 + 66.67)", 33.33, 66.67],
+    ])(
+      "no error reported for %s",
+      (_name, chemicalPulpPercentage, limeRecoveredByKilnPercentage) => {
+        const formData: any = {
+          biogenicIndustrialProcessEmissions: {
+            doesUtilizeLimeRecoveryKiln: true,
+            biogenicEmissionsSplit: {
+              chemicalPulpPercentage,
+              limeRecoveredByKilnPercentage,
             },
-          ],
+          },
+        };
+
+        const errors: any = { __errors: [] };
+        validateBiogenicTotalAllocated(formData, errors);
+
+        expect(errors.biogenicIndustrialProcessEmissions).toBeUndefined();
+      },
+    );
+
+    test.each([
+      // [description, chemicalPulpPercentage, limeRecoveredByKilnPercentage]
+      ["total 110 (>100)", 60, 50],
+      ["total 101", 51, 50],
+      ["total 70 (<100)", 30, 40],
+      ["string values summing >100", "60", "50"],
+      ["floating point exceeding 100 (50.5 + 50.5)", 50.5, 50.5],
+      ["floating point under 100 (33.33 + 33.34)", 33.33, 33.34],
+    ])(
+      "errors reported for %s",
+      (_name, chemicalPulpPercentage, limeRecoveredByKilnPercentage) => {
+        const formData: any = {
+          biogenicIndustrialProcessEmissions: {
+            doesUtilizeLimeRecoveryKiln: true,
+            biogenicEmissionsSplit: {
+              chemicalPulpPercentage,
+              limeRecoveredByKilnPercentage,
+            },
+          },
+        };
+
+        const errors: any = { __errors: [] };
+        validateBiogenicTotalAllocated(formData, errors);
+
+        expect(
+          errors.biogenicIndustrialProcessEmissions.biogenicEmissionsSplit
+            .totalAllocated.__errors,
+        ).toContain("The total allocation must add up to 100%");
+      },
+    );
+  });
+
+  describe("does not add error when", () => {
+    test.each([
+      [
+        "doesUtilizeLimeRecoveryKiln is false",
+        {
+          doesUtilizeLimeRecoveryKiln: false,
+          biogenicEmissionsSplit: {
+            chemicalPulpPercentage: 60,
+            limeRecoveredByKilnPercentage: 50,
+          },
         },
-      };
-
-      const errors = createUnitsWithFuelsEmptyEmissionsErrorStructure();
-
-      // Should not throw an error
-      expect(() =>
-        validateEmissionsMethodology(sourceTypes, errors),
-      ).not.toThrow();
+      ],
+      [
+        "doesUtilizeLimeRecoveryKiln is undefined",
+        {
+          biogenicEmissionsSplit: {
+            chemicalPulpPercentage: 60,
+            limeRecoveredByKilnPercentage: 50,
+          },
+        },
+      ],
+      ["biogenicIndustrialProcessEmissions is missing", undefined],
+      [
+        "biogenicEmissionsSplit is missing",
+        { doesUtilizeLimeRecoveryKiln: true },
+      ],
+    ])("%s", (_name, biogenicIndustrialProcessEmissions) => {
+      const errors: any = { __errors: [] };
+      validateBiogenicTotalAllocated(
+        { biogenicIndustrialProcessEmissions },
+        errors,
+      );
+      expect(errors.biogenicIndustrialProcessEmissions).toBeUndefined();
     });
   });
 });

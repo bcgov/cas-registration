@@ -83,8 +83,8 @@ class TestInfrastructure:
         t.activity = Activity.objects.get(slug=activity_slug)
         t.activity_json_schema = ActivityJsonSchema.objects.get(
             activity=t.activity,
-            valid_from=t.configuration,
-            valid_to=t.configuration,
+            valid_from__valid_from__lte=t.configuration.valid_from,
+            valid_to__valid_to__gte=t.configuration.valid_to,
         )
 
         return t
@@ -102,10 +102,11 @@ class TestInfrastructure:
         valid_date = get_report_valid_date_from_version_id(t.report_version.id)
         t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
         t.activity = Activity.objects.get(slug="gsc_non_compression")
+        # Query using the configuration's date range to find schemas valid for this configuration period
         t.activity_json_schema = ActivityJsonSchema.objects.get(
             activity=t.activity,
-            valid_from=t.configuration,
-            valid_to=t.configuration,
+            valid_from__valid_from__lte=t.configuration.valid_from,
+            valid_to__valid_to__gte=t.configuration.valid_to,
         )
         return t
 

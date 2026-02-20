@@ -10,8 +10,14 @@ import debounce from "lodash.debounce";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import setNestedErrorForCustomValidate from "@bciers/utils/src/setCustomValidateErrors";
 import { findPathsWithNegativeNumbers } from "@bciers/utils/src/findInObject";
-import { calculateMobileAnnualAmount } from "@bciers/utils/src/customReportingActivityFormCalculations";
-import { validateEmissionsMethodology } from "@bciers/utils/src/activityFormValidators";
+import {
+  calculateMobileAnnualAmount,
+  calculateBiogenicTotalAllocated,
+} from "@bciers/utils/src/customReportingActivityFormCalculations";
+import {
+  validateBiogenicTotalAllocated,
+  validateEmissionsMethodology,
+} from "@bciers/utils/src/activityFormValidators";
 import { NavigationInformation } from "../taskList/types";
 import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
 import { Dict } from "@bciers/types/dictionary";
@@ -38,6 +44,7 @@ interface Props {
     chemical_formula: string;
     cas_number: string;
   };
+  reportingYear: number;
 }
 
 // 🧩 Main component
@@ -51,6 +58,7 @@ export default function ActivityForm({
   initialJsonSchema,
   initialSelectedSourceTypeIds,
   gasTypes,
+  reportingYear,
 }: Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as string[]);
@@ -83,6 +91,9 @@ export default function ActivityForm({
       validateEmissionsMethodology(formData.sourceTypes, errors);
     }
 
+    // Validate biogenic industrial process emissions total allocated
+    validateBiogenicTotalAllocated(formData, errors);
+
     return errors;
   };
 
@@ -98,10 +109,11 @@ export default function ActivityForm({
   };
 
   const handleFormChange = async (c: { formData: Dict }) => {
-    const selectedSourceTypes = [];
+    const newFormData: Dict = { ...c.formData };
+    const selectedSourceTypes: string[] = [];
     // Checks for a change in source type selection & fetches the updated schema if they have changed.
     for (const [k, v] of Object.entries(sourceTypeMap)) {
-      if (c.formData[`${v}`]) selectedSourceTypes.push(k);
+      if (newFormData[`${v}`]) selectedSourceTypes.push(k);
     }
     if (!arrayEquals(selectedSourceTypes, selectedSourceTypeIds)) {
       const schemaData = await fetchSchemaData(selectedSourceTypes);
@@ -114,10 +126,14 @@ export default function ActivityForm({
     }
 
     // Add together quarterly amounts for Fuel Combustion by Mobile Equipment
-    if (c.formData?.sourceTypes?.mobileFuelCombustionPartOfFacility)
-      calculateMobileAnnualAmount(c.formData);
+    if (newFormData?.sourceTypes?.mobileFuelCombustionPartOfFacility)
+      calculateMobileAnnualAmount(newFormData);
 
-    setFormState(c.formData);
+    // Calculate total allocated for biogenic industrial process emissions
+    if (newFormData?.biogenicIndustrialProcessEmissions)
+      calculateBiogenicTotalAllocated(newFormData);
+
+    setFormState(newFormData);
   };
 
   // 🛠️ Function to submit user form data to API
@@ -193,7 +209,7 @@ export default function ActivityForm({
       fields={CUSTOM_FIELDS}
       noSaveButton={isFallbackSchema}
       formData={formState}
-      uiSchema={getUiSchema(currentActivity.slug)}
+      uiSchema={getUiSchema(currentActivity.slug, reportingYear)}
       onChange={debounce(handleFormChange, 200) as (data: object) => void}
       errors={errorList}
       backUrl={navigationInformation.backUrl}
@@ -202,6 +218,7 @@ export default function ActivityForm({
       formContext={{
         gasTypes,
       }}
+      omitExtraData={true}
       buttonText={isFallbackSchema ? "Continue" : "Save and Continue"}
     />
   );

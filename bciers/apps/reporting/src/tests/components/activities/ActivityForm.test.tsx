@@ -5,6 +5,11 @@ import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
 import { RJSFSchema } from "@rjsf/utils";
 
+// Mock actionHandler
+vi.mock("@bciers/actions", () => ({
+  actionHandler: vi.fn(),
+}));
+
 // Mock data
 const mockActivityData = {
   activityId: 1,
@@ -75,6 +80,7 @@ describe("ActivityForm component", () => {
           facilityId={mockUUID}
           initialSelectedSourceTypeIds={[]}
           gasTypes={mockGasTypes}
+          reportingYear={2024}
         />,
       );
       await flushPromises();
@@ -136,6 +142,7 @@ describe("ActivityForm component", () => {
           facilityId={mockUUID}
           initialSelectedSourceTypeIds={[]}
           gasTypes={mockGasTypes}
+          reportingYear={2024}
         />,
       );
       await flushPromises();
@@ -163,6 +170,7 @@ describe("ActivityForm component", () => {
           facilityId={mockUUID}
           initialSelectedSourceTypeIds={[]}
           gasTypes={mockGasTypes}
+          reportingYear={2024}
         />,
       );
       await flushPromises();
