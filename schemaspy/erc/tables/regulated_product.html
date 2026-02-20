@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>regulated_product - default.erc</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.erc</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>regulated_product</h1><p><span id="recordNumber">40</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>Table containing regulated and unregulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: <a href="https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015">https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015</a>. Unregulated products have been added to the dataset to assist in grouping some unregulated emissions for further analysis.</p>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="id">id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title='Automatically updated by the database'>√</td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="operation_regulated_products.regulatedproduct_id references regulated_product.id via operation_regulated__regulatedproduct_id_5e0156ca_fk_regulated"><a href='operation_regulated_products.html'>operation_regulated_products</a><span class='relatedKey'>.regulatedproduct_id</span></td>
+                                                <td class="constraint detail">operation_regulated__regulatedproduct_id_5e0156ca_fk_regulated</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="product_emission_intensity.product_id references regulated_product.id via product_emission_int_product_id_05c2d355_fk_regulated"><a href='product_emission_intensity.html'>product_emission_intensity</a><span class='relatedKey'>.product_id</span></td>
+                                                <td class="constraint detail">product_emission_int_product_id_05c2d355_fk_regulated</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_compliance_summary_product.product_id references regulated_product.id via report_compliance_su_product_id_ef8f22ff_fk_regulated"><a href='report_compliance_summary_product.html'>report_compliance_summary_product</a><span class='relatedKey'>.product_id</span></td>
+                                                <td class="constraint detail">report_compliance_su_product_id_ef8f22ff_fk_regulated</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_new_entrant_production.product_id references regulated_product.id via report_new_entrant_p_product_id_750578cd_fk_regulated"><a href='report_new_entrant_production.html'>report_new_entrant_production</a><span class='relatedKey'>.product_id</span></td>
+                                                <td class="constraint detail">report_new_entrant_p_product_id_750578cd_fk_regulated</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_operation_regulated_products.regulatedproduct_id references regulated_product.id via report_operation_reg_regulatedproduct_id_10ce22ab_fk_regulated"><a href='report_operation_regulated_products.html'>report_operation_regulated_products</a><span class='relatedKey'>.regulatedproduct_id</span></td>
+                                                <td class="constraint detail">report_operation_reg_regulatedproduct_id_10ce22ab_fk_regulated</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_product.product_id references regulated_product.id via report_product_product_id_95eeddf5_fk_regulated_product_id"><a href='report_product.html'>report_product</a><span class='relatedKey'>.product_id</span></td>
+                                                <td class="constraint detail">report_product_product_id_95eeddf5_fk_regulated_product_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="name">name</span></td>
+                                    <td>varchar</td>
+                                    <td>1000</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="regulated_product.name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='business_structure.html'>business_structure</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The name of a regulated product</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="is_regulated">is_regulated</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Indicates if a product is regulated</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="unit">unit</span></td>
+                                    <td>varchar</td>
+                                    <td>1000</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The unit of measure for a regulated product</p></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 id="Indexes" class="box-title">Indexes</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="indexes_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Type</th>
+                                    <th>Sort</th>
+                                    <th>Column(s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> regulated_product_pkey</td>
+                                    <td>Primary key</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>id</td>
+                                </tr>
+                                <tr>
+                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> unique_product_on_name_unit</td>
+                                    <td>Must be unique</td>
+                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
+                                    <td>name + unit</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="operation_regulated_products.html" target="_top" title="operation_regulated_products" alt="" coords="401,5,721,157">
+<area shape="rect" id="node2" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="5,580,308,767">
+<area shape="rect" id="node3" href="product_emission_intensity.html" target="_top" title="product_emission_intensity" alt="" coords="352,175,771,321">
+<area shape="rect" id="node4" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="371,339,751,632">
+<area shape="rect" id="node5" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="395,649,728,913">
+<area shape="rect" id="node6" href="report_operation_regulated_products.html" target="_top" title="report_operation_regulated_products" alt="" coords="373,931,750,1083">
+<area shape="rect" id="node7" href="report_product.html" target="_top" title="report_product" alt="" coords="388,1100,735,1393">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/regulated_product.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
+<area shape="rect" id="node1" href="facility_report.html" target="_top" title="facility_report" alt="" coords="463,1247,655,1335">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,721,120,809">
+<area shape="rect" id="node3" href="report_version.html" target="_top" title="report_version" alt="" coords="164,757,360,845">
+<area shape="rect" id="node4" href="operation.html" target="_top" title="operation" alt="" coords="183,439,341,527">
+<area shape="rect" id="node5" href="operation_regulated_products.html" target="_top" title="operation_regulated_products" alt="" coords="808,316,1128,468">
+<area shape="rect" id="node6" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="408,793,711,980">
+<area shape="rect" id="node7" href="product_emission_intensity.html" target="_top" title="product_emission_intensity" alt="" coords="759,767,1177,913">
+<area shape="rect" id="node8" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="404,297,715,385">
+<area shape="rect" id="node9" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="778,5,1158,299">
+<area shape="rect" id="node10" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="440,616,679,704">
+<area shape="rect" id="node11" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="801,485,1135,749">
+<area shape="rect" id="node12" href="report_operation.html" target="_top" title="report_operation" alt="" coords="451,1069,667,1157">
+<area shape="rect" id="node13" href="report_operation_regulated_products.html" target="_top" title="report_operation_regulated_products" alt="" coords="779,931,1157,1083">
+<area shape="rect" id="node14" href="report_product.html" target="_top" title="report_product" alt="" coords="795,1136,1141,1429">
+<area shape="rect" id="node15" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="1221,1425,1585,1513">
+</map>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/regulated_product.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="operation_regulated_products.html" target="_top" title="operation_regulated_products" alt="" coords="676,5,996,157">
+<area shape="rect" id="node2" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="280,580,583,767">
+<area shape="rect" id="node4" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,612,236,705">
+<area shape="rect" id="node3" href="product_emission_intensity.html" target="_top" title="product_emission_intensity" alt="" coords="627,175,1045,321">
+<area shape="rect" id="node5" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="646,339,1026,632">
+<area shape="rect" id="node6" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="669,649,1003,913">
+<area shape="rect" id="node7" href="report_operation_regulated_products.html" target="_top" title="report_operation_regulated_products" alt="" coords="647,931,1025,1083">
+<area shape="rect" id="node8" href="report_product.html" target="_top" title="report_product" alt="" coords="663,1100,1009,1393">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/regulated_product.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="activity.html" target="_top" title="activity" alt="" coords="307,5,456,93">
+<area shape="rect" id="node2" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,604,236,697">
+<area shape="rect" id="node3" href="contact.html" target="_top" title="contact" alt="" coords="867,299,1007,387">
+<area shape="rect" id="node4" href="user.html" target="_top" title="user" alt="" coords="324,1188,439,1276">
+<area shape="rect" id="node5" href="operator.html" target="_top" title="operator" alt="" coords="550,299,699,387">
+<area shape="rect" id="node6" href="document_type.html" target="_top" title="document_type" alt="" coords="280,331,483,419">
+<area shape="rect" id="node7" href="emission_category.html" target="_top" title="emission_category" alt="" coords="1932,2288,2159,2376">
+<area shape="rect" id="node8" href="facility.html" target="_top" title="facility" alt="" coords="1293,1024,1427,1112">
+<area shape="rect" id="node9" href="operation.html" target="_top" title="operation" alt="" coords="858,839,1015,927">
+<area shape="rect" id="node10" href="facility_report.html" target="_top" title="facility_report" alt="" coords="1625,2091,1817,2179">
+<area shape="rect" id="node11" href="report_version.html" target="_top" title="report_version" alt="" coords="527,1592,723,1680">
+<area shape="rect" id="node12" href="facility_snapshot.html" target="_top" title="facility_snapshot" alt="" coords="1613,923,1828,1011">
+<area shape="rect" id="node13" href="fuel_type.html" target="_top" title="fuel_type" alt="" coords="305,680,457,768">
+<area shape="rect" id="node14" href="gas_type.html" target="_top" title="gas_type" alt="" coords="307,785,455,873">
+<area shape="rect" id="node15" href="methodology.html" target="_top" title="methodology" alt="" coords="289,891,474,979">
+<area shape="rect" id="node16" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1248,749,1472,837">
+<area shape="rect" id="node17" href="operation_regulated_products.html" target="_top" title="operation_regulated_products" alt="" coords="1200,1165,1520,1317">
+<area shape="rect" id="node18" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="785,2317,1088,2504">
+<area shape="rect" id="node19" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="831,519,1042,607">
+<area shape="rect" id="node20" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="828,404,1045,492">
+<area shape="rect" id="node21" href="product_emission_intensity.html" target="_top" title="product_emission_intensity" alt="" coords="1151,2385,1569,2532">
+<area shape="rect" id="node22" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="821,1504,1053,1592">
+<area shape="rect" id="node23" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="781,1399,1092,1487">
+<area shape="rect" id="node24" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="1170,1335,1550,1628">
+<area shape="rect" id="node25" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="817,2003,1056,2091">
+<area shape="rect" id="node26" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="1193,1831,1527,2095">
+<area shape="rect" id="node27" href="report_operation.html" target="_top" title="report_operation" alt="" coords="829,2212,1045,2300">
+<area shape="rect" id="node28" href="report_operation_regulated_products.html" target="_top" title="report_operation_regulated_products" alt="" coords="1171,2180,1549,2332">
+<area shape="rect" id="node29" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="767,1012,1107,1100">
+<area shape="rect" id="node30" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="791,1117,1082,1205">
+<area shape="rect" id="node31" href="report_product.html" target="_top" title="report_product" alt="" coords="1872,1681,2219,1975">
+<area shape="rect" id="node32" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2263,1116,2627,1204">
+<area shape="rect" id="node33" href="report_verification.html" target="_top" title="report_verification" alt="" coords="822,1753,1051,1841">
+<area shape="rect" id="node34" href="reporting_field.html" target="_top" title="reporting_field" alt="" coords="283,2657,480,2745">
+<area shape="rect" id="node35" href="source_type.html" target="_top" title="source_type" alt="" coords="294,2763,469,2851">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/regulated_product.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 6.2.4</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>

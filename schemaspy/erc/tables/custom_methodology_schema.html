@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>custom_methodology_schema - default.erc</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.erc</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>custom_methodology_schema</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>Custom methodology schema used to define additional fields for reporting</p>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="id">id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title='Automatically updated by the database'>√</td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="configuration_element.custom_methodology_schema_id references custom_methodology_schema.id via configuration_elemen_custom_methodology_s_a41b027d_fk_custom_me"><a href='configuration_element.html'>configuration_element</a><span class='relatedKey'>.custom_methodology_schema_id</span></td>
+                                                <td class="constraint detail">configuration_elemen_custom_methodology_s_a41b027d_fk_custom_me</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="json_schema">json_schema</span></td>
+                                    <td>jsonb</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="activity_id">activity_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="custom_methodology_schema.activity_id references activity.id via custom_methodology_schema_activity_id_4769f6f0_fk_activity_id"><a href='activity.html'>activity</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">custom_methodology_schema_activity_id_4769f6f0_fk_activity_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="gas_type_id">gas_type_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="custom_methodology_schema.gas_type_id references gas_type.id via custom_methodology_schema_gas_type_id_e16bddf6_fk_gas_type_id"><a href='gas_type.html'>gas_type</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">custom_methodology_schema_gas_type_id_e16bddf6_fk_gas_type_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="methodology_id">methodology_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="custom_methodology_schema.methodology_id references methodology.id via custom_methodology_s_methodology_id_fe0f1db6_fk_methodolo"><a href='methodology.html'>methodology</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">custom_methodology_s_methodology_id_fe0f1db6_fk_methodolo</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="source_type_id">source_type_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="custom_methodology_schema.source_type_id references source_type.id via custom_methodology_s_source_type_id_a447909c_fk_source_ty"><a href='source_type.html'>source_type</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">custom_methodology_s_source_type_id_a447909c_fk_source_ty</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="valid_from_id">valid_from_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="custom_methodology_schema.valid_from_id references configuration.id via custom_methodology_s_valid_from_id_5f0ad045_fk_configura"><a href='configuration.html'>configuration</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">custom_methodology_s_valid_from_id_5f0ad045_fk_configura</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="valid_to_id">valid_to_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="custom_methodology_schema.valid_to_id references configuration.id via custom_methodology_s_valid_to_id_d0d7ecd8_fk_configura"><a href='configuration.html'>configuration</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">custom_methodology_s_valid_to_id_d0d7ecd8_fk_configura</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 id="Indexes" class="box-title">Indexes</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="indexes_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Type</th>
+                                    <th>Sort</th>
+                                    <th>Column(s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> custom_methodology_schema_pkey</td>
+                                    <td>Primary key</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>custom_methodology_schema_activity_id_4769f6f0</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>activity_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>custom_methodology_schema_gas_type_id_e16bddf6</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>gas_type_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>custom_methodology_schema_methodology_id_fe0f1db6</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>methodology_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>custom_methodology_schema_source_type_id_a447909c</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>source_type_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>custom_methodology_schema_valid_from_id_5f0ad045</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>valid_from_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>custom_methodology_schema_valid_to_id_d0d7ecd8</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>valid_to_id</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="configuration_element.html" target="_top" title="configuration_element" alt="" coords="715,60,1024,359">
+<area shape="rect" id="node2" href="activity.html" target="_top" title="activity" alt="" coords="12,5,189,181">
+<area shape="rect" id="node3" href="custom_methodology_schema.html" target="_top" title="custom_methodology_schema" alt="" coords="240,260,671,564">
+<area shape="rect" id="node4" href="gas_type.html" target="_top" title="gas_type" alt="" coords="5,199,196,345">
+<area shape="rect" id="node5" href="methodology.html" target="_top" title="methodology" alt="" coords="8,527,193,649">
+<area shape="rect" id="node6" href="source_type.html" target="_top" title="source_type" alt="" coords="13,667,188,819">
+<area shape="rect" id="node7" href="configuration.html" target="_top" title="configuration" alt="" coords="7,363,195,509">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/custom_methodology_schema.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
+<area shape="rect" id="node1" href="activity_json_schema.html" target="_top" title="activity_json_schema" alt="" coords="331,890,577,978">
+<area shape="rect" id="node2" href="activity.html" target="_top" title="activity" alt="" coords="30,997,169,1085">
+<area shape="rect" id="node3" href="configuration.html" target="_top" title="configuration" alt="" coords="5,746,193,834">
+<area shape="rect" id="node4" href="activity_source_type_json_schema.html" target="_top" title="activity_source_type_json_schema" alt="" coords="279,785,629,873">
+<area shape="rect" id="node5" href="source_type.html" target="_top" title="source_type" alt="" coords="12,461,187,549">
+<area shape="rect" id="node6" href="configuration_element.html" target="_top" title="configuration_element" alt="" coords="715,314,976,402">
+<area shape="rect" id="node7" href="custom_methodology_schema.html" target="_top" title="custom_methodology_schema" alt="" coords="239,306,669,610">
+<area shape="rect" id="node8" href="gas_type.html" target="_top" title="gas_type" alt="" coords="25,23,173,111">
+<area shape="rect" id="node9" href="methodology.html" target="_top" title="methodology" alt="" coords="7,199,192,287">
+<area shape="rect" id="node10" href="configuration_element_reporting_fields.html" target="_top" title="configuration_element_reporting_fields" alt="" coords="1020,311,1413,399">
+<area shape="rect" id="node11" href="emission_category_mapping.html" target="_top" title="emission_category_mapping" alt="" coords="302,627,606,715">
+<area shape="rect" id="node12" href="facility_report_activities.html" target="_top" title="facility_report_activities" alt="" coords="319,1278,589,1366">
+<area shape="rect" id="node13" href="operation_activities.html" target="_top" title="operation_activities" alt="" coords="335,1383,573,1471">
+<area shape="rect" id="node14" href="report_activity.html" target="_top" title="report_activity" alt="" coords="747,890,943,978">
+<area shape="rect" id="node15" href="report_emission.html" target="_top" title="report_emission" alt="" coords="1457,57,1665,145">
+<area shape="rect" id="node16" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="1101,601,1333,689">
+<area shape="rect" id="node17" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="1709,91,1952,179">
+<area shape="rect" id="node18" href="report_non_attributable_emissio_24f9faf2.html" target="_top" title="report_non_attributable_emissions_gas_type" alt="" coords="237,57,671,145">
+<area shape="rect" id="node19" href="report_operation_activities.html" target="_top" title="report_operation_activities" alt="" coords="307,1031,601,1119">
+<area shape="rect" id="node20" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="315,1137,593,1225">
+</map>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/custom_methodology_schema.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="configuration_element.html" target="_top" title="configuration_element" alt="" coords="715,60,1024,359">
+<area shape="rect" id="node2" href="activity.html" target="_top" title="activity" alt="" coords="12,5,189,181">
+<area shape="rect" id="node3" href="custom_methodology_schema.html" target="_top" title="custom_methodology_schema" alt="" coords="240,260,671,564">
+<area shape="rect" id="node4" href="gas_type.html" target="_top" title="gas_type" alt="" coords="5,199,196,345">
+<area shape="rect" id="node5" href="methodology.html" target="_top" title="methodology" alt="" coords="8,527,193,649">
+<area shape="rect" id="node6" href="source_type.html" target="_top" title="source_type" alt="" coords="13,667,188,819">
+<area shape="rect" id="node7" href="configuration.html" target="_top" title="configuration" alt="" coords="7,363,195,509">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/custom_methodology_schema.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="activity.html" target="_top" title="activity" alt="" coords="299,965,449,1053">
+<area shape="rect" id="node2" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,479,236,567">
+<area shape="rect" id="node3" href="activity_json_schema.html" target="_top" title="activity_json_schema" alt="" coords="605,911,852,999">
+<area shape="rect" id="node4" href="configuration.html" target="_top" title="configuration" alt="" coords="280,767,468,855">
+<area shape="rect" id="node5" href="activity_source_type_json_schema.html" target="_top" title="activity_source_type_json_schema" alt="" coords="554,805,903,893">
+<area shape="rect" id="node6" href="source_type.html" target="_top" title="source_type" alt="" coords="287,481,461,569">
+<area shape="rect" id="node7" href="configuration_element.html" target="_top" title="configuration_element" alt="" coords="989,203,1251,291">
+<area shape="rect" id="node8" href="custom_methodology_schema.html" target="_top" title="custom_methodology_schema" alt="" coords="513,327,944,631">
+<area shape="rect" id="node9" href="gas_type.html" target="_top" title="gas_type" alt="" coords="300,152,448,240">
+<area shape="rect" id="node10" href="methodology.html" target="_top" title="methodology" alt="" coords="281,27,467,115">
+<area shape="rect" id="node11" href="configuration_element_reporting_fields.html" target="_top" title="configuration_element_reporting_fields" alt="" coords="1295,200,1688,288">
+<area shape="rect" id="node12" href="emission_category_mapping.html" target="_top" title="emission_category_mapping" alt="" coords="577,648,881,736">
+<area shape="rect" id="node13" href="facility_report_activities.html" target="_top" title="facility_report_activities" alt="" coords="593,1016,864,1104">
+<area shape="rect" id="node14" href="operation_activities.html" target="_top" title="operation_activities" alt="" coords="610,1121,847,1209">
+<area shape="rect" id="node15" href="report_activity.html" target="_top" title="report_activity" alt="" coords="1022,911,1218,999">
+<area shape="rect" id="node16" href="report_emission.html" target="_top" title="report_emission" alt="" coords="1732,41,1940,129">
+<area shape="rect" id="node17" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="1375,564,1607,652">
+<area shape="rect" id="node18" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="1984,5,2227,93">
+<area shape="rect" id="node19" href="report_non_attributable_emissio_24f9faf2.html" target="_top" title="report_non_attributable_emissions_gas_type" alt="" coords="512,149,945,237">
+<area shape="rect" id="node20" href="report_operation_activities.html" target="_top" title="report_operation_activities" alt="" coords="581,1299,876,1387">
+<area shape="rect" id="node21" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="590,1404,867,1492">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/custom_methodology_schema.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 6.2.4</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>

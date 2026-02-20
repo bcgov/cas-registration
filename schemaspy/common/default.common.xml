@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><database name="default" schema="common" type="PostgreSQL - 16.4 (Debian 16.4-1.pgdg110+2)">
+   <tables>
+      <table name="dashboard_data" numRows="3" remarks="The JSON information for dashboard navigation tiles by app and ID type." schema="common" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Name of the dashboard by app and ID type used as a friendly unique identifier." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="data" nullable="false" remarks="JSON representation of dashboard navigation tiles." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="dashboard_data_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="dashboard_data_name_299fbda8_like" unique="false">
+            <column ascending="true" name="name"/>
+         </index>
+         <index name="dashboard_data_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+      </table>
+      <table name="email_notification" remarks="Stores email notifications after they have been sent" schema="common" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="transaction_id" nullable="false" remarks="Transaction identifier for the email message in CHES API" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="message_id" nullable="false" remarks="Message identifier for the email message in CHES API" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="recipients_email" nullable="false" remarks="List of email addresses to send the email to" size="255" type="_varchar" typeCode="2003"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="template_id" nullable="false" remarks="Email template to use for the email notification" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="email_notification_template_id_a9e7c5e7_fk_email_not" implied="false" onDeleteCascade="false" schema="common" table="email_notification_template"/>
+         </column>
+         <primaryKey column="transaction_id" sequenceNumberInPK="1"/>
+         <index name="email_notification_pkey" unique="true">
+            <column ascending="true" name="transaction_id"/>
+         </index>
+         <index name="email_notification_template_id_a9e7c5e7" unique="false">
+            <column ascending="true" name="template_id"/>
+         </index>
+      </table>
+      <table name="email_notification_template" remarks="Stores email templates for notifications" schema="common" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <child column="template_id" foreignKey="email_notification_template_id_a9e7c5e7_fk_email_not" implied="false" onDeleteCascade="false" schema="common" table="email_notification"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Name of the email template as a unique identifier" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="subject" nullable="false" remarks="Subject of the email template" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="body" nullable="false" remarks="Body of the email template" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="email_notification_template_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="email_notification_template_name_dbefe24b_like" unique="false">
+            <column ascending="true" name="name"/>
+         </index>
+         <index name="email_notification_template_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+      </table>
+      <table name="retry_task" remarks="Retry tasks created when functions fail" schema="common" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="function_path" nullable="false" remarks="" size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="tag" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="status" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="next_run_time" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="last_run_time" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="lock_acquired_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="error_history" nullable="false" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="kwargs" nullable="false" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="max_retries" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="retry_count" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="retry_delay_minutes" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="retry_task_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="retry_task_status_006913_idx" unique="false">
+            <column ascending="true" name="status"/>
+            <column ascending="true" name="next_run_time"/>
+         </index>
+         <index name="retry_task_tag_233003_idx" unique="false">
+            <column ascending="true" name="tag"/>
+            <column ascending="true" name="status"/>
+         </index>
+         <checkConstraint constraint="((max_retries &gt;= 0))" name="retry_task_max_retries_check"/>
+         <checkConstraint constraint="((retry_count &gt;= 0))" name="retry_task_retry_count_check"/>
+         <checkConstraint constraint="((retry_delay_minutes &gt;= 0))" name="retry_task_retry_delay_minutes_check"/>
+      </table>
+      <table name="scheduled_task" remarks="Scheduled tasks that run on a regular basis" schema="common" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="function_path" nullable="false" remarks="" size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="tag" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="status" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="next_run_time" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="last_run_time" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="lock_acquired_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="error_history" nullable="false" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="schedule_type" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="schedule_interval" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="schedule_hour" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="schedule_minute" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="schedule_day_of_week" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="schedule_day_of_month" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="schedule_month" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="scheduled_task_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="scheduled_t_status_bbd93c_idx" unique="false">
+            <column ascending="true" name="status"/>
+            <column ascending="true" name="next_run_time"/>
+         </index>
+         <index name="scheduled_t_tag_aef11c_idx" unique="false">
+            <column ascending="true" name="tag"/>
+            <column ascending="true" name="status"/>
+         </index>
+         <checkConstraint constraint="((schedule_day_of_month &gt;= 0))" name="scheduled_task_schedule_day_of_month_check"/>
+         <checkConstraint constraint="((schedule_day_of_week &gt;= 0))" name="scheduled_task_schedule_day_of_week_check"/>
+         <checkConstraint constraint="((schedule_hour &gt;= 0))" name="scheduled_task_schedule_hour_check"/>
+         <checkConstraint constraint="((schedule_interval &gt;= 0))" name="scheduled_task_schedule_interval_check"/>
+         <checkConstraint constraint="((schedule_minute &gt;= 0))" name="scheduled_task_schedule_minute_check"/>
+         <checkConstraint constraint="((schedule_month &gt;= 0))" name="scheduled_task_schedule_month_check"/>
+      </table>
+   </tables>
+</database>

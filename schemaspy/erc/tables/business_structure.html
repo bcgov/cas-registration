@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>business_structure - default.erc</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.erc</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>business_structure</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>Table containing operator business structures. Business structure refers to the legal and organizational framework under which a business operates (e.g., partnership, sole proprietorship, corporation, limited liability company).</p>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="name">name</span></td>
+                                    <td>varchar</td>
+                                    <td>1000</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="activity.name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='activity.html'>activity</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="activity.regulated_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='activity.html'>activity</a><span class='relatedKey'>.regulated_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="contact.first_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='contact.html'>contact</a><span class='relatedKey'>.first_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="contact.last_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='contact.html'>contact</a><span class='relatedKey'>.last_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="document_type.name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='document_type.html'>document_type</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="emission_category.category_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='emission_category.html'>emission_category</a><span class='relatedKey'>.category_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="facility.name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='facility.html'>facility</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="facility_report.facility_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='facility_report.html'>facility_report</a><span class='relatedKey'>.facility_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="facility_snapshot.name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='facility_snapshot.html'>facility_snapshot</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="fuel_type.name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='fuel_type.html'>fuel_type</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="gas_type.name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='gas_type.html'>gas_type</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="methodology.name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='methodology.html'>methodology</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="multiple_operator.business_structure_id references business_structure.name via multiple_operator_business_structure_i_5cd12973_fk_business_"><a href='multiple_operator.html'>multiple_operator</a><span class='relatedKey'>.business_structure_id</span></td>
+                                                <td class="constraint detail">multiple_operator_business_structure_i_5cd12973_fk_business_</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="multiple_operator.legal_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='multiple_operator.html'>multiple_operator</a><span class='relatedKey'>.legal_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="multiple_operator.trade_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='multiple_operator.html'>multiple_operator</a><span class='relatedKey'>.trade_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="operation.name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='operation.html'>operation</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="operator.business_structure_id references business_structure.name via operator_business_structure_i_12823845_fk_business_"><a href='operator.html'>operator</a><span class='relatedKey'>.business_structure_id</span></td>
+                                                <td class="constraint detail">operator_business_structure_i_12823845_fk_business_</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="operator.legal_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='operator.html'>operator</a><span class='relatedKey'>.legal_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="operator.trade_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='operator.html'>operator</a><span class='relatedKey'>.trade_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="parent_operator.business_structure_id references business_structure.name via parent_operator_business_structure_i_4dc51242_fk_business_"><a href='parent_operator.html'>parent_operator</a><span class='relatedKey'>.business_structure_id</span></td>
+                                                <td class="constraint detail">parent_operator_business_structure_i_4dc51242_fk_business_</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="parent_operator.legal_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='parent_operator.html'>parent_operator</a><span class='relatedKey'>.legal_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="parent_operator.trade_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='parent_operator.html'>parent_operator</a><span class='relatedKey'>.trade_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="partner_operator.business_structure_id references business_structure.name via partner_operator_business_structure_i_adb8646f_fk_business_"><a href='partner_operator.html'>partner_operator</a><span class='relatedKey'>.business_structure_id</span></td>
+                                                <td class="constraint detail">partner_operator_business_structure_i_adb8646f_fk_business_</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="partner_operator.legal_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='partner_operator.html'>partner_operator</a><span class='relatedKey'>.legal_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="partner_operator.trade_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='partner_operator.html'>partner_operator</a><span class='relatedKey'>.trade_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="regulated_product.name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='regulated_product.html'>regulated_product</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_attachment.attachment_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='report_attachment.html'>report_attachment</a><span class='relatedKey'>.attachment_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_operation.operation_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='report_operation.html'>report_operation</a><span class='relatedKey'>.operation_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_operation.operator_legal_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='report_operation.html'>report_operation</a><span class='relatedKey'>.operator_legal_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_operation.operator_trade_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='report_operation.html'>report_operation</a><span class='relatedKey'>.operator_trade_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_operation_representative.representative_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='report_operation_representative.html'>report_operation_representative</a><span class='relatedKey'>.representative_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_person_responsible.first_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='report_person_responsible.html'>report_person_responsible</a><span class='relatedKey'>.first_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_person_responsible.last_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='report_person_responsible.html'>report_person_responsible</a><span class='relatedKey'>.last_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_verification.verification_body_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='report_verification.html'>report_verification</a><span class='relatedKey'>.verification_body_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="reporting_field.field_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='reporting_field.html'>reporting_field</a><span class='relatedKey'>.field_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="source_type.name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='source_type.html'>source_type</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="user.bceid_business_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='user.html'>user</a><span class='relatedKey'>.bceid_business_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="user.first_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='user.html'>user</a><span class='relatedKey'>.first_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="user.last_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='user.html'>user</a><span class='relatedKey'>.last_name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The name of a business structure</p></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 id="Indexes" class="box-title">Indexes</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="indexes_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Type</th>
+                                    <th>Sort</th>
+                                    <th>Column(s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> business_structure_pkey</td>
+                                    <td>Primary key</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>name</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>business_structure_name_63e6488b_like</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>name</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="356,5,647,357">
+<area shape="rect" id="node2" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,459,312,557">
+<area shape="rect" id="node3" href="operator.html" target="_top" title="operator" alt="" coords="356,411,647,821">
+<area shape="rect" id="node4" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="691,227,981,608">
+<area shape="rect" id="node5" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="691,635,981,957">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/business_structure.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
+<area shape="rect" id="node1" href="contact.html" target="_top" title="contact" alt="" coords="623,249,763,337">
+<area shape="rect" id="node2" href="address.html" target="_top" title="address" alt="" coords="88,164,229,252">
+<area shape="rect" id="node3" href="user.html" target="_top" title="user" alt="" coords="101,656,216,744">
+<area shape="rect" id="node4" href="operator.html" target="_top" title="operator" alt="" coords="356,437,505,525">
+<area shape="rect" id="node7" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,25,312,124">
+<area shape="rect" id="node5" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="549,656,837,744">
+<area shape="rect" id="node6" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="937,127,1228,479">
+<area shape="rect" id="node8" href="operation.html" target="_top" title="operation" alt="" coords="615,829,772,917">
+<area shape="rect" id="node9" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="881,981,1284,1069">
+<area shape="rect" id="node10" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="588,108,799,196">
+<area shape="rect" id="node11" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="585,515,802,603">
+<area shape="rect" id="node12" href="report.html" target="_top" title="report" alt="" coords="1017,1087,1148,1175">
+<area shape="rect" id="node13" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="985,740,1181,828">
+<area shape="rect" id="node14" href="user_operator.html" target="_top" title="user_operator" alt="" coords="597,935,789,1023">
+</map>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/business_structure.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="activity.html" target="_top" title="activity" alt="" coords="381,5,558,181">
+<area shape="rect" id="node2" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,1556,312,1655">
+<area shape="rect" id="node3" href="contact.html" target="_top" title="contact" alt="" coords="1115,1464,1292,1845">
+<area shape="rect" id="node4" href="user.html" target="_top" title="user" alt="" coords="360,1964,579,2316">
+<area shape="rect" id="node5" href="operator.html" target="_top" title="operator" alt="" coords="672,1383,963,1793">
+<area shape="rect" id="node6" href="document_type.html" target="_top" title="document_type" alt="" coords="368,3620,571,3743">
+<area shape="rect" id="node7" href="emission_category.html" target="_top" title="emission_category" alt="" coords="356,3760,583,3907">
+<area shape="rect" id="node8" href="facility.html" target="_top" title="facility" alt="" coords="1399,2284,1693,2607">
+<area shape="rect" id="node9" href="operation.html" target="_top" title="operation" alt="" coords="1052,2513,1355,3041">
+<area shape="rect" id="node10" href="facility_report.html" target="_top" title="facility_report" alt="" coords="1789,1784,1981,2077">
+<area shape="rect" id="node11" href="facility_snapshot.html" target="_top" title="facility_snapshot" alt="" coords="1737,2937,2032,3260">
+<area shape="rect" id="node12" href="fuel_type.html" target="_top" title="fuel_type" alt="" coords="393,3924,546,4071">
+<area shape="rect" id="node13" href="gas_type.html" target="_top" title="gas_type" alt="" coords="374,4088,565,4235">
+<area shape="rect" id="node14" href="methodology.html" target="_top" title="methodology" alt="" coords="377,4252,562,4375">
+<area shape="rect" id="node15" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1401,960,1691,1312">
+<area shape="rect" id="node16" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="1058,2043,1349,2424">
+<area shape="rect" id="node17" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="1058,1124,1349,1447">
+<area shape="rect" id="node18" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="356,4392,583,4568">
+<area shape="rect" id="node19" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="701,2567,933,2860">
+<area shape="rect" id="node20" href="report_operation.html" target="_top" title="report_operation" alt="" coords="627,905,1008,1257">
+<area shape="rect" id="node21" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="647,2877,987,3141">
+<area shape="rect" id="node22" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="672,595,963,888">
+<area shape="rect" id="node23" href="report_verification.html" target="_top" title="report_verification" alt="" coords="692,3159,943,3423">
+<area shape="rect" id="node24" href="reporting_field.html" target="_top" title="reporting_field" alt="" coords="371,4585,568,4791">
+<area shape="rect" id="node25" href="source_type.html" target="_top" title="source_type" alt="" coords="382,4808,557,4960">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/business_structure.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="activity.html" target="_top" title="activity" alt="" coords="1843,924,2020,1100">
+<area shape="rect" id="node2" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,1012,312,1111">
+<area shape="rect" id="node3" href="activity_json_schema.html" target="_top" title="activity_json_schema" alt="" coords="2221,1317,2467,1405">
+<area shape="rect" id="node4" href="activity_source_type_json_schema.html" target="_top" title="activity_source_type_json_schema" alt="" coords="2169,904,2519,992">
+<area shape="rect" id="node5" href="source_type.html" target="_top" title="source_type" alt="" coords="1844,719,2019,871">
+<area shape="rect" id="node6" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="632,3275,885,3363">
+<area shape="rect" id="node7" href="user.html" target="_top" title="user" alt="" coords="400,4111,515,4199">
+<area shape="rect" id="node99" href="app_role.html" target="_top" title="app_role" alt="" coords="85,4108,233,4196">
+<area shape="rect" id="node8" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="603,2211,915,2299">
+<area shape="rect" id="node9" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1397,3163,1587,3251">
+<area shape="rect" id="node10" href="operation.html" target="_top" title="operation" alt="" coords="1024,2168,1181,2256">
+<area shape="rect" id="node36" href="operator.html" target="_top" title="operator" alt="" coords="684,933,833,1021">
+<area shape="rect" id="node54" href="naics_code.html" target="_top" title="naics_code" alt="" coords="676,1568,841,1656">
+<area shape="rect" id="node55" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="616,1463,901,1551">
+<area shape="rect" id="node11" href="closure_event_facilities.html" target="_top" title="closure_event_facilities" alt="" coords="1799,2967,2063,3055">
+<area shape="rect" id="node12" href="facility.html" target="_top" title="facility" alt="" coords="1425,2792,1559,2880">
+<area shape="rect" id="node34" href="address.html" target="_top" title="address" alt="" coords="387,824,528,912">
+<area shape="rect" id="node13" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="623,1833,895,1921">
+<area shape="rect" id="node14" href="reporting_year.html" target="_top" title="reporting_year" alt="" coords="359,1463,556,1551">
+<area shape="rect" id="node15" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="3062,5592,3350,5680">
+<area shape="rect" id="node16" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2605,5903,2900,5991">
+<area shape="rect" id="node23" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="1817,4532,2045,4620">
+<area shape="rect" id="node25" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="2189,5041,2499,5129">
+<area shape="rect" id="node17" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="3077,6107,3335,6195">
+<area shape="rect" id="node18" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="1381,4500,1603,4588">
+<area shape="rect" id="node41" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="959,3579,1247,3667">
+<area shape="rect" id="node19" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="3469,5987,3708,6075">
+<area shape="rect" id="node20" href="compliance_penalty_accrual.html" target="_top" title="compliance_penalty_accrual" alt="" coords="3752,5403,4055,5491">
+<area shape="rect" id="node21" href="compliance_penalty_rate.html" target="_top" title="compliance_penalty_rate" alt="" coords="963,3405,1242,3493">
+<area shape="rect" id="node22" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="644,2792,873,2880">
+<area shape="rect" id="node24" href="report.html" target="_top" title="report" alt="" coords="1427,3021,1557,3109">
+<area shape="rect" id="node47" href="report_version.html" target="_top" title="report_version" alt="" coords="1833,3851,2029,3939">
+<area shape="rect" id="node26" href="compliance_report_version_manua_f4e36670.html" target="_top" title="compliance_report_version_manual_handling" alt="" coords="2987,6243,3425,6331">
+<area shape="rect" id="node27" href="configuration_element.html" target="_top" title="configuration_element" alt="" coords="2622,655,2883,743">
+<area shape="rect" id="node28" href="custom_methodology_schema.html" target="_top" title="custom_methodology_schema" alt="" coords="2185,655,2503,743">
+<area shape="rect" id="node29" href="gas_type.html" target="_top" title="gas_type" alt="" coords="1836,415,2027,561">
+<area shape="rect" id="node30" href="methodology.html" target="_top" title="methodology" alt="" coords="1839,579,2024,701">
+<area shape="rect" id="node31" href="configuration_element_reporting_fields.html" target="_top" title="configuration_element_reporting_fields" alt="" coords="3009,583,3403,671">
+<area shape="rect" id="node32" href="reporting_field.html" target="_top" title="reporting_field" alt="" coords="359,5,556,211">
+<area shape="rect" id="node33" href="contact.html" target="_top" title="contact" alt="" coords="1033,659,1173,747">
+<area shape="rect" id="node35" href="business_role.html" target="_top" title="business_role" alt="" coords="665,600,852,688">
+<area shape="rect" id="node37" href="document.html" target="_top" title="document" alt="" coords="1411,2377,1573,2465">
+<area shape="rect" id="node38" href="document_type.html" target="_top" title="document_type" alt="" coords="356,512,559,635">
+<area shape="rect" id="node39" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="3077,6348,3335,6436">
+<area shape="rect" id="node40" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="1812,5353,2051,5441">
+<area shape="rect" id="node42" href="elicensing_payment.html" target="_top" title="elicensing_payment" alt="" coords="2225,5803,2463,5891">
+<area shape="rect" id="node43" href="emission_category.html" target="_top" title="emission_category" alt="" coords="2231,1045,2457,1192">
+<area shape="rect" id="node44" href="emission_category_mapping.html" target="_top" title="emission_category_mapping" alt="" coords="2601,975,2905,1063">
+<area shape="rect" id="node45" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1737,3352,2125,3440">
+<area shape="rect" id="node46" href="facility_report.html" target="_top" title="facility_report" alt="" coords="2248,3193,2440,3281">
+<area shape="rect" id="node48" href="facility_report_activities.html" target="_top" title="facility_report_activities" alt="" coords="2617,2417,2888,2505">
+<area shape="rect" id="node49" href="facility_snapshot.html" target="_top" title="facility_snapshot" alt="" coords="1824,3457,2039,3545">
+<area shape="rect" id="node50" href="facility_well_authorization_numbers.html" target="_top" title="facility_well_authorization_numbers" alt="" coords="1747,3669,2115,3757">
+<area shape="rect" id="node51" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="609,3888,908,3976">
+<area shape="rect" id="node52" href="fuel_type.html" target="_top" title="fuel_type" alt="" coords="3512,3479,3665,3625">
+<area shape="rect" id="node53" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1380,1689,1604,1777">
+<area shape="rect" id="node56" href="operation_activities.html" target="_top" title="operation_activities" alt="" coords="2225,1459,2463,1547">
+<area shape="rect" id="node57" href="operation_contacts.html" target="_top" title="operation_contacts" alt="" coords="1375,1427,1609,1515">
+<area shape="rect" id="node58" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1291,2483,1693,2571">
+<area shape="rect" id="node59" href="operation_regulated_products.html" target="_top" title="operation_regulated_products" alt="" coords="2593,1913,2913,2001">
+<area shape="rect" id="node60" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="2231,1987,2457,2163">
+<area shape="rect" id="node61" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="997,764,1208,852">
+<area shape="rect" id="node62" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="994,1069,1211,1157">
+<area shape="rect" id="node63" href="product_emission_intensity.html" target="_top" title="product_emission_intensity" alt="" coords="2603,2019,2902,2107">
+<area shape="rect" id="node64" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2655,2619,2851,2707">
+<area shape="rect" id="node65" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="2213,5492,2475,5580">
+<area shape="rect" id="node66" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="2228,4104,2460,4192">
+<area shape="rect" id="node67" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="2173,5697,2515,5785">
+<area shape="rect" id="node68" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="2563,5084,2943,5172">
+<area shape="rect" id="node69" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="2183,5908,2505,5996">
+<area shape="rect" id="node70" href="report_emission.html" target="_top" title="report_emission" alt="" coords="4099,4188,4307,4276">
+<area shape="rect" id="node71" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3819,4225,3987,4313">
+<area shape="rect" id="node72" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="3090,2703,3322,2791">
+<area shape="rect" id="node73" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3504,4188,3673,4276">
+<area shape="rect" id="node74" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="2605,4608,2900,4696">
+<area shape="rect" id="node75" href="report_emission_emission_categories.html" target="_top" title="report_emission_emission_categories" alt="" coords="4351,4136,4727,4224">
+<area shape="rect" id="node76" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="4417,5336,4660,5424">
+<area shape="rect" id="node77" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="2225,5215,2463,5303">
+<area shape="rect" id="node78" href="report_new_entrant_emission.html" target="_top" title="report_new_entrant_emission" alt="" coords="2595,6112,2911,6200">
+<area shape="rect" id="node79" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="2586,4868,2919,4956">
+<area shape="rect" id="node80" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2574,2216,2931,2304">
+<area shape="rect" id="node81" href="report_non_attributable_emissio_24f9faf2.html" target="_top" title="report_non_attributable_emissions_gas_type" alt="" coords="2989,1471,3423,1559">
+<area shape="rect" id="node82" href="report_operation.html" target="_top" title="report_operation" alt="" coords="2236,1705,2452,1793">
+<area shape="rect" id="node83" href="report_operation_activities.html" target="_top" title="report_operation_activities" alt="" coords="2605,1420,2900,1508">
+<area shape="rect" id="node84" href="report_operation_regulated_products.html" target="_top" title="report_operation_regulated_products" alt="" coords="2564,1773,2941,1861">
+<area shape="rect" id="node85" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="2174,4277,2514,4365">
+<area shape="rect" id="node86" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="2199,4383,2489,4471">
+<area shape="rect" id="node87" href="report_product.html" target="_top" title="report_product" alt="" coords="2653,3837,2853,3925">
+<area shape="rect" id="node88" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="3024,4608,3388,4696">
+<area shape="rect" id="node89" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2614,4503,2891,4591">
+<area shape="rect" id="node90" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="2245,4800,2443,4888">
+<area shape="rect" id="node91" href="report_verification.html" target="_top" title="report_verification" alt="" coords="2229,3999,2459,4087">
+<area shape="rect" id="node92" href="report_verification_visit.html" target="_top" title="report_verification_visit" alt="" coords="624,3101,893,3189">
+<area shape="rect" id="node93" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1399,3268,1585,3356">
+<area shape="rect" id="node94" href="restart_event_facilities.html" target="_top" title="restart_event_facilities" alt="" coords="1801,3211,2062,3299">
+<area shape="rect" id="node95" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1340,3799,1644,3887">
+<area shape="rect" id="node96" href="temporary_shutdown_event_facilities.html" target="_top" title="temporary_shutdown_event_facilities" alt="" coords="1742,3563,2121,3651">
+<area shape="rect" id="node97" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1394,1809,1590,1897">
+<area shape="rect" id="node98" href="transfer_event_facilities.html" target="_top" title="transfer_event_facilities" alt="" coords="1796,2393,2067,2481">
+<area shape="rect" id="node100" href="user_operator.html" target="_top" title="user_operator" alt="" coords="1007,3300,1199,3388">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/business_structure.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 6.2.4</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>
