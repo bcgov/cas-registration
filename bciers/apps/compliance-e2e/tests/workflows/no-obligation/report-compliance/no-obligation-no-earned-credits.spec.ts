@@ -19,7 +19,7 @@ import {
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
 test.describe.configure({ mode: "serial" });
-test.describe("Test compliance report version no obligation or earned credits flow", () => {
+test.describe("Test  report version to compliance report version no obligation or earned credits flow", () => {
   test("Submits a No Obligation or Earned Credits report and verifies status in Compliance Summary grid", async ({
     page,
     request,
