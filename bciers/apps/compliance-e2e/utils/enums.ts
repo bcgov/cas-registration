@@ -18,6 +18,7 @@ export enum ComplianceDisplayStatus {
   EARNED_CREDITS_CHANGES_REQUIRED = "Earned credits - changes required",
   EARNED_CREDITS_APPROVED = "Earned credits - approved",
   EARNED_CREDITS_DECLINED = "Earned credits - declined",
+  PENDING_INVOICE_CREATION = "Obligation - pending invoice creation",
 }
 
 export enum ComplianceTaskTitles {
