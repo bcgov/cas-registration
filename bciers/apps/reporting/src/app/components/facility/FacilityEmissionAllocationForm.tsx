@@ -14,7 +14,11 @@ import { calculateEmissionData } from "./calculateEmissionsData";
 import { NavigationInformation } from "../taskList/types";
 import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
 import { EmissionAllocationResponse } from "@reporting/src/app/utils/getEmissionAllocations";
-import { sumWithPrecision } from "../../utils/numberUtils";
+import { validateEmissions } from "./facilityEmissionAllocation/validateEmissions";
+import {
+  validateMethodology,
+  validateMethodologyOther,
+} from "./facilityEmissionAllocation/validateMethodology";
 
 // 📊 Interface for props passed to the component
 interface Props {
@@ -29,7 +33,7 @@ interface Props {
   operationType?: string;
 }
 
-interface FormData {
+export interface FormData {
   report_product_emission_allocations: EmissionAllocationData[];
   basic_emission_allocation_data: EmissionAllocationData[];
   fuel_excluded_emission_allocation_data: EmissionAllocationData[];
@@ -38,40 +42,6 @@ interface FormData {
   allocation_methodology: string;
   allocation_other_methodology_description: string;
 }
-
-// 🛠️ Function to validate that emissions totals equal emissions allocations
-const validateEmissions = (formData: FormData): boolean => {
-  // Ignore emissions if methodology is not applicable
-  if (formData?.allocation_methodology === "Not Applicable") return true;
-
-  const combinedEmissionAllocationData = [
-    ...formData.basic_emission_allocation_data,
-    ...formData.fuel_excluded_emission_allocation_data,
-  ];
-
-  return combinedEmissionAllocationData.every((allocation) => {
-    const sum = sumWithPrecision(
-      ...allocation.products.map((p) => p.allocated_quantity),
-    );
-    const emissionTotal = parseFloat(allocation.emission_total.toString()) || 0;
-
-    return sum === parseFloat(emissionTotal.toFixed(4));
-  });
-};
-
-const validateMethodology = (formData: FormData): boolean => {
-  return (
-    formData.allocation_methodology !== undefined &&
-    formData.allocation_methodology !== ""
-  );
-};
-
-const validateMethodologyOther = (formData: FormData): boolean => {
-  return formData.allocation_methodology !== "Other"
-    ? true
-    : formData.allocation_other_methodology_description !== undefined &&
-        formData.allocation_other_methodology_description !== "";
-};
 
 // Function to remove products if methodology is not applicable, preventing validation problems
 const removeProducts = (formData: FormData) => {
