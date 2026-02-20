@@ -48,7 +48,7 @@ class ExceptionHandler:
     @staticmethod
     def debug_log_exception() -> None:
         """Log exception traceback in debug mode."""
-        if settings.DEBUG != "True":
+        if not settings.DEBUG:
             return
         print("-" * 48 + "ERROR START" + "-" * 48)
         print(traceback.format_exc())
