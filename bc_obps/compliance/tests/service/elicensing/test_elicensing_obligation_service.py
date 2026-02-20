@@ -370,7 +370,7 @@ class TestElicensingObligationService:
     def test_process_obligation_integration_failure_sets_pending_status_and_does_not_email(
         self, mock_sync_client, mock_create_fees, mock_retryable_obligation_due_email
     ) -> None:
-        obligation = make_recipe('compliance.tests.utils.compliance_obligation')
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation', invoice_number=None)
         compliance_report_version = obligation.compliance_report_version
         mock_client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
         mock_sync_client.return_value = mock_client_operator
@@ -1080,3 +1080,79 @@ class TestElicensingObligationService:
         mock_get_current_reporting_year.assert_called_once()
         mock_get_obligations_for_reminders.assert_called_once_with(cp)
         mock_retryable_penalty_accrual_execute.assert_not_called()
+
+    def test_process_obligation_integration_calls_create_invoice_if_obligation_invoice_number_does_not_exist(
+        self,
+        mock_timezone,
+        mock_sync_client,
+        mock_create_fees,
+        mock_create_invoice,
+        mock_refresh_by_invoice,
+    ):
+        # Arrange
+        mock_datetime = MagicMock()
+        mock_datetime.astimezone.return_value.date.return_value = date(2025, 11, 15)  # After Nov 1, 2025
+        mock_timezone.now.return_value = mock_datetime
+
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation', invoice_number=None)
+        mock_client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
+
+        mock_sync_client.return_value = mock_client_operator
+        mock_fee_response = FeeResponse(
+            clientObjectId=mock_client_operator.client_object_id,
+            clientGUID=mock_client_operator.client_guid,
+            fees=[FeeItem(feeGUID=str(uuid.uuid4()), feeObjectId="1")],
+        )
+
+        mock_create_fees.return_value = mock_fee_response
+        mock_invoice_response = TestInvoiceResponse(invoiceNumber='inv-001')
+        mock_create_invoice.return_value = mock_invoice_response
+        make_recipe('compliance.tests.utils.elicensing_invoice', invoice_number='inv-001')
+
+        # Act
+        ElicensingObligationService.process_obligation_integration(obligation.id)
+        obligation.refresh_from_db()
+
+        # Assert
+        mock_create_fees.assert_called_once()
+        mock_create_invoice.assert_called_once()
+        assert obligation.invoice_number == mock_invoice_response.invoiceNumber
+        mock_refresh_by_invoice.assert_called_once()
+
+    def test_process_obligation_integration_does_not_call_create_invoice_if_obligation_invoice_number_exists(
+        self,
+        mock_timezone,
+        mock_sync_client,
+        mock_create_fees,
+        mock_create_invoice,
+        mock_refresh_by_invoice,
+    ):
+        # Arrange
+        mock_datetime = MagicMock()
+        mock_datetime.astimezone.return_value.date.return_value = date(2025, 11, 15)  # After Nov 1, 2025
+        mock_timezone.now.return_value = mock_datetime
+
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation', invoice_number='inv-001')
+        mock_client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
+
+        mock_sync_client.return_value = mock_client_operator
+        mock_fee_response = FeeResponse(
+            clientObjectId=mock_client_operator.client_object_id,
+            clientGUID=mock_client_operator.client_guid,
+            fees=[FeeItem(feeGUID=str(uuid.uuid4()), feeObjectId="1")],
+        )
+
+        mock_create_fees.return_value = mock_fee_response
+        mock_invoice_response = TestInvoiceResponse(invoiceNumber='inv-001')
+        mock_create_invoice.return_value = mock_invoice_response
+        make_recipe('compliance.tests.utils.elicensing_invoice', invoice_number='inv-001')
+
+        # Act
+        ElicensingObligationService.process_obligation_integration(obligation.id)
+        obligation.refresh_from_db()
+
+        # Assert
+        mock_create_fees.assert_not_called()
+        mock_create_invoice.assert_not_called()
+        assert obligation.invoice_number == mock_invoice_response.invoiceNumber
+        mock_refresh_by_invoice.assert_called_once()
