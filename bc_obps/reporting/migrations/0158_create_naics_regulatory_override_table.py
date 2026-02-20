@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0158_add_pulp_and_paper_product'),
-        ('reporting', '0152_report_operation_final_reporting_year'),
+        ('reporting', '0157_pulp_and_paper_biogenic_emissions_2025'),
     ]
 
     operations = [
