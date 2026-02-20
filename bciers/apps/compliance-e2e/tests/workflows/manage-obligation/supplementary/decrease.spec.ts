@@ -10,6 +10,8 @@ import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summari
 import { ComplianceSetupPOM } from "@/compliance-e2e/poms/compliance-setup";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
 import { REVIEW_OBLIGATION_URL_PATTERN } from "@/compliance-e2e/utils/constants";
+import { ReviewComplianceObligationPOM } from "@/compliance-e2e/poms/manage-obligation/review-compliance-obligation";
+import { ObligationInvoicePOM } from "@/compliance-e2e/poms/manage-obligation/obligation-invoice";
 
 // 👤 run test using the storageState for role UserRole.INDUSTRY_USER_ADMIN
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
@@ -43,19 +45,26 @@ test.describe("Test supplementary compliance report version flow", () => {
     });
 
     // Assert BEFORE generate invoice
+    const reviewObligationPOM = new ReviewComplianceObligationPOM(page);
+    // Open summary and generate invoice
     await gridComplianceSummaries.openActionForOperation({
       operationName: ComplianceOperations.OBLIGATION_NOT_MET,
       linkName: GridActionText.MANAGE_OBLIGATION,
       urlPattern: REVIEW_OBLIGATION_URL_PATTERN,
     });
+    // Capture invoice pdf as buffer
+    const pdfBuffer = await reviewObligationPOM.generateInvoiceAndGetPdfBuffer(
+      2,
+      "obligation",
+    );
+    // create invoice object from buffer
+    const invoice = await ObligationInvoicePOM.fromBuffer(pdfBuffer);
 
-    // const reviewObligationPOM = new ReviewComplianceObligationPOM(page);
-    // reviewObligationPOM.clickGenerateInvoice();
-    // const beforeResp = await reviewObligationPOM.generateInvoiceAndWaitForPdf(2,"obligation"
-    // );
-
-    // const beforeBytes = await beforeResp.body();
-    // expect(beforeBytes.byteLength).toBeGreaterThan(1_000);
+    invoice
+      .assertHasInvoiceNumber()
+      .assertHasFeesAndAdjustments()
+      .assertHasAdjustmentLine()
+      .assertNotVoid();
 
     // Submit supplementary decrease
     await gridReportingReports.route();
@@ -79,16 +88,5 @@ test.describe("Test supplementary compliance report version flow", () => {
       linkName: GridActionText.MANAGE_OBLIGATION,
       urlPattern: REVIEW_OBLIGATION_URL_PATTERN,
     });
-
-    // reviewObligationPOM.clickGenerateInvoice();
-    // const afterResp = await reviewObligationPOM.generateInvoiceAndWaitForPdf(
-    //   ReportIDs.OBLIGATION_NOT_MET,
-    // );
-
-    // const afterBytes = await afterResp.body();
-    // expect(afterBytes.byteLength).toBeGreaterThan(1_000);
-
-    // // Optional sanity: invoice regenerated / adjusted
-    // expect(afterBytes.byteLength).not.toEqual(beforeBytes.byteLength);
   });
 });

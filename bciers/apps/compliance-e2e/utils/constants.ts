@@ -42,6 +42,19 @@ export const DECISION_TO_BUTTON: Record<DirectorDecision, string> = {
   [IssuanceStatus.DECLINED]: DECLINE_BUTTON_TEXT,
 };
 
+// invoice anchors
+export const INVOICE_VOID_WATERMARK_REGEX = /\bVOID\b/i;
+export const FEES_AND_ADJUSTMENTS_TEXT = "Fees and Adjustments";
+export const INVOICE_NUMBER_LABEL_REGEX = /Invoice\s*#:/i;
+export const DEFAULT_ADJUSTMENT_REGEX = /\badjust(ment|ed|ments)?\b/i;
+export const COMPLIANCE_INVOICE_TYPES = {
+  OBLIGATION: "obligation",
+  AUTOMATIC_OVERDUE_PENALTY: "automatic-overdue-penalty",
+  LATE_SUBMISSION_PENALTY: "late-submission-penalty",
+} as const;
+export type ComplianceInvoiceType =
+  (typeof COMPLIANCE_INVOICE_TYPES)[keyof typeof COMPLIANCE_INVOICE_TYPES];
+
 // --- URL patterns / base paths ---
 
 export const COMPLIANCE_SUMMARIES_BASE_PATH =
@@ -64,6 +77,9 @@ export const DOWNLOAD_PAYMENT_INSTRUCTIONS_URL_PATTERN = new RegExp(
 export const REQUEST_ISSUANCE_CREDITS_URL_PATTERN = new RegExp(
   `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/request-issuance-of-earned-credits$`,
 );
+
+// Generate invoice
+export const COMPLIANCE_INVOICE_API_BASE = "/compliance/api/invoice";
 
 // Industry: scenario name used by the Django stub
 export const EARNED_CREDITS_REQUEST_ISSUANCE_SCENARIO =
