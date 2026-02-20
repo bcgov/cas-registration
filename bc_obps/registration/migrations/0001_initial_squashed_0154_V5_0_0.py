@@ -45,7 +45,9 @@ def init_app_role_data(apps, schema_editor):
 
 def reverse_init_app_role_data(apps, schema_editor):
     AppRole = apps.get_model('registration', 'AppRole')
-    AppRole.objects.filter(role_name__in=['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user', 'cas_director', 'cas_view_only']).delete()
+    AppRole.objects.filter(
+        role_name__in=['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user', 'cas_director', 'cas_view_only']
+    ).delete()
 
 
 def init_business_role_data(apps, schema_editor):
@@ -63,10 +65,6 @@ def init_business_role_data(apps, schema_editor):
             BusinessRole(
                 role_name='Authorized Signing Officer',
                 role_description='A person who has the authority to sign documents on behalf of the business.',
-            ),
-            BusinessRole(
-                role_name='Operation Registration Lead',
-                role_description='A person who is responsible for registering operations on behalf of the business.',
             ),
         ]
     )
@@ -116,9 +114,9 @@ def reverse_init_business_structure_data(apps, schema_editor):
 
 def init_document_type_data(apps, schema_editor):
     DocumentType = apps.get_model('registration', 'DocumentType')
-    DocumentType.objects.create(name='new_entrant_application')
     DocumentType.objects.bulk_create(
         [
+            DocumentType(name='new_entrant_application'),
             DocumentType(name='boundary_map'),
             DocumentType(name='signed_statutory_declaration'),
             DocumentType(name='process_flow_diagram'),
@@ -129,7 +127,6 @@ def init_document_type_data(apps, schema_editor):
             DocumentType(name='proof_of_start'),
             DocumentType(name='opt_in_signed_statutory_declaration'),
             DocumentType(name='equipment_list'),
-            DocumentType(name='new_entrant_application'),
         ]
     )
 
@@ -157,46 +154,77 @@ def init_naics_code_data(apps, schema_editor):
     NaicsCode = apps.get_model('registration', 'NaicsCode')
     NaicsCode.objects.bulk_create(
         [
-            NaicsCode(naics_code='211110', naics_description='Oil and gas extraction (except oil sands)'),
-            NaicsCode(naics_code='212114', naics_description='Bituminous coal mining'),
-            NaicsCode(naics_code='212220', naics_description='Gold and silver ore mining'),
-            NaicsCode(naics_code='212231', naics_description='Lead-zinc ore mining'),
-            NaicsCode(naics_code='212233', naics_description='Copper-zinc ore mining'),
-            NaicsCode(naics_code='212299', naics_description='All other metal ore mining'),
-            NaicsCode(naics_code='213118', naics_description='Services to oil and gas extraction'),
-            NaicsCode(naics_code='311119', naics_description='Other animal food manufacturing'),
-            NaicsCode(naics_code='311310', naics_description='Sugar manufacturing'),
-            NaicsCode(naics_code='311614', naics_description='Rendering and meat processing from carcasses'),
-            NaicsCode(naics_code='321111', naics_description='Sawmills (except shingle and shake mills)'),
-            NaicsCode(naics_code='321212', naics_description='Softwood veneer and plywood mills'),
-            NaicsCode(naics_code='321216', naics_description='Particle board and fibreboard mills'),
-            NaicsCode(naics_code='321999', naics_description='All other miscellaneous wood product manufacturing'),
-            NaicsCode(naics_code='322111', naics_description='Mechanical pulp mills'),
-            NaicsCode(naics_code='322112', naics_description='Chemical pulp mills'),
-            NaicsCode(naics_code='322121', naics_description='Paper (except newsprint) mills'),
-            NaicsCode(naics_code='322122', naics_description='Newsprint mills'),
-            NaicsCode(naics_code='324110', naics_description='Petroleum refineries'),
-            NaicsCode(naics_code='325120', naics_description='Industrial gas manufacturing'),
-            NaicsCode(naics_code='325181', naics_description='Alkali and chlorine manufacturing'),
-            NaicsCode(naics_code='325189', naics_description='All other basic inorganic chemical manufacturing'),
-            NaicsCode(naics_code='327310', naics_description='Cement manufacturing'),
-            NaicsCode(naics_code='327410', naics_description='Lime manufacturing'),
-            NaicsCode(naics_code='327420', naics_description='Gypsum product manufacturing'),
-            NaicsCode(naics_code='327990', naics_description='All other non-metallic mineral product manufacturing'),
-            NaicsCode(naics_code='331222', naics_description='Steel wire drawing'),
-            NaicsCode(naics_code='331313', naics_description='Primary production of alumina and aluminum'),
-            NaicsCode(naics_code='331410', naics_description='Non-ferrous metal (except aluminum) smelting and refining'),
-            NaicsCode(naics_code='331511', naics_description='Iron foundries'),
+            NaicsCode(
+                naics_code='211110', naics_description='Oil and gas extraction (except oil sands)', is_regulated=True
+            ),
+            NaicsCode(naics_code='212114', naics_description='Bituminous coal mining', is_regulated=True),
+            NaicsCode(naics_code='212220', naics_description='Gold and silver ore mining', is_regulated=True),
+            NaicsCode(naics_code='212231', naics_description='Lead-zinc ore mining', is_regulated=True),
+            NaicsCode(naics_code='212233', naics_description='Copper-zinc ore mining', is_regulated=True),
+            NaicsCode(naics_code='212299', naics_description='All other metal ore mining', is_regulated=True),
+            NaicsCode(naics_code='213118', naics_description='Services to oil and gas extraction', is_regulated=True),
+            NaicsCode(naics_code='311119', naics_description='Other animal food manufacturing', is_regulated=True),
+            NaicsCode(naics_code='311310', naics_description='Sugar manufacturing', is_regulated=True),
+            NaicsCode(
+                naics_code='311614', naics_description='Rendering and meat processing from carcasses', is_regulated=True
+            ),
+            NaicsCode(
+                naics_code='321111', naics_description='Sawmills (except shingle and shake mills)', is_regulated=True
+            ),
+            NaicsCode(naics_code='321212', naics_description='Softwood veneer and plywood mills', is_regulated=True),
+            NaicsCode(naics_code='321216', naics_description='Particle board and fibreboard mills', is_regulated=True),
+            NaicsCode(
+                naics_code='321999',
+                naics_description='All other miscellaneous wood product manufacturing',
+                is_regulated=True,
+            ),
+            NaicsCode(naics_code='322111', naics_description='Mechanical pulp mills', is_regulated=True),
+            NaicsCode(naics_code='322112', naics_description='Chemical pulp mills', is_regulated=True),
+            NaicsCode(naics_code='322121', naics_description='Paper (except newsprint) mills', is_regulated=True),
+            NaicsCode(naics_code='322122', naics_description='Newsprint mills', is_regulated=True),
+            NaicsCode(naics_code='324110', naics_description='Petroleum refineries', is_regulated=True),
+            NaicsCode(naics_code='325120', naics_description='Industrial gas manufacturing', is_regulated=True),
+            NaicsCode(naics_code='325181', naics_description='Alkali and chlorine manufacturing', is_regulated=True),
+            NaicsCode(
+                naics_code='325189',
+                naics_description='All other basic inorganic chemical manufacturing',
+                is_regulated=True,
+            ),
+            NaicsCode(naics_code='327310', naics_description='Cement manufacturing', is_regulated=True),
+            NaicsCode(naics_code='327410', naics_description='Lime manufacturing', is_regulated=True),
+            NaicsCode(naics_code='327420', naics_description='Gypsum product manufacturing', is_regulated=True),
+            NaicsCode(
+                naics_code='327990',
+                naics_description='All other non-metallic mineral product manufacturing',
+                is_regulated=True,
+            ),
+            NaicsCode(naics_code='331222', naics_description='Steel wire drawing', is_regulated=True),
+            NaicsCode(
+                naics_code='331313', naics_description='Primary production of alumina and aluminum', is_regulated=True
+            ),
+            NaicsCode(
+                naics_code='331410',
+                naics_description='Non-ferrous metal (except aluminum) smelting and refining',
+                is_regulated=True,
+            ),
+            NaicsCode(naics_code='331511', naics_description='Iron foundries', is_regulated=True),
             NaicsCode(
                 naics_code='412110',
                 naics_description='Petroleum, petroleum products, and other hydrocarbons merchant wholesalers',
+                is_regulated=True,
             ),
-            NaicsCode(naics_code='486210', naics_description='Pipeline transportation of natural gas'),
-            NaicsCode(naics_code='325190', naics_description='Other basic organic chemical manufacturing'),
+            NaicsCode(
+                naics_code='486210', naics_description='Pipeline transportation of natural gas', is_regulated=True
+            ),
+            NaicsCode(
+                naics_code='325190', naics_description='Other basic organic chemical manufacturing', is_regulated=True
+            ),
             NaicsCode(naics_code='111412', naics_description='Cannabis grown under cover', is_regulated=False),
             NaicsCode(naics_code='111419', naics_description='Other food crops grown under cover', is_regulated=False),
             NaicsCode(naics_code='221111', naics_description='Hydro-electric power generation', is_regulated=False),
-            NaicsCode(naics_code='221112', naics_description='Fossil-fuel electric power generation', is_regulated=False),
+            NaicsCode(
+                naics_code='221112', naics_description='Fossil-fuel electric power generation', is_regulated=False
+            ),
             NaicsCode(naics_code='221119', naics_description='Other electric power generation', is_regulated=False),
             NaicsCode(
                 naics_code='221121',
@@ -206,7 +234,9 @@ def init_naics_code_data(apps, schema_editor):
             NaicsCode(naics_code='221210', naics_description='Natural gas distribution', is_regulated=False),
             NaicsCode(naics_code='221320', naics_description='Sewage treatment facilities', is_regulated=False),
             NaicsCode(naics_code='221330', naics_description='Steam and air-conditioning supply', is_regulated=False),
-            NaicsCode(naics_code='486110', naics_description='Pipeline transportation of crude oil', is_regulated=False),
+            NaicsCode(
+                naics_code='486110', naics_description='Pipeline transportation of crude oil', is_regulated=False
+            ),
             NaicsCode(naics_code='493110', naics_description='General warehousing and storage', is_regulated=False),
             NaicsCode(naics_code='493190', naics_description='Other warehousing and storage', is_regulated=False),
             NaicsCode(naics_code='562210', naics_description='Waste treatment and disposal', is_regulated=False),
@@ -278,43 +308,93 @@ def init_regulated_product_data(apps, schema_editor):
     RegulatedProduct = apps.get_model('registration', 'RegulatedProduct')
     RegulatedProduct.objects.bulk_create(
         [
-            RegulatedProduct(name='BC-specific refinery complexity throughput'),
-            RegulatedProduct(name='Cement equivalent'),
-            RegulatedProduct(name='Chemicals: pure hydrogen peroxide'),
-            RegulatedProduct(name='Compression, centrifugal - consumed energy'),
-            RegulatedProduct(name='Compression, positive displacement - consumed energy'),
-            RegulatedProduct(name='Gypsum wallboard'),
-            RegulatedProduct(name='Lime at 94.5% CaO and lime kiln dust'),
-            RegulatedProduct(name='Limestone for sale'),
-            RegulatedProduct(name='Liquefied natural gas'),
-            RegulatedProduct(name='Mining: coal'),
-            RegulatedProduct(name='Mining: copper-equivalent, open pit'),
-            RegulatedProduct(name='Mining: copper-equivalent, underground'),
-            RegulatedProduct(name='Mining: gold-equivalent'),
-            RegulatedProduct(name='Processing sour gas - oil equivalent'),
-            RegulatedProduct(name='Processing sweet gas - oil equivalent'),
-            RegulatedProduct(name='Pulp and paper: chemical pulp'),
-            RegulatedProduct(name='Pulp and paper: non-chemical pulp'),
-            RegulatedProduct(name='Pulp and paper: paper (except newsprint and tissue paper)'),
-            RegulatedProduct(name='Pulp and paper: tissue Paper'),
-            RegulatedProduct(name='Rendering and meat processing: protein and fat'),
-            RegulatedProduct(name='Renewable diesel'),
-            RegulatedProduct(name='Smelting: aluminum'),
-            RegulatedProduct(name='Smelting: lead-zinc'),
-            RegulatedProduct(name='Sold electricity'),
-            RegulatedProduct(name='Sold Heat'),
-            RegulatedProduct(name='Steel wire: HDG-process (hot dip galvanization)'),
-            RegulatedProduct(name='Steel wire: Non-HDG'),
-            RegulatedProduct(name='Sugar: liquid'),
-            RegulatedProduct(name='Sugar: solid'),
-            RegulatedProduct(name='Wood products: lumber'),
-            RegulatedProduct(name='Wood products: medium density fibreboard (MDF)'),
-            RegulatedProduct(name='Wood products: plywood'),
-            RegulatedProduct(name='Wood products: veneer'),
-            RegulatedProduct(name='Wood products: wood chips (including hog fuel)'),
-            RegulatedProduct(name='Wood products: wood pellets'),
-            RegulatedProduct(name='Forged steel balls: less than 3.5 inches diameter'),
-            RegulatedProduct(name='Forged steel balls: greater than 4 inches diameter'),
+            RegulatedProduct(name='BC-specific refinery complexity throughput', unit='BCRCT', is_regulated=True),
+            RegulatedProduct(name='Cement equivalent', unit='Tonne cement equivalent', is_regulated=True),
+            RegulatedProduct(
+                name='Chemicals: pure hydrogen peroxide', unit='Tonne pure hydrogen peroxide', is_regulated=True
+            ),
+            RegulatedProduct(
+                name='Compression, centrifugal - consumed energy', unit='MWh consumed energy', is_regulated=True
+            ),
+            RegulatedProduct(
+                name='Compression, positive displacement - consumed energy',
+                unit='MWh consumed energy',
+                is_regulated=True,
+            ),
+            RegulatedProduct(name='Gypsum wallboard', unit='Thousand square feet', is_regulated=True),
+            RegulatedProduct(
+                name='Lime at 94.5% CaO and lime kiln dust', unit='Tonne lime@94.5% CAO + LKD', is_regulated=True
+            ),
+            RegulatedProduct(name='Limestone for sale', unit='Tonne limestone', is_regulated=True),
+            RegulatedProduct(name='Liquefied natural gas', unit='N/A', is_regulated=True),
+            RegulatedProduct(name='Mining: coal', unit='Tonne saleable coal', is_regulated=True),
+            RegulatedProduct(
+                name='Mining: copper-equivalent, open pit', unit='Tonne copper-equivalent', is_regulated=True
+            ),
+            RegulatedProduct(
+                name='Mining: copper-equivalent, underground', unit='Tonne copper-equivalent', is_regulated=True
+            ),
+            RegulatedProduct(name='Mining: gold-equivalent', unit='Tonne gold-equivalent', is_regulated=True),
+            RegulatedProduct(
+                name='Processing sour gas - oil equivalent', unit='Cubic metre oil-equivalent', is_regulated=True
+            ),
+            RegulatedProduct(
+                name='Processing sweet gas - oil equivalent', unit='Cubic metre oil-equivalent', is_regulated=True
+            ),
+            RegulatedProduct(
+                name='Pulp and paper: chemical pulp', unit='Tonne saleable dry chemical pulp', is_regulated=True
+            ),
+            RegulatedProduct(
+                name='Pulp and paper: non-chemical pulp', unit='Tonne saleable dry non-chemical pulp', is_regulated=True
+            ),
+            RegulatedProduct(
+                name='Pulp and paper: paper (except newsprint and tissue paper)',
+                unit='Tonne saleable paper',
+                is_regulated=True,
+            ),
+            RegulatedProduct(
+                name='Pulp and paper: tissue Paper', unit='Tonne saleable tissue paper', is_regulated=True
+            ),
+            RegulatedProduct(
+                name='Rendering and meat processing: protein and fat', unit='Tonne protein and fat', is_regulated=True
+            ),
+            RegulatedProduct(name='Renewable diesel', unit='N/A', is_regulated=True),
+            RegulatedProduct(name='Smelting: aluminum', unit='Tonne saleable aluminum', is_regulated=True),
+            RegulatedProduct(name='Smelting: lead-zinc', unit='Tonne lead-zinc', is_regulated=True),
+            RegulatedProduct(name='Sold electricity', unit='GWh', is_regulated=True),
+            RegulatedProduct(name='Sold Heat', unit='GJ', is_regulated=True),
+            RegulatedProduct(
+                name='Steel wire: HDG-process (hot dip galvanization)',
+                unit='Tonne hot dip galvanization wire',
+                is_regulated=True,
+            ),
+            RegulatedProduct(name='Steel wire: Non-HDG', unit='Tonne non-HDG wire', is_regulated=True),
+            RegulatedProduct(name='Sugar: liquid', unit='Tonne solid sugar content', is_regulated=True),
+            RegulatedProduct(name='Sugar: solid', unit='Tonne solid sugar', is_regulated=True),
+            RegulatedProduct(name='Wood products: lumber', unit='Cubic metre saleable lumber', is_regulated=True),
+            RegulatedProduct(
+                name='Wood products: medium density fibreboard (MDF)',
+                unit='Cubic metre saleable MDF',
+                is_regulated=True,
+            ),
+            RegulatedProduct(name='Wood products: plywood', unit='Cubic metre saleable plywood', is_regulated=True),
+            RegulatedProduct(name='Wood products: veneer', unit='Cubic metre saleable veneer', is_regulated=True),
+            RegulatedProduct(
+                name='Wood products: wood chips (including hog fuel)',
+                unit='Cubic metre saleable wood chips',
+                is_regulated=True,
+            ),
+            RegulatedProduct(name='Wood products: wood pellets', unit='Tonne saleable wood pellets', is_regulated=True),
+            RegulatedProduct(
+                name='Forged steel balls: less than 3.5 inches diameter',
+                unit='Tonne forged steel balls',
+                is_regulated=True,
+            ),
+            RegulatedProduct(
+                name='Forged steel balls: greater than 4 inches diameter',
+                unit='Tonne forged steel balls',
+                is_regulated=True,
+            ),
         ]
     )
 
@@ -369,7 +449,12 @@ def init_activity_data(apps, schema_editor):
     Activity.objects.bulk_create(
         [
             # SFO activities
-            Activity(name='Fuel combustion by mobile equipment', applicable_to='Single Facility Operation', slug='fuel_combustion_by_mobile', weight=500),
+            Activity(
+                name='Fuel combustion by mobile equipment',
+                applicable_to='Single Facility Operation',
+                slug='fuel_combustion_by_mobile',
+                weight=500,
+            ),
             # LFO activities
             Activity(
                 name='General stationary combustion, other than non-compression and non-processing combustion',
@@ -377,8 +462,18 @@ def init_activity_data(apps, schema_editor):
                 slug='gsc_other_than_non_compression',
                 weight=300,
             ),
-            Activity(name='General stationary non-compression and non-processing combustion', applicable_to='Linear Facilities Operation', slug='gsc_non_compression', weight=400),
-            Activity(name='Electricity transmission', applicable_to='Linear Facilities Operation', slug='electricity_transmission', weight=9999),
+            Activity(
+                name='General stationary non-compression and non-processing combustion',
+                applicable_to='Linear Facilities Operation',
+                slug='gsc_non_compression',
+                weight=400,
+            ),
+            Activity(
+                name='Electricity transmission',
+                applicable_to='Linear Facilities Operation',
+                slug='electricity_transmission',
+                weight=9999,
+            ),
             Activity(
                 name='Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities',
                 applicable_to='Linear Facilities Operation',
@@ -403,34 +498,71 @@ def init_activity_data(apps, schema_editor):
                 slug='natural_gas_activities_non_compression',
                 weight=9999,
             ),
-            Activity(name='LNG activities', applicable_to='Linear Facilities Operation', slug='lng_activities', weight=9999),
+            Activity(
+                name='LNG activities', applicable_to='Linear Facilities Operation', slug='lng_activities', weight=9999
+            ),
             # All activities
-            Activity(name='General stationary combustion excluding line tracing', applicable_to='all', slug='gsc_excluding_line_tracing', weight=100),
-            Activity(name='General stationary combustion solely for the purpose of line tracing', applicable_to='all', slug='gsc_solely_for_line_tracing', weight=200),
-            Activity(name='Aluminum or alumina production', applicable_to='all', slug='aluminum_production', weight=9999),
+            Activity(
+                name='General stationary combustion excluding line tracing',
+                applicable_to='all',
+                slug='gsc_excluding_line_tracing',
+                weight=100,
+            ),
+            Activity(
+                name='General stationary combustion solely for the purpose of line tracing',
+                applicable_to='all',
+                slug='gsc_solely_for_line_tracing',
+                weight=200,
+            ),
+            Activity(
+                name='Aluminum or alumina production', applicable_to='all', slug='aluminum_production', weight=9999
+            ),
             Activity(name='Ammonia production', applicable_to='all', slug='ammonia_production', weight=9999),
             Activity(name='Cement production', applicable_to='all', slug='cement_production', weight=9999),
             Activity(name='Underground coal mining', applicable_to='all', slug='underground_coal_mining', weight=9999),
-            Activity(name='Coal storage at facilities that combust coal', applicable_to='all', slug='coal_storage', weight=9999),
-            Activity(name='Copper or nickel smelting or refining', applicable_to='all', slug='copper_nickel_refining', weight=9999),
+            Activity(
+                name='Coal storage at facilities that combust coal',
+                applicable_to='all',
+                slug='coal_storage',
+                weight=9999,
+            ),
+            Activity(
+                name='Copper or nickel smelting or refining',
+                applicable_to='all',
+                slug='copper_nickel_refining',
+                weight=9999,
+            ),
             Activity(name='Electricity generation', applicable_to='all', slug='electricity_generation', weight=9999),
-            Activity(name='Electronics manufacturing', applicable_to='all', slug='electronics_manufacturing', weight=9999),
+            Activity(
+                name='Electronics manufacturing', applicable_to='all', slug='electronics_manufacturing', weight=9999
+            ),
             Activity(name='Ferroalloy production', applicable_to='all', slug='ferroalloy_production', weight=9999),
             Activity(name='Glass manufacturing', applicable_to='all', slug='glass_manufacturing', weight=9999),
             Activity(name='Hydrogen production', applicable_to='all', slug='hydrogen_production', weight=9999),
-            Activity(name='Industrial wastewater processing', applicable_to='all', slug='ind_wastewater_processing', weight=9999),
+            Activity(
+                name='Industrial wastewater processing',
+                applicable_to='all',
+                slug='ind_wastewater_processing',
+                weight=9999,
+            ),
             Activity(name='Lead production', applicable_to='all', slug='lead_production', weight=9999),
             Activity(name='Lime manufacturing', applicable_to='all', slug='lime_manufacturing', weight=9999),
             Activity(name='Magnesium production', applicable_to='all', slug='magnesium_production', weight=9999),
-            Activity(name='Nitric acid manufacturing', applicable_to='all', slug='nitric_acid_manufacturing', weight=9999),
-            Activity(name='Petrochemical production', applicable_to='all', slug='petrochemical_production', weight=9999),
+            Activity(
+                name='Nitric acid manufacturing', applicable_to='all', slug='nitric_acid_manufacturing', weight=9999
+            ),
+            Activity(
+                name='Petrochemical production', applicable_to='all', slug='petrochemical_production', weight=9999
+            ),
             Activity(name='Petroleum refining', applicable_to='all', slug='petroleum_refining', weight=9999),
             Activity(name='Phosphoric acid production', applicable_to='all', slug='phos_acid_production', weight=9999),
             Activity(name='Pulp and paper production', applicable_to='all', slug='pulp_and_paper', weight=9999),
             Activity(name='Refinery fuel gas combustion', applicable_to='all', slug='refinery_fuel_gas', weight=9999),
             Activity(name='Zinc production', applicable_to='all', slug='zinc_production', weight=9999),
             Activity(name='Open pit coal mining', applicable_to='all', slug='open_pit_coal_mining', weight=9999),
-            Activity(name='Storage of petroleum products', applicable_to='all', slug='storage_petro_products', weight=9999),
+            Activity(
+                name='Storage of petroleum products', applicable_to='all', slug='storage_petro_products', weight=9999
+            ),
             Activity(name='Carbonate use', applicable_to='all', slug='carbonate_use', weight=9999),
         ]
     )
@@ -498,12 +630,12 @@ def add_unregulated_products(apps, schema_editor):
 
     RegulatedProduct.objects.create(
         name='Oil and gas non-processing, non-compression',
-        unit=None,
+        unit='N/A',
         is_regulated=False,
     )
     RegulatedProduct.objects.create(
         name='Fat, oil and grease collection, refining and storage',
-        unit=None,
+        unit='N/A',
         is_regulated=False,
     )
     RegulatedProduct.objects.create(
@@ -697,11 +829,15 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 (
                     'street_address',
-                    models.CharField(blank=True, db_comment='Street address of relevant location)', max_length=1000, null=True),
+                    models.CharField(
+                        blank=True, db_comment='Street address of relevant location)', max_length=1000, null=True
+                    ),
                 ),
                 (
                     'municipality',
-                    models.CharField(blank=True, db_comment='Municipality of relevant location', max_length=1000, null=True),
+                    models.CharField(
+                        blank=True, db_comment='Municipality of relevant location', max_length=1000, null=True
+                    ),
                 ),
                 (
                     'province',
@@ -879,7 +1015,9 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 (
                     'name',
-                    models.CharField(db_comment='Name of document type (e.g. opt in signed statutory declaration)', max_length=1000),
+                    models.CharField(
+                        db_comment='Name of document type (e.g. opt in signed statutory declaration)', max_length=1000
+                    ),
                 ),
             ],
             options={
@@ -893,11 +1031,15 @@ class Migration(migrations.Migration):
                 ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
                 (
                     'street_address',
-                    models.CharField(blank=True, db_comment='Street address of relevant location)', max_length=1000, null=True),
+                    models.CharField(
+                        blank=True, db_comment='Street address of relevant location)', max_length=1000, null=True
+                    ),
                 ),
                 (
                     'municipality',
-                    models.CharField(blank=True, db_comment='Municipality of relevant location', max_length=1000, null=True),
+                    models.CharField(
+                        blank=True, db_comment='Municipality of relevant location', max_length=1000, null=True
+                    ),
                 ),
                 (
                     'province',
@@ -1123,7 +1265,9 @@ class Migration(migrations.Migration):
                 ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
                 (
                     'name',
-                    models.CharField(db_comment='Name of document type (e.g. opt in signed statutory declaration)', max_length=1000),
+                    models.CharField(
+                        db_comment='Name of document type (e.g. opt in signed statutory declaration)', max_length=1000
+                    ),
                 ),
                 ('history_user_id', models.UUIDField(blank=True, null=True)),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
@@ -1219,7 +1363,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'operation_has_multiple_operators',
-                    models.BooleanField(db_comment='Whether or not the operation has multiple operators', default=False),
+                    models.BooleanField(
+                        db_comment='Whether or not the operation has multiple operators', default=False
+                    ),
                 ),
                 (
                     'verified_at',
@@ -1299,8 +1445,12 @@ class Migration(migrations.Migration):
                     models.IntegerField(
                         db_comment='The CRA business number of an operator',
                         validators=[
-                            django.core.validators.MaxValueValidator(999999999, message='CRA Business Number should be 9 digits.'),
-                            django.core.validators.MinValueValidator(100000000, message='CRA Business Number should be 9 digits.'),
+                            django.core.validators.MaxValueValidator(
+                                999999999, message='CRA Business Number should be 9 digits.'
+                            ),
+                            django.core.validators.MinValueValidator(
+                                100000000, message='CRA Business Number should be 9 digits.'
+                            ),
                         ],
                     ),
                 ),
@@ -1344,7 +1494,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'verified_at',
-                    models.DateTimeField(blank=True, db_comment='The time an operator was verified by an IRC user', null=True),
+                    models.DateTimeField(
+                        blank=True, db_comment='The time an operator was verified by an IRC user', null=True
+                    ),
                 ),
                 (
                     'is_new',
@@ -1493,8 +1645,12 @@ class Migration(migrations.Migration):
                     models.IntegerField(
                         db_comment='The CRA business number of an operator',
                         validators=[
-                            django.core.validators.MaxValueValidator(999999999, message='CRA Business Number should be 9 digits.'),
-                            django.core.validators.MinValueValidator(100000000, message='CRA Business Number should be 9 digits.'),
+                            django.core.validators.MaxValueValidator(
+                                999999999, message='CRA Business Number should be 9 digits.'
+                            ),
+                            django.core.validators.MinValueValidator(
+                                100000000, message='CRA Business Number should be 9 digits.'
+                            ),
                         ],
                     ),
                 ),
@@ -1538,7 +1694,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'verified_at',
-                    models.DateTimeField(blank=True, db_comment='The time an operator was verified by an IRC user', null=True),
+                    models.DateTimeField(
+                        blank=True, db_comment='The time an operator was verified by an IRC user', null=True
+                    ),
                 ),
                 (
                     'is_new',
@@ -1620,7 +1778,9 @@ class Migration(migrations.Migration):
                 ('archived_at', models.DateTimeField(blank=True, null=True)),
                 (
                     'operator_index',
-                    models.IntegerField(db_comment='Index used to differentiate parent operators for the child operator for saving/updating purposes'),
+                    models.IntegerField(
+                        db_comment='Index used to differentiate parent operators for the child operator for saving/updating purposes'
+                    ),
                 ),
                 ('legal_name', models.CharField(db_comment='The legal name of an operator', max_length=1000)),
                 (
@@ -1740,11 +1900,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='operator',
-            name='contacts',
-            field=models.ManyToManyField(blank=True, related_name='operators', to='registration.contact'),
-        ),
-        migrations.AddField(
-            model_name='operator',
             name='created_by',
             field=models.ForeignKey(
                 blank=True,
@@ -1753,11 +1908,6 @@ class Migration(migrations.Migration):
                 related_name='%(class)s_created',
                 to='registration.user',
             ),
-        ),
-        migrations.AddField(
-            model_name='operator',
-            name='documents',
-            field=models.ManyToManyField(blank=True, related_name='operators', to='registration.document'),
         ),
         migrations.AddField(
             model_name='operator',
@@ -1858,7 +2008,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'operation_has_multiple_operators',
-                    models.BooleanField(db_comment='Whether or not the operation has multiple operators', default=False),
+                    models.BooleanField(
+                        db_comment='Whether or not the operation has multiple operators', default=False
+                    ),
                 ),
                 (
                     'verified_at',
@@ -1996,7 +2148,9 @@ class Migration(migrations.Migration):
                 ('archived_at', models.DateTimeField(blank=True, null=True)),
                 (
                     'operator_index',
-                    models.IntegerField(db_comment='Index used to differentiate operators for this operation for saving/updating purposes'),
+                    models.IntegerField(
+                        db_comment='Index used to differentiate operators for this operation for saving/updating purposes'
+                    ),
                 ),
                 ('legal_name', models.CharField(db_comment='The legal name of an operator', max_length=1000)),
                 ('trade_name', models.CharField(db_comment='The trade name of an operator', max_length=1000)),
@@ -2141,7 +2295,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'verified_at',
-                    models.DateTimeField(blank=True, db_comment='The time a user operator was verified by an IRC user', null=True),
+                    models.DateTimeField(
+                        blank=True, db_comment='The time a user operator was verified by an IRC user', null=True
+                    ),
                 ),
                 ('history_user_id', models.UUIDField(blank=True, null=True)),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
@@ -2282,7 +2438,9 @@ class Migration(migrations.Migration):
                 ('archived_at', models.DateTimeField(blank=True, null=True)),
                 (
                     'operator_index',
-                    models.IntegerField(db_comment='Index used to differentiate parent operators for the child operator for saving/updating purposes'),
+                    models.IntegerField(
+                        db_comment='Index used to differentiate parent operators for the child operator for saving/updating purposes'
+                    ),
                 ),
                 ('legal_name', models.CharField(db_comment='The legal name of an operator', max_length=1000)),
                 (
@@ -2772,7 +2930,9 @@ class Migration(migrations.Migration):
                 ('archived_at', models.DateTimeField(blank=True, null=True)),
                 (
                     'operator_index',
-                    models.IntegerField(db_comment='Index used to differentiate operators for this operation for saving/updating purposes'),
+                    models.IntegerField(
+                        db_comment='Index used to differentiate operators for this operation for saving/updating purposes'
+                    ),
                 ),
                 ('legal_name', models.CharField(db_comment='The legal name of an operator', max_length=1000)),
                 ('trade_name', models.CharField(db_comment='The trade name of an operator', max_length=1000)),
@@ -3150,11 +3310,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='contact',
-            name='documents',
-            field=models.ManyToManyField(blank=True, related_name='contacts', to='registration.document'),
-        ),
-        migrations.AddField(
-            model_name='contact',
             name='updated_by',
             field=models.ForeignKey(
                 blank=True,
@@ -3200,7 +3355,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'verified_at',
-                    models.DateTimeField(blank=True, db_comment='The time a user operator was verified by an IRC user', null=True),
+                    models.DateTimeField(
+                        blank=True, db_comment='The time a user operator was verified by an IRC user', null=True
+                    ),
                 ),
                 (
                     'archived_by',
@@ -3269,7 +3426,9 @@ class Migration(migrations.Migration):
                     models.Index(fields=['user'], name='user_operator_user_idx'),
                     models.Index(fields=['operator'], name='user_operator_operator_idx'),
                 ],
-                'constraints': [models.UniqueConstraint(fields=('user', 'operator'), name='user_and_operator_unique_constraint')],
+                'constraints': [
+                    models.UniqueConstraint(fields=('user', 'operator'), name='user_and_operator_unique_constraint')
+                ],
             },
         ),
         migrations.AddIndex(
@@ -3278,7 +3437,9 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='user',
-            constraint=models.UniqueConstraint(fields=('user_guid', 'business_guid'), name='uuid_user_and_business_constraint'),
+            constraint=models.UniqueConstraint(
+                fields=('user_guid', 'business_guid'), name='uuid_user_and_business_constraint'
+            ),
         ),
         migrations.AddIndex(
             model_name='parentoperator',
@@ -3298,7 +3459,9 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='operator',
-            constraint=models.UniqueConstraint(fields=('cra_business_number',), name='cra_business_number_unique_constraint'),
+            constraint=models.UniqueConstraint(
+                fields=('cra_business_number',), name='cra_business_number_unique_constraint'
+            ),
         ),
         migrations.AddIndex(
             model_name='operation',
@@ -3332,39 +3495,19 @@ class Migration(migrations.Migration):
             model_name='contact',
             index=models.Index(fields=['business_role'], name='contact_role_idx'),
         ),
-        migrations.RunPython(
-            code=init_app_role_data,
-            reverse_code=reverse_init_app_role_data,
-        ),
-        migrations.RunPython(
-            code=init_business_role_data,
-            reverse_code=reverse_init_business_role_data,
-        ),
-        migrations.RunPython(
-            code=init_business_structure_data,
-            reverse_code=reverse_init_business_structure_data,
-        ),
-        migrations.RunPython(
-            code=init_document_type_data,
-            reverse_code=reverse_init_document_type_data,
-        ),
-        migrations.RunPython(
-            code=init_naics_code_data,
-            reverse_code=reverse_init_naics_code_data,
-        ),
-        migrations.RunPython(
-            code=init_regulated_product_data,
-            reverse_code=reverse_init_regulated_product_data,
-        ),
         migrations.AddField(
             model_name='useroperator',
             name='user_friendly_id',
-            field=models.IntegerField(blank=True, db_comment='A user-friendly ID to identify the user operator', null=True),
+            field=models.IntegerField(
+                blank=True, db_comment='A user-friendly ID to identify the user operator', null=True
+            ),
         ),
         migrations.AddField(
             model_name='historicaluseroperator',
             name='user_friendly_id',
-            field=models.IntegerField(blank=True, db_comment='A user-friendly ID to identify the user operator', null=True),
+            field=models.IntegerField(
+                blank=True, db_comment='A user-friendly ID to identify the user operator', null=True
+            ),
         ),
         migrations.RemoveField(
             model_name='historicaloperation',
@@ -3462,32 +3605,6 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterField(
-            model_name='historicaloperation',
-            name='type',
-            field=models.CharField(db_comment='The type of an operation', max_length=1000),
-        ),
-        migrations.AlterField(
-            model_name='operation',
-            name='bcghg_id',
-            field=models.CharField(
-                blank=True,
-                db_comment="An operation's BCGHG identifier. Only needed if the operation submitted a report the previous year.",
-                max_length=1000,
-                null=True,
-            ),
-        ),
-        migrations.AlterField(
-            model_name='operation',
-            name='naics_code',
-            field=models.ForeignKey(
-                db_comment="An operation's NAICS code",
-                null=True,
-                on_delete=django.db.models.deletion.DO_NOTHING,
-                related_name='operations',
-                to='registration.naicscode',
-            ),
-        ),
-        migrations.AlterField(
             model_name='operation',
             name='name',
             field=models.CharField(db_comment='The name of an operation', max_length=1000),
@@ -3509,11 +3626,6 @@ class Migration(migrations.Migration):
                 db_comment="An operation's SWRS facility ID. Only needed if the operation submitted a report the previous year.",
                 null=True,
             ),
-        ),
-        migrations.AlterField(
-            model_name='operation',
-            name='type',
-            field=models.CharField(db_comment='The type of an operation', max_length=1000),
         ),
         migrations.CreateModel(
             name='WellAuthorizationNumber',
@@ -3581,7 +3693,9 @@ class Migration(migrations.Migration):
                 ('archived_at', models.DateTimeField(blank=True, null=True)),
                 (
                     'well_authorization_number',
-                    models.IntegerField(db_comment='A well authorization number from the BC Energy Regulator', db_index=True),
+                    models.IntegerField(
+                        db_comment='A well authorization number from the BC Energy Regulator', db_index=True
+                    ),
                 ),
                 ('history_user_id', models.UUIDField(blank=True, null=True)),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
@@ -3644,11 +3758,6 @@ class Migration(migrations.Migration):
                 'get_latest_by': ('history_date', 'history_id'),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
-        ),
-        migrations.AddField(
-            model_name='facility',
-            name='operation',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='facilities', to='registration.operation'),
         ),
         migrations.AddField(
             model_name='facility',
@@ -3766,29 +3875,6 @@ class Migration(migrations.Migration):
             model_name='facility',
             name='new_entrant',
         ),
-        migrations.RemoveField(
-            model_name='facility',
-            name='operation',
-        ),
-        migrations.AlterField(
-            model_name='facility',
-            name='name',
-            field=models.CharField(db_comment='The name of the facility when the operation owned it', max_length=1000),
-        ),
-        migrations.AlterField(
-            model_name='facility',
-            name='type',
-            field=models.CharField(
-                choices=[
-                    ('Single Facility', 'Single Facility'),
-                    ('Large LFO', 'Large Lfo'),
-                    ('Medium LFO', 'Medium Lfo'),
-                    ('Small Aggregate LFO', 'Small Aggregate Lfo'),
-                ],
-                db_comment='The type of the facility',
-                max_length=100,
-            ),
-        ),
         migrations.CreateModel(
             name='HistoricalFacility',
             fields=[
@@ -3806,7 +3892,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'name',
-                    models.CharField(db_comment='The name of the facility when the operation owned it', max_length=1000),
+                    models.CharField(
+                        db_comment='The name of the facility when the operation owned it', max_length=1000
+                    ),
                 ),
                 (
                     'type',
@@ -3876,7 +3964,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'bcghg_id',
-                    models.CharField(blank=True, db_comment="A facility's BCGHG identifier.", max_length=1000, null=True),
+                    models.CharField(
+                        blank=True, db_comment="A facility's BCGHG identifier.", max_length=1000, null=True
+                    ),
                 ),
                 (
                     'swrs_facility_id',
@@ -3891,540 +3981,6 @@ class Migration(migrations.Migration):
                 'get_latest_by': ('history_date', 'history_id'),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
-        ),
-        migrations.CreateModel(
-            name='HistoricalEvent',
-            fields=[
-                ('created_at', models.DateTimeField(blank=True, editable=False, null=True)),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('archived_at', models.DateTimeField(blank=True, null=True)),
-                (
-                    'id',
-                    models.UUIDField(db_comment='Primary key to identify the event', db_index=True, default=uuid.uuid4),
-                ),
-                ('effective_date', models.DateTimeField(db_comment='The effective date of the event')),
-                (
-                    'type',
-                    models.CharField(
-                        choices=[
-                            ('Closing or Temporary Shutdown', 'Closing Or Temporary Shutdown'),
-                            ('Acquisition', 'Acquisition'),
-                            ('Transfer of Control', 'Transfer Of Control'),
-                            ('Divestment', 'Divestment'),
-                            ('Startup', 'Startup'),
-                        ],
-                        db_comment='The type of the event',
-                        max_length=100,
-                    ),
-                ),
-                (
-                    'additional_data',
-                    models.JSONField(blank=True, db_comment='Additional data about the event', null=True),
-                ),
-                ('history_user_id', models.UUIDField(blank=True, null=True)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                (
-                    'history_type',
-                    models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1),
-                ),
-                (
-                    'archived_by',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'created_by',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'facility',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.facility',
-                    ),
-                ),
-                (
-                    'operation',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.operation',
-                    ),
-                ),
-                (
-                    'updated_by',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.user',
-                    ),
-                ),
-            ],
-            options={
-                'verbose_name': 'historical event',
-                'verbose_name_plural': 'historical events',
-                'db_table': 'erc_history"."event_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
-            },
-            bases=(simple_history.models.HistoricalChanges, models.Model),
-        ),
-        migrations.CreateModel(
-            name='HistoricalFacilityOwnershipTimeline',
-            fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(blank=True, editable=False, null=True)),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('archived_at', models.DateTimeField(blank=True, null=True)),
-                (
-                    'start_date',
-                    models.DateTimeField(blank=True, db_comment='The start date of the ownership of the facility', null=True),
-                ),
-                (
-                    'end_date',
-                    models.DateTimeField(blank=True, db_comment='The end date of the ownership of the facility', null=True),
-                ),
-                ('history_user_id', models.UUIDField(blank=True, null=True)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                (
-                    'history_type',
-                    models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1),
-                ),
-                (
-                    'archived_by',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'created_by',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'facility',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.facility',
-                    ),
-                ),
-                (
-                    'operation',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.operation',
-                    ),
-                ),
-                (
-                    'updated_by',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.user',
-                    ),
-                ),
-            ],
-            options={
-                'verbose_name': 'historical facility ownership timeline',
-                'verbose_name_plural': 'historical facility ownership timelines',
-                'db_table': 'erc_history"."facility_ownership_timeline_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
-            },
-            bases=(simple_history.models.HistoricalChanges, models.Model),
-        ),
-        migrations.CreateModel(
-            name='HistoricalOperationOwnershipTimeline',
-            fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(blank=True, editable=False, null=True)),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('archived_at', models.DateTimeField(blank=True, null=True)),
-                (
-                    'start_date',
-                    models.DateTimeField(blank=True, db_comment='The start date of the ownership of the operation', null=True),
-                ),
-                (
-                    'end_date',
-                    models.DateTimeField(blank=True, db_comment='The end date of the ownership of the operation', null=True),
-                ),
-                ('history_user_id', models.UUIDField(blank=True, null=True)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                (
-                    'history_type',
-                    models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1),
-                ),
-                (
-                    'archived_by',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'created_by',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'operation',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.operation',
-                    ),
-                ),
-                (
-                    'operator',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.operator',
-                    ),
-                ),
-                (
-                    'updated_by',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.user',
-                    ),
-                ),
-            ],
-            options={
-                'verbose_name': 'historical operation ownership timeline',
-                'verbose_name_plural': 'historical operation ownership timelines',
-                'db_table': 'erc_history"."operation_ownership_timeline_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
-            },
-            bases=(simple_history.models.HistoricalChanges, models.Model),
-        ),
-        migrations.CreateModel(
-            name='Event',
-            fields=[
-                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('archived_at', models.DateTimeField(blank=True, null=True)),
-                (
-                    'id',
-                    models.UUIDField(
-                        db_comment='Primary key to identify the event',
-                        default=uuid.uuid4,
-                        primary_key=True,
-                        serialize=False,
-                    ),
-                ),
-                ('effective_date', models.DateTimeField(db_comment='The effective date of the event')),
-                (
-                    'type',
-                    models.CharField(
-                        choices=[
-                            ('Closing or Temporary Shutdown', 'Closing Or Temporary Shutdown'),
-                            ('Acquisition', 'Acquisition'),
-                            ('Transfer of Control', 'Transfer Of Control'),
-                            ('Divestment', 'Divestment'),
-                            ('Startup', 'Startup'),
-                        ],
-                        db_comment='The type of the event',
-                        max_length=100,
-                    ),
-                ),
-                (
-                    'additional_data',
-                    models.JSONField(blank=True, db_comment='Additional data about the event', null=True),
-                ),
-                (
-                    'archived_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_archived',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'created_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_created',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'facility',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='events',
-                        to='registration.facility',
-                    ),
-                ),
-                (
-                    'operation',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='events',
-                        to='registration.operation',
-                    ),
-                ),
-                (
-                    'updated_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_updated',
-                        to='registration.user',
-                    ),
-                ),
-            ],
-            options={
-                'db_table': 'erc"."event',
-                'db_table_comment': 'Table containing information about events that occur in the lifecycle of an operation or facility.',
-                'constraints': [
-                    models.CheckConstraint(
-                        condition=models.Q(
-                            models.Q(('operation_id__isnull', True), ('facility_id__isnull', False)),
-                            models.Q(('operation_id__isnull', False), ('facility_id__isnull', True)),
-                            _connector='OR',
-                        ),
-                        name='event_not_both_operation_and_facility',
-                    ),
-                    models.CheckConstraint(
-                        condition=models.Q(('operation_id__isnull', False), ('facility_id__isnull', False), _negated=True),
-                        name='event_cannot_have_both_operation_and_facility',
-                    ),
-                    models.CheckConstraint(
-                        condition=models.Q(('facility_id__isnull', True), ('operation_id__isnull', True), _negated=True),
-                        name='event_has_operation_or_facility',
-                    ),
-                ],
-            },
-        ),
-        migrations.CreateModel(
-            name='FacilityOwnershipTimeline',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('archived_at', models.DateTimeField(blank=True, null=True)),
-                (
-                    'start_date',
-                    models.DateTimeField(blank=True, db_comment='The start date of the ownership of the facility', null=True),
-                ),
-                (
-                    'end_date',
-                    models.DateTimeField(blank=True, db_comment='The end date of the ownership of the facility', null=True),
-                ),
-                (
-                    'archived_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_archived',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'created_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_created',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'facility',
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='ownerships',
-                        to='registration.facility',
-                    ),
-                ),
-                (
-                    'operation',
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='facility_ownerships',
-                        to='registration.operation',
-                    ),
-                ),
-                (
-                    'updated_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_updated',
-                        to='registration.user',
-                    ),
-                ),
-            ],
-            options={
-                'db_table': 'erc"."facility_ownership_timeline',
-                'db_table_comment': 'A table to connect facilities and operations',
-                'constraints': [
-                    models.UniqueConstraint(
-                        condition=models.Q(('end_date__isnull', True)),
-                        fields=('facility',),
-                        name='unique_active_ownership_per_facility',
-                    )
-                ],
-            },
-        ),
-        migrations.CreateModel(
-            name='OperationOwnershipTimeline',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('archived_at', models.DateTimeField(blank=True, null=True)),
-                (
-                    'start_date',
-                    models.DateTimeField(blank=True, db_comment='The start date of the ownership of the operation', null=True),
-                ),
-                (
-                    'end_date',
-                    models.DateTimeField(blank=True, db_comment='The end date of the ownership of the operation', null=True),
-                ),
-                (
-                    'archived_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_archived',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'created_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_created',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'operation',
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='ownerships',
-                        to='registration.operation',
-                    ),
-                ),
-                (
-                    'operator',
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='operation_ownerships',
-                        to='registration.operator',
-                    ),
-                ),
-                (
-                    'updated_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_updated',
-                        to='registration.user',
-                    ),
-                ),
-            ],
-            options={
-                'db_table': 'erc"."operation_ownership_timeline',
-                'db_table_comment': 'A table to connect operations and operators',
-                'constraints': [
-                    models.UniqueConstraint(
-                        condition=models.Q(('end_date__isnull', True)),
-                        fields=('operation',),
-                        name='unique_active_ownership_per_operation',
-                    )
-                ],
-            },
         ),
         migrations.RemoveField(
             model_name='historicalwellauthorizationnumber',
@@ -4498,94 +4054,15 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='facility',
             name='name',
-            field=models.CharField(db_comment='The name of the facility when the operation owned it', max_length=1000, unique=True),
-        ),
-        migrations.AlterField(
-            model_name='facility',
-            name='type',
             field=models.CharField(
-                choices=[
-                    ('Single Facility', 'Single Facility'),
-                    ('Large Facility', 'Large Facility'),
-                    ('Medium Facility', 'Medium Facility'),
-                    ('Small Aggregate', 'Small Aggregate'),
-                ],
-                db_comment='The type of the facility',
-                max_length=100,
+                db_comment='The name of the facility when the operation owned it', max_length=1000, unique=True
             ),
         ),
         migrations.AlterField(
             model_name='historicalfacility',
             name='name',
-            field=models.CharField(db_comment='The name of the facility when the operation owned it', db_index=True, max_length=1000),
-        ),
-        migrations.AlterField(
-            model_name='historicalfacility',
-            name='type',
             field=models.CharField(
-                choices=[
-                    ('Single Facility', 'Single Facility'),
-                    ('Large Facility', 'Large Facility'),
-                    ('Medium Facility', 'Medium Facility'),
-                    ('Small Aggregate', 'Small Aggregate'),
-                ],
-                db_comment='The type of the facility',
-                max_length=100,
-            ),
-        ),
-        migrations.RunPython(
-            code=populate_facility_lat_long,
-        ),
-        migrations.AlterField(
-            model_name='facility',
-            name='latitude_of_largest_emissions',
-            field=models.DecimalField(
-                db_comment='The latitude of the largest point of emissions',
-                decimal_places=6,
-                max_digits=8,
-                validators=[
-                    django.core.validators.MinValueValidator(-90),
-                    django.core.validators.MaxValueValidator(90),
-                ],
-            ),
-        ),
-        migrations.AlterField(
-            model_name='facility',
-            name='longitude_of_largest_emissions',
-            field=models.DecimalField(
-                db_comment='The longitude of the largest point of emissions',
-                decimal_places=6,
-                max_digits=9,
-                validators=[
-                    django.core.validators.MinValueValidator(-180),
-                    django.core.validators.MaxValueValidator(180),
-                ],
-            ),
-        ),
-        migrations.AlterField(
-            model_name='historicalfacility',
-            name='latitude_of_largest_emissions',
-            field=models.DecimalField(
-                db_comment='The latitude of the largest point of emissions',
-                decimal_places=6,
-                max_digits=8,
-                validators=[
-                    django.core.validators.MinValueValidator(-90),
-                    django.core.validators.MaxValueValidator(90),
-                ],
-            ),
-        ),
-        migrations.AlterField(
-            model_name='historicalfacility',
-            name='longitude_of_largest_emissions',
-            field=models.DecimalField(
-                db_comment='The longitude of the largest point of emissions',
-                decimal_places=6,
-                max_digits=9,
-                validators=[
-                    django.core.validators.MinValueValidator(-180),
-                    django.core.validators.MaxValueValidator(180),
-                ],
+                db_comment='The name of the facility when the operation owned it', db_index=True, max_length=1000
             ),
         ),
         migrations.AddField(
@@ -4663,11 +4140,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='historicalparentoperator',
-            name='cra_business_number',
-            field=models.IntegerField(blank=True, db_comment='The CRA business number of a parent operator', null=True),
-        ),
-        migrations.AlterField(
-            model_name='historicalparentoperator',
             name='legal_name',
             field=models.CharField(db_comment='The legal name of a parent operator', max_length=1000),
         ),
@@ -4705,11 +4177,6 @@ class Migration(migrations.Migration):
                 related_name='+',
                 to='registration.address',
             ),
-        ),
-        migrations.AlterField(
-            model_name='historicalparentoperator',
-            name='trade_name',
-            field=models.CharField(blank=True, db_comment='The trade name of a parent operator', max_length=1000),
         ),
         migrations.AlterField(
             model_name='historicalparentoperator',
@@ -4762,11 +4229,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='parentoperator',
-            name='cra_business_number',
-            field=models.IntegerField(blank=True, db_comment='The CRA business number of a parent operator', null=True),
-        ),
-        migrations.AlterField(
-            model_name='parentoperator',
             name='legal_name',
             field=models.CharField(db_comment='The legal name of a parent operator', max_length=1000),
         ),
@@ -4805,11 +4267,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='parentoperator',
-            name='trade_name',
-            field=models.CharField(blank=True, db_comment='The trade name of a parent operator', max_length=1000),
-        ),
-        migrations.AlterField(
-            model_name='parentoperator',
             name='website',
             field=models.URLField(blank=True, db_comment='The website address of a parent operator', null=True),
         ),
@@ -4823,7 +4280,9 @@ class Migration(migrations.Migration):
                 ('legal_name', models.CharField(db_comment='The legal name of an operator', max_length=1000)),
                 (
                     'trade_name',
-                    models.CharField(blank=True, db_comment='The trade name of an operator', max_length=1000, null=True),
+                    models.CharField(
+                        blank=True, db_comment='The trade name of an operator', max_length=1000, null=True
+                    ),
                 ),
                 ('cra_business_number', models.IntegerField(db_comment='The CRA business number of an operator')),
                 (
@@ -4923,7 +4382,9 @@ class Migration(migrations.Migration):
                 ('legal_name', models.CharField(db_comment='The legal name of an operator', max_length=1000)),
                 (
                     'trade_name',
-                    models.CharField(blank=True, db_comment='The trade name of an operator', max_length=1000, null=True),
+                    models.CharField(
+                        blank=True, db_comment='The trade name of an operator', max_length=1000, null=True
+                    ),
                 ),
                 ('cra_business_number', models.IntegerField(db_comment='The CRA business number of an operator')),
                 (
@@ -5059,12 +4520,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='historicalparentoperator',
             name='trade_name',
-            field=models.CharField(blank=True, db_comment='The trade name of a parent operator', max_length=1000, null=True),
+            field=models.CharField(
+                blank=True, db_comment='The trade name of a parent operator', max_length=1000, null=True
+            ),
         ),
         migrations.AlterField(
             model_name='parentoperator',
             name='trade_name',
-            field=models.CharField(blank=True, db_comment='The trade name of a parent operator', max_length=1000, null=True),
+            field=models.CharField(
+                blank=True, db_comment='The trade name of a parent operator', max_length=1000, null=True
+            ),
         ),
         migrations.AddField(
             model_name='facility',
@@ -5078,7 +4543,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='facility',
             name='starting_date',
-            field=models.DateTimeField(blank=True, db_comment='The date of the facility starting operations', null=True),
+            field=models.DateTimeField(
+                blank=True, db_comment='The date of the facility starting operations', null=True
+            ),
         ),
         migrations.AddField(
             model_name='historicalfacility',
@@ -5092,7 +4559,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='historicalfacility',
             name='starting_date',
-            field=models.DateTimeField(blank=True, db_comment='The date of the facility starting operations', null=True),
+            field=models.DateTimeField(
+                blank=True, db_comment='The date of the facility starting operations', null=True
+            ),
         ),
         migrations.CreateModel(
             name='Activity',
@@ -5182,10 +4651,6 @@ class Migration(migrations.Migration):
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
-        migrations.RunPython(
-            code=init_activity_data,
-            reverse_code=reverse_init_activity_data,
-        ),
         migrations.AddField(
             model_name='operation',
             name='activities',
@@ -5235,200 +4700,6 @@ class Migration(migrations.Migration):
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalRegistrationPurpose',
-            fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(blank=True, editable=False, null=True)),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('archived_at', models.DateTimeField(blank=True, null=True)),
-                (
-                    'registration_purpose',
-                    models.CharField(
-                        choices=[
-                            ('Reporting Operation', 'Reporting Operation'),
-                            ('OBPS Regulated Operation', 'Obps Regulated Operation'),
-                            ('Opted-in Operation', 'Opted In Operation'),
-                            ('New Entrant Operation', 'New Entrant Operation'),
-                            ('Electricity Import Operation', 'Electricity Import Operation'),
-                            ('Potential Reporting Operation', 'Potential Reporting Operation'),
-                        ],
-                        db_comment='Registration purpose',
-                        max_length=1000,
-                    ),
-                ),
-                ('history_user_id', models.UUIDField(blank=True, null=True)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                (
-                    'history_type',
-                    models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1),
-                ),
-                (
-                    'archived_by',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'created_by',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'operation',
-                    models.ForeignKey(
-                        blank=True,
-                        db_comment='The operator that has the purpose',
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.operation',
-                    ),
-                ),
-                (
-                    'updated_by',
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='+',
-                        to='registration.user',
-                    ),
-                ),
-            ],
-            options={
-                'verbose_name': 'historical registration purpose',
-                'verbose_name_plural': 'historical registration purposes',
-                'db_table': 'erc_history"."registration_purpose_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
-            },
-            bases=(simple_history.models.HistoricalChanges, models.Model),
-        ),
-        migrations.CreateModel(
-            name='RegistrationPurpose',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('archived_at', models.DateTimeField(blank=True, null=True)),
-                (
-                    'registration_purpose',
-                    models.CharField(
-                        choices=[
-                            ('Reporting Operation', 'Reporting Operation'),
-                            ('OBPS Regulated Operation', 'Obps Regulated Operation'),
-                            ('Opted-in Operation', 'Opted In Operation'),
-                            ('New Entrant Operation', 'New Entrant Operation'),
-                            ('Electricity Import Operation', 'Electricity Import Operation'),
-                            ('Potential Reporting Operation', 'Potential Reporting Operation'),
-                        ],
-                        db_comment='Registration purpose',
-                        max_length=1000,
-                    ),
-                ),
-                (
-                    'archived_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_archived',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'created_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_created',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'operation',
-                    models.ForeignKey(
-                        db_comment='The operator that has the purpose',
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='registration_purposes',
-                        to='registration.operation',
-                    ),
-                ),
-                (
-                    'updated_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_updated',
-                        to='registration.user',
-                    ),
-                ),
-            ],
-            options={
-                'db_table': 'erc"."registration_purpose',
-                'db_table_comment': 'Table that contains operations and their registration purposes.',
-            },
-        ),
-        migrations.AlterField(
-            model_name='historicaloperation',
-            name='status',
-            field=models.CharField(
-                choices=[
-                    ('Not Started', 'Not Started'),
-                    ('Draft', 'Draft'),
-                    ('Pending', 'Pending'),
-                    ('Approved', 'Approved'),
-                    ('Declined', 'Declined'),
-                    ('Changes Requested', 'Changes Requested'),
-                    ('Registered', 'Registered'),
-                    ('Transferred', 'Transferred'),
-                    ('Closed', 'Closed'),
-                    ('Temporarily Shutdown', 'Temporarily Shutdown'),
-                ],
-                db_comment='The status of an operation in the app (e.g. pending review)',
-                default='Not Started',
-                max_length=1000,
-            ),
-        ),
-        migrations.AlterField(
-            model_name='operation',
-            name='status',
-            field=models.CharField(
-                choices=[
-                    ('Not Started', 'Not Started'),
-                    ('Draft', 'Draft'),
-                    ('Pending', 'Pending'),
-                    ('Approved', 'Approved'),
-                    ('Declined', 'Declined'),
-                    ('Changes Requested', 'Changes Requested'),
-                    ('Registered', 'Registered'),
-                    ('Transferred', 'Transferred'),
-                    ('Closed', 'Closed'),
-                    ('Temporarily Shutdown', 'Temporarily Shutdown'),
-                ],
-                db_comment='The status of an operation in the app (e.g. pending review)',
-                default='Not Started',
-                max_length=1000,
-            ),
-        ),
-        migrations.CreateModel(
             name='HistoricalOptedInOperationDetail',
             fields=[
                 ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
@@ -5445,7 +4716,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'meets_electricity_import_operation_criteria',
-                    models.BooleanField(blank=True, db_comment='Is this operation an electricity import operation?', null=True),
+                    models.BooleanField(
+                        blank=True, db_comment='Is this operation an electricity import operation?', null=True
+                    ),
                 ),
                 (
                     'meets_entire_operation_requirements',
@@ -5563,7 +4836,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'meets_electricity_import_operation_criteria',
-                    models.BooleanField(blank=True, db_comment='Is this operation an electricity import operation?', null=True),
+                    models.BooleanField(
+                        blank=True, db_comment='Is this operation an electricity import operation?', null=True
+                    ),
                 ),
                 (
                     'meets_entire_operation_requirements',
@@ -5704,26 +4979,6 @@ class Migration(migrations.Migration):
                 to='registration.contact',
             ),
         ),
-        migrations.RemoveField(
-            model_name='historicalevent',
-            name='archived_by',
-        ),
-        migrations.RemoveField(
-            model_name='historicalevent',
-            name='created_by',
-        ),
-        migrations.RemoveField(
-            model_name='historicalevent',
-            name='facility',
-        ),
-        migrations.RemoveField(
-            model_name='historicalevent',
-            name='operation',
-        ),
-        migrations.RemoveField(
-            model_name='historicalevent',
-            name='updated_by',
-        ),
         migrations.CreateModel(
             name='ClosureEvent',
             fields=[
@@ -5768,7 +5023,9 @@ class Migration(migrations.Migration):
                 ('facilities', models.ManyToManyField(blank=True, to='registration.facility')),
                 (
                     'operation',
-                    models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='registration.operation'),
+                    models.ForeignKey(
+                        blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='registration.operation'
+                    ),
                 ),
                 (
                     'updated_by',
@@ -5952,7 +5209,9 @@ class Migration(migrations.Migration):
                 ('effective_date', models.DateTimeField(db_comment='The effective date of the event')),
                 (
                     'description',
-                    models.TextField(blank=True, db_comment='Rationale for temporary shutdown or other details.', null=True),
+                    models.TextField(
+                        blank=True, db_comment='Rationale for temporary shutdown or other details.', null=True
+                    ),
                 ),
                 (
                     'status',
@@ -6185,7 +5444,9 @@ class Migration(migrations.Migration):
                 ('facilities', models.ManyToManyField(blank=True, to='registration.facility')),
                 (
                     'operation',
-                    models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='registration.operation'),
+                    models.ForeignKey(
+                        blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='registration.operation'
+                    ),
                 ),
                 (
                     'updated_by',
@@ -6222,7 +5483,9 @@ class Migration(migrations.Migration):
                 ('effective_date', models.DateTimeField(db_comment='The effective date of the event')),
                 (
                     'description',
-                    models.TextField(blank=True, db_comment='Rationale for temporary shutdown or other details.', null=True),
+                    models.TextField(
+                        blank=True, db_comment='Rationale for temporary shutdown or other details.', null=True
+                    ),
                 ),
                 (
                     'status',
@@ -6255,7 +5518,9 @@ class Migration(migrations.Migration):
                 ('facilities', models.ManyToManyField(blank=True, to='registration.facility')),
                 (
                     'operation',
-                    models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='registration.operation'),
+                    models.ForeignKey(
+                        blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='registration.operation'
+                    ),
                 ),
                 (
                     'updated_by',
@@ -6337,7 +5602,9 @@ class Migration(migrations.Migration):
                 ('facilities', models.ManyToManyField(blank=True, to='registration.facility')),
                 (
                     'operation',
-                    models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='registration.operation'),
+                    models.ForeignKey(
+                        blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='registration.operation'
+                    ),
                 ),
                 (
                     'other_operator',
@@ -6373,72 +5640,6 @@ class Migration(migrations.Migration):
                 'db_table_comment': 'Transfer events for operations and/or facilities.',
                 'default_related_name': 'transfer_events',
             },
-        ),
-        migrations.DeleteModel(
-            name='Event',
-        ),
-        migrations.DeleteModel(
-            name='HistoricalEvent',
-        ),
-        migrations.RemoveField(
-            model_name='historicalfacilityownershiptimeline',
-            name='archived_by',
-        ),
-        migrations.RemoveField(
-            model_name='historicalfacilityownershiptimeline',
-            name='created_by',
-        ),
-        migrations.RemoveField(
-            model_name='historicalfacilityownershiptimeline',
-            name='facility',
-        ),
-        migrations.RemoveField(
-            model_name='historicalfacilityownershiptimeline',
-            name='operation',
-        ),
-        migrations.RemoveField(
-            model_name='historicalfacilityownershiptimeline',
-            name='updated_by',
-        ),
-        migrations.RemoveField(
-            model_name='historicaloperationownershiptimeline',
-            name='archived_by',
-        ),
-        migrations.RemoveField(
-            model_name='historicaloperationownershiptimeline',
-            name='created_by',
-        ),
-        migrations.RemoveField(
-            model_name='historicaloperationownershiptimeline',
-            name='operation',
-        ),
-        migrations.RemoveField(
-            model_name='historicaloperationownershiptimeline',
-            name='operator',
-        ),
-        migrations.RemoveField(
-            model_name='historicaloperationownershiptimeline',
-            name='updated_by',
-        ),
-        migrations.RemoveField(
-            model_name='operationownershiptimeline',
-            name='archived_by',
-        ),
-        migrations.RemoveField(
-            model_name='operationownershiptimeline',
-            name='created_by',
-        ),
-        migrations.RemoveField(
-            model_name='operationownershiptimeline',
-            name='operation',
-        ),
-        migrations.RemoveField(
-            model_name='operationownershiptimeline',
-            name='operator',
-        ),
-        migrations.RemoveField(
-            model_name='operationownershiptimeline',
-            name='updated_by',
         ),
         migrations.CreateModel(
             name='FacilityDesignatedOperationTimeline',
@@ -6782,18 +5983,6 @@ class Migration(migrations.Migration):
                 'db_table_comment': 'A table to connect operations and their designated operators throughout their lifetimes',
             },
         ),
-        migrations.DeleteModel(
-            name='FacilityOwnershipTimeline',
-        ),
-        migrations.DeleteModel(
-            name='HistoricalFacilityOwnershipTimeline',
-        ),
-        migrations.DeleteModel(
-            name='HistoricalOperationOwnershipTimeline',
-        ),
-        migrations.DeleteModel(
-            name='OperationOwnershipTimeline',
-        ),
         migrations.AddConstraint(
             model_name='facilitydesignatedoperationtimeline',
             constraint=models.UniqueConstraint(
@@ -6849,17 +6038,6 @@ class Migration(migrations.Migration):
                 null=True,
                 on_delete=django.db.models.deletion.PROTECT,
                 to='registration.bcobpsregulatedoperation',
-            ),
-        ),
-        migrations.AlterField(
-            model_name='operation',
-            name='naics_code',
-            field=models.ForeignKey(
-                db_comment="This column refers to an operation's primary NAICS code.",
-                null=True,
-                on_delete=django.db.models.deletion.PROTECT,
-                related_name='operations',
-                to='registration.naicscode',
             ),
         ),
         migrations.AlterField(
@@ -7121,40 +6299,6 @@ class Migration(migrations.Migration):
                 to='registration.operation',
             ),
         ),
-        migrations.RunPython(
-            code=init_document_type_data,
-            reverse_code=reverse_init_document_type_data,
-        ),
-        migrations.AddField(
-            model_name='facilitydesignatedoperationtimeline',
-            name='status',
-            field=models.CharField(
-                choices=[
-                    ('Active', 'Active'),
-                    ('Transferred', 'Transferred'),
-                    ('Closed', 'Closed'),
-                    ('Temporarily Shutdown', 'Temporarily Shutdown'),
-                ],
-                db_comment="The status of the facility in relation to the designated operation. For example, when a facility is transferred from Operation A to Operation B, under Operation A the status will be 'Transferred' but under Operation B the status will be 'Active'.",
-                default='Active',
-                max_length=1000,
-            ),
-        ),
-        migrations.AddField(
-            model_name='historicalfacilitydesignatedoperationtimeline',
-            name='status',
-            field=models.CharField(
-                choices=[
-                    ('Active', 'Active'),
-                    ('Transferred', 'Transferred'),
-                    ('Closed', 'Closed'),
-                    ('Temporarily Shutdown', 'Temporarily Shutdown'),
-                ],
-                db_comment="The status of the facility in relation to the designated operation. For example, when a facility is transferred from Operation A to Operation B, under Operation A the status will be 'Transferred' but under Operation B the status will be 'Active'.",
-                default='Active',
-                max_length=1000,
-            ),
-        ),
         migrations.AddField(
             model_name='bcobpsregulatedoperation',
             name='issued_by',
@@ -7222,11 +6366,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'issued_at',
-                    models.DateTimeField(auto_now_add=True, db_comment='The time the BCGHG ID was issued by an IRC user'),
+                    models.DateTimeField(
+                        auto_now_add=True, db_comment='The time the BCGHG ID was issued by an IRC user'
+                    ),
                 ),
                 (
                     'comments',
-                    models.TextField(blank=True, db_comment='Comments from admins in the case that a BCGHG ID is revoked'),
+                    models.TextField(
+                        blank=True, db_comment='Comments from admins in the case that a BCGHG ID is revoked'
+                    ),
                 ),
                 (
                     'issued_by',
@@ -7250,15 +6398,21 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     'id',
-                    models.CharField(db_comment='The BCGHG ID of an operation or facility', db_index=True, max_length=255),
+                    models.CharField(
+                        db_comment='The BCGHG ID of an operation or facility', db_index=True, max_length=255
+                    ),
                 ),
                 (
                     'issued_at',
-                    models.DateTimeField(blank=True, db_comment='The time the BCGHG ID was issued by an IRC user', editable=False),
+                    models.DateTimeField(
+                        blank=True, db_comment='The time the BCGHG ID was issued by an IRC user', editable=False
+                    ),
                 ),
                 (
                     'comments',
-                    models.TextField(blank=True, db_comment='Comments from admins in the case that a BCGHG ID is revoked'),
+                    models.TextField(
+                        blank=True, db_comment='Comments from admins in the case that a BCGHG ID is revoked'
+                    ),
                 ),
                 ('history_user_id', models.UUIDField(blank=True, null=True)),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
@@ -7376,22 +6530,6 @@ class Migration(migrations.Migration):
                 max_length=100,
             ),
         ),
-        migrations.RemoveField(
-            model_name='registrationpurpose',
-            name='archived_by',
-        ),
-        migrations.RemoveField(
-            model_name='registrationpurpose',
-            name='created_by',
-        ),
-        migrations.RemoveField(
-            model_name='registrationpurpose',
-            name='operation',
-        ),
-        migrations.RemoveField(
-            model_name='registrationpurpose',
-            name='updated_by',
-        ),
         migrations.AddField(
             model_name='historicaloperation',
             name='registration_purpose',
@@ -7427,12 +6565,6 @@ class Migration(migrations.Migration):
                 max_length=1000,
                 null=True,
             ),
-        ),
-        migrations.DeleteModel(
-            name='HistoricalRegistrationPurpose',
-        ),
-        migrations.DeleteModel(
-            name='RegistrationPurpose',
         ),
         migrations.AlterModelTableComment(
             name='regulatedproduct',
@@ -7447,7 +6579,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='historicalregulatedproduct',
             name='unit',
-            field=models.CharField(blank=True, db_comment='The unit of measure for a regulated product', max_length=1000, null=True),
+            field=models.CharField(
+                blank=True, db_comment='The unit of measure for a regulated product', max_length=1000, null=True
+            ),
         ),
         migrations.AddField(
             model_name='regulatedproduct',
@@ -7458,53 +6592,33 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='regulatedproduct',
             name='unit',
-            field=models.CharField(blank=True, db_comment='The unit of measure for a regulated product', max_length=1000, null=True),
-        ),
-        migrations.RunPython(
-            code=update_regulated_product_units_and_is_regulated,
-        ),
-        migrations.RunPython(
-            code=add_unregulated_products,
-            reverse_code=reverse_add_unregulated_products,
-        ),
-        migrations.RemoveField(
-            model_name='historicaltransferevent',
-            name='description',
-        ),
-        migrations.RemoveField(
-            model_name='historicaltransferevent',
-            name='other_operator',
-        ),
-        migrations.RemoveField(
-            model_name='historicaltransferevent',
-            name='other_operator_contact',
-        ),
-        migrations.RemoveField(
-            model_name='transferevent',
-            name='description',
-        ),
-        migrations.RemoveField(
-            model_name='transferevent',
-            name='other_operator',
-        ),
-        migrations.RemoveField(
-            model_name='transferevent',
-            name='other_operator_contact',
-        ),
-        migrations.AddField(
-            model_name='historicaloperationdesignatedoperatortimeline',
-            name='status',
             field=models.CharField(
-                choices=[
-                    ('Active', 'Active'),
-                    ('Transferred', 'Transferred'),
-                    ('Closed', 'Closed'),
-                    ('Temporarily Shutdown', 'Temporarily Shutdown'),
-                ],
-                db_comment='The status of an operation in relation to a specific operator (e.g. if an operation has transferred ownership, it may have a status of Transferred with its old operator and Active with its new one)',
-                default='Active',
-                max_length=1000,
+                blank=True, db_comment='The unit of measure for a regulated product', max_length=1000, null=True
             ),
+        ),
+        migrations.RemoveField(
+            model_name='historicaltransferevent',
+            name='description',
+        ),
+        migrations.RemoveField(
+            model_name='historicaltransferevent',
+            name='other_operator',
+        ),
+        migrations.RemoveField(
+            model_name='historicaltransferevent',
+            name='other_operator_contact',
+        ),
+        migrations.RemoveField(
+            model_name='transferevent',
+            name='description',
+        ),
+        migrations.RemoveField(
+            model_name='transferevent',
+            name='other_operator',
+        ),
+        migrations.RemoveField(
+            model_name='transferevent',
+            name='other_operator_contact',
         ),
         migrations.AddField(
             model_name='historicaltransferevent',
@@ -7559,21 +6673,6 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name='operationdesignatedoperatortimeline',
-            name='status',
-            field=models.CharField(
-                choices=[
-                    ('Active', 'Active'),
-                    ('Transferred', 'Transferred'),
-                    ('Closed', 'Closed'),
-                    ('Temporarily Shutdown', 'Temporarily Shutdown'),
-                ],
-                db_comment='The status of an operation in relation to a specific operator (e.g. if an operation has transferred ownership, it may have a status of Transferred with its old operator and Active with its new one)',
-                default='Active',
-                max_length=1000,
-            ),
-        ),
-        migrations.AddField(
             model_name='transferevent',
             name='from_operation',
             field=models.ForeignKey(
@@ -7620,42 +6719,6 @@ class Migration(migrations.Migration):
                 to='registration.operator',
             ),
             preserve_default=False,
-        ),
-        migrations.AlterField(
-            model_name='historicaloperation',
-            name='status',
-            field=models.CharField(
-                choices=[
-                    ('Not Started', 'Not Started'),
-                    ('Draft', 'Draft'),
-                    ('Registered', 'Registered'),
-                    ('Approved', 'Approved'),
-                    ('Declined', 'Declined'),
-                    ('Changes Requested', 'Changes Requested'),
-                    ('Pending', 'Pending'),
-                ],
-                db_comment='The status of an operation in the app (e.g. pending review)',
-                default='Not Started',
-                max_length=1000,
-            ),
-        ),
-        migrations.AlterField(
-            model_name='operation',
-            name='status',
-            field=models.CharField(
-                choices=[
-                    ('Not Started', 'Not Started'),
-                    ('Draft', 'Draft'),
-                    ('Registered', 'Registered'),
-                    ('Approved', 'Approved'),
-                    ('Declined', 'Declined'),
-                    ('Changes Requested', 'Changes Requested'),
-                    ('Pending', 'Pending'),
-                ],
-                db_comment='The status of an operation in the app (e.g. pending review)',
-                default='Not Started',
-                max_length=1000,
-            ),
         ),
         migrations.AlterField(
             model_name='facility',
@@ -7766,19 +6829,7 @@ class Migration(migrations.Migration):
             name='user',
         ),
         migrations.RemoveField(
-            model_name='contact',
-            name='documents',
-        ),
-        migrations.RemoveField(
             model_name='operation',
-            name='documents',
-        ),
-        migrations.RemoveField(
-            model_name='operator',
-            name='contacts',
-        ),
-        migrations.RemoveField(
-            model_name='operator',
             name='documents',
         ),
         migrations.RemoveField(
@@ -8608,22 +7659,6 @@ class Migration(migrations.Migration):
                 max_length=1000,
             ),
         ),
-        migrations.RemoveField(
-            model_name='facilitydesignatedoperationtimeline',
-            name='status',
-        ),
-        migrations.RemoveField(
-            model_name='historicalfacilitydesignatedoperationtimeline',
-            name='status',
-        ),
-        migrations.RemoveField(
-            model_name='historicaloperationdesignatedoperatortimeline',
-            name='status',
-        ),
-        migrations.RemoveField(
-            model_name='operationdesignatedoperatortimeline',
-            name='status',
-        ),
         migrations.CreateModel(
             name='HistoricalFacility_well_authorization_numbers',
             fields=[
@@ -9052,12 +8087,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='historicalregulatedproduct',
             name='unit',
-            field=models.CharField(db_comment='The unit of measure for a regulated product', default='N/A', max_length=1000),
+            field=models.CharField(
+                db_comment='The unit of measure for a regulated product', default='N/A', max_length=1000
+            ),
         ),
         migrations.AlterField(
             model_name='regulatedproduct',
             name='unit',
-            field=models.CharField(db_comment='The unit of measure for a regulated product', default='N/A', max_length=1000),
+            field=models.CharField(
+                db_comment='The unit of measure for a regulated product', default='N/A', max_length=1000
+            ),
         ),
         migrations.AddConstraint(
             model_name='regulatedproduct',
@@ -9447,13 +8486,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='historicalnaicscode',
             name='is_regulated',
-            field=models.BooleanField(db_comment='Whether the NAICS code applies to regulated operations', default=True),
+            field=models.BooleanField(
+                db_comment='Whether the NAICS code applies to regulated operations', default=True
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='naicscode',
             name='is_regulated',
-            field=models.BooleanField(db_comment='Whether the NAICS code applies to regulated operations', default=True),
+            field=models.BooleanField(
+                db_comment='Whether the NAICS code applies to regulated operations', default=True
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
@@ -9461,7 +8504,11 @@ class Migration(migrations.Migration):
             name='cra_business_number',
             field=models.CharField(
                 db_comment='The CRA business number of an operator',
-                validators=[django.core.validators.RegexValidator(message='CRA Business Number should be 9 digits.', regex='^\\d{9}$')],
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message='CRA Business Number should be 9 digits.', regex='^\\d{9}$'
+                    )
+                ],
             ),
         ),
         migrations.AlterField(
@@ -9469,7 +8516,11 @@ class Migration(migrations.Migration):
             name='cra_business_number',
             field=models.CharField(
                 db_comment='The CRA business number of an operator',
-                validators=[django.core.validators.RegexValidator(message='CRA Business Number should be 9 digits.', regex='^\\d{9}$')],
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message='CRA Business Number should be 9 digits.', regex='^\\d{9}$'
+                    )
+                ],
             ),
         ),
         migrations.AlterField(
@@ -9479,7 +8530,11 @@ class Migration(migrations.Migration):
                 blank=True,
                 db_comment='The CRA business number of an operator',
                 null=True,
-                validators=[django.core.validators.RegexValidator(message='CRA Business Number should be 9 digits.', regex='^\\d{9}$')],
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message='CRA Business Number should be 9 digits.', regex='^\\d{9}$'
+                    )
+                ],
             ),
         ),
         migrations.AlterField(
@@ -9487,7 +8542,11 @@ class Migration(migrations.Migration):
             name='cra_business_number',
             field=models.CharField(
                 db_comment='The CRA business number of an operator',
-                validators=[django.core.validators.RegexValidator(message='CRA Business Number should be 9 digits.', regex='^\\d{9}$')],
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message='CRA Business Number should be 9 digits.', regex='^\\d{9}$'
+                    )
+                ],
             ),
         ),
         migrations.AlterField(
@@ -9495,7 +8554,11 @@ class Migration(migrations.Migration):
             name='cra_business_number',
             field=models.CharField(
                 db_comment='The CRA business number of an operator',
-                validators=[django.core.validators.RegexValidator(message='CRA Business Number should be 9 digits.', regex='^\\d{9}$')],
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message='CRA Business Number should be 9 digits.', regex='^\\d{9}$'
+                    )
+                ],
             ),
         ),
         migrations.AlterField(
@@ -9503,7 +8566,11 @@ class Migration(migrations.Migration):
             name='cra_business_number',
             field=models.CharField(
                 db_comment='The CRA business number of an operator',
-                validators=[django.core.validators.RegexValidator(message='CRA Business Number should be 9 digits.', regex='^\\d{9}$')],
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message='CRA Business Number should be 9 digits.', regex='^\\d{9}$'
+                    )
+                ],
             ),
         ),
         migrations.AlterField(
@@ -9513,7 +8580,11 @@ class Migration(migrations.Migration):
                 blank=True,
                 db_comment='The CRA business number of an operator',
                 null=True,
-                validators=[django.core.validators.RegexValidator(message='CRA Business Number should be 9 digits.', regex='^\\d{9}$')],
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message='CRA Business Number should be 9 digits.', regex='^\\d{9}$'
+                    )
+                ],
             ),
         ),
         migrations.AlterField(
@@ -9521,7 +8592,11 @@ class Migration(migrations.Migration):
             name='cra_business_number',
             field=models.CharField(
                 db_comment='The CRA business number of an operator',
-                validators=[django.core.validators.RegexValidator(message='CRA Business Number should be 9 digits.', regex='^\\d{9}$')],
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message='CRA Business Number should be 9 digits.', regex='^\\d{9}$'
+                    )
+                ],
             ),
         ),
         migrations.AlterField(
@@ -9532,7 +8607,11 @@ class Migration(migrations.Migration):
                 max_length=255,
                 primary_key=True,
                 serialize=False,
-                validators=[django.core.validators.RegexValidator(message='BCGHG ID should be 11 digits, starting with 1 or 2.', regex='^[1-2]\\d{10}$')],
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message='BCGHG ID should be 11 digits, starting with 1 or 2.', regex='^[1-2]\\d{10}$'
+                    )
+                ],
             ),
         ),
         migrations.AlterField(
@@ -9542,7 +8621,11 @@ class Migration(migrations.Migration):
                 db_comment='The BCGHG ID of an operation or facility',
                 db_index=True,
                 max_length=255,
-                validators=[django.core.validators.RegexValidator(message='BCGHG ID should be 11 digits, starting with 1 or 2.', regex='^[1-2]\\d{10}$')],
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message='BCGHG ID should be 11 digits, starting with 1 or 2.', regex='^[1-2]\\d{10}$'
+                    )
+                ],
             ),
         ),
         pgtrigger.migrations.RemoveTrigger(
@@ -9912,7 +8995,9 @@ class Migration(migrations.Migration):
                 ('archived_at', models.DateTimeField(blank=True, null=True)),
                 (
                     'name',
-                    models.CharField(db_comment='The name of the facility at the time of the snapshot', max_length=1000),
+                    models.CharField(
+                        db_comment='The name of the facility at the time of the snapshot', max_length=1000
+                    ),
                 ),
                 (
                     'is_current_year',
@@ -9964,15 +9049,21 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'province',
-                    models.CharField(blank=True, db_comment='Province of the facility at snapshot time', max_length=1000, null=True),
+                    models.CharField(
+                        blank=True, db_comment='Province of the facility at snapshot time', max_length=1000, null=True
+                    ),
                 ),
                 (
                     'postal_code',
-                    models.CharField(blank=True, db_comment='Postal code of the facility at snapshot time', max_length=10, null=True),
+                    models.CharField(
+                        blank=True, db_comment='Postal code of the facility at snapshot time', max_length=10, null=True
+                    ),
                 ),
                 (
                     'swrs_facility_id',
-                    models.IntegerField(blank=True, db_comment="The facility's SWRS facility ID at snapshot time", null=True),
+                    models.IntegerField(
+                        blank=True, db_comment="The facility's SWRS facility ID at snapshot time", null=True
+                    ),
                 ),
                 (
                     'bcghg_id',
@@ -10022,7 +9113,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'snapshot_timestamp',
-                    models.DateTimeField(blank=True, db_comment='The timestamp at which this snapshot was taken', editable=False),
+                    models.DateTimeField(
+                        blank=True, db_comment='The timestamp at which this snapshot was taken', editable=False
+                    ),
                 ),
                 ('history_user_id', models.UUIDField(blank=True, null=True)),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
@@ -10108,7 +9201,9 @@ class Migration(migrations.Migration):
                 ('archived_at', models.DateTimeField(blank=True, null=True)),
                 (
                     'name',
-                    models.CharField(db_comment='The name of the facility at the time of the snapshot', max_length=1000),
+                    models.CharField(
+                        db_comment='The name of the facility at the time of the snapshot', max_length=1000
+                    ),
                 ),
                 (
                     'is_current_year',
@@ -10160,15 +9255,21 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'province',
-                    models.CharField(blank=True, db_comment='Province of the facility at snapshot time', max_length=1000, null=True),
+                    models.CharField(
+                        blank=True, db_comment='Province of the facility at snapshot time', max_length=1000, null=True
+                    ),
                 ),
                 (
                     'postal_code',
-                    models.CharField(blank=True, db_comment='Postal code of the facility at snapshot time', max_length=10, null=True),
+                    models.CharField(
+                        blank=True, db_comment='Postal code of the facility at snapshot time', max_length=10, null=True
+                    ),
                 ),
                 (
                     'swrs_facility_id',
-                    models.IntegerField(blank=True, db_comment="The facility's SWRS facility ID at snapshot time", null=True),
+                    models.IntegerField(
+                        blank=True, db_comment="The facility's SWRS facility ID at snapshot time", null=True
+                    ),
                 ),
                 (
                     'bcghg_id',
@@ -10218,7 +9319,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'snapshot_timestamp',
-                    models.DateTimeField(auto_now_add=True, db_comment='The timestamp at which this snapshot was taken'),
+                    models.DateTimeField(
+                        auto_now_add=True, db_comment='The timestamp at which this snapshot was taken'
+                    ),
                 ),
                 (
                     'archived_by',
@@ -10308,5 +9411,40 @@ class Migration(migrations.Migration):
                     when='BEFORE',
                 ),
             ),
+        ),
+        migrations.RunPython(
+            code=init_app_role_data,
+            reverse_code=reverse_init_app_role_data,
+        ),
+        migrations.RunPython(
+            code=init_business_role_data,
+            reverse_code=reverse_init_business_role_data,
+        ),
+        migrations.RunPython(
+            code=init_business_structure_data,
+            reverse_code=reverse_init_business_structure_data,
+        ),
+        migrations.RunPython(
+            code=init_document_type_data,
+            reverse_code=reverse_init_document_type_data,
+        ),
+        migrations.RunPython(
+            code=init_regulated_product_data,
+            reverse_code=reverse_init_regulated_product_data,
+        ),
+        migrations.RunPython(
+            code=populate_facility_lat_long,
+        ),
+        migrations.RunPython(
+            code=init_activity_data,
+            reverse_code=reverse_init_activity_data,
+        ),
+        migrations.RunPython(
+            code=add_unregulated_products,
+            reverse_code=reverse_add_unregulated_products,
+        ),
+        migrations.RunPython(
+            code=init_naics_code_data,
+            reverse_code=reverse_init_naics_code_data,
         ),
     ]
