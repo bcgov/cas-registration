@@ -216,6 +216,24 @@ export class ComplianceSummariesPOM {
     return text;
   }
 
+  async assertRowCountForOperation(options: {
+    operationName: string;
+    expectedCount: number;
+  }) {
+    const { operationName, expectedCount } = options;
+
+    await this.waitForGridReady({ timeout: 30_000 });
+
+    await expect(async () => {
+      const rows = this.grid()
+        .getByRole("row")
+        .filter({ hasText: operationName });
+
+      const count = await rows.count();
+      expect(count).toBe(expectedCount);
+    }).toPass({ timeout: 30_000 });
+  }
+
   async assertStatusForOperation(
     operationName: string,
     expectedStatus: string,
