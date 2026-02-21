@@ -15,10 +15,10 @@ logger = logging.getLogger(__name__)
 @dataclass
 class BiogenicEmissionsSplit:
     chemical_pulp_ratio: Decimal
-    lime_recovery_kiln_ratio: Decimal
+    lime_recovered_by_kiln_ratio: Decimal
 
     def __post_init__(self) -> None:
-        if not self.chemical_pulp_ratio + self.lime_recovery_kiln_ratio == Decimal('1'):
+        if not self.chemical_pulp_ratio + self.lime_recovered_by_kiln_ratio == Decimal('1'):
             raise ValueError("The biogenic emissions split reported must total to 1.")
 
 
@@ -31,21 +31,27 @@ def retrieve_pulp_and_paper_biogenic_emissions_split(report_version_id: int) -> 
         )
     except ReportActivity.DoesNotExist:
         raise ReportActivity.DoesNotExist(
-            'Under NAICS code 322112, there must be biogenic industrial process emission details reported under the "Pulp and Paper production" activity.'
+            'Under NAICS code 322112, there must be emissions reported under the "Pulp and Paper production" activity.'
         )
 
     try:
         if not report_activity.json_data["biogenicIndustrialProcessEmissions"]["doesUtilizeLimeRecoveryKiln"]:
-            raise ValueError("When ")
+            raise ValueError(
+                """Under NAICS code 322112 and with either 'chemical pulp' or 'lime recovered by kiln' products,
+                biogenic industrial process emission details must be reported."""
+            )
 
         split_data = report_activity.json_data["biogenicIndustrialProcessEmissions"]["biogenicEmissionsSplit"]
-        return BiogenicEmissionsSplit(
-            split_data["chemicalPulpPercentage"] / 100.0, split_data["limeRecoveredByKilnPercentage"] / 100.0
-        )
+        chemical_pulp_percentage = Decimal(split_data["chemicalPulpPercentage"])
+        lime_recovered_by_kiln_percentage = Decimal(split_data["limeRecoveredByKilnPercentage"])
 
-    except KeyError:
-        # Issues with the format
-        raise KeyError("Biogenic industrial process emissions details reported under the Pulp and paper activity ")
+    except KeyError as e:
+        # Issues with the format of the data
+        raise KeyError(f"Biogenic industrial process emissions data: key error at {str(e)}")
+
+    return BiogenicEmissionsSplit(
+        chemical_pulp_percentage / Decimal(100.0), lime_recovered_by_kiln_percentage / Decimal(100.0)
+    )
 
 
 def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
@@ -79,7 +85,7 @@ def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
         if rp.product.name == "Pulp and paper: lime recovered by kiln":
             return (
                 industrial_process
-                - overlapping_industrial_process_emissions * biogenic_emissions_split.lime_recovery_kiln_ratio
+                - overlapping_industrial_process_emissions * biogenic_emissions_split.lime_recovered_by_kiln_ratio
             )
 
     return industrial_process

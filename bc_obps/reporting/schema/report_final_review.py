@@ -28,6 +28,7 @@ from reporting.schema.compliance_data import ComplianceDataSchemaOut
 from reporting.schema.emission_category import EmissionSummarySchemaOut
 from reporting.schema.report_emission_allocation import ReportEmissionAllocationSchemaOut
 from reporting.service.compliance_service import ComplianceService
+from reporting.service.compliance_service.compliance_service import ComplianceData
 from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.service.report_emission_allocation_service import (
     ReportEmissionAllocationService,
@@ -381,11 +382,11 @@ class BaseReportVersionSchema(ModelSchema):
         return obj.report.reporting_year_id
 
     @staticmethod
-    def resolve_report_compliance_summary(obj: ReportVersion) -> Optional[ComplianceDataSchemaOut]:
+    def resolve_report_compliance_summary(obj: ReportVersion) -> Optional[ComplianceData]:
         if obj.report_operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             return None
         data = ComplianceService.get_calculated_compliance_data(obj.id)
-        return ComplianceDataSchemaOut.model_validate(data) if data else None
+        return data if data else None
 
     @staticmethod
     def resolve_operation_emission_summary(obj: ReportVersion) -> Optional[dict]:

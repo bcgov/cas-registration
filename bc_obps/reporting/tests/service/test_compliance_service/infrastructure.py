@@ -1,4 +1,5 @@
 from decimal import Decimal
+from registration.models.activity import Activity
 from registration.models.regulated_product import RegulatedProduct
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_product import ReportProduct
@@ -311,6 +312,21 @@ class ComplianceTestInfrastructure:
         # Create ReportOperation for the report_version
         t.report_operation_1 = make_recipe("reporting.tests.utils.report_operation", report_version=t.report_version_1)
 
+        t.report_activity = make_recipe(
+            "reporting.tests.utils.report_activity",
+            report_version=t.report_version_1,
+            activity=Activity.objects.get(slug="pulp_and_paper"),
+            json_data={
+                "biogenicIndustrialProcessEmissions": {
+                    "doesUtilizeLimeRecoveryKiln": True,
+                    "biogenicEmissionsSplit": {
+                        "chemicalPulpPercentage": 40,
+                        "limeRecoveredByKilnPercentage": 60,
+                    },
+                }
+            },
+        )
+
         ## 4 Emissions, 2 GSC and 2 industrial process
         t.report_emission_1 = make_recipe(
             "reporting.tests.utils.report_emission",
@@ -324,6 +340,7 @@ class ComplianceTestInfrastructure:
         t.report_emission_2 = make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=t.report_version_1,
+            report_source_type__report_activity=t.report_activity,
             gas_type_id=1,
             json_data={"equivalentEmission": 20000.9988},
         )
@@ -333,6 +350,7 @@ class ComplianceTestInfrastructure:
         t.report_emission_3 = make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=t.report_version_1,
+            report_source_type__report_activity=t.report_activity,
             gas_type_id=1,
             json_data={"equivalentEmission": 10000.05},
         )
@@ -342,6 +360,7 @@ class ComplianceTestInfrastructure:
         t.report_emission_4 = make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=t.report_version_1,
+            report_source_type__report_activity=t.report_activity,
             gas_type_id=1,
             json_data={"equivalentEmission": 500},
             emission_categories=EmissionCategory.objects.filter(id__in=[5, 12]),
