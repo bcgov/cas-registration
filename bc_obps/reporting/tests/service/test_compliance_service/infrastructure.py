@@ -1,4 +1,6 @@
 from decimal import Decimal
+from registration.models.activity import Activity
+from registration.models.regulated_product import RegulatedProduct
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_product import ReportProduct
 from reporting.models.report import Report
@@ -288,6 +290,169 @@ class ComplianceTestInfrastructure:
             report_product=t.report_product_1,
             emission_category=EmissionCategory.objects.get(pk=1),  # Flaring Product 1
             allocated_quantity=Decimal('10000.5555'),
+        )
+
+        return t
+
+    @classmethod
+    def build_pulp_and_paper_2025(cls):
+        t = ComplianceTestInfrastructure()
+        t.operation_1 = make_recipe(
+            'registration.tests.utils.operation',
+            name='test sfo',
+            naics_code=NaicsCode.objects.get(naics_code='322112'),
+            type='Single Facility Operation',
+        )
+        t.report_1 = make_recipe(
+            "reporting.tests.utils.report",
+            operation=t.operation_1,
+            reporting_year_id=2025,
+        )
+        t.report_version_1 = make_recipe("reporting.tests.utils.report_version", report=t.report_1)
+        # Create ReportOperation for the report_version
+        t.report_operation_1 = make_recipe("reporting.tests.utils.report_operation", report_version=t.report_version_1)
+
+        t.report_activity = make_recipe(
+            "reporting.tests.utils.report_activity",
+            report_version=t.report_version_1,
+            activity=Activity.objects.get(slug="pulp_and_paper"),
+            json_data={
+                "biogenicIndustrialProcessEmissions": {
+                    "doesUtilizeLimeRecoveryKiln": True,
+                    "biogenicEmissionsSplit": {
+                        "chemicalPulpPercentage": 40,
+                        "limeRecoveredByKilnPercentage": 60,
+                    },
+                }
+            },
+        )
+
+        ## 4 Emissions, 2 GSC and 2 industrial process
+        t.report_emission_1 = make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=t.report_version_1,
+            gas_type_id=1,
+            json_data={"equivalentEmission": 10000.0001},
+        )
+        # GSC
+        t.report_emission_1.emission_categories.set([5])
+
+        t.report_emission_2 = make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=t.report_version_1,
+            report_source_type__report_activity=t.report_activity,
+            gas_type_id=1,
+            json_data={"equivalentEmission": 20000.9988},
+        )
+        # Industrial process only (special methodology case for pulp and paper)
+        t.report_emission_2.emission_categories.set([3])
+
+        t.report_emission_3 = make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=t.report_version_1,
+            report_source_type__report_activity=t.report_activity,
+            gas_type_id=1,
+            json_data={"equivalentEmission": 10000.05},
+        )
+        # Industrial process + woody biomass (default for pulp and paper)
+        t.report_emission_3.emission_categories.set([3, 10])
+
+        t.report_emission_4 = make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=t.report_version_1,
+            report_source_type__report_activity=t.report_activity,
+            gas_type_id=1,
+            json_data={"equivalentEmission": 500},
+            emission_categories=EmissionCategory.objects.filter(id__in=[5, 12]),
+        )
+        # GSC + excluded biomass (reporting only)
+        t.report_emission_4.emission_categories.set([5, 11])
+
+        t.report_product_1 = make_recipe(
+            "reporting.tests.utils.report_product",
+            report_version=t.report_version_1,
+            product=RegulatedProduct.objects.get(name='Pulp and paper: chemical pulp'),
+            annual_production=Decimal('10000'),
+        )
+        t.report_product_2 = make_recipe(
+            "reporting.tests.utils.report_product",
+            report_version=t.report_version_1,
+            product=RegulatedProduct.objects.get(name='Pulp and paper: lime recovered by kiln'),
+            annual_production=Decimal('15000'),
+        )
+        t.report_product_3 = make_recipe(
+            "reporting.tests.utils.report_product",
+            report_version=t.report_version_1,
+            product_id=3,  # PWAEI = 1.07
+            annual_production=Decimal('200'),
+        )
+
+        t.report_emission_allocation = make_recipe(
+            "reporting.tests.utils.report_emission_allocation", report_version=t.report_version_1
+        )
+        t.allocation_1 = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
+            report_version=t.report_version_1,
+            report_product=t.report_product_1,
+            emission_category=EmissionCategory.objects.get(pk=3),  # Industrial Process
+            allocated_quantity=Decimal('10000.048'),
+        )
+        t.allocation_1_2 = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
+            report_version=t.report_version_1,
+            report_product=t.report_product_1,
+            emission_category=EmissionCategory.objects.get(pk=5),  # GSC (both taxable and excluded)
+            allocated_quantity=Decimal('2100'),
+        )
+        t.allocation_2 = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
+            report_version=t.report_version_1,
+            emission_category=EmissionCategory.objects.get(pk=3),  # Industrial Process
+            report_product=t.report_product_2,
+            allocated_quantity=Decimal('20001.0008'),
+        )
+        t.allocation_2_2 = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
+            report_version=t.report_version_1,
+            emission_category=EmissionCategory.objects.get(pk=5),  # GSC (both taxable and excluded)
+            report_product=t.report_product_2,
+            allocated_quantity=Decimal('2100'),
+        )
+        t.allocation_3 = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
+            report_version=t.report_version_1,
+            emission_category=EmissionCategory.objects.get(pk=5),  # GSC (both taxable and excluded)
+            report_product=t.report_product_3,
+            allocated_quantity=Decimal('6300.0001'),
+        )
+        t.allocation_4 = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
+            report_version=t.report_version_1,
+            emission_category=EmissionCategory.objects.get(pk=10),  # Excluded woody biomass
+            report_product=t.report_product_1,
+            allocated_quantity=Decimal('4100.02'),  # Industrial emission + GSC both from woody biomass
+        )
+        t.allocation_5 = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
+            report_version=t.report_version_1,
+            emission_category=EmissionCategory.objects.get(pk=10),  # Excluded woody biomass
+            report_product=t.report_product_2,
+            allocated_quantity=Decimal('6100.03'),  # Industrial emission + GSC both from woody biomass
+        )
+        t.allocation_6 = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
+            report_version=t.report_version_1,
+            report_product=t.report_product_3,
+            emission_category=EmissionCategory.objects.get(pk=11),  # Other excl biomass from GSC emission 4
+            allocated_quantity=Decimal('300'),
         )
 
         return t

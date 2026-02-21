@@ -15,6 +15,7 @@ class RegulatedProductModelTest(BaseTestCase):
             ("report_products", "report product", None, 0),
             ("new_entrant_productions", "report new entrant production", None, 0),
             ("productemissionintensity", "product emission intensity", None, 0),
+            ("regulatory_values_overrides", "naics regulatory override", None, None),
         ]
         cls.test_object = RegulatedProduct.objects.create(
             name="test product",

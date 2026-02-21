@@ -247,11 +247,12 @@ class EmissionCategoryService:
     def get_industrial_process_excluded_biomass_overlap_by_report_version(cls, report_version_id: int) -> Decimal:
         industrial_process_records = ReportEmission.objects_with_decimal_emissions.filter(
             emission_categories__id=3,
-            report_source_type__report_version_id=report_version_id,
+            report_version_id=report_version_id,
         )
 
         woody_biomass_overlap_records = industrial_process_records.filter(emission_categories__id=10)
         other_biomass_overlap_records = industrial_process_records.filter(emission_categories__id=11)
         overlapping_records = woody_biomass_overlap_records.union(other_biomass_overlap_records)
         total_overlapping_emissions = overlapping_records.aggregate(emission_sum=Sum('emission'))
+
         return total_overlapping_emissions['emission_sum'] or Decimal(0)
