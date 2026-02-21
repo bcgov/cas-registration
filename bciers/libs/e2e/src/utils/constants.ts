@@ -98,3 +98,5 @@ export const appRouteRoles: Record<AppRoute, UserRole[]> = {
 
 export const COMPLIANCE_E2E_INTEGRATION_STUB_PATH =
   "compliance/e2e-integration-stub";
+
+export const GRID_ROOT = '[role="grid"]';
