@@ -12,6 +12,7 @@ export const NO_OBLIGATION_OR_CREDITS_ALERT_REGEX =
 
 // --- Obligation form ---
 export const INVOICE_NUMBER_FIELD = "#root_invoice_number";
+export const GENERATE_INVOICE_BUTTON_TEXT = "Generate Compliance Invoice";
 
 export const ISSUANCE_STATUS_FIELD =
   'xpath=//label[@for="root_issuance_status"]/../following-sibling::div//span';
@@ -83,3 +84,20 @@ export const REVIEW_BY_DIRECTOR_URL_PATTERN = new RegExp(
 // Scenario name used by the Django stub for APPROVE (DECLINE doesn't need stub)
 export const EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO =
   "earned_credits_director_approve";
+
+// --- Invoice API ---
+export const COMPLIANCE_INVOICE_API_BASE = "/compliance/api/invoice";
+export type ComplianceInvoiceType =
+  | "obligation"
+  | "automatic-overdue-penalty"
+  | "late-submission-penalty";
+
+// --- Invoice PDF content ---
+export const INVOICE_VOID_WATERMARK_REGEX = /VOID/i;
+export const FEES_AND_ADJUSTMENTS_TEXT = "Fees and Adjustments";
+export const INVOICE_NUMBER_LABEL_REGEX = /Invoice\s+#:/i;
+export const DEFAULT_ADJUSTMENT_REGEX = /Supplementary Report Adjustment/i;
+
+// Outstanding balance values matching E2E invoice mock data
+export const INITIAL_OUTSTANDING_BALANCE_REGEX = /13[,.]?458/;
+export const POST_ADJUSTMENT_OUTSTANDING_BALANCE_REGEX = /2[,.]?921/;
