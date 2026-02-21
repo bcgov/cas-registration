@@ -8,7 +8,7 @@ import {
   webkit,
   Browser,
 } from "@playwright/test";
-import { baseUrlSetup } from "@bciers/e2e/utils/constants";
+import { baseUrlSetup, GRID_ROOT } from "@bciers/e2e/utils/constants";
 import { DataTestID, MessageTextResponse } from "@bciers/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
 import path from "node:path";
@@ -33,6 +33,13 @@ export async function analyzeAccessibility(
   expect(accessibilityScanResults.violations).toEqual([]);
 }
 
+/**
+ * Clicks a button by accessible name and optionally waits for navigation.
+ * @param page - Playwright Page instance
+ * @param buttonText - Button accessible name or RegExp
+ * @param opts.inForm - Scope the button search to a <form> (default: false)
+ * @param opts.waitForUrl - RegExp to wait for after clicking (optional)
+ */
 export async function clickButton(
   page: Page,
   buttonText: string | RegExp,
@@ -40,7 +47,7 @@ export async function clickButton(
     inForm?: boolean; // default false
     waitForUrl?: RegExp;
   },
-) {
+): Promise<void> {
   const { inForm = false, waitForUrl } = opts ?? {};
 
   const name =
@@ -49,8 +56,18 @@ export async function clickButton(
   const root = inForm ? page.locator("form") : page;
   const button = root.getByRole("button", { name });
 
+  await expect(button).toBeVisible({ timeout: 30_000 });
+  await expect(button).toBeEnabled({ timeout: 30_000 });
+
   if (waitForUrl) {
-    await Promise.all([page.waitForURL(waitForUrl), button.click()]);
+    // Use a lighter wait for SPA navigation
+    await Promise.all([
+      page.waitForURL((u) => waitForUrl.test(u.toString()), {
+        timeout: 30_000,
+        waitUntil: "domcontentloaded",
+      }),
+      button.click(),
+    ]);
   } else {
     await button.click();
   }
@@ -83,6 +100,55 @@ export async function fillDropdownByLabel(
   await input.fill(value);
 }
 
+export async function fillInputValueByLabel(
+  page: Page,
+  label: string | RegExp,
+  value: string | number,
+  opts?: {
+    blur?: "tab" | "enter" | "none"; // default "tab"
+  },
+): Promise<void> {
+  const { blur = "tab" } = opts ?? {};
+
+  const name = label instanceof RegExp ? label : new RegExp(label, "i");
+  const field = page.getByLabel(name);
+
+  await expect(field).toBeVisible({ timeout: 30_000 });
+  await expect(field).toBeEnabled({ timeout: 30_000 });
+
+  await field.click();
+  await field.press("Control+A");
+  await field.press("Backspace");
+
+  await field.fill(String(value));
+
+  if (blur === "tab") await field.press("Tab");
+  if (blur === "enter") await field.press("Enter");
+}
+
+export async function fillInputValueByLocator(
+  field: Locator,
+  value: string | number,
+  opts?: {
+    blur?: "tab" | "enter" | "none"; // default "tab"
+  },
+): Promise<void> {
+  const { blur = "tab" } = opts ?? {};
+
+  await expect(field).toBeVisible({ timeout: 30_000 });
+  await expect(field).toBeEnabled({ timeout: 30_000 });
+
+  // focus and clear field
+  await field.click();
+  await field.press("Control+A");
+  await field.press("Backspace");
+
+  await field.fill(String(value));
+
+  if (blur === "tab") await field.press("Tab");
+  if (blur === "enter") await field.press("Enter");
+}
+
 export async function checkAllRadioButtons(page: Page) {
   const radioButtons = page.getByRole("radio", { name: "Yes" });
   // Wait for at least one radio button to be visible before counting.
@@ -98,6 +164,24 @@ export async function checkAllRadioButtons(page: Page) {
       await radio.check();
     }
   }
+}
+
+export async function checkCheckboxByLabel(
+  page: Page,
+  label: string | RegExp,
+): Promise<void> {
+  const name = label instanceof RegExp ? label : new RegExp(label, "i");
+
+  const checkbox = page.getByRole("checkbox", { name });
+
+  await expect(checkbox).toBeVisible({ timeout: 30_000 });
+  await expect(checkbox).toBeEnabled({ timeout: 30_000 });
+
+  if (!(await checkbox.isChecked())) {
+    await checkbox.check();
+  }
+
+  await expect(checkbox).toBeChecked();
 }
 
 // 🛠️ Function: checks expected alert message
@@ -231,7 +315,7 @@ export async function tableColumnNamesAreCorrect(
   expectedColumnNames: string[],
 ) {
   const columnHeaders = page.locator(".MuiDataGrid-columnHeaderTitle");
-  const actualColumnNames = await columnHeaders.allTextContents();
+  const actualColumnNames = await columnHeaders.getByText();
   expect(actualColumnNames).toEqual(expectedColumnNames);
 }
 
@@ -524,4 +608,61 @@ export function getCrvIdFromUrl({ url }: { url: string }): number {
 
   if (!match) throw new Error(`Could not extract crvId from URL: ${url}`);
   return Number(match[1]);
+}
+
+/**
+ * Wait until the grid is actually "ready":
+ * - GRID_ROOT exists
+ * - root + role=grid visible
+ * - (optional) progressbar/spinner is gone
+ * - at least one gridcell exists
+ *
+ * Tolerates re-mounts (e.g. HMR) with re-check of counts on every attempt
+ */
+export async function waitForGridReady(
+  page: Page,
+  options?: { timeout?: number },
+): Promise<void> {
+  const timeout = options?.timeout ?? 30_000;
+
+  await expect(async () => {
+    const rootCount = await page.locator(GRID_ROOT).count();
+    expect(rootCount).toBeGreaterThan(0);
+
+    const grid = page.locator(GRID_ROOT);
+    await expect(grid).toBeVisible();
+
+    const progressbar = grid.locator('[role="progressbar"]');
+    const anyCell = grid.locator('[role="gridcell"]').first();
+
+    if ((await progressbar.count()) > 0) {
+      await expect(progressbar).toBeHidden();
+    }
+
+    await expect(anyCell).toBeVisible();
+  }).toPass({ timeout });
+}
+
+export async function getGridRowByText(
+  page: Page,
+  rowText: string | RegExp,
+): Promise<Locator> {
+  await waitForGridReady(page, { timeout: 30_000 });
+
+  const grid = page.locator(GRID_ROOT).first().locator('[role="grid"]').first();
+  const row = grid.getByRole("row").filter({ hasText: rowText }).first();
+
+  await expect(async () => {
+    const matchingRowCount = await row.count();
+    const totalRowCount = await grid.getByRole("row").count();
+
+    expect(totalRowCount).toBeGreaterThan(0);
+    expect(matchingRowCount).toBeGreaterThan(0);
+    await expect(row).toBeVisible();
+
+    const cellCount = await row.locator('[role="gridcell"]').count();
+    expect(cellCount).toBeGreaterThan(0);
+  }).toPass({ timeout: 30_000 });
+
+  return row;
 }
