@@ -51,8 +51,4 @@ export class ReviewComplianceObligationPOM {
     await expect(this.invoiceButton).toBeEnabled({ timeout: 30_000 });
     await this.invoiceButton.click();
   }
-
-  private escapeRegex(value: string): string {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  }
 }

@@ -42,19 +42,6 @@ export const DECISION_TO_BUTTON: Record<DirectorDecision, string> = {
   [IssuanceStatus.DECLINED]: DECLINE_BUTTON_TEXT,
 };
 
-// invoice anchors
-export const INVOICE_VOID_WATERMARK_REGEX = /\bVOID\b/i;
-export const FEES_AND_ADJUSTMENTS_TEXT = "Fees and Adjustments";
-export const INVOICE_NUMBER_LABEL_REGEX = /Invoice\s*#:/i;
-export const DEFAULT_ADJUSTMENT_REGEX = /\badjust(ment|ed|ments)?\b/i;
-export const COMPLIANCE_INVOICE_TYPES = {
-  OBLIGATION: "obligation",
-  AUTOMATIC_OVERDUE_PENALTY: "automatic-overdue-penalty",
-  LATE_SUBMISSION_PENALTY: "late-submission-penalty",
-} as const;
-export type ComplianceInvoiceType =
-  (typeof COMPLIANCE_INVOICE_TYPES)[keyof typeof COMPLIANCE_INVOICE_TYPES];
-
 // --- URL patterns / base paths ---
 
 export const COMPLIANCE_SUMMARIES_BASE_PATH =
@@ -78,9 +65,6 @@ export const REQUEST_ISSUANCE_CREDITS_URL_PATTERN = new RegExp(
   `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/request-issuance-of-earned-credits$`,
 );
 
-// Generate invoice
-export const COMPLIANCE_INVOICE_API_BASE = "/compliance/api/invoice";
-
 // Industry: scenario name used by the Django stub
 export const EARNED_CREDITS_REQUEST_ISSUANCE_SCENARIO =
   "earned_credits_request_issuance";
@@ -100,3 +84,22 @@ export const REVIEW_BY_DIRECTOR_URL_PATTERN = new RegExp(
 // Scenario name used by the Django stub for APPROVE (DECLINE doesn't need stub)
 export const EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO =
   "earned_credits_director_approve";
+
+// --- Invoice API ---
+export const COMPLIANCE_INVOICE_API_BASE = "/compliance/api/invoice";
+export type ComplianceInvoiceType =
+  | "obligation"
+  | "automatic-overdue-penalty"
+  | "late-submission-penalty";
+
+// --- Invoice PDF content
+export const INVOICE_VOID_WATERMARK = /\bVOID\b/i;
+export const FEES_AND_ADJUSTMENTS_TEXT = "Fees and Adjustments";
+export const INVOICE_NUMBER_LABEL = /Invoice\s*#:\s*\S+/i;
+export const DEFAULT_COMPLIANCE_OBLIGATION_LINE =
+  /\bcompliance\s+obligation\b/i;
+export const DEFAULT_ADJUSTMENT_LINE = /\badjustment\b/i;
+// Dollars
+export const DEFAULT_OBLIGATION_AMOUNT_DUE = /Amount Due:\s*\$1,?000,?968\.64/i;
+export const POST_ADJUSTMENT_OBLIGATION_AMOUNT_DUE =
+  /Amount Due:\s*\$277,?582\.40/i;

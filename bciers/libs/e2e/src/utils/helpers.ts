@@ -315,7 +315,7 @@ export async function tableColumnNamesAreCorrect(
   expectedColumnNames: string[],
 ) {
   const columnHeaders = page.locator(".MuiDataGrid-columnHeaderTitle");
-  const actualColumnNames = await columnHeaders.getByText();
+  const actualColumnNames = await columnHeaders.allTextContents();
   expect(actualColumnNames).toEqual(expectedColumnNames);
 }
 

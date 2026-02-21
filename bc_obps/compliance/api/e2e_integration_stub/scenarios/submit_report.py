@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Optional, cast
 from django.http import HttpRequest
 from compliance.models import (
     ComplianceObligation,
@@ -11,37 +11,46 @@ from .base import ScenarioHandler
 
 
 class SubmitReportScenario(ScenarioHandler):
-    def execute(self, request: HttpRequest, data: ScenarioPayload) -> Dict[str, Any]:
-        payload = data.payload or {}
+    def execute(self, request: HttpRequest, data: ScenarioPayload) -> dict[str, Any]:
+        payload: dict[str, Any] = data.payload or {}
+        user_guid = extract_user_guid(request, payload)
 
         report_version_id = payload.get("report_version_id") or data.compliance_report_version_id
         if report_version_id is None:
             raise ValueError("report_version_id is required for submit_report scenario")
 
-        user_guid = extract_user_guid(request, payload)
+        supplementary = payload.get("supplementary")
+        ack_new_version: Optional[bool] = None
+        ack_corrections: Optional[bool] = None
+        if supplementary is not None:
+            if not isinstance(supplementary, dict):
+                raise ValueError("payload.supplementary must be an object")
 
+            ack_new_version = cast(Optional[bool], supplementary.get("acknowledgement_of_new_version"))
+            ack_corrections = cast(Optional[bool], supplementary.get("acknowledgement_of_corrections"))
+
+        # Local imports to avoid circular deps with reporting services
         from reporting.service.report_submission_service import ReportSubmissionService
-        from reporting.service.report_sign_off_service import ReportSignOffAcknowledgements, ReportSignOffData
-
-        if "signature" not in payload:
-            raise ValueError("payload.signature is required")
-        if "acknowledgement_of_records" not in payload:
-            raise ValueError("payload.acknowledgement_of_records is required")
+        from reporting.service.report_sign_off_service import (
+            ReportSignOffAcknowledgements,
+            ReportSignOffData,
+        )
 
         signoff = ReportSignOffData(
             acknowledgements=ReportSignOffAcknowledgements(
-                payload.get("acknowledgement_of_review"),
-                payload.get("acknowledgement_of_certification"),
-                payload["acknowledgement_of_records"],
-                payload.get("acknowledgement_of_information"),
-                payload.get("acknowledgement_of_possible_costs"),
-                payload.get("acknowledgement_of_errors"),
-                payload.get("acknowledgement_of_new_version"),
-                payload.get("acknowledgement_of_corrections"),
+                acknowledgement_of_review=cast(bool, payload.get("acknowledgement_of_review")),
+                acknowledgement_of_certification=cast(bool, payload.get("acknowledgement_of_certification")),
+                acknowledgement_of_records=cast(bool, payload.get("acknowledgement_of_records")),
+                acknowledgement_of_information=cast(bool, payload.get("acknowledgement_of_information")),
+                acknowledgement_of_possible_costs=cast(bool, payload.get("acknowledgement_of_possible_costs")),
+                acknowledgement_of_new_version=ack_new_version,
+                acknowledgement_of_corrections=ack_corrections,
+                acknowledgement_of_errors=cast(bool, payload.get("acknowledgement_of_errors")),
             ),
-            signature=payload["signature"],
+            signature=cast(str, payload.get("signature")),
         )
 
+        # Submit report - triggers validations, record creations, signal, and api integrations that are intercepted and mocked
         report_version = ReportSubmissionService.submit_report(
             version_id=int(report_version_id),
             user_guid=user_guid,
@@ -62,19 +71,13 @@ class SubmitReportScenario(ScenarioHandler):
 
         invoice_number: Optional[str] = None
 
-        # Process obligation integration using existing service if obligation not met
+        # If obligation not met, get obligation invoice (set from mocked obligation integration-./mocking/http_mocks.py)
         if compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET:
             obligation = ComplianceObligation.objects.filter(
                 compliance_report_version=compliance_report_version
             ).first()
 
             if obligation is not None:
-                from compliance.service.elicensing.elicensing_obligation_service import (
-                    ElicensingObligationService,
-                )
-
-                # Use existing service - external calls are mocked by e2e_sandbox
-                ElicensingObligationService.process_obligation_integration(obligation.id)
 
                 obligation.refresh_from_db()
                 if obligation.elicensing_invoice:

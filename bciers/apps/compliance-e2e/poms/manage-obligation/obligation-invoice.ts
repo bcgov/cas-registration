@@ -1,10 +1,11 @@
 import { expect } from "@playwright/test";
 import { PDFParse } from "pdf-parse";
 import {
-  INVOICE_VOID_WATERMARK_REGEX,
+  DEFAULT_ADJUSTMENT_LINE,
+  DEFAULT_COMPLIANCE_OBLIGATION_LINE,
   FEES_AND_ADJUSTMENTS_TEXT,
-  INVOICE_NUMBER_LABEL_REGEX,
-  DEFAULT_ADJUSTMENT_REGEX,
+  INVOICE_NUMBER_LABEL,
+  INVOICE_VOID_WATERMARK,
 } from "@/compliance-e2e/utils/constants";
 
 export class ObligationInvoicePOM {
@@ -28,8 +29,17 @@ export class ObligationInvoicePOM {
   // Assertions (Chainable)
   // -----------------------
 
-  assertNotVoid(): this {
-    expect(this.text).not.toMatch(INVOICE_VOID_WATERMARK_REGEX);
+  assertVoid(expectedVoid: boolean = false): this {
+    if (expectedVoid) {
+      expect(this.text).toMatch(INVOICE_VOID_WATERMARK);
+    } else {
+      expect(this.text).not.toMatch(INVOICE_VOID_WATERMARK);
+    }
+    return this;
+  }
+
+  assertHasInvoiceNumber(): this {
+    expect(this.text).toMatch(INVOICE_NUMBER_LABEL);
     return this;
   }
 
@@ -38,13 +48,18 @@ export class ObligationInvoicePOM {
     return this;
   }
 
-  assertHasAdjustmentLine(matcher: RegExp = DEFAULT_ADJUSTMENT_REGEX): this {
+  assertComplianceObligationLine(): this {
+    expect(this.text).toMatch(DEFAULT_COMPLIANCE_OBLIGATION_LINE);
+    return this;
+  }
+
+  assertHasAdjustmentLine(matcher: RegExp = DEFAULT_ADJUSTMENT_LINE): this {
     expect(this.text).toMatch(matcher);
     return this;
   }
 
-  assertHasInvoiceNumber(): this {
-    expect(this.text).toMatch(INVOICE_NUMBER_LABEL_REGEX);
+  assertAmountDue(matcher: RegExp): this {
+    expect(this.text).toMatch(matcher);
     return this;
   }
 
