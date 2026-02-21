@@ -5,7 +5,14 @@ import {
   FEES_AND_ADJUSTMENTS_TEXT,
   INVOICE_NUMBER_LABEL_REGEX,
   DEFAULT_ADJUSTMENT_REGEX,
+  INITIAL_OUTSTANDING_BALANCE_REGEX,
+  POST_ADJUSTMENT_OUTSTANDING_BALANCE_REGEX,
 } from "@/compliance-e2e/utils/constants";
+
+export {
+  INITIAL_OUTSTANDING_BALANCE_REGEX,
+  POST_ADJUSTMENT_OUTSTANDING_BALANCE_REGEX,
+};
 
 export class ObligationInvoicePOM {
   private constructor(
@@ -45,6 +52,11 @@ export class ObligationInvoicePOM {
 
   assertHasInvoiceNumber(): this {
     expect(this.text).toMatch(INVOICE_NUMBER_LABEL_REGEX);
+    return this;
+  }
+
+  assertOutstandingBalance(matcher: RegExp): this {
+    expect(this.text).toMatch(matcher);
     return this;
   }
 
