@@ -73,6 +73,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             create_compliance_met_penalty_due_notice_email_template,
             reverse_compliance_met_penalty_due_notice_email_template,
-            elidable=True,
         )
     ]

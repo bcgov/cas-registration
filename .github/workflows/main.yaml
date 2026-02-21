@@ -67,7 +67,7 @@ jobs:
       backend_has_changes: ${{ (needs.check-backend-changes.outputs.has_changes || contains(github.event.pull_request.labels.*.name, 'run-all-ci')) && 'true' || 'false' }}
       frontend_has_changes: ${{ (needs.check-frontend-changes.outputs.has_changes || contains(github.event.pull_request.labels.*.name, 'run-all-ci')) && 'true' || 'false' }}
   test-backend:
-    needs: [build-backend, check-backend-changes]
+    needs: [check-backend-changes]
     uses: ./.github/workflows/test-backend.yaml
     with:
       backend_has_changes: ${{ (needs.check-backend-changes.outputs.has_changes || contains(github.event.pull_request.labels.*.name, 'run-all-ci')) && 'true' || 'false' }}
