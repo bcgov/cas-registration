@@ -250,34 +250,33 @@ class ReportSupplementaryVersionServiceTests(TestCase):
 
     def test_create_or_clone_purpose_changed_current_year_creates_blank(self):
         """Test that for current/future years with purpose change, blank version is created."""
-        # Setup: different purpose, current year, same operator
-        from django.utils import timezone
-
         operation = self.old_report_version.report.operation
         operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
         operation.save()
 
-        # Set to current year
-        self.old_report_version.report.reporting_year.reporting_year = timezone.now().year
+        # Set to current year (2026)
+        self.old_report_version.report.reporting_year.reporting_year = 2026
         self.old_report_version.report.reporting_year.save()
 
-        # Same operator
-        self.old_report_version.report.operator = operation.operator
-        self.old_report_version.report.save()
+        # Ensure report.operator matches operation.operator so operator_changed=False
+        report = self.old_report_version.report
+        report.operator = operation.operator
+        report.save()
+
+        self.new_report_version.delete()
 
         with patch(
             'reporting.service.report_supplementary_version_service.ReportVersionService.create_report_version'
         ) as mock_create:
-            self.new_report_version.delete()
             mock_create.return_value = make_recipe(
                 'reporting.tests.utils.report_version',
-                report=self.old_report_version.report,
+                report=report,
                 status=ReportVersion.ReportVersionStatus.Draft,
             )
             new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
 
-            mock_create.assert_called_once_with(self.old_report_version.report)
-            self.assertEqual(new_version.report, self.old_report_version.report)
+            mock_create.assert_called_once_with(report)
+            self.assertEqual(new_version.report, report)
 
     def test_create_or_clone_operator_changed_purpose_changed_creates_supplementary_with_same_details(self):
         """Test that when operator and purpose both change, supplementary version is created cloning the submitted version's details."""
