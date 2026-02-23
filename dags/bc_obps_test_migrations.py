@@ -94,6 +94,10 @@ def test_migrations(
         "pg-migration-test-wait-for-postgres-restore-job"
     )
 
+    postgres_check_backup_age = trigger_k8s_cronjob_with_params.override(task_id="check-backup-age")(
+        "pg-migration-test-check-backup-age-job"
+    )
+
     postgres_migration_test = trigger_k8s_cronjob_with_params.override(task_id="postgres-migration-test")(
         "pg-migration-test-job"
     )
@@ -168,7 +172,7 @@ def test_migrations(
         postgres_helm_install
         >> time_delay_postgres
         >> wait_for_postgres_restore
-        >> postgres_migration_test
+        >> [postgres_check_backup_age, postgres_migration_test]
         >> backend_helm_install
         >> time_delay_backend
         >> wait_for_backend
