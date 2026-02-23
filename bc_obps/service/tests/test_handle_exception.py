@@ -33,7 +33,7 @@ class TestExceptionHandler:
         assert "ERROR END" in captured.out
 
     def test_debug_log_exception_debug_false(self, mock_settings, capsys):
-        mock_settings.DEBUG = "False"
+        mock_settings.DEBUG = False
         ExceptionHandler.debug_log_exception()
         captured = capsys.readouterr()
         assert captured.out == ""
