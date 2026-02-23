@@ -58,16 +58,15 @@ class ReportSupplementaryVersionService:
         operation = report_version.report.operation
         report_operation = report_version.report_operation
 
-        # Check if creating supplementary version
         operator_changed = operation.operator_id != report_version.report.operator_id
         registration_purpose_changed = operation.registration_purpose != report_operation.registration_purpose
         is_past_year = report_version.report.reporting_year.reporting_year < timezone.now().year
 
-        # Create supplementary if: same purpose OR operator changed OR past year
-        if not registration_purpose_changed or operator_changed or is_past_year:
+        should_clone = not registration_purpose_changed or operator_changed or is_past_year
+
+        if should_clone:
             return ReportSupplementaryVersionService.create_report_supplementary_version(report_version_id)
 
-        # Otherwise create new blank version
         return ReportVersionService.create_report_version(report_version.report)
 
     @staticmethod

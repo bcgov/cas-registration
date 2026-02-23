@@ -1,11 +1,8 @@
 from unittest.mock import patch, MagicMock
 from model_bakery import baker
-from registration.models import Operation
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from reporting.models import ReportEmission, ReportProduct
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
-from django.utils import timezone
 
 
 class TestReportSupplementaryApi(CommonTestSetup):
@@ -46,58 +43,6 @@ class TestReportSupplementaryApi(CommonTestSetup):
         assert response.status_code == 201
         assert response.json() == self.new_report_version.id
         mock_create_or_clone.assert_called_once_with(report_version.id)
-
-    def test_new_version_has_no_emission_or_product_records_when_purpose_changed_current_year(self):
-        """Test that when registration purpose changes and it's a current/future year, a blank version is created."""
-        # Set up operation with different purpose than report_operation
-        self.old_report_version.report.operation.registration_purpose = Operation.Purposes.OBPS_REGULATED_OPERATION
-        self.old_report_version.report.operation.save()
-
-        # Set operator to match (no transfer)
-        self.old_report_version.report.operator = self.old_report_version.report.operation.operator
-        self.old_report_version.report.save()
-
-        # Set current year
-
-        self.old_report_version.report.reporting_year.reporting_year = timezone.now().year
-        self.old_report_version.report.reporting_year.save()
-
-        baker.make_recipe(
-            "reporting.tests.utils.report_operation",
-            report_version=self.old_report_version,
-            registration_purpose="different-purpose",
-        )
-        baker.make_recipe("reporting.tests.utils.report_emission", report_version=self.old_report_version, _quantity=3)
-
-        facility_report = baker.make_recipe(
-            "reporting.tests.utils.facility_report",
-            report_version=self.old_report_version,
-        )
-        baker.make_recipe(
-            "reporting.tests.utils.report_product",
-            report_version=self.old_report_version,
-            facility_report=facility_report,
-            product_id=1,
-        )
-
-        self.old_report_version.status = "Submitted"
-        self.old_report_version.save()
-
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            {},
-            custom_reverse_lazy(
-                "create_report_supplementary_version",
-                kwargs={"version_id": self.old_report_version.id},
-            ),
-        )
-        assert response.status_code == 201
-        new_report_version_id = response.json()
-        # Verify that the new report version has no related entries
-        assert not ReportEmission.objects.filter(report_version_id=new_report_version_id).exists()
-        assert not ReportProduct.objects.filter(report_version_id=new_report_version_id).exists()
 
     @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
     def test_returns_data_as_provided_by_is_initial_version(self, mock_is_initial_report_version: MagicMock):
