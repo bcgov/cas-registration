@@ -20,7 +20,7 @@ const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
 
 test.describe.configure({ mode: "serial" });
 
-test.describe("Test compliance report version manage obligation flow", () => {
+test.describe("Test report version to compliance report version manage obligation flow", () => {
   test("when invoice_generation_date is reached, compliance report version status is OBLIGATION_NOT_MET", async ({
     page,
     request,

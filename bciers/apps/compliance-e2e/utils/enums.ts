@@ -13,6 +13,7 @@ export enum ComplianceOperations {
 export enum ComplianceDisplayStatus {
   NO_OBLIGATION = "No obligation or earned credits",
   OBLIGATION_NOT_MET = "Obligation - not met",
+  OBLIGATION_MET = "Obligation - met",
   EARNED_CREDITS_NOT_REQUESTED = "Earned credits - not requested",
   EARNED_CREDITS_REQUESTED = "Earned credits - issuance requested",
   EARNED_CREDITS_CHANGES_REQUIRED = "Earned credits - changes required",
