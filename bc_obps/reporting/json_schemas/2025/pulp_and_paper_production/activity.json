@@ -1,6 +1,7 @@
 {
   "name": "Pulp and paper production",
   "type": "object",
+  "required": ["biogenicIndustrialProcessEmissions"],
   "properties": {
     "id": {
       "type": "number",
@@ -15,6 +16,7 @@
           "title": "Does this mill utilize a lime recovery kiln?"
         }
       },
+      "required": ["doesUtilizeLimeRecoveryKiln"],
       "dependencies": {
         "doesUtilizeLimeRecoveryKiln": {
           "oneOf": [

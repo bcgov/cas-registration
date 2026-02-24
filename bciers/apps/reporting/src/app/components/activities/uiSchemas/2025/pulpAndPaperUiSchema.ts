@@ -31,6 +31,7 @@ const pulpAndPaperUiSchema2025 = {
     "ui:order": ["doesUtilizeLimeRecoveryKiln", "biogenicEmissionsSplit"],
     doesUtilizeLimeRecoveryKiln: {
       "ui:widget": RadioWidget,
+      "ui:emptyValue": undefined,
       "ui:options": {
         inline: true,
       },
