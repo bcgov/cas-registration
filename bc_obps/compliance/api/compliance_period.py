@@ -14,7 +14,7 @@ from compliance.constants import COMPLIANCE
     response={200: CompliancePeriodOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Get compliance period for reporting year",
-    auth=authorize("approved_authorized_roles"),
+    auth=authorize("all_roles"),
 )
 def get_compliance_period_for_year(
     request: HttpRequest,

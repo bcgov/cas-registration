@@ -5,5 +5,9 @@ export default async function getCompliancePeriod(
   reporting_year: number,
   pathToRevalidate: string = "",
 ) {
-  return actionHandler(`compliance/compliance-period/${reporting_year}`, "GET", pathToRevalidate);
+  return actionHandler(
+    `compliance/compliance-period/${reporting_year}`,
+    "GET",
+    pathToRevalidate,
+  );
 }
