@@ -1,9 +1,11 @@
-from decimal import Decimal
+import dataclasses
 from typing import List
 from ninja import Schema
+from reporting.service.compliance_service.compliance_service import ComplianceData
+from reporting.service.compliance_service.regulatory_values import RegulatoryValues
 
 
-class RegulatoryValueSchema(Schema):
+class RegulatoryValuesSchema(Schema):
     initial_compliance_period: int
     compliance_period: int
 
@@ -12,11 +14,11 @@ class ReportProductComplianceSchema(Schema):
     name: str
     annual_production: float
     apr_dec_production: float
-    emission_intensity: Decimal
+    emission_intensity: float
     allocated_industrial_process_emissions: float
     allocated_compliance_emissions: float
-    reduction_factor: Decimal
-    tightening_rate: Decimal
+    reduction_factor: float
+    tightening_rate: float
 
 
 class ComplianceDataSchemaOut(Schema):
@@ -26,6 +28,25 @@ class ComplianceDataSchemaOut(Schema):
     emissions_limit: float
     excess_emissions: float
     credited_emissions: float
-    regulatory_values: RegulatoryValueSchema
+    regulatory_values: RegulatoryValuesSchema
     products: List[ReportProductComplianceSchema]
     reporting_year: int
+
+    @staticmethod
+    def resolve_regulatory_values(obj: ComplianceData) -> RegulatoryValues:
+        return obj.industry_regulatory_values
+
+    @staticmethod
+    def resolve_products(obj: ComplianceData) -> List[ReportProductComplianceSchema]:
+        return list(
+            map(
+                lambda p: ReportProductComplianceSchema(
+                    **dataclasses.asdict(p),
+                    reduction_factor=float(
+                        p.reduction_factor_override or obj.industry_regulatory_values.reduction_factor
+                    ),
+                    tightening_rate=float(p.tightening_rate_override or obj.industry_regulatory_values.tightening_rate),
+                ),
+                obj.products,
+            )
+        )

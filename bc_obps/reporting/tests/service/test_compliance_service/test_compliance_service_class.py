@@ -1,3 +1,4 @@
+import dataclasses
 from django.test import TestCase
 from reporting.models import (
     ReportComplianceSummary,
@@ -62,11 +63,11 @@ class TestComplianceSummaryServiceClass(TestCase):
 
         # Verify that each product has reduction_factor and tightening_rate populated
         for product in result.products:
-            assert product.reduction_factor is not None
-            assert product.tightening_rate is not None
-            # For this test data, all products should have the same NAICS-based values
-            assert product.reduction_factor == Decimal('0.6500')
-            assert product.tightening_rate == Decimal('0.0100')
+            assert product.reduction_factor_override is None
+            assert product.tightening_rate_override is None
+
+        assert result.industry_regulatory_values.reduction_factor == Decimal('0.6500')
+        assert result.industry_regulatory_values.tightening_rate == Decimal('0.0100')
 
     def test_apr_dec_used_for_2024_summary(self):
         # Explicit test that 2024 uses Apr-Dec scaled allocations for compliance
@@ -202,6 +203,62 @@ class TestComplianceSummaryServiceClass(TestCase):
         )
         for idx, p in enumerate(report_compliance_product_records):
             assert p.annual_production == updated_result.products[idx].annual_production
+
+    def test_compliance_summary_with_pulp_and_paper_regulatory_override(self):
+        # Sheet 6
+        build_data = ComplianceTestInfrastructure.build_pulp_and_paper_2025()
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        assert dataclasses.asdict(result) == {
+            'credited_emissions': Decimal('0.0000'),
+            'emissions_attributable_for_compliance': Decimal('30000.9989'),
+            'emissions_attributable_for_reporting': Decimal('40501.0489'),
+            'emissions_limit': Decimal('7346.6017'),
+            'excess_emissions': Decimal('22654.3972'),
+            'industry_regulatory_values': {
+                'compliance_period': 2025,
+                'initial_compliance_period': 2024,
+                'reduction_factor': Decimal('0.6500'),
+                'tightening_rate': Decimal('0.0100'),
+            },
+            'products': [
+                {
+                    'allocated_compliance_emissions': Decimal('6000.0001'),
+                    'allocated_industrial_process_emissions': Decimal('0'),
+                    'annual_production': 200.0,
+                    'apr_dec_production': Decimal('0'),
+                    'emission_intensity': Decimal('1.0700'),
+                    'name': 'Chemicals: pure hydrogen peroxide',
+                    'product_id': 3,
+                    'reduction_factor_override': None,
+                    'tightening_rate_override': None,
+                },
+                {
+                    'allocated_compliance_emissions': Decimal('8000.0280'),
+                    'allocated_industrial_process_emissions': Decimal('6000.02800'),
+                    'annual_production': 10000.0,
+                    'apr_dec_production': Decimal('0'),
+                    'emission_intensity': Decimal('0.3177'),
+                    'name': 'Pulp and paper: chemical pulp',
+                    'product_id': 16,
+                    'reduction_factor_override': None,
+                    'tightening_rate_override': None,
+                },
+                {
+                    'allocated_compliance_emissions': Decimal('16000.9708'),
+                    'allocated_industrial_process_emissions': Decimal('14000.97080'),
+                    'annual_production': 15000.0,
+                    'apr_dec_production': Decimal('0'),
+                    'emission_intensity': Decimal('0.3822'),
+                    'name': 'Pulp and paper: lime recovered by kiln',
+                    'product_id': 43,
+                    'reduction_factor_override': Decimal('0.9000'),
+                    'tightening_rate_override': Decimal('0.0100'),
+                },
+            ],
+            'reporting_only_emissions': Decimal('10500.0500'),
+            'reporting_year': 2025,
+        }
 
     def test_compliance_summary_rounding(self):
         build_data = ComplianceTestInfrastructure.decimal_places()
