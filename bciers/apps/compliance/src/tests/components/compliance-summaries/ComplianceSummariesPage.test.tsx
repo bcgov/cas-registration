@@ -78,6 +78,10 @@ const mockFetchResponseWithPenalty = {
 
 const fetchSpy = vi.spyOn(fetchModule, "fetchComplianceSummariesPageData");
 const roleSpy = vi.spyOn(sessionUtils, "getSessionRole");
+const compliancePeriodSpy = vi.spyOn(
+  reportingYearModule,
+  "getCompliancePeriod",
+);
 
 // --- Helpers ---
 
@@ -94,6 +98,9 @@ describe("ComplianceSummariesPage", () => {
     vi.resetAllMocks();
     fetchSpy.mockResolvedValue(mockFetchResponse);
     roleSpy.mockResolvedValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
+    compliancePeriodSpy.mockResolvedValue({
+      compliance_deadline: "2025-11-30",
+    });
     vi.spyOn(reportingYearModule, "getReportingYear").mockResolvedValue({
       reporting_year: 2024,
       report_due_date: "2025-03-31",
@@ -163,7 +170,7 @@ describe("ComplianceSummariesPage", () => {
 
   // midnight to next day deadline
   it("renders different 1st alert message before and after midnight deadline", async () => {
-    const currentDate = new Date(2025, 10, 30, 23, 58, 59);
+    const currentDate = new Date(2025, 10, 29, 23, 58, 59);
     vi.setSystemTime(currentDate);
     await renderPage();
 
