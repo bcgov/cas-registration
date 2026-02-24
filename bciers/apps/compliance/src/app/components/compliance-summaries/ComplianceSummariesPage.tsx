@@ -3,12 +3,13 @@ import { fetchComplianceSummariesPageData } from "@/compliance/src/app/utils/fet
 import ComplianceSummariesDataGrid from "@/compliance/src/app/components/compliance-summaries/ComplianceSummariesDataGrid";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 import AlertNote from "@bciers/components/form/components/AlertNote";
-import { getReportingYear } from "@bciers/actions/api";
+import { getReportingYear, getCompliancePeriod } from "@bciers/actions/api";
 import {
   ComplianceSummaryStatus,
   FrontEndRoles,
   PenaltyStatus,
 } from "@bciers/utils/src/enums";
+import { months } from "../../utils/constants";
 
 export default async function ComplianceSummariesPage({
   searchParams,
@@ -22,10 +23,16 @@ export default async function ComplianceSummariesPage({
   const currentDatePST = new Date(
     currentDate.toLocaleString("en-US", { timeZone: "America/Vancouver" }),
   );
-  const dueDate = new Date(reportingYear + 1, 10, 30, 23, 59, 59); // November 30 of the reporting year + 1
-  const dueDatePST = new Date(
-    dueDate.toLocaleString("en-US", { timeZone: "America/Vancouver" }),
-  );
+
+  // Due date alert message info
+  const compliancePeriod = await getCompliancePeriod(reportingYear);
+  const [year, month, date] = compliancePeriod.compliance_deadline
+    .split("-")
+    .map(Number);
+  const dueDate = new Date(year, month - 1, date); // Date converts to local time by default hence the split
+  const dueYear = dueDate.getFullYear();
+  const dueMonth = months[dueDate.getMonth()];
+  const dueDay = dueDate.getDate();
 
   const isAllowedCas = [
     FrontEndRoles.CAS_DIRECTOR,
@@ -54,15 +61,17 @@ export default async function ComplianceSummariesPage({
           {isAllowedIndustryUser && obligationsNotMet && (
             <AlertNote>
               Your compliance obligation for the {reportingYear} compliance
-              period {currentDatePST > dueDatePST ? "was" : "is"}{" "}
-              <strong>due on November 30, {reportingYear + 1}</strong>. Plan to
-              make your payment at least five business days before the
+              period {currentDatePST > dueDate ? "was" : "is"}{" "}
+              <strong>
+                due on {dueMonth} {dueDay}, {dueYear}
+              </strong>
+              . Plan to make your payment at least five business days before the
               compliance obligation deadline to allow for payment processing.
             </AlertNote>
           )}
         </div>
         {isAllowedIndustryUser &&
-          currentDatePST > dueDatePST &&
+          currentDatePST > dueDate &&
           obligationsNotMet &&
           penaltyExists && (
             <AlertNote>

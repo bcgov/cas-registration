@@ -21,3 +21,4 @@ export { default as handleInteralAccessRequest } from "./handleInternalAccessReq
 export { default as getInternalAccessRequests } from "./getInteralAccessRequests";
 export { default as getReportingYear } from "./getReportingYear";
 export { default as getReportingYears } from "./getReportingYears";
+export { default as getCompliancePeriod } from "./getCompliancePeriod";
