@@ -14,7 +14,6 @@ from reporting.service.compliance_service.industrial_process import (
 )
 from reporting.service.compliance_service.parameters import ComplianceParameters
 from reporting.service.emission_category_service import EmissionCategoryService
-from reporting.service.compliance_service_parameters import resolve_compliance_parameters, ProductionPeriod
 from reporting.models import ReportComplianceSummary, ReportComplianceSummaryProduct
 from registration.models import RegulatedProduct, Operation
 from decimal import Decimal
@@ -22,6 +21,7 @@ from django.db.models import Sum
 from typing import Dict, List
 from django.db import transaction
 from dataclasses import dataclass
+from reporting.service.compliance_service_parameters import resolve_compliance_parameters, ProductionPeriod
 
 from reporting.service.compliance_service.regulatory_values import (
     RegulatoryValues,
@@ -177,14 +177,14 @@ class ComplianceService:
         reporting_year = report_version.report.reporting_year_id
 
         if reporting_year == 2024:
-            return "apr_dec"
+            return ProductionPeriod.APR_DEC
         elif (
             registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
             and reporting_year == final_reporting_year == 2025
         ):
-            return "jan_mar"
+            return ProductionPeriod.JAN_MAR
         else:
-            return "annual"
+            return ProductionPeriod.ANNUAL
 
     @staticmethod
     def get_calculated_compliance_data(report_version_id: int) -> ComplianceData:
@@ -238,6 +238,7 @@ class ComplianceService:
             allocated_for_compliance = allocated - allocated_reporting_only
 
             # Calculate prorated_allocated limit (if applicable), depending on reporting year and operation criteria.
+
             production_for_limit, prorated_allocated, allocated_compliance_emissions_value = (
                 resolve_compliance_parameters(production_period, allocated_for_compliance, production_totals)
             )
@@ -302,7 +303,7 @@ class ComplianceService:
             credited_emissions = Decimal(0)
         else:
             # Select which allocated total to use for compliance comparisons
-            if production_period == "annual":
+            if production_period == ProductionPeriod.ANNUAL:
                 total_allocated_for_compliance_used = total_allocated_for_compliance_default
             else:
                 # production_period is "jan_mar" or "apr_dec"
