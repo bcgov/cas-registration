@@ -2,6 +2,8 @@ import unittest
 from decimal import Decimal
 
 from reporting.service.compliance_service.parameters import ComplianceParameters
+from reporting.service.compliance_service_parameters import resolve_compliance_parameters
+from reporting.service.compliance_service import ProductionPeriod
 
 
 class TestResolveComplianceParameters(unittest.TestCase):
@@ -9,7 +11,9 @@ class TestResolveComplianceParameters(unittest.TestCase):
         # allocated 100 over annual 1000, apr-dec production 100 => prorated = (100/1000)*100 = 10
         production_totals = {"annual_amount": Decimal("1000"), "apr_dec": Decimal("100")}
         production_for_limit, prorated_allocated, allocated_value = resolve_compliance_parameters(
-            production_period="apr_dec", allocated_for_compliance=Decimal("100"), production_totals=production_totals
+            production_period=ProductionPeriod.APR_DEC,
+            allocated_for_compliance=Decimal("100"),
+            production_totals=production_totals,
         )
 
         self.assertEqual(production_for_limit, Decimal("100"))
@@ -22,7 +26,9 @@ class TestResolveComplianceParameters(unittest.TestCase):
         # allocated 100 over annual 1000, jan-mar production 200 => prorated = (200/1000)*100 = 20
         production_totals = {"annual_amount": Decimal("1000"), "jan_mar": Decimal("200")}
         production_for_limit, prorated_allocated, allocated_value = resolve_compliance_parameters(
-            production_period="jan_mar", allocated_for_compliance=Decimal("100"), production_totals=production_totals
+            production_period=ProductionPeriod.JAN_MAR,
+            allocated_for_compliance=Decimal("100"),
+            production_totals=production_totals,
         )
 
         self.assertEqual(production_for_limit, Decimal("200"))
@@ -34,7 +40,9 @@ class TestResolveComplianceParameters(unittest.TestCase):
     def test_apr_dec_with_zero_annual_returns_zero_prorated(self):
         production_totals = {"annual_amount": Decimal("0"), "apr_dec": Decimal("50")}
         production_for_limit, prorated_allocated, allocated_value = resolve_compliance_parameters(
-            production_period="apr_dec", allocated_for_compliance=Decimal("100"), production_totals=production_totals
+            production_period=ProductionPeriod.APR_DEC,
+            allocated_for_compliance=Decimal("100"),
+            production_totals=production_totals,
         )
 
         # production_for_limit should be apr-dec value even if annual is zero
@@ -46,7 +54,9 @@ class TestResolveComplianceParameters(unittest.TestCase):
     def test_jan_mar_with_zero_annual_returns_zero_prorated(self):
         production_totals = {"annual_amount": Decimal("0"), "jan_mar": Decimal("75")}
         production_for_limit, prorated_allocated, allocated_value = resolve_compliance_parameters(
-            production_period="jan_mar", allocated_for_compliance=Decimal("100"), production_totals=production_totals
+            production_period=ProductionPeriod.JAN_MAR,
+            allocated_for_compliance=Decimal("100"),
+            production_totals=production_totals,
         )
 
         # production_for_limit should be jan-mar value even if annual is zero
@@ -59,7 +69,9 @@ class TestResolveComplianceParameters(unittest.TestCase):
         production_totals = {"annual_amount": Decimal("2000"), "apr_dec": Decimal("100")}
         allocated = Decimal("123.45678")
         production_for_limit, prorated_allocated, allocated_value = resolve_compliance_parameters(
-            production_period="annual", allocated_for_compliance=allocated, production_totals=production_totals
+            production_period=ProductionPeriod.ANNUAL,
+            allocated_for_compliance=allocated,
+            production_totals=production_totals,
         )
 
         # full-year production used
