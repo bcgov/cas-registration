@@ -1,0 +1,89 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-check-backup-age-job
+  labels: {{- include "cas-obps-postgres-migration-test.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  suspend: true # This cron job is intended to be triggered manually by Airflow
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels: {{ include "cas-obps-postgres-migration-test.labels" . | nindent 12 }}
+            component: job-with-database-access
+        spec:
+          activeDeadlineSeconds: 600
+          restartPolicy: Never
+          serviceAccountName: airflow-deployer
+          containers:
+            - name: postgres-age-check
+              image: postgres:16
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+              env:
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-postgres
+                      key: user
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-postgres
+                      key: password
+                - name: PGHOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-postgres
+                      key: host
+                - name: PGPORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-postgres
+                      key: port
+                - name: PGDATABASE
+                  value: "obps"
+                - name: MAX_FULL_BACKUP_AGE_HRS
+                  value: "24"
+              command:
+                - /usr/bin/env
+                - bash
+                - -c
+                - |
+                  set -euo pipefail;
+                  until pg_isready; do
+                    echo "⏱️ Waiting for Postgres to be ready...";
+                    sleep 5;
+                  done;
+
+                  CURRENT_EPOCH=$(date +%s)
+                  echo "Current epoch: $CURRENT_EPOCH"
+                  LATEST_BACKUP_EPOCH=$(
+                    pgbackrest info --type=full |
+                    awk '
+                        /timestamp start\/stop:/ {
+                            split($0,a,"/ ")
+                            print a[2]
+                        }
+                    ' |
+                    tail -1 |
+                    date +%s
+                  )
+
+                  echo "Latest backup epoch: $LATEST_BACKUP_EPOCH"
+
+                  FULL_BACKUP_AGE_HRS=$(( (CURRENT_EPOCH - LATEST_BACKUP_EPOCH) /3600))
+                  echo "Latest backup age in hours: $FULL_BACKUP_AGE_HRS"
+
+                  if [ $FULL_BACKUP_AGE_HRS -gt $MAX_FULL_BACKUP_AGE_HRS ]; then
+                    echo "❌ Latest full backup is $FULL_BACKUP_AGE_HRS hours old, which is more than the maximum allowed of $MAX_FULL_BACKUP_AGE_HRS hours."
+                    exit 1
+                  fi
+
+                  echo "✅ Latest full backup is less than $MAX_FULL_BACKUP_AGE_HRS hours old."
