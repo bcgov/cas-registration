@@ -65,13 +65,11 @@ spec:
                   CURRENT_EPOCH=$(date +%s)
                   echo "Current epoch: $CURRENT_EPOCH"
                   LATEST_BACKUP_EPOCH=$(
-                    pgbackrest info |
+                    pgbackrest info --type=full |
                     awk '
-                        /full backup:/ {found=1}
-                        found && /timestamp start\/stop:/ {
+                        /timestamp start\/stop:/ {
                             split($0,a,"/ ")
                             print a[2]
-                            found=0
                         }
                     ' |
                     tail -1 |
