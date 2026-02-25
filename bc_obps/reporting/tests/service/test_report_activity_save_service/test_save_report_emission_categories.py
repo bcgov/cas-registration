@@ -1,4 +1,5 @@
 from django.test import TestCase
+from registration.models import Activity
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.source_type import SourceType
@@ -18,7 +19,9 @@ class TestSaveReportEmission(TestCase):
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = test_infrastructure.make_report_activity(activity_id=1)
+        report_activity = test_infrastructure.make_report_activity(
+            activity_id=Activity.objects.get(slug='gsc_excluding_line_tracing').id
+        )
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -74,7 +77,9 @@ class TestSaveReportEmission(TestCase):
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = test_infrastructure.make_report_activity(activity_id=1)
+        report_activity = test_infrastructure.make_report_activity(
+            activity_id=Activity.objects.get(slug='gsc_excluding_line_tracing').id
+        )
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -163,7 +168,9 @@ class TestSaveReportEmission(TestCase):
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = test_infrastructure.make_report_activity(activity_id=20)
+        report_activity = test_infrastructure.make_report_activity(
+            activity_id=Activity.objects.get(slug='petrochemical_production').id
+        )
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -203,7 +210,9 @@ class TestSaveReportEmission(TestCase):
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = test_infrastructure.make_report_activity(activity_id=4)
+        report_activity = test_infrastructure.make_report_activity(
+            activity_id=Activity.objects.get(slug='aluminum_production').id
+        )
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -243,7 +252,9 @@ class TestSaveReportEmission(TestCase):
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = test_infrastructure.make_report_activity(activity_id=9)
+        report_activity = test_infrastructure.make_report_activity(
+            activity_id=Activity.objects.get(slug='copper_nickel_refining').id
+        )
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -285,7 +296,9 @@ class TestSaveReportEmission(TestCase):
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = test_infrastructure.make_report_activity(activity_id=3)
+        report_activity = test_infrastructure.make_report_activity(
+            activity_id=Activity.objects.get(slug='fuel_combustion_by_mobile').id
+        )
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -328,7 +341,9 @@ class TestSaveReportEmission(TestCase):
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = test_infrastructure.make_report_activity(activity_id=33)
+        report_activity = test_infrastructure.make_report_activity(
+            activity_id=Activity.objects.get(slug='og_activities_other_than_non_compression').id
+        )
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -368,7 +383,9 @@ class TestSaveReportEmission(TestCase):
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = test_infrastructure.make_report_activity(activity_id=20)
+        report_activity = test_infrastructure.make_report_activity(
+            activity_id=Activity.objects.get(slug='petrochemical_production').id
+        )
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -411,7 +428,9 @@ class TestSaveReportEmission(TestCase):
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = test_infrastructure.make_report_activity(activity_id=31)
+        report_activity = test_infrastructure.make_report_activity(
+            activity_id=Activity.objects.get(slug='gsc_other_than_non_compression').id
+        )
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -451,7 +470,9 @@ class TestSaveReportEmission(TestCase):
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = test_infrastructure.make_report_activity(activity_id=21)
+        report_activity = test_infrastructure.make_report_activity(
+            activity_id=Activity.objects.get(slug='petroleum_refining').id
+        )
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -485,7 +506,6 @@ class TestSaveReportEmission(TestCase):
         assert return_value.emission_categories.get(category_type="basic").category_name == "Emissions from wastewater"
 
     def test_pulp_and_paper_exception(self):
-        pulp_paper_activity_id = 23
         pulping_source_type_id = 49
         test_infrastructure = TestInfrastructure.build()
         act_st = test_infrastructure.make_activity_source_type(
@@ -493,7 +513,9 @@ class TestSaveReportEmission(TestCase):
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = test_infrastructure.make_report_activity(activity_id=pulp_paper_activity_id)
+        report_activity = test_infrastructure.make_report_activity(
+            activity_id=Activity.objects.get(slug='pulp_and_paper').id
+        )
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
