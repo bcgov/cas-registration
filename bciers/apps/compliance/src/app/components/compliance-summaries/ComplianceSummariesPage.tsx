@@ -9,7 +9,6 @@ import {
   FrontEndRoles,
   PenaltyStatus,
 } from "@bciers/utils/src/enums";
-import { months } from "../../utils/constants";
 
 export default async function ComplianceSummariesPage({
   searchParams,
@@ -31,7 +30,9 @@ export default async function ComplianceSummariesPage({
     .map(Number);
   const dueDate = new Date(year, month - 1, date); // Date converts to local time by default hence the split
   const dueYear = dueDate.getFullYear();
-  const dueMonth = months[dueDate.getMonth()];
+  const dueMonth = new Intl.DateTimeFormat("en-CA", { month: "long" }).format(
+    dueDate,
+  );
   const dueDay = dueDate.getDate();
 
   const isAllowedCas = [
