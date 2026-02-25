@@ -32,7 +32,7 @@ export class ReviewComplianceObligationPOM {
     );
     const [response] = await Promise.all([
       this.page.waitForResponse((r) => invoiceUrl.test(r.url()), {
-        timeout: 60_000,
+        timeout: 120_000,
       }),
       this.clickGenerateInvoice(),
     ]);

@@ -100,6 +100,16 @@ export const DEFAULT_COMPLIANCE_OBLIGATION_LINE =
   /\bcompliance\s+obligation\b/i;
 export const DEFAULT_ADJUSTMENT_LINE = /\badjustment\b/i;
 // Dollars
-export const DEFAULT_OBLIGATION_AMOUNT_DUE = /Amount Due:\s*\$1,?000,?968\.64/i;
-export const POST_ADJUSTMENT_OBLIGATION_AMOUNT_DUE =
-  /Amount Due:\s*\$277,?582\.40/i;
+export const AMOUNT_DUE_LABEL = /Amount\s*Due:\s*/i;
+export const DEFAULT_OBLIGATION_AMOUNT_DUE = new RegExp(
+  `${AMOUNT_DUE_LABEL.source}\\$1,?000,?968\\.64`,
+  "i",
+);
+export const AMOUNT_DUE_AFTER_DECREASE_STILL_UNMET = new RegExp(
+  `${AMOUNT_DUE_LABEL.source}\\$277,?582\\.40`,
+  "i",
+);
+export const AMOUNT_DUE_AFTER_DECREASE_OBLIGATION_MET = new RegExp(
+  `${AMOUNT_DUE_LABEL.source}\\$0\\.00`,
+  "i",
+);
