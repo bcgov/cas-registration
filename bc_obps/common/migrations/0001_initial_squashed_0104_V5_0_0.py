@@ -9,10 +9,6 @@ from common.utils import reset_dashboard_data
 
 # common.migrations.0002_admin_access_request_email_templates
 def create_admin_access_request_email_notification_templates(apps, schema_editor):
-    """
-    Create EmailNotificationTemplates for the Admin Access Request workflow
-    """
-
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.create(
         name='Admin Access Request Confirmation',
@@ -58,10 +54,6 @@ def create_admin_access_request_email_notification_templates(apps, schema_editor
 
 
 def reverse_create_admin_access_request_email_notification_templates(apps, schema_editor):
-    """
-    Reverse the creation of the EmailNotificationTemplates for the Admin Access Request workflow
-    """
-
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.filter(
         name__in=[
@@ -74,10 +66,6 @@ def reverse_create_admin_access_request_email_notification_templates(apps, schem
 
 # common.migrations.0003_operator_access_request_email_templates
 def create_operator_access_request_email_notification_templates(apps, schema_editor):
-    """
-    Create EmailNotificationTemplates for the Access Request to an existing operator with an existing admin
-    """
-
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.create(
         name='Operator With Admin Access Request Confirmation',
@@ -123,10 +111,6 @@ def create_operator_access_request_email_notification_templates(apps, schema_edi
 
 
 def reverse_create_operator_access_request_email_notification_templates(apps, schema_editor):
-    """
-    Reverse the creation of the EmailNotificationTemplates for the Access Request to an existing operator with an existing admin
-    """
-
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.filter(
         name__in=[
@@ -139,10 +123,6 @@ def reverse_create_operator_access_request_email_notification_templates(apps, sc
 
 # common.migrations.0004_new_operator_and_admin_access_request_email_templates
 def create_new_operator_and_admin_access_request_email_notification_templates(apps, schema_editor):
-    """
-    Create EmailNotificationTemplates for creating a new operator and granting admin access
-    """
-
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.create(
         name='New Operator And Admin Access Request Confirmation',
@@ -188,10 +168,6 @@ def create_new_operator_and_admin_access_request_email_notification_templates(ap
 
 
 def reverse_new_operator_and_admin_access_request_email_notification_templates(apps, schema_editor):
-    """
-    Reverse EmailNotificationTemplates for creating a new operator and granting admin access
-    """
-
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.filter(
         name__in=[
@@ -204,9 +180,6 @@ def reverse_new_operator_and_admin_access_request_email_notification_templates(a
 
 # common.migrations.0007_operation_boro_id_email_templates
 def submit_operation_boro_id_email_notification_templates(apps, schema_editor):
-    """
-    Create EmailNotificationTemplate objects for confirming the submission of a BORO ID application, and for approving, declining, or requesting changes on the BORO ID application.
-    """
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.create(
         name='BORO ID Application Confirmation',
@@ -230,7 +203,7 @@ def submit_operation_boro_id_email_notification_templates(apps, schema_editor):
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
             <p>Your application to obtain a BC OBPS Regulated Operation ID (BORO ID) for {{ operation_name }} of {{ operator_legal_name }} has been approved by the Climate Action Secretariat.</p>
-            <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca/">BCIERS</a> to see {{ operation_name }}'s assigned BORO ID. For more information on how to use the BORO ID, please refer to <a href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf">Getting Started with the B.C. Output-Based Pricing System (gov.bc.ca)</a>.</p><br>
+            <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca/">BCIERS</a> to see {{ operation_name }}’s assigned BORO ID. For more information on how to use the BORO ID, please refer to <a href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf">Getting Started with the B.C. Output-Based Pricing System (gov.bc.ca)</a>.</p><br>
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
@@ -266,9 +239,6 @@ def submit_operation_boro_id_email_notification_templates(apps, schema_editor):
 
 
 def reverse_submit_operation_boro_id_email_notification_templates(apps, schema_editor):
-    """
-    Reverse EmailNotificationTemplates for confirming the submission of a BORO ID application, and for approving, declining, or requesting changes on the BORO ID application.
-    """
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.filter(
         name__in=[
@@ -282,9 +252,6 @@ def reverse_submit_operation_boro_id_email_notification_templates(apps, schema_e
 
 # common.migrations.0008_operation_opt_in_and_boro_id_email_templates
 def opt_in_and_submit_operation_boro_id_email_notification_templates(apps, schema_editor):
-    """
-    Create EmailNotificationTemplate objects for confirming the submission of a BORO ID application, and for approving, declining, or requesting changes on the BORO ID application for opted-in operations.
-    """
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.create(
         name='Opt-in And BORO ID Application Confirmation',
@@ -310,7 +277,7 @@ def opt_in_and_submit_operation_boro_id_email_notification_templates(apps, schem
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
             <p>Your application to opt-in as a reporting and regulated operation and obtain a BC OBPS Regulated Operation ID (BORO ID) for {{ operation_name }} of {{ operator_legal_name }} has been approved by the Climate Action Secretariat.</p>
-            <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca/">BCIERS</a> to see {{ operation_name }}'s assigned BORO ID. For more information on how to use the BORO ID, please refer to <a href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf">Getting Started with the B.C. Output-Based Pricing System (gov.bc.ca)</a>.</p><br>
+            <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca/">BCIERS</a> to see {{ operation_name }}’s assigned BORO ID. For more information on how to use the BORO ID, please refer to <a href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf">Getting Started with the B.C. Output-Based Pricing System (gov.bc.ca)</a>.</p><br>
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
@@ -346,9 +313,6 @@ def opt_in_and_submit_operation_boro_id_email_notification_templates(apps, schem
 
 
 def reverse_opt_in_and_submit_operation_boro_id_email_notification_templates(apps, schema_editor):
-    """
-    Reverse EmailNotificationTemplate objects for confirming the submission of a BORO ID application, and for approving, declining, or requesting changes on the BORO ID application for opted-in operations.
-    """
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.filter(
         name_in=[
@@ -362,9 +326,6 @@ def reverse_opt_in_and_submit_operation_boro_id_email_notification_templates(app
 
 # common.migrations.0047_boro_id_issuance_email_template
 def create_boro_id_issuance_email_notification_template(apps, schema_editor):
-    """
-    Create EmailNotificationTemplate for the Notification of Issuance of BORO ID
-    """
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.create(
         name='BORO ID Issuance',
@@ -383,19 +344,12 @@ def create_boro_id_issuance_email_notification_template(apps, schema_editor):
 
 
 def reverse_create_boro_id_issuance_email_notification_template(apps, schema_editor):
-    """
-    Reverse the creation of the EmailNotificationTemplate for the Notification of Issuance of BORO ID
-    """
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.filter(name='BORO ID Issuance').delete()
 
 
 # common.migrations.0048_admin_access_request_emails
 def update_admin_access_request_email_notification_templates(apps, schema_editor):
-    """
-    Update EmailNotificationTemplates for the admin Access Request workflow
-    """
-
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
 
     EmailNotificationTemplate.objects.filter(name='Admin Access Request Confirmation').update(
@@ -442,10 +396,6 @@ def update_admin_access_request_email_notification_templates(apps, schema_editor
 
 # common.migrations.0049_access_request_emails
 def update_operator_access_request_email_notification_templates(apps, schema_editor):
-    """
-    Update EmailNotificationTemplates for the Access Request to an existing operator with an existing admin
-    """
-
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.filter(name='Operator With Admin Access Request Confirmation').update(
         subject='BCIERS Receipt Acknowledgement – Access request to {{ operator_legal_name }}',
@@ -490,9 +440,6 @@ def update_operator_access_request_email_notification_templates(apps, schema_edi
 
 # common.migrations.0050_registration_submitted_email_template
 def create_registration_submitted_email_template(apps, schema_editor):
-    """
-    Creates EmailNotificationTemplate for the Receipt Acknowledgement of Registration.
-    """
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.create(
         name='Registration Submission Acknowledgement',
@@ -513,9 +460,6 @@ def create_registration_submitted_email_template(apps, schema_editor):
 
 
 def reverse_create_registration_submitted_email_template(apps, schema_editor):
-    """
-    Reverses the creation of the EmailNotificationTemplate for Registration Submission Acknowledgement.
-    """
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.filter(name='Registration Submission Acknowledgement').delete()
 
@@ -580,7 +524,7 @@ def create_no_obligation_no_credits_notice_email_template(apps, schema_editor):
             <br>
             <p>Dear {{ operator_legal_name }},</p>
             <br>
-            <p>Based on the information submitted in <b>{{operation_name}}</b>'s  Annual Report for the {{ compliance_year }} compliance period, you have met your compliance obligation with no excess emissions or earned credits.  You can now review your records in the BC Industrial Emissions Reporting System (BCIERS). There is no further action required at this time.</p>
+            <p>Based on the information submitted in <b>{{operation_name}}</b>’s  Annual Report for the {{ compliance_year }} compliance period, you have met your compliance obligation with no excess emissions or earned credits.  You can now review your records in the BC Industrial Emissions Reporting System (BCIERS). There is no further action required at this time.</p>
             <p>To review your compliance obligation, including how it was calculated, please log-into BCIERS at <a
               href="https://industrialemissions.gov.bc.ca/onboarding">https://industrialemissions.gov.bc.ca/onboarding</a>.</p>
             <p><em>Please do not reply to this email. This email is auto-generated and sent from an unmonitored address. If you have
@@ -614,8 +558,8 @@ def create_obligation_notice_email_template(apps, schema_editor):
             <br>
             <p>Dear {{ operator_legal_name }},</p>
             <br>
-            <p>You can now view your compliance obligation for the {{compliance_year}} compliance period in the BC Industrial Emissions Reporting System (BCIERS). This compliance obligation is based on the information submitted in <b>{{operation_name}}</b>'s Annual Report for the {{compliance_year}} compliance period. </p>
-            <p>On <b>November 1, 2025</b>, the Ministry will issue an invoice to <b>{{operator_legal_name}}</b> based on <b>{{operation_name}}</b>'s excess emissions for the 2024 compliance period multiplied by the applicable compliance charge rate. On November 1, 2025, you will receive payment instructions and have the option to use compliance units to meet part of your obligation. </p>
+            <p>You can now view your compliance obligation for the {{compliance_year}} compliance period in the BC Industrial Emissions Reporting System (BCIERS). This compliance obligation is based on the information submitted in <b>{{operation_name}}</b>’s Annual Report for the {{compliance_year}} compliance period. </p>
+            <p>On <b>November 1, 2025</b>, the Ministry will issue an invoice to <b>{{operator_legal_name}}</b> based on <b>{{operation_name}}</b>’s excess emissions for the 2024 compliance period multiplied by the applicable compliance charge rate. On November 1, 2025, you will receive payment instructions and have the option to use compliance units to meet part of your obligation. </p>
             <p><b>Please note:</b> Payments cannot be made before you receive your invoice. Payments received after the payment deadline of November 30 will be subject to daily compounding penalties, as well as interest under the <em>Financial Administration Act</em> (FAA). We encourage you to make your monetary payment at least five business days in advance of the compliance obligation deadline to allow for payment processing time. </p>
             <p><em>Please do not reply to this email. This email is auto-generated and sent from an unmonitored address. If you have
               any questions, or need further assistance, please reach out to our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a>.</em>
@@ -683,7 +627,7 @@ def create_obligation_due_template(apps, schema_editor):
             <p>You can now review your compliance obligation and take action to meet your obligation using the BC Industrial Emissions Reporting System (BCIERS).
             </p>
             <br>
-            <p>Based on the information submitted in <b>{{operation_name}}</b>'s Annual Report for the {{compliance_period}} compliance period and the applicable compliance charge rate, a compliance obligation for excess emissions of {{tonnes_of_co2}} at an equivalent amount of  {{outstanding_balance}} is now payable.   </p>
+            <p>Based on the information submitted in <b>{{operation_name}}</b>’s Annual Report for the {{compliance_period}} compliance period and the applicable compliance charge rate, a compliance obligation for excess emissions of {{tonnes_of_co2}} at an equivalent amount of  {{outstanding_balance}} is now payable.   </p>
             <br>
             <p>You have the option to use compliance units to meet part of your obligation. When you apply compliance units against your obligation, BCIERS automatically adjusts the equivalent monetary amount due on the invoice. To review your compliance obligation and how it was calculated, please log-into BCIERS at <a
               href="https://industrialemissions.gov.bc.ca/onboarding">https://industrialemissions.gov.bc.ca/onboarding</a>.</p><br>
@@ -908,7 +852,7 @@ def supplementary_report_submitted_after_deadline_template(apps, schema_editor):
             <p>Thank you for submitting a supplementary report through the BC Industrial Emissions Reporting System (BCIERS).
             </p>
             <br/>
-            <p>Because your supplementary report results in an increased amount of excess emissions, <b>you must meet an additional compliance obligation</b>. Based on the information submitted in <b>{{operation_name}}</b>'s supplementary report and the applicable compliance charge rate, an additional compliance obligation for excess emissions of {{tonnes_of_co2}} at an equivalent amount of {{outstanding_balance}} is now payable.   </p>
+            <p>Because your supplementary report results in an increased amount of excess emissions, <b>you must meet an additional compliance obligation</b>. Based on the information submitted in <b>{{operation_name}}</b>’s supplementary report and the applicable compliance charge rate, an additional compliance obligation for excess emissions of {{tonnes_of_co2}} at an equivalent amount of {{outstanding_balance}} is now payable.   </p>
             <br/>
             <p><b>Because the supplementary report was submitted after the compliance obligation deadline</b>, the additional compliance obligation is subject to interest under the Greenhouse Gas Emission Administrative Penalty and Appeals Regulation (GGEAPAR). Interest is calculated at the prime lending rate + 3%, compounded monthly from the compliance obligation deadline of November 30, {{year_due}} and applies until you resolve the overdue obligation.</p>
             <br/><p>To review your compliance obligation and how it was calculated, please log-into BCIERS at <a
