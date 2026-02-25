@@ -397,6 +397,7 @@ ENDPOINTS = {
     ],
     "all_roles": [
         {"method": "get", "endpoint_name": "get_reporting_year"},
+        {"method": "get", "endpoint_name": "get_compliance_period_for_year", "kwargs": {"reporting_year": MOCK_INT}},
         {"method": "put", "endpoint_name": "update_user_profile"},
         {"method": "get", "endpoint_name": "get_all_reporting_years"},
     ],
