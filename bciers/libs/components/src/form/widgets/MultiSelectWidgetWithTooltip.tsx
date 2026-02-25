@@ -85,6 +85,7 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
   const placeholder = uiSchema?.["ui:placeholder"]
     ? `${uiSchema["ui:placeholder"]}...`
     : "";
+  const helpText = uiSchema?.["ui:help"];
 
   // Optional prefix for tooltips (e.g.: "Regulatory name: ")
   const tooltipPrefix = uiSchema?.["ui:tooltipPrefix"] as string | undefined;
@@ -172,6 +173,7 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
         <TextField
           {...params}
           placeholder={displayPlaceholder ? placeholder : ""}
+          helperText={helpText}
         />
       )}
       renderTags={(
