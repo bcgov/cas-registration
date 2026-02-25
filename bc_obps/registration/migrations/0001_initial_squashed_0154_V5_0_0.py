@@ -448,60 +448,6 @@ def init_activity_data(apps, schema_editor):
     Activity = apps.get_model('registration', 'Activity')
     Activity.objects.bulk_create(
         [
-            # SFO activities
-            Activity(
-                name='Fuel combustion by mobile equipment',
-                applicable_to='Single Facility Operation',
-                slug='fuel_combustion_by_mobile',
-                weight=500,
-            ),
-            # LFO activities
-            Activity(
-                name='General stationary combustion, other than non-compression and non-processing combustion',
-                applicable_to='Linear Facilities Operation',
-                slug='gsc_other_than_non_compression',
-                weight=300,
-            ),
-            Activity(
-                name='General stationary non-compression and non-processing combustion',
-                applicable_to='Linear Facilities Operation',
-                slug='gsc_non_compression',
-                weight=400,
-            ),
-            Activity(
-                name='Electricity transmission',
-                applicable_to='Linear Facilities Operation',
-                slug='electricity_transmission',
-                weight=9999,
-            ),
-            Activity(
-                name='Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities',
-                applicable_to='Linear Facilities Operation',
-                slug='og_activities_other_than_non_compression',
-                weight=9999,
-            ),
-            Activity(
-                name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities',
-                applicable_to='Linear Facilities Operation',
-                slug='og_activities_non_compression',
-                weight=9999,
-            ),
-            Activity(
-                name='Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities',
-                applicable_to='Linear Facilities Operation',
-                slug='natural_gas_activities_other_than_non_compression',
-                weight=9999,
-            ),
-            Activity(
-                name='Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission',
-                applicable_to='Linear Facilities Operation',
-                slug='natural_gas_activities_non_compression',
-                weight=9999,
-            ),
-            Activity(
-                name='LNG activities', applicable_to='Linear Facilities Operation', slug='lng_activities', weight=9999
-            ),
-            # All activities
             Activity(
                 name='General stationary combustion excluding line tracing',
                 applicable_to='all',
@@ -513,6 +459,12 @@ def init_activity_data(apps, schema_editor):
                 applicable_to='all',
                 slug='gsc_solely_for_line_tracing',
                 weight=200,
+            ),
+            Activity(
+                name='Fuel combustion by mobile equipment',
+                applicable_to='Single Facility Operation',
+                slug='fuel_combustion_by_mobile',
+                weight=500,
             ),
             Activity(
                 name='Aluminum or alumina production', applicable_to='all', slug='aluminum_production', weight=9999
@@ -564,6 +516,51 @@ def init_activity_data(apps, schema_editor):
                 name='Storage of petroleum products', applicable_to='all', slug='storage_petro_products', weight=9999
             ),
             Activity(name='Carbonate use', applicable_to='all', slug='carbonate_use', weight=9999),
+            Activity(
+                name='General stationary combustion, other than non-compression and non-processing combustion',
+                applicable_to='Linear Facilities Operation',
+                slug='gsc_other_than_non_compression',
+                weight=300,
+            ),
+            Activity(
+                name='General stationary non-compression and non-processing combustion',
+                applicable_to='Linear Facilities Operation',
+                slug='gsc_non_compression',
+                weight=400,
+            ),
+            Activity(
+                name='Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities',
+                applicable_to='Linear Facilities Operation',
+                slug='og_activities_other_than_non_compression',
+                weight=9999,
+            ),
+            Activity(
+                name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities',
+                applicable_to='Linear Facilities Operation',
+                slug='og_activities_non_compression',
+                weight=9999,
+            ),
+            Activity(
+                name='Electricity transmission',
+                applicable_to='Linear Facilities Operation',
+                slug='electricity_transmission',
+                weight=9999,
+            ),
+            Activity(
+                name='Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities',
+                applicable_to='Linear Facilities Operation',
+                slug='natural_gas_activities_other_than_non_compression',
+                weight=9999,
+            ),
+            Activity(
+                name='Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission',
+                applicable_to='Linear Facilities Operation',
+                slug='natural_gas_activities_non_compression',
+                weight=9999,
+            ),
+            Activity(
+                name='LNG activities', applicable_to='Linear Facilities Operation', slug='lng_activities', weight=9999
+            ),
         ]
     )
 
