@@ -291,14 +291,6 @@ const OperationInformationForm = ({
     setIsConfirmTypeChangeModalOpen(false);
   };
 
-  // Regulated product IDs 16 and 43 are the Pulp and paper: chemical pulp
-  // and Pulp and paper: lime recovered by kiln, respectively
-  const selectedProductIds: number[] =
-    confirmedFormState.section1.regulated_products;
-  const displayPulpAndPaperHelpText =
-    (selectedProductIds?.includes(16) && !selectedProductIds?.includes(43)) ||
-    (!selectedProductIds?.includes(16) && selectedProductIds?.includes(43));
-
   return (
     <>
       <ConfirmChangeOfFieldModal
@@ -365,19 +357,7 @@ const OperationInformationForm = ({
           }
           setConfirmedFormState(e.formData);
         }}
-        uiSchema={{
-          ...currentUiSchema,
-          ...(displayPulpAndPaperHelpText && {
-            section1: {
-              ...currentUiSchema.section1,
-              regulated_products: {
-                ...currentUiSchema.section1.regulated_products,
-                "ui:help": `If this is a chemical pulp mill that recovered lime by kiln,
-                select both 'Pulp and paper: chemical pulp' and 'Pulp and paper: lime recovered by kiln'`,
-              },
-            },
-          }),
-        }}
+        uiSchema={currentUiSchema}
         customValidate={customValidate}
       />
     </>
