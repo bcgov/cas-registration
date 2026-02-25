@@ -11670,8 +11670,6 @@ class Migration(migrations.Migration):
             name='Report',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(db_comment='The title of the report', max_length=100)),
-                ('description', models.TextField(db_comment='The description of the report')),
                 (
                     'created_at',
                     models.DateTimeField(auto_now_add=True, db_comment='The timestamp when the report was created'),
@@ -11835,10 +11833,6 @@ class Migration(migrations.Migration):
                         null=True,
                     ),
                 ),
-                (
-                    'operation_representative_name',
-                    models.CharField(db_comment='The full name of the operation representative', max_length=10000),
-                ),
             ],
             options={
                 'db_table': 'erc"."report_operation',
@@ -11926,14 +11920,6 @@ class Migration(migrations.Migration):
         migrations.AlterModelTableComment(
             name='report',
             table_comment='A table to store report instances. Each operation has at most one report per year.',
-        ),
-        migrations.RemoveField(
-            model_name='report',
-            name='description',
-        ),
-        migrations.RemoveField(
-            model_name='report',
-            name='title',
         ),
         migrations.AddField(
             model_name='report',
@@ -12171,7 +12157,6 @@ class Migration(migrations.Migration):
                         to='registration.facility',
                     ),
                 ),
-                ('products', models.ManyToManyField(related_name='+', to='registration.regulatedproduct')),
                 (
                     'updated_by',
                     models.ForeignKey(
@@ -12972,14 +12957,6 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddConstraint(
-            model_name='activitysourcetypejsonschema',
-            constraint=models.CheckConstraint(
-                condition=models.Q(('has_unit', True), ('has_fuel', False), _negated=True),
-                name='invalid_if_has_unit_and_no_fuel',
-                violation_error_message='A Source Type configuration cannot specify a unit without a fuel',
-            ),
-        ),
-        migrations.AddConstraint(
             model_name='facilityreport',
             constraint=models.UniqueConstraint(
                 fields=('report_version', 'facility_id'), name='unique_facility_report_per_facility_and_report_version'
@@ -12998,153 +12975,6 @@ class Migration(migrations.Migration):
                 fields=('report_activity', 'source_type'),
                 name='unique_source_type_report_per_activity_report_and_source_type',
             ),
-        ),
-        migrations.CreateModel(
-            name='ReportPersonResponsible',
-            fields=[
-                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('archived_at', models.DateTimeField(blank=True, null=True)),
-                ('first_name', models.CharField(db_comment="A user or contact's first name", max_length=1000)),
-                ('last_name', models.CharField(db_comment="A user or contact's last name", max_length=1000)),
-                ('position_title', models.CharField(db_comment="A user or contact's position title", max_length=1000)),
-                (
-                    'email',
-                    models.EmailField(db_comment="A user or contact's email, limited to valid emails", max_length=254),
-                ),
-                (
-                    'phone_number',
-                    phonenumber_field.modelfields.PhoneNumberField(
-                        blank=True,
-                        db_comment="A user or contact's phone number, limited to valid phone numbers",
-                        max_length=128,
-                        region=None,
-                    ),
-                ),
-                (
-                    'report_version',
-                    models.OneToOneField(
-                        db_comment='The report version this person responsible applies to',
-                        on_delete=django.db.models.deletion.PROTECT,
-                        primary_key=True,
-                        related_name='report_person_responsible',
-                        serialize=False,
-                        to='reporting.reportversion',
-                    ),
-                ),
-                ('street_address', models.CharField(db_comment='The street address of the contact.', max_length=255)),
-                ('municipality', models.CharField(db_comment='The municipality of the contact.', max_length=255)),
-                ('province', models.CharField(db_comment='The province of the contact.', max_length=100)),
-                ('postal_code', models.CharField(db_comment='The postal code of the contact.', max_length=20)),
-                ('business_role', models.CharField(db_comment='The business role of the contact.', max_length=255)),
-                (
-                    'archived_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_archived',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'created_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_created',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'updated_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_updated',
-                        to='registration.user',
-                    ),
-                ),
-            ],
-            options={
-                'db_table': 'erc"."report_person_responsible',
-                'db_table_comment': 'A table to store the data about the person responsible for the report',
-            },
-        ),
-        migrations.CreateModel(
-            name='ReportAdditionalData',
-            fields=[
-                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('archived_at', models.DateTimeField(blank=True, null=True)),
-                (
-                    'report_version',
-                    models.OneToOneField(
-                        db_comment='The report version this report additional data applies to',
-                        on_delete=django.db.models.deletion.PROTECT,
-                        primary_key=True,
-                        related_name='report_additional_data',
-                        serialize=False,
-                        to='reporting.reportversion',
-                    ),
-                ),
-                (
-                    'capture_emissions',
-                    models.BooleanField(db_comment='Whether or not capture emissions was selected', default=False),
-                ),
-                (
-                    'emissions_on_site_use',
-                    models.IntegerField(blank=True, db_comment='Emissions on site use', null=True),
-                ),
-                (
-                    'emissions_on_site_sequestration',
-                    models.IntegerField(blank=True, db_comment='Emissions on site sequestration', null=True),
-                ),
-                (
-                    'emissions_off_site_transfer',
-                    models.IntegerField(blank=True, db_comment='Emissions off-site transfer', null=True),
-                ),
-                (
-                    'electricity_generated',
-                    models.IntegerField(blank=True, db_comment='Electricity generated', null=True),
-                ),
-                (
-                    'archived_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_archived',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'created_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_created',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'updated_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_updated',
-                        to='registration.user',
-                    ),
-                ),
-            ],
-            options={
-                'db_table': 'erc"."report_additional_data',
-                'db_table_comment': 'A table to store the additional data for the report',
-            },
         ),
         migrations.CreateModel(
             name='EmissionCategory',
@@ -13307,10 +13137,6 @@ class Migration(migrations.Migration):
             ),
             preserve_default=False,
         ),
-        migrations.RemoveField(
-            model_name='facilityreport',
-            name='products',
-        ),
         migrations.CreateModel(
             name='ReportNonAttributableEmissions',
             fields=[
@@ -13397,133 +13223,6 @@ class Migration(migrations.Migration):
             model_name='reportversion',
             name='report_type',
             field=models.CharField(db_comment='Report type', default='Annual Report', max_length=1000),
-        ),
-        migrations.CreateModel(
-            name='ReportVerification',
-            fields=[
-                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('archived_at', models.DateTimeField(blank=True, null=True)),
-                (
-                    'report_version',
-                    models.OneToOneField(
-                        db_comment='The report version of this report verification',
-                        on_delete=django.db.models.deletion.PROTECT,
-                        primary_key=True,
-                        related_name='report_verification',
-                        serialize=False,
-                        to='reporting.reportversion',
-                    ),
-                ),
-                (
-                    'verification_body_name',
-                    models.CharField(
-                        db_comment='The name of the verification body conducting the verification', max_length=1000
-                    ),
-                ),
-                (
-                    'accredited_by',
-                    models.CharField(
-                        choices=[('ANAB', 'Anab'), ('SCC', 'Scc')],
-                        db_comment='The verification accreditation body',
-                        max_length=10,
-                    ),
-                ),
-                (
-                    'scope_of_verification',
-                    models.CharField(
-                        choices=[
-                            ('B.C. OBPS Annual Report', 'Bc Obps'),
-                            ('Supplementary Report', 'Supplementary'),
-                            ('Corrected Report', 'Corrected'),
-                        ],
-                        db_comment='The scope of the verification',
-                        max_length=50,
-                    ),
-                ),
-                (
-                    'threats_to_independence',
-                    models.BooleanField(
-                        blank=True,
-                        db_comment='Optional field to store whether or not there is an indication of threats to independence of an other facility visited',
-                        default=False,
-                        null=True,
-                    ),
-                ),
-                (
-                    'verification_conclusion',
-                    models.CharField(
-                        blank=True,
-                        choices=[('Positive', 'Positive'), ('Modified', 'Modified'), ('Negative', 'Negative')],
-                        db_comment='The conclusion of the verification',
-                        max_length=8,
-                        null=True,
-                    ),
-                ),
-                ('visit_name', models.CharField(db_comment='The name of the site visited', max_length=100)),
-                (
-                    'visit_type',
-                    models.CharField(
-                        blank=True,
-                        choices=[('In person', 'In Person'), ('Virtual', 'Virtual')],
-                        db_comment='Optional field to store the type of visit conducted',
-                        max_length=10,
-                        null=True,
-                    ),
-                ),
-                (
-                    'other_facility_name',
-                    models.CharField(
-                        blank=True,
-                        db_comment='Optional field to store the name of an other facility visited',
-                        max_length=100,
-                        null=True,
-                    ),
-                ),
-                (
-                    'other_facility_coordinates',
-                    models.CharField(
-                        blank=True,
-                        db_comment='Optional field to store geographic coordinates of an other facility visited',
-                        max_length=50,
-                        null=True,
-                    ),
-                ),
-                (
-                    'archived_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_archived',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'created_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_created',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'updated_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_updated',
-                        to='registration.user',
-                    ),
-                ),
-            ],
-            options={
-                'db_table': 'erc"."report_verification',
-                'db_table_comment': 'Table to store verification information associated with a report version',
-            },
         ),
         migrations.CreateModel(
             name='ReportAttachment',
@@ -13739,11 +13438,6 @@ class Migration(migrations.Migration):
                 'db_table': 'erc"."report_product',
                 'db_table_comment': 'A table storing the production information for a single product, as part of a facility report',
                 'constraints': [
-                    models.UniqueConstraint(
-                        fields=('facility_report', 'product'),
-                        name='unique_report_product_per_product_and_facility_report',
-                        violation_error_message='A FacilityReport can only have one ReportProduct per product',
-                    ),
                     models.CheckConstraint(
                         condition=models.Q(
                             ('production_methodology', 'other'),
@@ -13891,25 +13585,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    'allocation_methodology',
-                    models.CharField(
-                        choices=[
-                            ('Not Applicable', 'Not Applicable'),
-                            ('OBPS Allocation Calculator', 'Calculator'),
-                            ('Other', 'Other'),
-                        ],
-                        db_comment='The methodology used to calculate the allocated emissions',
-                        default='OBPS Allocation Calculator',
-                        max_length=255,
-                    ),
-                ),
-                (
-                    'allocation_other_methodology_description',
-                    models.TextField(
-                        blank=True, db_comment="A description of the methodology used if 'Other' is selected", null=True
-                    ),
-                ),
-                (
                     'archived_by',
                     models.ForeignKey(
                         blank=True,
@@ -13936,15 +13611,6 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name='%(class)s_records',
                         to='reporting.emissioncategory',
-                    ),
-                ),
-                (
-                    'facility_report',
-                    models.ForeignKey(
-                        db_comment='The facility report this production information belongs to',
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name='%(class)s_records',
-                        to='reporting.facilityreport',
                     ),
                 ),
                 (
@@ -13979,22 +13645,6 @@ class Migration(migrations.Migration):
             options={
                 'db_table': 'erc"."report_product_emission_allocation',
                 'db_table_comment': 'A table to store the allocated amount of emissions for a given product',
-                'constraints': [
-                    models.UniqueConstraint(
-                        fields=('report_version', 'facility_report', 'report_product', 'emission_category'),
-                        name='unique_report_product_emission_allocation',
-                        violation_error_message='A FacilityReport can only have one ReportProductEmissionAllocation per Report Product and Emission Category',
-                    ),
-                    models.CheckConstraint(
-                        condition=models.Q(
-                            ('allocation_methodology', 'Other'),
-                            ('allocation_other_methodology_description__isnull', True),
-                            _negated=True,
-                        ),
-                        name='allocation_other_methodology_must_have_description',
-                        violation_error_message="A value for allocation_other_methodology_description must be provided if the allocation_methodology is 'Other'",
-                    ),
-                ],
             },
         ),
         migrations.CreateModel(
@@ -14133,13 +13783,6 @@ class Migration(migrations.Migration):
             options={
                 'db_table': 'erc"."report_new_entrant_emission',
                 'db_table_comment': 'Table for storing emission data related to new entrant',
-                'constraints': [
-                    models.UniqueConstraint(
-                        fields=('report_new_entrant', 'emission_category'),
-                        name='unique_new_entrant_emissions',
-                        violation_error_code='A report new entrant emission already exists for this emission category',
-                    )
-                ],
             },
         ),
         migrations.CreateModel(
@@ -14211,68 +13854,7 @@ class Migration(migrations.Migration):
             options={
                 'db_table': 'erc"."report_new_entrant_production',
                 'db_table_comment': 'Table for storing production data related to new entrant emissions reporting',
-                'constraints': [
-                    models.UniqueConstraint(
-                        fields=('product', 'report_new_entrant'),
-                        name='unique_new_entrant_production',
-                        violation_error_code='A production record with this product and new entrant report already exists.',
-                    )
-                ],
             },
-        ),
-        migrations.AlterField(
-            model_name='reportverification',
-            name='other_facility_coordinates',
-            field=models.CharField(
-                blank=True, db_comment='Geographic location of the other facility visited', max_length=100, null=True
-            ),
-        ),
-        migrations.AlterField(
-            model_name='reportverification',
-            name='other_facility_name',
-            field=models.CharField(
-                blank=True,
-                db_comment="Name of the other facility visited if 'Other' is selected",
-                max_length=100,
-                null=True,
-            ),
-        ),
-        migrations.AlterField(
-            model_name='reportverification',
-            name='threats_to_independence',
-            field=models.BooleanField(
-                db_comment='Indicates whether there were any threats to independence noted', default=False
-            ),
-            preserve_default=False,
-        ),
-        migrations.AlterField(
-            model_name='reportverification',
-            name='verification_conclusion',
-            field=models.CharField(
-                choices=[('Positive', 'Positive'), ('Modified', 'Modified'), ('Negative', 'Negative')],
-                db_comment='The conclusion of the verification',
-                default='Positive',
-                max_length=8,
-            ),
-            preserve_default=False,
-        ),
-        migrations.AlterField(
-            model_name='reportverification',
-            name='visit_name',
-            field=models.CharField(
-                db_comment='The name of the site visited (Facility X, Other, or None)', max_length=100
-            ),
-        ),
-        migrations.AlterField(
-            model_name='reportverification',
-            name='visit_type',
-            field=models.CharField(
-                blank=True,
-                choices=[('In person', 'In Person'), ('Virtual', 'Virtual')],
-                db_comment='The type of visit conducted (Virtual or In Person)',
-                max_length=10,
-                null=True,
-            ),
         ),
         migrations.AlterField(
             model_name='reportversion',
@@ -14306,22 +13888,6 @@ class Migration(migrations.Migration):
                 'db_table': 'erc"."report_operation_representative',
                 'db_table_comment': 'Stores information about operation representatives linked to report versions, including their selection status for reports.',
             },
-        ),
-        migrations.RemoveField(
-            model_name='reportoperation',
-            name='operation_representative_name',
-        ),
-        migrations.AlterField(
-            model_name='reportpersonresponsible',
-            name='report_version',
-            field=models.OneToOneField(
-                db_comment='The report version this person responsible applies to',
-                on_delete=django.db.models.deletion.CASCADE,
-                primary_key=True,
-                related_name='report_person_responsible',
-                serialize=False,
-                to='reporting.reportversion',
-            ),
         ),
         migrations.AlterField(
             model_name='reportversion',
@@ -14386,18 +13952,6 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterField(
-            model_name='reportadditionaldata',
-            name='report_version',
-            field=models.OneToOneField(
-                db_comment='The report version this report additional data applies to',
-                on_delete=django.db.models.deletion.CASCADE,
-                primary_key=True,
-                related_name='report_additional_data',
-                serialize=False,
-                to='reporting.reportversion',
-            ),
-        ),
-        migrations.AlterField(
             model_name='reportproductemissionallocation',
             name='report_product',
             field=models.ForeignKey(
@@ -14414,18 +13968,6 @@ class Migration(migrations.Migration):
                 db_comment='The report version this emission data is associated with',
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='%(class)s_records',
-                to='reporting.reportversion',
-            ),
-        ),
-        migrations.AlterField(
-            model_name='reportverification',
-            name='report_version',
-            field=models.OneToOneField(
-                db_comment='The report version of this report verification',
-                on_delete=django.db.models.deletion.CASCADE,
-                primary_key=True,
-                related_name='report_verification',
-                serialize=False,
                 to='reporting.reportversion',
             ),
         ),
@@ -14459,25 +14001,96 @@ class Migration(migrations.Migration):
                 violation_error_message='An emission record must belong to either a fuel, a unit, or none, but not both',
             ),
         ),
-        migrations.RemoveConstraint(
-            model_name='activitysourcetypejsonschema',
-            name='invalid_if_has_unit_and_no_fuel',
-        ),
-        migrations.RemoveField(
-            model_name='reportverification',
-            name='other_facility_coordinates',
-        ),
-        migrations.RemoveField(
-            model_name='reportverification',
-            name='other_facility_name',
-        ),
-        migrations.RemoveField(
-            model_name='reportverification',
-            name='visit_name',
-        ),
-        migrations.RemoveField(
-            model_name='reportverification',
-            name='visit_type',
+        migrations.CreateModel(
+            name='ReportVerification',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(blank=True, null=True)),
+                ('updated_at', models.DateTimeField(blank=True, null=True)),
+                ('archived_at', models.DateTimeField(blank=True, null=True)),
+                (
+                    'verification_body_name',
+                    models.CharField(
+                        db_comment='The name of the verification body conducting the verification', max_length=1000
+                    ),
+                ),
+                (
+                    'accredited_by',
+                    models.CharField(
+                        choices=[('ANAB', 'Anab'), ('SCC', 'Scc')],
+                        db_comment='The verification accreditation body',
+                        max_length=10,
+                    ),
+                ),
+                (
+                    'scope_of_verification',
+                    models.CharField(
+                        choices=[
+                            ('B.C. OBPS Annual Report', 'Bc Obps'),
+                            ('Supplementary Report', 'Supplementary'),
+                            ('Corrected Report', 'Corrected'),
+                        ],
+                        db_comment='The scope of the verification',
+                        max_length=50,
+                    ),
+                ),
+                (
+                    'threats_to_independence',
+                    models.BooleanField(db_comment='Indicates whether there were any threats to independence noted'),
+                ),
+                (
+                    'verification_conclusion',
+                    models.CharField(
+                        choices=[('Positive', 'Positive'), ('Modified', 'Modified'), ('Negative', 'Negative')],
+                        db_comment='The conclusion of the verification',
+                        max_length=8,
+                    ),
+                ),
+                (
+                    'archived_by',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='%(class)s_archived',
+                        to='registration.user',
+                    ),
+                ),
+                (
+                    'created_by',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='%(class)s_created',
+                        to='registration.user',
+                    ),
+                ),
+                (
+                    'report_version',
+                    models.OneToOneField(
+                        db_comment='The report version of this report verification',
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='report_verification',
+                        to='reporting.reportversion',
+                    ),
+                ),
+                (
+                    'updated_by',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='%(class)s_updated',
+                        to='registration.user',
+                    ),
+                ),
+            ],
+            options={
+                'db_table': 'erc"."report_verification',
+                'db_table_comment': 'Table to store verification information associated with a report version',
+                'abstract': False,
+            },
         ),
         migrations.CreateModel(
             name='ReportVerificationVisit',
@@ -14587,11 +14200,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='reportadditionaldata',
-            name='created_at',
-            field=models.DateTimeField(blank=True, null=True),
-        ),
-        migrations.AlterField(
             model_name='reportattachment',
             name='created_at',
             field=models.DateTimeField(blank=True, null=True),
@@ -14642,11 +14250,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='reportpersonresponsible',
-            name='created_at',
-            field=models.DateTimeField(blank=True, null=True),
-        ),
-        migrations.AlterField(
             model_name='reportproduct',
             name='created_at',
             field=models.DateTimeField(blank=True, null=True),
@@ -14668,11 +14271,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='reportunit',
-            name='created_at',
-            field=models.DateTimeField(blank=True, null=True),
-        ),
-        migrations.AlterField(
-            model_name='reportverification',
             name='created_at',
             field=models.DateTimeField(blank=True, null=True),
         ),
@@ -14766,34 +14364,6 @@ class Migration(migrations.Migration):
                     operation='UPDATE',
                     pgid='pgtrigger_set_updated_audit_columns_22281',
                     table='erc"."report_activity',
-                    when='BEFORE',
-                ),
-            ),
-        ),
-        pgtrigger.migrations.AddTrigger(
-            model_name='reportadditionaldata',
-            trigger=pgtrigger.compiler.Trigger(
-                name='set_created_audit_columns',
-                sql=pgtrigger.compiler.UpsertTriggerSql(
-                    func="new.created_by_id = (select current_setting('my.guid', true)); new.created_at = now(); return new;",
-                    hash='cb6c94d5e55db5286a0e73d783a8da48337d6001',
-                    operation='INSERT',
-                    pgid='pgtrigger_set_created_audit_columns_85628',
-                    table='erc"."report_additional_data',
-                    when='BEFORE',
-                ),
-            ),
-        ),
-        pgtrigger.migrations.AddTrigger(
-            model_name='reportadditionaldata',
-            trigger=pgtrigger.compiler.Trigger(
-                name='set_updated_audit_columns',
-                sql=pgtrigger.compiler.UpsertTriggerSql(
-                    func="new.updated_by_id = (select current_setting('my.guid', true)); new.updated_at = now(); return new;",
-                    hash='fbb7e410c9bab331b31f23f05df69ea6e92d2f34',
-                    operation='UPDATE',
-                    pgid='pgtrigger_set_updated_audit_columns_10b60',
-                    table='erc"."report_additional_data',
                     when='BEFORE',
                 ),
             ),
@@ -15079,34 +14649,6 @@ class Migration(migrations.Migration):
             ),
         ),
         pgtrigger.migrations.AddTrigger(
-            model_name='reportpersonresponsible',
-            trigger=pgtrigger.compiler.Trigger(
-                name='set_created_audit_columns',
-                sql=pgtrigger.compiler.UpsertTriggerSql(
-                    func="new.created_by_id = (select current_setting('my.guid', true)); new.created_at = now(); return new;",
-                    hash='bb162791540d1e8f1e6f08b94f20784379fc3c8a',
-                    operation='INSERT',
-                    pgid='pgtrigger_set_created_audit_columns_a62b6',
-                    table='erc"."report_person_responsible',
-                    when='BEFORE',
-                ),
-            ),
-        ),
-        pgtrigger.migrations.AddTrigger(
-            model_name='reportpersonresponsible',
-            trigger=pgtrigger.compiler.Trigger(
-                name='set_updated_audit_columns',
-                sql=pgtrigger.compiler.UpsertTriggerSql(
-                    func="new.updated_by_id = (select current_setting('my.guid', true)); new.updated_at = now(); return new;",
-                    hash='56dfaab4f9c0a852dcfb789b51a4eb07509af7f2',
-                    operation='UPDATE',
-                    pgid='pgtrigger_set_updated_audit_columns_515b7',
-                    table='erc"."report_person_responsible',
-                    when='BEFORE',
-                ),
-            ),
-        ),
-        pgtrigger.migrations.AddTrigger(
             model_name='reportproduct',
             trigger=pgtrigger.compiler.Trigger(
                 name='set_created_audit_columns',
@@ -15247,34 +14789,6 @@ class Migration(migrations.Migration):
             ),
         ),
         pgtrigger.migrations.AddTrigger(
-            model_name='reportverification',
-            trigger=pgtrigger.compiler.Trigger(
-                name='set_created_audit_columns',
-                sql=pgtrigger.compiler.UpsertTriggerSql(
-                    func="new.created_by_id = (select current_setting('my.guid', true)); new.created_at = now(); return new;",
-                    hash='04e06ba2cad6b55dceb3a1e016bde958d2e7a0c5',
-                    operation='INSERT',
-                    pgid='pgtrigger_set_created_audit_columns_90770',
-                    table='erc"."report_verification',
-                    when='BEFORE',
-                ),
-            ),
-        ),
-        pgtrigger.migrations.AddTrigger(
-            model_name='reportverification',
-            trigger=pgtrigger.compiler.Trigger(
-                name='set_updated_audit_columns',
-                sql=pgtrigger.compiler.UpsertTriggerSql(
-                    func="new.updated_by_id = (select current_setting('my.guid', true)); new.updated_at = now(); return new;",
-                    hash='3cd7525cefd08840cbf81a7b7ff9473a0fe0452e',
-                    operation='UPDATE',
-                    pgid='pgtrigger_set_updated_audit_columns_71494',
-                    table='erc"."report_verification',
-                    when='BEFORE',
-                ),
-            ),
-        ),
-        pgtrigger.migrations.AddTrigger(
             model_name='reportverificationvisit',
             trigger=pgtrigger.compiler.Trigger(
                 name='set_created_audit_columns',
@@ -15336,15 +14850,6 @@ class Migration(migrations.Migration):
             field=models.BooleanField(
                 db_comment='Indicates whether the facility report has been completed.', default=False
             ),
-        ),
-        migrations.DeleteModel(
-            name='ReportAdditionalData',
-        ),
-        migrations.DeleteModel(
-            name='ReportPersonResponsible',
-        ),
-        migrations.DeleteModel(
-            name='ReportVerification',
         ),
         migrations.CreateModel(
             name='ReportAdditionalData',
@@ -15490,97 +14995,6 @@ class Migration(migrations.Migration):
             options={
                 'db_table': 'erc"."report_person_responsible',
                 'db_table_comment': 'A table to store the data about the person responsible for the report',
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='ReportVerification',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(blank=True, null=True)),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('archived_at', models.DateTimeField(blank=True, null=True)),
-                (
-                    'verification_body_name',
-                    models.CharField(
-                        db_comment='The name of the verification body conducting the verification', max_length=1000
-                    ),
-                ),
-                (
-                    'accredited_by',
-                    models.CharField(
-                        choices=[('ANAB', 'Anab'), ('SCC', 'Scc')],
-                        db_comment='The verification accreditation body',
-                        max_length=10,
-                    ),
-                ),
-                (
-                    'scope_of_verification',
-                    models.CharField(
-                        choices=[
-                            ('B.C. OBPS Annual Report', 'Bc Obps'),
-                            ('Supplementary Report', 'Supplementary'),
-                            ('Corrected Report', 'Corrected'),
-                        ],
-                        db_comment='The scope of the verification',
-                        max_length=50,
-                    ),
-                ),
-                (
-                    'threats_to_independence',
-                    models.BooleanField(db_comment='Indicates whether there were any threats to independence noted'),
-                ),
-                (
-                    'verification_conclusion',
-                    models.CharField(
-                        choices=[('Positive', 'Positive'), ('Modified', 'Modified'), ('Negative', 'Negative')],
-                        db_comment='The conclusion of the verification',
-                        max_length=8,
-                    ),
-                ),
-                (
-                    'archived_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_archived',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'created_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_created',
-                        to='registration.user',
-                    ),
-                ),
-                (
-                    'report_version',
-                    models.OneToOneField(
-                        db_comment='The report version of this report verification',
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name='report_verification',
-                        to='reporting.reportversion',
-                    ),
-                ),
-                (
-                    'updated_by',
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='%(class)s_updated',
-                        to='registration.user',
-                    ),
-                ),
-            ],
-            options={
-                'db_table': 'erc"."report_verification',
-                'db_table_comment': 'Table to store verification information associated with a report version',
                 'abstract': False,
             },
         ),
@@ -16244,26 +15658,6 @@ class Migration(migrations.Migration):
                 'abstract': False,
             },
         ),
-        migrations.RemoveConstraint(
-            model_name='reportproductemissionallocation',
-            name='unique_report_product_emission_allocation',
-        ),
-        migrations.RemoveConstraint(
-            model_name='reportproductemissionallocation',
-            name='allocation_other_methodology_must_have_description',
-        ),
-        migrations.RemoveField(
-            model_name='reportproductemissionallocation',
-            name='allocation_methodology',
-        ),
-        migrations.RemoveField(
-            model_name='reportproductemissionallocation',
-            name='allocation_other_methodology_description',
-        ),
-        migrations.RemoveField(
-            model_name='reportproductemissionallocation',
-            name='facility_report',
-        ),
         migrations.AlterField(
             model_name='reportproduct',
             name='production_methodology',
@@ -16354,22 +15748,6 @@ class Migration(migrations.Migration):
             preserve_default=False,
         ),
         migrations.AddConstraint(
-            model_name='reportproductemissionallocation',
-            constraint=models.UniqueConstraint(
-                fields=('report_emission_allocation', 'report_version', 'report_product', 'emission_category'),
-                name='unique_report_product_emission_allocation',
-                violation_error_message='A FacilityReport can only have one ReportProductEmissionAllocation per Report Product and Emission Category',
-            ),
-        ),
-        migrations.AddConstraint(
-            model_name='reportemissionallocation',
-            constraint=models.UniqueConstraint(
-                fields=('report_version', 'facility_report'),
-                name='unique_report_emission_allocation',
-                violation_error_message='A FacilityReport can only have one ReportEmissionAllocation per Report',
-            ),
-        ),
-        migrations.AddConstraint(
             model_name='reportemissionallocation',
             constraint=models.CheckConstraint(
                 condition=models.Q(
@@ -16422,26 +15800,6 @@ class Migration(migrations.Migration):
                     when='BEFORE',
                 ),
             ),
-        ),
-        migrations.RemoveConstraint(
-            model_name='reportemissionallocation',
-            name='unique_report_emission_allocation',
-        ),
-        migrations.RemoveConstraint(
-            model_name='reportnewentrantemission',
-            name='unique_new_entrant_emissions',
-        ),
-        migrations.RemoveConstraint(
-            model_name='reportnewentrantproduction',
-            name='unique_new_entrant_production',
-        ),
-        migrations.RemoveConstraint(
-            model_name='reportproduct',
-            name='unique_report_product_per_product_and_facility_report',
-        ),
-        migrations.RemoveConstraint(
-            model_name='reportproductemissionallocation',
-            name='unique_report_product_emission_allocation',
         ),
         migrations.AddConstraint(
             model_name='reportemissionallocation',
