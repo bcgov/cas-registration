@@ -265,6 +265,7 @@ class TestElicensingObligationService:
 
     def test_process_obligation_integration_success_before_deadline(
         self,
+        mock_transaction,
         mock_update_status,
         mock_refresh_by_invoice,
         mock_create_invoice,
@@ -299,6 +300,12 @@ class TestElicensingObligationService:
 
         invoice = make_recipe('compliance.tests.utils.elicensing_invoice', invoice_number='inv-001')
 
+        # Mock transaction.on_commit to execute the callback immediately
+        def mock_on_commit(callback):
+            callback()
+
+        mock_transaction.on_commit.side_effect = mock_on_commit
+
         # Call the method
         ElicensingObligationService.process_obligation_integration(obligation.id)
 
@@ -313,6 +320,7 @@ class TestElicensingObligationService:
 
     def test_process_obligation_integration_success_after_deadline(
         self,
+        mock_transaction,
         mock_update_status,
         mock_refresh_by_invoice,
         mock_create_invoice,
@@ -351,6 +359,12 @@ class TestElicensingObligationService:
         mock_update_status.return_value = None
 
         invoice = make_recipe('compliance.tests.utils.elicensing_invoice', invoice_number='inv-001')
+
+        # Mock transaction.on_commit to execute the callback immediately
+        def mock_on_commit(callback):
+            callback()
+
+        mock_transaction.on_commit.side_effect = mock_on_commit
 
         # Call the method
         ElicensingObligationService.process_obligation_integration(obligation.id)
