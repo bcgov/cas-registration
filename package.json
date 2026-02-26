@@ -6,15 +6,16 @@
   "author": "ggircs@gov.bc.ca",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@release-it/conventional-changelog": "^8.0.1",
-    "release-it": "^17.3.0"
+    "@release-it/conventional-changelog": "^10.0.5",
+    "release-it": "^19.2.4"
   },
   "release-it": {
     "npm": {
       "publish": false
     },
     "git": {
-      "commitMessage": "chore: release v${version}"
+      "commitMessage": "chore: release v${version}",
+      "tagName": "v${version}"
     },
     "plugins": {
       "@release-it/conventional-changelog": {
