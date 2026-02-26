@@ -139,7 +139,7 @@ export enum ContactE2EValue {
 export const IDE2EValue = {
   OPERATION_NAME: "Brine LFO - Registered - No BORO and BCGHG ID",
   OPERATOR_NAME: "Bravo Technologies - has parTNER operator",
-  EXPECTED_BCGHG_ID: "23251810001",
+  EXPECTED_BCGHG_ID: "13251810001",
   get EXPECTED_BORO_ID() {
     const year = new Date().getFullYear().toString().slice(-2);
     return `${year}-0001`;
@@ -202,9 +202,9 @@ export const ActionedRequest: ReadonlyArray<UserAccessRequestActions> = [
 
 export enum ChangeRegistrationPurposeE2EValues {
   BCGHG_ID_FIELD_NAME = "BC GHG ID",
-  REGULATED_BCGHG_ID_FIELD_VALUE = "23219990004",
+  REGULATED_BCGHG_ID_FIELD_VALUE = "13219990004",
   REGULATED_OPERATION_NAME = "Banana LFO - Registered",
-  REPORTING_BCGHG_ID_FIELD_VALUE = "23219990019",
+  REPORTING_BCGHG_ID_FIELD_VALUE = "13219990019",
   REPORTING_OPERATION_NAME = "Bat LFO - Registered",
   EIO_OPERATION_NAME = "Bojangles EIO - Registered",
   CONFIRMATION_MODAL_MESSAGE = "Are you sure you want to change your registration purpose?",
