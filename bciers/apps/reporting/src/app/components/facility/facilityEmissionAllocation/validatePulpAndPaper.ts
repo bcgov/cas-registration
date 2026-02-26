@@ -7,6 +7,10 @@ const validatePulpAndPaper = (
 ): string[] => {
   const errors: string[] = [];
 
+  // Ignore pulp and paper (return no errors) if methodology is not applicable
+  // This methodology is only allowed in 2024
+  if (formData?.allocation_methodology === "Not Applicable") return [];
+
   const industrialEmissionAllocations =
     formData?.basic_emission_allocation_data?.find(
       (allocation: EmissionAllocationData) =>
