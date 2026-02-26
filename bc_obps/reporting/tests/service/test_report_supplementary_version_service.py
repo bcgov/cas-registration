@@ -34,6 +34,8 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             'reporting.tests.utils.report_version',
             status=ReportVersion.ReportVersionStatus.Draft,
         )
+        self.old_reporting_year = make_recipe('reporting.tests.utils.reporting_year')
+        self.current_reporting_year = make_recipe('reporting.tests.utils.reporting_year')
 
         # Create a regulated product.
         self.old_regulated_product = make_recipe('registration.tests.utils.regulated_product')
@@ -148,7 +150,8 @@ class ReportSupplementaryVersionServiceTests(TestCase):
 
     def test_create_report_supplementary_version(self):
         # ACT: Call the method to create a supplementary version.
-        self.new_report_version.delete()
+        self.new_report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        self.new_report_version.save()
         new_version = ReportSupplementaryVersionService.create_report_supplementary_version(self.old_report_version.id)
 
         # ASSERT: Verify that the new report version is correctly created.
@@ -184,8 +187,9 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.old_report_version.report.operator = operation.operator
         self.old_report_version.report.save()
 
-        # Delete the draft version created in setUp to avoid constraint violation
-        self.new_report_version.delete()
+        # Change the draft version to Submitted to avoid constraint violation
+        self.new_report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        self.new_report_version.save()
 
         # Act
         new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
@@ -194,89 +198,69 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.assertEqual(new_version.report, self.old_report_version.report)
         self.assertIsNotNone(ReportOperation.objects.filter(report_version=new_version).first())
 
-    def test_create_or_clone_operator_changed_creates_supplementary(self):
-        """Test that when operator has changed (transfer), supplementary version is created regardless of purpose."""
-        # Setup: different operator (transfer scenario)
-        # Store the old operator before we change it
-        operation = self.old_report_version.report.operation
-        old_operator = operation.operator
-
-        # Create new operator and transfer the operation to it
-        new_operator = make_recipe("registration.tests.utils.operator")
-        operation.operator = new_operator
-        operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
-        operation.save()
-
-        # Old report still has old operator (simulating it was created before the transfer)
-        self.old_report_version.report.operator = old_operator
-        self.old_report_version.report.save()
-
-        # Delete the draft version created in setUp to avoid constraint violation
-        self.new_report_version.delete()
-
-        # Act
-        new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
-
-        # Assert: Should create supplementary version even though purpose changed
-        self.assertEqual(new_version.report, self.old_report_version.report)
-        self.assertIsNotNone(ReportOperation.objects.filter(report_version=new_version).first())
-
-    def test_create_or_clone_purpose_changed_past_year_creates_supplementary(self):
-        """Test that for past years with purpose change, supplementary version is created."""
-        # Setup: different purpose, past year
-        from django.utils import timezone
+    @patch('reporting.service.report_supplementary_version_service.ReportingYearService.get_current_reporting_year')
+    def test_create_or_clone_purpose_changed_past_year_creates_supplementary(self, mock_get_year):
+        """Test that when registration purpose has changed since the 2024 report was submitted,
+        and the current year is 2025, a supplementary (cloned) version is created for the past year."""
 
         operation = self.old_report_version.report.operation
-        operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
-        operation.save()
 
-        # Set to past year
-        self.old_report_version.report.reporting_year.reporting_year = timezone.now().year - 1
-        self.old_report_version.report.reporting_year.save()
-
-        # Same operator
+        # The report being supplemented is for 2024, operator hasn't changed
+        self.old_report_version.report.reporting_year = self.old_reporting_year
         self.old_report_version.report.operator = operation.operator
         self.old_report_version.report.save()
 
-        # Delete the draft version created in setUp to avoid constraint violation
-        self.new_report_version.delete()
+        # No draft exists yet for 2024
+        self.new_report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        self.new_report_version.save()
 
-        # Act
+        # Now the operator changes their registration purpose (e.g. in 2025)
+        operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
+        operation.save()
+
+        # Current reporting year is 2025
+        mock_get_year.return_value = self.current_reporting_year
+
         new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
 
-        # Assert: Should create supplementary version for past year
+        # Should clone the submitted 2024 version (not create blank), preserving old purpose
         self.assertEqual(new_version.report, self.old_report_version.report)
-        self.assertIsNotNone(ReportOperation.objects.filter(report_version=new_version).first())
+        new_operation = ReportOperation.objects.get(report_version=new_version)
+        self.assertEqual(
+            new_operation.registration_purpose,
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            "Cloned version should preserve the submitted report's registration purpose, not the new one",
+        )
 
-    def test_create_or_clone_purpose_changed_current_year_creates_blank(self):
-        """Test that for current/future years with purpose change, blank version is created."""
+    @patch('reporting.service.report_supplementary_version_service.ReportVersionService.create_report_version')
+    @patch('reporting.service.report_supplementary_version_service.ReportingYearService.get_current_reporting_year')
+    def test_create_or_clone_purpose_changed_current_year_creates_blank(self, mock_get_year, mock_create):
+        """Test that for current years with purpose change, blank version is created."""
         operation = self.old_report_version.report.operation
         operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
         operation.save()
 
-        # Set to current year (2026)
-        self.old_report_version.report.reporting_year.reporting_year = 2026
-        self.old_report_version.report.reporting_year.save()
+        self.old_report_version.report.reporting_year = self.current_reporting_year
 
-        # Ensure report.operator matches operation.operator so operator_changed=False
         report = self.old_report_version.report
         report.operator = operation.operator
         report.save()
 
-        self.new_report_version.delete()
+        self.new_report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        self.new_report_version.save()
 
-        with patch(
-            'reporting.service.report_supplementary_version_service.ReportVersionService.create_report_version'
-        ) as mock_create:
-            mock_create.return_value = make_recipe(
-                'reporting.tests.utils.report_version',
-                report=report,
-                status=ReportVersion.ReportVersionStatus.Draft,
-            )
-            new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
+        mock_get_year.return_value = self.current_reporting_year
 
-            mock_create.assert_called_once_with(report)
-            self.assertEqual(new_version.report, report)
+        mock_create.return_value = make_recipe(
+            'reporting.tests.utils.report_version',
+            report=report,
+            status=ReportVersion.ReportVersionStatus.Draft,
+        )
+
+        new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
+
+        mock_create.assert_called_once_with(report)
+        self.assertEqual(new_version.report, report)
 
     def test_create_or_clone_operator_changed_purpose_changed_creates_supplementary_with_same_details(self):
         """Test that when operator and purpose both change, supplementary version is created cloning the submitted version's details."""
@@ -291,7 +275,8 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.old_report_version.report.operator = old_operator
         self.old_report_version.report.save()
 
-        self.new_report_version.delete()
+        self.new_report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        self.new_report_version.save()
 
         new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
 

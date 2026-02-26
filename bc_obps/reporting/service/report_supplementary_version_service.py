@@ -1,9 +1,9 @@
 from django.core.files.storage import default_storage
 from django.db import transaction
 from django.forms import model_to_dict
-from django.utils import timezone
 from typing import Optional
 import copy
+
 from reporting.models import (
     FacilityReport,
     ReportActivity,
@@ -34,6 +34,8 @@ from reporting.service.emission_category_mapping_service import (
 )
 from service.report_version_service import ReportVersionService
 
+from service.reporting_year_service import ReportingYearService
+
 
 class ReportSupplementaryVersionService:
     @staticmethod
@@ -43,7 +45,7 @@ class ReportSupplementaryVersionService:
         Creates either a supplementary report version or a new blank report version based on:
         - Registration purpose changes
         - Operator changes (operation transfer)
-        - Reporting year (past vs current/future)
+        - Reporting year (past or current)
 
         Args:
             report_version_id: The report version ID to create a new version from
@@ -51,6 +53,7 @@ class ReportSupplementaryVersionService:
         Returns:
             New ReportVersion instance (either supplementary or blank)
         """
+        # Grab the report version with all the stuff we need
         report_version = ReportVersion.objects.select_related(
             "report__operation", "report__reporting_year", "report_operation"
         ).get(id=report_version_id)
@@ -58,20 +61,29 @@ class ReportSupplementaryVersionService:
         operation = report_version.report.operation
         report_operation = report_version.report_operation
 
+        # Check if operator has changed (operation transferred to a new operator)
         operator_changed = operation.operator_id != report_version.report.operator_id
+        # Check if registration purpose has been updated
         registration_purpose_changed = operation.registration_purpose != report_operation.registration_purpose
-        is_past_year = report_version.report.reporting_year.reporting_year < timezone.now().year
+        # Check if its a past year report
+        current_reporting_year = ReportingYearService.get_current_reporting_year()
 
+        is_past_year = report_version.report.reporting_year.reporting_year < current_reporting_year.reporting_year
+        # Decide whether to clone or create a new report version - if the registration purpose is not changed or if operator has changed or if it's a past year report, then we clone, otherwise we create a new blank version
         should_clone = not registration_purpose_changed or operator_changed or is_past_year
 
         if should_clone:
-            return ReportSupplementaryVersionService.create_report_supplementary_version(report_version_id)
+            # Clone the existing version
+            return ReportSupplementaryVersionService.create_report_supplementary_version(
+                report_version_id, is_past_year=is_past_year
+            )
 
+        # Otherwise just make a new blank one
         return ReportVersionService.create_report_version(report_version.report)
 
     @staticmethod
     @transaction.atomic
-    def create_report_supplementary_version(report_version_id: int) -> ReportVersion:
+    def create_report_supplementary_version(report_version_id: int, is_past_year: bool = False) -> ReportVersion:
         """
         Creates a new report version for a given report version ID cloning related data.
 
@@ -80,6 +92,7 @@ class ReportSupplementaryVersionService:
 
         Args:
             report_version_id: The report version ID
+            is_past_year: Whether the report is for a past reporting year
 
         Returns:
             New ReportVersion instance
@@ -105,17 +118,21 @@ class ReportSupplementaryVersionService:
         version_to_clone_id = report_version_id
 
         if registration_purpose_changed and operator_changed:
-            # Find the latest submitted report version with matching registration purpose for this operation
-            latest_matching_version = ReportVersion.objects.filter(
-                report__operation=operation,
-                status=ReportVersion.ReportVersionStatus.Submitted,
-                is_latest_submitted=True,
-                report_operation__registration_purpose=operation_registration_purpose,
-            ).first()
+            # Find the latest submitted report version by the same operator (old operator) with the same registration purpose and reporting year
+            latest_submitted_report_version = (
+                ReportVersion.objects.filter(
+                    report__operation=operation,
+                    report__reporting_year=report_version.report.reporting_year,
+                    report__operator_id=report_operator_id,
+                    status=ReportVersion.ReportVersionStatus.Submitted,
+                )
+                .order_by('-created_at')
+                .first()
+            )
 
-            if latest_matching_version:
+            if latest_submitted_report_version:
                 # Clone from the matching version instead
-                version_to_clone_id = latest_matching_version.id
+                version_to_clone_id = latest_submitted_report_version.id
 
         # Get the version to clone (might be the original or the matching version)
         source_version = ReportVersion.objects.get(id=version_to_clone_id)
