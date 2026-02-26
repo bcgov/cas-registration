@@ -183,14 +183,14 @@ class AdjustmentStrategy:
     - invoices: invoice-level adjustments to apply
     - should_record_manual_handling: flag to create manual-handling record
     - earned_credits_tonnes: earned credits to create on the NEW CRV (tonnes)
-    - create_earned_credits: whether to create an earned-credits record
+    - should_create_earned_credits: whether to create an earned-credits record
     """
 
     invoices: List["InvoiceAdjustment"] = field(default_factory=list)
     should_record_manual_handling: bool = False
 
     earned_credits_tonnes: Decimal = Decimal("0")
-    create_earned_credits: bool = False
+    should_create_earned_credits: bool = False
 
     @staticmethod
     def empty() -> "AdjustmentStrategy":

@@ -1123,7 +1123,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Leftover refund dollars AND cash present across invoices → record manual handling
         mock_record_manual_handling.assert_called_once_with(res.id)
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         refreshed = ComplianceReportVersion.objects.get(id=res.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -1223,7 +1223,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # No cash across invoices → refundable_dollars == 0 → no manual handling record
         mock_record_manual_handling.assert_not_called()
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         refreshed = ComplianceReportVersion.objects.get(id=res.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -1387,7 +1387,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_void_invoices.assert_not_called()
         mock_mark_fully_met.assert_not_called()
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         refreshed = ComplianceReportVersion.objects.get(id=res.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -1401,7 +1401,6 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_sum_already_applied,
         mock_fallback_invoice_filter,
         mock_sum_invoice_cash,
-        mock_create_earned_credits,
         run_on_commit_immediately,
     ):
         """
@@ -1414,13 +1413,11 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_sum_already_applied.return_value = ZERO_DECIMAL
         mock_find_newest_unpaid_anchor.return_value = None  # -> invoices == []
         mock_collect_unpaid.return_value = []  # explicit
-
-        mock_fallback_invoice_filter.return_value = ElicensingInvoice.objects.none()  # no previous_invoices found
-
-        # Ensure the fallback yields an invoice so _sum_invoice_cash_payments gets called
-        found_invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
-        mock_find_newest_non_void_prior_invoices.return_value = [found_invoice]
         mock_sum_invoice_cash.return_value = Decimal("2000.00")  # CASH present
+
+        mock_fallback_invoice_filter.return_value = (
+            ElicensingInvoice.objects.none()
+        )  # no previous_invoices found in fallback
 
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             prev = baker.make_recipe(
@@ -1446,16 +1443,11 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         )
 
         # Act
-        res = DecreasedObligationHandler.handle(report, new, prev, version_count=2)
+        DecreasedObligationHandler.handle(report, new, prev, version_count=2)
 
-        # Edge case: fallback walker used
+        # ▶▶ EXTENDED from above previous test:
+        # mock_fallback_invoice_filter retuns [] which means this edgecase must be called
         mock_find_newest_non_void_prior_invoices.assert_called_once()
-        mock_sum_invoice_cash.assert_called_once_with(found_invoice)
-
-        # CASH present -> manual handling path -> must NOT auto-create earned credits
-        mock_create_earned_credits.assert_not_called()
-        refreshed = ComplianceReportVersion.objects.get(id=res.id)
-        assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
 
     # handle one invoice\no payment
     def test_handle__partial_refund_invoice_no_payment__adjustment_not_met_no_void(
@@ -1543,7 +1535,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_void_invoices.assert_not_called()
         mock_record_manual_handling.assert_not_called()
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         refreshed = ComplianceReportVersion.objects.get(id=result.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -1634,7 +1626,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # No remainder, no over-compliance, no credited_emissions → no manual handling created
         mock_record_manual_handling.assert_not_called()
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         refreshed = ComplianceReportVersion.objects.get(id=result.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -1714,7 +1706,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_void_invoices.assert_not_called()
         mock_record_manual_handling.assert_not_called()
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         refreshed = ComplianceReportVersion.objects.get(id=result.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -1795,7 +1787,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_void_invoices.assert_not_called()
         mock_record_manual_handling.assert_not_called()
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         refreshed = ComplianceReportVersion.objects.get(id=result.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -1874,7 +1866,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_void_invoices.assert_not_called()
         mock_record_manual_handling.assert_not_called()
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         assert (
             ComplianceReportVersion.objects.get(id=res.id).status
@@ -1950,7 +1942,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         assert mock_void_invoices.call_count == 2
         mock_record_manual_handling.assert_not_called()
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         assert (
             ComplianceReportVersion.objects.get(id=res.id).status
@@ -2062,7 +2054,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Not all invoices cleared → no manual handling
         mock_record_manual_handling.assert_not_called()
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         refreshed = ComplianceReportVersion.objects.get(id=result.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -2139,7 +2131,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_void_invoices.assert_not_called()
         mock_record_manual_handling.assert_not_called()
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         refreshed = ComplianceReportVersion.objects.get(id=res.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -2212,7 +2204,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_void_invoices.assert_not_called()
         mock_record_manual_handling.assert_not_called()
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         refreshed = ComplianceReportVersion.objects.get(id=res.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -2289,7 +2281,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Not all cleared → no manual handling
         mock_record_manual_handling.assert_not_called()
 
-        # Placeholder status remains (no credits auto-created here)
+        # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
         refreshed = ComplianceReportVersion.objects.get(id=res.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS

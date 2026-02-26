@@ -1,7 +1,6 @@
 import { expect } from "@playwright/test";
 import { PDFParse } from "pdf-parse";
 import {
-  DEFAULT_ADJUSTMENT_LINE,
   DEFAULT_COMPLIANCE_OBLIGATION_LINE,
   FEES_AND_ADJUSTMENTS_TEXT,
   INVOICE_NUMBER_LABEL,
@@ -53,7 +52,7 @@ export class ObligationInvoicePOM {
     return this;
   }
 
-  assertHasAdjustmentLine(matcher: RegExp = DEFAULT_ADJUSTMENT_LINE): this {
+  assertHasAdjustmentLine(matcher: RegExp): this {
     expect(this.text).toMatch(matcher);
     return this;
   }

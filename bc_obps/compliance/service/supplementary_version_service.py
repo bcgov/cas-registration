@@ -31,10 +31,6 @@ MONEY = Decimal("0.01")
 EMISS = Decimal("0.0000")
 
 
-class ForceRollbackForDebug(Exception):
-    """Raised to intentionally rollback DB changes during debugging."""
-
-
 # Define the strategy interface
 class SupplementaryScenarioHandler(Protocol):
     @staticmethod
@@ -312,8 +308,8 @@ class DecreasedObligationHandler:
         # The strategy object returned by the determination functions is the single contract used _process_adjustment_after_commit
         # invoices: list of InvoiceAdjustment entries, each with `version_id`, `applied`, `net_outstanding_after`, `mark_fully_met`, `should_void_invoice`.
         # should_record_manual_handling: boolean flag.
-        # earned_credits_tonnes: earned credits to create on the NEW CRV (tonnes)
-        # create_earned_credits: whether to create an earned-credits record
+        # earned_credits_tonnes: earned credits to create on the NEW CRV
+        # should_create_earned_credits: whether to create an earned-credits record
 
         if invoices:
             # anchor_prev_excess comes from the newest unpaid CRV (first in the list)
@@ -327,10 +323,10 @@ class DecreasedObligationHandler:
 
         strategy: AdjustmentStrategy = DecreasedObligationHandler._build_adjustment_strategy(
             new_excess_emissions=new_summary.excess_emissions,
-            credited_emissions=getattr(new_summary, "credited_emissions", None),
             anchor_prev_excess=anchor_prev_excess,
             charge_rate=charge_rate,
             invoices=invoices,  # 0/1/many
+            credited_emissions=new_summary.credited_emissions,
             anchor_crv_id=anchor_id_for_strategy,
         )
 
@@ -361,7 +357,8 @@ class DecreasedObligationHandler:
           - Post a signed negative adjustment (reduces outstanding).
           - If net outstanding hits zero, mark that previous CRV as FULLY_MET.
           - If fully met AND no prior CASH payments, void the invoice.
-          - If fully met AND no prior CASH payments AND over-corrected emissions, create earned credits”
+          - If fully met AND no prior CASH payments AND credited emissions, create earned credits
+
         """
         for entry in strategy.invoices:
             applied = entry.applied
@@ -386,7 +383,7 @@ class DecreasedObligationHandler:
         if strategy.should_record_manual_handling:
             DecreasedObligationHandler._record_manual_handling(compliance_report_version_id)
 
-        if strategy.create_earned_credits and strategy.earned_credits_tonnes > ZERO_DECIMAL:
+        if strategy.should_create_earned_credits and strategy.earned_credits_tonnes > ZERO_DECIMAL:
             DecreasedObligationHandler._create_earned_credits(
                 compliance_report_version_id,
                 strategy.earned_credits_tonnes,
@@ -407,7 +404,7 @@ class DecreasedObligationHandler:
         """
         Determine how to allocate a decreased-obligation refund across zero, one, or multiple invoices.
 
-        Behavior:
+         Behavior:
         - Works for any number of unpaid invoices (0/1/many), newest → oldest.
         - Calculates total refund since the anchor CRV:
             refund_pool = max(-(new_excess_emissions - anchor_prev_excess) * charge_rate, 0)
@@ -417,20 +414,18 @@ class DecreasedObligationHandler:
             * Mark FULLY_MET if outstanding becomes zero.
             * VOID invoice only if FULLY_MET and no prior cash payments.
 
-        Manual handling:
-        • If the obligation ends up fully paid (no outstanding invoices), AND
-        • The refund pool represents real cash (not just prior adjustments),
-            then flag manual handling.
-
-        Earned credits:
-        • Creates 'earned_credits' if no cash exists and over-correction is present
+        Returns:
+            AdjustmentStrategy: containing invoice adjustments
+            Flag for the manual-handling rule:
+                • If the obligation ends up fully paid (no outstanding invoices), AND
+                • The refund pool represents real cash (not just prior adjustments), then flag manual handling
+            Flag for create earned credits if no payments on invoice and credited emissions exist
         """
 
         rate = (charge_rate or ZERO_DECIMAL).quantize(Decimal("0.00"))
         excess_new = (new_excess_emissions or ZERO_DECIMAL).quantize(EMISS)
         anchor_prev = (anchor_prev_excess or ZERO_DECIMAL).quantize(EMISS)
-
-        # Over-corrected emissions
+        # Over-correction in tonnes (excess emissions went below zero)
         over_corrected_tonnes = (credited_emissions or ZERO_DECIMAL).quantize(EMISS)
 
         # Negative delta means "refund owed"; convert to positive dollars for allocation
@@ -491,45 +486,60 @@ class DecreasedObligationHandler:
             # Reduce the shared pool for next (older) invoice
             refund_pool = (refund_pool - apply_abs).quantize(MONEY)
 
-        # --- Shared state for handling decisions --------------------------------
+        # --- Manual handling decision -------------------------------------------
+        # Fully paid if no invoices OR all tracked invoices end at $0.
         fully_paid_obligation = (len(per_invoice) == 0) or all(
             e.net_outstanding_after == ZERO_DECIMAL for e in per_invoice
         )
 
-        # Check for any cash payments in current or prior invoices
-        has_cash = any((inv.get("paid") or ZERO_DECIMAL) > ZERO_DECIMAL for inv in invoices)
-        if not has_cash and not invoices and anchor_crv_id:
-            prior_invoices = ElicensingInvoice.objects.filter(
-                compliance_obligation__compliance_report_version_id=anchor_crv_id
-            ).prefetch_related(
-                Prefetch(
-                    "elicensing_line_items",
-                    queryset=ElicensingLineItem.objects.filter(
-                        line_item_type=ElicensingLineItem.LineItemType.FEE
-                    ).prefetch_related("elicensing_payments"),
+        should_record_manual_handling = False
+        has_cash = False
+        if fully_paid_obligation and (refund_pool > ZERO_DECIMAL or over_corrected_tonnes > ZERO_DECIMAL):
+            # Prefer using precomputed per-invoice 'paid' when available.
+            has_cash = any((inv.get("paid") or ZERO_DECIMAL) > ZERO_DECIMAL for inv in invoices)
+            # TODO; There's the case where a supplementary report is decreasing before voiding
+
+            # Fallback when there are NO invoices but we have an anchor_crv_id
+            if not has_cash and not invoices and anchor_crv_id:
+                prior_invoices = ElicensingInvoice.objects.filter(
+                    compliance_obligation__compliance_report_version_id=anchor_crv_id
+                ).prefetch_related(
+                    Prefetch(
+                        "elicensing_line_items",
+                        queryset=ElicensingLineItem.objects.filter(
+                            line_item_type=ElicensingLineItem.LineItemType.FEE
+                        ).prefetch_related("elicensing_payments"),
+                    )
                 )
-            )
-            if not prior_invoices:
-                prior_invoices = DecreasedObligationHandler._find_newest_non_void_prior_invoices(
-                    anchor_crv_id, prior_invoices
-                )
 
-            cash_total = sum(
-                (DecreasedObligationHandler._sum_invoice_cash_payments(i) for i in prior_invoices), ZERO_DECIMAL
-            )
-            has_cash = cash_total > ZERO_DECIMAL
+                # Edge case check if supp CRV is created and anchor_crv_id is still attached to original obligation
+                if not prior_invoices:
+                    prior_invoices = DecreasedObligationHandler._find_newest_non_void_prior_invoices(
+                        anchor_crv_id, prior_invoices
+                    )
 
-        # --- Manual handling decision -------------------------------------------
-        should_record_manual_handling = fully_paid_obligation and refund_pool > ZERO_DECIMAL and has_cash
+                cash_total = ZERO_DECIMAL
+                for _inv in prior_invoices:
+                    cash_total += DecreasedObligationHandler._sum_invoice_cash_payments(_inv)
+                has_cash = cash_total > ZERO_DECIMAL
 
-        # --- Earned credits handling decision -------------------------------------------
-        create_earned_credits = fully_paid_obligation and (not has_cash) and over_corrected_tonnes > ZERO_DECIMAL
-        earned_credits_tonnes = over_corrected_tonnes if create_earned_credits else ZERO_DECIMAL
+            if has_cash:
+                should_record_manual_handling = True
+
+        # --- Earned credits decision -------------------------------------------
+        # If the decrease over-corrects past zero AND there were no cash payments,
+        # create earned credits for the over-corrected tonnes.
+
+        should_create_earned_credits = False
+        earned_credits_tonnes = ZERO_DECIMAL
+        if fully_paid_obligation and (not has_cash) and over_corrected_tonnes > ZERO_DECIMAL:
+            should_create_earned_credits = True
+            earned_credits_tonnes = over_corrected_tonnes
 
         return AdjustmentStrategy(
             invoices=per_invoice,
             should_record_manual_handling=should_record_manual_handling,
-            create_earned_credits=create_earned_credits,
+            should_create_earned_credits=should_create_earned_credits,
             earned_credits_tonnes=earned_credits_tonnes,
         )
 
@@ -826,9 +836,8 @@ class DecreasedObligationHandler:
             compliance_report_version=crv,
             amount=int(tonnes),
         )
-        ComplianceReportVersion.objects.filter(id=compliance_report_version_id).update(
-            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
-        )
+        crv.status = ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        crv.save()
 
 
 # Concrete strategy for no significant change
