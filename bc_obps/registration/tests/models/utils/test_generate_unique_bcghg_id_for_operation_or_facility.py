@@ -53,8 +53,8 @@ class TestGenerateUniqueBcghgIdForOperationOrFacility:
     @pytest.mark.parametrize(
         "op_type, expected_prefix",
         [
-            (Operation.Types.SFO, "1"),
-            (Operation.Types.LFO, "2"),
+            (Operation.Types.LFO, "1"),
+            (Operation.Types.SFO, "2"),
         ],
     )
     def test_generate_unique_bcghg_id_for_operation(self, cas_director, op_type, expected_prefix):
@@ -71,21 +71,21 @@ class TestGenerateUniqueBcghgIdForOperationOrFacility:
 
     def test_generate_unique_bcghg_id_for_facility(self, facility, cas_director):
         facility.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
-        expected_id = f"2{facility.operation.naics_code.naics_code}0001"
+        expected_id = f"1{facility.operation.naics_code.naics_code}0001"
         assert facility.bcghg_id.pk == expected_id
 
     def test_generate_unique_bcghg_id_multiple_existing_ids(self, registered_operation, facility, cas_director):
-        existing_ids = ['13221210001', '13221210002', '13221210003', '23221210001', '23221210002']
+        existing_ids = ['23221210001', '23221210002', '23221210003', '13221210001', '13221210002']
         for existing_id in existing_ids:
             baker.make_recipe('registration.tests.utils.bcghg_id', id=existing_id)
 
         # Generate ID for operation
         registered_operation.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
-        assert registered_operation.bcghg_id.pk == '23221210003'
+        assert registered_operation.bcghg_id.pk == '13221210003'
 
         # Generate ID for facility
         facility.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
-        assert facility.bcghg_id.pk == '23221210004'
+        assert facility.bcghg_id.pk == '13221210004'
 
     def test_missing_naics_code_raises_error(self, cas_director):
         operation = baker.make_recipe(
