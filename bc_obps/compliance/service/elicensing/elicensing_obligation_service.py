@@ -155,9 +155,13 @@ class ElicensingObligationService:
                 if obligation.compliance_report_version.is_supplementary and cls._has_compliance_deadline_passed(
                     obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
                 ):
-                    retryable_notice_of_supplementary_report_post_deadline_increases_emissions.execute(obligation.id)
+                    transaction.on_commit(
+                        lambda: retryable_notice_of_supplementary_report_post_deadline_increases_emissions.execute(
+                            obligation.id
+                        )
+                    )
                 else:
-                    retryable_send_notice_of_obligation_due_email.execute(obligation.id)
+                    transaction.on_commit(lambda: retryable_send_notice_of_obligation_due_email.execute(obligation.id))
 
         except Exception:
             obligation.compliance_report_version.status = (
