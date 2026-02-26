@@ -23,7 +23,7 @@ class TestFacilityBcghgIdEndpoint(CommonTestSetup):
             ),
         )
         assert response.status_code == 200
-        assert response.json() == {'id': '14862100001'}  # '1' and '486210' come from the recipe's mock data
+        assert response.json() == {'id': '24862100001'}  # '2' and '486210' come from the recipe's mock data
 
     def test_authorize_role_can_clear_id(self):
         operation = baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED)

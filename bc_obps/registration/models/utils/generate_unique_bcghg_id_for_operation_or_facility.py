@@ -21,9 +21,9 @@ def generate_unique_bcghg_id_for_operation_or_facility(record: Operation | Facil
         raise ValueError('Operation must be registered before generating a BCGHG ID.')
 
     if operation.type == Operation.Types.SFO:
-        first_digit = '1'
-    elif operation.type == Operation.Types.LFO:
         first_digit = '2'
+    elif operation.type == Operation.Types.LFO:
+        first_digit = '1'
     else:
         raise ValueError(f"Invalid operation type: {operation.type}")
 
