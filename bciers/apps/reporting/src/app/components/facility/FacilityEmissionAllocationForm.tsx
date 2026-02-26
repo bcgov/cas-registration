@@ -19,6 +19,7 @@ import {
   validateMethodology,
   validateMethodologyOther,
 } from "./facilityEmissionAllocation/validateMethodology";
+import { validatePulpAndPaper } from "./facilityEmissionAllocation/validatePulpAndPaper";
 
 // 📊 Interface for props passed to the component
 interface Props {
@@ -66,58 +67,16 @@ const validateFormData = (
   isPulpAndPaper: boolean,
   overlappingIndustrialProcessEmissions: number,
 ) => {
-  const errorMismatch =
-    "All emissions must be allocated to 100% before saving and continuing";
-  const errorMethodology =
-    "A methodology must be selected before saving and continuing";
-  const errorMethodologyOther =
-    "A description must be provided for the selected methodology";
-
   const newErrors: string[] = [];
 
-  if (!validateEmissions(formData)) {
-    newErrors.push(errorMismatch);
-  }
-  if (!validateMethodology(formData)) {
-    newErrors.push(errorMethodology);
-  }
-  if (!validateMethodologyOther(formData)) {
-    newErrors.push(errorMethodologyOther);
-  }
+  newErrors.push(...validateEmissions(formData));
+  newErrors.push(...validateMethodology(formData));
+  newErrors.push(...validateMethodologyOther(formData));
+
   if (isPulpAndPaper && overlappingIndustrialProcessEmissions > 0) {
-    const industrialEmissionAllocations =
-      formData?.basic_emission_allocation_data?.find(
-        (allocation: EmissionAllocationData) =>
-          allocation.emission_category_name === "Industrial process emissions",
-      );
-    const chemicalPulpAllocation =
-      industrialEmissionAllocations?.products?.find(
-        (p) => p.product_name === "Pulp and paper: chemical pulp",
-      );
-    const limeRecoveredByKilnAllocation =
-      industrialEmissionAllocations?.products?.find(
-        (p) => p.product_name === "Pulp and paper: lime recovered by kiln",
-      );
-    if (!chemicalPulpAllocation)
-      newErrors.push(
-        "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
-      );
-    else if (!limeRecoveredByKilnAllocation)
-      newErrors.push(
-        "Missing Product: 'Pulp and paper: lime recovered by kiln'. Please add the product on the operation review page",
-      );
-    else if (
-      // overlapping industrial process emissions are necessarily allocated to either of these products,
-      // we can give the user an early warning if they didn't allocate enough at this stage
-      chemicalPulpAllocation.allocated_quantity +
-        limeRecoveredByKilnAllocation.allocated_quantity -
-        overlappingIndustrialProcessEmissions <
-      0
-    )
-      newErrors.push(
-        `Invalid allocation: Industrial Process quantity allocated betwen 'Pulp and paper:
-        chemical pulp' and 'Pulp and paper: lime recovered by kiln' is too low`,
-      );
+    newErrors.push(
+      ...validatePulpAndPaper(formData, overlappingIndustrialProcessEmissions),
+    );
   }
 
   return newErrors;
