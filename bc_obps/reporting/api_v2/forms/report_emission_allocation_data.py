@@ -1,7 +1,9 @@
+import dataclasses
 from typing import Literal
 from uuid import UUID
 
 from django.http import HttpRequest
+from reporting.api_v2.forms.form_response_builder import FormResponseBuilder
 from reporting.api_v2.forms.form_schema import ReportingFormSchema
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
@@ -24,4 +26,9 @@ from ..router import router
 def get_emission_allocations(request: HttpRequest, version_id: int, facility_id: UUID) -> tuple[Literal[200], dict]:
     # Delegate the responsibility to the service
     response_data = ReportEmissionAllocationService.get_emission_allocation_data(version_id, facility_id)
-    return 200, response_data
+
+    response = (
+        FormResponseBuilder(version_id).payload(dataclasses.asdict(response_data)).facility_data(facility_id).build()
+    )
+
+    return 200, response
