@@ -37,6 +37,12 @@ class ComplianceObligation(TimeStampedModel):
         blank=True,
     )
 
+    invoice_number = models.CharField(
+        null=True,
+        blank=True,
+        db_comment="The invoice number for the related elicensing invoice. Populated immediately on invoice creation in elicensing to ensure the link is not lost between invoice creation in elicensing and the refresh function that creates the elicensing_invoice record in the erc data.",
+    )
+
     obligation_id = models.CharField(
         max_length=30,
         db_comment="A human-readable identifier for the obligation in format YY-OOOO-R-V",
