@@ -12,8 +12,7 @@ from reporting.service.compliance_service.industrial_process import (
     compute_industrial_process_emissions,
     get_allocated_emissions_by_report_product_emission_category,
 )
-from reporting.service.compliance_service.parameters import ComplianceParameters
-from reporting.service.emission_category_service import EmissionCategoryService
+from reporting.service.compliance_service.parameters import ComplianceParameters, ProductionPeriod
 from reporting.models import ReportComplianceSummary, ReportComplianceSummaryProduct
 from registration.models import RegulatedProduct, Operation
 from decimal import Decimal
@@ -21,7 +20,6 @@ from django.db.models import Sum
 from typing import Dict, List
 from django.db import transaction
 from dataclasses import dataclass
-from reporting.service.compliance_service_parameters import resolve_compliance_parameters, ProductionPeriod
 
 from reporting.service.compliance_service.regulatory_values import (
     RegulatoryValues,
@@ -240,7 +238,9 @@ class ComplianceService:
             # Calculate prorated_allocated limit (if applicable), depending on reporting year and operation criteria.
 
             production_for_limit, prorated_allocated, allocated_compliance_emissions_value = (
-                resolve_compliance_parameters(production_period, allocated_for_compliance, production_totals)
+                ComplianceParameters.resolve_compliance_parameters(
+                    production_period, allocated_for_compliance, production_totals
+                )
             )
 
             # Compute emissions limit with the product-specific regulatory values,
@@ -361,14 +361,14 @@ class ComplianceService:
                 report_compliance_summary=compliance_summary_record,
                 product=RegulatedProduct.objects.get(id=product_data_to_save.product_id),
                 defaults={
-                    "annual_production": ComplianceService.round(product_data_to_save.annual_production),
-                    "jan_mar_production": ComplianceService.round(product_data_to_save.jan_mar_production),
-                    "apr_dec_production": ComplianceService.round(product_data_to_save.apr_dec_production),
-                    "emission_intensity": ComplianceService.round(product_data_to_save.emission_intensity),
-                    "allocated_industrial_process_emissions": ComplianceService.round(
+                    "annual_production": ComplianceParameters.round(product_data_to_save.annual_production),
+                    "jan_mar_production": ComplianceParameters.round(product_data_to_save.jan_mar_production),
+                    "apr_dec_production": ComplianceParameters.round(product_data_to_save.apr_dec_production),
+                    "emission_intensity": ComplianceParameters.round(product_data_to_save.emission_intensity),
+                    "allocated_industrial_process_emissions": ComplianceParameters.round(
                         product_data_to_save.allocated_industrial_process_emissions
                     ),
-                    "allocated_compliance_emissions": ComplianceService.round(
+                    "allocated_compliance_emissions": ComplianceParameters.round(
                         product_data_to_save.allocated_compliance_emissions
                     ),
                 },

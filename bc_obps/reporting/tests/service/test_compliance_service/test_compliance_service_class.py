@@ -13,7 +13,7 @@ from reporting.models import (
 from reporting.service.compliance_service import ComplianceService
 from reporting.tests.service.test_compliance_service.infrastructure import ComplianceTestInfrastructure
 from decimal import Decimal
-from reporting.service.compliance_service_parameters import ProductionPeriod
+from reporting.service.compliance_service.parameters import ProductionPeriod
 
 
 class TestComplianceSummaryServiceClass(TestCase):
