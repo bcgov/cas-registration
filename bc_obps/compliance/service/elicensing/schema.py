@@ -138,6 +138,8 @@ class PaymentDistribution:
     reason: str
     amount: Decimal
     taxAmount: Decimal
+    invoiceNumber: Optional[str] = None
+    reversedAmount: Optional[Decimal] = None
 
 
 @dataclass
@@ -154,6 +156,7 @@ class Payment:
     onlineTransactionId: Optional[str] = None
     onlineApprovalCode: Optional[str] = None
     distributions: List[PaymentDistribution] = field(default_factory=list)
+    adjustmentAmount: Optional[Decimal] = None
 
 
 @dataclass
