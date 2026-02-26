@@ -1,10 +1,10 @@
 import logging
 from typing import Type, Any
 from django.dispatch import receiver
-from django.utils import timezone
 from registration.signals.signals import operation_registration_purpose_changed
 from reporting.models import ReportVersion
 from service.report_version_service import ReportVersionService
+from service.reporting_year_service import ReportingYearService
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +37,9 @@ def handle_registration_purpose_changed(sender: Type[Any], **kwargs: Any) -> Non
 
     report = draft_version.report
     version_id = draft_version.id
+    current_reporting_year = ReportingYearService.get_current_reporting_year()
 
-    if report.reporting_year.reporting_year < timezone.now().year:
+    if report.reporting_year.reporting_year < current_reporting_year.reporting_year:
         logger.info(
             "Skipping deletion of draft report version id=%s for operation_id=%s: past reporting year",
             version_id,

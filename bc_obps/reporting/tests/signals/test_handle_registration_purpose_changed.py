@@ -1,5 +1,4 @@
 import pytest
-from datetime import datetime, timezone as dt_timezone
 from unittest.mock import patch, MagicMock
 from model_bakery import baker
 
@@ -63,42 +62,42 @@ class TestHandleRegistrationPurposeChanged:
 
         mock_delete.assert_not_called()
 
-    @patch("reporting.signals.consumers.timezone.now")
+    @patch("reporting.signals.consumers.ReportingYearService.get_current_reporting_year")
     @patch("reporting.signals.consumers.ReportVersionService.delete_report_version")
-    def test_past_year_draft_is_not_deleted(self, mock_delete: MagicMock, mock_now: MagicMock):
-        mock_now.return_value = datetime(2029, 6, 1, tzinfo=dt_timezone.utc)
+    def test_past_year_draft_is_not_deleted(self, mock_delete: MagicMock, mock_get_year: MagicMock):
         draft_version = self._make_draft_version(year_value=2028)
+        mock_get_year.return_value = MagicMock(reporting_year=2029)
 
         self._send(draft_version.report.operation_id)
 
         mock_delete.assert_not_called()
         assert ReportVersion.objects.filter(id=draft_version.id).exists()
 
-    @patch("reporting.signals.consumers.timezone.now")
+    @patch("reporting.signals.consumers.ReportingYearService.get_current_reporting_year")
     @patch("reporting.signals.consumers.ReportVersionService.delete_report_version")
-    def test_transferred_operation_draft_is_not_deleted(self, mock_delete: MagicMock, mock_now: MagicMock):
-        mock_now.return_value = datetime(2030, 6, 1, tzinfo=dt_timezone.utc)
+    def test_transferred_operation_draft_is_not_deleted(self, mock_delete: MagicMock, mock_get_year: MagicMock):
         draft_version = self._make_draft_version(year_value=2030, same_operator=False)
+        mock_get_year.return_value = MagicMock(reporting_year=2030)
 
         self._send(draft_version.report.operation_id)
 
         mock_delete.assert_not_called()
         assert ReportVersion.objects.filter(id=draft_version.id).exists()
 
-    @patch("reporting.signals.consumers.timezone.now")
+    @patch("reporting.signals.consumers.ReportingYearService.get_current_reporting_year")
     @patch("reporting.signals.consumers.ReportVersionService.delete_report_version")
-    def test_current_year_draft_is_deleted(self, mock_delete: MagicMock, mock_now: MagicMock):
-        mock_now.return_value = datetime(2031, 6, 1, tzinfo=dt_timezone.utc)
+    def test_current_year_draft_is_deleted(self, mock_delete: MagicMock, mock_get_year: MagicMock):
         draft_version = self._make_draft_version(year_value=2031, same_operator=True)
+        mock_get_year.return_value = MagicMock(reporting_year=2031)
 
         self._send(draft_version.report.operation_id)
 
         mock_delete.assert_called_once_with(draft_version.id)
 
-    @patch("reporting.signals.consumers.timezone.now")
+    @patch("reporting.signals.consumers.ReportingYearService.get_current_reporting_year")
     @patch("reporting.signals.consumers.ReportVersionService.delete_report_version")
-    def test_submitted_version_is_not_deleted(self, mock_delete: MagicMock, mock_now: MagicMock):
-        mock_now.return_value = datetime(2032, 6, 1, tzinfo=dt_timezone.utc)
+    def test_submitted_version_is_not_deleted(self, mock_delete: MagicMock, mock_get_year: MagicMock):
+        mock_get_year.return_value = MagicMock(reporting_year=2032)
         operator = baker.make_recipe("registration.tests.utils.operator")
         operation = baker.make_recipe("registration.tests.utils.operation", operator=operator)
         year_obj = baker.make_recipe("reporting.tests.utils.reporting_year", reporting_year=2032)
