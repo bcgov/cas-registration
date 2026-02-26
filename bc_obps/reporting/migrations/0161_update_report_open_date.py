@@ -12,17 +12,10 @@ def update_report_open_date(apps, schema_editor):
     reporting_year_2025.save()
 
 
-def reverse_update_report_open_date(apps, schema_editor):
-    ReportingYear = apps.get_model('reporting', 'ReportingYear')
-    reporting_year_2025 = ReportingYear.objects.get(reporting_year=2025)
-    reporting_year_2025.report_open_date = datetime(2026, 3, 4, tzinfo=ZoneInfo("America/Vancouver"))
-    reporting_year_2025.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
         ('reporting', '0160_compliance_summary_product_override_values'),
     ]
 
-    operations = [migrations.RunPython(update_report_open_date, reverse_update_report_open_date)]
+    operations = [migrations.RunPython(update_report_open_date, elidable=True)]
