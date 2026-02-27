@@ -14,6 +14,12 @@ class CommonFacilityDataSchema(Schema):
     facility_type: Optional[str]
 
 
+class CommonOperationDataSchema(Schema):
+    naics_code: Optional[str]
+    operation_type: Optional[str]
+
+
 class ReportingFormSchema(ReportingResponseSchema[TPayload], Generic[TPayload]):
     report_data: Optional[CommonProgramDataSchema] = None
     facility_data: Optional[CommonFacilityDataSchema] = None
+    operation_data: Optional[CommonOperationDataSchema] = None

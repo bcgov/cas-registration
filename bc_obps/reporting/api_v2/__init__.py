@@ -2,4 +2,5 @@
 
 from .router import router
 from .forms.report_production_data import get_production_form_data
+from .forms.report_emission_allocation_data import get_emission_allocations
 from ._reports._report_id.history import get_report_history
