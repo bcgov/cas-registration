@@ -32,15 +32,17 @@ class TestFormResponseBuilder(SimpleTestCase):
             "facility_data": {"facility_type": "Facility Of Unusual Size", "facility_name": "Name!!"},
         }
 
+    @patch("reporting.api_v2.forms.form_response_builder.NaicsCodeService")
     @patch("reporting.api_v2.forms.form_response_builder.ReportOperation")
     @patch("reporting.api_v2.forms.form_response_builder.ReportVersion")
-    def test_with_operation_data(self, MockReportVersion, MockReportOperation):
+    def test_with_operation_data(self, MockReportVersion, MockReportOperation, MockNaicsCodeService):
         mocked_report_version = MockReportVersion.objects.select_related.return_value.get.return_value
         mocked_report_version.report.reporting_year_id = 2001
         mocked_report_version.id = 123456789
 
+        MockNaicsCodeService.get_naics_code_by_version_id.return_value = "123456"
+
         mocked_report_operation = MockReportOperation.objects.select_related.return_value.get.return_value
-        mocked_report_operation.report_version.report.operation.naics_code.naics_code = "123456"
         mocked_report_operation.operation_type = "test type"
 
         builder = FormResponseBuilder(456).operation_data()
@@ -63,17 +65,21 @@ class TestFormResponseBuilder(SimpleTestCase):
             "payload": {"a": "b"},
         }
 
+    @patch("reporting.api_v2.forms.form_response_builder.NaicsCodeService")
     @patch("reporting.api_v2.forms.form_response_builder.FacilityReport")
     @patch("reporting.api_v2.forms.form_response_builder.ReportOperation")
     @patch("reporting.api_v2.forms.form_response_builder.ReportVersion")
-    def test_with_facility_and_operation_and_payload(self, MockReportVersion, MockReportOperation, MockFacilityReport):
+    def test_with_facility_and_operation_and_payload(
+        self, MockReportVersion, MockReportOperation, MockFacilityReport, MockNaicsCodeService
+    ):
         mocked_report_version = MockReportVersion.objects.select_related.return_value.get.return_value
         mocked_report_version.report.reporting_year_id = 3000
         mocked_report_version.id = 102
 
         mocked_report_operation = MockReportOperation.objects.select_related.return_value.get.return_value
-        mocked_report_operation.report_version.report.operation.naics_code.naics_code = "222333"
         mocked_report_operation.operation_type = "Operation Type"
+
+        MockNaicsCodeService.get_naics_code_by_version_id.return_value = "222333"
 
         mocked_facility_report = MockFacilityReport.objects.get.return_value
         mocked_facility_report.facility_type = "Facility Type"

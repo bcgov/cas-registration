@@ -6,6 +6,7 @@ from reporting.api_v2.response_builder import ResponseBuilder
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
+from reporting.service.naics_code import NaicsCodeService
 
 
 """
@@ -71,10 +72,10 @@ class FormResponseBuilder(ResponseBuilder):
             report_version_id=self.report_version_id
         )
 
-        naics_code = report_operation.report_version.report.operation.naics_code
+        naics_code = NaicsCodeService.get_naics_code_by_version_id(self.report_version_id)
 
         operation_data = OperationData(
-            naics_code=naics_code.naics_code if naics_code else None,
+            naics_code=naics_code,
             operation_type=report_operation.operation_type,
         )
 
