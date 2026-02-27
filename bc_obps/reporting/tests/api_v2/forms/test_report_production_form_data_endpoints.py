@@ -35,7 +35,11 @@ class TestReportProductV2Endpoints(CommonTestSetup):
                 'report_version_id': self.report_version.id,
                 'reporting_year': 1222,
             },
-            'payload': {'report_products': [], 'allowed_products': []},
+            'payload': {
+                'report_products': [],
+                'allowed_products': [],
+                'naics_code': self.report_version.report.operation.naics_code.naics_code,
+            },
         }
 
     def test_get_returns_the_right_data_with_data(self):
@@ -133,6 +137,7 @@ class TestReportProductV2Endpoints(CommonTestSetup):
                         "is_regulated": RegulatedProduct.objects.get(id=3).is_regulated,
                     },
                 ],
+                "naics_code": self.report_version.report.operation.naics_code.naics_code,
             },
         }
 
