@@ -24,7 +24,7 @@ export default async function ProductionDataPage({
   }));
 
   const facilityType = response.facility_data.facility_type;
-
+  const naicsCode = response.payload.naics_code;
   const reportingYear = response.report_data.reporting_year;
   const isOptedOut = Boolean(
     response.payload.operation_opted_out_final_reporting_year &&
@@ -54,8 +54,9 @@ export default async function ProductionDataPage({
   if (
     orderedActivities.find(
       (activity: { id: number; name: string; slug: string }) =>
-        (activity.slug = "pulp_and_paper"),
-    )
+        activity.slug === "pulp_and_paper",
+    ) &&
+    naicsCode === "322112" // NAICS code for chemical pulp mills
   ) {
     isPulpAndPaper = true;
     overlappingIndustrialProcessEmissions =
