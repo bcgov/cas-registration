@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import List, Literal
+from typing import List, Literal, Tuple
 from uuid import UUID
 
 from django.http import HttpRequest
@@ -13,14 +13,14 @@ from reporting.schema.generic import Message
 from reporting.schema.report_emission_allocation import ReportEmissionAllocationSchemaOut
 from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.service.report_emission_allocation_service import ReportEmissionAllocationService
-from service.error_service import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 from service.facility_report_service import FacilityReportService
 
 from ..router import router
 
 
-class ReportingFormPayloadSchema(Schema):
+class EmissionAllocationFormPayloadSchema(Schema):
     emission_allocation_data: ReportEmissionAllocationSchemaOut
     ordered_activities: List[FacilityReportActivityDataOut]
     overlapping_industrial_process_emissions: Decimal
@@ -28,13 +28,15 @@ class ReportingFormPayloadSchema(Schema):
 
 @router.get(
     "report-version/{version_id}/facilities/{facility_id}/forms/emission-allocation-data",
-    response={200: ReportingFormSchema[ReportingFormPayloadSchema], custom_codes_4xx: Message},
+    response={200: ReportingFormSchema[EmissionAllocationFormPayloadSchema], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for product emissions allocations that have been saved for a facility""",
     exclude_none=True,
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_emission_allocations(request: HttpRequest, version_id: int, facility_id: UUID) -> tuple[Literal[200], dict]:
+def get_emission_allocation_form_data(
+    request: HttpRequest, version_id: int, facility_id: UUID
+) -> Tuple[Literal[200], dict]:
     emission_allocation_data = ReportEmissionAllocationService.get_emission_allocation_data(version_id, facility_id)
 
     facility_report_activities = FacilityReportService.get_activity_ids_for_facility(version_id, facility_id)
