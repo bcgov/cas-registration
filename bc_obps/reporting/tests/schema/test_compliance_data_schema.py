@@ -28,7 +28,7 @@ class TestComplianceDataSchema(SimpleTestCase):
                     name="product 1",
                     product_id=999,
                     annual_production=Decimal("1"),
-                    jan_mar_production=Decimal("0.25"),
+                    jan_mar_production=Decimal("0.0"),
                     apr_dec_production=Decimal("0.5"),
                     emission_intensity=Decimal("2.3"),
                     allocated_industrial_process_emissions=Decimal("123.45"),
@@ -68,7 +68,8 @@ class TestComplianceDataSchema(SimpleTestCase):
         }
         assert dict(schema_under_test.products[0]) == {
             "name": "product 1",
-            "annual_production": 1,
+            "annual_production": 1.0,
+            "jan_mar_production": 0,
             "apr_dec_production": 0.5,
             "emission_intensity": 2.3,
             "allocated_industrial_process_emissions": 123.45,
@@ -78,11 +79,12 @@ class TestComplianceDataSchema(SimpleTestCase):
         }
         assert dict(schema_under_test.products[1]) == {
             "name": "product 2",
-            "annual_production": 5,
-            "apr_dec_production": 4,
-            "emission_intensity": 3,
-            "allocated_industrial_process_emissions": 2,
-            "allocated_compliance_emissions": 1,
+            "annual_production": 5.0,
+            "jan_mar_production": 0,
+            "apr_dec_production": 4.0,
+            "emission_intensity": 3.0,
+            "allocated_industrial_process_emissions": 2.0,
+            "allocated_compliance_emissions": 1.0,
             "reduction_factor": 0.001,  # Use overridden value
             "tightening_rate": 99999.99,  # Use overridden value
         }
