@@ -5,6 +5,10 @@ import {
   complianceSummarySchema2024,
   complianceSummaryUiSchema2024,
 } from "./2024/complianceSummary";
+import {
+  complianceSummarySchema2025,
+  complianceSummaryUiSchema2025,
+} from "./2025/complianceSummary";
 
 const complianceSummarySchemaDefault: RJSFSchema = {
   type: "object",
@@ -169,13 +173,15 @@ export const createComplianceSummarySchema = (
 ): RJSFSchema => {
   if (reportingYear === 2024) {
     return complianceSummarySchema2024;
-  }
-  return complianceSummarySchemaDefault;
+  } else if (reportingYear === 2025) {
+    return complianceSummarySchema2025;
+  } else return complianceSummarySchemaDefault;
 };
 
 export const createComplianceSummaryUiSchema = (reportingYear: number) => {
   if (reportingYear === 2024) {
     return complianceSummaryUiSchema2024;
-  }
-  return complianceSummaryUiSchemaDefault;
+  } else if (reportingYear === 2025) {
+    return complianceSummaryUiSchema2025;
+  } else return complianceSummaryUiSchemaDefault;
 };
