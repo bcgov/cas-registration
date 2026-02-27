@@ -3,14 +3,22 @@ import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 // 🪄 Page Object Models
 import { OperatorPOM } from "@/administration-e2e/poms/operator";
 // ☰ Enums
-import { OperatorE2EValue } from "@/administration-e2e/utils/enums";
-import { AppRoute } from "@/administration-e2e/utils/enums";
+import {
+  AppRoute,
+  MessageTextOperatorSelect,
+  OperatorE2EValue,
+  SecondaryUserOperatorFixtureFields,
+  UserAccessRequestStatus,
+} from "@/administration-e2e/utils/enums";
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import {
   analyzeAccessibility,
   assertSuccessfulSnackbar,
+  linkIsVisible,
+  takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
+import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 import { FrontendMessages } from "@bciers/utils/src/enums";
 
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER);
@@ -105,5 +113,47 @@ test.describe("Test select operator paths", () => {
 
     await selectOperatorPage.buttonSave.click();
     await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
+  });
+});
+
+test.describe("Declined access request", () => {
+  // Set the secondary user (INDUSTRY_USER / bc-cas-dev-secondary) to Declined
+  // directly via DB so the fixture `page` is the same user happo is bound to.
+  // This avoids the happo "Frame has been detached" error that occurs when
+  // passing a locator from openNewBrowserContextAs() to happoScreenshot().
+  test.beforeEach(async () => {
+    await upsertUserOperatorRecord(
+      SecondaryUserOperatorFixtureFields.USER,
+      SecondaryUserOperatorFixtureFields.ROLE_PENDING,
+      UserAccessRequestStatus.DECLINED,
+    );
+  });
+
+  test("View declined access request message", async ({
+    page,
+    happoScreenshot,
+  }) => {
+    const selectOperatorPage = new OperatorPOM(page);
+    await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
+    await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
+
+    // 👉 Action search by legal name — navigates to confirm page
+    await selectOperatorPage.selectByLegalName(
+      OperatorE2EValue.SEARCH_LEGAL_NAME,
+      "Bravo Technologies - has parTNER operator - name from admin",
+    );
+
+    // 🔍 Assert the declined message is shown (waits up to 30s for client-side nav)
+    await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
+    await linkIsVisible(
+      page,
+      MessageTextOperatorSelect.SELECT_ANOTHER_OPERATOR,
+      true,
+    );
+
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "Decline a user operator request",
+      variant: "default",
+    });
   });
 });
