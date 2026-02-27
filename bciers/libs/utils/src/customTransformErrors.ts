@@ -45,9 +45,6 @@ const customTransformErrors = (
       if (error.property?.match(/\.emissions\.\d+\.methodology$/)) {
         return false;
       }
-      if (error.property?.match(/\.biogenicIndustrialProcessEmissions$/)) {
-        return false;
-      }
     }
 
     // Filter out gas type enum errors ONLY from oneOf branches
@@ -194,6 +191,13 @@ const customTransformErrors = (
       return error;
     }
     if (error?.name === "required") {
+      if (
+        error?.message?.includes("Does this mill utilize a lime recovery kiln?")
+      ) {
+        error.message = "This field is required";
+        return error;
+      }
+
       const fieldName = getFieldNameIfExists(error?.message);
       const selectOptionFields = ["Fuel Name", "Gas Type", "Methodology"];
 

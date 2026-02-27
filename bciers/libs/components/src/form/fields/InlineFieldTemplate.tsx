@@ -23,6 +23,7 @@ function InlineFieldTemplate({
   // UI Schema options
   const options = uiSchema?.["ui:options"] || {};
   const isLabel = options?.label !== false;
+  const labelClassNames = (options?.labelClassNames as string) ?? "lg:w-3/12";
 
   let cellWidth = "lg:w-4/12";
   if (options?.inline) cellWidth = "lg:w-full";
@@ -40,7 +41,7 @@ function InlineFieldTemplate({
         className={`flex flex-col md:flex-row items-start md:items-center ${classNames}`}
       >
         {isLabel && (
-          <div className="w-full lg:w-3/12">
+          <div className={`w-full ${labelClassNames}`}>
             <label htmlFor={id} className="font-bold">
               {label}
               {required && "*"}
