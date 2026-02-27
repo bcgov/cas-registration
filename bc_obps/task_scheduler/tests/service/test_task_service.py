@@ -43,44 +43,44 @@ class TestTaskService(TestCase):
 
     def test_get_due_tasks_different_statuses_scheduled_task(self):
         # Test PENDING status
-        self.scheduled_task.status = ScheduledTask.Status.PENDING
+        self.scheduled_task.task_status = ScheduledTask.Status.PENDING
         self.scheduled_task.save()
         due_tasks = TaskService.get_due_tasks()
         self.assertIn(self.scheduled_task, due_tasks)
 
         # Test FAILED status
-        self.scheduled_task.status = ScheduledTask.Status.FAILED
+        self.scheduled_task.task_status = ScheduledTask.Status.FAILED
         self.scheduled_task.save()
         due_tasks = TaskService.get_due_tasks()
         self.assertIn(self.scheduled_task, due_tasks)
 
         # Test COMPLETED status
-        self.scheduled_task.status = ScheduledTask.Status.COMPLETED
+        self.scheduled_task.task_status = ScheduledTask.Status.COMPLETED
         self.scheduled_task.save()
         due_tasks = TaskService.get_due_tasks()
         self.assertIn(self.scheduled_task, due_tasks)
 
         # Test INACTIVE status (should not be included)
-        self.scheduled_task.status = ScheduledTask.Status.INACTIVE
+        self.scheduled_task.task_status = ScheduledTask.Status.INACTIVE
         self.scheduled_task.save()
         due_tasks = TaskService.get_due_tasks()
         self.assertNotIn(self.scheduled_task, due_tasks)
 
     def test_get_due_tasks_different_statuses_retry_task(self):
         # Test PENDING status
-        self.retry_task.status = RetryTask.Status.PENDING
+        self.retry_task.task_status = RetryTask.Status.PENDING
         self.retry_task.save()
         due_tasks = TaskService.get_due_tasks()
         self.assertIn(self.retry_task, due_tasks)
 
         # Test FAILED status
-        self.retry_task.status = RetryTask.Status.FAILED
+        self.retry_task.task_status = RetryTask.Status.FAILED
         self.retry_task.save()
         due_tasks = TaskService.get_due_tasks()
         self.assertIn(self.retry_task, due_tasks)
 
         # Test COMPLETED status (should not be included)
-        self.retry_task.status = RetryTask.Status.COMPLETED
+        self.retry_task.task_status = RetryTask.Status.COMPLETED
         self.retry_task.save()
         due_tasks = TaskService.get_due_tasks()
         self.assertNotIn(self.retry_task, due_tasks)
@@ -90,7 +90,7 @@ class TestTaskService(TestCase):
         exhausted_retry_task_obj = baker.make_recipe(
             "task_scheduler.tests.utils.retry_task",
             function_path="exhausted.retry.function",
-            status=RetryTask.Status.FAILED,
+            task_status=RetryTask.Status.FAILED,
             retry_count=3,
             max_retries=3,
             next_run_time=timezone.now() - timedelta(minutes=1),
@@ -220,19 +220,19 @@ class TestTaskService(TestCase):
         old_completed_task = baker.make_recipe(
             "task_scheduler.tests.utils.scheduled_task",
             function_path="old.completed.function",
-            status=ScheduledTask.Status.COMPLETED,
+            task_status=ScheduledTask.Status.COMPLETED,
             last_run_time=timezone.now() - timedelta(days=35),
         )
         old_inactive_task = baker.make_recipe(
             "task_scheduler.tests.utils.scheduled_task",
             function_path="old.inactive.function",
-            status=ScheduledTask.Status.INACTIVE,
+            task_status=ScheduledTask.Status.INACTIVE,
             last_run_time=timezone.now() - timedelta(days=35),
         )
         old_retry_task_obj = baker.make_recipe(
             "task_scheduler.tests.utils.retry_task",
             function_path="old.retry.function",
-            status=RetryTask.Status.COMPLETED,
+            task_status=RetryTask.Status.COMPLETED,
             last_run_time=timezone.now() - timedelta(days=35),
         )
 
@@ -240,7 +240,7 @@ class TestTaskService(TestCase):
         recent_task = baker.make_recipe(
             "task_scheduler.tests.utils.scheduled_task",
             function_path="recent.function",
-            status=ScheduledTask.Status.COMPLETED,
+            task_status=ScheduledTask.Status.COMPLETED,
             last_run_time=timezone.now() - timedelta(days=15),
         )
 

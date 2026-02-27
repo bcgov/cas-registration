@@ -71,9 +71,9 @@ class ScheduledTaskSynchronizer:
 
     @classmethod
     def _activate_task_if_needed(cls, task: ScheduledTask) -> None:
-        if task.status == ScheduledTask.Status.INACTIVE:
-            task.status = ScheduledTask.Status.PENDING
-            task.save(update_fields=['status'])
+        if task.task_status == ScheduledTask.Status.INACTIVE:
+            task.task_status = ScheduledTask.Status.PENDING
+            task.save(update_fields=['task_status'])
 
     @classmethod
     def _create_new_task(cls, function_path: str, task_config: Dict[str, Any]) -> bool:
@@ -88,14 +88,14 @@ class ScheduledTaskSynchronizer:
             task = ScheduledTask(
                 function_path=function_path,
                 schedule_type=schedule_type,
-                tag=task_config.get('tag', ''),
-                schedule_interval=task_config.get('schedule_interval'),
-                schedule_hour=task_config.get('schedule_hour'),
-                schedule_minute=task_config.get('schedule_minute'),
-                schedule_day_of_week=task_config.get('schedule_day_of_week'),
-                schedule_day_of_month=task_config.get('schedule_day_of_month'),
-                schedule_month=task_config.get('schedule_month'),
-                status=ScheduledTask.Status.PENDING,
+                tag=task_config.get("tag", ""),
+                schedule_interval=task_config.get("schedule_interval"),
+                schedule_hour=task_config.get("schedule_hour"),
+                schedule_minute=task_config.get("schedule_minute"),
+                schedule_day_of_week=task_config.get("schedule_day_of_week"),
+                schedule_day_of_month=task_config.get("schedule_day_of_month"),
+                schedule_month=task_config.get("schedule_month"),
+                task_status=ScheduledTask.Status.PENDING,
             )
 
             # Calculate next run time
@@ -115,8 +115,8 @@ class ScheduledTaskSynchronizer:
         discovered_paths = set(discovered_tasks.keys())
 
         for function_path, task in existing_tasks.items():
-            if function_path not in discovered_paths and task.status != ScheduledTask.Status.INACTIVE:
-                task.status = ScheduledTask.Status.INACTIVE
-                task.save(update_fields=['status'])
+            if function_path not in discovered_paths and task.task_status != ScheduledTask.Status.INACTIVE:
+                task.task_status = ScheduledTask.Status.INACTIVE
+                task.save(update_fields=['task_status'])
                 deactivated_count += 1
         return deactivated_count

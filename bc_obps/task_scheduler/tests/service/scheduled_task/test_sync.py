@@ -127,23 +127,23 @@ class TestScheduledTaskSynchronizer(TestCase):
                 mock_save.assert_not_called()
 
     def test_activate_task_if_needed(self):
-        self.existing_task.status = ScheduledTask.Status.INACTIVE
+        self.existing_task.task_status = ScheduledTask.Status.INACTIVE
         self.existing_task.save()
 
         with patch.object(self.existing_task, 'save') as mock_save:
             ScheduledTaskSynchronizer._activate_task_if_needed(self.existing_task)
 
-            self.assertEqual(self.existing_task.status, ScheduledTask.Status.PENDING)
-            mock_save.assert_called_once_with(update_fields=['status'])
+            self.assertEqual(self.existing_task.task_status, ScheduledTask.Status.PENDING)
+            mock_save.assert_called_once_with(update_fields=['task_status'])
 
     def test_activate_task_if_needed_already_active(self):
-        self.existing_task.status = ScheduledTask.Status.PENDING
+        self.existing_task.task_status = ScheduledTask.Status.PENDING
         self.existing_task.save()
 
         with patch.object(self.existing_task, 'save') as mock_save:
             ScheduledTaskSynchronizer._activate_task_if_needed(self.existing_task)
 
-            self.assertEqual(self.existing_task.status, ScheduledTask.Status.PENDING)
+            self.assertEqual(self.existing_task.task_status, ScheduledTask.Status.PENDING)
             mock_save.assert_not_called()
 
     def test_create_new_task(self):
@@ -170,8 +170,8 @@ class TestScheduledTaskSynchronizer(TestCase):
         # Create a task that won't be in discovered_tasks
         removed_task = baker.make_recipe(
             "task_scheduler.tests.utils.scheduled_task",
-            function_path='test.module.removed_function',
-            status=ScheduledTask.Status.PENDING,
+            function_path="test.module.removed_function",
+            task_status=ScheduledTask.Status.PENDING,
         )
 
         existing_tasks = {
@@ -183,7 +183,7 @@ class TestScheduledTaskSynchronizer(TestCase):
 
         self.assertEqual(result, 1)
         removed_task.refresh_from_db()
-        self.assertEqual(removed_task.status, ScheduledTask.Status.INACTIVE)
+        self.assertEqual(removed_task.task_status, ScheduledTask.Status.INACTIVE)
 
     def test_sync_tasks_integration_flow(self):
         with patch.object(ScheduledTask.objects, 'all', return_value=[self.existing_task]):

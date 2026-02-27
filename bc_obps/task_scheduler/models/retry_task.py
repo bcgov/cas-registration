@@ -17,12 +17,12 @@ class RetryTask(Task):
         db_table = 'common"."retry_task'
         db_table_comment = "Retry tasks created when functions fail"
         indexes = [
-            models.Index(fields=['status', 'next_run_time']),
-            models.Index(fields=['tag', 'status']),
+            models.Index(fields=['task_status', 'next_run_time']),
+            models.Index(fields=['tag', 'task_status']),
         ]
 
     def __str__(self) -> str:
-        status_display = dict(self.Status.choices)[self.status]
+        status_display = dict(self.Status.choices)[self.task_status]
         return f"{self.function_path} (retry {self.retry_count}/{self.max_retries}) - {status_display}"
 
     @property
@@ -31,7 +31,7 @@ class RetryTask(Task):
 
     def calculate_next_run_time(self, force_recalculate: bool = False, **kwargs: object) -> Optional[datetime]:
         # For retry tasks, don't schedule next run on success
-        if self.status == self.Status.COMPLETED or not self.can_retry:
+        if self.task_status == self.Status.COMPLETED or not self.can_retry:
             return None
         return timezone.now() + timedelta(minutes=self.retry_delay_minutes)
 

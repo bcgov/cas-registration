@@ -20,7 +20,7 @@ class Task(models.Model):
 
     function_path = models.CharField(max_length=512, help_text="Full path to the function to execute")
     tag = models.CharField(max_length=100, blank=True, help_text="Tag for categorizing and filtering tasks")
-    status = models.CharField(
+    task_status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.PENDING, help_text="Current status of the task"
     )
     next_run_time = models.DateTimeField(null=True, blank=True, help_text="When this task should run next")
@@ -56,24 +56,24 @@ class Task(models.Model):
         logger.debug(f"Lock released for {self.__class__.__name__} {self.pk}")
 
     def mark_attempt_started(self) -> None:
-        self.status = self.Status.RUNNING
+        self.task_status = self.Status.RUNNING
         self.last_run_time = timezone.now()
-        self.save(update_fields=['status', 'last_run_time'])
+        self.save(update_fields=['task_status', 'last_run_time'])
 
     def mark_attempt_success(self) -> None:
-        self.status = self.Status.COMPLETED
+        self.task_status = self.Status.COMPLETED
         self.lock_acquired_at = None
-        self.save(update_fields=['status', 'lock_acquired_at'])
+        self.save(update_fields=['task_status', 'lock_acquired_at'])
 
     def mark_attempt_failed(self, error_message: str) -> None:
-        self.status = self.Status.FAILED
+        self.task_status = self.Status.FAILED
         self.lock_acquired_at = None
         error_entry: dict = {'error': error_message, 'timestamp': timezone.now().isoformat()}
         self.error_history.append(error_entry)
         if len(self.error_history) > 5:  # Keep only last 5
             self.error_history.pop(0)  # Remove oldest error
 
-        self.save(update_fields=['status', 'lock_acquired_at', 'error_history'])
+        self.save(update_fields=['task_status', 'lock_acquired_at', 'error_history'])
 
     def calculate_next_run_time(self, force_recalculate: bool = False, **kwargs: object) -> Optional[datetime]:
         raise NotImplementedError("Subclasses must implement calculate_next_run_time")

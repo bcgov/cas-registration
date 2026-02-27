@@ -34,12 +34,12 @@ class ScheduledTask(Task):
         db_table = 'common"."scheduled_task'
         db_table_comment = "Scheduled tasks that run on a regular basis"
         indexes = [
-            models.Index(fields=['status', 'next_run_time']),
-            models.Index(fields=['tag', 'status']),
+            models.Index(fields=['task_status', 'next_run_time']),
+            models.Index(fields=['tag', 'task_status']),
         ]
 
     def __str__(self) -> str:
-        status_display = dict(self.Status.choices)[self.status]
+        status_display = dict(self.Status.choices)[self.task_status]
         return f"{self.function_path} ({self.schedule_type}) - {status_display}"
 
     def calculate_next_run_time(self, force_recalculate: bool = False, **kwargs: object) -> Optional[datetime]:
