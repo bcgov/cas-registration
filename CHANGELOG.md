@@ -1,3 +1,18 @@
+# Changelog
+
+# [5.3.0](https://github.com/bcgov/cas-registration/compare/v5.2.0...v5.3.0) (2026-02-27)
+
+### Bug Fixes
+
+- populate obligation.invoice_number immediately on create_invoice() success ([b3ace57](https://github.com/bcgov/cas-registration/commit/b3ace5747ca4e8a0d6a57a4dc11ccbd0596ec41e))
+
+### Features
+
+- add regulated_name tooltips to activity selectors ([91156bb](https://github.com/bcgov/cas-registration/commit/91156bbab1bd7f919f036bdc67ba5ca0e264b11b))
+- adding new table to track overrides for naics regulatory values ([3b1d212](https://github.com/bcgov/cas-registration/commit/3b1d2124f3da1762dab50ac7096febfa59d72b53))
+- create multiselectwidgetwithtooltip ([a1058cb](https://github.com/bcgov/cas-registration/commit/a1058cb8de3d231f6b1d7eed7a66f7202205b148))
+- replace hardcoded due date with compliance period's compliance_deadline through new endpoint ([52e0330](https://github.com/bcgov/cas-registration/commit/52e03309f8c2450215a88a3f3f718212d1475213))
+
 # [5.2.0](https://github.com/bcgov/cas-registration/compare/5.1.0...5.2.0) (2026-02-19)
 
 ### Bug Fixes
