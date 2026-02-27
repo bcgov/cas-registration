@@ -66,7 +66,7 @@
   {
     "model": "registration.bcgreenhousegasid",
     "fields": {
-      "id": "33219990001",
+      "id": "13219990001",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "For LFO Operation 1"
     }
@@ -74,7 +74,7 @@
   {
     "model": "registration.bcgreenhousegasid",
     "fields": {
-      "id": "33219990002",
+      "id": "13219990002",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "For LFO Operation 2"
     }
