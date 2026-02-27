@@ -36,7 +36,7 @@ const pulpAndPaperUiSchema2025 = {
         "Does this mill utilize a lime recovery kiln? (select yes if you are a chemical pulp mill)",
       "ui:emptyValue": undefined,
       "ui:options": {
-        labelWidth: "lg:w-4/12",
+        labelClassNames: "lg:w-4/12",
       },
     },
     biogenicEmissionsSplit: {
