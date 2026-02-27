@@ -31,18 +31,25 @@ runs:
       uses: actions/checkout@v6
 
     - name: Set environment variables
+      env:
+        DJANGO_SECRET_KEY: ${{ inputs.django_secret_key }}
+        NEXTAUTH_SECRET: ${{ inputs.nextauth_secret }}
+        KEYCLOAK_CLIENT_ID: ${{ inputs.keycloak_client_id }}
+        KEYCLOAK_CLIENT_SECRET: ${{ inputs.keycloak_client_secret }}
+        NX_APP_PORT: ${{ inputs.nx_app_port }}
+        IMAGE_URL: ${{ inputs.image_url }}
       run: |
         echo "GITHUB_SHA=${{ github.sha }}" >> $GITHUB_ENV
-        echo "DJANGO_SECRET_KEY=${{ inputs.django_secret_key }}" >> $GITHUB_ENV
-        echo "NEXTAUTH_SECRET=${{ inputs.nextauth_secret }}" >> $GITHUB_ENV
-        echo "KEYCLOAK_CLIENT_ID=${{ inputs.keycloak_client_id }}" >> $GITHUB_ENV
-        echo "KEYCLOAK_CLIENT_SECRET=${{ inputs.keycloak_client_secret }}" >> $GITHUB_ENV
+        echo "DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY" >> $GITHUB_ENV
+        echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> $GITHUB_ENV
+        echo "KEYCLOAK_CLIENT_ID=$KEYCLOAK_CLIENT_ID" >> $GITHUB_ENV
+        echo "KEYCLOAK_CLIENT_SECRET=$KEYCLOAK_CLIENT_SECRET" >> $GITHUB_ENV
         echo "NEXTAUTH_URL_INTERNAL=http://localhost:3000" >> $GITHUB_ENV
         echo "NEXTAUTH_URL=http://localhost:3000" >> $GITHUB_ENV
         echo "API_URL=http://127.0.0.1:8000/api/" >> $GITHUB_ENV
         echo "KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard" >> $GITHUB_ENV
-        echo "NX_APP_PORT=${{ inputs.nx_app_port }}" >> $GITHUB_ENV
-        echo "IMAGE_URL=${{ inputs.image_url }}" >> $GITHUB_ENV
+        echo "NX_APP_PORT=$NX_APP_PORT" >> $GITHUB_ENV
+        echo "IMAGE_URL=$IMAGE_URL" >> $GITHUB_ENV
 
       shell: bash
 
