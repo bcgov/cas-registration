@@ -25,7 +25,7 @@ export type EmissionAllocationFormResponseData = {
   operation_data: OperationData;
 };
 
-export async function getEmissionAllocationFormData(
+export async function getEmissionAllocationPageData(
   reportVersionId: number,
   facilityId: string,
 ) {

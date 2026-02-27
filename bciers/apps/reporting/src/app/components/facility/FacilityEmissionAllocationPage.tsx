@@ -1,4 +1,4 @@
-import { getEmissionAllocationFormData } from "@reporting/src/app/utils/getEmissionAllocations";
+import { getEmissionAllocationPageData } from "@reporting/src/app/utils/getEmissionAllocations";
 import FacilityEmissionAllocationForm from "@reporting/src/app/components/facility/FacilityEmissionAllocationForm";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getNavigationInformation } from "../taskList/navigationInformation";
@@ -8,7 +8,7 @@ export default async function FacilityEmissionAllocationPage({
   version_id,
   facility_id,
 }: HasFacilityId) {
-  const page_data = await getEmissionAllocationFormData(
+  const page_data = await getEmissionAllocationPageData(
     version_id,
     facility_id,
   );
