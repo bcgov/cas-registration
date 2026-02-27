@@ -81,7 +81,7 @@ export const complianceSummarySchema2025: RJSFSchema = {
   },
 };
 
-export const complianceSummaryUiSchema2024 = {
+export const complianceSummaryUiSchema2025 = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:disabled": true,
