@@ -38,6 +38,10 @@ REFRESH_DATA = (
 CREATE_PENALTY_INVOICE = (
     "compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice"
 )
+CREATE_ADJUSTMENT = (
+    "compliance.service.compliance_adjustment_service"
+    ".ComplianceAdjustmentService.create_adjustment_for_target_version"
+)
 
 
 class ComplianceIntegrationTestBase:
