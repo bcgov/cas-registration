@@ -1,7 +1,6 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
-from reporting.service.naics_code import NaicsCodeService
 from .form_response_builder import FormResponseBuilder
 from .form_schema import ReportingFormSchema
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -16,13 +15,9 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
 from ..router import router
 
 
-class ProductionDataFormOut(ProductionDataOut):
-    naics_code: str | None
-
-
 @router.get(
     "report-version/{version_id}/facilities/{facility_id}/forms/production-data",
-    response={200: ReportingFormSchema[ProductionDataFormOut], custom_codes_4xx: Message},
+    response={200: ReportingFormSchema[ProductionDataOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for the production data page from the multiple ReportProduct rows""",
     exclude_none=True,
@@ -38,14 +33,12 @@ def get_production_form_data(request: HttpRequest, version_id: int, facility_id:
     )
     allowed_products = ReportProductService.get_allowed_products(version_id)
     report_operation = ReportOperation.objects.get(report_version_id=version_id)
-    naics_code = NaicsCodeService.get_naics_code_by_version_id(version_id)
 
     payload = {
         "report_products": report_products,
         "allowed_products": allowed_products,
         "operation_opted_out_final_reporting_year": report_operation.operation_opted_out_final_reporting_year,
-        "naics_code": naics_code,
     }
-    response = FormResponseBuilder(version_id).payload(payload).facility_data(facility_id).build()
-    print("response", response)
+    response = FormResponseBuilder(version_id).payload(payload).facility_data(facility_id).operation_data().build()
+
     return 200, response

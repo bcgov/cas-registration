@@ -31,6 +31,10 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             'facility_data': {
                 'facility_type': 'test facility type',
             },
+            'operation_data': {
+                'naics_code': self.report_version.report.operation.naics_code.naics_code,
+                'operation_type': self.report_operation.operation_type,
+            },
             'report_data': {
                 'report_version_id': self.report_version.id,
                 'reporting_year': 1222,
@@ -38,7 +42,6 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             'payload': {
                 'report_products': [],
                 'allowed_products': [],
-                'naics_code': self.report_version.report.operation.naics_code.naics_code,
             },
         }
 
@@ -87,6 +90,10 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         assert response.json() == {
             'facility_data': {
                 'facility_type': 'test facility type',
+            },
+            'operation_data': {
+                'naics_code': self.report_version.report.operation.naics_code.naics_code,
+                'operation_type': self.report_operation.operation_type,
             },
             'report_data': {
                 'report_version_id': self.report_version.id,
@@ -137,7 +144,6 @@ class TestReportProductV2Endpoints(CommonTestSetup):
                         "is_regulated": RegulatedProduct.objects.get(id=3).is_regulated,
                     },
                 ],
-                "naics_code": self.report_version.report.operation.naics_code.naics_code,
             },
         }
 

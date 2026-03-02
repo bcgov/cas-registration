@@ -50,14 +50,17 @@ const mockReportTaskList = {
 const defaultGetProductionDataMock = {
   report_data: {
     reporting_year: 2020,
+    report_version_id: 1,
   },
   facility_data: { facility_type: "SFO" },
-  report_operation: {
-    operation_opted_out_final_reporting_year: undefined,
+  operation_data: {
+    naics_code: null,
+    operation_type: "SFO",
   },
   payload: {
     allowed_products: [],
     report_products: [],
+    operation_opted_out_final_reporting_year: null,
   },
 };
 
@@ -244,6 +247,8 @@ describe("The Production Data component", () => {
       payload: {
         allowed_products: [],
         report_products: [],
+      },
+      operation_data: {
         naics_code: "322112",
       },
     });
@@ -265,6 +270,8 @@ describe("The Production Data component", () => {
       payload: {
         allowed_products: [],
         report_products: [],
+      },
+      operation_data: {
         naics_code: "322112",
       },
     });
@@ -282,6 +289,8 @@ describe("The Production Data component", () => {
       payload: {
         allowed_products: [],
         report_products: [],
+      },
+      operation_data: {
         naics_code: "644224",
       },
     });
@@ -297,6 +306,8 @@ describe("The Production Data component", () => {
       payload: {
         allowed_products: [],
         report_products: [],
+      },
+      operation_data: {
         naics_code: "322112",
       },
     });
