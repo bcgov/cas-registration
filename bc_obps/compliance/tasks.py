@@ -9,6 +9,7 @@ from compliance.emails import (
     send_notice_of_obligation_due_email,
     send_notice_of_obligation_generated_email,
     send_notice_of_penalty_accrual_email,
+    send_notice_of_penalty_paid_email,
     send_reminder_of_obligation_due_email,
     send_notice_of_obligation_met_email,
     send_notice_of_obligation_met_penalty_due_email,
@@ -93,6 +94,12 @@ retryable_notice_of_obligation_met_penalty_due_email = create_retryable(
 retryable_send_notice_of_penalty_accrual_email = create_retryable(
     func=send_notice_of_penalty_accrual_email,
     tag="obligation_penalty_accrual_email_notifications",
+    max_retries=5,
+    retry_delay_minutes=10,
+)
+retryable_send_notice_of_penalty_paid_email = create_retryable(
+    func=send_notice_of_penalty_paid_email,
+    tag="obligation_penalty_paid_email_notifications",
     max_retries=5,
     retry_delay_minutes=10,
 )
