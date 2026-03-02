@@ -234,7 +234,7 @@ describe("the FacilityLfoForm component", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/facilities",
         "POST",
-        "",
+        `/registration/register-an-operation/${operationId}/${step}`,
         {
           body: JSON.stringify([
             {
@@ -316,7 +316,7 @@ describe("the FacilityLfoForm component", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/facilities",
         "POST",
-        "",
+        `/registration/register-an-operation/${operationId}/${step}`,
         {
           body: JSON.stringify([
             {
