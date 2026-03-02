@@ -110,6 +110,7 @@ export default async function ActivityPage({
       initialSelectedSourceTypeIds={sourceTypeIds}
       gasTypes={gasTypes}
       reportingYear={reportingYear.reporting_year}
+      activityIndex={resolvedStep}
     />
   );
 }

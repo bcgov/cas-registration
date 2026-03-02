@@ -106,7 +106,7 @@ describe("The FacilityReview component", () => {
     expect(mockActionHandler).toHaveBeenCalledWith(
       "reporting/report-version/1000/facility-report/abcd",
       "POST",
-      "reporting/report-version/1000/facility-report/abcd",
+      "reporting/reports/1000/facilities/abcd/review-facility-information",
       {
         body: '{"operation_id":"1234","facility_name":"Test Facility","facility_type":"Test Type","facility_bcghgid":null,"activities":[1],"facility":"abcd"}',
       },

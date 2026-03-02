@@ -146,13 +146,14 @@ const PersonResponsibleForm = ({
       return false;
     }
     const endpoint = `reporting/report-version/${versionId}/report-contact`;
+    const pathToRevalidate = `reporting/reports/${versionId}/person-responsible`;
     const method = "POST";
     const payload = {
       report_version: versionId,
       ...componentState.contactToSubmit,
     };
 
-    const response = await actionHandler(endpoint, method, "", {
+    const response = await actionHandler(endpoint, method, pathToRevalidate, {
       body: JSON.stringify(payload),
     });
 

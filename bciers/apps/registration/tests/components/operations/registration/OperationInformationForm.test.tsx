@@ -225,7 +225,7 @@ describe("the OperationInformationForm component", () => {
         expect(actionHandler).toHaveBeenLastCalledWith(
           "registration/operations/b974a7fc-ff63-41aa-9d57-509ebe2553a4/registration/operation",
           "PUT",
-          "",
+          "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/1",
           {
             body: JSON.stringify({
               registration_purpose: "Reporting Operation",

@@ -48,7 +48,7 @@ export const FacilityReview: React.FC<Props> = ({
   const handleSubmit = async () => {
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
-
+    const pathToRevalidate = `reporting/reports/${version_id}/facilities/${facility_id}/review-facility-information`;
     if (formData.activities.length === 0) {
       setErrors(["You must select at least one activity"]);
       return false;
@@ -70,7 +70,7 @@ export const FacilityReview: React.FC<Props> = ({
         .map(Number), // Ensure all IDs are numbers
     };
 
-    const response = await actionHandler(endpoint, method, endpoint, {
+    const response = await actionHandler(endpoint, method, pathToRevalidate, {
       body: JSON.stringify(updatedFormData),
     });
     if (response?.error) {

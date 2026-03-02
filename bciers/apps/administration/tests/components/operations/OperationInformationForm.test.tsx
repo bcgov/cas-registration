@@ -385,7 +385,7 @@ describe("the OperationInformationForm component", () => {
     expect(actionHandler).toHaveBeenCalledWith(
       `registration/operations/${operationId}`,
       "PUT",
-      "",
+      `/operations/${operationId}`,
       {
         body: JSON.stringify({
           name: "Operation 4",
@@ -438,7 +438,7 @@ describe("the OperationInformationForm component", () => {
     expect(actionHandler).toHaveBeenCalledWith(
       `registration/operations/${operationId}/registration/opted-in-operation-detail`,
       "PUT",
-      "",
+      `/operations/${operationId}`,
       {
         body: JSON.stringify({
           meets_section_3_emissions_requirements: false,
@@ -858,7 +858,7 @@ describe("the OperationInformationForm component", () => {
     expect(actionHandler).toHaveBeenCalledWith(
       `registration/operations/${operationId}`,
       "PUT",
-      "",
+      `/operations/${operationId}`,
       {
         body: JSON.stringify({
           name: "Operation 5",
@@ -958,7 +958,7 @@ describe("the OperationInformationForm component", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         `registration/operations/${operationId}`,
         "PUT",
-        "",
+        `/operations/${operationId}`,
         {
           body: JSON.stringify({
             name: "Operation 3",

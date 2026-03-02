@@ -14,10 +14,6 @@ export const formatDate = (
   return dayjs(dateString).format(format);
 };
 
-export const getTodaysDateWithTime = (): string => {
-  return formatDate(new Date(), "YYYY-MM-DD HH:mm:ss");
-};
-
 export const getTodaysDateForReportSignOff = (): string => {
   const today = new Date();
   return formatDate(today, "MMM DD, YYYY");

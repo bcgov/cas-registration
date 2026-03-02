@@ -94,10 +94,11 @@ const OperationInformationForm = ({
     formData?: OperationInformationFormData;
   }) => {
     setError(undefined);
+    const pathToRevalidate = `/operations/${operationId}`;
     const response = await actionHandler(
       `registration/operations/${operationId}`,
       "PUT",
-      "",
+      pathToRevalidate,
       {
         body: JSON.stringify(data.formData),
       },
@@ -122,7 +123,7 @@ const OperationInformationForm = ({
     const response2 = await actionHandler(
       `registration/operations/${operationId}/registration/opted-in-operation-detail`,
       "PUT",
-      "",
+      pathToRevalidate,
       {
         body: JSON.stringify(data.formData?.opted_in_operation),
       },

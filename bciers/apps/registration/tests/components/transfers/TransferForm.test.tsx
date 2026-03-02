@@ -246,7 +246,7 @@ describe("The TransferForm component", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/transfer-events",
         "POST",
-        "",
+        "/transfers",
         {
           body: JSON.stringify({
             from_operator: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",

@@ -45,6 +45,7 @@ interface Props {
     cas_number: string;
   };
   reportingYear: number;
+  activityIndex: number;
 }
 
 // 🧩 Main component
@@ -59,6 +60,7 @@ export default function ActivityForm({
   initialSelectedSourceTypeIds,
   gasTypes,
   reportingYear,
+  activityIndex,
 }: Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as string[]);
@@ -176,17 +178,13 @@ export default function ActivityForm({
       ...filteredData,
       sourceTypes: selectedSourceTypeDataReduced,
     };
-
-    const response = await actionHandler(
-      `reporting/report-version/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`,
-      "POST",
-      "",
-      {
-        body: JSON.stringify({
-          activity_data: submittedData,
-        }),
-      },
-    );
+    const endpoint = `reporting/report-version/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`;
+    const pathToRevalidate = `/reporting/reports/${reportVersionId}/facilities/${facilityId}/activities?activity_id=${activityId}&step=${activityIndex}`;
+    const response = await actionHandler(endpoint, "POST", pathToRevalidate, {
+      body: JSON.stringify({
+        activity_data: submittedData,
+      }),
+    });
 
     if (response.error) {
       setErrorList([getValidationErrorMessage(response.error)]);

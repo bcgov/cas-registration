@@ -243,7 +243,7 @@ export default function TransferForm({
     const response = await actionHandler(
       "registration/transfer-events",
       "POST",
-      "",
+      "/transfers",
       {
         body: JSON.stringify(updatedFormData),
       },

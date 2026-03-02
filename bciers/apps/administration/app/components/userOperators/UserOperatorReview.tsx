@@ -19,30 +19,21 @@ export default function UserOperatorReview({
 }: Props) {
   // Reusable function to change the status of the user
   const changePrimeAdminStatus = async (status: Status) => {
-    const response = await actionHandler(
-      `registration/user-operators/${userOperatorId}/status`,
-      "PATCH",
-      "",
-      {
-        body: JSON.stringify({
-          role: UserOperatorRoles.ADMIN,
-          status,
-        }),
-      },
-    );
-    return response;
+    const endpoint = `registration/user-operators/${userOperatorId}/status`;
+    return await actionHandler(endpoint, "PATCH", endpoint, {
+      body: JSON.stringify({
+        role: UserOperatorRoles.ADMIN,
+        status,
+      }),
+    });
   };
 
   const approvePrimeAdminRequest = async () => {
-    const response = await changePrimeAdminStatus(Status.APPROVED);
-
-    return response;
+    return await changePrimeAdminStatus(Status.APPROVED);
   };
 
   const declinePrimeAdminRequest = async () => {
-    const response = await changePrimeAdminStatus(Status.DECLINED);
-
-    return response;
+    return await changePrimeAdminStatus(Status.DECLINED);
   };
 
   return (

@@ -59,9 +59,10 @@ export default function ChangeReviewForm({
     setIsSaving(true);
 
     const endpoint = `reporting/report-version/${versionId}`;
+    const pathToRevalidate = `reporting/reports/${versionId}/review-changes`;
     const method = "POST";
 
-    const response = await actionHandler(endpoint, method, endpoint, {
+    const response = await actionHandler(endpoint, method, pathToRevalidate, {
       body: JSON.stringify(payload),
     });
 

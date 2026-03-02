@@ -81,6 +81,7 @@ describe("ActivityForm component", () => {
           initialSelectedSourceTypeIds={[]}
           gasTypes={mockGasTypes}
           reportingYear={2024}
+          activityIndex={0}
         />,
       );
       await flushPromises();
@@ -143,6 +144,7 @@ describe("ActivityForm component", () => {
           initialSelectedSourceTypeIds={[]}
           gasTypes={mockGasTypes}
           reportingYear={2024}
+          activityIndex={0}
         />,
       );
       await flushPromises();
@@ -171,6 +173,7 @@ describe("ActivityForm component", () => {
           initialSelectedSourceTypeIds={[]}
           gasTypes={mockGasTypes}
           reportingYear={2024}
+          activityIndex={0}
         />,
       );
       await flushPromises();

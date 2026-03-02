@@ -105,6 +105,7 @@ export default function FacilityLfoForm({
           operationId={operationId as UUID}
           formData={formData}
           setFacilityFormIsSubmitting={setFacilityFormIsSubmitting}
+          step={step}
           // 📌 **onSuccess** appends the created facility into local grid data state
           onSuccess={handleSuccess}
         />

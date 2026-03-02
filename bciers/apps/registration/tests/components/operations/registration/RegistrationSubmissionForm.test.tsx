@@ -108,7 +108,7 @@ describe("the RegistrationSubmissionForm component", () => {
     expect(actionHandler).toHaveBeenCalledWith(
       `registration/operations/${defaultProps.operation}/registration/submission`,
       "PATCH",
-      "",
+      "/administration/operations",
       {
         body: JSON.stringify({
           acknowledgement_of_review: true,

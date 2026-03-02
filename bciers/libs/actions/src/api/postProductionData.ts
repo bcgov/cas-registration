@@ -7,9 +7,9 @@ async function postProductionData(
   data: ProductData[],
 ) {
   const endpoint = `reporting/report-version/${report_version_id}/facilities/${facility_id}/production-data`;
-  return actionHandler(endpoint, "POST", endpoint, {
+  const pathToRevalidate = `reporting/reports/${report_version_id}/facilities/${facility_id}/production-data`;
+  return actionHandler(endpoint, "POST", pathToRevalidate, {
     body: JSON.stringify(data),
   });
 }
-
 export default postProductionData;

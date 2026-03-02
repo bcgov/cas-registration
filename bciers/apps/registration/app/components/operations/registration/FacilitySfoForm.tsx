@@ -60,9 +60,14 @@ const FacilitySfoForm = ({
     // just as we do in the POST route
     const body = isCreating ? [sfoFormData] : sfoFormData;
 
-    const response = await actionHandler(endpoint, method, "", {
-      body: JSON.stringify(body),
-    });
+    const response = await actionHandler(
+      endpoint,
+      method,
+      `/registration/register-an-operation/${operationId}/${step}`,
+      {
+        body: JSON.stringify(body),
+      },
+    );
 
     if (!response || response?.error) {
       return { error: response.error };

@@ -8,10 +8,11 @@ async function handleInternalAccessRequest(
   archive: boolean,
 ) {
   if (!roleUpdate) return;
+  const pathToRevalidate = "/users";
   const response = await actionHandler(
     `registration/users/${userId}`,
     "PATCH",
-    "",
+    pathToRevalidate,
     {
       body: JSON.stringify({
         app_role: roleUpdate,
