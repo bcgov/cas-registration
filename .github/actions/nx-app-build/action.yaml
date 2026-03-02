@@ -82,7 +82,7 @@ runs:
         HOST_REPORTING: ${{ inputs.host_reporting }}
         PROJECT: ${{ inputs.project }}
       run: |
-        if ! grep -qix "$PROJECT" .github/nx-projects.txt; then
+        if ! grep -qix "$PROJECT" $GITHUB_WORKSPACE/.github/nx-projects.txt; then
           echo "Project not in allowed project list"
           exit 1
         fi
