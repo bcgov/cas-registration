@@ -72,7 +72,7 @@ class TestElicensingOperatorService:
                     feeGUID="00000000-0000-0000-0000-000000000000",
                     businessAreaCode='asdf',
                     feeDate="2025-11-30",
-                    description="desc",
+                    description="2024 GGIRCA Compliance Obligation",
                     baseAmount=Decimal('0'),
                     taxTotal=Decimal('0'),
                     adjustmentTotal=Decimal('0'),
@@ -102,7 +102,21 @@ class TestElicensingOperatorService:
                             type='adj',
                         )
                     ],
-                )
+                ),
+                InvoiceFee(
+                    feeObjectId=2,
+                    feeGUID="00000000-0000-0000-0000-000000000000",
+                    businessAreaCode='asdf',
+                    feeDate="2025-11-30",
+                    description="Interest",
+                    baseAmount=Decimal('0'),
+                    taxTotal=Decimal('0'),
+                    adjustmentTotal=Decimal('0'),
+                    taxAdjustmentTotal=Decimal('0'),
+                    paymentBaseAmount=Decimal('0'),
+                    paymentTotal=Decimal('0'),
+                    invoiceNumber="inv-001",
+                ),
             ],
         )
 
@@ -118,12 +132,14 @@ class TestElicensingOperatorService:
 
         # Assert record creation successful & accurate
         invoice = ElicensingInvoice.objects.get(invoice_number='inv-001')
-        fee = ElicensingLineItem.objects.get(elicensing_invoice=invoice)
+        fees = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
+        fee = fees.first()
         payment = ElicensingPayment.objects.get(elicensing_line_item=fee)
         adjustment = ElicensingAdjustment.objects.get(elicensing_line_item=fee)
         assert invoice.outstanding_balance == 100.00
+        assert fees.count() == 1  # Did not parse extra fee with "Interest" description
         assert fee.object_id == 1
-        assert fee.description == 'desc'
+        assert fee.description == '2024 GGIRCA Compliance Obligation'
         assert payment.amount == Decimal('50')
         assert payment.method == "EFT/Wire - OBPS"
         assert payment.receipt_number == 'R192883'
