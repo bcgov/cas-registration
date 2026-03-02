@@ -136,12 +136,21 @@ describe("The FinalReviewForm component", () => {
         excess_emissions: "0",
         credited_emissions: "200",
         regulatory_values: {
-          reduction_factor: "0.05",
-          tightening_rate: "0.02",
           initial_compliance_period: 2021,
           compliance_period: 2024,
         },
-        products: [],
+        products: [
+          {
+            name: "Cement equivalent",
+            annual_production: 45.0,
+            apr_dec_production: 0.0,
+            emission_intensity: 0.6262,
+            allocated_industrial_process_emissions: 0.0,
+            allocated_compliance_emissions: 0.0,
+            reduction_factor: 0.65,
+            tightening_rate: 0.01,
+          },
+        ],
       },
     };
 
