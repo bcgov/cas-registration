@@ -20,7 +20,7 @@ class TestScheduledTask(BaseTestCase):
             ("id", "ID", None, None),
             ("function_path", "function path", None, None),
             ("tag", "tag", None, None),
-            ("task_status", "task_status", None, None),
+            ("task_status", "task status", None, None),
             ("schedule_type", "schedule type", None, None),
             ("schedule_interval", "schedule interval", None, None),
             ("schedule_hour", "schedule hour", None, None),
