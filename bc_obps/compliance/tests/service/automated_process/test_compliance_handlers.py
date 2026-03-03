@@ -72,22 +72,29 @@ class TestPenaltyPaidHandler:
         assert result is False
 
     @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
-    def test_handle_updates_penalty_status(self, mock_update_status):
+    @patch('compliance.tasks.retryable_send_notice_of_penalty_paid_email')
+    def test_handle_updates_penalty_status(self, mock_retryable_send_notice_of_penalty_paid_email, mock_update_status):
         self.handler.handle(self.invoice)
 
         mock_update_status.assert_called_once_with(self.obligation.pk, ComplianceObligation.PenaltyStatus.PAID)
+        mock_retryable_send_notice_of_penalty_paid_email.execute.assert_called_once_with(self.obligation.id)
 
     @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
-    def test_handle_skips_if_already_paid(self, mock_update_status):
+    @patch('compliance.tasks.retryable_send_notice_of_penalty_paid_email')
+    def test_handle_skips_if_already_paid(self, mock_retryable_send_notice_of_penalty_paid_email, mock_update_status):
         self.obligation.penalty_status = ComplianceObligation.PenaltyStatus.PAID
         self.obligation.save()
 
         self.handler.handle(self.invoice)
 
         mock_update_status.assert_not_called()
+        mock_retryable_send_notice_of_penalty_paid_email.execute.assert_called_once_with(self.obligation.id)
 
     @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
-    def test_handle_does_not_update_status_if_any_penalty_unpaid(self, mock_update_status):
+    @patch('compliance.tasks.retryable_send_notice_of_penalty_paid_email')
+    def test_handle_does_not_update_status_if_any_penalty_unpaid(
+        self, mock_retryable_send_notice_of_penalty_paid_email, mock_update_status
+    ):
         other_invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
             outstanding_balance=Decimal("100.00"),
@@ -101,9 +108,13 @@ class TestPenaltyPaidHandler:
         self.handler.handle(self.invoice)
 
         mock_update_status.assert_not_called()
+        mock_retryable_send_notice_of_penalty_paid_email.execute.assert_called_once_with(self.obligation.id)
 
     @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
-    def test_handle_updates_status_when_all_penalties_paid_multiple(self, mock_update_status):
+    @patch('compliance.tasks.retryable_send_notice_of_penalty_paid_email')
+    def test_handle_updates_status_when_all_penalties_paid_multiple(
+        self, mock_retryable_send_notice_of_penalty_paid_email, mock_update_status
+    ):
         other_invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
             outstanding_balance=Decimal("0.00"),
@@ -117,6 +128,7 @@ class TestPenaltyPaidHandler:
         self.handler.handle(self.invoice)
 
         mock_update_status.assert_called_once_with(self.obligation.pk, ComplianceObligation.PenaltyStatus.PAID)
+        mock_retryable_send_notice_of_penalty_paid_email.execute.assert_called_once_with(self.obligation.id)
 
 
 class TestPenaltyAccruingHandler:
