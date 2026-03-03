@@ -367,15 +367,6 @@ export function getStorageStateForRole(role: string) {
   return JSON.parse(processEnv as string);
 }
 
-// Open a new browser context instead of logging out and logging in as a new user
-export async function openNewBrowserContextAs(role: string) {
-  const browser = await getBrowser();
-  const storageState = await getStorageStateForRole(role);
-  const context = await browser.newContext({ storageState });
-  const newPage = await context.newPage();
-  return newPage;
-}
-
 // 🛠️ Function: calls api to seed database with data for workflow tests
 export async function setupTestEnvironment(
   workFlow?: string,
@@ -396,30 +387,106 @@ export async function setupTestEnvironment(
   expect(response.status()).toBe(200);
 }
 
-export async function waitForElementToStabilize(page: Page, element: string) {
-  await page.waitForLoadState();
-  const el = await page.$(element);
-  await el?.waitForElementState("stable");
+// helper: wait until page is "screenshot-safe"
+async function waitForPageToBeScreenshotSafe(
+  page: Page,
+  quietMs = 700,
+  maxRounds = 12,
+) {
+  if (page.isClosed()) return;
+
+  // Never proceed on about:blank
+  if (page.url() === "about:blank") {
+    await page.waitForURL((url) => url.toString() !== "about:blank");
+  }
+
+  // Ensure at least a document exists
+  await page.waitForLoadState("domcontentloaded").catch(() => {});
+
+  // Best-effort "load" – important for full navigations/redirects.
+  await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => {});
+
+  //  Require a quiet window with:
+  // - no framenavigated events AND
+  // - page.url() not changing
+  for (let i = 0; i < maxRounds; i++) {
+    if (page.isClosed()) return;
+
+    const urlBefore = page.url();
+
+    const navigatedDuringWindow = await Promise.race([
+      page.waitForEvent("framenavigated").then(() => true),
+      page.waitForTimeout(quietMs).then(() => false),
+    ]);
+
+    const urlAfter = page.url();
+
+    if (!navigatedDuringWindow && urlBefore === urlAfter) break;
+  }
+
+  // Ensure root exists in the current document/frame
+  await page
+    .locator("html")
+    .waitFor({ state: "attached" })
+    .catch(() => {});
 }
 
-// This function can be used instead of `happoScreenshot` directly when experiencing flaky screenshots. It waits for the page to be stable before taking a screenshot.
+export async function openNewBrowserContextAs(role: string) {
+  const browser = await getBrowser();
+  const storageState = await getStorageStateForRole(role);
+  const context = await browser.newContext({ storageState });
+  const newPage = await context.newPage();
+  return newPage;
+}
+
+export async function waitForElementToStabilize(page: Page, selector: string) {
+  if (page.isClosed()) return;
+
+  await waitForPageToBeScreenshotSafe(page);
+
+  const loc = page.locator(selector);
+  await loc.waitFor({ state: "attached" });
+
+  // settle buffer
+  await page.waitForTimeout(150);
+}
+
 export async function takeStabilizedScreenshot(
   happoScreenshot: any,
   page: Page,
   happoArgs: { component: string; variant: string; targets?: string[] },
 ) {
-  // Skip Happo screenshots if Happo is not enabled (e.g., running locally without API keys)
-  if (!happoScreenshot) {
-    return;
-  }
+  if (!happoScreenshot) return;
+  if (page.isClosed()) return;
+
   const { component, variant, targets } = happoArgs;
-  const pageContent = page.locator("html");
-  await waitForElementToStabilize(page, "html"); // <-- match the screenshot target
-  await happoScreenshot(pageContent, {
-    component,
-    variant,
-    targets,
-  });
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      await waitForPageToBeScreenshotSafe(page);
+
+      // Reacquire right before screenshot
+      const html = page.locator("html");
+      await html.waitFor({ state: "attached" });
+
+      await happoScreenshot(html, { component, variant, targets });
+      return;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+
+      // Retry only on detach/close-family errors
+      if (
+        !/Frame has been detached|Target closed|Page closed/i.test(msg) ||
+        attempt === 2
+      ) {
+        throw e;
+      }
+
+      // Let the next navigation settle, then retry
+      await page.waitForLoadState("domcontentloaded").catch(() => {});
+      await page.waitForTimeout(300);
+    }
+  }
 }
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
