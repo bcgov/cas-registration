@@ -134,19 +134,22 @@ class ElicensingDataRefreshService:
                 },
             )
             for fee in invoice_response.fees:
-                fee_record, _ = ElicensingLineItem.objects.update_or_create(
-                    elicensing_invoice=invoice_record,
-                    object_id=fee.feeObjectId,
-                    guid=fee.feeGUID,
-                    line_item_type=ElicensingLineItem.LineItemType.FEE,
-                    defaults={
-                        "fee_date": date.fromisoformat(fee.feeDate),
-                        "description": fee.description,
-                        "base_amount": Decimal(fee.baseAmount).quantize(Decimal("0.00")),
-                    },
-                )
-                cls._process_fee_payments(fee_record, fee.payments)
-                cls._process_fee_adjustments(fee_record, fee.adjustments, supplementary_compliance_report_version_id)
+                if 'GGIRCA Compliance Obligation' in fee.description and 'Interest' not in fee.description:
+                    fee_record, _ = ElicensingLineItem.objects.update_or_create(
+                        elicensing_invoice=invoice_record,
+                        object_id=fee.feeObjectId,
+                        guid=fee.feeGUID,
+                        line_item_type=ElicensingLineItem.LineItemType.FEE,
+                        defaults={
+                            "fee_date": date.fromisoformat(fee.feeDate),
+                            "description": fee.description,
+                            "base_amount": Decimal(fee.baseAmount).quantize(Decimal("0.00")),
+                        },
+                    )
+                    cls._process_fee_payments(fee_record, fee.payments)
+                    cls._process_fee_adjustments(
+                        fee_record, fee.adjustments, supplementary_compliance_report_version_id
+                    )
 
     @classmethod
     def _process_fee_payments(cls, fee_record: ElicensingLineItem, payments: list) -> None:
