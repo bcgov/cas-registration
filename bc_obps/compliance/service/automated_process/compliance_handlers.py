@@ -9,6 +9,7 @@ from compliance.models.compliance_penalty import CompliancePenalty
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.penalty.queries import has_outstanding_penalty
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -44,27 +45,30 @@ class PenaltyPaidHandler(ComplianceUpdateHandler):
         """Update obligation penalty_status to PAID if ALL penalty invoices are fully paid."""
         from compliance.tasks import retryable_send_notice_of_penalty_paid_email
 
-        obligation = invoice.compliance_penalty.compliance_obligation
+        with transaction.atomic():
+            obligation = invoice.compliance_penalty.compliance_obligation
 
-        # Check if all penalties for this obligation are paid
-        all_penalties = obligation.compliance_penalties.all()
-        all_penalties_paid = all(
-            penalty.elicensing_invoice and penalty.elicensing_invoice.outstanding_balance == Decimal('0.00')
-            for penalty in all_penalties
-        )
+            # Check if all penalties for this obligation are paid
+            all_penalties = obligation.compliance_penalties.all()
+            all_penalties_paid = all(
+                penalty.elicensing_invoice and penalty.elicensing_invoice.outstanding_balance == Decimal('0.00')
+                for penalty in all_penalties
+            )
 
-        if all_penalties_paid and obligation.penalty_status != ComplianceObligation.PenaltyStatus.PAID:
-            ComplianceObligationService.update_penalty_status(obligation.pk, ComplianceObligation.PenaltyStatus.PAID)
-            logger.info(f"Updated penalty status to PAID for obligation {obligation.obligation_id}")
+            if all_penalties_paid and obligation.penalty_status != ComplianceObligation.PenaltyStatus.PAID:
+                ComplianceObligationService.update_penalty_status(
+                    obligation.pk, ComplianceObligation.PenaltyStatus.PAID
+                )
+                logger.info(f"Updated penalty status to PAID for obligation {obligation.obligation_id}")
 
-        penalty = invoice.compliance_penalty
+            penalty = invoice.compliance_penalty
 
-        # Mark the current penalty (for this invoice) as PAID
-        penalty.status = CompliancePenalty.Status.PAID
-        penalty.save(update_fields=['status'])
+            # Mark the current penalty (for this invoice) as PAID
+            penalty.status = CompliancePenalty.Status.PAID
+            penalty.save(update_fields=['status'])
 
-        # Send email notification that the penalty has been paid
-        retryable_send_notice_of_penalty_paid_email.execute(obligation.id)
+            # Send email notification that the penalty has been paid
+            retryable_send_notice_of_penalty_paid_email.execute(obligation.id)
 
 
 class PenaltyAccruingHandler(ComplianceUpdateHandler):
