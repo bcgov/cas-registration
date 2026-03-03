@@ -42,6 +42,8 @@ class PenaltyPaidHandler(ComplianceUpdateHandler):
 
     def handle(self, invoice: ElicensingInvoice) -> None:
         """Update obligation penalty_status to PAID if ALL penalty invoices are fully paid."""
+        from compliance.tasks import retryable_send_notice_of_penalty_paid_email
+
         obligation = invoice.compliance_penalty.compliance_obligation
 
         # Check if all penalties for this obligation are paid
@@ -60,6 +62,9 @@ class PenaltyPaidHandler(ComplianceUpdateHandler):
         # Mark the current penalty (for this invoice) as PAID
         penalty.status = CompliancePenalty.Status.PAID
         penalty.save(update_fields=['status'])
+
+        # Send email notification that the penalty has been paid
+        retryable_send_notice_of_penalty_paid_email.execute(obligation.id)
 
 
 class PenaltyAccruingHandler(ComplianceUpdateHandler):

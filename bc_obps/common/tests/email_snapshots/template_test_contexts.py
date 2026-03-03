@@ -170,6 +170,10 @@ TEMPLATE_CONTEXTS = {
         "compliance_deadline": "November 30, 2026",
         "penalty_amount": "$350.25",
     },
+    "Notice of Penalty Paid": {
+        "operator_legal_name": "Acme Corp Ltd.",
+        "operation_name": "Test Smelter",
+    },
     "Compliance Obligation Due Date Passed - Penalty now Accruing": {
         "operator_legal_name": "Acme Corp Ltd.",
         "operation_name": "Test Smelter",
