@@ -305,43 +305,55 @@ export const emissionsSummaryFields = [
   ...otherExcludedEmissions,
 ];
 
-export const productionDataFields = (product: any) => [
-  { heading: product.product },
-  { label: "Unit", key: "unit" },
-  { label: "Annual Production", key: "annual_production" },
-  {
-    label: "Production Data for Apr 1 - Dec 31 2024",
-    key: "production_data_apr_dec",
-  },
-  {
-    label: "Production Data for Jan 1 - Mar 31 2025",
-    key: "production_data_jan_mar",
-  },
-  {
-    label: "Production Quantification Methodology",
-    key: "production_methodology",
-  },
-  {
-    label:
-      "Quantity in storage at the beginning of the compliance period [Jan 1], if applicable",
-    key: "storage_quantity_start_of_period",
-  },
-  {
-    label:
-      "Quantity in storage at the end of the compliance period [Dec 31], if applicable",
-    key: "storage_quantity_end_of_period",
-  },
-  {
-    label:
-      "Quantity sold during compliance period [Jan 1 - Dec 31], if applicable",
-    key: "quantity_sold_during_period",
-  },
-  {
-    label:
-      "Quantity of throughput at point of sale during compliance period [Jan 1 - Dec 31], if applicable",
-    key: "quantity_throughput_during_period",
-  },
-];
+export const productionDataFields = (product: any = []) => {
+  return [
+    { heading: product.product },
+    { label: "Unit", key: "unit" },
+    { label: "Annual Production", key: "annual_production" },
+    ...(product.production_data_apr_dec !== null &&
+    product.production_data_apr_dec !== undefined
+      ? [
+          {
+            label: "Production Data for Apr 1 - Dec 31 2024",
+            key: "production_data_apr_dec",
+          },
+        ]
+      : []),
+    ...(product.production_data_jan_mar !== null &&
+    product.production_data_jan_mar !== undefined
+      ? [
+          {
+            label: "Production Data for Jan 1 - Mar 31 2025",
+            key: "production_data_jan_mar",
+          },
+        ]
+      : []),
+    {
+      label: "Production Quantification Methodology",
+      key: "production_methodology", // gitleaks:allow
+    },
+    {
+      label:
+        "Quantity in storage at the beginning of the compliance period [Jan 1], if applicable",
+      key: "storage_quantity_start_of_period", // gitleaks:allow
+    },
+    {
+      label:
+        "Quantity in storage at the end of the compliance period [Dec 31], if applicable",
+      key: "storage_quantity_end_of_period", // gitleaks:allow
+    },
+    {
+      label:
+        "Quantity sold during compliance period [Jan 1 - Dec 31], if applicable",
+      key: "quantity_sold_during_period", // gitleaks:allow
+    },
+    {
+      label:
+        "Quantity of throughput at point of sale during compliance period [Jan 1 - Dec 31], if applicable",
+      key: "quantity_throughput_during_period", // gitleaks:allow
+    },
+  ];
+};
 
 export const operationEmissionSummaryFields = [
   {
