@@ -77,6 +77,40 @@ class TestReportOperationService:
         assert "is_sync_allowed" in result
         assert isinstance(result["is_sync_allowed"], bool)
         assert result["reporting_year"] == self.report_version.report.reporting_year.reporting_year
+        assert "selected_activities" in result
+        assert isinstance(result["selected_activities"], list)
+
+    def test_get_report_operation_data_by_version_id_selected_activities_empty_with_no_report_activities(self):
+        result = ReportOperationService.get_report_operation_data_by_version_id(self.report_version.id)
+        assert result["selected_activities"] == []
+
+    def test_get_report_operation_data_by_version_id_selected_activities_with_report_activities(self):
+        baker.make_recipe(
+            "reporting.tests.utils.report_activity",
+            facility_report=self.facility_report,
+            activity=self.activity,
+        )
+
+        result = ReportOperationService.get_report_operation_data_by_version_id(self.report_version.id)
+
+        assert self.activity.id in result["selected_activities"]
+        assert len(result["selected_activities"]) == 1
+
+    def test_get_report_operation_data_by_version_id_selected_activities_are_distinct(self):
+        baker.make_recipe(
+            "reporting.tests.utils.report_activity",
+            facility_report=self.facility_report,
+            activity=self.activity,
+        )
+        baker.make_recipe(
+            "reporting.tests.utils.report_activity",
+            facility_report=self.facility_report,
+            activity=self.activity,
+        )
+
+        result = ReportOperationService.get_report_operation_data_by_version_id(self.report_version.id)
+
+        assert result["selected_activities"].count(self.activity.id) == 1
 
     def test_update_report_service(self):
         self.operation.name = "New Operation Name"

@@ -63,6 +63,7 @@ class TestReportOperationDataApi(CommonTestSetup):
             "show_activities": True,
             "reporting_year": self.reporting_year.reporting_year,
             "is_sync_allowed": True,
+            "selected_activities": [1],
         }
         expected_purpose = self.report_operation["registration_purpose"]
 
@@ -132,6 +133,7 @@ class TestReportOperationDataApi(CommonTestSetup):
             "show_activities": True,
             "reporting_year": self.reporting_year.reporting_year,
             "is_sync_allowed": True,
+            "selected_activities": [1],
         }
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
