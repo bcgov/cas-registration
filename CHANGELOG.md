@@ -1,5 +1,15 @@
 # Changelog
 
+# [5.4.0](https://github.com/bcgov/cas-registration/compare/v5.3.1...v5.4.0) (2026-03-04)
+
+### Bug Fixes
+
+- fix not started status on reporting grid ([71df83c](https://github.com/bcgov/cas-registration/commit/71df83c2b6e76afca8fee5230e4f556a653c2e25))
+
+### Features
+
+- Add email template for notice of penalty paid ([cb3ef78](https://github.com/bcgov/cas-registration/commit/cb3ef78a9b5ddaee3cf60a78aebbf5785bf54edb))
+
 ## [5.3.1](https://github.com/bcgov/cas-registration/compare/v5.3.0...v5.3.1) (2026-02-28)
 
 # [5.3.0](https://github.com/bcgov/cas-registration/compare/v5.2.0...v5.3.0) (2026-02-27)

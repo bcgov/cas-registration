@@ -1,6 +1,6 @@
 {
   "name": "cas-registration",
-  "version": "5.3.1",
+  "version": "5.4.0",
   "main": "index.js",
   "repository": "https://github.com/bcgov/cas-registration.git",
   "author": "ggircs@gov.bc.ca",
