@@ -189,6 +189,20 @@ class TestElicensingOperatorService:
                     paymentTotal=Decimal('0'),
                     invoiceNumber="inv-002",
                 ),
+                InvoiceFee(
+                    feeObjectId=5,
+                    feeGUID="00000000-0000-0000-0000-000000000000",
+                    businessAreaCode='asdf',
+                    feeDate="2025-11-30",
+                    description="Automatic Overdue Penalty",
+                    baseAmount=Decimal('0'),
+                    taxTotal=Decimal('0'),
+                    adjustmentTotal=Decimal('0'),
+                    taxAdjustmentTotal=Decimal('0'),
+                    paymentBaseAmount=Decimal('0'),
+                    paymentTotal=Decimal('0'),
+                    invoiceNumber="inv-002",
+                ),
             ],
         )
 
@@ -205,13 +219,16 @@ class TestElicensingOperatorService:
         # Assert record creation successful & accurate
         invoice = ElicensingInvoice.objects.get(invoice_number='inv-002')
         fees = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
-        late_fee = fees.first()
-        overdue_fee = fees.last()
-        assert fees.count() == 2
+        late_fee = fees[0]
+        overdue_fee = fees[1]
+        overdue_alt_description_fee = fees[2]
+        assert fees.count() == 3
         assert late_fee.object_id == 3
         assert late_fee.description == 'Late Submission'
         assert overdue_fee.object_id == 4
         assert overdue_fee.description == 'Automatic Overdue'
+        assert overdue_alt_description_fee.object_id == 5
+        assert overdue_alt_description_fee.description == 'Automatic Overdue Penalty'
 
     def test_compliance_report_version_id_wrapper_stale_data(self, mock_refresh_invoice):
         invoice = make_recipe(
