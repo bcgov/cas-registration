@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rls', '0041_V5_0_0'),
+        ('rls', '0001_rls_role_setup_squashed_0041_V5_0_0'),
     ]
 
     operations = []
