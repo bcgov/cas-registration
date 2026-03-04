@@ -168,9 +168,15 @@ test.describe("External User", () => {
     // client-side routing (router.push) doesn't fire a traditional page load event.
     await expect(selectOperatorPage.page).toHaveURL(
       /select-operator\/confirm/,
-      { timeout: 30_000 },
+      {
+        timeout: 30_000,
+      },
     );
 
+    // Helps if there *was* a real navigation/redirect
+    await selectOperatorPage.page.waitForLoadState("load");
+
+    // True readiness signal
     await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
     await linkIsVisible(
       selectOperatorPage.page,
@@ -178,7 +184,10 @@ test.describe("External User", () => {
       true,
     );
 
-    await takeStabilizedScreenshot(happoScreenshot, newPage, {
+    // Optional micro-settle for hydration swaps
+    await selectOperatorPage.page.waitForTimeout(100);
+
+    await takeStabilizedScreenshot(happoScreenshot, selectOperatorPage.page, {
       component: "Decline a user operator request",
       variant: "default",
     });
