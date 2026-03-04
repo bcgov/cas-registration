@@ -31,11 +31,18 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             'facility_data': {
                 'facility_type': 'test facility type',
             },
+            'operation_data': {
+                'naics_code': self.report_version.report.operation.naics_code.naics_code,
+                'operation_type': self.report_operation.operation_type,
+            },
             'report_data': {
                 'report_version_id': self.report_version.id,
                 'reporting_year': 1222,
             },
-            'payload': {'report_products': [], 'allowed_products': []},
+            'payload': {
+                'report_products': [],
+                'allowed_products': [],
+            },
         }
 
     def test_get_returns_the_right_data_with_data(self):
@@ -83,6 +90,10 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         assert response.json() == {
             'facility_data': {
                 'facility_type': 'test facility type',
+            },
+            'operation_data': {
+                'naics_code': self.report_version.report.operation.naics_code.naics_code,
+                'operation_type': self.report_operation.operation_type,
             },
             'report_data': {
                 'report_version_id': self.report_version.id,

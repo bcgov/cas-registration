@@ -39,5 +39,6 @@ def get_production_form_data(request: HttpRequest, version_id: int, facility_id:
         "allowed_products": allowed_products,
         "operation_opted_out_final_reporting_year": report_operation.operation_opted_out_final_reporting_year,
     }
-    response = FormResponseBuilder(version_id).payload(payload).facility_data(facility_id).build()
+    response = FormResponseBuilder(version_id).payload(payload).facility_data(facility_id).operation_data().build()
+
     return 200, response

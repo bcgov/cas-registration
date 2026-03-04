@@ -6,6 +6,8 @@ import { getReportInformationTasklist } from "@reporting/src/app/utils/getReport
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
+import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
+import { getOverlappingIndustrialProcessEmissions } from "@reporting/src/app/utils/getOverlappingIndProcessEmissions";
 
 vi.mock("@bciers/actions/api", () => ({
   getProductionData: vi.fn(),
@@ -22,8 +24,16 @@ vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
 vi.mock("@reporting/src/app/utils/getFacilityReportDetails", () => ({
   getFacilityReportDetails: vi.fn().mockReturnValue([]),
 }));
+vi.mock("@reporting/src/app/utils/getOverlappingIndProcessEmissions", () => ({
+  getOverlappingIndustrialProcessEmissions: vi.fn().mockReturnValue(0),
+}));
 
 const getProductionDataMock = getProductionData as ReturnType<typeof vi.fn>;
+const getOrderedActivitiesMock = getOrderedActivities as ReturnType<
+  typeof vi.fn
+>;
+const getOverlappingIndustrialProcessEmissionsMock =
+  getOverlappingIndustrialProcessEmissions as ReturnType<typeof vi.fn>;
 
 // 🏷 Constants
 const props: HasFacilityId = {
@@ -40,14 +50,17 @@ const mockReportTaskList = {
 const defaultGetProductionDataMock = {
   report_data: {
     reporting_year: 2020,
+    report_version_id: 1,
   },
   facility_data: { facility_type: "SFO" },
-  report_operation: {
-    operation_opted_out_final_reporting_year: undefined,
+  operation_data: {
+    naics_code: null,
+    operation_type: "SFO",
   },
   payload: {
     allowed_products: [],
     report_products: [],
+    operation_opted_out_final_reporting_year: null,
   },
 };
 
@@ -223,5 +236,83 @@ describe("The Production Data component", () => {
     });
 
     render(await ProductionDataPage(props));
+  });
+
+  it("sets isPulpAndPaper to true when pulp_and_paper activity is found and naicsCode is 322112", async () => {
+    getOrderedActivitiesMock.mockReturnValue([
+      { id: 23, name: "Pulp and paper production", slug: "pulp_and_paper" },
+    ]);
+    getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
+      payload: {
+        allowed_products: [],
+        report_products: [],
+      },
+      operation_data: {
+        naics_code: "322112",
+      },
+    });
+
+    render(await ProductionDataPage(props));
+    // getOverlappingIndustrialProcessEmissions is only called when isPulpAndPaper is set to true
+    expect(getOverlappingIndustrialProcessEmissionsMock).toHaveBeenCalledWith(
+      1,
+      "abc",
+    );
+  });
+
+  it("does not call getOverlappingIndustrialProcessEmissions when pulp_and_paper activity is not found", async () => {
+    getOrderedActivitiesMock.mockReturnValue([
+      { id: 1, name: "Other Activity", slug: "other_activity" },
+    ]);
+    getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
+      payload: {
+        allowed_products: [],
+        report_products: [],
+      },
+      operation_data: {
+        naics_code: "322112",
+      },
+    });
+
+    render(await ProductionDataPage(props));
+    expect(getOverlappingIndustrialProcessEmissionsMock).not.toHaveBeenCalled();
+  });
+
+  it("does not call getOverlappingIndustrialProcessEmissions when naicsCode is not 322112", async () => {
+    getOrderedActivitiesMock.mockReturnValue([
+      { id: 23, name: "Pulp and paper production", slug: "pulp_and_paper" },
+    ]);
+    getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
+      payload: {
+        allowed_products: [],
+        report_products: [],
+      },
+      operation_data: {
+        naics_code: "644224",
+      },
+    });
+
+    render(await ProductionDataPage(props));
+    expect(getOverlappingIndustrialProcessEmissionsMock).not.toHaveBeenCalled();
+  });
+
+  it("does not call getOverlappingIndustrialProcessEmissions when no activities are found", async () => {
+    getOrderedActivitiesMock.mockReturnValue([]);
+    getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
+      payload: {
+        allowed_products: [],
+        report_products: [],
+      },
+      operation_data: {
+        naics_code: "322112",
+      },
+    });
+
+    render(await ProductionDataPage(props));
+    expect(getOverlappingIndustrialProcessEmissionsMock).not.toHaveBeenCalled();
   });
 });
