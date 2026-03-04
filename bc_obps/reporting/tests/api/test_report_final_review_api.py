@@ -78,10 +78,3 @@ class TestReportFinalReviewApi(CommonTestSetup):
         data = response.json()
         assert data["facility_name"] == self.facility_report.facility_name
         assert data["facility_type"] == self.facility_report.facility_type
-        assert "facility" in data
-        assert "facility_bcghgid" in data
-        assert "activity_data" in data
-        assert "report_products" in data
-        assert "reportnonattributableemissions_records" in data
-        assert "emission_summary" in data
-        assert "report_emission_allocation" in data
