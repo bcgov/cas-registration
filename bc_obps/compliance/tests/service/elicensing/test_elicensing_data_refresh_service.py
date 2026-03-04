@@ -53,7 +53,7 @@ class TestElicensingOperatorService:
 
     @patch(RLS_BYPASS_RLS_PATH)
     def test_refreshes_data_from_elicensing(self, mock_bypass_rls, mock_query_invoice):
-        """Test sync_client_with_elicensing successfully creates a new client"""
+        """Test refresh success"""
         # Setup mocks
         client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
 
@@ -147,7 +147,7 @@ class TestElicensingOperatorService:
 
     @patch(RLS_BYPASS_RLS_PATH)
     def test_parses_penalty_fees_from_elicensing(self, mock_bypass_rls, mock_query_invoice):
-        """Test sync_client_with_elicensing successfully creates a new client"""
+        """Test fee filter parses penalty fees"""
         # Setup mocks
         client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
 

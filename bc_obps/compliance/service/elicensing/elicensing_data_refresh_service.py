@@ -1,6 +1,4 @@
 from compliance.enums import ComplianceInvoiceTypes
-from compliance.models.compliance_penalty import CompliancePenalty
-
 from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
 from django.db import transaction
 from compliance.models import (
@@ -10,6 +8,7 @@ from compliance.models import (
     ElicensingPayment,
     ElicensingAdjustment,
     ComplianceObligation,
+    CompliancePenalty,
 )
 from datetime import date, timedelta
 from decimal import Decimal
@@ -135,8 +134,8 @@ class ElicensingDataRefreshService:
             )
             for fee in invoice_response.fees:
                 if 'GGIRCA Compliance Obligation' in fee.description or fee.description in [
-                    'Late Submission',
-                    'Automatic Overdue',
+                    CompliancePenalty.PenaltyType.LATE_SUBMISSION,
+                    CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
                 ]:
                     fee_record, _ = ElicensingLineItem.objects.update_or_create(
                         elicensing_invoice=invoice_record,
