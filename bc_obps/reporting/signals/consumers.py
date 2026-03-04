@@ -12,22 +12,27 @@ logger = logging.getLogger(__name__)
 @receiver(operation_registration_purpose_changed)
 def handle_registration_purpose_changed(sender: Type[Any], **kwargs: Any) -> None:
     """
-    Deletes the current-year draft report version for an operation whose
-    registration purpose has changed.
+    Signal handler that deletes the draft report version for an operation
+    whose registration purpose has changed.
 
     Skips deletion if:
-    - No draft report version exists
-    - The draft is for a past reporting year
+    - No draft report version exists for the current reporting year
     - The draft belongs to a previous operator (operation was transferred)
     """
     operation_id = kwargs.get("operation_id")
     if not operation_id:
-        logger.warning("Received %s without operation_id", sender)
+        logger.warning("Signal received without operation_id in kwargs")
         return
+
+    current_reporting_year = ReportingYearService.get_current_reporting_year()
 
     draft_version = (
         ReportVersion.objects.select_related("report__operation", "report__reporting_year", "report__operator")
-        .filter(report__operation_id=operation_id, status=ReportVersion.ReportVersionStatus.Draft)
+        .filter(
+            report__operation_id=operation_id,
+            status=ReportVersion.ReportVersionStatus.Draft,
+            report__reporting_year=current_reporting_year,
+        )
         .first()
     )
 
@@ -37,15 +42,6 @@ def handle_registration_purpose_changed(sender: Type[Any], **kwargs: Any) -> Non
 
     report = draft_version.report
     version_id = draft_version.id
-    current_reporting_year = ReportingYearService.get_current_reporting_year()
-
-    if report.reporting_year.reporting_year < current_reporting_year.reporting_year:
-        logger.info(
-            "Skipping deletion of draft report version id=%s for operation_id=%s: past reporting year",
-            version_id,
-            operation_id,
-        )
-        return
 
     if report.operation.operator_id != report.operator_id:
         logger.info(

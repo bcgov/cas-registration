@@ -1,14 +1,14 @@
-from django.core.files.storage import default_storage
-from django.db import transaction
-from django.forms import model_to_dict
-from typing import Optional
 import copy
+from typing import Optional
+
+from django.core.files.storage import default_storage
 
 from reporting.models import (
     FacilityReport,
     ReportActivity,
     ReportAdditionalData,
     ReportAttachment,
+    ReportElectricityImportData,
     ReportEmission,
     ReportEmissionAllocation,
     ReportFuel,
@@ -27,136 +27,10 @@ from reporting.models import (
     ReportUnit,
     ReportVerification,
     ReportVersion,
-    ReportElectricityImportData,
 )
-from reporting.service.emission_category_mapping_service import (
-    EmissionCategoryMappingService,
-)
-from service.report_version_service import ReportVersionService
-
-from service.reporting_year_service import ReportingYearService
 
 
-class ReportSupplementaryVersionService:
-    @staticmethod
-    @transaction.atomic
-    def create_or_clone_report_version(report_version_id: int) -> ReportVersion:
-        """
-        Creates either a supplementary report version or a new blank report version based on:
-        - Registration purpose changes
-        - Operator changes (operation transfer)
-        - Reporting year (past or current)
-
-        Args:
-            report_version_id: The report version ID to create a new version from
-
-        Returns:
-            New ReportVersion instance (either supplementary or blank)
-        """
-        # Grab the report version with all the stuff we need
-        report_version = ReportVersion.objects.select_related(
-            "report__operation", "report__reporting_year", "report_operation"
-        ).get(id=report_version_id)
-
-        operation = report_version.report.operation
-        report_operation = report_version.report_operation
-
-        # Check if operator has changed (operation transferred to a new operator)
-        operator_changed = operation.operator_id != report_version.report.operator_id
-        # Check if registration purpose has been updated
-        registration_purpose_changed = operation.registration_purpose != report_operation.registration_purpose
-        # Check if its a past year report
-        current_reporting_year = ReportingYearService.get_current_reporting_year()
-
-        is_past_year = report_version.report.reporting_year.reporting_year < current_reporting_year.reporting_year
-        # Decide whether to clone or create a new report version - if the registration purpose is not changed or if operator has changed or if it's a past year report, then we clone, otherwise we create a new blank version
-        should_clone = not registration_purpose_changed or operator_changed or is_past_year
-
-        if should_clone:
-            # Clone the existing version
-            return ReportSupplementaryVersionService.create_report_supplementary_version(
-                report_version_id, is_past_year=is_past_year
-            )
-
-        # Otherwise just make a new blank one
-        return ReportVersionService.create_report_version(report_version.report)
-
-    @staticmethod
-    @transaction.atomic
-    def create_report_supplementary_version(report_version_id: int, is_past_year: bool = False) -> ReportVersion:
-        """
-        Creates a new report version for a given report version ID cloning related data.
-
-        This method determines whether to create a supplementary version based on the current version
-        or based on a previous version with matching registration purpose when the operator has changed.
-
-        Args:
-            report_version_id: The report version ID
-            is_past_year: Whether the report is for a past reporting year
-
-        Returns:
-            New ReportVersion instance
-        """
-        # Get the existing report version with related data
-        report_version = ReportVersion.objects.select_related(
-            "report__operation", "report__operator", "report_operation"
-        ).get(id=report_version_id)
-
-        operation = report_version.report.operation
-        operation_registration_purpose = operation.registration_purpose
-        current_operator_id = operation.operator_id
-        report_operator_id = report_version.report.operator_id
-        report_operation_registration_purpose = report_version.report_operation.registration_purpose
-
-        # Determine if operator has changed (operation transferred to a new operator)
-        operator_changed = current_operator_id != report_operator_id
-
-        # Determine if registration purpose has changed
-        registration_purpose_changed = operation_registration_purpose != report_operation_registration_purpose
-
-        # Determine which version to clone from
-        version_to_clone_id = report_version_id
-
-        if registration_purpose_changed and operator_changed:
-            # Find the latest submitted report version by the same operator (old operator) with the same registration purpose and reporting year
-            latest_submitted_report_version = (
-                ReportVersion.objects.filter(
-                    report__operation=operation,
-                    report__reporting_year=report_version.report.reporting_year,
-                    report__operator_id=report_operator_id,
-                    status=ReportVersion.ReportVersionStatus.Submitted,
-                )
-                .order_by('-created_at')
-                .first()
-            )
-
-            if latest_submitted_report_version:
-                # Clone from the matching version instead
-                version_to_clone_id = latest_submitted_report_version.id
-
-        # Get the version to clone (might be the original or the matching version)
-        source_version = ReportVersion.objects.get(id=version_to_clone_id)
-
-        # Create a new report version as a Draft
-        new_report_version = ReportVersion.objects.create(
-            report=report_version.report,
-            report_type=source_version.report_type,
-            status=ReportVersion.ReportVersionStatus.Draft,
-            is_latest_submitted=False,
-        )
-        # Clone related data from the source version
-        ReportSupplementaryVersionService.clone_report_version_operation(source_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_representatives(source_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_person_responsible(source_version, new_report_version)
-        ReportSupplementaryVersionService.clone_electricity_import_data(source_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_additional_data(source_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_new_entrant_data(source_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_verification(source_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_attachments(source_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_facilities(source_version, new_report_version)
-        ReportSupplementaryVersionService.reapply_emission_categories(new_report_version)
-        # Return the newly created report version
-        return new_report_version
+class ReportSupplementaryCloning:
 
     @staticmethod
     def clone_report_version_operation(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
@@ -322,13 +196,13 @@ class ReportSupplementaryVersionService:
 
             cloned_facility_report.activities.set(activities)
 
-            ReportSupplementaryVersionService.clone_report_version_facility_activities(
+            ReportSupplementaryCloning.clone_report_version_facility_activities(
                 facility_report_to_clone, cloned_facility_report
             )
-            ReportSupplementaryVersionService.clone_report_version_facility_non_attributable_emissions(
+            ReportSupplementaryCloning.clone_report_version_facility_non_attributable_emissions(
                 old_report_version, new_report_version, facility_report_to_clone, cloned_facility_report
             )
-            ReportSupplementaryVersionService.clone_report_version_facility_product_data(
+            ReportSupplementaryCloning.clone_report_version_facility_product_data(
                 old_report_version, new_report_version, facility_report_to_clone, cloned_facility_report
             )
 
@@ -338,9 +212,7 @@ class ReportSupplementaryVersionService:
     ) -> None:
         # Retrieve and clone each ReportActivity for the new facility report.
         for report_activity in ReportActivity.objects.filter(facility_report=old_facility_report):
-            ReportSupplementaryVersionService.clone_report_version_facility_activity(
-                report_activity, new_facility_report
-            )
+            ReportSupplementaryCloning.clone_report_version_facility_activity(report_activity, new_facility_report)
 
     @staticmethod
     def clone_report_version_facility_activity(
@@ -356,15 +228,11 @@ class ReportSupplementaryVersionService:
         cloned_report_activity.save()
 
         # Clone the related ReportRawActivityData record for the activity
-        ReportSupplementaryVersionService.clone_activity_raw_json_data(
-            old_report_activity_to_clone, new_facility_report
-        )
+        ReportSupplementaryCloning.clone_activity_raw_json_data(old_report_activity_to_clone, new_facility_report)
 
         # Clone each related ReportSourceType associated with the old activity
         for old_source_type_to_clone in ReportSourceType.objects.filter(report_activity=old_report_activity_to_clone):
-            ReportSupplementaryVersionService.clone_activity_source_type(
-                old_source_type_to_clone, cloned_report_activity
-            )
+            ReportSupplementaryCloning.clone_activity_source_type(old_source_type_to_clone, cloned_report_activity)
 
         return cloned_report_activity
 
@@ -396,11 +264,11 @@ class ReportSupplementaryVersionService:
 
         # Clone additional related data based on the schema.
         if old_source_type_to_clone.activity_source_type_base_schema.has_unit:
-            ReportSupplementaryVersionService.clone_source_type_units(old_source_type_to_clone, cloned_source_type)
+            ReportSupplementaryCloning.clone_source_type_units(old_source_type_to_clone, cloned_source_type)
         elif old_source_type_to_clone.activity_source_type_base_schema.has_fuel:
-            ReportSupplementaryVersionService.clone_source_type_fuels(old_source_type_to_clone, cloned_source_type)
+            ReportSupplementaryCloning.clone_source_type_fuels(old_source_type_to_clone, cloned_source_type)
         else:
-            ReportSupplementaryVersionService.clone_source_type_emissions(old_source_type_to_clone, cloned_source_type)
+            ReportSupplementaryCloning.clone_source_type_emissions(old_source_type_to_clone, cloned_source_type)
 
     @staticmethod
     def clone_source_type_units(old_source_type_to_clone: ReportSourceType, new_source_type: ReportSourceType) -> None:
@@ -414,11 +282,11 @@ class ReportSupplementaryVersionService:
             cloned_unit.save()
 
             if old_source_type_to_clone.activity_source_type_base_schema.has_fuel:
-                ReportSupplementaryVersionService.clone_unit_fuels(
+                ReportSupplementaryCloning.clone_unit_fuels(
                     old_source_type_to_clone, new_source_type, old_unit_to_clone, cloned_unit
                 )
             else:
-                ReportSupplementaryVersionService.clone_unit_emissions(
+                ReportSupplementaryCloning.clone_unit_emissions(
                     old_source_type_to_clone, new_source_type, old_unit_to_clone, cloned_unit
                 )
 
@@ -434,7 +302,7 @@ class ReportSupplementaryVersionService:
             cloned_fuel.report_version = new_source_type.report_version
             cloned_fuel.report_source_type = new_source_type
             cloned_fuel.save()
-            ReportSupplementaryVersionService.clone_fuel_emissions(
+            ReportSupplementaryCloning.clone_fuel_emissions(
                 old_source_type_to_clone, new_source_type, old_fuel_to_clone, cloned_fuel
             )
 
@@ -456,7 +324,7 @@ class ReportSupplementaryVersionService:
             cloned_fuel.report_source_type = new_source_type
             cloned_fuel.report_unit = new_unit
             cloned_fuel.save()
-            ReportSupplementaryVersionService.clone_fuel_emissions(
+            ReportSupplementaryCloning.clone_fuel_emissions(
                 old_source_type_to_clone, new_source_type, old_fuel_to_clone, cloned_fuel, new_unit
             )
 
@@ -481,7 +349,7 @@ class ReportSupplementaryVersionService:
         cloned_emission.emission_categories.set(old_emission_to_clone.emission_categories.all())
 
         # Clone related methodology.
-        ReportSupplementaryVersionService.clone_emission_methodology(old_emission_to_clone, cloned_emission)
+        ReportSupplementaryCloning.clone_emission_methodology(old_emission_to_clone, cloned_emission)
 
     @staticmethod
     def clone_source_type_emissions(
@@ -492,7 +360,7 @@ class ReportSupplementaryVersionService:
             report_source_type=old_source_type_to_clone, report_unit__isnull=True, report_fuel__isnull=True
         )
         for old_emission_to_clone in old_emissions_to_clone:
-            ReportSupplementaryVersionService._clone_emission_common_fields(
+            ReportSupplementaryCloning._clone_emission_common_fields(
                 old_emission_to_clone,
                 report_version=new_source_type.report_version,
                 new_source_type=new_source_type,
@@ -510,7 +378,7 @@ class ReportSupplementaryVersionService:
             report_source_type=old_source_type_to_clone, report_unit=old_unit_to_clone, report_fuel__isnull=True
         )
         for old_emission_to_clone in old_emissions_to_clone:
-            ReportSupplementaryVersionService._clone_emission_common_fields(
+            ReportSupplementaryCloning._clone_emission_common_fields(
                 old_emission_to_clone,
                 report_version=new_source_type.report_version,
                 new_source_type=new_source_type,
@@ -530,7 +398,7 @@ class ReportSupplementaryVersionService:
             report_source_type=old_source_type_to_clone, report_fuel=old_fuel_to_clone
         )
         for old_emission_to_clone in old_emissions_to_clone:
-            ReportSupplementaryVersionService._clone_emission_common_fields(
+            ReportSupplementaryCloning._clone_emission_common_fields(
                 old_emission_to_clone,
                 report_version=new_source_type.report_version,
                 new_source_type=new_source_type,
@@ -598,7 +466,7 @@ class ReportSupplementaryVersionService:
             cloned_report_product.report_version = new_report_version
             cloned_report_product.facility_report = new_facility_report
             cloned_report_product.save()
-            ReportSupplementaryVersionService.clone_report_version_facility_product_emission_allocations(
+            ReportSupplementaryCloning.clone_report_version_facility_product_emission_allocations(
                 old_report_version=old_report_version,
                 new_report_version=new_report_version,
                 new_facility_report=new_facility_report,
@@ -632,22 +500,3 @@ class ReportSupplementaryVersionService:
                 cloned_product_allocation.report_emission_allocation = new_report_emission_allocation
             cloned_product_allocation.report_product = new_report_product
             cloned_product_allocation.save()
-
-    @staticmethod
-    def reapply_emission_categories(report_version: ReportVersion) -> None:
-        """
-        Reapplies emission categories for all emissions in the given report version.
-        This ensures that the emission categories are applied to the report correctly, in case changes to emission categories
-        have occurred in the database since the report was last updated.
-        """
-        report_emissions = ReportEmission.objects.filter(report_version=report_version).select_related(
-            "report_methodology"
-        )
-
-        for report_emission in report_emissions:
-            EmissionCategoryMappingService.apply_emission_categories(
-                report_source_type=report_emission.report_source_type,
-                report_fuel=report_emission.report_fuel if report_emission.report_fuel else None,
-                report_emission=report_emission,
-                methodology_data=model_to_dict(report_emission.report_methodology),
-            )
