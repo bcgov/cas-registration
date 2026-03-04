@@ -134,7 +134,10 @@ class ElicensingDataRefreshService:
                 },
             )
             for fee in invoice_response.fees:
-                if 'GGIRCA Compliance Obligation' in fee.description and 'Interest' not in fee.description:
+                if 'GGIRCA Compliance Obligation' in fee.description or fee.description in [
+                    'Late Submission',
+                    'Automatic Overdue',
+                ]:
                     fee_record, _ = ElicensingLineItem.objects.update_or_create(
                         elicensing_invoice=invoice_record,
                         object_id=fee.feeObjectId,
