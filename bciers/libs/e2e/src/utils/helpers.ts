@@ -462,19 +462,32 @@ export async function takeStabilizedScreenshot(
   const { component, variant, targets } = happoArgs;
 
   for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      await waitForPageToBeScreenshotSafe(page);
+    // Define handler inside the loop so we can unroute it reliably.
+    const blockDocumentNavigations = (route: any) => {
+      const req = route.request();
+      // Only block real document navigations that would replace the frame.
+      if (req.resourceType() === "document" && req.isNavigationRequest()) {
+        return route.abort();
+      }
+      return route.continue();
+    };
 
-      // Reacquire right before screenshot
+    try {
+      // Your existing “settle” gates (keep them)
+      await waitForPageToBeScreenshotSafe(page);
+      await waitForElementToStabilize(page, "html");
+
       const html = page.locator("html");
       await html.waitFor({ state: "attached" });
+
+      // ✅ Critical: prevent late redirects from detaching the frame DURING Happo
+      await page.route("**/*", blockDocumentNavigations);
 
       await happoScreenshot(html, { component, variant, targets });
       return;
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
 
-      // Retry only on detach/close-family errors
       if (
         !/Frame has been detached|Target closed|Page closed/i.test(msg) ||
         attempt === 2
@@ -482,9 +495,15 @@ export async function takeStabilizedScreenshot(
         throw e;
       }
 
-      // Let the next navigation settle, then retry
-      await page.waitForLoadState("domcontentloaded").catch(() => {});
+      // small backoff before retry
       await page.waitForTimeout(300);
+    } finally {
+      // Always remove the route so it doesn’t affect the rest of the test.
+      try {
+        await page.unroute("**/*", blockDocumentNavigations);
+      } catch {
+        // ignore if page already closed
+      }
     }
   }
 }
