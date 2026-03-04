@@ -231,8 +231,7 @@ export const complianceSummaryFields = (products: any[] = []) => {
     { label: "Credited emissions", key: "credited_emissions", unit: "tCO2e" },
 
     { heading: "Regulatory values" },
-    { label: "Reduction factor", key: "regulatory_values.reduction_factor" },
-    { label: "Tightening rate", key: "regulatory_values.tightening_rate" },
+
     {
       label: "Initial compliance period",
       key: "regulatory_values.initial_compliance_period",
@@ -247,6 +246,11 @@ export const complianceSummaryFields = (products: any[] = []) => {
     ...(products.flatMap((product, index) => {
       const fields: any[] = [
         { heading: product.name || `Product ${index + 1}` },
+        {
+          label: "Reduction factor",
+          key: `products.${index}.reduction_factor`,
+        },
+        { label: "Tightening rate", key: `products.${index}.tightening_rate` },
         {
           label: "Annual production",
           key: `products.${index}.annual_production`,

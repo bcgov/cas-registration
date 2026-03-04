@@ -2,6 +2,7 @@ from django.test import TestCase
 from common.tests.utils.model_inspection import get_cascading_models
 from model_bakery import baker
 import pytest
+from registration.models import Operation
 from reporting.models.report_version import ReportVersion
 from service.report_version_service import ReportVersionService
 
@@ -112,3 +113,13 @@ class TestReportVersionService(TestCase):
         """
         result = ReportVersionService.is_initial_report_version(self.report_version_2.id)
         self.assertFalse(result, "Expected the second report version to not be considered initial.")
+
+    def test_fetch_full_report_version(self):
+        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=report_version,
+            operation_type=Operation.Types.SFO,
+        )
+        result = ReportVersionService.fetch_full_report_version(report_version.id, prefetch_full_facility_report=False)
+        self.assertEqual(result.id, report_version.id)
