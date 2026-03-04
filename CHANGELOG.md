@@ -1,5 +1,7 @@
 # Changelog
 
+## [5.4.1](https://github.com/bcgov/cas-registration/compare/v5.4.0...v5.4.1) (2026-03-04)
+
 # [5.4.0](https://github.com/bcgov/cas-registration/compare/v5.3.1...v5.4.0) (2026-03-04)
 
 ### Bug Fixes

@@ -3,7 +3,7 @@ name: cas-bciers
 description: A Helm chart for the CAS BCIERS applications.
 type: application
 version: 0.2.0
-appVersion: "5.4.0"
+appVersion: "5.4.1"
 
 dependencies:
   - name: terraform-bucket-provision
