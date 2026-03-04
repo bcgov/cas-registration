@@ -80,33 +80,6 @@ def reverse_generate_compliance_reports(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ('compliance', '0001_initial'),
-        ('compliance', '0002_seed_compliance_periods'),
-        ('compliance', '0003_seed_compliance_charge_rates'),
-        ('compliance', '0004_generate_compliance_reports'),
-        ('compliance', '0005_V4_0_0'),
-        ('compliance', '0006_V4_0_1'),
-        ('compliance', '0007_V4_1_0'),
-        ('compliance', '0008_V4_2_0'),
-        ('compliance', '0009_remove_compliancechargerate_set_updated_audit_columns_and_more'),
-        ('compliance', '0010_V4_3_0'),
-        ('compliance', '0011_compliancereportversion_requires_manual_handling'),
-        ('compliance', '0012_complianceearnedcredit_supplementary_declined_and_more'),
-        ('compliance', '0013_V4_4_0'),
-        ('compliance', '0014_compliancepenalty_accrual_final_date_and_more'),
-        ('compliance', '0015_add_metadata_context_to_elicensing_invoice_model'),
-        ('compliance', '0016_compliancepenalty_status_and_more'),
-        ('compliance', '0017_V4_5_0'),
-        ('compliance', '0018_V4_6_0'),
-        ('compliance', '0019_remove_compliancereportversion_requires_manual_handling_and_more'),
-        ('compliance', '0020_V4_6_1'),
-        ('compliance', '0021_remove_complianceobligation_obligation_deadline_and_more'),
-        ('compliance', '0022_V4_7_0'),
-        ('compliance', '0023_V4_7_1'),
-        ('compliance', '0024_V5_0_0'),
-    ]
-
     dependencies = [
         ('registration', '0138_V3_20_0'),
         ('reporting', '0131_V3_20_0'),

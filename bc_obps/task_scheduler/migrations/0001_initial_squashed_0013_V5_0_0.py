@@ -5,22 +5,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ('task_scheduler', '0001_initial'),
-        ('task_scheduler', '0002_V4_0_0'),
-        ('task_scheduler', '0003_V4_0_1'),
-        ('task_scheduler', '0004_V4_1_0'),
-        ('task_scheduler', '0005_V4_2_0'),
-        ('task_scheduler', '0006_V4_3_0'),
-        ('task_scheduler', '0007_V4_4_0'),
-        ('task_scheduler', '0008_V4_5_0'),
-        ('task_scheduler', '0009_V4_6_0'),
-        ('task_scheduler', '0010_V4_6_1'),
-        ('task_scheduler', '0011_V4_7_0'),
-        ('task_scheduler', '0012_V4_7_1'),
-        ('task_scheduler', '0013_V5_0_0'),
-    ]
-
     dependencies = []
 
     operations = [
