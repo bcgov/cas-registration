@@ -25,6 +25,17 @@ import { SecondaryUserOperatorFixtureFields } from "@/administration-e2e/utils/e
 import { OperatorPOM } from "@/administration-e2e/poms/operator";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
+test.describe.configure({ mode: "serial" });
+
+type LastAction =
+  | "approve_reporter"
+  | "approve_admin"
+  | "decline_request"
+  | "edit_request"
+  | null;
+
+let lastAction: LastAction = null;
+
 test.beforeEach(async () => {
   /**
    * Upsert bc-cas-dev-secondary user operator as pending
@@ -38,22 +49,22 @@ test.beforeEach(async () => {
   );
 });
 
-// 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
-test.describe.configure({ mode: "serial" });
-test.describe("External User", () => {
-  test("Approve a reporter", async ({ page, happoScreenshot }) => {
-    // 🤣🛸 Navigate to Users and Access Requests from dashboard
+test.describe("Users & Access Requests: admin action then external verification", () => {
+  // -----------------------
+  // 1) Approve reporter (admin)
+  // -----------------------
+  test("Admin: Approve a reporter", async ({ page, happoScreenshot }) => {
     const accessRequestPage = new UsersAccessRequestPOM(page);
     await accessRequestPage.goToUserAccessRequestPage();
     await accessRequestPage.pageIsStable();
 
-    // Get specific row that has the unique email
     const row = await getRowByUniqueCellValue(
       page,
       UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
       UserAndAccessRequestValues.EMAIL,
     );
     await expect(row).toBeVisible();
+
     const currentStatus = await accessRequestPage.getCurrentStatus(row);
     await accessRequestPage.assertActionVisibility(row, currentStatus);
 
@@ -70,19 +81,30 @@ test.describe("External User", () => {
       variant: "filled",
     });
 
+    lastAction = "approve_reporter";
+  });
+
+  test("External user: sees reporter approval effect", async () => {
+    expect(lastAction).toBe("approve_reporter");
+
     const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
 
     const dashboardPage = new DashboardPOM(newPage);
     await dashboardPage.route();
+
     await expect(
       newPage.getByRole("link", {
         name: AdministrationTileText.ACCESS_REQUEST,
       }),
     ).toBeHidden();
+
+    lastAction = null;
   });
 
-  test("Approve an administrator", async ({ page, happoScreenshot }) => {
-    // 🛸 Navigate to Users and Access Requests from dashboard
+  // -----------------------
+  // 2) Approve administrator (admin)
+  // -----------------------
+  test("Admin: Approve an administrator", async ({ page, happoScreenshot }) => {
     const accessRequestPage = new UsersAccessRequestPOM(page);
     await accessRequestPage.goToUserAccessRequestPage();
     await accessRequestPage.pageIsStable();
@@ -109,19 +131,30 @@ test.describe("External User", () => {
       variant: "default",
     });
 
+    lastAction = "approve_admin";
+  });
+
+  test("External user: sees admin approval effect", async () => {
+    expect(lastAction).toBe("approve_admin");
+
     const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
 
     const dashboardPage = new DashboardPOM(newPage);
     await dashboardPage.route();
+
     await expect(
       newPage.getByRole("link", {
         name: AdministrationTileText.ACCESS_REQUEST,
       }),
     ).toBeVisible();
+
+    lastAction = null;
   });
 
-  test("Reject a request", async ({ page, happoScreenshot }) => {
-    // 🛸 Navigate to Users and Access Requests from dashboard
+  // -----------------------
+  // 3) Decline request (admin)
+  // -----------------------
+  test("Admin: Reject a request", async ({ page, happoScreenshot }) => {
     const accessRequestPage = new UsersAccessRequestPOM(page);
     await accessRequestPage.goToUserAccessRequestPage();
     await accessRequestPage.pageIsStable();
@@ -134,7 +167,6 @@ test.describe("External User", () => {
 
     const role = await accessRequestPage.getCurrentRole(row);
 
-    // Decline Request
     await accessRequestPage.approveOrDeclineRequest(
       row,
       role,
@@ -151,21 +183,23 @@ test.describe("External User", () => {
       variant: "default",
     });
 
+    lastAction = "decline_request";
+  });
+
+  test("External user: sees declined-request effect", async () => {
+    expect(lastAction).toBe("decline_request");
+
     const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
 
-    // Verify Select an operator is visible
     const selectOperatorPage = new OperatorPOM(newPage);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
     await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
 
-    // 👉 Action search by legal name
     await selectOperatorPage.selectByLegalName(
       OperatorE2EValue.SEARCH_LEGAL_NAME,
       "Bravo Technologies - has parTNER operator - name from admin",
     );
-    // Wait for client-side navigation to the confirm page after selecting the operator.
-    // Uses toHaveURL (polling assertion) instead of waitForURL because Next.js
-    // client-side routing (router.push) doesn't fire a traditional page load event.
+
     await expect(selectOperatorPage.page).toHaveURL(
       /select-operator\/confirm/,
       {
@@ -173,10 +207,6 @@ test.describe("External User", () => {
       },
     );
 
-    // Helps if there *was* a real navigation/redirect
-    await selectOperatorPage.page.waitForLoadState("load");
-
-    // True readiness signal
     await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
     await linkIsVisible(
       selectOperatorPage.page,
@@ -184,17 +214,18 @@ test.describe("External User", () => {
       true,
     );
 
-    // Optional micro-settle for hydration swaps
-    await selectOperatorPage.page.waitForTimeout(100);
-
-    await takeStabilizedScreenshot(happoScreenshot, selectOperatorPage.page, {
+    await takeStabilizedScreenshot(happoScreenshot, newPage, {
       component: "Decline a user operator request",
       variant: "default",
     });
+
+    lastAction = null;
   });
 
-  test("Edit a request", async ({ page }) => {
-    // 🛸 Navigate to Users and Access Requests from dashboard
+  // -----------------------
+  // 4) Edit request (admin)
+  // -----------------------
+  test("Admin: Edit a request", async ({ page }) => {
     const accessRequestPage = new UsersAccessRequestPOM(page);
     await accessRequestPage.goToUserAccessRequestPage();
     await accessRequestPage.pageIsStable();
@@ -204,6 +235,7 @@ test.describe("External User", () => {
       UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
       UserAndAccessRequestValues.EMAIL,
     );
+
     const role = UserAccessRequestRoles.REPORTER;
     await accessRequestPage.approveOrDeclineRequest(
       row,

@@ -367,6 +367,15 @@ export function getStorageStateForRole(role: string) {
   return JSON.parse(processEnv as string);
 }
 
+// Open a new browser context instead of logging out and logging in as a new user
+export async function openNewBrowserContextAs(role: string) {
+  const browser = await getBrowser();
+  const storageState = await getStorageStateForRole(role);
+  const context = await browser.newContext({ storageState });
+  const newPage = await context.newPage();
+  return newPage;
+}
+
 // 🛠️ Function: calls api to seed database with data for workflow tests
 export async function setupTestEnvironment(
   workFlow?: string,
@@ -387,125 +396,30 @@ export async function setupTestEnvironment(
   expect(response.status()).toBe(200);
 }
 
-// helper: wait until page is "screenshot-safe"
-async function waitForPageToBeScreenshotSafe(
-  page: Page,
-  quietMs = 700,
-  maxRounds = 12,
-) {
-  if (page.isClosed()) return;
-
-  // Never proceed on about:blank
-  if (page.url() === "about:blank") {
-    await page.waitForURL((url) => url.toString() !== "about:blank");
-  }
-
-  // Ensure at least a document exists
-  await page.waitForLoadState("domcontentloaded").catch(() => {});
-
-  // Best-effort "load" – important for full navigations/redirects.
-  await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => {});
-
-  //  Require a quiet window with:
-  // - no framenavigated events AND
-  // - page.url() not changing
-  for (let i = 0; i < maxRounds; i++) {
-    if (page.isClosed()) return;
-
-    const urlBefore = page.url();
-
-    const navigatedDuringWindow = await Promise.race([
-      page.waitForEvent("framenavigated").then(() => true),
-      page.waitForTimeout(quietMs).then(() => false),
-    ]);
-
-    const urlAfter = page.url();
-
-    if (!navigatedDuringWindow && urlBefore === urlAfter) break;
-  }
-
-  // Ensure root exists in the current document/frame
-  await page
-    .locator("html")
-    .waitFor({ state: "attached" })
-    .catch(() => {});
+export async function waitForElementToStabilize(page: Page, element: string) {
+  await page.waitForLoadState();
+  const el = await page.$(element);
+  await el?.waitForElementState("stable");
 }
 
-export async function openNewBrowserContextAs(role: string) {
-  const browser = await getBrowser();
-  const storageState = await getStorageStateForRole(role);
-  const context = await browser.newContext({ storageState });
-  const newPage = await context.newPage();
-  return newPage;
-}
-
-export async function waitForElementToStabilize(page: Page, selector: string) {
-  if (page.isClosed()) return;
-
-  await waitForPageToBeScreenshotSafe(page);
-
-  const loc = page.locator(selector);
-  await loc.waitFor({ state: "attached" });
-
-  // settle buffer
-  await page.waitForTimeout(150);
-}
-
+// This function can be used instead of `happoScreenshot` directly when experiencing flaky screenshots. It waits for the page to be stable before taking a screenshot.
 export async function takeStabilizedScreenshot(
   happoScreenshot: any,
   page: Page,
   happoArgs: { component: string; variant: string; targets?: string[] },
 ) {
-  if (!happoScreenshot) return;
-  if (page.isClosed()) return;
-
-  const { component, variant, targets } = happoArgs;
-
-  for (let attempt = 0; attempt < 3; attempt++) {
-    // Define handler inside the loop so we can unroute it reliably.
-    const blockDocumentNavigations = (route: any) => {
-      const req = route.request();
-      // Only block real document navigations that would replace the frame.
-      if (req.resourceType() === "document" && req.isNavigationRequest()) {
-        return route.abort();
-      }
-      return route.continue();
-    };
-
-    try {
-      // Your existing “settle” gates (keep them)
-      await waitForPageToBeScreenshotSafe(page);
-      await waitForElementToStabilize(page, "html");
-
-      const html = page.locator("html");
-      await html.waitFor({ state: "attached" });
-
-      // ✅ Critical: prevent late redirects from detaching the frame DURING Happo
-      await page.route("**/*", blockDocumentNavigations);
-
-      await happoScreenshot(html, { component, variant, targets });
-      return;
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-
-      if (
-        !/Frame has been detached|Target closed|Page closed/i.test(msg) ||
-        attempt === 2
-      ) {
-        throw e;
-      }
-
-      // small backoff before retry
-      await page.waitForTimeout(300);
-    } finally {
-      // Always remove the route so it doesn’t affect the rest of the test.
-      try {
-        await page.unroute("**/*", blockDocumentNavigations);
-      } catch {
-        // ignore if page already closed
-      }
-    }
+  // Skip Happo screenshots if Happo is not enabled (e.g., running locally without API keys)
+  if (!happoScreenshot) {
+    return;
   }
+  const { component, variant, targets } = happoArgs;
+  const pageContent = page.locator("html");
+  await waitForElementToStabilize(page, "html"); // <-- match the screenshot target
+  await happoScreenshot(pageContent, {
+    component,
+    variant,
+    targets,
+  });
 }
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
