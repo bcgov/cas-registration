@@ -81,7 +81,7 @@ describe("RegulatedProductMultiSelectWidget", () => {
         screen.getByText(
           /If this is a chemical pulp mill that recovered lime by kiln/,
         ),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
   });
 
@@ -99,7 +99,7 @@ describe("RegulatedProductMultiSelectWidget", () => {
         screen.getByText(
           /If this is a chemical pulp mill that recovered lime by kiln/,
         ),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
   });
 
@@ -135,7 +135,7 @@ describe("RegulatedProductMultiSelectWidget", () => {
         screen.getByText(
           /If this is a chemical pulp mill that recovered lime by kiln/,
         ),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
   });
 
@@ -153,7 +153,7 @@ describe("RegulatedProductMultiSelectWidget", () => {
         screen.getByText(
           /If this is a chemical pulp mill that recovered lime by kiln/,
         ),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
   });
 
@@ -205,7 +205,7 @@ describe("RegulatedProductMultiSelectWidget", () => {
         screen.getByText(
           /If this is a chemical pulp mill that recovered lime by kiln/,
         ),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
   });
 
@@ -223,7 +223,7 @@ describe("RegulatedProductMultiSelectWidget", () => {
         screen.getByText(
           /If this is a chemical pulp mill that recovered lime by kiln/,
         ),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
 
     rerender(
