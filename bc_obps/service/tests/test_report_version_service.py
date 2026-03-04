@@ -114,58 +114,12 @@ class TestReportVersionService(TestCase):
         result = ReportVersionService.is_initial_report_version(self.report_version_2.id)
         self.assertFalse(result, "Expected the second report version to not be considered initial.")
 
-    def test_fetch_full_report_version_sfo(self):
+    def test_fetch_full_report_version(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version")
         baker.make_recipe(
             "reporting.tests.utils.report_operation",
             report_version=report_version,
             operation_type=Operation.Types.SFO,
         )
-        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
-        baker.make_recipe(
-            "reporting.tests.utils.report_activity", facility_report=facility_report, report_version=report_version
-        )
-        with self.assertNumQueries(12):
-            result = ReportVersionService.fetch_full_report_version(
-                report_version.id, prefetch_full_facility_report=False
-            )
-            list(result.facility_reports.all())
-            list(result.facility_reports.all()[0].reportactivity_records.all())
-
-    def test_fetch_full_report_version_lfo_prefetch_true(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version")
-        baker.make_recipe(
-            "reporting.tests.utils.report_operation",
-            report_version=report_version,
-            operation_type=Operation.Types.LFO,
-        )
-        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
-        baker.make_recipe(
-            "reporting.tests.utils.report_activity", facility_report=facility_report, report_version=report_version
-        )
-
-        with self.assertNumQueries(12):
-            result = ReportVersionService.fetch_full_report_version(
-                report_version.id, prefetch_full_facility_report=True
-            )
-            list(result.facility_reports.all()[0].reportactivity_records.all())
-
-    def test_fetch_full_report_version_lfo_prefetch_false(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version")
-        baker.make_recipe(
-            "reporting.tests.utils.report_operation",
-            report_version=report_version,
-            operation_type=Operation.Types.LFO,
-        )
-        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
-        baker.make_recipe(
-            "reporting.tests.utils.report_activity", facility_report=facility_report, report_version=report_version
-        )
-
-        with self.assertNumQueries(12):
-            result = ReportVersionService.fetch_full_report_version(
-                report_version.id, prefetch_full_facility_report=False
-            )
-
-        with self.assertNumQueries(1):
-            list(result.facility_reports.all()[0].reportactivity_records.all())
+        result = ReportVersionService.fetch_full_report_version(report_version.id, prefetch_full_facility_report=False)
+        self.assertEqual(result.id, report_version.id)

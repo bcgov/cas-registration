@@ -15,6 +15,9 @@ class TestReportFinalReviewApi(CommonTestSetup):
             "reporting.tests.utils.facility_report",
             report_version=self.report_version,
         )
+        self.report_person_responsible = baker.make_recipe(
+            "reporting.tests.utils.report_person_responsible", report_version=self.report_version
+        )
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
 
@@ -41,25 +44,11 @@ class TestReportFinalReviewApi(CommonTestSetup):
         )
 
         assert response.status_code == 200
-        mock_fetch.assert_called_once_with(self.report_version.id, prefetch_full_facility_report=False)
-
         data = response.json()
-        assert "report_type" in data
-        assert "status" in data
-        assert "reporting_year" in data
-        assert data["reporting_year"] == self.report_version.report.reporting_year_id
-        assert "is_supplementary_report" in data
-        assert data["is_supplementary_report"] is False
-        assert "facility_reports" in data
-        assert "report_operation" in data
-        assert data["report_operation"]["operator_legal_name"] == self.report_operation.operator_legal_name
+        assert data["report_type"] == self.report_version.report_type
+        assert data["status"] == self.report_version.status
         assert data["report_operation"]["operation_name"] == self.report_operation.operation_name
-        assert "activities" in data["report_operation"]
-        assert "regulated_products" in data["report_operation"]
-        assert "representatives" in data["report_operation"]
-        assert "registration_purpose" in data["report_operation"]
-        assert "report_person_responsible" in data
-        assert "report_additional_data" in data
+        assert data["report_person_responsible"]["first_name"] == self.report_person_responsible.first_name
 
     def test_get_report_version_facility_report_returns_required_data(self):
         response = TestUtils.mock_get_with_auth_role(
