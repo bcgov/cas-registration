@@ -53,7 +53,7 @@ class TestElicensingOperatorService:
 
     @patch(RLS_BYPASS_RLS_PATH)
     def test_refreshes_data_from_elicensing(self, mock_bypass_rls, mock_query_invoice):
-        """Test sync_client_with_elicensing successfully creates a new client"""
+        """Test refresh success"""
         # Setup mocks
         client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
 
@@ -144,6 +144,74 @@ class TestElicensingOperatorService:
         assert payment.method == "EFT/Wire - OBPS"
         assert payment.receipt_number == 'R192883'
         assert adjustment.amount == Decimal('10.11')
+
+    @patch(RLS_BYPASS_RLS_PATH)
+    def test_parses_penalty_fees_from_elicensing(self, mock_bypass_rls, mock_query_invoice):
+        """Test fee filter parses penalty fees"""
+        # Setup mocks
+        client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
+
+        # Setup successful API call
+        mock_inv = InvoiceQueryResponse(
+            clientObjectId=client_operator.client_object_id,
+            clientGUID="00000000-0000-0000-0000-000000000000",
+            invoiceNumber="inv-002",
+            invoicePaymentDueDate="2025-11-30",
+            invoiceOutstandingBalance=Decimal('100.00'),
+            invoiceFeeBalance=Decimal('100.00'),
+            invoiceInterestBalance=Decimal('0.00'),
+            fees=[
+                InvoiceFee(
+                    feeObjectId=3,
+                    feeGUID="00000000-0000-0000-0000-000000000000",
+                    businessAreaCode='asdf',
+                    feeDate="2025-11-30",
+                    description="Late Submission",
+                    baseAmount=Decimal('0'),
+                    taxTotal=Decimal('0'),
+                    adjustmentTotal=Decimal('0'),
+                    taxAdjustmentTotal=Decimal('0'),
+                    paymentBaseAmount=Decimal('0'),
+                    paymentTotal=Decimal('0'),
+                    invoiceNumber="inv-002",
+                ),
+                InvoiceFee(
+                    feeObjectId=4,
+                    feeGUID="00000000-0000-0000-0000-000000000000",
+                    businessAreaCode='asdf',
+                    feeDate="2025-11-30",
+                    description="Automatic Overdue",
+                    baseAmount=Decimal('0'),
+                    taxTotal=Decimal('0'),
+                    adjustmentTotal=Decimal('0'),
+                    taxAdjustmentTotal=Decimal('0'),
+                    paymentBaseAmount=Decimal('0'),
+                    paymentTotal=Decimal('0'),
+                    invoiceNumber="inv-002",
+                ),
+            ],
+        )
+
+        mock_query_invoice.return_value = mock_inv
+        mock_bypass_rls.return_value = MagicMock()
+
+        # Call the method
+        ElicensingDataRefreshService.refresh_data_by_invoice(
+            client_operator_id=client_operator.id, invoice_number="inv-002"
+        )
+
+        mock_bypass_rls.assert_called_once()
+
+        # Assert record creation successful & accurate
+        invoice = ElicensingInvoice.objects.get(invoice_number='inv-002')
+        fees = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
+        late_fee = fees.first()
+        overdue_fee = fees.last()
+        assert fees.count() == 2
+        assert late_fee.object_id == 3
+        assert late_fee.description == 'Late Submission'
+        assert overdue_fee.object_id == 4
+        assert overdue_fee.description == 'Automatic Overdue'
 
     def test_compliance_report_version_id_wrapper_stale_data(self, mock_refresh_invoice):
         invoice = make_recipe(
