@@ -56,6 +56,8 @@ class ReportProductComplianceData:
                 ComplianceParameters.round(self.tightening_rate_override) if self.tightening_rate_override else None
             ),
         }
+    
+    
 
 
 @dataclass
@@ -179,7 +181,8 @@ class ComplianceService:
 
         # Determine whether this report's compliance calculations should use the Apr-Dec (2024) window
         # Use the report's reporting year (from the ReportVersion) rather than the NAICS regulatory value.
-        use_apr_dec = report_version_record.report.reporting_year_id == 2024
+        reporting_year_is_2024 = report_version_record.report.reporting_year_id == 2024
+        use_apr_dec = reporting_year_is_2024
 
         report_products = (
             ReportProduct.objects.order_by("product_id")
@@ -284,17 +287,30 @@ class ComplianceService:
                 credited_emissions = emissions_limit_total - total_allocated_for_compliance_used
 
         # Craft return object with all data
-        return_object = ComplianceData(
-            emissions_attributable_for_reporting=attributable_for_reporting_total,
-            reporting_only_emissions=round(total_allocated_reporting_only, 4),
-            emissions_attributable_for_compliance=round(total_allocated_for_compliance_used, 4),
-            emissions_limit=round(emissions_limit_total, 4),
-            excess_emissions=round(excess_emissions, 4),
-            credited_emissions=round(credited_emissions, 4),
-            industry_regulatory_values=industry_regulatory_values,
-            products=compliance_product_list,
-            reporting_year=report_version_record.report.reporting_year_id,
-        )
+        if reporting_year_is_2024:
+            return_object = ComplianceData(
+                emissions_attributable_for_reporting=attributable_for_reporting_total,
+                reporting_only_emissions=round(total_allocated_reporting_only, 4),
+                emissions_attributable_for_compliance=round(total_allocated_for_compliance_used, 4),
+                emissions_limit=round(emissions_limit_total, 4),
+                excess_emissions=round(excess_emissions, 4),
+                credited_emissions=round(credited_emissions, 4),
+                industry_regulatory_values=industry_regulatory_values,
+                products=compliance_product_list,
+                reporting_year=report_version_record.report.reporting_year_id,
+            )
+        else:
+            return_object = ComplianceData(
+                emissions_attributable_for_reporting=attributable_for_reporting_total,
+                reporting_only_emissions=ComplianceParameters.round(total_allocated_reporting_only),
+                emissions_attributable_for_compliance=ComplianceParameters.round(total_allocated_for_compliance_used),
+                emissions_limit=ComplianceParameters.round(emissions_limit_total),
+                excess_emissions=ComplianceParameters.round(excess_emissions),
+                credited_emissions=ComplianceParameters.round(credited_emissions),
+                industry_regulatory_values=industry_regulatory_values,
+                products=compliance_product_list,
+                reporting_year=report_version_record.report.reporting_year_id,
+            )
 
         return return_object
 
