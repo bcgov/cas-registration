@@ -93,13 +93,26 @@ export type ComplianceInvoiceType =
   | "late-submission-penalty";
 
 // --- Invoice PDF content
-export const INVOICE_VOID_WATERMARK = /\bVOID\b/i;
+export const INVOICE_VOID_WATERMARK = /VOID/i;
 export const FEES_AND_ADJUSTMENTS_TEXT = "Fees and Adjustments";
 export const INVOICE_NUMBER_LABEL = /Invoice\s*#:\s*\S+/i;
 export const DEFAULT_COMPLIANCE_OBLIGATION_LINE =
   /\bcompliance\s+obligation\b/i;
-export const DEFAULT_ADJUSTMENT_LINE = /\badjustment\b/i;
+export const SUPPLEMENTARY_ADJUSTMENT_LINE =
+  /\bsupplementary\s*report\s*adjustment\b/i;
+export const SUPPLEMENTARY_ADJUSTMENT_VOID_LINE =
+  /\bsupplementary\s*report\s*adjustment\b.*\bvoid\b/i;
 // Dollars
-export const DEFAULT_OBLIGATION_AMOUNT_DUE = /Amount Due:\s*\$1,?000,?968\.64/i;
-export const POST_ADJUSTMENT_OBLIGATION_AMOUNT_DUE =
-  /Amount Due:\s*\$277,?582\.40/i;
+export const AMOUNT_DUE_LABEL = /Amount\s*Due:\s*/i;
+export const DEFAULT_OBLIGATION_AMOUNT_DUE = new RegExp(
+  `${AMOUNT_DUE_LABEL.source}\\$1,?000,?968\\.64`,
+  "i",
+);
+export const AMOUNT_DUE_AFTER_DECREASE_STILL_UNMET = new RegExp(
+  `${AMOUNT_DUE_LABEL.source}\\$277,?582\\.40`,
+  "i",
+);
+export const AMOUNT_DUE_AFTER_DECREASE_OBLIGATION_MET = new RegExp(
+  `${AMOUNT_DUE_LABEL.source}\\$0\\.00`,
+  "i",
+);

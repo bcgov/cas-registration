@@ -468,32 +468,39 @@ export class CurrentReportsPOM {
    * Completes a supplementary report flow that **decreases an obligation**
    * for an existing “Obligation Not Met” report.
    *
-   * Flow overview:
-   * - Creates a supplementary report from an OBLIGATION_NOT_MET base report
-   * - Updates production data to reduce emissions
-   * - Completes and Submits the supplementary report
+   * “Amount of decrease” in this flow is controlled by the production input(s)
+   *
+   * @param apiContext Playwright API request context (required for stub submission)
+   * @param options Controls how much the obligation decreases (via production values)
    */
-  async supplementaryReportObligationDecrease(apiContext?: APIRequestContext) {
-    // Start supplementary report for OBLIGATION_NOT_MET
+  async supplementaryReportObligationDecrease(
+    apiContext: APIRequestContext,
+    {
+      annualProduction,
+      productIndex,
+      reviewChangesReason,
+      facilityId = FacilityIDs.OBLIGATION_NOT_MET,
+    }: {
+      annualProduction: number;
+      productIndex: number;
+      reviewChangesReason?: string;
+      facilityId?: FacilityIDs;
+    },
+  ): Promise<void> {
     const reportId = await this.createSupplementaryReportById(
       ReportIDs.OBLIGATION_NOT_MET,
     );
 
-    // Fill Cement equivalent (product index 1) with annual production = 20,000, decreases emmissions
-    await this.gotoProductionData(reportId, FacilityIDs.OBLIGATION_NOT_MET);
-    await this.fillProductionData(1, 20_000);
+    await this.gotoProductionData(reportId, facilityId);
+    await this.fillProductionData(productIndex, annualProduction);
+
     await this.clickSaveAndContinue(
-      new RegExp(
-        this.getAllocationEmissionsUrl(
-          reportId,
-          FacilityIDs.OBLIGATION_NOT_MET,
-        ),
-      ),
+      new RegExp(this.getAllocationEmissionsUrl(reportId, facilityId)),
     );
 
-    // Complete review changes
     await this.gotoReviewChanges(reportId);
-    await this.fillReviewChanges();
+    await this.fillReviewChanges(reviewChangesReason);
+
     await this.clickSaveAndContinue(
       new RegExp(this.getFinalReviewsUrl(reportId)),
     );
@@ -501,18 +508,10 @@ export class CurrentReportsPOM {
       new RegExp(`${this.getFinalReviewsUrl(reportId)}\\/?$`, "i"),
     );
 
-    // Complete attachments
     await this.gotoAtachments(reportId);
     await this.fillAttachments();
     await this.clickSaveAndContinue(new RegExp(this.getSignOffUrl(reportId)));
 
-    // Submit supplementary sign-off
-    await this.submitReportById(
-      apiContext,
-      reportId,
-      false, // isEioFlow
-      true, // isSupplementary
-      true, // isRegulated (obligation decrease implies regulated)
-    );
+    await this.submitReportById(apiContext, reportId, false, true, true);
   }
 }

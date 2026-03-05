@@ -178,13 +178,19 @@ class InvoiceAdjustment:
 @dataclass(slots=True, frozen=True)
 class AdjustmentStrategy:
     """
-    Immutable, normalized contract consumed by `DecreasedObligationHandle._process_adjustment_after_commit(...)`
-    - invoices : List[InvoiceAdjustment]: the invoice-level adjustments to apply.
-    - should_record_manual_handling: A flag indicating whether the entity has an outcome that should be captured for manual handling
+    Immutable, normalized contract consumed by `DecreasedObligationHandler._process_adjustment_after_commit(...)`
+
+    - invoices: invoice-level adjustments to apply
+    - should_record_manual_handling: flag to create manual-handling record
+    - earned_credits_tonnes: earned credits to create on the NEW CRV (tonnes)
+    - should_create_earned_credits: whether to create an earned-credits record
     """
 
     invoices: List["InvoiceAdjustment"] = field(default_factory=list)
     should_record_manual_handling: bool = False
+
+    earned_credits_tonnes: Decimal = Decimal("0")
+    should_create_earned_credits: bool = False
 
     @staticmethod
     def empty() -> "AdjustmentStrategy":

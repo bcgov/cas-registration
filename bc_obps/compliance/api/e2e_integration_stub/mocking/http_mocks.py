@@ -1,9 +1,12 @@
 import re
 from contextlib import contextmanager
+from decimal import Decimal
 from typing import Any, Callable, Iterator, Optional
 from unittest.mock import patch
+
 import requests
 from requests.models import Response
+
 from ..utils import base_url, is_local_url, json_response
 from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
 from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
@@ -15,9 +18,8 @@ class UnmockedExternalCall(RuntimeError):
     pass
 
 
-# Invoice balance constants used across initial obligation and supplementary adjustment scenarios
+# Invoice balance constants used across initial obligation scenarios
 _INITIAL_OUTSTANDING = "1000968.64"
-_ADJUSTMENT_AMOUNT = "-723386.24"
 
 
 class _InvoiceMock:
@@ -27,23 +29,32 @@ class _InvoiceMock:
 
     def __init__(self) -> None:
         self._adjusted = False
+        self._posted_adjustment_amount: Optional[str] = None
+        self._posted_adjustment_reason: Optional[str] = None
 
-    def get(self, url: str) -> Response:
-        outstanding = _INITIAL_OUTSTANDING
+    def get(self, url: str, **_kwargs: Any) -> Response:
+        outstanding_dec = Decimal(_INITIAL_OUTSTANDING)
+        if self._adjusted and self._posted_adjustment_amount is not None:
+            outstanding_dec += Decimal(self._posted_adjustment_amount)
+        outstanding_dec = max(outstanding_dec, Decimal("0.00"))
+        outstanding = str(outstanding_dec.quantize(Decimal("0.01")))
+        adjustment_amount = self._posted_adjustment_amount
+        adjustment_reason = self._posted_adjustment_reason
         adjustments = (
             [
                 {
                     "adjustmentObjectId": "1",
-                    "adjustmentTotal": _ADJUSTMENT_AMOUNT,
-                    "amount": _ADJUSTMENT_AMOUNT,
+                    "adjustmentTotal": adjustment_amount,
+                    "amount": adjustment_amount,
                     "date": "2025-12-18",
-                    "reason": "Supplementary Report Adjustment",
+                    "reason": adjustment_reason,
                     "type": "Adjustment",
                 }
             ]
             if self._adjusted
             else []
         )
+
         return json_response(
             200,
             {
@@ -63,7 +74,7 @@ class _InvoiceMock:
                         "description": "GGIRCA Compliance Obligation",
                         "baseAmount": _INITIAL_OUTSTANDING,
                         "taxTotal": "0.00",
-                        "adjustmentTotal": _ADJUSTMENT_AMOUNT if self._adjusted else "0.00",
+                        "adjustmentTotal": adjustment_amount if self._adjusted else "0.00",
                         "taxAdjustmentTotal": "0.00",
                         "paymentBaseAmount": _INITIAL_OUTSTANDING,
                         "paymentTotal": _INITIAL_OUTSTANDING,
@@ -76,17 +87,35 @@ class _InvoiceMock:
             url,
         )
 
-    def adjust(self, url: str) -> Response:
+    def adjust(self, url: str, **kwargs: Any) -> Response:
         self._adjusted = True
+        payload: dict[str, Any] = kwargs.get("json") or {}
+        targets = [payload, payload.get("feeAdjustment", {}), (payload.get("adjustments") or [{}])[0]]
+
+        for target in targets:
+            if not isinstance(target, dict):
+                continue
+
+            raw_amount = target.get("adjustmentTotal") or target.get("amount")
+            raw_reason = target.get("reason")
+
+            if raw_amount is not None:
+                self._posted_adjustment_amount = str(Decimal(str(raw_amount)).quantize(Decimal("0.01")))
+            if raw_reason is not None:
+                self._posted_adjustment_reason = str(raw_reason)
+
+            if raw_amount or raw_reason:
+                break
+
         return json_response(200, {"clientObjectId": 123}, url)
 
 
 # Static eLicensing mocks
-_ELICENSING_STATIC_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
+_ELICENSING_STATIC_MOCKS: list[tuple[str, str, Callable[..., Response]]] = [
     (
         rf"{ELicensingAPIClient.CLIENT_ENDPOINT}$",
         "POST",
-        lambda url: json_response(
+        lambda url, **_kwargs: json_response(
             200,
             {
                 "clientObjectId": 123,
@@ -98,7 +127,7 @@ _ELICENSING_STATIC_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
     (
         rf"{ELicensingAPIClient.CLIENT_ENDPOINT}/\d+{ELicensingAPIClient.FEES_ENDPOINT}$",
         "POST",
-        lambda url: json_response(
+        lambda url, **_kwargs: json_response(
             200,
             {
                 "clientObjectId": 123,
@@ -116,7 +145,7 @@ _ELICENSING_STATIC_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
     (
         rf"{ELicensingAPIClient.CLIENT_ENDPOINT}/\d+{ELicensingAPIClient.INVOICE_ENDPOINT}$",
         "POST",
-        lambda url: json_response(
+        lambda url, **_kwargs: json_response(
             200,
             {
                 "clientObjectId": "123",
@@ -154,11 +183,11 @@ E2E_PROJECT_DETAILS = {
 }
 
 
-BCCR_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
+BCCR_MOCKS: list[tuple[str, str, Callable[..., Response]]] = [
     (
         rf"{BCCarbonRegistryAPIClient.AUTH_ENDPOINT}$",
         "POST",
-        lambda url: json_response(
+        lambda url, **_kwargs: json_response(
             200,
             {
                 "access_token": "e2e-test-token",
@@ -171,7 +200,7 @@ BCCR_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
     (
         rf"{BCCarbonRegistryAPIClient.ACCOUNT_SEARCH_ENDPOINT}$",
         "POST",
-        lambda url: json_response(
+        lambda url, **_kwargs: json_response(
             200,
             {
                 "totalEntities": 1,
@@ -200,17 +229,17 @@ BCCR_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
     (
         rf"{BCCarbonRegistryAPIClient.PROJECT_SUBMIT_ENDPOINT}$",
         "POST",
-        lambda url: json_response(200, E2E_PROJECT_DETAILS, url),
+        lambda url, **_kwargs: json_response(200, E2E_PROJECT_DETAILS, url),
     ),
     (
         rf"{BCCarbonRegistryAPIClient.ISSUANCE_SUBMIT_ENDPOINT}$",
         "POST",
-        lambda url: json_response(200, {"id": "E2E-ISSUANCE-1"}, url),
+        lambda url, **_kwargs: json_response(200, {"id": "E2E-ISSUANCE-1"}, url),
     ),
     (
         rf"{BCCarbonRegistryAPIClient.PROJECT_DETAILS_ENDPOINT}/\d+(?:/)?(?:\?.*)?$",
         "GET",
-        lambda url: json_response(
+        lambda url, **_kwargs: json_response(
             200,
             E2E_PROJECT_DETAILS,
             url,
@@ -220,12 +249,12 @@ BCCR_MOCKS: list[tuple[str, str, Callable[[str], Response]]] = [
 
 
 def match_endpoint(
-    url: str, method: str, mocks: list[tuple[str, str, Callable[[str], Response]]]
+    url: str, method: str, mocks: list[tuple[str, str, Callable[..., Response]]], **kwargs: Any
 ) -> Optional[Response]:
     """Match URL and method against registered mocks using regex patterns."""
     for pattern, expected_method, handler in mocks:
         if method == expected_method and re.search(pattern, url):
-            return handler(url)
+            return handler(url, **kwargs)
     return None
 
 
@@ -235,7 +264,7 @@ def mock_external_http() -> Iterator[None]:
     # Fresh invoice mock state for each context invocation — no cross-request leakage
     invoice_mock = _InvoiceMock()
 
-    elicensing_mocks: list[tuple[str, str, Callable[[str], Response]]] = _ELICENSING_STATIC_MOCKS + [
+    elicensing_mocks: list[tuple[str, str, Callable[..., Response]]] = _ELICENSING_STATIC_MOCKS + [
         (
             rf"{ELicensingAPIClient.CLIENT_ENDPOINT}/\d+{ELicensingAPIClient.INVOICE_ENDPOINT}$",
             "GET",
@@ -259,7 +288,7 @@ def mock_external_http() -> Iterator[None]:
     def dispatch(method: str, url: str, **_kwargs: Any) -> Optional[Response]:
         # Try pattern-based mocking first
         for _, patterns, _ in api_mocks:
-            response = match_endpoint(url, method.upper(), patterns)
+            response = match_endpoint(url, method.upper(), patterns, **_kwargs)
             if response is not None:
                 response.url = url
                 return response
