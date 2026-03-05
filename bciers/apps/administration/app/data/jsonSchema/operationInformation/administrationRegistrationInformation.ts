@@ -311,7 +311,7 @@ export const registrationInformationUiSchema: UiSchema = {
     "ui:tooltipPrefix": "Regulatory name: ",
   },
   regulated_products: {
-    "ui:widget": "MultiSelectWidgetWithTooltip",
+    "ui:widget": "RegulatedProductMultiSelectWidget",
     "ui:placeholder": "Select Regulated Product",
   },
   opted_out_operation: {

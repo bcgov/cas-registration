@@ -268,7 +268,7 @@ export const buildOperationReviewUiSchema = (
     uniqueItems: true,
   },
   regulated_products: {
-    "ui:widget": "MultiSelectWidgetWithTooltip",
+    "ui:widget": "RegulatedProductMultiSelectWidget",
     "ui:options": {
       ...commonUiOptions,
       label: { style: { verticalAlign: "top" } },
