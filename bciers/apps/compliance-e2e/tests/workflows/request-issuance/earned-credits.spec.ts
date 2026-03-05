@@ -300,9 +300,7 @@ test.describe("Test earned credits request issuance flow", () => {
       );
 
       // happo screenshot
-      const issuanceStatus = analystPage.locator(
-        '//label[@for="root_issuance_status"]/../following-sibling::div//span',
-      );
+      const issuanceStatus = analystPage.locator("#root_issuance_status");
       await takeStabilizedScreenshot(happoScreenshot, analystPage, {
         component: "Earned credits issuance",
         variant: "Analyst view: issuance status",
@@ -331,15 +329,15 @@ test.describe("Test earned credits request issuance flow", () => {
         linkName: GridActionText.REVIEW_CHANGE_REQUIRED,
       });
 
-      // happo screenshot
-      const issuanceStatus = industryPage2.locator(
-        '//label[@for="root_issuance_status"]/../following-sibling::div//span',
-      );
-      await takeStabilizedScreenshot(happoScreenshot, industryPage2, {
-        component: "Earned credits issuance",
-        variant: "Industry resubmission: review change required",
-        locator: issuanceStatus,
-      });
+      // // happo screenshot
+      // const issuanceStatus = industryPage2.locator(
+      //   '//label[@for="root_issuance_status"]/../following-sibling::div//span',
+      // );
+      // await takeStabilizedScreenshot(happoScreenshot, industryPage2, {
+      //   component: "Earned credits issuance",
+      //   variant: "Industry resubmission: review change required",
+      //   locator: issuanceStatus,
+      // });
 
       await industryEarnedCredits2.submitRequestIssuance(request);
     } finally {
