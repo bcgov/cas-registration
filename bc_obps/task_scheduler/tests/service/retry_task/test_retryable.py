@@ -74,16 +74,16 @@ class TestCreateRetryTask(TestCase):
         self.assertEqual(result.tag, 'test_tag')
         self.assertEqual(result.max_retries, 5)
         self.assertEqual(result.retry_delay_minutes, 10)
-        self.assertEqual(result.status, RetryTask.Status.PENDING)
+        self.assertEqual(result.status, RetryTask.TaskStatus.PENDING)
 
     def test_create_retry_task_existing_failed_task(self):
         existing_task = baker.make_recipe(
             "task_scheduler.tests.utils.retry_task",
-            function_path='test.module.function',
-            status=RetryTask.Status.FAILED,
+            function_path="test.module.function",
+            status=RetryTask.TaskStatus.FAILED,
             retry_count=1,
-            kwargs={'param': 'value'},
-            tag='test_tag',
+            kwargs={"param": "value"},
+            tag="test_tag",
         )
 
         # Try to create another task with same parameters
@@ -97,10 +97,10 @@ class TestCreateRetryTask(TestCase):
     def test_create_retry_task_existing_completed_task(self):
         existing_task = baker.make_recipe(
             "task_scheduler.tests.utils.retry_task",
-            function_path='test.module.function',
-            status=RetryTask.Status.COMPLETED,
-            kwargs={'param': 'value'},
-            tag='test_tag',
+            function_path="test.module.function",
+            status=RetryTask.TaskStatus.COMPLETED,
+            kwargs={"param": "value"},
+            tag="test_tag",
         )
 
         # Try to create another task with same parameters
@@ -110,7 +110,7 @@ class TestCreateRetryTask(TestCase):
         self.assertNotEqual(result, existing_task)
         self.assertIsInstance(result, RetryTask)
         self.assertEqual(result.function_path, 'test.module.function')
-        self.assertEqual(result.status, RetryTask.Status.PENDING)
+        self.assertEqual(result.status, RetryTask.TaskStatus.PENDING)
         # Should have 2 tasks now
         self.assertEqual(RetryTask.objects.filter(function_path='test.module.function').count(), 2)
 
@@ -118,10 +118,10 @@ class TestCreateRetryTask(TestCase):
         # Create a running task first with matching kwargs
         existing_task = baker.make_recipe(
             "task_scheduler.tests.utils.retry_task",
-            function_path='test.module.function',
-            status=RetryTask.Status.RUNNING,
-            kwargs={'param': 'value'},
-            tag='test_tag',
+            function_path="test.module.function",
+            status=RetryTask.TaskStatus.RUNNING,
+            kwargs={"param": "value"},
+            tag="test_tag",
         )
 
         # Try to create another task with same parameters
@@ -136,12 +136,12 @@ class TestCreateRetryTask(TestCase):
         # Create a failed task that has exhausted retries with matching kwargs
         existing_task = baker.make_recipe(
             "task_scheduler.tests.utils.retry_task",
-            function_path='test.module.function',
-            status=RetryTask.Status.FAILED,
+            function_path="test.module.function",
+            status=RetryTask.TaskStatus.FAILED,
             retry_count=3,
             max_retries=3,
-            kwargs={'param': 'value'},
-            tag='test_tag',
+            kwargs={"param": "value"},
+            tag="test_tag",
         )
 
         # Try to create another task with same parameters

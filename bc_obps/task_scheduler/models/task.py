@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class Task(models.Model):
     """Abstract base model for all tasks."""
 
-    class Status(models.TextChoices):
+    class TaskStatus(models.TextChoices):
         PENDING = "pending", "Pending"
         RUNNING = "running", "Running"
         COMPLETED = "completed", "Completed"
@@ -21,7 +21,7 @@ class Task(models.Model):
     function_path = models.CharField(max_length=512, help_text="Full path to the function to execute")
     tag = models.CharField(max_length=100, blank=True, help_text="Tag for categorizing and filtering tasks")
     status = models.CharField(
-        max_length=20, choices=Status.choices, default=Status.PENDING, help_text="Current status of the task"
+        max_length=20, choices=TaskStatus.choices, default=TaskStatus.PENDING, help_text="Current status of the task"
     )
     next_run_time = models.DateTimeField(null=True, blank=True, help_text="When this task should run next")
     last_run_time = models.DateTimeField(null=True, blank=True, help_text="When this task was last executed")
@@ -56,17 +56,17 @@ class Task(models.Model):
         logger.debug(f"Lock released for {self.__class__.__name__} {self.pk}")
 
     def mark_attempt_started(self) -> None:
-        self.status = self.Status.RUNNING
+        self.status = self.TaskStatus.RUNNING
         self.last_run_time = timezone.now()
         self.save(update_fields=['status', 'last_run_time'])
 
     def mark_attempt_success(self) -> None:
-        self.status = self.Status.COMPLETED
+        self.status = self.TaskStatus.COMPLETED
         self.lock_acquired_at = None
         self.save(update_fields=['status', 'lock_acquired_at'])
 
     def mark_attempt_failed(self, error_message: str) -> None:
-        self.status = self.Status.FAILED
+        self.status = self.TaskStatus.FAILED
         self.lock_acquired_at = None
         error_entry: dict = {'error': error_message, 'timestamp': timezone.now().isoformat()}
         self.error_history.append(error_entry)

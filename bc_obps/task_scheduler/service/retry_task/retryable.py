@@ -18,11 +18,11 @@ def create_retry_task(
         function_path=function_path,
         kwargs=kwargs,
         tag=tag,
-        status__in=[RetryTask.Status.PENDING, RetryTask.Status.RUNNING, RetryTask.Status.FAILED],
+        status__in=[RetryTask.TaskStatus.PENDING, RetryTask.TaskStatus.RUNNING, RetryTask.TaskStatus.FAILED],
     ).first()
 
     if existing_task:
-        if existing_task.status == RetryTask.Status.FAILED and existing_task.can_retry:
+        if existing_task.status == RetryTask.TaskStatus.FAILED and existing_task.can_retry:
             # Update existing failed task instead of creating duplicate
             existing_task.retry_count += 1
             existing_task.next_run_time = existing_task.calculate_next_run_time()
