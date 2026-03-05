@@ -405,21 +405,48 @@ export async function waitForElementToStabilize(page: Page, element: string) {
 // This function can be used instead of `happoScreenshot` directly when experiencing flaky screenshots. It waits for the page to be stable before taking a screenshot.
 export async function takeStabilizedScreenshot(
   happoScreenshot: any,
-  page: Page,
-  happoArgs: { component: string; variant: string; targets?: string[] },
-) {
-  // Skip Happo screenshots if Happo is not enabled (e.g., running locally without API keys)
-  if (!happoScreenshot) {
-    return;
-  }
-  const { component, variant, targets } = happoArgs;
-  const pageContent = page.locator("html");
-  await waitForElementToStabilize(page, "html"); // <-- match the screenshot target
-  await happoScreenshot(pageContent, {
+  page: import("@playwright/test").Page,
+  {
     component,
     variant,
     targets,
-  });
+    selector = "html",
+  }: {
+    component: string;
+    variant: string;
+    targets?: string[];
+    selector?: string;
+  },
+) {
+  const isDetached = (e: unknown) =>
+    /Frame has been detached|Target closed|Execution context was destroyed/i.test(
+      e instanceof Error ? e.message : String(e),
+    );
+
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      await page.waitForLoadState("domcontentloaded");
+
+      await waitForElementToStabilize(page, selector);
+
+      const pageContent = page.locator(selector);
+
+      await happoScreenshot(pageContent, {
+        component,
+        variant,
+        targets,
+      });
+
+      return; // success
+    } catch (e) {
+      if (attempt === 0 && isDetached(e)) {
+        // Re-wait and try again.
+        await page.waitForLoadState("domcontentloaded").catch(() => {});
+        continue;
+      }
+      throw e;
+    }
+  }
 }
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
