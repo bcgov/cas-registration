@@ -39,7 +39,7 @@ class ScheduledTask(Task):
         ]
 
     def __str__(self) -> str:
-        status_display = dict(self.Status.choices)[self.status]
+        status_display = dict(self.TaskStatus.choices)[self.status]
         return f"{self.function_path} ({self.schedule_type}) - {status_display}"
 
     def calculate_next_run_time(self, force_recalculate: bool = False, **kwargs: object) -> Optional[datetime]:

@@ -53,11 +53,16 @@ class TaskService:
     def get_due_tasks(cls, tag: Optional[str] = None) -> List[Task]:
         now = timezone.now()
         scheduled_tasks = ScheduledTask.objects.filter(
-            status__in=[ScheduledTask.Status.PENDING, ScheduledTask.Status.FAILED, ScheduledTask.Status.COMPLETED],
+            status__in=[
+                ScheduledTask.TaskStatus.PENDING,
+                ScheduledTask.TaskStatus.FAILED,
+                ScheduledTask.TaskStatus.COMPLETED,
+            ],
             next_run_time__lte=now,
         )
         retry_tasks = RetryTask.objects.filter(
-            status__in=[RetryTask.Status.PENDING, RetryTask.Status.FAILED], next_run_time__lte=now
+            status__in=[RetryTask.TaskStatus.PENDING, RetryTask.TaskStatus.FAILED],
+            next_run_time__lte=now,
         )
 
         if tag:
@@ -79,9 +84,13 @@ class TaskService:
     def cleanup_old_tasks(cls, days: int = 30) -> int:
         cutoff_date = timezone.now() - timedelta(days=days)
         scheduled_deleted, _ = ScheduledTask.objects.filter(
-            status__in=[ScheduledTask.Status.COMPLETED, ScheduledTask.Status.INACTIVE], last_run_time__lt=cutoff_date
+            status__in=[
+                ScheduledTask.TaskStatus.COMPLETED,
+                ScheduledTask.TaskStatus.INACTIVE,
+            ],
+            last_run_time__lt=cutoff_date,
         ).delete()
         retry_deleted, _ = RetryTask.objects.filter(
-            status=RetryTask.Status.COMPLETED, last_run_time__lt=cutoff_date
+            status=RetryTask.TaskStatus.COMPLETED, last_run_time__lt=cutoff_date
         ).delete()
         return scheduled_deleted + retry_deleted

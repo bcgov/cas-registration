@@ -71,8 +71,8 @@ class ScheduledTaskSynchronizer:
 
     @classmethod
     def _activate_task_if_needed(cls, task: ScheduledTask) -> None:
-        if task.status == ScheduledTask.Status.INACTIVE:
-            task.status = ScheduledTask.Status.PENDING
+        if task.status == ScheduledTask.TaskStatus.INACTIVE:
+            task.status = ScheduledTask.TaskStatus.PENDING
             task.save(update_fields=['status'])
 
     @classmethod
@@ -95,7 +95,7 @@ class ScheduledTaskSynchronizer:
                 schedule_day_of_week=task_config.get('schedule_day_of_week'),
                 schedule_day_of_month=task_config.get('schedule_day_of_month'),
                 schedule_month=task_config.get('schedule_month'),
-                status=ScheduledTask.Status.PENDING,
+                status=ScheduledTask.TaskStatus.PENDING,
             )
 
             # Calculate next run time
@@ -115,8 +115,8 @@ class ScheduledTaskSynchronizer:
         discovered_paths = set(discovered_tasks.keys())
 
         for function_path, task in existing_tasks.items():
-            if function_path not in discovered_paths and task.status != ScheduledTask.Status.INACTIVE:
-                task.status = ScheduledTask.Status.INACTIVE
+            if function_path not in discovered_paths and task.status != ScheduledTask.TaskStatus.INACTIVE:
+                task.status = ScheduledTask.TaskStatus.INACTIVE
                 task.save(update_fields=['status'])
                 deactivated_count += 1
         return deactivated_count

@@ -61,21 +61,21 @@ class RetryTaskTest(BaseTestCase):
         assert next_run is None
 
     def test_retry_task_mark_attempt_failed_increments_retry_count(self):
-        self.test_object.status = RetryTask.Status.RUNNING
+        self.test_object.status = RetryTask.TaskStatus.RUNNING
         self.test_object.save()
 
         error_message = "Test error"
         self.test_object.mark_attempt_failed(error_message)
         self.test_object.refresh_from_db()
 
-        assert self.test_object.status == RetryTask.Status.FAILED
+        assert self.test_object.status == RetryTask.TaskStatus.FAILED
         assert self.test_object.retry_count == 1
         assert len(self.test_object.error_history) == 1
         assert self.test_object.error_history[0]['error'] == error_message
         assert 'timestamp' in self.test_object.error_history[0]
 
     def test_retry_task_mark_attempt_failed_multiple_times(self):
-        self.test_object.status = RetryTask.Status.RUNNING
+        self.test_object.status = RetryTask.TaskStatus.RUNNING
         self.test_object.save()
 
         # First failure
@@ -85,7 +85,7 @@ class RetryTaskTest(BaseTestCase):
         assert len(self.test_object.error_history) == 1
 
         # Second failure
-        self.test_object.status = RetryTask.Status.RUNNING
+        self.test_object.status = RetryTask.TaskStatus.RUNNING
         self.test_object.save()
         self.test_object.mark_attempt_failed("Error 2")
         self.test_object.refresh_from_db()
@@ -93,7 +93,7 @@ class RetryTaskTest(BaseTestCase):
         assert len(self.test_object.error_history) == 2
 
         # Third failure
-        self.test_object.status = RetryTask.Status.RUNNING
+        self.test_object.status = RetryTask.TaskStatus.RUNNING
         self.test_object.save()
         self.test_object.mark_attempt_failed("Error 3")
         self.test_object.refresh_from_db()
@@ -101,7 +101,7 @@ class RetryTaskTest(BaseTestCase):
         assert len(self.test_object.error_history) == 3
 
         # Fourth failure (should not increment beyond max_retries)
-        self.test_object.status = RetryTask.Status.RUNNING
+        self.test_object.status = RetryTask.TaskStatus.RUNNING
         self.test_object.save()
         self.test_object.mark_attempt_failed("Error 4")
         self.test_object.refresh_from_db()
@@ -109,12 +109,12 @@ class RetryTaskTest(BaseTestCase):
         assert len(self.test_object.error_history) == 4
 
     def test_retry_task_error_history_limit(self):
-        self.test_object.status = RetryTask.Status.RUNNING
+        self.test_object.status = RetryTask.TaskStatus.RUNNING
         self.test_object.save()
 
         # Add 6 errors
         for i in range(6):
-            self.test_object.status = RetryTask.Status.RUNNING
+            self.test_object.status = RetryTask.TaskStatus.RUNNING
             self.test_object.save()
             self.test_object.mark_attempt_failed(f"Error {i}")
 
@@ -126,7 +126,7 @@ class RetryTaskTest(BaseTestCase):
         assert self.test_object.error_history[4]['error'] == "Error 5"  # Last error is kept
 
     def test_retry_task_error_history_structure(self):
-        self.test_object.status = RetryTask.Status.RUNNING
+        self.test_object.status = RetryTask.TaskStatus.RUNNING
         self.test_object.save()
 
         error_message = "Test error message"
@@ -144,11 +144,11 @@ class RetryTaskTest(BaseTestCase):
         self.test_object.mark_attempt_started()
         self.test_object.refresh_from_db()
 
-        assert self.test_object.status == RetryTask.Status.RUNNING
+        assert self.test_object.status == RetryTask.TaskStatus.RUNNING
         assert self.test_object.last_run_time is not None
 
     def test_retry_task_mark_attempt_success(self):
-        self.test_object.status = RetryTask.Status.RUNNING
+        self.test_object.status = RetryTask.TaskStatus.RUNNING
         self.test_object.lock_acquired_at = timezone.now()
         self.test_object.error_history = [{"error": "Previous error", "timestamp": "2024-01-01T10:00:00"}]
         self.test_object.save()
@@ -156,7 +156,7 @@ class RetryTaskTest(BaseTestCase):
         self.test_object.mark_attempt_success()
         self.test_object.refresh_from_db()
 
-        assert self.test_object.status == RetryTask.Status.COMPLETED
+        assert self.test_object.status == RetryTask.TaskStatus.COMPLETED
         assert self.test_object.error_history == [{"error": "Previous error", "timestamp": "2024-01-01T10:00:00"}]
         assert self.test_object.lock_acquired_at is None
 
