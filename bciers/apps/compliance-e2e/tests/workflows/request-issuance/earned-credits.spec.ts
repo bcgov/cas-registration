@@ -300,9 +300,13 @@ test.describe("Test earned credits request issuance flow", () => {
       );
 
       // happo screenshot
+      const issuanceStatus = analystPage.locator(
+        '//label[@for="root_issuance_status"]/../following-sibling::div//span',
+      );
       await takeStabilizedScreenshot(happoScreenshot, analystPage, {
         component: "Earned credits issuance",
-        variant: "Analyst suggestion: changes required (BCCR holding account)",
+        variant: "Analyst view: issuance status",
+        locator: issuanceStatus,
       });
     } finally {
       await analystPage.context().close();
@@ -328,9 +332,13 @@ test.describe("Test earned credits request issuance flow", () => {
       });
 
       // happo screenshot
+      const issuanceStatus = industryPage2.locator(
+        '//label[@for="root_issuance_status"]/../following-sibling::div//span',
+      );
       await takeStabilizedScreenshot(happoScreenshot, industryPage2, {
         component: "Earned credits issuance",
         variant: "Industry resubmission: review change required",
+        locator: issuanceStatus,
       });
 
       await industryEarnedCredits2.submitRequestIssuance(request);
@@ -362,12 +370,6 @@ test.describe("Test earned credits request issuance flow", () => {
       await analystEarnedCredits2.submitAnalystReviewRequestIssuance(
         AnalystSuggestion.READY_TO_APPROVE,
       );
-
-      // happo screenshot
-      await takeStabilizedScreenshot(happoScreenshot, analystPage2, {
-        component: "Earned credits issuance",
-        variant: "Analyst suggestion: ready to approve",
-      });
     } finally {
       await analystPage2.context().close();
     }

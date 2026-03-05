@@ -396,25 +396,37 @@ export async function setupTestEnvironment(
   expect(response.status()).toBe(200);
 }
 
-export async function waitForElementToStabilize(page: Page, element: string) {
-  await page.waitForLoadState();
-  const el = await page.$(element);
-  await el?.waitForElementState("stable");
+export async function waitForElementToStabilize(page: Page, selector: string) {
+  await page.waitForLoadState("domcontentloaded");
+
+  // Locator auto-retries across re-renders
+  const loc = page.locator(selector).first();
+
+  // Make sure it exists and is attached before waiting for "stable".
+  await loc.waitFor({ state: "attached" });
+
+  const handle = await loc.elementHandle();
+  await handle?.waitForElementState("stable");
+
+  // Tiny yield for any immediate post-render replace/route swap to happen
+  await page.evaluate(() => new Promise(requestAnimationFrame));
 }
 
 // This function can be used instead of `happoScreenshot` directly when experiencing flaky screenshots. It waits for the page to be stable before taking a screenshot.
 export async function takeStabilizedScreenshot(
   happoScreenshot: any,
-  page: import("@playwright/test").Page,
+  page: Page,
   {
     component,
     variant,
     targets,
+    locator, // NEW
     selector = "html",
   }: {
     component: string;
     variant: string;
     targets?: string[];
+    locator?: Locator; // NEW
     selector?: string;
   },
 ) {
@@ -423,30 +435,33 @@ export async function takeStabilizedScreenshot(
       e instanceof Error ? e.message : String(e),
     );
 
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     try {
       await page.waitForLoadState("domcontentloaded");
 
-      await waitForElementToStabilize(page, selector);
-
-      const pageContent = page.locator(selector);
-
-      await happoScreenshot(pageContent, {
-        component,
-        variant,
-        targets,
-      });
-
-      return; // success
-    } catch (e) {
-      if (attempt === 0 && isDetached(e)) {
-        // Re-wait and try again.
-        await page.waitForLoadState("domcontentloaded").catch(() => {});
-        continue;
+      // stabilize either the provided locator (best) or fallback selector
+      if (locator) {
+        await locator.waitFor({ state: "visible" });
+        const h = await locator.elementHandle();
+        await h?.waitForElementState("stable");
+      } else {
+        await waitForElementToStabilize(page, selector);
       }
+
+      // ✅ Use locator when provided; otherwise use selector
+      const target = locator ?? page.locator(selector);
+
+      await happoScreenshot(target, { component, variant, targets });
+      return;
+    } catch (e) {
+      if (isDetached(e)) continue;
       throw e;
     }
   }
+
+  // If it keeps detaching, throw the last error by re-running once
+  const target = page.locator(selector);
+  await happoScreenshot(target, { component, variant, targets });
 }
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
