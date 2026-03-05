@@ -14,7 +14,12 @@ import { calculateEmissionData } from "./calculateEmissionsData";
 import { NavigationInformation } from "../taskList/types";
 import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
 import { EmissionAllocationResponse } from "@reporting/src/app/utils/getEmissionAllocations";
-import { sumWithPrecision } from "../../utils/numberUtils";
+import { validateEmissions } from "./facilityEmissionAllocation/validateEmissions";
+import {
+  validateMethodology,
+  validateMethodologyOther,
+} from "./facilityEmissionAllocation/validateMethodology";
+import { validatePulpAndPaper } from "./facilityEmissionAllocation/validatePulpAndPaper";
 
 // 📊 Interface for props passed to the component
 interface Props {
@@ -29,7 +34,7 @@ interface Props {
   operationType?: string;
 }
 
-interface FormData {
+export interface FormData {
   report_product_emission_allocations: EmissionAllocationData[];
   basic_emission_allocation_data: EmissionAllocationData[];
   fuel_excluded_emission_allocation_data: EmissionAllocationData[];
@@ -38,40 +43,6 @@ interface FormData {
   allocation_methodology: string;
   allocation_other_methodology_description: string;
 }
-
-// 🛠️ Function to validate that emissions totals equal emissions allocations
-const validateEmissions = (formData: FormData): boolean => {
-  // Ignore emissions if methodology is not applicable
-  if (formData?.allocation_methodology === "Not Applicable") return true;
-
-  const combinedEmissionAllocationData = [
-    ...formData.basic_emission_allocation_data,
-    ...formData.fuel_excluded_emission_allocation_data,
-  ];
-
-  return combinedEmissionAllocationData.every((allocation) => {
-    const sum = sumWithPrecision(
-      ...allocation.products.map((p) => p.allocated_quantity),
-    );
-    const emissionTotal = parseFloat(allocation.emission_total.toString()) || 0;
-
-    return sum === parseFloat(emissionTotal.toFixed(4));
-  });
-};
-
-const validateMethodology = (formData: FormData): boolean => {
-  return (
-    formData.allocation_methodology !== undefined &&
-    formData.allocation_methodology !== ""
-  );
-};
-
-const validateMethodologyOther = (formData: FormData): boolean => {
-  return formData.allocation_methodology !== "Other"
-    ? true
-    : formData.allocation_other_methodology_description !== undefined &&
-        formData.allocation_other_methodology_description !== "";
-};
 
 // Function to remove products if methodology is not applicable, preventing validation problems
 const removeProducts = (formData: FormData) => {
@@ -96,58 +67,16 @@ const validateFormData = (
   isPulpAndPaper: boolean,
   overlappingIndustrialProcessEmissions: number,
 ) => {
-  const errorMismatch =
-    "All emissions must be allocated to 100% before saving and continuing";
-  const errorMethodology =
-    "A methodology must be selected before saving and continuing";
-  const errorMethodologyOther =
-    "A description must be provided for the selected methodology";
-
   const newErrors: string[] = [];
 
-  if (!validateEmissions(formData)) {
-    newErrors.push(errorMismatch);
-  }
-  if (!validateMethodology(formData)) {
-    newErrors.push(errorMethodology);
-  }
-  if (!validateMethodologyOther(formData)) {
-    newErrors.push(errorMethodologyOther);
-  }
+  newErrors.push(...validateEmissions(formData));
+  newErrors.push(...validateMethodology(formData));
+  newErrors.push(...validateMethodologyOther(formData));
+
   if (isPulpAndPaper && overlappingIndustrialProcessEmissions > 0) {
-    const industrialEmissionAllocations =
-      formData?.basic_emission_allocation_data?.find(
-        (allocation: EmissionAllocationData) =>
-          allocation.emission_category_name === "Industrial process emissions",
-      );
-    const chemicalPulpAllocation =
-      industrialEmissionAllocations?.products?.find(
-        (p) => p.product_name === "Pulp and paper: chemical pulp",
-      );
-    const limeRecoveredByKilnAllocation =
-      industrialEmissionAllocations?.products?.find(
-        (p) => p.product_name === "Pulp and paper: lime recovered by kiln",
-      );
-    if (!chemicalPulpAllocation)
-      newErrors.push(
-        "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
-      );
-    else if (!limeRecoveredByKilnAllocation)
-      newErrors.push(
-        "Missing Product: 'Pulp and paper: lime recovered by kiln'. Please add the product on the operation review page",
-      );
-    else if (
-      // overlapping industrial process emissions are necessarily allocated to either of these products,
-      // we can give the user an early warning if they didn't allocate enough at this stage
-      chemicalPulpAllocation.allocated_quantity +
-        limeRecoveredByKilnAllocation.allocated_quantity -
-        overlappingIndustrialProcessEmissions <
-      0
-    )
-      newErrors.push(
-        `Invalid allocation: Industrial Process quantity allocated betwen 'Pulp and paper:
-        chemical pulp' and 'Pulp and paper: lime recovered by kiln' is too low`,
-      );
+    newErrors.push(
+      ...validatePulpAndPaper(formData, overlappingIndustrialProcessEmissions),
+    );
   }
 
   return newErrors;

@@ -1,39 +1,30 @@
-import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
-import { getEmissionAllocations } from "@reporting/src/app/utils/getEmissionAllocations";
+import { getEmissionAllocationPageData } from "@reporting/src/app/utils/getEmissionAllocations";
 import FacilityEmissionAllocationForm from "@reporting/src/app/components/facility/FacilityEmissionAllocationForm";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
-import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
-import { getOverlappingIndustrialProcessEmissions } from "../../utils/getOverlappingIndProcessEmissions";
-import { getFacilityReportDetails } from "@reporting/src/app/utils/getFacilityReportDetails";
 
 export default async function FacilityEmissionAllocationPage({
   version_id,
   facility_id,
 }: HasFacilityId) {
-  const tasklistData = await getReportInformationTasklist(
+  const page_data = await getEmissionAllocationPageData(
     version_id,
     facility_id,
   );
-  const orderedActivities = await getOrderedActivities(version_id, facility_id);
-  const initialData = await getEmissionAllocations(version_id, facility_id);
-  // Get facility type for not applicable methodology in LFO small and medium facilities
-  const facilityType = (await getFacilityReportDetails(version_id, facility_id))
-    .facility_type;
 
   // These values are used when reporting the pulp & paper activity
   let isPulpAndPaper = false;
   let overlappingIndustrialProcessEmissions = 0; // emissions that are categorized as both industrial_process and excluded (ie: woody biomass)
   if (
-    orderedActivities.find(
+    page_data.payload.ordered_activities.find(
       (activity: { id: number; name: string; slug: string }) =>
         (activity.slug = "pulp_and_paper"),
     )
   ) {
     isPulpAndPaper = true;
     overlappingIndustrialProcessEmissions =
-      await getOverlappingIndustrialProcessEmissions(version_id, facility_id);
+      page_data.payload.overlapping_industrial_process_emissions;
   }
 
   const navInfo = await getNavigationInformation(
@@ -42,8 +33,8 @@ export default async function FacilityEmissionAllocationPage({
     version_id,
     facility_id,
     {
-      orderedActivities: orderedActivities,
-      facilityName: tasklistData?.facilityName,
+      orderedActivities: page_data.payload.ordered_activities,
+      facilityName: page_data.facility_data.facility_name,
     },
   );
 
@@ -51,15 +42,15 @@ export default async function FacilityEmissionAllocationPage({
     <FacilityEmissionAllocationForm
       version_id={version_id}
       facility_id={facility_id}
-      orderedActivities={orderedActivities}
-      initialData={initialData}
+      orderedActivities={page_data.payload.ordered_activities}
+      initialData={page_data.payload.emission_allocation_data}
       navigationInformation={navInfo}
       isPulpAndPaper={isPulpAndPaper}
       overlappingIndustrialProcessEmissions={
         overlappingIndustrialProcessEmissions
       }
-      facilityType={facilityType}
-      operationType={tasklistData?.operationType}
+      facilityType={page_data.facility_data.facility_type}
+      operationType={page_data.operation_data.operation_type}
     />
   );
 }

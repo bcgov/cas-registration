@@ -1,42 +1,21 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import FacilityEmissionAllocationPage from "@reporting/src/app/components/facility/FacilityEmissionAllocationPage";
-import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
-import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
-import { getEmissionAllocations } from "@reporting/src/app/utils/getEmissionAllocations";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
-import { getOverlappingIndustrialProcessEmissions } from "@reporting/src/app/utils/getOverlappingIndProcessEmissions";
-import { getFacilityReportDetails } from "@reporting/src/app/utils/getFacilityReportDetails";
+import { getEmissionAllocationPageData } from "@reporting/src/app/utils/getEmissionAllocations";
 
 // ✨ Mocks
-vi.mock("@reporting/src/app/utils/getReportInformationTaskListData", () => ({
-  getReportInformationTasklist: vi.fn(),
-}));
-
-vi.mock("@reporting/src/app/utils/getOrderedActivities", () => ({
-  getOrderedActivities: vi.fn(),
-}));
 vi.mock("@reporting/src/app/utils/getEmissionAllocations", () => ({
-  getEmissionAllocations: vi.fn(),
+  getEmissionAllocationPageData: vi.fn(),
 }));
 vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
   getNavigationInformation: vi.fn(),
-}));
-vi.mock("@reporting/src/app/utils/getOverlappingIndProcessEmissions", () => ({
-  getOverlappingIndustrialProcessEmissions: vi.fn(),
-}));
-vi.mock("@reporting/src/app/utils/getFacilityReportDetails", () => ({
-  getFacilityReportDetails: vi.fn(),
 }));
 
 // 🏷 Constants
 const mockVersionId = 3;
 const mockFacilityId = "abc3";
-const mockReportTaskList = {
-  facilityName: "Test Facility",
-  operationType: "SFO",
-};
 const orderedActivities = [
   {
     id: 1,
@@ -182,8 +161,22 @@ const emissionAllocations = {
     },
   ],
 };
-const justFacilityReportTypeLarge = {
-  facility_type: "Large Facility",
+const pageData = {
+  payload: {
+    emission_allocation_data: emissionAllocations,
+    ordered_activities: orderedActivities,
+    getOverlappingIndustrialProcessEmissions: 0,
+  },
+  facility_data: {
+    facility_name: "Test Facility",
+    facility_type: "Large Facility",
+  },
+  operation_data: {
+    operation_type: "SFO",
+  },
+  report_data: {
+    report_version_id: mockVersionId,
+  },
 };
 describe("The FacilityEmissionAllocationPage component", () => {
   beforeEach(() => {
@@ -194,23 +187,11 @@ describe("The FacilityEmissionAllocationPage component", () => {
   });
   it("renders the FacilityEmissionAllocationForm", async () => {
     (
-      getReportInformationTasklist as ReturnType<typeof vi.fn>
-    ).mockResolvedValueOnce(mockReportTaskList);
-    (getOrderedActivities as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-      orderedActivities,
-    );
-    (getEmissionAllocations as ReturnType<typeof vi.fn>).mockReturnValueOnce(
-      emissionAllocations,
-    );
+      getEmissionAllocationPageData as ReturnType<typeof vi.fn>
+    ).mockReturnValueOnce(pageData);
     (getNavigationInformation as ReturnType<typeof vi.fn>).mockReturnValueOnce(
       dummyNavigationInformation,
     );
-    (getFacilityReportDetails as ReturnType<typeof vi.fn>).mockReturnValueOnce(
-      justFacilityReportTypeLarge,
-    );
-    (
-      getOverlappingIndustrialProcessEmissions as ReturnType<typeof vi.fn>
-    ).mockResolvedValueOnce(0.0);
     // Render the page with the `versionId` prop
     render(
       await FacilityEmissionAllocationPage({
