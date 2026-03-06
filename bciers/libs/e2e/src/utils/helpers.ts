@@ -368,10 +368,11 @@ export function getStorageStateForRole(role: string) {
 }
 
 // Open a new browser context instead of logging out and logging in as a new user
-export async function openNewBrowserContextAs(role: string) {
-  const browser = await getBrowser();
+export async function openNewBrowserContextAs(role: string, browser?: Browser) {
+  // Use the passed browser fixture or fall back to getter method
+  const browserInstance = browser || (await getBrowser());
   const storageState = await getStorageStateForRole(role);
-  const context = await browser.newContext({ storageState });
+  const context = await browserInstance.newContext({ storageState });
   const newPage = await context.newPage();
   return newPage;
 }
