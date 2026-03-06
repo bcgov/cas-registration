@@ -1,5 +1,6 @@
 import uuid
 from django.db import transaction
+from reporting.service.compliance_service.parameters import ComplianceParameters
 from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
 from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
@@ -245,10 +246,11 @@ class ReportActivitySaveService:
         gas_type = GasType.objects.get(chemical_formula=emission_data["gasType"])
         # Set equivalent emission value (emission * gwp)
         equivalent_emission = round(json_data["emission"] * gas_type.gwp, 4)
-        json_data["equivalentEmission"] = equivalent_emission
+        equivalent_emission = ComplianceParameters.round(json_data["emission"] * gas_type.gwp)
+        json_data["equivalentEmission"] = float(equivalent_emission)
 
         # updated emission_data to include the calculated equivalent emission
-        emission_data["equivalentEmission"] = equivalent_emission
+        emission_data["equivalentEmission"] = float(equivalent_emission)
 
         report_emission_id = emission_data.get("id")
         if "methodology" not in emission_data:

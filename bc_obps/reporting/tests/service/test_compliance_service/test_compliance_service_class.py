@@ -267,3 +267,6 @@ class TestComplianceSummaryServiceClass(TestCase):
 
         assert result.emissions_attributable_for_reporting == Decimal('10000.5556')
         assert result.emissions_attributable_for_compliance == Decimal('5000.2778')
+
+    def test_calculated_compliance_data_rounding(self):
+        pass
