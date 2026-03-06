@@ -1,6 +1,5 @@
 import { NextURL } from "next/dist/server/web/next-url";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
-import { instance, mock, reset, when } from "ts-mockito";
 import { fetch, getToken } from "@bciers/testConfig/mocks";
 import {
   mockCasUserToken,
@@ -9,8 +8,6 @@ import {
 import { withResponseCompliance } from "@/compliance/src/proxies/withResponseCompliance";
 
 const domain = "https://localhost:3000";
-const mockedRequest: NextRequest = mock(NextRequest);
-const mockNextFetchEvent: NextFetchEvent = mock(NextFetchEvent);
 
 // 🧪 Create the proxy instance with a no-op base proxy
 const proxy = withResponseCompliance(() => NextResponse.next());
@@ -18,27 +15,25 @@ const proxy = withResponseCompliance(() => NextResponse.next());
 vi.spyOn(NextResponse, "redirect");
 vi.spyOn(NextResponse, "rewrite");
 
+function mockRequest(path: string): NextRequest {
+  return {
+    nextUrl: new NextURL(`${domain}${path}`),
+    url: domain,
+  } as unknown as NextRequest;
+}
+
 describe("withResponseCompliance proxy", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  afterEach(() => {
-    reset(mockedRequest);
-  });
-
   it("builds the correct URL for industry users", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
-    const nextUrl = new NextURL(`${domain}/compliance/compliance-summaries`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
     fetch.mockResponseOnce(JSON.stringify({ status: "Registered" }));
 
     const result = await proxy(
-      instance(mockedRequest),
-      instance(mockNextFetchEvent),
+      mockRequest("/compliance/compliance-summaries"),
+      {} as NextFetchEvent,
     );
 
     const expectedUrl = new NextURL(
@@ -52,16 +47,11 @@ describe("withResponseCompliance proxy", () => {
 
   it("builds the correct URL for CAS users", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
-    const nextUrl = new NextURL(`${domain}/compliance/compliance-summaries`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
     fetch.mockResponseOnce(JSON.stringify({ status: "Registered" }));
 
     const result = await proxy(
-      instance(mockedRequest),
-      instance(mockNextFetchEvent),
+      mockRequest("/compliance/compliance-summaries"),
+      {} as NextFetchEvent,
     );
 
     const expectedUrl = new NextURL(

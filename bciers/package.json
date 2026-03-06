@@ -144,7 +144,6 @@
     "pdf-parse": "^2.4.5",
     "playwright-core": "1.57.0",
     "prettier": "~3.6.2",
-    "ts-mockito": "^2.6.1",
     "vite": "7.3.0",
     "vitest": "^4.0.16",
     "vitest-fetch-mock": "^0.4.5"
