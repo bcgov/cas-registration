@@ -1,5 +1,8 @@
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
+import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
+import generateInvoice from "@/compliance/src/app/utils/generateInvoice";
+import Link from "@mui/material/Link";
 
 const elicensingInvoiceColumns = (isInternalUser: boolean): GridColDef[] => {
   return [
@@ -33,6 +36,24 @@ const elicensingInvoiceColumns = (isInternalUser: boolean): GridColDef[] => {
       field: "invoice_number",
       headerName: "Invoice Number",
       flex: 1,
+      renderCell: (params: GridRenderCellParams) => {
+        const complianceReportVersionId =
+          params.row.compliance_report_version_id;
+
+        const invoiceType = params.row.invoice_type as ComplianceInvoiceTypes;
+
+        return (
+          <Link
+            component="button"
+            underline="hover"
+            onClick={() =>
+              generateInvoice(complianceReportVersionId, invoiceType)
+            }
+          >
+            {params.value}
+          </Link>
+        );
+      },
     },
     {
       field: "invoice_total",
