@@ -4,23 +4,20 @@ import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   assertSuccessfulSnackbar,
   getRowByUniqueCellValue,
-  linkIsVisible,
   openNewBrowserContextAs,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
 import {
-  AppRoute,
-  MessageTextOperatorSelect,
-  OperatorE2EValue,
   UserAccessRequestActions,
+  UserAccessRequestRoles,
   UserAndAccessRequestGridHeaders,
   UserAndAccessRequestValues,
 } from "@/administration-e2e/utils/enums";
 import { UsersAccessRequestPOM } from "@/administration-e2e/poms/users-access-request";
-
+import { DashboardPOM } from "@/dashboard-e2e/poms/dashboard";
+import { AdministrationTileText } from "@/dashboard-e2e/utils/enums";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 import { SecondaryUserOperatorFixtureFields } from "@/administration-e2e/utils/enums";
-import { OperatorPOM } from "@/administration-e2e/poms/operator";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 test.beforeEach(async () => {
@@ -39,81 +36,140 @@ test.beforeEach(async () => {
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
 test.describe("External User", () => {
-  // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
-  test.describe.configure({ mode: "serial" });
-  test.describe("External User", () => {
-    test("Reject a request", async ({ page, browser, happoScreenshot }) => {
-      // 🛸 Navigate to Users and Access Requests from dashboard
-      const accessRequestPage = new UsersAccessRequestPOM(page);
-      await accessRequestPage.goToUserAccessRequestPage();
-      await accessRequestPage.pageIsStable();
+  test("Approve a reporter", async ({ page, happoScreenshot }) => {
+    // 🤣🛸 Navigate to Users and Access Requests from dashboard
+    const accessRequestPage = new UsersAccessRequestPOM(page);
+    await accessRequestPage.goToUserAccessRequestPage();
+    await accessRequestPage.pageIsStable();
 
-      const row = await getRowByUniqueCellValue(
-        page,
-        UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
-        UserAndAccessRequestValues.EMAIL,
-      );
+    // Get specific row that has the unique email
+    const row = await getRowByUniqueCellValue(
+      page,
+      UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
+      UserAndAccessRequestValues.EMAIL,
+    );
+    await expect(row).toBeVisible();
+    const currentStatus = await accessRequestPage.getCurrentStatus(row);
+    await accessRequestPage.assertActionVisibility(row, currentStatus);
 
-      const role = await accessRequestPage.getCurrentRole(row);
+    const role = UserAccessRequestRoles.REPORTER;
+    await accessRequestPage.approveOrDeclineRequest(
+      row,
+      role,
+      UserAccessRequestActions.APPROVE,
+    );
+    await assertSuccessfulSnackbar(page, /is now approved/i);
 
-      // Decline Request
-      await accessRequestPage.approveOrDeclineRequest(
-        row,
-        role,
-        UserAccessRequestActions.DECLINE,
-      );
-      await expect(row.getByText(role)).toBeHidden();
-      await assertSuccessfulSnackbar(page, /is now declined/i);
-
-      const currentStatus = await accessRequestPage.getCurrentStatus(row);
-      await accessRequestPage.assertActionVisibility(row, currentStatus);
-
-      await takeStabilizedScreenshot(happoScreenshot, page, {
-        component: "EXTERNAL: Decline a user operator request",
-        variant: "default",
-      });
-
-      // Create the new context using the browser fixture
-      const newPage = await openNewBrowserContextAs(
-        UserRole.INDUSTRY_USER,
-        browser,
-      );
-
-      try {
-        // Verify Select an operator is visible
-        const selectOperatorPage = new OperatorPOM(newPage);
-        await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
-        await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
-
-        // 👉 Action search by legal name
-        await selectOperatorPage.selectByLegalName(
-          OperatorE2EValue.SEARCH_LEGAL_NAME,
-          "Bravo Technologies - has parTNER operator - name from admin",
-        );
-
-        // Wait for client-side navigation
-        await expect(selectOperatorPage.page).toHaveURL(
-          /select-operator\/confirm/,
-          { timeout: 30_000 },
-        );
-
-        await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
-        await linkIsVisible(
-          selectOperatorPage.page,
-          MessageTextOperatorSelect.SELECT_ANOTHER_OPERATOR,
-          true,
-        );
-
-        // This is where the error usually occurs; we await it fully inside the try block
-        await takeStabilizedScreenshot(happoScreenshot, newPage, {
-          component: "Decline a user operator request",
-          variant: "default",
-        });
-      } finally {
-        // 🚨 CRITICAL: Close the page/context before the test ends.
-        // This prevents the runner from detaching the frame while Happo is still talking to it.
-        await newPage.close();
-      }
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "EXTERNAL: Approve a reporter",
+      variant: "filled",
     });
+
+    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+
+    const dashboardPage = new DashboardPOM(newPage);
+    await dashboardPage.route();
+    await expect(
+      newPage.getByRole("link", {
+        name: AdministrationTileText.ACCESS_REQUEST,
+      }),
+    ).toBeHidden();
+  });
+
+  test("Approve an administrator", async ({ page, happoScreenshot }) => {
+    // 🛸 Navigate to Users and Access Requests from dashboard
+    const accessRequestPage = new UsersAccessRequestPOM(page);
+    await accessRequestPage.goToUserAccessRequestPage();
+    await accessRequestPage.pageIsStable();
+
+    const row = await getRowByUniqueCellValue(
+      page,
+      UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
+      UserAndAccessRequestValues.EMAIL,
+    );
+
+    const currentStatus = await accessRequestPage.getCurrentStatus(row);
+    await accessRequestPage.assertActionVisibility(row, currentStatus);
+
+    const role = UserAccessRequestRoles.ADMIN;
+    await accessRequestPage.approveOrDeclineRequest(
+      row,
+      role,
+      UserAccessRequestActions.APPROVE,
+    );
+    await assertSuccessfulSnackbar(page, /is now approved/i);
+
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "EXTERNAL: Approve an administrator",
+      variant: "default",
+    });
+
+    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+
+    const dashboardPage = new DashboardPOM(newPage);
+    await dashboardPage.route();
+    await expect(
+      newPage.getByRole("link", {
+        name: AdministrationTileText.ACCESS_REQUEST,
+      }),
+    ).toBeVisible();
+  });
+
+  test("Reject a request", async ({ page, happoScreenshot }) => {
+    // 🛸 Navigate to Users and Access Requests from dashboard
+    const accessRequestPage = new UsersAccessRequestPOM(page);
+    await accessRequestPage.goToUserAccessRequestPage();
+    await accessRequestPage.pageIsStable();
+
+    const row = await getRowByUniqueCellValue(
+      page,
+      UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
+      UserAndAccessRequestValues.EMAIL,
+    );
+
+    const role = await accessRequestPage.getCurrentRole(row);
+
+    // Decline Request
+    await accessRequestPage.approveOrDeclineRequest(
+      row,
+      role,
+      UserAccessRequestActions.DECLINE,
+    );
+    await expect(row.getByText(role)).toBeHidden();
+    await assertSuccessfulSnackbar(page, /is now declined/i);
+
+    const currentStatus = await accessRequestPage.getCurrentStatus(row);
+    await accessRequestPage.assertActionVisibility(row, currentStatus);
+
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "EXTERNAL: Decline a user operator request",
+      variant: "default",
+    });
+  });
+
+  test("Edit a request", async ({ page }) => {
+    // 🛸 Navigate to Users and Access Requests from dashboard
+    const accessRequestPage = new UsersAccessRequestPOM(page);
+    await accessRequestPage.goToUserAccessRequestPage();
+    await accessRequestPage.pageIsStable();
+
+    const row = await getRowByUniqueCellValue(
+      page,
+      UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
+      UserAndAccessRequestValues.EMAIL,
+    );
+    const role = UserAccessRequestRoles.REPORTER;
+    await accessRequestPage.approveOrDeclineRequest(
+      row,
+      role,
+      UserAccessRequestActions.APPROVE,
+    );
+    await assertSuccessfulSnackbar(page, /is now approved/i);
+
+    await accessRequestPage.editRequest(row);
+    await assertSuccessfulSnackbar(page, /is now pending/i);
+
+    const currentStatus = await accessRequestPage.getCurrentStatus(row);
+    await accessRequestPage.assertActionVisibility(row, currentStatus);
   });
 });
