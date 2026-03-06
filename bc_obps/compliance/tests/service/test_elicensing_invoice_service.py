@@ -477,14 +477,14 @@ class TestElicensingInvoiceService:
         )  # cas users should see all invoices, 3 from setup (obligation + 2 penalty invoices) + 2 from this test
 
         assert list(result.values_list("invoice_type", flat=True)) == [
-            "Compliance obligation",
-            "Automatic overdue penalty",
-            "Late Submission Penalty",
-            "Compliance obligation",
-            "Compliance obligation",
+            "obligation",
+            "automatic overdue penalty",
+            "late submission penalty",
+            "obligation",
+            "obligation",
         ]
         # spot-checking the details
-        assert result[0].invoice_type == "Compliance obligation"
+        assert result[0].invoice_type == "obligation"
         assert result[0].invoice_total == 300
         assert result[0].total_payments == 250  # 201 + 49
         assert result[0].total_adjustments == 50  # 25 + 25
@@ -546,7 +546,7 @@ class TestElicensingInvoiceService:
         )
         assert result.count() == 1
 
-        assert result[0].invoice_type == "Compliance obligation"
+        assert result[0].invoice_type == "obligation"
         assert result[0].invoice_total == 500
         assert result[0].total_payments == 250  # 201 + 49
         assert result[0].total_adjustments == 50  # 25 + 25

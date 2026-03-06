@@ -530,6 +530,10 @@ class ElicensingInvoiceService:
             "compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",
             "compliance_penalty__compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation",
         ).annotate(
+            compliance_report_version_id=Coalesce(
+                F("compliance_obligation__compliance_report_version_id"),
+                F("compliance_penalty__compliance_obligation__compliance_report_version_id"),
+            ),
             compliance_period=Coalesce(
                 F(
                     "compliance_obligation__compliance_report_version__compliance_report__report__reporting_year__reporting_year"
@@ -558,10 +562,13 @@ class ElicensingInvoiceService:
                 When(
                     Q(compliance_penalty__isnull=False)
                     & Q(compliance_penalty__penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION),
-                    then=Value("Late Submission Penalty"),
+                    then=Value(ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY.value),
                 ),
-                When(compliance_penalty__isnull=False, then=Value("Automatic overdue penalty")),
-                default=Value("Compliance obligation"),
+                When(
+                    compliance_penalty__isnull=False,
+                    then=Value(ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY.value),
+                ),
+                default=Value(ComplianceInvoiceTypes.OBLIGATION.value),
             ),
             invoice_total=Coalesce(
                 Subquery(invoice_total_subquery),

@@ -15,7 +15,7 @@ const mockResponse = {
       invoice_total: "421170.80",
       total_adjustments: "5.00",
       total_payments: "421170.80",
-      invoice_type: "Compliance obligation",
+      invoice_type: "Obligation",
       id: 1,
       invoice_number: "OBI702922",
       outstanding_balance: "0.00",
@@ -86,7 +86,7 @@ describe("ElicensingInvoicesDataGrid component", () => {
 
     expect(within(firstRow!).getByText("2024")).toBeVisible();
     expect(within(firstRow!).getByText("Operator name")).toBeVisible();
-    expect(within(firstRow!).getByText("Compliance obligation")).toBeVisible();
+    expect(within(firstRow!).getByText("Obligation")).toBeVisible();
     expect(within(firstRow!).getByText("OBI702922")).toBeVisible();
     expect(within(firstRow!).getAllByText("$421,170.80")).toHaveLength(2);
     expect(within(firstRow!).getByText("$5.00")).toBeVisible();
