@@ -28,6 +28,7 @@ class ReportProductModelTest(BaseTestCase):
             ("facility_report", "facility report", None, None),
             ("product", "product", None, None),
             ("annual_production", "annual production", None, None),
+            ("production_data_jan_mar", "production data jan mar", None, None),
             ("production_data_apr_dec", "production data apr dec", None, None),
             ("production_methodology", "production methodology", 10000, None),
             (

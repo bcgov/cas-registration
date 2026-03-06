@@ -1,14 +1,19 @@
 import dataclasses
 from django.test import TestCase
+from reporting.models.emission_category import EmissionCategory
+from registration.models import Operation
 from reporting.models import (
     ReportComplianceSummary,
     ReportComplianceSummaryProduct,
     ReportEmission,
     ReportProduct,
+    Report,
+    ReportOperation,
 )
 from reporting.service.compliance_service import ComplianceService
 from reporting.tests.service.test_compliance_service.infrastructure import ComplianceTestInfrastructure
 from decimal import Decimal
+from reporting.service.compliance_service.parameters import ProductionPeriod, ComplianceParameters
 
 
 class TestComplianceSummaryServiceClass(TestCase):
@@ -116,6 +121,65 @@ class TestComplianceSummaryServiceClass(TestCase):
         # The product should have zero allocated compliance emissions when production is zero
         for product in result_2024.products:
             self.assertEqual(product.allocated_compliance_emissions, Decimal("0.0000"))
+
+    def test_jan_mar_production_period_for_operation_opted_out_for_2025(self):
+        """Test that Jan-Mar production period is used for opted-in operations in their final reporting year."""
+        # ------- ARRANGE -----------
+        build_data = ComplianceTestInfrastructure.zero_production_single_product()
+        build_data.allocation_1.emission_category = EmissionCategory.objects.get(pk=5)
+        build_data.allocation_1.save()
+        build_data.report_emission_1.emission_categories.set([5])  # GSC
+
+        # Set up as an opted-in operation in final reporting year (2025)
+        build_data.report_version_1.report_operation.registration_purpose = 'Opted-in Operation'
+        build_data.report_version_1.report_operation.operation_opted_out_final_reporting_year = 2025
+        build_data.report_version_1.report_operation.save()
+
+        build_data.report_1.reporting_year_id = 2025
+        build_data.report_1.save()
+
+        build_data.report_product_1.production_data_jan_mar = Decimal('12500')
+        build_data.report_product_1.annual_production = Decimal('50000')
+        build_data.report_product_1.save()
+
+        # ------- ACT -----------
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        # ------- ASSERT -----------
+        product = result.products[0]  # there's only 1 product
+        # Verify that allocated compliance emissions are prorated based on jan-mar production
+        # 10000.0001 * (12500/50000) = 2500
+        # total_annual_allocated_emissions * (jan_mar_production / annual_production)
+        self.assertEqual(product.allocated_compliance_emissions, Decimal('2500'))
+
+    def test_production_period_returns_annual_for_opted_in_not_final_year(self):
+        """Test that annual production is used for opted-in operations NOT in their final reporting year."""
+        # ------- ARRANGE -----------
+        build_data = ComplianceTestInfrastructure.zero_production_single_product()
+        # Set up as an opted-in operation but 2025 is NOT their final reporting year
+        ReportOperation.objects.filter(report_version=build_data.report_version_1).update(
+            registration_purpose='Opted-in Operation',
+            operation_opted_out_final_reporting_year=2026,
+        )
+        Report.objects.filter(pk=build_data.report_1.id).update(reporting_year=2025)
+
+        build_data.report_product_1.annual_production = Decimal('50000')
+        # Operator shouldn't even be asked for Jan-Mar production data in the UI, but inserting dirty
+        # data in the backend just to assert that the calculation is still done correctly
+        build_data.report_product_1.production_data_jan_mar = Decimal('12500')
+        build_data.report_product_1.save()
+
+        # ------- ACT -----------
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        # ------- ASSERT -----------
+        # For annual period, allocated_compliance_emissions should equal full allocated (no prorating)
+        product = result.products[0]  # there's only 1 product
+        self.assertEqual(result.emissions_attributable_for_compliance, product.allocated_compliance_emissions)
+        self.assertEqual(
+            ComplianceParameters.round(Decimal(build_data.report_emission_1.json_data.get("equivalentEmission"))),
+            result.emissions_attributable_for_compliance,
+        )  # Decimal(10000.0001)
 
     def test_compliance_summary_2025_period(self):
         # Assertion values from compliance_class_manual_calcs.xlsx sheet 4
@@ -226,6 +290,7 @@ class TestComplianceSummaryServiceClass(TestCase):
                     'allocated_compliance_emissions': Decimal('6000.0001'),
                     'allocated_industrial_process_emissions': Decimal('0'),
                     'annual_production': 200.0,
+                    'jan_mar_production': Decimal('0'),
                     'apr_dec_production': Decimal('0'),
                     'emission_intensity': Decimal('1.0700'),
                     'name': 'Chemicals: pure hydrogen peroxide',
@@ -237,6 +302,7 @@ class TestComplianceSummaryServiceClass(TestCase):
                     'allocated_compliance_emissions': Decimal('8000.0280'),
                     'allocated_industrial_process_emissions': Decimal('6000.02800'),
                     'annual_production': 10000.0,
+                    'jan_mar_production': Decimal('0'),
                     'apr_dec_production': Decimal('0'),
                     'emission_intensity': Decimal('0.3177'),
                     'name': 'Pulp and paper: chemical pulp',
@@ -248,6 +314,7 @@ class TestComplianceSummaryServiceClass(TestCase):
                     'allocated_compliance_emissions': Decimal('16000.9708'),
                     'allocated_industrial_process_emissions': Decimal('14000.97080'),
                     'annual_production': 15000.0,
+                    'jan_mar_production': Decimal('0'),
                     'apr_dec_production': Decimal('0'),
                     'emission_intensity': Decimal('0.3822'),
                     'name': 'Pulp and paper: lime recovered by kiln',
@@ -267,3 +334,36 @@ class TestComplianceSummaryServiceClass(TestCase):
 
         assert result.emissions_attributable_for_reporting == Decimal('10000.5556')
         assert result.emissions_attributable_for_compliance == Decimal('5000.2778')
+
+    def test_get_production_period_for_jan_mar(self):
+        build_2025 = ComplianceTestInfrastructure.reporting_year_2025()
+        assert (
+            ComplianceService.get_production_period(
+                build_2025.report_version_1.id, Operation.Purposes.OPTED_IN_OPERATION, 2025
+            )
+            == ProductionPeriod.JAN_MAR
+        )
+
+    def test_get_production_period_for_apr_dec(self):
+        build_data = ComplianceTestInfrastructure.build()
+        assert (
+            ComplianceService.get_production_period(
+                build_data.report_version_1.id, Operation.Purposes.OBPS_REGULATED_OPERATION, None
+            )
+            == ProductionPeriod.APR_DEC
+        )
+
+    def test_get_production_period_for_annual(self):
+        build_data = ComplianceTestInfrastructure.reporting_year_2025()
+        assert (
+            ComplianceService.get_production_period(
+                build_data.report_version_1.id, Operation.Purposes.OBPS_REGULATED_OPERATION, None
+            )
+            == ProductionPeriod.ANNUAL
+        )
+        assert (
+            ComplianceService.get_production_period(
+                build_data.report_version_1.id, Operation.Purposes.OPTED_IN_OPERATION, 2026
+            )
+            == ProductionPeriod.ANNUAL
+        )

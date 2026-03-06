@@ -9,6 +9,7 @@ class ReportProductSchema(ModelSchema):
         model = ReportProduct
         fields = [
             "annual_production",
+            "production_data_jan_mar",
             "production_data_apr_dec",
             "production_methodology",
             "production_methodology_description",

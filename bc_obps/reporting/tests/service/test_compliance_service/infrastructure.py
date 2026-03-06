@@ -212,6 +212,15 @@ class ComplianceTestInfrastructure:
     def reporting_year_2025(cls):
         t = cls.build()
         Report.objects.filter(pk=t.report_1.id).update(reporting_year=2025)
+
+        # set jan_mar_production to 0 by default (can be overwritten if needed)
+        t.report_product_1.production_data_jan_mar = Decimal('0')
+        t.report_product_1.save()
+        t.report_product_2.production_data_jan_mar = Decimal('0')
+        t.report_product_2.save()
+        t.report_product_3.production_data_jan_mar = Decimal('0')
+        t.report_product_3.save()
+
         return t
 
     @classmethod
