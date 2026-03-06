@@ -286,14 +286,22 @@ def mock_external_http() -> Iterator[None]:
     real_requests_request = requests.api.request
 
     def dispatch(method: str, url: str, **_kwargs: Any) -> Optional[Response]:
-        # Try pattern-based mocking first
+        response = _pattern_based_mocking(url, method, api_mocks)
+        if response is not None:
+            response.url = url
+            return response
+
+        _block_unconfigured_external_http_calls(url, method, api_mocks)
+        return None
+
+    def _pattern_based_mocking(url: str, method: str, api_mocks: list[tuple[str, list, str]]) -> Optional[Response]:
         for _, patterns, _ in api_mocks:
             response = match_endpoint(url, method.upper(), patterns, **_kwargs)
             if response is not None:
-                response.url = url
                 return response
+        return None
 
-        # Block unconfigured external HTTP calls
+    def _block_unconfigured_external_http_calls(url: str, method: str, api_mocks: list[tuple[str, list, str]]) -> None:
         if url.startswith(("http://", "https://")) and not is_local_url(url):  # NOSONAR
             # Check if this is an unmocked call to a configured API
             for service_name, _, setting in api_mocks:
@@ -303,8 +311,6 @@ def mock_external_http() -> Iterator[None]:
 
             # Generic block for other external URLs
             raise UnmockedExternalCall(f"[E2E] Outbound HTTP blocked: {method.upper()} {url}")
-
-        return None
 
     def patched_session_request(self: requests.Session, method: str, url: str, **kwargs: Any) -> Response:
         resp = dispatch(method, url, **kwargs)
