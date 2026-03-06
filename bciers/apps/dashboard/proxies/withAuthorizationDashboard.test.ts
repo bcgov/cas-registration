@@ -1,6 +1,5 @@
 import { NextURL } from "next/dist/server/web/next-url";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
-import { instance, mock, reset, when } from "ts-mockito";
 import proxy from "../proxy";
 import { authAllowedPaths } from "./withAuthorizationDashboard";
 
@@ -14,13 +13,10 @@ import {
 } from "@bciers/testConfig/data/tokens";
 
 const domain = "https://localhost:3000";
-const mockedRequest: NextRequest = mock(NextRequest);
 const dashboardUrl = new URL("/dashboard", domain);
 
 vi.spyOn(NextResponse, "redirect");
 vi.spyOn(NextResponse, "rewrite");
-
-const mockNextFetchEvent: NextFetchEvent = mock(NextFetchEvent);
 
 vi.mock("next-auth/jwt", () => ({
   getToken: vi.fn(),
@@ -29,9 +25,7 @@ const mockGetToken = nextGetToken as ReturnType<typeof vi.fn>;
 
 function mockRequest(path: string): NextRequest {
   const nextUrl = new NextURL(path, { base: domain });
-  when(mockedRequest.nextUrl).thenReturn(nextUrl);
-  when(mockedRequest.url).thenReturn(domain);
-  return instance(mockedRequest);
+  return { nextUrl, url: domain } as unknown as NextRequest;
 }
 
 describe("withAuthorizationDashboard proxy", () => {
@@ -39,15 +33,12 @@ describe("withAuthorizationDashboard proxy", () => {
     vi.clearAllMocks();
     mockGetToken.mockReturnValue(undefined);
   });
-  afterEach(() => {
-    reset(mockedRequest);
-  });
 
   it("redirects to the onboarding page if the user is not authenticated", async () => {
     // The user tries to access the operations page
     const result = await proxy(
       mockRequest("/registration/operations"),
-      mockNextFetchEvent,
+      {} as NextFetchEvent,
     );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
@@ -57,7 +48,10 @@ describe("withAuthorizationDashboard proxy", () => {
   });
 
   it("calls NextProxy if the user is not authenticated and the route is /onboarding", async () => {
-    const result = await proxy(mockRequest("/onboarding"), mockNextFetchEvent);
+    const result = await proxy(
+      mockRequest("/onboarding"),
+      {} as NextFetchEvent,
+    );
 
     expect(result?.status).toBe(200);
   });
@@ -65,7 +59,7 @@ describe("withAuthorizationDashboard proxy", () => {
   it("redirects to the administration profile page if the user has no app role", async () => {
     getToken.mockResolvedValue(mockBaseToken);
 
-    const result = await proxy(mockRequest("/dashboard"), mockNextFetchEvent);
+    const result = await proxy(mockRequest("/dashboard"), {} as NextFetchEvent);
 
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
@@ -80,7 +74,7 @@ describe("withAuthorizationDashboard proxy", () => {
   it("calls NextProxy if the user has no app role and the route ends in /profile", async () => {
     getToken.mockResolvedValue(mockBaseToken);
 
-    const result = await proxy(mockRequest("/profile"), mockNextFetchEvent);
+    const result = await proxy(mockRequest("/profile"), {} as NextFetchEvent);
 
     expect(result?.status).toBe(200);
   });
@@ -88,7 +82,10 @@ describe("withAuthorizationDashboard proxy", () => {
   it("redirects authenticated industry_user to the common dashboard if the route is /onboarding", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
 
-    const result = await proxy(mockRequest("/onboarding"), mockNextFetchEvent);
+    const result = await proxy(
+      mockRequest("/onboarding"),
+      {} as NextFetchEvent,
+    );
 
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
@@ -98,7 +95,7 @@ describe("withAuthorizationDashboard proxy", () => {
   it("redirects authenticated industry_user to the common dashboard if the route is /", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
 
-    const result = await proxy(mockRequest(""), mockNextFetchEvent);
+    const result = await proxy(mockRequest(""), {} as NextFetchEvent);
 
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
@@ -108,7 +105,7 @@ describe("withAuthorizationDashboard proxy", () => {
   it("redirects authenticated, authorized cas_user to the common dashboard if the route is /", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
 
-    const result = await proxy(mockRequest(""), mockNextFetchEvent);
+    const result = await proxy(mockRequest(""), {} as NextFetchEvent);
 
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
@@ -117,18 +114,18 @@ describe("withAuthorizationDashboard proxy", () => {
 
   it("calls NextProxy for authenticated, authorized cas_user if the route is /dashboard", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
-    const nextUrl = new NextURL(`${domain}/dashboard`);
 
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-
-    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
+    const result = await proxy(mockRequest("/dashboard"), {} as NextFetchEvent);
     expect(result?.status).toBe(200);
   });
 
   it("redirects authenticated, authorized cas_user to the common dashboard if the route is /onboarding", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
 
-    const result = await proxy(mockRequest("/onboarding"), mockNextFetchEvent);
+    const result = await proxy(
+      mockRequest("/onboarding"),
+      {} as NextFetchEvent,
+    );
 
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
@@ -137,7 +134,7 @@ describe("withAuthorizationDashboard proxy", () => {
 
   it("redirects authenticated, NON-authorized cas_user to the common dashboard if the route is /", async () => {
     getToken.mockResolvedValue(mockCasPendingToken);
-    const result = await proxy(mockRequest(""), mockNextFetchEvent);
+    const result = await proxy(mockRequest(""), {} as NextFetchEvent);
 
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
@@ -149,7 +146,10 @@ describe("withAuthorizationDashboard proxy", () => {
 
     // Loop through the array of allowed paths
     for (const allowedPath of authAllowedPaths) {
-      const result = await proxy(mockRequest(allowedPath), mockNextFetchEvent);
+      const result = await proxy(
+        mockRequest(allowedPath),
+        {} as NextFetchEvent,
+      );
 
       expect(result?.status).toBe(200);
     }
@@ -166,7 +166,7 @@ describe("withAuthorizationDashboard proxy", () => {
     ];
 
     for (const path of paths) {
-      const result = await proxy(mockRequest(path), mockNextFetchEvent);
+      const result = await proxy(mockRequest(path), {} as NextFetchEvent);
 
       expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
       expect(result?.status).toBe(307);

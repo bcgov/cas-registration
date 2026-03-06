@@ -1,36 +1,34 @@
 import { NextURL } from "next/dist/server/web/next-url";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
-import { instance, mock, reset, when } from "ts-mockito";
 import proxy from "../proxy";
 import { fetch, getToken } from "@bciers/testConfig/mocks";
 import { mockIndustryUserToken } from "@bciers/testConfig/data/tokens";
 
 const domain = "https://localhost:3000";
-const mockedRequest: NextRequest = mock(NextRequest);
 
 vi.spyOn(NextResponse, "redirect");
 vi.spyOn(NextResponse, "rewrite");
 
-const mockNextFetchEvent: NextFetchEvent = mock(NextFetchEvent);
+function mockRequest(path: string): NextRequest {
+  return {
+    nextUrl: new NextURL(`${domain}${path}`),
+    url: domain,
+  } as unknown as NextRequest;
+}
 
 describe("withRulesAppliedReg proxy", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
-  afterEach(() => {
-    reset(mockedRequest);
-  });
 
   it("redirects industry users if their userOperator is not found", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
-    const nextUrl = new NextURL(`${domain}/registration`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
     fetch.mockResponseOnce(JSON.stringify({}));
 
-    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
+    const result = await proxy(
+      mockRequest("/registration"),
+      {} as NextFetchEvent,
+    );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
       new URL("/onboarding", domain),
@@ -39,10 +37,6 @@ describe("withRulesAppliedReg proxy", () => {
   });
   it("redirects industry users if their userOperator does not have required fields", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
-    const nextUrl = new NextURL(`${domain}/registration`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
 
     // Mocking the fetch response for access to an operator
     fetch.mockResponseOnce(
@@ -58,7 +52,10 @@ describe("withRulesAppliedReg proxy", () => {
       }),
     );
 
-    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
+    const result = await proxy(
+      mockRequest("/registration"),
+      {} as NextFetchEvent,
+    );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
       new URL("/onboarding", domain),
@@ -67,10 +64,6 @@ describe("withRulesAppliedReg proxy", () => {
   });
   it("proceeds industry users if their operator is found and has required fields", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
-    const nextUrl = new NextURL(`${domain}/registration/register-an-operation`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
 
     // Mocking the fetch response for access to an operator
     fetch.mockResponseOnce(
@@ -87,7 +80,10 @@ describe("withRulesAppliedReg proxy", () => {
       }),
     );
 
-    const result = await proxy(instance(mockedRequest), mockNextFetchEvent);
+    const result = await proxy(
+      mockRequest("/registration/register-an-operation"),
+      {} as NextFetchEvent,
+    );
 
     expect(result?.status).toBe(200);
   });
