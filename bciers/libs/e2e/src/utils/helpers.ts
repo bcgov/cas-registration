@@ -368,10 +368,11 @@ export function getStorageStateForRole(role: string) {
 }
 
 // Open a new browser context instead of logging out and logging in as a new user
-export async function openNewBrowserContextAs(role: string) {
-  const browser = await getBrowser();
+export async function openNewBrowserContextAs(role: string, browser?: Browser) {
+  // Use the passed browser fixture or fall back to getter method
+  const browserInstance = browser || (await getBrowser());
   const storageState = await getStorageStateForRole(role);
-  const context = await browser.newContext({ storageState });
+  const context = await browserInstance.newContext({ storageState });
   const newPage = await context.newPage();
   return newPage;
 }
@@ -396,72 +397,30 @@ export async function setupTestEnvironment(
   expect(response.status()).toBe(200);
 }
 
-export async function waitForElementToStabilize(page: Page, selector: string) {
-  await page.waitForLoadState("domcontentloaded");
-
-  // Locator auto-retries across re-renders
-  const loc = page.locator(selector).first();
-
-  // Make sure it exists and is attached before waiting for "stable".
-  await loc.waitFor({ state: "attached" });
-
-  const handle = await loc.elementHandle();
-  await handle?.waitForElementState("stable");
-
-  // Tiny yield for any immediate post-render replace/route swap to happen
-  await page.evaluate(() => new Promise(requestAnimationFrame));
+export async function waitForElementToStabilize(page: Page, element: string) {
+  await page.waitForLoadState();
+  const el = await page.$(element);
+  await el?.waitForElementState("stable");
 }
 
 // This function can be used instead of `happoScreenshot` directly when experiencing flaky screenshots. It waits for the page to be stable before taking a screenshot.
 export async function takeStabilizedScreenshot(
   happoScreenshot: any,
   page: Page,
-  {
+  happoArgs: { component: string; variant: string; targets?: string[] },
+) {
+  // Skip Happo screenshots if Happo is not enabled (e.g., running locally without API keys)
+  if (!happoScreenshot) {
+    return;
+  }
+  const { component, variant, targets } = happoArgs;
+  const pageContent = page.locator("html");
+  await waitForElementToStabilize(page, "html"); // <-- match the screenshot target
+  await happoScreenshot(pageContent, {
     component,
     variant,
     targets,
-    locator, // NEW
-    selector = "html",
-  }: {
-    component: string;
-    variant: string;
-    targets?: string[];
-    locator?: Locator; // NEW
-    selector?: string;
-  },
-) {
-  const isDetached = (e: unknown) =>
-    /Frame has been detached|Target closed|Execution context was destroyed/i.test(
-      e instanceof Error ? e.message : String(e),
-    );
-
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      await page.waitForLoadState("domcontentloaded");
-
-      // stabilize either the provided locator (best) or fallback selector
-      if (locator) {
-        await locator.waitFor({ state: "visible" });
-        const h = await locator.elementHandle();
-        await h?.waitForElementState("stable");
-      } else {
-        await waitForElementToStabilize(page, selector);
-      }
-
-      // ✅ Use locator when provided; otherwise use selector
-      const target = locator ?? page.locator(selector);
-
-      await happoScreenshot(target, { component, variant, targets });
-      return;
-    } catch (e) {
-      if (isDetached(e)) continue;
-      throw e;
-    }
-  }
-
-  // If it keeps detaching, throw the last error by re-running once
-  const target = page.locator(selector);
-  await happoScreenshot(target, { component, variant, targets });
+  });
 }
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
