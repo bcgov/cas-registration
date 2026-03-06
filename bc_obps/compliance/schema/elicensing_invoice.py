@@ -28,6 +28,13 @@ class ElicensingLastRefreshOut(Schema):
 
 
 class ElicensingInvoiceListOut(ModelSchema):
+    compliance_report_version_id: Optional[int] = Field(
+        None,
+        description=(
+            "Compliance Report Version ID derived from the associated record: "
+            "uses the Compliance Obligation path if present, otherwise the Penalty path."
+        ),
+    )
     compliance_period: Optional[int] = Field(
         None,
         description=(
