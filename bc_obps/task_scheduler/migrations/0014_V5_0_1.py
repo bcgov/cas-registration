@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('task_scheduler', '0013_V5_0_0'),
+        ('task_scheduler', '0001_initial_squashed_0013_V5_0_0'),
     ]
 
     operations = []
