@@ -387,6 +387,11 @@ class _Change(Condition):
 
         fields = sorted(f for f in (self.fields or model_fields) if f not in exclude)
 
+        expr = self._build_expr(fields, model_fields, model)
+
+        return f"NOT ({expr})" if self._negated else expr
+
+    def _build_expr(self, fields, model_fields, model):
         if set(fields) == model_fields and not self.all:
             if self.comparison == "df":
                 expr = "OLD.* IS DISTINCT FROM NEW.*"
@@ -401,8 +406,7 @@ class _Change(Condition):
                 [Q(**{f"old__{field}__{self.comparison}": F(f"new__{field}")}) for field in fields],
             )
             expr = q.resolve(model)
-
-        return f"NOT ({expr})" if self._negated else expr
+        return expr
 
 
 class AnyChange(_Change):
@@ -595,6 +599,10 @@ class Trigger:
         self.declare = declare or self.declare
         self.timing = timing or self.timing
 
+        self._check_for_errors()
+        self.validate_name()
+
+    def _check_for_value_error(self):
         if not self.level or not isinstance(self.level, Level):
             raise ValueError(f'Invalid "level" attribute: {self.level}')
 
@@ -618,8 +626,6 @@ class Trigger:
 
         if not self.name:
             raise ValueError('Trigger must have "name" attribute')
-
-        self.validate_name()
 
     def __str__(self) -> str:  # pragma: no cover
         return self.name
