@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 elicensing_api_client = ELicensingAPIClient()
 
+DEFAULT_TIMEZONE_NAME = "America/Vancouver"
 
 class ElicensingObligationService:
     """
@@ -34,21 +35,21 @@ class ElicensingObligationService:
     @classmethod
     def _is_invoice_generation_date_reached(cls, compliance_period: CompliancePeriod) -> bool:
         # Convert current UTC time to Vancouver timezone before extracting date to ensure proper comparison
-        vancouver_timezone = ZoneInfo("America/Vancouver")
+        vancouver_timezone = ZoneInfo(DEFAULT_TIMEZONE_NAME)
         current_date = timezone.now().astimezone(vancouver_timezone).date()
         return current_date >= compliance_period.invoice_generation_date
 
     @classmethod
     def _is_invoice_generation_date_today(cls, compliance_period: CompliancePeriod) -> bool:
         # Convert current UTC time to Vancouver timezone before extracting date to ensure proper comparison
-        vancouver_timezone = ZoneInfo("America/Vancouver")
+        vancouver_timezone = ZoneInfo(DEFAULT_TIMEZONE_NAME)
         current_date = timezone.now().astimezone(vancouver_timezone).date()
         return current_date == compliance_period.invoice_generation_date
 
     @classmethod
     def _has_compliance_deadline_passed(cls, obligation_deadline: date) -> bool:
         # Convert current UTC time to Vancouver timezone before extracting date to ensure proper comparison
-        vancouver_timezone = ZoneInfo("America/Vancouver")
+        vancouver_timezone = ZoneInfo(DEFAULT_TIMEZONE_NAME)
         current_date = timezone.now().astimezone(vancouver_timezone).date()
         return current_date > obligation_deadline
 
@@ -115,7 +116,7 @@ class ElicensingObligationService:
                 # Create invoice in eLicensing
                 invoice_data = cls._map_obligation_to_invoice_data(obligation, fee_response.fees[0].feeObjectId)
 
-                vancouver_timezone = ZoneInfo("America/Vancouver")
+                vancouver_timezone = ZoneInfo(DEFAULT_TIMEZONE_NAME)
                 obligation_created_date = obligation.created_at.astimezone(vancouver_timezone).date()  # type: ignore[union-attr]
                 # Set the invoice due date to 30 days past date of obligation creation if the compliance period's deadline has passed
                 if (
