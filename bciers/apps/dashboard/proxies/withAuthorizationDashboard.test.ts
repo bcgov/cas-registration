@@ -1,5 +1,5 @@
-import { NextURL } from "next/dist/server/web/next-url";
-import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+import { NextFetchEvent, NextResponse } from "next/server";
+import { domain, mockRequest } from "@bciers/testConfig/helpers/mockRequest";
 import proxy from "../proxy";
 import { authAllowedPaths } from "./withAuthorizationDashboard";
 
@@ -12,7 +12,6 @@ import {
   mockIndustryUserToken,
 } from "@bciers/testConfig/data/tokens";
 
-const domain = "https://localhost:3000";
 const dashboardUrl = new URL("/dashboard", domain);
 
 vi.spyOn(NextResponse, "redirect");
@@ -22,11 +21,6 @@ vi.mock("next-auth/jwt", () => ({
   getToken: vi.fn(),
 }));
 const mockGetToken = nextGetToken as ReturnType<typeof vi.fn>;
-
-function mockRequest(path: string): NextRequest {
-  const nextUrl = new NextURL(path, { base: domain });
-  return { nextUrl, url: domain } as unknown as NextRequest;
-}
 
 describe("withAuthorizationDashboard proxy", () => {
   beforeEach(() => {
@@ -147,7 +141,7 @@ describe("withAuthorizationDashboard proxy", () => {
     // Loop through the array of allowed paths
     for (const allowedPath of authAllowedPaths) {
       const result = await proxy(
-        mockRequest(allowedPath),
+        mockRequest(`/${allowedPath}`),
         {} as NextFetchEvent,
       );
 

@@ -1,20 +1,11 @@
-import { NextURL } from "next/dist/server/web/next-url";
-import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+import { NextFetchEvent, NextResponse } from "next/server";
+import { domain, mockRequest } from "@bciers/testConfig/helpers/mockRequest";
 import proxy from "../proxy";
 import { fetch, getToken } from "@bciers/testConfig/mocks";
 import { mockIndustryUserToken } from "@bciers/testConfig/data/tokens";
 
-const domain = "https://localhost:3000";
-
 vi.spyOn(NextResponse, "redirect");
 vi.spyOn(NextResponse, "rewrite");
-
-function mockRequest(path: string): NextRequest {
-  return {
-    nextUrl: new NextURL(`${domain}${path}`),
-    url: domain,
-  } as unknown as NextRequest;
-}
 
 describe("withRulesAppliedReg proxy", () => {
   beforeEach(() => {
