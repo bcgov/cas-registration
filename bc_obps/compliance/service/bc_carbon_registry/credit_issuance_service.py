@@ -33,10 +33,12 @@ class BCCarbonRegistryCreditIssuanceService:
         verification_date_end = compliance_period_end_date.strftime("%d/%m/%Y")
 
         mixed_unit_data = bccr_project_data["mixedUnitList"][0]
+        DATE_FORMAT_STRING_LONG = "%Y-%m-%dT%H:%M:%S.000Z"
+
         credits_issuance_payload = {
             "account_id": earned_credit.bccr_holding_account_id,
             "issuance_requested_date": (
-                earned_credit.issuance_requested_date.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+                earned_credit.issuance_requested_date.strftime(DATE_FORMAT_STRING_LONG)
                 if earned_credit.issuance_requested_date
                 else None
             ),
@@ -49,13 +51,21 @@ class BCCarbonRegistryCreditIssuanceService:
                     "mixedUnits": [
                         {
                             "holding_quantity": earned_credit.earned_credits_amount,
-                            "vintage_start": compliance_period_start_date.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                            "vintage_end": compliance_period_end_date.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                            "vintage_start": compliance_period_start_date.strftime(
+                                DATE_FORMAT_STRING_LONG
+                            ),
+                            "vintage_end": compliance_period_end_date.strftime(
+                                DATE_FORMAT_STRING_LONG
+                            ),
                             "city": mixed_unit_data["city"],
                             "address_line_1": mixed_unit_data["address_line_1"],
                             "zipcode": mixed_unit_data["zipcode"],
-                            "latitude": str(mixed_unit_data["latitude"]) if mixed_unit_data["latitude"] else None,
-                            "longitude": str(mixed_unit_data["longitude"]) if mixed_unit_data["longitude"] else None,
+                            "latitude": str(mixed_unit_data["latitude"])
+                            if mixed_unit_data["latitude"]
+                            else None,
+                            "longitude": str(mixed_unit_data["longitude"])
+                            if mixed_unit_data["longitude"]
+                            else None,
                             "defined_unit_id": str(mixed_unit_data["id"]),
                             "project_type_id": str(mixed_unit_data["project_type_id"]),
                         }
