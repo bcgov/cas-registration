@@ -16,6 +16,7 @@ from service.data_access_service.email_template_service import EmailNotification
 logger = logging.getLogger(__name__)
 
 email_service = EmailService()
+DATE_FORMAT_STRINGIFY = "%B %d, %Y"
 
 
 def _send_email_or_raise(
@@ -122,8 +123,8 @@ def send_notice_of_obligation_generated_email(compliance_report_version_id: int)
         "operator_legal_name": crv.report_compliance_summary.report_version.report_operation.operator_legal_name,
         "operation_name": crv.report_compliance_summary.report_version.report_operation.operation_name,
         "compliance_year": crv.compliance_report.report.reporting_year.reporting_year,
-        "invoice_generation_date": compliance_period.invoice_generation_date.strftime("%B %d, %Y"),
-        "compliance_deadline": compliance_period.compliance_deadline.strftime("%B %d, %Y"),
+        "invoice_generation_date": compliance_period.invoice_generation_date.strftime(DATE_FORMAT_STRINGIFY),
+        "compliance_deadline": compliance_period.compliance_deadline.strftime(DATE_FORMAT_STRINGIFY),
     }
 
     _send_email_to_operators_approved_users_or_raise(crv.compliance_report.report.operator, template, email_context)
@@ -242,7 +243,9 @@ def send_notice_of_obligation_met_penalty_due_email(obligation_id: int) -> None:
         "operator_legal_name": crv.report_compliance_summary.report_version.report_operation.operator_legal_name,
         "operation_name": crv.report_compliance_summary.report_version.report_operation.operation_name,
         "compliance_year": crv.compliance_report.report.reporting_year.reporting_year,
-        "compliance_deadline": crv.compliance_report.compliance_period.compliance_deadline.strftime("%B %d, %Y"),
+        "compliance_deadline": crv.compliance_report.compliance_period.compliance_deadline.strftime(
+            DATE_FORMAT_STRINGIFY
+        ),
         "penalty_amount": f"${penalty_amount:,.2f}",
     }
 
