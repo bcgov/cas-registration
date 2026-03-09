@@ -4,6 +4,7 @@ import logging
 from registration.models.activity import Activity
 from reporting.models.report_activity import ReportActivity
 from reporting.models.report_product import ReportProduct
+from reporting.models.report_version import ReportVersion
 from reporting.service.compliance_service.emission_allocation import (
     get_allocated_emissions_by_report_product_emission_category,
 )
@@ -22,12 +23,11 @@ class BiogenicEmissionsSplit:
             raise ValueError("The biogenic emissions split reported must total to 1.")
 
 
-def retrieve_pulp_and_paper_biogenic_emissions_split(report_version_id: int) -> BiogenicEmissionsSplit:
-    # return BiogenicEmissionsSplit(chemical_pulp_ratio=Decimal('0.4'), lime_recovery_kiln_ratio=Decimal('0.6'))
+def retrieve_pulp_and_paper_biogenic_emissions_split_default(report_version: ReportVersion) -> BiogenicEmissionsSplit:
 
     try:
         report_activity = ReportActivity.objects.get(
-            report_version_id=report_version_id, activity=Activity.objects.get(slug='pulp_and_paper')
+            report_version=report_version, activity=Activity.objects.get(slug='pulp_and_paper')
         )
     except ReportActivity.DoesNotExist:
         raise ReportActivity.DoesNotExist(
@@ -54,6 +54,22 @@ def retrieve_pulp_and_paper_biogenic_emissions_split(report_version_id: int) -> 
     )
 
 
+def retrieve_pulp_and_paper_biogenic_emissions_split_2024() -> BiogenicEmissionsSplit:
+    """
+    In 2024, the 'Lime recovered by kiln' product wasn't reported, and the split wasn't on the ReportActivity form.
+    We allocate all the emissions overlap to the 'Chemical pulp' product, which was the behaviour before that product was added.
+    """
+    return BiogenicEmissionsSplit(Decimal('1'), Decimal('0'))
+
+
+def retrieve_pulp_and_paper_biogenic_emissions_split(report_version: ReportVersion) -> BiogenicEmissionsSplit:
+    match report_version.report.reporting_year_id:
+        case 2024:
+            return retrieve_pulp_and_paper_biogenic_emissions_split_2024()
+        case _:
+            return retrieve_pulp_and_paper_biogenic_emissions_split_default(report_version)
+
+
 def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
 
     industrial_process = get_allocated_emissions_by_report_product_emission_category(
@@ -69,7 +85,7 @@ def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
         and rp.report_version.report.operation.naics_code.naics_code.startswith("322112")
         and rp.product.name in ["Pulp and paper: chemical pulp", "Pulp and paper: lime recovered by kiln"]
     ):
-        biogenic_emissions_split = retrieve_pulp_and_paper_biogenic_emissions_split(rp.report_version.id)
+        biogenic_emissions_split = retrieve_pulp_and_paper_biogenic_emissions_split(rp.report_version)
         overlapping_industrial_process_emissions = (
             EmissionCategoryService.get_industrial_process_excluded_biomass_overlap_by_report_version(
                 rp.report_version.id
