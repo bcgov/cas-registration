@@ -40,7 +40,7 @@ from service.report_version_service import ReportVersionService
 class EmissionCategorySchema(ModelSchema):
     class Meta:
         model = EmissionCategory
-        fields = ['id', 'category_name', 'category_type']
+        fields = ['category_name', 'category_type']
 
 
 class ReportProductSchema(ModelSchema):
@@ -85,9 +85,7 @@ class ReportEmissionAllocationSchema(ModelSchema):
         obj: ReportEmissionAllocation,
     ) -> Dict[str, ReportProductEmissionAllocation]:
         allocations = obj.reportproductemissionallocation_records.all()
-        return {
-            f"emission_category:{allocation.emission_category.category_name}": allocation for allocation in allocations
-        }
+        return {allocation.emission_category.category_name: allocation for allocation in allocations}
 
     @staticmethod
     def resolve_report_product_emission_allocation_totals(obj: ReportEmissionAllocation) -> Dict[str, ReportProduct]:
@@ -112,12 +110,18 @@ class ReportRawActivityDataSchema(ModelSchema):
 
     @staticmethod
     def resolve_source_types(obj: ReportRawActivityData) -> dict:
-        source_types = obj.json_data.get("sourceTypes", {})
+        json_data = obj.json_data
         resolved_source_types = {}
-        for key, value in source_types.items():
+        source_type_section_keys = set(json_data.get("sourceTypes", {}).keys())
+        for key, value in json_data.get("sourceTypes", {}).items():
             source_type = SourceType.objects.filter(json_key=key).first()
             resolved_source_types[source_type.name if source_type else key] = value
-        return resolved_source_types
+        source_type_json_keys = set(
+            SourceType.objects.filter(json_key__in=json_data.keys()).values_list("json_key", flat=True)
+        )
+        _excluded = {"sourceTypes", "id", "activity", "activityId"} | source_type_json_keys | source_type_section_keys
+        other_data = {k: v for k, v in json_data.items() if k not in _excluded}
+        return {**resolved_source_types, **other_data}
 
     class Meta:
         model = ReportRawActivityData
@@ -328,16 +332,18 @@ class ReportComplianceSummaryProductSchema(ModelSchema):
 
 
 class ReportNewEntrantSchema(ModelSchema):
-    report_new_entrant_emission: list[ReportNewEntrantEmissionSchema] = []
-    productions: list[ReportProductionSchema] = []
+    report_new_entrant_emission: Dict[str, ReportNewEntrantEmissionSchema] = {}
+    productions: Dict[str, ReportProductionSchema] = {}
 
     @staticmethod
-    def resolve_report_new_entrant_emission(obj: ReportNewEntrant) -> List[ReportNewEntrantEmission]:
-        return list(obj.report_new_entrant_emission.all())
+    def resolve_report_new_entrant_emission(obj: ReportNewEntrant) -> Dict[str, ReportNewEntrantEmission]:
+        return {
+            e.emission_category.category_name: e for e in obj.report_new_entrant_emission.all() if e.emission_category
+        }
 
     @staticmethod
-    def resolve_productions(obj: ReportNewEntrant) -> List[ReportNewEntrantProduction]:
-        return list(obj.productions.all())
+    def resolve_productions(obj: ReportNewEntrant) -> Dict[str, ReportNewEntrantProduction]:
+        return {p.product.name: p for p in obj.productions.all() if p.product}
 
     class Meta:
         model = ReportNewEntrant
@@ -410,9 +416,9 @@ class FinalReviewVersionSchema(BaseReportVersionSchema):
     @staticmethod
     def resolve_facility_reports(obj: ReportVersion) -> Union[Dict[str, FacilityReport], List[FacilityReport]]:
         if obj.report_operation.operation_type == Operation.Types.EIO:
-            return {}  # always dict for EIO
+            return {}
         if obj.report_operation.operation_type == Operation.Types.LFO:
-            return list(obj.facility_reports.all())  # list for LFO
+            return list(obj.facility_reports.all())
 
         facility = obj.facility_reports.first()
         return {facility.facility_name: facility} if facility else {}

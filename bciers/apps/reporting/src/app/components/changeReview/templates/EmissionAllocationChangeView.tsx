@@ -91,7 +91,7 @@ export const EmissionAllocationChangeView: React.FC<
             field: `${change.field}['products'][${product.product_name}]['allocated_quantity']`,
             oldValue: product.allocated_quantity,
             newValue: "0",
-            change_type: "deleted",
+            change_type: "removed",
           });
         }
       });
@@ -266,7 +266,7 @@ export const EmissionAllocationChangeView: React.FC<
         displayLabel: oldValue.product_name,
         oldValue: oldValue.allocated_quantity ?? "0.0000",
         newValue: "0",
-        change_type: "deleted",
+        change_type: "removed",
         isNewAddition: false,
       });
     }
@@ -318,7 +318,7 @@ export const EmissionAllocationChangeView: React.FC<
         : "Details about the allocation methodology";
       let changeType = change.change_type;
       if (!change.oldValue) changeType = "added";
-      else if (!change.newValue) changeType = "deleted";
+      else if (!change.newValue) changeType = "removed";
       return { ...change, displayLabel, changeType } as DisplayChangeItem;
     });
   const totalChanges = data

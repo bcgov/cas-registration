@@ -18,7 +18,7 @@ import React, { useState } from "react";
 interface SourceTypeBoxTemplateProps extends Partial<FieldTemplateProps> {
   isDeleted?: boolean;
   sourceTypeChange?: {
-    type: "added" | "deleted" | "modified";
+    type: "added" | "deleted" | "removed" | "modified";
     oldValue?: any;
     newValue?: any;
   };
@@ -44,6 +44,13 @@ export function SourceTypeBoxTemplate({
       }
     : {};
 
+  const changeTypeDisplayLabel: Record<string, string> = {
+    deleted: "DELETED",
+    removed: "DELETED",
+    added: "ADDED",
+    modified: "MODIFIED",
+  };
+
   const changeLabel = sourceTypeChange ? (
     <Typography
       component="span"
@@ -57,14 +64,18 @@ export function SourceTypeBoxTemplate({
         color: "white",
 
         bgcolor:
-          sourceTypeChange?.type === "deleted"
+          sourceTypeChange?.type === "deleted" ||
+          sourceTypeChange?.type === "removed"
             ? BC_GOV_SEMANTICS_RED
             : sourceTypeChange?.type === "added"
               ? BC_GOV_SEMANTICS_GREEN
               : "warning.main",
       }}
     >
-      ({sourceTypeChange.type.toUpperCase()})
+      (
+      {changeTypeDisplayLabel[sourceTypeChange.type] ??
+        sourceTypeChange.type.toUpperCase()}
+      )
     </Typography>
   ) : null;
 

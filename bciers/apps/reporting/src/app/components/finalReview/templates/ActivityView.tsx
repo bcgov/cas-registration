@@ -1,258 +1,20 @@
 import React from "react";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
-import {
-  BC_GOV_BACKGROUND_COLOR_GREY,
-  BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-  WHITE,
-} from "@bciers/styles";
 import StatusLabel from "@bciers/components/form/fields/StatusLabel";
-import { NumberField } from "@base-ui/react/number-field";
-import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
-import { numberStyles } from "../formCustomization/FinalReviewStringField";
+import { ActivityItem } from "@reporting/src/app/components/changeReview/constants/types";
+import {
+  getDeletedStyles,
+  renderFuels,
+  renderObject,
+} from "@reporting/src/app/components/changeReview/utils/activityRenderUtils";
+import {
+  getSourceTypeChange,
+  isDisplayableSourceType,
+  getDisplayName,
+} from "@reporting/src/app/components/changeReview/utils/activityViewHelpers";
+import { dataCardStyle } from "@reporting/src/app/components/changeReview/constants/styles";
+import { ActivitiesViewProps } from "@reporting/src/app/components/finalReview/reportTypes";
 
-const styles = {
-  sourceCard: {
-    backgroundColor: WHITE,
-    padding: "16px",
-    marginBottom: "20px",
-    borderRadius: "8px",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-  },
-  dataCard: {
-    backgroundColor: BC_GOV_BACKGROUND_COLOR_GREY,
-    padding: "12px",
-    marginTop: "10px",
-    borderRadius: "6px",
-  },
-};
-
-const verticalBorder = {
-  borderLeft: `6px solid ${BC_GOV_PRIMARY_BRAND_COLOR_BLUE}`,
-  marginLeft: "1rem",
-  paddingLeft: "1rem",
-  height: "50%",
-  backgroundColor: "transparent",
-  borderRadius: "7px",
-};
-
-type DynamicObject = {
-  [key: string]:
-    | string
-    | number
-    | boolean
-    | DynamicObject
-    | DynamicObject[]
-    | null
-    | undefined;
-};
-
-type ActivityItem = {
-  activity: string;
-  source_types: Record<string, DynamicObject | DynamicObject[]>;
-};
-
-interface ActivitiesViewProps {
-  activity_data: ActivityItem[] | Record<string, any>;
-  isAdded?: boolean;
-  isDeleted?: boolean;
-  changeType?: "added" | "deleted";
-  sourceTypeChange?: {
-    name: string;
-    type: "added" | "deleted" | "modified";
-    deletedSourceTypes?: Array<{
-      name: string;
-      data: any;
-    }>;
-  };
-}
-
-const excludedKeys = ["units", "fuels", "emissions", "fuelType"];
-
-// --- Helper functions ---
-/**
- * Returns styles for deleted items (line-through and grey color) if isDeleted is true.
- * @param isDeleted - Boolean indicating if the item is deleted.
- * @returns CSSProperties for deleted styling.
- */
-const getDeletedStyles = (isDeleted: boolean) =>
-  isDeleted ? { textDecoration: "line-through", color: "#666" } : {};
-
-/**
- * Formats a camelCase or PascalCase key into a human-readable string.
- * Example: "fuelType" -> "Fuel Type"
- * @param key - The key to format.
- * @returns Formatted string.
- */
-const formatKey = (key: string) =>
-  key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase());
-
-/**
- * Recursively renders an object or array as React nodes, handling deleted styles and label prefixes.
- * @param obj - The object or array to render.
- * @param labelPrefix - Optional prefix for labels (used for arrays).
- * @param isDeleted - Boolean indicating if the item is deleted.
- * @returns ReactNode representing the object structure.
- */
-const renderObject = (
-  obj: unknown,
-  labelPrefix = "",
-  isDeleted = false,
-): React.ReactNode => {
-  const deletedStyles = getDeletedStyles(isDeleted);
-
-  if (Array.isArray(obj)) {
-    return obj.map((item, index) => {
-      // Format the label prefix to singular form and proper case
-      const formatLabel = (prefix: string) => {
-        const lower = prefix.toLowerCase();
-        if (lower === "units") return "Unit";
-        if (lower === "fuels") return "Fuel";
-        if (lower === "emissions") return "Emission";
-        return prefix.charAt(0).toUpperCase() + prefix.slice(1);
-      };
-
-      const title = labelPrefix
-        ? `${formatLabel(labelPrefix)} ${index + 1}:`
-        : "";
-      const containerStyle = {
-        marginLeft: 20,
-        marginBottom: 8,
-        ...(labelPrefix.toLowerCase() === "emissions" ? verticalBorder : {}),
-      };
-      return (
-        <div key={`${labelPrefix}-${index}`} style={containerStyle}>
-          {title && (
-            <strong
-              className="text-bc-bg-blue relative flex items-center"
-              style={deletedStyles}
-            >
-              {title}
-            </strong>
-          )}
-          <div style={{ marginLeft: 10 }}>
-            {renderObject(item, labelPrefix, isDeleted)}
-          </div>
-        </div>
-      );
-    });
-  }
-
-  if (obj && typeof obj === "object") {
-    return Object.entries(obj).map(([key, value], idx) => {
-      const isNumberValue = typeof value === "number";
-      const isObjectOrArray = typeof value === "object" && value !== null;
-
-      return (
-        <div
-          key={`${key}-${idx}`}
-          style={{
-            marginBottom: 4,
-            ...(isNumberValue || !isObjectOrArray
-              ? { display: "flex", alignItems: "center", gap: "4px" }
-              : {}),
-          }}
-        >
-          {!excludedKeys.includes(key.toLowerCase()) && (
-            <strong style={deletedStyles}>{formatKey(key)}:</strong>
-          )}
-          {isNumberValue ? (
-            <NumberField.Root
-              name={key}
-              disabled
-              value={transformToNumberOrUndefined(value)}
-              format={{
-                maximumFractionDigits: 4,
-              }}
-            >
-              <NumberField.Group>
-                <NumberField.Input
-                  style={{
-                    ...numberStyles,
-                    ...deletedStyles,
-                  }}
-                  name={key}
-                />
-              </NumberField.Group>
-            </NumberField.Root>
-          ) : (
-            <span style={deletedStyles}>
-              {isObjectOrArray
-                ? renderObject(value, key, isDeleted)
-                : String(value)}
-            </span>
-          )}
-        </div>
-      );
-    });
-  }
-
-  return <span style={deletedStyles}>{String(obj)}</span>;
-};
-
-/**
- * Renders fuel-related source type values as React nodes, showing only fuel name and unit.
- * @param sourceTypeValue - The value object for the fuel source type.
- * @param deletedStyles - CSSProperties for deleted styling.
- * @returns ReactNode representing the fuel data.
- */
-const renderFuels = (
-  sourceTypeValue: any,
-  deletedStyles: React.CSSProperties,
-) => (
-  <div style={styles.dataCard}>
-    {Object.entries(sourceTypeValue).map(([key, value]) => {
-      if (["fuel name", "fuel unit"].includes(key.toLowerCase())) {
-        return (
-          <div
-            key={key}
-            style={{
-              marginBottom: 4,
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-            }}
-          >
-            <strong style={deletedStyles}>{formatKey(key)}:</strong>
-            <span style={deletedStyles}>{String(value)}</span>
-          </div>
-        );
-      }
-      return null;
-    })}
-  </div>
-);
-
-/**
- * Determines the change type (added, deleted, modified) for a source type based on props and state.
- * @param stName - The name of the source type.
- * @param sourceTypeChange - The change object for source types.
- * @param activityIsAdded - Boolean indicating if the activity is added.
- * @param isSourceTypeDeleted - Boolean indicating if the source type is deleted.
- * @returns Change type object or undefined.
- */
-const getSourceTypeChange = (
-  stName: string,
-  sourceTypeChange: ActivitiesViewProps["sourceTypeChange"],
-  activityIsAdded: boolean,
-  isSourceTypeDeleted: boolean,
-): { type: "added" | "deleted" | "modified" } | undefined => {
-  if (sourceTypeChange?.name.split(",").includes(stName)) {
-    return {
-      type: isSourceTypeDeleted ? "deleted" : "added",
-    };
-  }
-  if (activityIsAdded) {
-    return { type: "added" };
-  }
-  return undefined;
-};
-
-/**
- * Main component for rendering activities and their source types in the final review template.
- * Handles added/deleted status, change types, and source type changes.
- * @param props - ActivitiesViewProps
- * @returns ReactNode representing the activities view.
- */
 export default function ActivityView({
   activity_data,
   isAdded = false,
@@ -261,43 +23,48 @@ export default function ActivityView({
   sourceTypeChange,
 }: ActivitiesViewProps) {
   const activityIsAdded = isAdded || changeType === "added";
-  const activityIsDeleted = isDeleted || changeType === "deleted";
+  const activityIsDeleted = isDeleted || changeType === "removed";
   const deletedStyles = getDeletedStyles(activityIsDeleted);
 
-  const activitiesArray = Array.isArray(activity_data)
+  const activitiesArray: ActivityItem[] = Array.isArray(activity_data)
     ? activity_data
     : Object.entries(activity_data).map(([activityName, activityData]) => ({
         activity: activityName,
-        source_types: (activityData as any)?.source_types || activityData,
+        source_types: activityData?.source_types ?? activityData,
       }));
 
   return (
     <div>
       {activitiesArray.map((activityItem, activityIndex) => (
         <section key={activityIndex} style={{ marginBottom: 30 }}>
-          <div>
-            <h2
-              className="py-2 font-bold text-bc-bg-blue"
-              style={deletedStyles}
-            >
-              {activityItem.activity}
-              {activityIsAdded && <StatusLabel type="added" />}
-              {activityIsDeleted && <StatusLabel type="deleted" />}
-            </h2>
-          </div>
+          <h2 className="py-2 font-bold text-bc-bg-blue" style={deletedStyles}>
+            {activityItem.activity}
+            {activityIsAdded && <StatusLabel type="added" />}
+            {activityIsDeleted && <StatusLabel type="removed" />}
+          </h2>
 
-          {Object.entries(activityItem.source_types)
-            .sort(([keyA], [keyB]) => {
-              if (keyA.toLowerCase().includes("emissions")) return 1;
-              if (keyB.toLowerCase().includes("emissions")) return -1;
+          {Object.entries(activityItem.source_types ?? {})
+            .filter(([, v]) => isDisplayableSourceType(v))
+            .sort(([a], [b]) => {
+              if (a.toLowerCase().includes("emissions")) return 1;
+              if (b.toLowerCase().includes("emissions")) return -1;
               return 0;
             })
             .map(([sourceTypeName, sourceTypeValue], sourceTypeIndex) => {
+              const displayName = getDisplayName(sourceTypeName);
               const isSourceTypeDeleted =
                 sourceTypeChange?.deletedSourceTypes?.some(
                   (st) => st.name === sourceTypeName,
                 );
+              const stIsDeleted = activityIsDeleted || isSourceTypeDeleted;
+              const stChange = getSourceTypeChange(
+                sourceTypeName,
+                sourceTypeChange,
+                activityIsAdded,
+                isSourceTypeDeleted || false,
+              );
 
+              // Fuel source types: show only name/unit summary row
               if (sourceTypeName.toLowerCase().includes("fuels")) {
                 return (
                   <div key={sourceTypeIndex}>
@@ -306,30 +73,21 @@ export default function ActivityView({
                 );
               }
 
+              // All other source types: arrays pass key as labelPrefix for "N+1" headings,
+              // objects render recursively with no prefix.
+              const content = Array.isArray(sourceTypeValue)
+                ? renderObject(sourceTypeValue, sourceTypeName, stIsDeleted)
+                : renderObject(sourceTypeValue, "", stIsDeleted);
+
               return (
                 <SourceTypeBoxTemplate
                   key={sourceTypeIndex}
                   classNames="source-type-box"
-                  label={sourceTypeName}
-                  description={
-                    <div style={styles.dataCard}>
-                      {typeof sourceTypeValue === "object"
-                        ? renderObject(
-                            sourceTypeValue,
-                            "",
-                            activityIsDeleted || isSourceTypeDeleted,
-                          )
-                        : String(sourceTypeValue)}
-                    </div>
-                  }
+                  label={displayName}
+                  description={<div style={dataCardStyle}>{content}</div>}
                   readonly={false}
-                  isDeleted={activityIsDeleted || isSourceTypeDeleted}
-                  sourceTypeChange={getSourceTypeChange(
-                    sourceTypeName,
-                    sourceTypeChange,
-                    activityIsAdded,
-                    isSourceTypeDeleted || false,
-                  )}
+                  isDeleted={stIsDeleted}
+                  sourceTypeChange={stChange}
                 />
               );
             })}

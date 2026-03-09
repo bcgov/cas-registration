@@ -172,18 +172,30 @@ export const FinalReviewReportSections: React.FC<Props> = ({
       condition: (reportData: ReportData) =>
         !isEIO && !!reportData.report_additional_data,
       getData: (reportData: ReportData) => reportData.report_additional_data,
-      fields: () => additionalDataFields,
+      fields: (reportData: ReportData) =>
+        additionalDataFields(reportData.report_additional_data),
     },
     {
       title: "Report New Entrant Information",
       condition: (reportData: ReportData) =>
         isNewEntrant && reportData.report_new_entrant.length > 0,
-      getData: (reportData: ReportData) => reportData.report_new_entrant[0],
-      fields: (reportData: ReportData) =>
-        reportNewEntrantFields(
-          reportData.report_new_entrant[0].productions,
-          reportData.report_new_entrant[0].report_new_entrant_emission,
-        ),
+      getData: (reportData: ReportData) => {
+        const newEntrant = reportData.report_new_entrant[0];
+        return {
+          ...newEntrant,
+          productions: Object.values(newEntrant.productions),
+          report_new_entrant_emission: Object.values(
+            newEntrant.report_new_entrant_emission,
+          ),
+        };
+      },
+      fields: (reportData: ReportData) => {
+        const newEntrant = reportData.report_new_entrant[0];
+        return reportNewEntrantFields(
+          Object.values(newEntrant.productions),
+          Object.values(newEntrant.report_new_entrant_emission),
+        );
+      },
     },
     {
       title: "Operation Emission Summary",
@@ -220,14 +232,17 @@ export const FinalReviewReportSections: React.FC<Props> = ({
         const sectionFields = section.fields ? section.fields(data) : [];
 
         return (
-          <SectionReview
+          <div
             key={section.title}
-            title={section.title}
-            data={sectionData}
-            fields={sectionFields}
-            reportingYear={data.reporting_year}
-            id={section.id}
-          />
+            id={section.id ?? section.title.toLowerCase().replace(" ", "-")}
+          >
+            <SectionReview
+              title={section.title}
+              data={sectionData}
+              fields={sectionFields}
+              reportingYear={data.reporting_year}
+            />
+          </div>
         );
       })}
     </>

@@ -37,3 +37,10 @@ export const collapseStyles = {
 };
 
 export const excludedKeys = ["units", "fuels", "emissions", "fuel type"];
+
+export const dataCardStyle = {
+  backgroundColor: BC_GOV_BACKGROUND_COLOR_GREY,
+  padding: "12px",
+  marginTop: "10px",
+  borderRadius: "6px",
+};

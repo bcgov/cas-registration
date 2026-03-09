@@ -19,7 +19,7 @@ interface ProductionDataChangeViewProps {
 interface ProcessedProduct {
   productName: string;
   changes: DisplayChangeItem[];
-  changeType: "added" | "modified" | "deleted";
+  changeType: "added" | "modified" | "removed";
   productData?: any;
 }
 
@@ -33,20 +33,19 @@ const getFieldKey = (field: string) => {
   const match = field.match(/\['report_products'\]\['[^']+'\]\['([^']+)'\]/);
   return match ? match[1] : undefined;
 };
-// Helper to determine change type and flags
-const getChangeMeta = (
-  change: ChangeItem,
-): {
-  changeType: "added" | "deleted" | "modified";
-  isNewAddition: boolean;
-  isDeletion: boolean;
-} => {
-  if (change.oldValue == null)
-    return { changeType: "added", isNewAddition: true, isDeletion: false };
-  if (change.newValue == null)
-    return { changeType: "deleted", isNewAddition: false, isDeletion: true };
-  return { changeType: "modified", isNewAddition: false, isDeletion: false };
-};
+// Derive display flags directly from the API change_type
+const getChangeMeta = (change: ChangeItem) => ({
+  changeType: change.change_type as "added" | "removed" | "modified",
+  isNewAddition: change.change_type === "added",
+  isDeletion: change.change_type === "removed",
+});
+
+// Infer change type from values for synthetic object diffs (Case 1)
+const inferChangeType = (
+  oldVal: any,
+  newVal: any,
+): "added" | "removed" | "modified" =>
+  oldVal == null ? "added" : newVal == null ? "removed" : "modified";
 export const ProductionDataChangeView: React.FC<
   ProductionDataChangeViewProps
 > = ({ data }) => {
@@ -101,7 +100,7 @@ export const ProductionDataChangeView: React.FC<
             productGroups[productName] = {
               productName,
               changes: [],
-              changeType: "deleted",
+              changeType: "removed",
               productData: oldProduct,
             };
           } else if (!oldProduct && newProduct) {
@@ -117,13 +116,7 @@ export const ProductionDataChangeView: React.FC<
               const oldVal = oldProduct[fieldKey];
               const newVal = newProduct[fieldKey];
               if (oldVal !== newVal) {
-                const { changeType, isNewAddition, isDeletion } = getChangeMeta(
-                  {
-                    ...change,
-                    oldValue: oldVal,
-                    newValue: newVal,
-                  },
-                );
+                const changeType = inferChangeType(oldVal, newVal);
                 productChanges.push({
                   ...change,
                   field: `${change.field}['${productName}']['${fieldKey}']`,
@@ -131,8 +124,8 @@ export const ProductionDataChangeView: React.FC<
                   oldValue: oldVal,
                   newValue: newVal,
                   change_type: changeType,
-                  isNewAddition,
-                  isDeletion,
+                  isNewAddition: changeType === "added",
+                  isDeletion: changeType === "removed",
                 });
               }
             });
@@ -165,6 +158,8 @@ export const ProductionDataChangeView: React.FC<
       else {
         const productName = getProductName(change.field);
         if (!productName) return;
+        // Skip fields where both old and new values are null (no meaningful change)
+        if (change.oldValue == null && change.newValue == null) return;
         const { changeType, isNewAddition, isDeletion } = getChangeMeta(change);
 
         const fieldKey = getFieldKey(change.field);
@@ -212,7 +207,7 @@ export const ProductionDataChangeView: React.FC<
         <React.Fragment key={`product-${product.productName}`}>
           {/* For full product changes (added/deleted), display in final review format */}
           {(product.changeType === "added" ||
-            product.changeType === "deleted") &&
+            product.changeType === "removed") &&
           product.productData ? (
             <Box mb={3}>
               <SectionReview
@@ -232,7 +227,7 @@ export const ProductionDataChangeView: React.FC<
                       : field,
                 )}
                 isAdded={product.changeType === "added"}
-                isDeleted={product.changeType === "deleted"}
+                isDeleted={product.changeType === "removed"}
               />
             </Box>
           ) : (
@@ -243,7 +238,7 @@ export const ProductionDataChangeView: React.FC<
                   {product.productName}
                 </Typography>
                 {(product.changeType === "added" ||
-                  product.changeType === "deleted") && (
+                  product.changeType === "removed") && (
                   <Box mb={2}>
                     <StatusLabel type={product.changeType} />
                   </Box>

@@ -1,5 +1,12 @@
 import { ChangeItem } from "../constants/types";
-import { ChangeType } from "@reporting/src/app/components/finalReview/templates/types";
+
+/**
+ * Normalize a facility name extracted from a field path string like ['Facility 42']
+ * by removing leading/trailing quotes and trimming whitespace.
+ * This is the SINGLE source of truth — all parsers/organizers must use this.
+ */
+export const normalizeFacilityName = (raw: string): string =>
+  (raw || "").replace(/^['"]|['"]$/g, "").trim();
 
 /**
  * Normalize a name by removing leading/trailing quotes and trimming whitespace
@@ -45,6 +52,7 @@ export function getSection(field: string): string {
 
   return "Other";
 }
+
 /**
  * Get field label from path
  */
@@ -112,14 +120,15 @@ export function groupPersonResponsibleChanges(
     );
 
     const combinedNameChange: ChangeItem = {
-      change_type: "",
+      change_type:
+        firstNameChange?.change_type ??
+        lastNameChange?.change_type ??
+        "modified",
       field: "root['report_person_responsible']['name']",
-      oldValue: `${firstNameChange?.oldValue || ""} ${
-        lastNameChange?.oldValue || ""
-      }`.trim(),
-      newValue: `${firstNameChange?.newValue || ""} ${
-        lastNameChange?.newValue || ""
-      }`.trim(),
+      oldValue:
+        `${firstNameChange?.oldValue || ""} ${lastNameChange?.oldValue || ""}`.trim(),
+      newValue:
+        `${firstNameChange?.newValue || ""} ${lastNameChange?.newValue || ""}`.trim(),
     };
 
     grouped.push(combinedNameChange);
@@ -157,9 +166,6 @@ export function isDictObject(value: any): boolean {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
-export const normalizeChangeType = (type?: string): ChangeType =>
-  type === "removed" ? "deleted" : (type as ChangeType) || "modified"; // Determine the change type for the activity
-
 export const isNonEmptyValue = (v: unknown): boolean =>
   v != null &&
   (typeof v !== "string" ? true : v.trim() !== "") &&
@@ -167,11 +173,11 @@ export const isNonEmptyValue = (v: unknown): boolean =>
   (typeof v === "object" && !Array.isArray(v)
     ? Object.keys(v).length > 0
     : true);
+
 // Check if the object itself is entirely added at this level
 export const isWholeObjectAdded = (oldObj: any, newObj: any): boolean => {
   if (!oldObj && newObj) {
     const fields = newObj.fields || [];
-    // Only consider fields at this level; ignore nested children
     return fields.length > 0
       ? fields.every((f: any) => f.oldValue == null)
       : false;
@@ -183,27 +189,34 @@ export const isWholeObjectAdded = (oldObj: any, newObj: any): boolean => {
 export const isWholeObjectDeleted = (oldObj: any, newObj: any): boolean => {
   if (oldObj && !newObj) {
     const fields = oldObj.fields || [];
-    // Only consider fields at this level; ignore nested children
     return fields.length > 0
       ? fields.every((f: any) => f.newValue == null)
       : false;
   }
   return false;
 };
-// Utility to normalize old_value/new_value to oldValue/newValue recursively
-export function normalizeChangeKeys(obj: any): any {
-  if (Array.isArray(obj)) {
-    return obj.map(normalizeChangeKeys);
-  }
-  if (obj && typeof obj === "object") {
-    const newObj: any = {};
-    for (const key in obj) {
-      let newKey = key;
-      if (key === "old_value") newKey = "oldValue";
-      if (key === "new_value") newKey = "newValue";
-      newObj[newKey] = normalizeChangeKeys(obj[key]);
+
+/**
+ * Normalize old_value/new_value (snake_case from API) → oldValue/newValue (camelCase)
+ * on the TOP-LEVEL change objects ONLY.
+ *
+ * ⚠️  The previous implementation recursed into every nested object which would
+ *     corrupt the actual payload data (e.g. activity_data objects whose keys
+ *     happened to be named old_value/new_value).  We now only touch the
+ *     top-level change-item keys.
+ */
+export function normalizeChangeKeys(changes: ChangeItem[]): ChangeItem[] {
+  return changes.map((change) => {
+    const c = { ...change } as any;
+
+    // Only add camelCase alias if it doesn't already exist
+    if ("old_value" in c && !("oldValue" in c)) {
+      c.oldValue = c.old_value;
     }
-    return newObj;
-  }
-  return obj;
+    if ("new_value" in c && !("newValue" in c)) {
+      c.newValue = c.new_value;
+    }
+
+    return c as ChangeItem;
+  });
 }

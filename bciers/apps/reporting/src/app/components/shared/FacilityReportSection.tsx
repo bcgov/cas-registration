@@ -100,13 +100,7 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
                 <div key={i} className="mb-4">
                   {record.change_type && (
                     <Box mb={1}>
-                      <StatusLabel
-                        type={
-                          record.change_type === "removed"
-                            ? "deleted"
-                            : record.change_type
-                        }
-                      />
+                      <StatusLabel type={record.change_type} />
                     </Box>
                   )}
                   {fieldOrder.map((key) => (

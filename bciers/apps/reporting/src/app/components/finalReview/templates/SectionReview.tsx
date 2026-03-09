@@ -76,7 +76,7 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
             )}
             {title}
             {isAdded && <StatusLabel type="added" />}
-            {isDeleted && <StatusLabel type="deleted" />}
+            {isDeleted && <StatusLabel type="removed" />}
           </div>
         )}
       </div>
