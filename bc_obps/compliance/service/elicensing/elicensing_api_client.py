@@ -23,6 +23,7 @@ from .schema import (
 
 logger = logging.getLogger(__name__)
 
+UNEXPECTED_API_ERROR_MESSAGE = "Unexpected code path - API error handling failed"
 
 class ELicensingAPIClient:
     """
@@ -242,7 +243,7 @@ class ELicensingAPIClient:
         else:
             self._handle_error_response(response, "query client")
             # This line should never be reached due to raise_for_status in _handle_error_response
-            raise RuntimeError("Unexpected code path - API error handling failed")
+            raise RuntimeError(UNEXPECTED_API_ERROR_MESSAGE)
 
     def update_client(self, client_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -281,7 +282,7 @@ class ELicensingAPIClient:
         else:
             self._handle_error_response(response, "update client")
             # This line should never be reached due to raise_for_status in _handle_error_response
-            raise RuntimeError("Unexpected code path - API error handling failed")
+            raise RuntimeError(UNEXPECTED_API_ERROR_MESSAGE)
 
     def query_balance(self, client_object_id: str) -> Dict[str, Any]:
         """
@@ -318,7 +319,7 @@ class ELicensingAPIClient:
         else:
             self._handle_error_response(response, "query balance")
             # This line should never be reached due to raise_for_status in _handle_error_response
-            raise RuntimeError("Unexpected code path - API error handling failed")
+            raise RuntimeError(UNEXPECTED_API_ERROR_MESSAGE)
 
     def create_fees(self, client_id: int, fees_data: FeeCreationRequest) -> FeeResponse:
         """
@@ -397,7 +398,7 @@ class ELicensingAPIClient:
         else:
             self._handle_error_response(response, "adjust fees")
             # This line should never be reached due to raise_for_status in _handle_error_response
-            raise RuntimeError("Unexpected code path - API error handling failed")
+            raise RuntimeError(UNEXPECTED_API_ERROR_MESSAGE)
 
     def query_fees(self, client_object_id: str, fee_status: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -438,7 +439,7 @@ class ELicensingAPIClient:
         else:
             self._handle_error_response(response, "query fees")
             # This line should never be reached due to raise_for_status in _handle_error_response
-            raise RuntimeError("Unexpected code path - API error handling failed")
+            raise RuntimeError(UNEXPECTED_API_ERROR_MESSAGE)
 
     def query_invoice(self, client_id: int, invoice_number: str) -> InvoiceQueryResponse:
         """
