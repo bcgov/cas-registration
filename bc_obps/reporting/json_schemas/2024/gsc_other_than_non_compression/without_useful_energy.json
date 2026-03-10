@@ -58,7 +58,7 @@
                   "type": "string"
                 },
                 "annualFuelAmount": {
-                  "title": "Annual Fuel Amount",
+                  "title": "Annual Fuel Amount (fuel unit)",
                   "type": "number"
                 },
                 "emissions": {
@@ -77,7 +77,7 @@
                         "type": "number"
                       },
                       "equivalentEmission": {
-                        "title": "Equivalent Emission",
+                        "title": "Equivalent Emissions (tCO2e)",
                         "type": "number",
                         "readOnly": true,
                         "description": "Computed upon saving"
