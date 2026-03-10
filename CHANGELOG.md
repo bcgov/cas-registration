@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.4.2](https://github.com/bcgov/cas-registration/compare/v5.4.1...v5.4.2) (2026-03-10)
+
+### Bug Fixes
+
+- not applicable methodology (2024) now skips pulp and paper validation ([e9a4eac](https://github.com/bcgov/cas-registration/commit/e9a4eac42cd973a0483c962b1dd0a470babde2bc))
+
 ## [5.4.1](https://github.com/bcgov/cas-registration/compare/v5.4.0...v5.4.1) (2026-03-04)
 
 # [5.4.0](https://github.com/bcgov/cas-registration/compare/v5.3.1...v5.4.0) (2026-03-04)
