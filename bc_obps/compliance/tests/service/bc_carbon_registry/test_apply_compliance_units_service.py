@@ -1,13 +1,14 @@
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
 import pytest
 from unittest.mock import patch, Mock
 from model_bakery import baker
 from common.exceptions import UserError
 from compliance.service.bc_carbon_registry.apply_compliance_units_service import ApplyComplianceUnitsService
-from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData, ObligationData
-from registration.models.operation import Operation
+from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData
 from decimal import Decimal
 from compliance.dataclass import RefreshWrapperReturn
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 
 pytestmark = pytest.mark.django_db
 
@@ -183,25 +184,22 @@ class TestApplyComplianceUnitsService:
             ]
         }
 
-        operation = baker.make_recipe(
-            "registration.tests.utils.operation",
-            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id"),
-            status=Operation.Statuses.REGISTERED,
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
         )
-        mock_compliance_report_version_service.get_compliance_report_version.return_value = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version", compliance_report__report__operation=operation
+        mock_compliance_report_version_service.get_compliance_report_version.return_value = (
+            test_data.compliance_report_version
         )
         mock_compliance_charge_rate_service.get_rate_for_year.return_value = Decimal("75.00")
+        test_data.compliance_obligation.reporting_year = 2023
+        test_data.compliance_obligation.outstanding_balance = Decimal("400.00")
+        test_data.compliance_obligation.equivalent_value = Decimal("30000.00")
+        test_data.compliance_obligation.fee_amount_dollars = Decimal("3000.00")
+        test_data.compliance_obligation.obligation_id = "23-0001-1-1"
+        test_data.compliance_obligation.penalty_status = "NONE"
+        test_data.compliance_obligation.save()
 
-        mock_obligation_data = ObligationData(
-            reporting_year=2023,
-            outstanding_balance=Decimal("400.00"),
-            equivalent_value=Decimal("30000.00"),
-            fee_amount_dollars=Decimal("3000.00"),
-            obligation_id="23-0001-1-1",
-            penalty_status="NONE",
-        )
-        mock_get_obligation_data.return_value = mock_obligation_data
+        mock_get_obligation_data.return_value = test_data.compliance_obligation
 
         # Stub compute caps: limit 500, remaining 400
         mock_compute_compliance_unit_caps.return_value = (Decimal("500.00"), Decimal("400.00"))
@@ -256,17 +254,16 @@ class TestApplyComplianceUnitsService:
         "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
     )
     def test_calculate_apply_units_cap_success(self, mock_refresh):
-        invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
-        obligation = baker.make_recipe(
-            "compliance.tests.utils.compliance_obligation",
-            fee_amount_dollars=Decimal("1000"),
-            elicensing_invoice_id=invoice.id,
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
         )
+        test_data.compliance_obligation.fee_amount_dollars = Decimal("1000.00")
+        test_data.compliance_obligation.save()
 
-        mock_refresh.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
+        mock_refresh.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=test_data.invoice)
 
         result = ApplyComplianceUnitsService._calculate_apply_units_cap(
-            compliance_report_version_id=obligation.compliance_report_version_id
+            compliance_report_version_id=test_data.compliance_report_version.id
         )
         assert result == Decimal("500.00")
 
@@ -464,20 +461,22 @@ class TestApplyComplianceUnitsService:
         mock_refresh_data,
     ):
         # Arrange
-        mock_obligation = Mock(
-            fee_amount_dollars=Decimal("1000.00"),
-            equivalent_value=Decimal("100.00"),
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
         )
-        mock_get_obligation_data.return_value = mock_obligation
+        test_data.compliance_obligation.fee_amount_dollars = Decimal("1000.00")
+        test_data.compliance_obligation.equivalent_value = Decimal("100.00")
+        test_data.compliance_obligation.save()
 
-        mock_invoice = Mock()
-        mock_invoice.outstanding_balance = Decimal("500.00")
-        mock_invoice.elicensing_line_items.all.return_value = []
-        mock_refresh_data.return_value.invoice = mock_invoice
+        mock_get_obligation_data.return_value = test_data.compliance_obligation
+
+        test_data.invoice.outstanding_balance = Decimal("500.00")
+        test_data.invoice.elicensing_line_items.set([])
+        test_data.invoice.save()
+        mock_refresh_data.return_value.invoice = test_data.invoice
 
         mock_bccr_service.validate_holding_account_ownership.return_value = True
 
-        compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
         account_id = "123"
         payload = {
             "bccr_compliance_account_id": "456",
@@ -499,7 +498,7 @@ class TestApplyComplianceUnitsService:
         }
 
         # Act
-        ApplyComplianceUnitsService.apply_compliance_units(account_id, compliance_report_version.id, payload)
+        ApplyComplianceUnitsService.apply_compliance_units(account_id, test_data.compliance_report_version.id, payload)
 
         # Assert
         mock_bccr_service.client.transfer_compliance_units.assert_called_once()
@@ -520,12 +519,12 @@ class TestApplyComplianceUnitsService:
             "id": "unit-2",
         } in transfer_payload["mixedUnitList"]
 
-        mock_can_apply_units.assert_called_once_with(compliance_report_version.id)
+        mock_can_apply_units.assert_called_once_with(test_data.compliance_report_version.id)
         mock_create_adjustment.assert_called_once()
         assert mock_create_adjustment.call_args.kwargs["adjustment_total"] == -Decimal("80.00")
         mock_bccr_service.validate_holding_account_ownership.assert_called_once_with(
             holding_account_id=account_id,
-            compliance_report_version_id=compliance_report_version.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
         )
 
     def test_apply_compliance_units_filters_zero_quantities(
@@ -538,18 +537,23 @@ class TestApplyComplianceUnitsService:
         mock_refresh_data,
     ):
         # Arrange
-        mock_obligation = Mock(fee_amount_dollars=Decimal("1000.00"), equivalent_value=Decimal("100.00"))
-        mock_get_obligation_data.return_value = mock_obligation
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
+        )
+        test_data.compliance_obligation.fee_amount_dollars = Decimal("1000.00")
+        test_data.compliance_obligation.equivalent_value = Decimal("100.00")
+        test_data.compliance_obligation.save()
+        mock_get_obligation_data.return_value = test_data.compliance_obligation
 
-        mock_invoice = Mock(outstanding_balance=Decimal("500.00"))
-        mock_invoice.elicensing_line_items.all.return_value = []
-        mock_refresh_data.return_value.invoice = mock_invoice
+        test_data.invoice.outstanding_balance = Decimal("500.00")
+        test_data.invoice.elicensing_line_items.set([])
+        test_data.invoice.save()
+        mock_refresh_data.return_value.invoice = test_data.invoice
 
         mock_bccr_service.client.transfer_compliance_units.return_value = {"success": True}
 
         mock_bccr_service.validate_holding_account_ownership.return_value = True
 
-        compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
         account_id = "123"
         payload = {
             "bccr_compliance_account_id": "456",
@@ -583,7 +587,7 @@ class TestApplyComplianceUnitsService:
         }
 
         # Act
-        ApplyComplianceUnitsService.apply_compliance_units(account_id, compliance_report_version.id, payload)
+        ApplyComplianceUnitsService.apply_compliance_units(account_id, test_data.compliance_report_version.id, payload)
 
         # Assert
         transfer_payload = mock_bccr_service.client.transfer_compliance_units.call_args[0][0]
@@ -595,7 +599,7 @@ class TestApplyComplianceUnitsService:
         assert mock_create_adjustment.call_args.kwargs["adjustment_total"] == -Decimal("80.00")
         mock_bccr_service.validate_holding_account_ownership.assert_called_once_with(
             holding_account_id=account_id,
-            compliance_report_version_id=compliance_report_version.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
         )
 
     def test_apply_compliance_units_all_zero_quantities(
@@ -608,18 +612,19 @@ class TestApplyComplianceUnitsService:
         mock_refresh_data,
     ):
         # Arrange
-        mock_obligation = Mock(fee_amount_dollars=Decimal("1000.00"), equivalent_value=Decimal("100.00"))
-        mock_get_obligation_data.return_value = mock_obligation
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
+        )
 
-        mock_invoice = Mock(outstanding_balance=Decimal("500.00"))
-        mock_invoice.elicensing_line_items.all.return_value = []
-        mock_refresh_data.return_value.invoice = mock_invoice
+        mock_get_obligation_data.return_value = test_data.compliance_obligation
+
+        test_data.invoice.elicensing_line_items.set([])
+        mock_refresh_data.return_value.invoice = test_data.invoice
 
         mock_bccr_service.client.transfer_compliance_units.return_value = {"success": True}
 
         mock_bccr_service.validate_holding_account_ownership.return_value = True
 
-        compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
         account_id = "123"
         payload = {
             "bccr_compliance_account_id": "456",
@@ -641,7 +646,7 @@ class TestApplyComplianceUnitsService:
         }
 
         # Act
-        ApplyComplianceUnitsService.apply_compliance_units(account_id, compliance_report_version.id, payload)
+        ApplyComplianceUnitsService.apply_compliance_units(account_id, test_data.compliance_report_version.id, payload)
 
         # Assert
         call_args = mock_bccr_service.client.transfer_compliance_units.call_args[0][0]
@@ -649,7 +654,7 @@ class TestApplyComplianceUnitsService:
         assert mock_create_adjustment.call_args.kwargs["adjustment_total"] == -Decimal("0.00")
         mock_bccr_service.validate_holding_account_ownership.assert_called_once_with(
             holding_account_id=account_id,
-            compliance_report_version_id=compliance_report_version.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
         )
 
     @patch(
@@ -658,32 +663,39 @@ class TestApplyComplianceUnitsService:
     @patch('compliance.service.compliance_charge_rate_service.ComplianceChargeRateService.get_rate_for_year')
     def test_compute_units_cap_with_supplementary_and_unit_adjustments(self, mock_get_charge_rate, mock_refresh):
         mock_get_charge_rate.return_value = Decimal('80.00')
-        invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
-        obligation = baker.make_recipe(
-            "compliance.tests.utils.compliance_obligation",
-            fee_amount_dollars=Decimal('1000'),
-            elicensing_invoice_id=invoice.id,
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
         )
-        line_item = baker.make_recipe("compliance.tests.utils.elicensing_line_item", elicensing_invoice=invoice)
-        supplementary_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
+        test_data.invoice.outstanding_balance = Decimal('100.01')
+        test_data.invoice.fee_balance = Decimal('100.01')
+        test_data.invoice.interest_balance = Decimal('0.00')
+        test_data.invoice.save()
+        test_data.compliance_obligation.fee_amount_dollars = Decimal("1000")
+        test_data.compliance_obligation.save()
+
+        test_supplementary_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+            previous_data=test_data,
+        )
         baker.make_recipe(
             "compliance.tests.utils.elicensing_adjustment",
             reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
-            supplementary_compliance_report_version=supplementary_version,
-            elicensing_line_item=line_item,
+            supplementary_compliance_report_version=test_supplementary_data.compliance_report_version,
+            elicensing_line_item=test_data.invoice.elicensing_line_items.first(),
             amount=Decimal('-500'),
         )
         baker.make_recipe(
             "compliance.tests.utils.elicensing_adjustment",
             reason='Compliance Units Applied',
-            elicensing_line_item=line_item,
+            elicensing_line_item=test_data.invoice.elicensing_line_items.first(),
             amount=Decimal('-100'),
         )
 
-        mock_refresh.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
+        mock_refresh.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=test_data.invoice)
 
         result = ApplyComplianceUnitsService._compute_compliance_unit_caps(
-            compliance_report_version_id=obligation.compliance_report_version_id
+            compliance_report_version_id=test_data.compliance_report_version.id
         )
         print(result)
         assert result == (Decimal("250.00"), Decimal("150"))
@@ -710,13 +722,12 @@ class TestApplyComplianceUnitsService:
             "The sub-account does not belong to the holding account."
         )
 
-        operation = baker.make_recipe(
-            "registration.tests.utils.operation",
-            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id"),
-            status=Operation.Statuses.REGISTERED,
+        # Test data
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
         )
-        mock_compliance_report_version_service.get_compliance_report_version.return_value = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version", compliance_report__report__operation=operation
+        mock_compliance_report_version_service.get_compliance_report_version.return_value = (
+            test_data.compliance_report_version
         )
 
         # Act & Assert
@@ -742,16 +753,13 @@ class TestApplyComplianceUnitsService:
     ):
         """Test that applying units with invalid ownership raises an error."""
         # Arrange
-        operation = baker.make_recipe(
-            "registration.tests.utils.operation",
-            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id"),
-            status=Operation.Statuses.REGISTERED,
-        )
-        compliance_report_version = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version", compliance_report__report__operation=operation
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
         )
 
-        mock_compliance_report_version_service.get_compliance_report_version.return_value = compliance_report_version
+        mock_compliance_report_version_service.get_compliance_report_version.return_value = (
+            test_data.compliance_report_version
+        )
 
         # Mock ownership validation to return False (invalid ownership)
         mock_bccr_service.validate_holding_account_ownership.return_value = False
@@ -767,12 +775,14 @@ class TestApplyComplianceUnitsService:
         with pytest.raises(
             UserError, match="The holding account does not own the compliance sub-account for this operation."
         ):
-            ApplyComplianceUnitsService.apply_compliance_units(account_id, compliance_report_version.id, payload)
+            ApplyComplianceUnitsService.apply_compliance_units(
+                account_id, test_data.compliance_report_version.id, payload
+            )
 
         # Verify that ownership validation was called
         mock_bccr_service.validate_holding_account_ownership.assert_called_once_with(
             holding_account_id=account_id,
-            compliance_report_version_id=compliance_report_version.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
         )
 
         # Verify that no further processing occurred

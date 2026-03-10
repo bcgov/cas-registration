@@ -1,6 +1,4 @@
-from decimal import Decimal
 from model_bakery.baker import make_recipe
-from registration.models.operation import Operation
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from unittest.mock import patch
@@ -8,6 +6,7 @@ from urllib.parse import urlencode
 from compliance.models import ComplianceReportVersion
 from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from reporting.models.reporting_year import ReportingYear
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 
 
 class TestComplianceReportVersionsEndpoint(CommonTestSetup):
@@ -26,36 +25,21 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
     def test_crv_endpoint_industry_user(self, mock_get_versions):
 
         operator = make_recipe('registration.tests.utils.operator')
-        operation1 = make_recipe(
-            'registration.tests.utils.operation', operator=operator, status=Operation.Statuses.REGISTERED
-        )
-        operation2 = make_recipe(
-            'registration.tests.utils.operation', operator=operator, status=Operation.Statuses.REGISTERED
-        )
-        report1 = make_recipe('compliance.tests.utils.report', operator=operator, operation=operation1)
-        report2 = make_recipe('compliance.tests.utils.report', operator=operator, operation=operation2)
-        # Arrange
-
-        version1 = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report__report=report1,
-            report_compliance_summary__report_version__report_operation__operation_name='whee',
-            report_compliance_summary__report_version__report_operation__operator_legal_name='whee',
-        )
-        version1.report_compliance_summary.excess_emissions = Decimal("50.0000")
-        version1.report_compliance_summary.save()
-
-        version2 = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report__report=report2,
-            report_compliance_summary__report_version__report_operation__operation_name='whee',
-            report_compliance_summary__report_version__report_operation__operator_legal_name='whee',
-        )
-        version2.report_compliance_summary.excess_emissions = Decimal("75.0000")
-        version2.report_compliance_summary.save()
+        test_data1 = ComplianceTestHelper.build_test_data()
+        test_data2 = ComplianceTestHelper.build_test_data()
+        test_data1.operation.operator = operator
+        test_data1.report.operator = operator
+        test_data1.operation.save()
+        test_data1.report.save()
+        test_data2.operation.operator = operator
+        test_data2.report.operator = operator
+        test_data2.operation.save()
+        test_data2.report.save()
 
         # Return a queryset, not a list
-        mock_get_versions.return_value = ComplianceReportVersion.objects.filter(pk__in=[version1.pk, version2.pk])
+        mock_get_versions.return_value = ComplianceReportVersion.objects.filter(
+            pk__in=[test_data1.compliance_report_version.pk, test_data2.compliance_report_version.pk]
+        )
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         resp = TestUtils.mock_get_with_auth_role(self, "industry_user", self._url(paginate_result=False))
