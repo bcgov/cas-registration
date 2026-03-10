@@ -40,6 +40,12 @@ class BaseComplianceTestInfrastructure:
         )
         ## INITIAL EMISSION REPORT VERSION
         self.report_version = make_recipe('reporting.tests.utils.report_version', report=self.report)
+        ## INITIAL REPORT OPERATION
+        self.report_operation = make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=self.report_version,
+            operation_name="Test Operation Name",
+        )
         ## INITIAL REPORT COMPLIANCE SUMMARY
         self.report_compliance_summary = make_recipe(
             'reporting.tests.utils.report_compliance_summary',

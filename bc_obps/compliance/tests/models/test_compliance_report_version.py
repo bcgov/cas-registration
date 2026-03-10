@@ -3,6 +3,7 @@ from compliance.models.compliance_report_version import ComplianceReportVersion
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 
 
 class ComplianceReportVersionTest(BaseTestCase):
@@ -34,76 +35,49 @@ class TestComplianceReportVersionRls(BaseTestCase):
         new_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
         old_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
 
-        # operation
-        operation = make_recipe(
-            'registration.tests.utils.operation', operator=new_user_operator.operator, status="Registered"
-        )
+        new_test_data = ComplianceTestHelper.build_test_data()
+        old_test_data = ComplianceTestHelper.build_test_data()
+
+        new_test_data.report.operator = new_user_operator.operator
+        new_test_data.operation.operator = new_user_operator.operator
+        new_test_data.report.save()
+        old_test_data.report.operator = old_user_operator.operator
+        old_test_data.operation.operator = old_user_operator.operator
+        old_test_data.report.save()
+
         # timeline of current and historical ownership
         make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            operation=operation,
+            operation=new_test_data.operation,
             operator=old_user_operator.operator,
         )
         make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            operation=operation,
+            operation=new_test_data.operation,
             operator=new_user_operator.operator,
-        )
-        # old operator's data
-        old_operator_report = make_recipe(
-            'reporting.tests.utils.report', operation=operation, operator=old_user_operator.operator
-        )
-        old_operator_compliance_report = make_recipe(
-            'compliance.tests.utils.compliance_report', report=old_operator_report
-        )
-
-        old_operator_compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=old_operator_compliance_report
-        )
-
-        # new operator's data
-        new_operator_report = make_recipe(
-            'reporting.tests.utils.report', operation=operation, operator=new_user_operator.operator
-        )
-        new_operator_compliance_report = make_recipe(
-            'compliance.tests.utils.compliance_report', report=new_operator_report
-        )
-
-        new_operator_compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=new_operator_compliance_report
         )
 
         # extra objects for insert function
-        new_operator_report_version = make_recipe(
-            'reporting.tests.utils.report_version',
-            report=new_operator_report,
-        )
-
         new_operator_report_compliance_summary = make_recipe(
-            'reporting.tests.utils.report_compliance_summary', report_version=new_operator_report_version
-        )
-
-        old_operator_report_version = make_recipe(
-            'reporting.tests.utils.report_version',
-            report=old_operator_report,
+            'reporting.tests.utils.report_compliance_summary', report_version=new_test_data.report_version
         )
 
         old_operator_report_compliance_summary = make_recipe(
-            'reporting.tests.utils.report_compliance_summary', report_version=old_operator_report_version
+            'reporting.tests.utils.report_compliance_summary', report_version=new_test_data.report_version
         )
 
         assert ComplianceReportVersion.objects.count() == 2
 
         # test to access currently owned operation data
         def select_function(cursor):
-            ComplianceReportVersion.objects.get(id=new_operator_compliance_report_version.id)
+            ComplianceReportVersion.objects.get(id=new_test_data.compliance_report_version.id)
 
         def forbidden_select_function(cursor):
-            ComplianceReportVersion.objects.get(id=old_operator_compliance_report_version.id)
+            ComplianceReportVersion.objects.get(id=old_test_data.compliance_report_version.id)
 
         def insert_function(cursor):
             ComplianceReportVersion.objects.create(
-                compliance_report=new_operator_compliance_report,
+                compliance_report=new_test_data.compliance_report,
                 report_compliance_summary=new_operator_report_compliance_summary,
                 status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET,
                 excess_emissions_delta_from_previous=10,
@@ -131,7 +105,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
                     )
                 """,
                 (
-                    old_operator_compliance_report.id,
+                    old_test_data.compliance_report.id,
                     old_operator_report_compliance_summary.id,
                     "Obligation fully met",
                     10,
@@ -149,7 +123,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
                 """,
                 (
                     ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-                    new_operator_compliance_report_version.id,
+                    new_test_data.compliance_report_version.id,
                 ),
             )
             return cursor.rowcount
@@ -163,7 +137,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
                 """,
                 (
                     ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-                    old_operator_compliance_report_version.id,
+                    old_test_data.compliance_report_version.id,
                 ),
             )
             return cursor.rowcount
@@ -174,7 +148,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
                    DELETE FROM "erc"."compliance_report_version"
                    WHERE id = %s
                 """,
-                (new_operator_compliance_report_version.id,),
+                (new_test_data.compliance_report_version.id,),
             )
             return cursor.rowcount
 
@@ -184,7 +158,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
                    DELETE FROM "erc"."compliance_report_version"
                    WHERE id = %s
                 """,
-                (old_operator_compliance_report_version.id,),
+                (old_test_data.compliance_report_version.id,),
             )
             return cursor.rowcount
 
@@ -203,15 +177,15 @@ class TestComplianceReportVersionRls(BaseTestCase):
 
         # test to access previously owned operation data
         def select_function(cursor):
-            ComplianceReportVersion.objects.get(id=old_operator_compliance_report_version.id)
+            ComplianceReportVersion.objects.get(id=old_test_data.compliance_report_version.id)
 
         def forbidden_select_function(cursor):
-            ComplianceReportVersion.objects.get(id=new_operator_compliance_report_version.id)
+            ComplianceReportVersion.objects.get(id=new_test_data.compliance_report_version.id)
 
         def insert_function(cursor):
 
             ComplianceReportVersion.objects.create(
-                compliance_report=old_operator_compliance_report,
+                compliance_report=old_test_data.compliance_report,
                 report_compliance_summary=old_operator_report_compliance_summary,
                 status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET,
                 excess_emissions_delta_from_previous=10,
@@ -239,7 +213,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
                     )
                 """,
                 (
-                    new_operator_compliance_report.id,
+                    new_test_data.compliance_report.id,
                     new_operator_report_compliance_summary.id,
                     "Obligation fully met",
                     10,
@@ -257,7 +231,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
                 """,
                 (
                     ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-                    old_operator_compliance_report_version.id,
+                    old_test_data.compliance_report_version.id,
                 ),
             )
             return cursor.rowcount
@@ -271,7 +245,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
                 """,
                 (
                     ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-                    new_operator_compliance_report_version.id,
+                    new_test_data.compliance_report_version.id,
                 ),
             )
             return cursor.rowcount
@@ -282,7 +256,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
                    DELETE FROM "erc"."compliance_report_version"
                    WHERE id = %s
                 """,
-                (old_operator_compliance_report_version.id,),
+                (old_test_data.compliance_report_version.id,),
             )
             return cursor.rowcount
 
@@ -292,7 +266,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
                    DELETE FROM "erc"."compliance_report_version"
                    WHERE id = %s
                 """,
-                (new_operator_compliance_report_version.id,),
+                (new_test_data.compliance_report_version.id,),
             )
             return cursor.rowcount
 
@@ -310,11 +284,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
         )
 
     def test_compliance_report_version_rls_cas_users(self):
-        operator = make_recipe('registration.tests.utils.operator')
-        operation = make_recipe('registration.tests.utils.operation', operator=operator)
-        report = make_recipe('reporting.tests.utils.report', operation=operation)
-        compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=report)
-        make_recipe('compliance.tests.utils.compliance_report_version', id=88, compliance_report=compliance_report)
+        ComplianceTestHelper.build_test_data()
 
         def select_function(cursor):
             assert ComplianceReportVersion.objects.count() == 1

@@ -5,6 +5,7 @@ from common.exceptions import UserError
 from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
 from compliance.dataclass import BCCRAccountResponseDetails, BCCRComplianceAccountResponseDetails
 from registration.models.operation import Operation
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 
 pytestmark = pytest.mark.django_db
 
@@ -168,27 +169,7 @@ class TestBCCarbonRegistryAccountService:
     def test_create_compliance_account(self, service, mock_api_client, compliance_report_instance):
         # Arrange
         service.client = mock_api_client
-        # Create a report version with report operation
-        report_version = baker.make_recipe(
-            "reporting.tests.utils.report_version", report=compliance_report_instance.report
-        )
-        baker.make_recipe(
-            "reporting.tests.utils.report_operation",
-            report_version=report_version,
-            operation_name="Test Operation Name",
-        )
-
-        # Create a report compliance summary
-        report_compliance_summary = baker.make_recipe(
-            "reporting.tests.utils.report_compliance_summary", report_version=report_version
-        )
-
-        # Create a compliance report version
-        compliance_report_version = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report_instance,
-            report_compliance_summary=report_compliance_summary,
-        )
+        test_data = ComplianceTestHelper.build_test_data()
 
         mock_api_client.create_sub_account.return_value = {"entity": {"id": "789", "parent_name": "Parent Corp"}}
 
@@ -199,7 +180,7 @@ class TestBCCarbonRegistryAccountService:
             type_of_account_holder="Corporation",
             compliance_year=2024,
             boro_id="BORO123",
-            compliance_report_version=compliance_report_version,
+            compliance_report_version=test_data.compliance_report_version,
         )
 
         # Assert
@@ -219,21 +200,21 @@ class TestBCCarbonRegistryAccountService:
     def test_get_or_create_compliance_account_existing(self, service, mock_api_client):
         # Arrange
         service.client = mock_api_client
-        compliance_report = baker.make_recipe(
-            "compliance.tests.utils.compliance_report", bccr_subaccount_id="123456789012345"
-        )
+        test_data = ComplianceTestHelper.build_test_data()
+        test_data.compliance_report.bccr_subaccount_id = "123456789012345"
+        test_data.compliance_report.save()
         holding_account = BCCRAccountResponseDetails(
             entity_id="123",
             organization_classification_id="456",
             type_of_account_holder="Corporation",
             trading_name="Test Corp",
         )
-        compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
+
         # Act
         result = service.get_or_create_compliance_account(
             holding_account_details=holding_account,
-            compliance_report=compliance_report,
-            compliance_report_version=compliance_report_version,
+            compliance_report=test_data.compliance_report,
+            compliance_report_version=test_data.compliance_report_version,
         )
         # Assert
         assert isinstance(result, BCCRComplianceAccountResponseDetails)
@@ -244,20 +225,9 @@ class TestBCCarbonRegistryAccountService:
     def test_validate_holding_account_ownership_with_existing_subaccount_valid(self, service, mock_api_client):
         # Arrange
         service.client = mock_api_client
-        operation = baker.make_recipe(
-            "registration.tests.utils.operation",
-            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id", id="24-0019"),
-            status=Operation.Statuses.REGISTERED,
-        )
-        compliance_report = baker.make_recipe(
-            "compliance.tests.utils.compliance_report",
-            bccr_subaccount_id="987654321012345",
-            report__operation=operation,
-        )
-        compliance_report_version = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-        )
+        test_data = ComplianceTestHelper.build_test_data()
+        test_data.compliance_report.bccr_subaccount_id = "987654321012345"
+        test_data.compliance_report.save()
 
         # Mock sub-account details with matching master account
         mock_api_client.get_account_details.return_value = {
@@ -272,7 +242,7 @@ class TestBCCarbonRegistryAccountService:
         # Act
         result = service.validate_holding_account_ownership(
             holding_account_id="123456789012345",
-            compliance_report_version_id=compliance_report_version.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
         )
 
         # Assert
@@ -284,20 +254,9 @@ class TestBCCarbonRegistryAccountService:
     def test_validate_holding_account_ownership_with_existing_subaccount_invalid(self, service, mock_api_client):
         # Arrange
         service.client = mock_api_client
-        operation = baker.make_recipe(
-            "registration.tests.utils.operation",
-            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id", id="24-0019"),
-            status=Operation.Statuses.REGISTERED,
-        )
-        compliance_report = baker.make_recipe(
-            "compliance.tests.utils.compliance_report",
-            bccr_subaccount_id="987654321012345",
-            report__operation=operation,
-        )
-        compliance_report_version = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-        )
+        test_data = ComplianceTestHelper.build_test_data()
+        test_data.compliance_report.bccr_subaccount_id = "987654321012345"
+        test_data.compliance_report.save()
 
         # Mock sub-account details with different master account
         mock_api_client.get_account_details.return_value = {
@@ -313,7 +272,7 @@ class TestBCCarbonRegistryAccountService:
         with pytest.raises(UserError, match="The sub-account does not belong to the holding account."):
             service.validate_holding_account_ownership(
                 holding_account_id="123456789012345",
-                compliance_report_version_id=compliance_report_version.id,
+                compliance_report_version_id=test_data.compliance_report_version.id,
             )
 
         mock_api_client.get_account_details.assert_called_once_with(
@@ -323,18 +282,9 @@ class TestBCCarbonRegistryAccountService:
     def test_validate_holding_account_ownership_no_existing_subaccount_valid(self, service, mock_api_client):
         # Arrange
         service.client = mock_api_client
-        operation = baker.make_recipe(
-            "registration.tests.utils.operation",
-            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id", id="24-0019"),
-            status=Operation.Statuses.REGISTERED,
-        )
-        compliance_report = baker.make_recipe(
-            "compliance.tests.utils.compliance_report", bccr_subaccount_id=None, report__operation=operation
-        )
-        compliance_report_version = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-        )
+        test_data = ComplianceTestHelper.build_test_data()
+        test_data.compliance_report.bccr_subaccount_id = None
+        test_data.compliance_report.save()
 
         # Mock holding account details
         mock_api_client.get_account_details.return_value = {
@@ -361,7 +311,7 @@ class TestBCCarbonRegistryAccountService:
         # Act
         result = service.validate_holding_account_ownership(
             holding_account_id="123456789012345",
-            compliance_report_version_id=compliance_report_version.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
         )
 
         # Assert
@@ -371,18 +321,9 @@ class TestBCCarbonRegistryAccountService:
     def test_validate_holding_account_ownership_no_existing_subaccount_invalid(self, service, mock_api_client):
         # Arrange
         service.client = mock_api_client
-        operation = baker.make_recipe(
-            "registration.tests.utils.operation",
-            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id", id="24-0019"),
-            status=Operation.Statuses.REGISTERED,
-        )
-        compliance_report = baker.make_recipe(
-            "compliance.tests.utils.compliance_report", bccr_subaccount_id=None, report__operation=operation
-        )
-        compliance_report_version = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-        )
+        test_data = ComplianceTestHelper.build_test_data()
+        test_data.compliance_report.bccr_subaccount_id = None
+        test_data.compliance_report.save()
 
         # Mock holding account details
         mock_api_client.get_account_details.return_value = {
@@ -402,7 +343,7 @@ class TestBCCarbonRegistryAccountService:
         # Act
         result = service.validate_holding_account_ownership(
             holding_account_id="123456789012345",
-            compliance_report_version_id=compliance_report_version.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
         )
 
         # Assert
@@ -412,18 +353,9 @@ class TestBCCarbonRegistryAccountService:
     def test_validate_holding_account_ownership_holding_account_not_found(self, service, mock_api_client):
         # Arrange
         service.client = mock_api_client
-        operation = baker.make_recipe(
-            "registration.tests.utils.operation",
-            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id", id="24-0019"),
-            status=Operation.Statuses.REGISTERED,
-        )
-        compliance_report = baker.make_recipe(
-            "compliance.tests.utils.compliance_report", bccr_subaccount_id=None, report__operation=operation
-        )
-        compliance_report_version = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-        )
+        test_data = ComplianceTestHelper.build_test_data()
+        test_data.compliance_report.bccr_subaccount_id = None
+        test_data.compliance_report.save()
 
         # Mock holding account not found
         mock_api_client.get_account_details.return_value = {"entities": []}
@@ -431,7 +363,7 @@ class TestBCCarbonRegistryAccountService:
         # Act
         result = service.validate_holding_account_ownership(
             holding_account_id="123456789012345",
-            compliance_report_version_id=compliance_report_version.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
         )
 
         # Assert
@@ -440,31 +372,10 @@ class TestBCCarbonRegistryAccountService:
     def test_get_or_create_compliance_account_new(self, service, mock_api_client):
         # Arrange
         service.client = mock_api_client
-        operation = baker.make_recipe(
-            "registration.tests.utils.operation",
-            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id"),
-            status=Operation.Statuses.REGISTERED,
-        )
-        report = baker.make_recipe("reporting.tests.utils.report", operation=operation)
-        compliance_report = baker.make_recipe(
-            "compliance.tests.utils.compliance_report", report=report, bccr_subaccount_id=None
-        )
 
-        # Create the required relationships for compliance_report_version
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report=report)
-        baker.make_recipe(
-            "reporting.tests.utils.report_operation",
-            report_version=report_version,
-            operation_name="Test Operation Name",
-        )
-        report_compliance_summary = baker.make_recipe(
-            "reporting.tests.utils.report_compliance_summary", report_version=report_version
-        )
-        compliance_report_version = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
-        )
+        test_data = ComplianceTestHelper.build_test_data()
+        test_data.compliance_report.bccr_subaccount_id = None
+        test_data.compliance_report.save()
 
         holding_account = BCCRAccountResponseDetails(
             entity_id="123",
@@ -477,8 +388,8 @@ class TestBCCarbonRegistryAccountService:
         # Act
         result = service.get_or_create_compliance_account(
             holding_account_details=holding_account,
-            compliance_report=compliance_report,
-            compliance_report_version=compliance_report_version,
+            compliance_report=test_data.compliance_report,
+            compliance_report_version=test_data.compliance_report_version,
         )
         # Assert
         assert isinstance(result, BCCRComplianceAccountResponseDetails)

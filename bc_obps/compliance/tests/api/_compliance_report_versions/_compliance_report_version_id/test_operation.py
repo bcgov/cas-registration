@@ -21,12 +21,8 @@ class TestReportOperationByComplianceReportVersionEndpoint(CommonTestSetup):
         approved_user_operator = make_recipe(
             'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
         )
-        # create the report_operation linked to the report_version
-        make_recipe(
-            'reporting.tests.utils.report_operation',
-            report_version=test_data.report_version,
-            operation_name='reporting name',
-        )
+        test_data.report_operation.operation_name = 'reporting name'
+        test_data.report_operation.save()
 
         # Act
         # Mock the authorization and perform the request
