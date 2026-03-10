@@ -1,5 +1,6 @@
 import logging
 from typing import Type, Any
+from django.db.models import F
 from django.dispatch import receiver
 from registration.signals.signals import operation_registration_purpose_changed
 from reporting.models import ReportVersion
@@ -30,6 +31,7 @@ def handle_registration_purpose_changed(sender: Type[Any], **kwargs: Any) -> Non
         ReportVersion.objects.select_related("report__operation", "report__reporting_year", "report__operator")
         .filter(
             report__operation_id=operation_id,
+            report__operation__operator_id=F("report__operator_id"),
             status=ReportVersion.ReportVersionStatus.Draft,
             report__reporting_year=current_reporting_year,
         )
@@ -40,16 +42,7 @@ def handle_registration_purpose_changed(sender: Type[Any], **kwargs: Any) -> Non
         logger.info("No draft report version found for operation_id=%s", operation_id)
         return
 
-    report = draft_version.report
     version_id = draft_version.id
-
-    if report.operation.operator_id != report.operator_id:
-        logger.info(
-            "Skipping deletion of draft report version id=%s for operation_id=%s: operator has changed",
-            version_id,
-            operation_id,
-        )
-        return
 
     logger.info("Deleting draft report version id=%s for operation_id=%s", version_id, operation_id)
     ReportVersionService.delete_report_version(version_id)

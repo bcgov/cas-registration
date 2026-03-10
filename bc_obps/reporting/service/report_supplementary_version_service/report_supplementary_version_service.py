@@ -1,11 +1,8 @@
 from django.db import transaction
-from django.forms import model_to_dict
 
-from reporting.models import ReportEmission, ReportOperation, ReportVersion
-from reporting.service.emission_category_mapping_service import EmissionCategoryMappingService
+from reporting.models import ReportOperation, ReportVersion
+from reporting.service.report_supplementary_version_service.report_supplementary_cloning import clone_all
 from service.reporting_year_service import ReportingYearService
-
-from .report_supplementary_cloning import ReportSupplementaryCloning
 
 
 class ReportSupplementaryVersionService:
@@ -97,7 +94,7 @@ class ReportSupplementaryVersionService:
             is_latest_submitted=False,
         )
 
-        ReportSupplementaryVersionService._clone_all(source, new_version)
+        clone_all(source, new_version)
         return new_version
 
     @staticmethod
@@ -123,36 +120,3 @@ class ReportSupplementaryVersionService:
                 matching_versions = matching_versions.filter(report__operator_id=report_version.report.operator_id)
             return matching_versions.order_by("-created_at").first()
         return report_version
-
-    @staticmethod
-    def _clone_all(source: ReportVersion, target: ReportVersion) -> None:
-        """Copies all related data from source report version into target report version."""
-        ReportSupplementaryCloning.clone_report_version_operation(source, target)
-        ReportSupplementaryCloning.clone_report_version_representatives(source, target)
-        ReportSupplementaryCloning.clone_report_version_person_responsible(source, target)
-        ReportSupplementaryCloning.clone_electricity_import_data(source, target)
-        ReportSupplementaryCloning.clone_report_version_additional_data(source, target)
-        ReportSupplementaryCloning.clone_report_version_new_entrant_data(source, target)
-        ReportSupplementaryCloning.clone_report_version_verification(source, target)
-        ReportSupplementaryCloning.clone_report_version_attachments(source, target)
-        ReportSupplementaryCloning.clone_report_version_facilities(source, target)
-        ReportSupplementaryVersionService.reapply_emission_categories(target)
-
-    @staticmethod
-    def reapply_emission_categories(report_version: ReportVersion) -> None:
-        """
-        Reapplies emission categories for all emissions in the given report version.
-        This ensures that the emission categories are applied to the report correctly, in case changes to emission categories
-        have occurred in the database since the report was last updated.
-        """
-        report_emissions = ReportEmission.objects.filter(report_version=report_version).select_related(
-            "report_methodology"
-        )
-
-        for report_emission in report_emissions:
-            EmissionCategoryMappingService.apply_emission_categories(
-                report_source_type=report_emission.report_source_type,
-                report_fuel=report_emission.report_fuel if report_emission.report_fuel else None,
-                report_emission=report_emission,
-                methodology_data=model_to_dict(report_emission.report_methodology),
-            )
