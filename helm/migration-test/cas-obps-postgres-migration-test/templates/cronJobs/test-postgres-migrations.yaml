@@ -21,7 +21,7 @@ spec:
           serviceAccountName: airflow-deployer
           containers:
           - name: postgres-migration-test
-            image: postgres:16
+            image: {{ .Values.pgImage }}
             resources:
               requests:
                 cpu: 50m

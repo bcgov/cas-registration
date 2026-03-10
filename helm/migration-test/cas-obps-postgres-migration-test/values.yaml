@@ -3,3 +3,5 @@
 fullnameOverride: pg-migration-test
 
 sourceNamespace: ~
+
+pgImage: artifacts.developer.gov.bc.ca/bcgov-docker-local/crunchy-postgres:ubi8-16.11-2547
