@@ -7,7 +7,7 @@ from rls.utils.helpers import generate_report_policy_mapping_from_grants, genera
 class Rls:
     enable_rls = True
     schema = 'erc'
-    table = ReportingTableNames.REPORT_UNIT
+    table = ReportingTableNames.REPORT_ELECTRICITY_IMPORT_DATA
     role_grants_mapping = {
         RlsRoles.INDUSTRY_USER: [
             RlsOperations.SELECT,
