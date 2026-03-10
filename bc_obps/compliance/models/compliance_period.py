@@ -26,6 +26,11 @@ class CompliancePeriod(TimeStampedModel):
     invoice_generation_date = models.DateField(
         db_comment="Date on which invoices for this compliance period should be generated"
     )
+    max_credit_usage_percentage = models.DecimalField(
+        max_digits=4,
+        decimal_places=2,
+        db_comment="Maximum percentage of the compliance obligation that can be met using compliance units (e.g. 0.50 = 50 percent)",
+    )
 
     reporting_year = models.ForeignKey(
         ReportingYear,
