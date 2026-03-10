@@ -32,6 +32,7 @@ export interface BccrComplianceAccountResponse {
   outstanding_balance: number;
   compliance_unit_cap_limit: number;
   compliance_unit_cap_remaining: number;
+  max_credit_usage_percentage: number;
 }
 
 export interface RequestIssuanceOfEarnedCreditsFormData {
@@ -161,6 +162,7 @@ export interface ComplianceSummary {
   has_overdue_penalty: boolean;
   requires_manual_handling: boolean;
   director_decision?: string;
+  max_credit_usage_percentage: number;
 }
 
 export interface ComplianceAppliedUnitsData {

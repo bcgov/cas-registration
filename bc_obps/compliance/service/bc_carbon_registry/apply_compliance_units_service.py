@@ -2,6 +2,7 @@ from dataclasses import asdict
 from typing import Dict, List, Optional, Any
 from common.exceptions import UserError
 from compliance.dataclass import ComplianceUnitsPageData, BCCRUnit, TransferComplianceUnitsPayload, MixedUnit
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
@@ -45,7 +46,8 @@ class ApplyComplianceUnitsService:
     def _calculate_apply_units_cap(cls, compliance_report_version_id: int) -> Decimal:
         """
         Retrieves the obligation for the given compliance report version ID and calculates the maximum
-        allowable value for applied compliance units as 50% of (the original fee less any adjustments due to supplementary report submissions).
+        allowable value for applied compliance units based on the max_credit_usage_percentage
+        configured on the associated CompliancePeriod.
 
         Raises:
             UserError: If the obligation is missing or the fee_amount_dollars is not available.
@@ -57,9 +59,11 @@ class ApplyComplianceUnitsService:
             compliance_report_version_id=compliance_report_version_id,
             reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
         )
-        return (obligation.fee_amount_dollars + total_supplementary_report_adjustments) * Decimal(
-            "0.5"
-        )  # 50% of (original amount less any adjustments due to supplementary reports)
+        crv = ComplianceReportVersion.objects.select_related('compliance_report__compliance_period').get(
+            id=compliance_report_version_id
+        )
+        max_credit_usage_percentage = crv.compliance_report.compliance_period.max_credit_usage_percentage
+        return (obligation.fee_amount_dollars + total_supplementary_report_adjustments) * max_credit_usage_percentage
 
     @classmethod
     def _compute_compliance_unit_caps(cls, compliance_report_version_id: int) -> tuple[Decimal, Decimal]:
@@ -89,7 +93,7 @@ class ApplyComplianceUnitsService:
         Returns True if:
         * There is a valid obligation with a fee > 0.
         * Outstanding balance / equivalent value is > 0.
-        * There is remaining cap to apply (50% of original fee minus already applied adjustments).
+        * There is a remaining cap to apply (max_credit_usage_percentage of original fee minus already applied adjustments).
         """
         # Get cap limit and remaining (handles missing obligation or fee internally).
         cap_limit, cap_remaining = cls._compute_compliance_unit_caps(compliance_report_version_id)
@@ -117,7 +121,7 @@ class ApplyComplianceUnitsService:
         """
         Validates two things:
         1. That the total equivalent value in the payload does not exceed the remaining cap
-        (50% of the original fee minus already applied adjustments).
+        (max_credit_usage_percentage of the original fee minus already applied adjustments).
         2. That for each unit in the payload, the quantity to be applied does not exceed the available quantity.
 
         Args:
@@ -247,6 +251,7 @@ class ApplyComplianceUnitsService:
             bccr_units=cls._format_bccr_units_for_grid_display(bccr_units.get("entities", [])),
             compliance_unit_cap_limit=compliance_unit_cap_limit,
             compliance_unit_cap_remaining=compliance_unit_cap_remaining,
+            max_credit_usage_percentage=compliance_report.compliance_period.max_credit_usage_percentage,
         )
 
     @classmethod
@@ -290,7 +295,9 @@ class ApplyComplianceUnitsService:
 
         # Check overall eligibility for applying compliance units.
         if not cls.can_apply_compliance_units(compliance_report_version_id):
-            raise UserError("Quantity to be applied exceeds 50% of the original obligation fee.")
+            raise UserError(
+                "Quantity to be applied exceeds the maximum credit usage percentage of the original obligation fee."
+            )
 
         # Validate the payload against global and per-unit limits.
         cls._validate_quantity_limits(payload, compliance_report_version_id)
