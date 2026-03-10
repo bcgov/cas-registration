@@ -1,8 +1,8 @@
 from typing import Literal, Tuple
-
-from common.permissions import authorize
+from common.permissions import authorize, compose_auth
 from django.http import HttpRequest
 
+from reporting.api.permissions import check_report_ownership_in_url
 from reporting.api_v2._reports._report_id.report_information_mixin import ReportInformationMixin
 from reporting.api_v2._reports._report_id.report_schema import ReportingReportResponseSchema
 from reporting.api_v2.response_builder import PaginatedResponseBuilder
@@ -24,10 +24,9 @@ class ReportHistoryResponseBuilder(PaginatedResponseBuilder, ReportInformationMi
     response={200: ReportingReportResponseSchema[ReportHistoryResponse], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns object with report_data and payload. Payload is a paginated list of report versions for the specified report.""",
-    auth=authorize("approved_authorized_roles"),
+    auth=compose_auth(authorize("approved_authorized_roles"), check_report_ownership_in_url("report_id")),
 )
 def get_report_history(request: HttpRequest, report_id: int) -> Tuple[Literal[200], dict]:
     report_versions = ReportingHistoryDashboardService.get_report_versions_for_report_history_dashboard(report_id)
-    builder = ReportHistoryResponseBuilder(request)
-    response = builder.report(report_id).payload(report_versions).build()
+    response = ReportHistoryResponseBuilder(request).report(report_id).payload(report_versions).build()
     return 200, response
