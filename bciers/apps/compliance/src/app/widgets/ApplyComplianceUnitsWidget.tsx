@@ -8,27 +8,26 @@ import { BccrUnit } from "@/compliance/src/app/types";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import { ComplianceLimitStatus } from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
 
-const COMPLIANCE_LIMIT_MESSAGES: Record<
-  ComplianceLimitStatus,
-  ReactNode | null
-> = {
+const getComplianceLimitMessages = (
+  limitPercent: number,
+): Record<ComplianceLimitStatus, ReactNode | null> => ({
   EXCEEDS: (
     <AlertNote>
-      At least 50% of the compliance obligation must be met with monetary
-      payment(s). The compliance units (earned credits, offset units) you
-      selected below have exceeded the limit, please reduce the quantity to be
-      applied to proceed.
+      At least {100 - limitPercent}% of the compliance obligation must be met
+      with monetary payment(s). The compliance units (earned credits, offset
+      units) you selected below have exceeded the limit, please reduce the
+      quantity to be applied to proceed.
     </AlertNote>
   ),
   EQUALS: (
     <AlertNote>
       The compliance units (earned credits, offset units) you selected below
-      have reached 50% of the compliance obligation. The remaining balance must
-      be met with monetary payment(s).
+      have reached {limitPercent}% of the compliance obligation. The remaining
+      balance must be met with monetary payment(s).
     </AlertNote>
   ),
   BELOW: null,
-};
+});
 
 const ApplyComplianceUnitsWidget = ({
   value,
@@ -36,7 +35,13 @@ const ApplyComplianceUnitsWidget = ({
   formContext,
   readonly,
 }: WidgetProps) => {
-  const { chargeRate, complianceLimitStatus, isApplied } = formContext;
+  const {
+    chargeRate,
+    complianceLimitStatus,
+    isApplied,
+    maxCreditUsagePercentage,
+  } = formContext;
+  const limitPercent = Math.round(maxCreditUsagePercentage * 100);
   const [localUnits, setLocalUnits] = useState<BccrUnit[]>(value || []);
 
   // Update localUnits when value prop changes from the parent
@@ -71,8 +76,12 @@ const ApplyComplianceUnitsWidget = ({
 
   return (
     <div className="w-full">
+      <p className="text-bc-text">
+        You may use compliance units to meet up to {limitPercent}% of the
+        compliance obligation.
+      </p>
       {!isApplied &&
-        COMPLIANCE_LIMIT_MESSAGES[
+        getComplianceLimitMessages(limitPercent)[
           complianceLimitStatus as ComplianceLimitStatus
         ]}
       <DataGrid

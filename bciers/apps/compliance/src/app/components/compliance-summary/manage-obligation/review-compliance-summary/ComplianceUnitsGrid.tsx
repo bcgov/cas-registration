@@ -14,7 +14,7 @@ export const ComplianceUnitsGrid = ({
   formContext,
 }: {
   value: ComplianceAppliedUnitsSummary;
-  formContext: { reportingYear: number };
+  formContext: { reportingYear: number; maxCreditUsagePercentage: number };
 }) => {
   // Destructure to camelCase variable names
   const {
@@ -22,6 +22,7 @@ export const ComplianceUnitsGrid = ({
     applied_compliance_units: appliedComplianceUnits,
   } = value;
   const { can_apply_compliance_units: canApplyUnits } = appliedComplianceUnits;
+  const limitPercent = Math.round(formContext.maxCreditUsagePercentage * 100);
 
   const router = useRouter();
 
@@ -44,8 +45,8 @@ export const ComplianceUnitsGrid = ({
         >
           B.C. Carbon Registry (BCCR)
         </Link>{" "}
-        to meet up to 50% of the compliance obligation below. The remaining
-        balance must be met with monetary payment(s).
+        to meet up to {limitPercent}% of the compliance obligation below. The
+        remaining balance must be met with monetary payment(s).
       </AlertNote>
       <p>
         All compliance units transferred to the compliance sub-account to meet

@@ -24,6 +24,9 @@ CREDITED_EMISSIONS_ALIAS = "report_compliance_summary.credited_emissions"
 OBLIGATION_ID_ALIAS = "obligation.obligation_id"
 OBLIGATION_PENALTY_STATUS_ALIAS = "obligation.penalty_status"
 
+# compliance_period aliases
+MAX_CREDIT_USAGE_PERCENTAGE_ALIAS = "compliance_report.compliance_period.max_credit_usage_percentage"
+
 # compliance_earned_credits aliases
 ISSUANCE_STATUS_ALIAS = "compliance_earned_credit.issuance_status"
 
@@ -67,6 +70,7 @@ class ComplianceReportVersionOut(ModelSchema):
     has_overdue_penalty: bool
     # derived flag: True only when manual_handling_record exists
     requires_manual_handling: Optional[bool] = None
+    max_credit_usage_percentage: Decimal = Field(..., alias=MAX_CREDIT_USAGE_PERCENTAGE_ALIAS)
 
     @staticmethod
     def resolve_has_late_submission_penalty(obj: Any) -> bool:

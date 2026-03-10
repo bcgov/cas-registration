@@ -316,6 +316,8 @@ export default function ApplyComplianceUnitsComponent({
         onError: setErrors,
         complianceLimitStatus,
         isApplied: status === "applied",
+        maxCreditUsagePercentage: (formData as ApplyComplianceUnitsFormData)
+          ?.max_credit_usage_percentage,
       }}
       className="w-full min-h-[52vh] flex flex-col justify-between"
     >
