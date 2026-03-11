@@ -44,23 +44,20 @@ class ComplianceParameters:
         """
         annual = Decimal(cast(Decimal, production_totals.get("annual_amount")))
 
-        if production_period == ProductionPeriod.ANNUAL:
-            production_for_limit = annual
-            prorated_allocated = Decimal(0)
-        elif production_period == ProductionPeriod.APR_DEC:
-            apr_dec = Decimal(production_totals.get("apr_dec") or 0)
-            production_for_limit = apr_dec
-            prorated_allocated = Decimal(0) if annual == 0 else (allocated_for_compliance / annual) * apr_dec
-        else:
-            # production_period == ProductionPeriod.JAN_MAR
-            jan_mar = Decimal(production_totals.get("jan_mar") or 0)
-            production_for_limit = jan_mar
-            prorated_allocated = Decimal(0) if annual == 0 else (allocated_for_compliance / annual) * jan_mar
-
-        allocated_compliance_emissions_value = (
-            ComplianceParameters.round(prorated_allocated)
-            if production_period != ProductionPeriod.ANNUAL
-            else ComplianceParameters.round(allocated_for_compliance)
-        )
+        match production_period:
+            case ProductionPeriod.ANNUAL:
+                production_for_limit = annual
+                prorated_allocated = Decimal(0)
+                allocated_compliance_emissions_value = ComplianceParameters.round(allocated_for_compliance)
+            case ProductionPeriod.APR_DEC:
+                apr_dec = Decimal(production_totals.get("apr_dec") or 0)
+                production_for_limit = apr_dec
+                prorated_allocated = Decimal(0) if annual == 0 else (allocated_for_compliance / annual) * apr_dec
+                allocated_compliance_emissions_value = ComplianceParameters.round(prorated_allocated)
+            case ProductionPeriod.JAN_MAR:
+                jan_mar = Decimal(production_totals.get("jan_mar") or 0)
+                production_for_limit = jan_mar
+                prorated_allocated = Decimal(0) if annual == 0 else (allocated_for_compliance / annual) * jan_mar
+                allocated_compliance_emissions_value = ComplianceParameters.round(prorated_allocated)
 
         return production_for_limit, prorated_allocated, allocated_compliance_emissions_value

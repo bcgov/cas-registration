@@ -44,6 +44,7 @@ class ReportProductComplianceData:
     def as_record_defaults(self) -> dict[str, Decimal | None]:
         return {
             "annual_production": ComplianceParameters.round(self.annual_production),
+            "jan_mar_production": ComplianceParameters.round(self.jan_mar_production),
             "apr_dec_production": ComplianceParameters.round(self.apr_dec_production),
             "emission_intensity": ComplianceParameters.round(self.emission_intensity),
             "allocated_industrial_process_emissions": ComplianceParameters.round(
@@ -181,8 +182,8 @@ class ComplianceService:
             and reporting_year == final_reporting_year == 2025
         ):
             return ProductionPeriod.JAN_MAR
-        else:
-            return ProductionPeriod.ANNUAL
+
+        return ProductionPeriod.ANNUAL
 
     @staticmethod
     def get_calculated_compliance_data(report_version_id: int) -> ComplianceData:
@@ -360,16 +361,5 @@ class ComplianceService:
                 report_version=report_version_record,
                 report_compliance_summary=compliance_summary_record,
                 product=RegulatedProduct.objects.get(id=product_data_to_save.product_id),
-                defaults={
-                    "annual_production": ComplianceParameters.round(product_data_to_save.annual_production),
-                    "jan_mar_production": ComplianceParameters.round(product_data_to_save.jan_mar_production),
-                    "apr_dec_production": ComplianceParameters.round(product_data_to_save.apr_dec_production),
-                    "emission_intensity": ComplianceParameters.round(product_data_to_save.emission_intensity),
-                    "allocated_industrial_process_emissions": ComplianceParameters.round(
-                        product_data_to_save.allocated_industrial_process_emissions
-                    ),
-                    "allocated_compliance_emissions": ComplianceParameters.round(
-                        product_data_to_save.allocated_compliance_emissions
-                    ),
-                },
+                defaults=product_data_to_save.as_record_defaults(),
             )
