@@ -71,6 +71,7 @@ class ReportProductService:
                         "facility_report": facility_report,
                         "product_id": r_product_id,
                         "annual_production": 0,
+                        "production_data_jan_mar": 0,
                         "production_data_apr_dec": 0,
                         "production_methodology": "other",
                         "production_methodology_description": "auto-generated report_product record for unregulated product",

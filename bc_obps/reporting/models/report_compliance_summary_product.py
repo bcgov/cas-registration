@@ -32,6 +32,13 @@ class ReportComplianceSummaryProduct(TimeStampedModel):
         decimal_places=4,
         max_digits=20,
     )
+    jan_mar_production = models.DecimalField(
+        null=True,
+        blank=True,
+        db_comment="Amount of product produced between January & March",
+        decimal_places=4,
+        max_digits=20,
+    )
     apr_dec_production = models.DecimalField(
         db_comment="Amount of product produced between April & December",
         decimal_places=4,

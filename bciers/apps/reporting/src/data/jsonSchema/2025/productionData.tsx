@@ -125,12 +125,12 @@ export const buildProductionDataSchema2025 = (
     productionDataItem.properties ??= {};
     productionDataItem.required ??= [];
 
-    productionDataItem.properties.production_data_jan_mar_2025 = {
+    productionDataItem.properties.production_data_jan_mar = {
       title: "Production data for Jan 1 - Mar 31, 2025",
       type: "number",
       minimum: 0,
     };
-    productionDataItem.required!.push("production_data_jan_mar_2025");
+    productionDataItem.required!.push("production_data_jan_mar");
   }
 
   return schema;
@@ -163,7 +163,7 @@ export const productionDataUiSchema2025 = (isOptedOut: boolean): UiSchema => ({
         "product_name",
         "unit",
         "annual_production",
-        ...(isOptedOut ? ["production_data_jan_mar_2025"] : []),
+        ...(isOptedOut ? ["production_data_jan_mar"] : []),
         "production_methodology",
         "production_methodology_description",
         "*",

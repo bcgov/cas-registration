@@ -13,6 +13,7 @@ class RegulatoryValuesSchema(Schema):
 class ReportProductComplianceSchema(Schema):
     name: str
     annual_production: float
+    jan_mar_production: float
     apr_dec_production: float
     emission_intensity: float
     allocated_industrial_process_emissions: float

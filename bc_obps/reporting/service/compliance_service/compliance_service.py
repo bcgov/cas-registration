@@ -12,9 +12,9 @@ from reporting.service.compliance_service.industrial_process import (
     compute_industrial_process_emissions,
     get_allocated_emissions_by_report_product_emission_category,
 )
-from reporting.service.compliance_service.parameters import ComplianceParameters
+from reporting.service.compliance_service.parameters import ComplianceParameters, ProductionPeriod
 from reporting.models import ReportComplianceSummary, ReportComplianceSummaryProduct
-from registration.models import RegulatedProduct
+from registration.models import RegulatedProduct, Operation
 from decimal import Decimal
 from django.db.models import Sum
 from typing import Dict, List
@@ -33,6 +33,7 @@ class ReportProductComplianceData:
     name: str
     product_id: int
     annual_production: Decimal
+    jan_mar_production: Decimal
     apr_dec_production: Decimal
     emission_intensity: Decimal
     allocated_industrial_process_emissions: Decimal
@@ -43,6 +44,7 @@ class ReportProductComplianceData:
     def as_record_defaults(self) -> dict[str, Decimal | None]:
         return {
             "annual_production": ComplianceParameters.round(self.annual_production),
+            "jan_mar_production": ComplianceParameters.round(self.jan_mar_production),
             "apr_dec_production": ComplianceParameters.round(self.apr_dec_production),
             "emission_intensity": ComplianceParameters.round(self.emission_intensity),
             "allocated_industrial_process_emissions": ComplianceParameters.round(
@@ -110,10 +112,12 @@ class ComplianceService:
             report_version_id=report_version_id,
         )
         annual_production_sum = records.aggregate(production_sum=Sum("annual_production"))
+        jan_mar_sum = records.aggregate(production_sum=Sum("production_data_jan_mar"))
         apr_dec_sum = records.aggregate(production_sum=Sum("production_data_apr_dec"))
 
         return {
             "annual_amount": annual_production_sum["production_sum"] or Decimal("0"),
+            "jan_mar": jan_mar_sum["production_sum"] or Decimal("0"),
             "apr_dec": apr_dec_sum["production_sum"] or Decimal("0"),
         }
 
@@ -124,10 +128,12 @@ class ComplianceService:
             product_id=product_id,
         )
         product_annual_amount_sum = records.aggregate(production_sum=Sum("annual_production"))
+        jan_mar_sum = records.aggregate(production_sum=Sum("production_data_jan_mar"))
         apr_dec_sum = records.aggregate(production_sum=Sum("production_data_apr_dec"))
 
         return {
             "annual_amount": product_annual_amount_sum["production_sum"] or Decimal("0"),
+            "jan_mar": jan_mar_sum["production_sum"] or Decimal("0"),
             "apr_dec": apr_dec_sum["production_sum"] or Decimal("0"),
         }
 
@@ -160,6 +166,26 @@ class ComplianceService:
         return product_emission_limit
 
     @staticmethod
+    def get_production_period(
+        report_version_id: int, registration_purpose: Operation.Purposes, final_reporting_year: int
+    ) -> ProductionPeriod:
+        """
+        Determine which production period to use for compliance calculations based on operation criteria.
+        """
+        report_version = ReportVersion.objects.select_related("report").get(pk=report_version_id)
+        reporting_year = report_version.report.reporting_year_id
+
+        if reporting_year == 2024:
+            return ProductionPeriod.APR_DEC
+        elif (
+            registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
+            and reporting_year == final_reporting_year == 2025
+        ):
+            return ProductionPeriod.JAN_MAR
+
+        return ProductionPeriod.ANNUAL
+
+    @staticmethod
     def get_calculated_compliance_data(report_version_id: int) -> ComplianceData:
         # Fetch the ReportVersion once (bring in reporting_year and operation) to avoid extra queries
         report_version_record = ReportVersion.objects.select_related("report__reporting_year", "report_operation").get(
@@ -174,12 +200,15 @@ class ComplianceService:
         compliance_product_list: List[ReportProductComplianceData] = []
         total_allocated_reporting_only = Decimal(0)
         total_allocated_for_compliance_default = Decimal(0)
-        total_allocated_for_compliance_2024 = Decimal(0)
+        total_allocated_for_compliance_prorated_year = Decimal(0)
         emissions_limit_total = Decimal(0)
 
-        # Determine whether this report's compliance calculations should use the Apr-Dec (2024) window
-        # Use the report's reporting year (from the ReportVersion) rather than the NAICS regulatory value.
-        use_apr_dec = report_version_record.report.reporting_year_id == 2024
+        # Determine which production period to use for compliance calculations (i.e., the full year or a portion of the year)
+        production_period = ComplianceService.get_production_period(
+            report_version_id,
+            Operation.Purposes(report_version_record.report_operation.registration_purpose),
+            report_version_record.report_operation.operation_opted_out_final_reporting_year or 0,
+        )
 
         report_products = (
             ReportProduct.objects.order_by("product_id")
@@ -206,11 +235,12 @@ class ComplianceService:
             )
             allocated_reporting_only = get_reporting_only_allocated(report_version_id, rp.product_id)
             allocated_for_compliance = allocated - allocated_reporting_only
-            # If this compliance period is 2024, use Apr-Dec production for allocations and limits.
-            # Otherwise use full-year production and full-year allocated emissions.
-            production_for_limit, allocated_for_compliance_2024, allocated_compliance_emissions_value = (
+
+            # Calculate prorated_allocated limit (if applicable), depending on reporting year and operation criteria.
+
+            production_for_limit, prorated_allocated, allocated_compliance_emissions_value = (
                 ComplianceParameters.resolve_compliance_parameters(
-                    use_apr_dec, allocated_for_compliance, production_totals
+                    production_period, allocated_for_compliance, production_totals
                 )
             )
 
@@ -236,7 +266,7 @@ class ComplianceService:
             total_allocated_reporting_only += allocated_reporting_only
             # Accumulate into the default (full-year) allocated total
             total_allocated_for_compliance_default += allocated_for_compliance
-            total_allocated_for_compliance_2024 += allocated_for_compliance_2024
+            total_allocated_for_compliance_prorated_year += prorated_allocated
             emissions_limit_total += product_emission_limit
 
             # Add product to list of products
@@ -245,6 +275,7 @@ class ComplianceService:
                     name=rp.product.name,
                     product_id=rp.product_id,
                     annual_production=production_totals["annual_amount"],
+                    jan_mar_production=production_totals["jan_mar"],
                     apr_dec_production=production_totals["apr_dec"],
                     emission_intensity=ei,
                     allocated_industrial_process_emissions=industrial_process,
@@ -272,10 +303,13 @@ class ComplianceService:
             excess_emissions = Decimal(0)
             credited_emissions = Decimal(0)
         else:
-            # Select which allocated total to use for compliance comparisons: Apr-Dec 2024 window or default full-year total
-            total_allocated_for_compliance_used = (
-                total_allocated_for_compliance_2024 if use_apr_dec else total_allocated_for_compliance_default
-            )
+            # Select which allocated total to use for compliance comparisons
+            if production_period == ProductionPeriod.ANNUAL:
+                total_allocated_for_compliance_used = total_allocated_for_compliance_default
+            else:
+                # production_period is "jan_mar" or "apr_dec"
+                total_allocated_for_compliance_used = total_allocated_for_compliance_prorated_year
+
             if total_allocated_for_compliance_used > emissions_limit_total:
                 excess_emissions = total_allocated_for_compliance_used - emissions_limit_total
                 credited_emissions = Decimal(0)

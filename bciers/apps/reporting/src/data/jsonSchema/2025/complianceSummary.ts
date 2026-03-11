@@ -1,16 +1,8 @@
-import { RJSFSchema, UiSchema } from "@rjsf/utils";
+import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
-import {
-  complianceSummarySchema2024,
-  complianceSummaryUiSchema2024,
-} from "./2024/complianceSummary";
-import {
-  complianceSummarySchema2025,
-  complianceSummaryUiSchema2025,
-} from "./2025/complianceSummary";
 
-const complianceSummarySchemaDefault: RJSFSchema = {
+export const complianceSummarySchema2025: RJSFSchema = {
   type: "object",
   title: "Compliance Summary",
   properties: {
@@ -67,6 +59,10 @@ const complianceSummarySchemaDefault: RJSFSchema = {
             type: "number",
             title: "Annual production",
           },
+          jan_mar_production: {
+            type: "number",
+            title: "Production data for Jan 1 - Mar 31 2025",
+          },
           emission_intensity: {
             type: "number",
             title: "Production-weighted average emission intensity",
@@ -85,7 +81,7 @@ const complianceSummarySchemaDefault: RJSFSchema = {
   },
 };
 
-const complianceSummaryUiSchemaDefault: UiSchema = {
+export const complianceSummaryUiSchema2025 = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:disabled": true,
@@ -149,6 +145,11 @@ const complianceSummaryUiSchemaDefault: UiSchema = {
           displayUnit: "production unit",
         },
       },
+      jan_mar_production: {
+        "ui:options": {
+          displayUnit: "production unit",
+        },
+      },
       emission_intensity: {
         "ui:options": {
           displayUnit: "tCO2e/production unit",
@@ -166,22 +167,4 @@ const complianceSummaryUiSchemaDefault: UiSchema = {
       },
     },
   },
-};
-
-export const createComplianceSummarySchema = (
-  reportingYear: number,
-): RJSFSchema => {
-  if (reportingYear === 2024) {
-    return complianceSummarySchema2024;
-  } else if (reportingYear === 2025) {
-    return complianceSummarySchema2025;
-  } else return complianceSummarySchemaDefault;
-};
-
-export const createComplianceSummaryUiSchema = (reportingYear: number) => {
-  if (reportingYear === 2024) {
-    return complianceSummaryUiSchema2024;
-  } else if (reportingYear === 2025) {
-    return complianceSummaryUiSchema2025;
-  } else return complianceSummaryUiSchemaDefault;
 };

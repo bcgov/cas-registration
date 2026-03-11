@@ -52,6 +52,7 @@ export interface ReportComplianceSummary {
 export interface ComplianceProduct {
   name: string;
   annual_production: number;
+  jan_mar_production: number;
   apr_dec_production: number;
   emission_intensity: number;
   allocated_industrial_process_emissions: number;
@@ -60,6 +61,7 @@ export interface ComplianceProduct {
 export interface ReportProduct {
   product: string;
   annual_production: number;
+  production_data_jan_mar: number;
   production_data_apr_dec: number;
   production_methodology: string;
   production_methodology_description: string;

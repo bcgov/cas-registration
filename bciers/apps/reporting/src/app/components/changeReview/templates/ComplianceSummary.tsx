@@ -17,7 +17,8 @@ const complianceSummaryLabels: Record<string, string> = {
 const productFieldLabels: Record<string, string> = {
   name: "Product Name",
   annual_production: "Annual Production",
-  apr_dec_production: "Apr-Dec Production",
+  jan_mar_production: "Production data for Jan 1 - Mar 31 2025",
+  apr_dec_production: "Production data for Apr 1 - Dec 31 2024",
   emission_intensity: "Emission Intensity",
   allocated_industrial_process_emissions:
     "Allocated Industrial Process Emissions",
