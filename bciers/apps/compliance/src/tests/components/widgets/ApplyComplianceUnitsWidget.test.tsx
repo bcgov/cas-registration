@@ -41,12 +41,23 @@ const defaultProps = {
     chargeRate: 40,
     complianceLimitStatus: "BELOW" as ComplianceLimitStatus,
     isSubmitted: false,
+    maxCreditUsagePercentage: 0.5,
   },
 } as unknown as WidgetProps;
 
 describe("ApplyComplianceUnitsWidget", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("renders the compliance usage percentage text", () => {
+    render(<ApplyComplianceUnitsWidget {...defaultProps} />);
+
+    expect(
+      screen.getByText(
+        /you may use compliance units to meet up to 50% of the compliance obligation\./i,
+      ),
+    ).toBeVisible();
   });
 
   it("renders DataGrid with correct column headers", () => {

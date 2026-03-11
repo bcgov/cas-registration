@@ -221,6 +221,7 @@ class TestApplyComplianceUnitsService:
 
         assert result.compliance_unit_cap_limit == Decimal("500.00")
         assert result.compliance_unit_cap_remaining == Decimal("400.00")
+        assert result.max_credit_usage_percentage == Decimal("0.50")
 
         mock_get_obligation_data.assert_called_once_with(1)
         mock_bccr_service.validate_holding_account_ownership.assert_called_once_with(
@@ -787,3 +788,36 @@ class TestApplyComplianceUnitsService:
 
         # Verify that no further processing occurred
         mock_refresh_data.assert_not_called()
+
+    def test_apply_compliance_units_exceeds_max_credit_usage_percentage(
+        self,
+        mock_can_apply_units,
+        mock_validate_limits,
+        mock_create_adjustment,
+        mock_bccr_service,
+        mock_get_obligation_data,
+        mock_refresh_data,
+    ):
+        """Test that applying units when can_apply_compliance_units returns False raises the correct error."""
+        # Arrange
+        mock_bccr_service.validate_holding_account_ownership.return_value = True
+        mock_refresh_data.return_value.data_is_fresh = True
+        mock_can_apply_units.return_value = False
+
+        compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
+        account_id = "123"
+        payload = {
+            "bccr_compliance_account_id": "456",
+            "bccr_units": [],
+            "total_equivalent_value": "0.00",
+        }
+
+        # Act & Assert
+        with pytest.raises(
+            UserError,
+            match="Quantity to be applied exceeds the maximum credit usage percentage of the original obligation fee.",
+        ):
+            ApplyComplianceUnitsService.apply_compliance_units(account_id, compliance_report_version.id, payload)
+
+        mock_can_apply_units.assert_called_once_with(compliance_report_version.id)
+        mock_validate_limits.assert_not_called()

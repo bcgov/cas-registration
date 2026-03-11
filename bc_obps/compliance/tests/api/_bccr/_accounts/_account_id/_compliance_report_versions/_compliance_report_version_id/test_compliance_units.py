@@ -41,6 +41,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
             outstanding_balance=Decimal("30000.00"),
             compliance_unit_cap_limit=Decimal("15000.00"),
             compliance_unit_cap_remaining=Decimal("15000.00"),
+            max_credit_usage_percentage=Decimal("0.50"),
             bccr_units=[
                 BCCRUnit(
                     id="1",
@@ -64,6 +65,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         assert Decimal(response_data["outstanding_balance"]) == Decimal("30000.00")
         assert Decimal(response_data["compliance_unit_cap_limit"]) == Decimal("15000.00")
         assert Decimal(response_data["compliance_unit_cap_remaining"]) == Decimal("15000.00")
+        assert Decimal(response_data["max_credit_usage_percentage"]) == Decimal("0.50")
         assert len(response_data["bccr_units"]) == 1
         assert response_data["bccr_units"][0]["type"] == "Earned Credits"
         assert response_data["bccr_units"][0]["serial_number"] == "BCE-2023-0001"
