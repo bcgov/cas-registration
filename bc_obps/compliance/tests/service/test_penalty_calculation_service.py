@@ -3,8 +3,12 @@ from datetime import date, timedelta
 from decimal import Decimal
 from unittest.mock import patch
 from model_bakery import baker
-from compliance.models import CompliancePenalty, CompliancePenaltyAccrual, ComplianceObligation, ElicensingInterestRate
-from compliance.service.penalty_calculation_service import PenaltyCalculationService, CalculatedPenaltyData, CalculatedPenaltyAccrualData
+from compliance.models import CompliancePenalty, CompliancePenaltyAccrual
+from compliance.service.penalty_calculation_service import (
+    PenaltyCalculationService,
+    CalculatedPenaltyData,
+    CalculatedPenaltyAccrualData,
+)
 from compliance.dataclass import RefreshWrapperReturn
 
 
@@ -111,10 +115,20 @@ class TestPenaltyCalculationService:
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
     )
     @patch("compliance.service.penalty_calculation_service.ElicensingClientOperator.objects.get")
-    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.perform_idempotent_penalty_creation")
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.perform_idempotent_penalty_creation"
+    )
     @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty")
     @patch("compliance.service.penalty_calculation_service.ElicensingInvoice.objects.get")
-    def test_create_penalty_integration(self, mock_get_invoice, mock_calculate, mock_idempotent_creation, mock_get_client_operator, mock_refresh_by_invoice, mock_refresh_data):
+    def test_create_penalty_integration(
+        self,
+        mock_get_invoice,
+        mock_calculate,
+        mock_idempotent_creation,
+        mock_get_client_operator,
+        mock_refresh_by_invoice,
+        mock_refresh_data,
+    ):
         """Test create_penalty calls calculate_penalty with expected data"""
         clean_invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
@@ -138,7 +152,7 @@ class TestPenaltyCalculationService:
             due_date=date(2025, 1, 8),
             outstanding_balance=Decimal("20000.00"),
             invoice_interest_balance=Decimal("0.00"),
-            invoice_number='OBI000000'
+            invoice_number='OBI000000',
         )
         self.obligation.elicensing_invoice = clean_invoice
         compliance_period = self.obligation.compliance_report_version.compliance_report.compliance_period
@@ -150,39 +164,39 @@ class TestPenaltyCalculationService:
         mock_get_client_operator.return_value = baker.make_recipe(
             "compliance.tests.utils.elicensing_client_operator",
         )
-        
+
         mock_idempotent_creation.return_value = baker.make_recipe(
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.obligation,
-            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
         )
         mock_calculate.return_value = CalculatedPenaltyData(
-            penalty_type = CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            penalty_charge_rate = .5,
-            days_late = 2,
-            accumulated_penalty = 100,
-            accumulated_compounding = 100,
-            total_penalty = 200,
-            faa_interest = 0,
-            total_amount = 200,
-            daily_accumulated_list = [
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            penalty_charge_rate=0.5,
+            days_late=2,
+            accumulated_penalty=100,
+            accumulated_compounding=100,
+            total_penalty=200,
+            faa_interest=0,
+            total_amount=200,
+            daily_accumulated_list=[
                 CalculatedPenaltyAccrualData(
-                    date = '2025-12-01',
-                    interest_rate = .38,
-                    daily_penalty = 5,
-                    daily_compounded = 1,
-                    accumulated_penalty = 5,
-                    accumulated_compounded = 1,
+                    date='2025-12-01',
+                    interest_rate=0.38,
+                    daily_penalty=5,
+                    daily_compounded=1,
+                    accumulated_penalty=5,
+                    accumulated_compounded=1,
                 ),
                 CalculatedPenaltyAccrualData(
-                    date = '2025-12-01',
-                    interest_rate = .38,
-                    daily_penalty = 6,
-                    daily_compounded = 2,
-                    accumulated_penalty = 6,
-                    accumulated_compounded = 2,
+                    date='2025-12-01',
+                    interest_rate=0.38,
+                    daily_penalty=6,
+                    daily_compounded=2,
+                    accumulated_penalty=6,
+                    accumulated_compounded=2,
                 ),
-            ]
+            ],
         )
         mock_refresh_by_invoice.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=penalty_invoice)
         mock_get_invoice.return_value = penalty_invoice
@@ -197,17 +211,15 @@ class TestPenaltyCalculationService:
         mock_idempotent_creation.assert_called_with(
             obligation=self.obligation,
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            penalty_data = mock_calculate.return_value,
+            penalty_data=mock_calculate.return_value,
             penalty_accrual_start_date=compliance_deadline + timedelta(days=1),
             final_transaction_date=clean_payment.received_date,
         )
         # Created the correct number of accrual records
-        accruals = CompliancePenaltyAccrual.objects.filter(compliance_penalty = mock_idempotent_creation.return_value)
+        accruals = CompliancePenaltyAccrual.objects.filter(compliance_penalty=mock_idempotent_creation.return_value)
         assert accruals.count() == 2
-        
-    def test_determine_last_transaction_date(
-        self
-    ):
+
+    def test_determine_last_transaction_date(self):
         """Payment does not cover the full obligation; later adjustment fully covers the remainder."""
         clean_invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
