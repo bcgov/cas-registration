@@ -72,6 +72,7 @@ const setupMocks = () => {
     outstanding_balance: MOCK_OUTSTANDING_BALANCE,
     compliance_unit_cap_limit: MOCK_CAP_LIMIT,
     compliance_unit_cap_remaining: MOCK_CAP_REMAINING,
+    max_credit_usage_percentage: 0.5,
   });
 };
 

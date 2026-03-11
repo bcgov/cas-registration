@@ -13,7 +13,7 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-const complianceReportVersionId = "123";
+const complianceReportVersionId = 123;
 const appliedComplianceUnits = {
   row_count: 2,
   rows: [
@@ -50,7 +50,7 @@ describe("ComplianceUnitsGrid", () => {
   it("renders the grid with compliance units data", () => {
     render(
       <ComplianceUnitsGrid
-        formContext={{ reportingYear: 2025 }}
+        formContext={{ reportingYear: 2025, maxCreditUsagePercentage: 0.5 }}
         value={mockValue}
       />,
     );
@@ -108,7 +108,7 @@ describe("ComplianceUnitsGrid", () => {
   it("navigates to apply compliance units page when button is clicked", () => {
     render(
       <ComplianceUnitsGrid
-        formContext={{ reportingYear: 2025 }}
+        formContext={{ reportingYear: 2025, maxCreditUsagePercentage: 0.5 }}
         value={mockValue}
       />,
     );
@@ -126,7 +126,7 @@ describe("ComplianceUnitsGrid", () => {
   it("renders BCCR link with correct attributes", () => {
     render(
       <ComplianceUnitsGrid
-        formContext={{ reportingYear: 2025 }}
+        formContext={{ reportingYear: 2025, maxCreditUsagePercentage: 0.5 }}
         value={mockValue}
       />,
     );
@@ -154,7 +154,7 @@ describe("ComplianceUnitsGrid", () => {
 
     render(
       <ComplianceUnitsGrid
-        formContext={{ reportingYear: 2025 }}
+        formContext={{ reportingYear: 2025, maxCreditUsagePercentage: 0.5 }}
         value={mockValueWithoutApply}
       />,
     );
@@ -168,7 +168,7 @@ describe("ComplianceUnitsGrid", () => {
   it("renders the helper text explaining inherited compliance units in the compliance grid", () => {
     render(
       <ComplianceUnitsGrid
-        formContext={{ reportingYear: 2025 }}
+        formContext={{ reportingYear: 2025, maxCreditUsagePercentage: 0.5 }}
         value={mockValue}
       />,
     );
@@ -177,5 +177,17 @@ describe("ComplianceUnitsGrid", () => {
       /All compliance units transferred to the compliance sub-account to meet this operation's obligation/i,
     ); // Using a regex for a flexible match
     expect(paragraphElement).toBeInTheDocument();
+  });
+
+  it("renders the dynamic credit usage percentage in the alert note", () => {
+    render(
+      <ComplianceUnitsGrid
+        formContext={{ reportingYear: 2025, maxCreditUsagePercentage: 0.4 }}
+        value={mockValue}
+      />,
+    );
+
+    const alertNote = screen.getByRole("alert");
+    expect(alertNote).toHaveTextContent("to meet up to 40%");
   });
 });
