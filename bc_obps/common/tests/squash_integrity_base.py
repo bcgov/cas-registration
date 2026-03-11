@@ -3,7 +3,7 @@ import os
 import unittest
 from django.apps import apps as django_apps
 from django.test import TestCase
-from reporting.management.commands.snapshot_db import (
+from common.management.commands.snapshot_db import (
     is_historical_model,
     snapshot_model,
 )
