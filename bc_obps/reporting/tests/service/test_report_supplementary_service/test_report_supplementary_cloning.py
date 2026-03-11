@@ -6,7 +6,18 @@ from django.utils import timezone
 from registration.models import Operation
 from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.tests.service.test_report_activity_save_service import data
-from reporting.service.report_supplementary_version_service import ReportSupplementaryVersionService
+from reporting.service.report_supplementary_version_service.report_supplementary_cloning import (
+    clone_report_version_operation,
+    clone_report_version_representatives,
+    clone_report_version_person_responsible,
+    clone_report_version_additional_data,
+    clone_report_version_new_entrant_data,
+    clone_report_version_verification,
+    clone_report_version_attachments,
+    clone_report_version_facilities,
+    reapply_emission_categories,
+    clone_all,
+)
 from reporting.models import (
     FacilityReport,
     ReportActivity,
@@ -27,7 +38,7 @@ from reporting.models import (
 import common.lib.pgtrigger as pgtrigger
 
 
-class ReportSupplementaryVersionServiceTests(TestCase):
+class ReportSupplementaryCloningTests(TestCase):
     def setUp(self):
         # Create old and new ReportVersion instances
         self.old_report_version = make_recipe(
@@ -51,6 +62,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             operation_type=Operation.Types.SFO,
             operation_bcghgid="A fake BC GHG ID",
             bc_obps_regulated_operation_id="123456789",
+            registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,
             regulated_products=[self.old_regulated_product],
             activities=[self.old_activity],
         )
@@ -145,34 +157,6 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             status=ReportVersion.ReportVersionStatus.Draft,
         )
 
-    def test_create_report_supplementary_version(self):
-        # ACT: Call the method to create a supplementary version.
-        self.new_report_version.delete()
-        new_version = ReportSupplementaryVersionService.create_report_supplementary_version(self.old_report_version.id)
-
-        # ASSERT: Verify that the new report version is correctly created.
-        # It should have the same report and report_type as the original,
-        # but its status should be Draft and is_latest_submitted False.
-        self.assertEqual(
-            new_version.report,
-            self.old_report_version.report,
-            "The new report version should be associated with the same report as the original.",
-        )
-        self.assertEqual(
-            new_version.report_type,
-            self.old_report_version.report_type,
-            "The new report version should have the same report type as the original.",
-        )
-        self.assertEqual(
-            new_version.status,
-            ReportVersion.ReportVersionStatus.Draft,
-            "The new report version should be created with status Draft.",
-        )
-        self.assertFalse(
-            new_version.is_latest_submitted,
-            "The new report version should not be marked as the latest submitted version.",
-        )
-
     def test_clone_report_version_operation(self):
         """
         Test that the cloning method for ReportOperation correctly duplicates
@@ -184,9 +168,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.assertEqual(initial_count, 1, "There should be one ReportOperation initially.")
 
         # ACT: Run the cloning method.
-        ReportSupplementaryVersionService.clone_report_version_operation(
-            self.old_report_version, self.new_report_version
-        )
+        clone_report_version_operation(self.old_report_version, self.new_report_version)
 
         # ASSERT: Verify that a new ReportOperation has been created (count increases from 1 to 2).
         new_count = ReportOperation.objects.count()
@@ -229,9 +211,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         )
 
         # ACT: Clone the representatives.
-        ReportSupplementaryVersionService.clone_report_version_representatives(
-            self.old_report_version, self.new_report_version
-        )
+        clone_report_version_representatives(self.old_report_version, self.new_report_version)
 
         # ASSERT: Verify that two new representatives have been created.
         new_reps = ReportOperationRepresentative.objects.filter(report_version=self.new_report_version)
@@ -256,9 +236,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.assertIsNone(ReportPersonResponsible.objects.filter(report_version=self.new_report_version).first())
 
         # ACT: Clone the ReportPersonResponsible.
-        ReportSupplementaryVersionService.clone_report_version_person_responsible(
-            self.old_report_version, self.new_report_version
-        )
+        clone_report_version_person_responsible(self.old_report_version, self.new_report_version)
 
         # ASSERT: Retrieve and verify the cloned ReportPersonResponsible.
         new_person = ReportPersonResponsible.objects.filter(report_version=self.new_report_version).first()
@@ -284,9 +262,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.assertIsNone(ReportAdditionalData.objects.filter(report_version=self.new_report_version).first())
 
         # ACT: Clone the ReportAdditionalData.
-        ReportSupplementaryVersionService.clone_report_version_additional_data(
-            self.old_report_version, self.new_report_version
-        )
+        clone_report_version_additional_data(self.old_report_version, self.new_report_version)
 
         # ASSERT: Retrieve and verify the cloned additional data.
         new_additional_data = ReportAdditionalData.objects.filter(report_version=self.new_report_version).first()
@@ -321,9 +297,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.assertIsNone(ReportNewEntrant.objects.filter(report_version=self.new_report_version).first())
 
         # ACT: Clone the ReportNewEntrant data.
-        ReportSupplementaryVersionService.clone_report_version_new_entrant_data(
-            self.old_report_version, self.new_report_version
-        )
+        clone_report_version_new_entrant_data(self.old_report_version, self.new_report_version)
 
         # ASSERT: Verify that a new ReportNewEntrant has been created (count increases from 0 to 1).
         new_new_entrant_instance = ReportNewEntrant.objects.filter(report_version=self.new_report_version).first()
@@ -384,9 +358,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             )
 
         # ACT: Clone the ReportVerification from old to new report version.
-        ReportSupplementaryVersionService.clone_report_version_verification(
-            self.old_report_version, self.new_report_version
-        )
+        clone_report_version_verification(self.old_report_version, self.new_report_version)
 
         # ASSERT: Verify that a new ReportVerification has been created (record count increases).
         new_verification = ReportVerification.objects.filter(report_version=self.new_report_version).first()
@@ -415,9 +387,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
 
         ReportVerification.objects.filter(report_version=self.old_report_version).delete()
         # ACT: Attempt to clone ReportVerification.
-        ReportSupplementaryVersionService.clone_report_version_verification(
-            self.old_report_version, self.new_report_version
-        )
+        clone_report_version_verification(self.old_report_version, self.new_report_version)
 
         # ASSERT: Verify that no ReportVerification has been created for the new report version.
         new_verification = ReportVerification.objects.filter(report_version=self.new_report_version).first()
@@ -450,9 +420,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         with patch("django.core.files.storage.default_storage.duplicate_file") as mock_duplicate:
             mock_duplicate.return_value = "test_file"
 
-            ReportSupplementaryVersionService.clone_report_version_attachments(
-                self.old_report_version, self.new_report_version
-            )
+            clone_report_version_attachments(self.old_report_version, self.new_report_version)
             current_year = timezone.now().year
             # we add random suffixes to filenames, so we check patterns instead of exact matches
             assert len(mock_duplicate.mock_calls) == 2
@@ -480,9 +448,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.assertEqual(initial_count, 1, "There should be one FacilityReport initially.")
 
         # ACT: Clone the FacilityReport (and its associated ReportActivity) to the new report version.
-        ReportSupplementaryVersionService.clone_report_version_facilities(
-            self.old_report_version, self.new_report_version
-        )
+        clone_report_version_facilities(self.old_report_version, self.new_report_version)
 
         # ASSERT: Verify that a new FacilityReport has been created (record count increases from 1 to 2).
         new_count = FacilityReport.objects.count()
@@ -531,9 +497,11 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         with (
             patch("reporting.models.ReportEmission.objects.filter") as mock_filter,
             patch(
-                "reporting.service.report_supplementary_version_service.EmissionCategoryMappingService.apply_emission_categories"
+                "reporting.service.report_supplementary_version_service.report_supplementary_cloning.EmissionCategoryMappingService.apply_emission_categories"
             ) as mock_apply,
-            patch("reporting.service.report_supplementary_version_service.model_to_dict") as mock_model_to_dict,
+            patch(
+                "reporting.service.report_supplementary_version_service.report_supplementary_cloning.model_to_dict"
+            ) as mock_model_to_dict,
         ):
 
             mock_filter.return_value.select_related.return_value = [fake_emission]
@@ -544,7 +512,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             }
 
             # Act
-            ReportSupplementaryVersionService.reapply_emission_categories(fake_version)
+            reapply_emission_categories(fake_version)
 
             # Assert
             mock_filter.assert_called_once_with(report_version=fake_version)
@@ -558,3 +526,35 @@ class ReportSupplementaryVersionServiceTests(TestCase):
                     'report_methodology': fake_methodology,
                 },
             )
+
+    def test_clone_all(self):
+        """
+        Test that clone_all delegates to each individual cloning function
+        with the correct source and target arguments, and calls reapply_emission_categories
+        on the target version.
+        """
+        cloning = "reporting.service.report_supplementary_version_service.report_supplementary_cloning"
+        with (
+            patch(f"{cloning}.clone_report_version_operation") as mock_op,
+            patch(f"{cloning}.clone_report_version_representatives") as mock_reps,
+            patch(f"{cloning}.clone_report_version_person_responsible") as mock_person,
+            patch(f"{cloning}.clone_electricity_import_data") as mock_electricity,
+            patch(f"{cloning}.clone_report_version_additional_data") as mock_additional,
+            patch(f"{cloning}.clone_report_version_new_entrant_data") as mock_new_entrant,
+            patch(f"{cloning}.clone_report_version_verification") as mock_verification,
+            patch(f"{cloning}.clone_report_version_attachments") as mock_attachments,
+            patch(f"{cloning}.clone_report_version_facilities") as mock_facilities,
+            patch(f"{cloning}.reapply_emission_categories") as mock_reapply,
+        ):
+            clone_all(self.old_report_version, self.new_report_version)
+
+            mock_op.assert_called_once_with(self.old_report_version, self.new_report_version)
+            mock_reps.assert_called_once_with(self.old_report_version, self.new_report_version)
+            mock_person.assert_called_once_with(self.old_report_version, self.new_report_version)
+            mock_electricity.assert_called_once_with(self.old_report_version, self.new_report_version)
+            mock_additional.assert_called_once_with(self.old_report_version, self.new_report_version)
+            mock_new_entrant.assert_called_once_with(self.old_report_version, self.new_report_version)
+            mock_verification.assert_called_once_with(self.old_report_version, self.new_report_version)
+            mock_attachments.assert_called_once_with(self.old_report_version, self.new_report_version)
+            mock_facilities.assert_called_once_with(self.old_report_version, self.new_report_version)
+            mock_reapply.assert_called_once_with(self.new_report_version)
