@@ -80,6 +80,12 @@ class CompliancePenalty(TimeStampedModel):
         db_comment="The status of this penalty (e.g., NOT PAID, PAID)",
     )
 
+    invoice_number = models.CharField(
+        null=True,
+        blank=True,
+        db_comment="The invoice number for the related elicensing invoice. Populated immediately on invoice creation in elicensing to ensure the link is not lost between invoice creation in elicensing and the refresh function that creates the elicensing_invoice record in the erc data.",
+    )
+
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
         db_table_comment = (
