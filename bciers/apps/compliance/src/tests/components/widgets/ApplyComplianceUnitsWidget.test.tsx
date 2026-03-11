@@ -168,7 +168,7 @@ describe("ApplyComplianceUnitsWidget", () => {
   it("does not show compliance limit message when status is BELOW", () => {
     render(<ApplyComplianceUnitsWidget {...defaultProps} />);
 
-    expect(screen.queryByText(/compliance obligation/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/monetary payment/)).not.toBeInTheDocument();
   });
 
   it("does not show compliance limit message when status is BELOW and form is submitted", () => {
@@ -182,7 +182,7 @@ describe("ApplyComplianceUnitsWidget", () => {
 
     render(<ApplyComplianceUnitsWidget {...props} />);
 
-    expect(screen.queryByText(/compliance obligation/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/monetary payment/)).not.toBeInTheDocument();
   });
 
   it("formats equivalent value using charge rate", () => {
