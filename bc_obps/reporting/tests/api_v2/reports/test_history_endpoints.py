@@ -9,7 +9,7 @@ class TestHistoryV2Endpoints(CommonTestSetup):
         return super().setup_method()
 
     def test_get_returns_the_right_data_when_empty(self):
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report.operation.operator)
+        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report.operator)
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
         assert response.json() == {
             'payload': {'items': [], 'count': 0},
@@ -20,7 +20,7 @@ class TestHistoryV2Endpoints(CommonTestSetup):
         }
 
     def test_get_returns_the_right_data_with_data(self):
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report.operation.operator)
+        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report.operator)
         rv1 = make_recipe(
             "reporting.tests.utils.report_version",
             report=self.report,
