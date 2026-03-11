@@ -221,7 +221,7 @@ class TestApplyComplianceUnitsService:
 
         assert result.compliance_unit_cap_limit == Decimal("500.00")
         assert result.compliance_unit_cap_remaining == Decimal("400.00")
-        assert result.max_credit_usage_percentage == Decimal("0.50")
+        assert result.max_credit_usage_percentage == Decimal("0.40")
 
         mock_get_obligation_data.assert_called_once_with(1)
         mock_bccr_service.validate_holding_account_ownership.assert_called_once_with(
@@ -266,7 +266,7 @@ class TestApplyComplianceUnitsService:
         result = ApplyComplianceUnitsService._calculate_apply_units_cap(
             compliance_report_version_id=test_data.compliance_report_version.id
         )
-        assert result == Decimal("500.00")
+        assert result == Decimal("400.00")
 
     def test_calculate_apply_units_cap_missing_obligation(self, mock_get_obligation):
         mock_obligation = None
@@ -698,8 +698,7 @@ class TestApplyComplianceUnitsService:
         result = ApplyComplianceUnitsService._compute_compliance_unit_caps(
             compliance_report_version_id=test_data.compliance_report_version.id
         )
-        print(result)
-        assert result == (Decimal("250.00"), Decimal("150"))
+        assert result == (Decimal("200.00"), Decimal("100.00"))
 
     def test_get_apply_compliance_units_page_data_invalid_ownership(
         self,
