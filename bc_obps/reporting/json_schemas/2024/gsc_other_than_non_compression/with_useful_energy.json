@@ -77,7 +77,7 @@
                         "type": "number"
                       },
                       "equivalentEmission": {
-                        "title": "Equivalent Emission",
+                        "title": "Equivalent Emissions (tCO2e)",
                         "type": "number",
                         "readOnly": true,
                         "description": "Computed upon saving"
