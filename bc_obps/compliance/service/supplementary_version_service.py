@@ -60,8 +60,11 @@ class ManualHandler:
         """
         previous_crv = ComplianceReportVersion.objects.get(report_compliance_summary=previous_summary)
 
-        # Use the existence of the one-to-one manual_handling_record
-        return ComplianceReportVersionManualHandling.objects.filter(compliance_report_version=previous_crv).exists()
+        # Use the existence of the one-to-one manual_handling_record PENDING_MANUAL_HANDLING
+        return ComplianceReportVersionManualHandling.objects.filter(
+            compliance_report_version=previous_crv,
+            director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
+        ).exists()
 
     @staticmethod
     @transaction.atomic()
