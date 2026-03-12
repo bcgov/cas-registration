@@ -63,7 +63,7 @@
                   "type": "string"
                 },
                 "annualFuelAmount": {
-                  "title": "Annual Fuel Amount",
+                  "title": "Annual Fuel Amount (fuel unit)",
                   "type": "number"
                 },
                 "emissions": {
