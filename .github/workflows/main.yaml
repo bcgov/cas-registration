@@ -132,6 +132,15 @@ jobs:
       nx_project: compliance
     secrets: inherit
   trivy:
+    needs:
+      [
+        build-backend,
+        build-administration,
+        build-compliance,
+        build-dashboard,
+        build-registration,
+        build-reporting,
+      ]
     uses: ./.github/workflows/trivy.yaml
   codeql:
     uses: ./.github/workflows/codeql.yaml
