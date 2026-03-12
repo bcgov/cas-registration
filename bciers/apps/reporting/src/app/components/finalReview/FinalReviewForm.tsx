@@ -31,6 +31,7 @@ export const FinalReviewForm: React.FC<Props> = ({
     async function fetchData() {
       const finalReviewData = await getFinalReviewData(version_id);
       setData(finalReviewData);
+      console.log(finalReviewData)
       setLoading(false);
     }
     fetchData();

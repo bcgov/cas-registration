@@ -16,6 +16,8 @@ interface Props {
   origin: "annual-report" | "submitted"; // restrict origin
 }
 
+const d = <>To save facility reports, scroll to <a href="#report-information">report information</a>, click view details on each report and then click Save as PDF.</>
+
 const ReportForm: React.FC<Props> = ({ version_id, flow, origin }) => {
   const router = useRouter();
   const [data, setData] = useState<ReportData | null>(null);
@@ -26,6 +28,7 @@ const ReportForm: React.FC<Props> = ({ version_id, flow, origin }) => {
       const finalReviewData = await getFinalReviewData(version_id);
       setData(finalReviewData);
       setLoading(false);
+      console.log(finalReviewData)
     }
     fetchData();
   }, [version_id]);
@@ -34,7 +37,7 @@ const ReportForm: React.FC<Props> = ({ version_id, flow, origin }) => {
     <div className="flex flex-col gap-6">
       {!loading && data ? (
         <>
-          <DownloadPdfButton />
+          <DownloadPdfButton description={d} />
           <FinalReviewReportSections
             version_id={version_id}
             data={data}
