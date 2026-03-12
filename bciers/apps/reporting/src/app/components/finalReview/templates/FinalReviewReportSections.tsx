@@ -1,7 +1,18 @@
 "use client";
 import React, { useEffect } from "react";
 
-import { FacilityReport, FacilityReportLFO, ReportData } from "../reportTypes";
+import {
+  FacilityReport,
+  FacilityReportLFO,
+  OperationEmissionSummary,
+  ReportAdditionalData,
+  ReportComplianceSummary,
+  ReportData,
+  ReportElectricityImportData,
+  ReportNewEntrant,
+  ReportOperation,
+  ReportPersonResponsible,
+} from "../reportTypes";
 import {
   additionalDataFields,
   complianceSummaryFields,
@@ -19,9 +30,33 @@ import { flowHelpers } from "@reporting/src/app/components/taskList/flowHelpers"
 
 interface Props {
   data: ReportData | null;
-  version_id: any;
+  version_id: number;
   origin?: "final-review" | "submitted" | "annual-report";
   flow: ReportingFlow;
+}
+
+interface ReportFieldConfig {
+  label: string;
+  key?: string;
+  heading?: string;
+}
+
+interface ReportSectionConfig {
+  title: string;
+  condition?: (reportData: ReportData) => boolean;
+  getData?: (
+    reportData: ReportData,
+  ) =>
+    | ReportData
+    | ReportComplianceSummary
+    | ReportElectricityImportData
+    | ReportAdditionalData
+    | ReportNewEntrant
+    | OperationEmissionSummary
+    | ReportPersonResponsible
+    | ReportOperation;
+  fields?: ReportFieldConfig[];
+  render?: () => React.JSX.Element | null
 }
 
 export const FinalReviewReportSections: React.FC<Props> = ({
@@ -93,7 +128,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
     );
   };
 
-  const sectionConfigs = [
+  const sectionConfigs : ReportSectionConfig[] = [
     {
       title: "Reason for Change",
       condition: (reportData: ReportData) => reportData.is_supplementary_report,
@@ -109,13 +144,13 @@ export const FinalReviewReportSections: React.FC<Props> = ({
       title: "Review Operation Information",
       condition: () => true,
       getData: (reportData: ReportData) => reportData.report_operation,
-      fields: () => operationFields(isEIO),
+      fields: operationFields(isEIO),
     },
     {
       title: "Person Responsible for Submitting Report",
       condition: () => true,
       getData: (reportData: ReportData) => reportData.report_person_responsible,
-      fields: () => personResponsibleFields,
+      fields: personResponsibleFields,
     },
     {
       title: "Electricity Import Data",
@@ -123,7 +158,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
         isEIO && !!reportData.report_electricity_import_data,
       getData: (reportData: ReportData) =>
         reportData.report_electricity_import_data[0],
-      fields: () => eioFields,
+      fields: eioFields,
     },
     {
       title: "Facility Reports",

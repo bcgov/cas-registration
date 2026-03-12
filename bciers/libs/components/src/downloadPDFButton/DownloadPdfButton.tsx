@@ -1,11 +1,11 @@
 "use client";
-import React from "react";
+import React, { JSX } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import PrintIcon from "@mui/icons-material/Print";
 
 interface Props {
   label?: string;
-  description?: string;
+  description?: string | JSX.Element;
 }
 
 const DownloadPdfButton: React.FC<Props> = ({
