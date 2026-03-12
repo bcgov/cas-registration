@@ -7,12 +7,9 @@ import * as generateInvoice from "@/compliance/src/app/utils/generateInvoice";
 import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 import { ElicensingInvoice } from "@/compliance/src/app/types";
 
-vi.mock(
-  "@/compliance/src/app/components/elicensing-invoices/generateInvoice",
-  () => ({
-    default: vi.fn(),
-  }),
-);
+vi.mock("@/compliance/src/app/utils/generateInvoice", () => ({
+  default: vi.fn(),
+}));
 useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
