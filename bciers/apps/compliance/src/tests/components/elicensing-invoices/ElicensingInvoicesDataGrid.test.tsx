@@ -1,36 +1,52 @@
 import { render, screen, within } from "@testing-library/react";
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import ElicensingInvoicesDataGrid from "@/compliance/src/app/components/elicensing-invoices/ElicensingInvoicesDataGrid";
+import userEvent from "@testing-library/user-event";
+import * as generateInvoice from "@/compliance/src/app/utils/generateInvoice";
 
+import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
+import { ElicensingInvoice } from "@/compliance/src/app/types";
+
+vi.mock("@/compliance/src/app/utils/generateInvoice", () => ({
+  default: vi.fn(),
+}));
 useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-const mockResponse = {
+const mockResponse: { rows: ElicensingInvoice[]; row_count: number } = {
   rows: [
     {
+      compliance_report_version_id: 1,
       compliance_period: 2024,
       operator_legal_name: "Operator name",
       operation_name: "Operation 1",
       invoice_total: "421170.80",
       total_adjustments: "5.00",
       total_payments: "421170.80",
-      invoice_type: "Compliance obligation",
+      invoice_type: "obligation",
       id: 1,
       invoice_number: "OBI702922",
       outstanding_balance: "0.00",
+      due_date: "2025-12-31",
+      is_void: false,
+      last_refreshed: "2026-03-10T10:00:00Z",
     },
     {
+      compliance_report_version_id: 2,
       compliance_period: 2024,
       operator_legal_name: "Operator name",
       operation_name: "Operation 2",
       invoice_total: "80280.84",
       total_adjustments: "6.00",
       total_payments: "0.00",
-      invoice_type: "Automatic overdue penalty",
+      invoice_type: "automatic overdue penalty",
       id: 2,
       invoice_number: "OBI702923",
       outstanding_balance: "80280.84",
+      due_date: "2025-12-31",
+      is_void: false,
+      last_refreshed: "2026-03-10T10:00:00Z",
     },
   ],
   row_count: 2,
@@ -86,7 +102,7 @@ describe("ElicensingInvoicesDataGrid component", () => {
 
     expect(within(firstRow!).getByText("2024")).toBeVisible();
     expect(within(firstRow!).getByText("Operator name")).toBeVisible();
-    expect(within(firstRow!).getByText("Compliance obligation")).toBeVisible();
+    expect(within(firstRow!).getByText("Obligation")).toBeVisible();
     expect(within(firstRow!).getByText("OBI702922")).toBeVisible();
     expect(within(firstRow!).getAllByText("$421,170.80")).toHaveLength(2);
     expect(within(firstRow!).getByText("$5.00")).toBeVisible();
@@ -133,5 +149,27 @@ describe("ElicensingInvoicesDataGrid component", () => {
     // Verify data displays
     const summaryRows = screen.getAllByRole("row");
     expect(summaryRows.length).toBe(4); // header + search cell + 2 data rows
+  });
+
+  it("calls generateInvoice when invoice number link is clicked", async () => {
+    const user = userEvent.setup();
+
+    const generateInvoiceSpy = vi
+      .spyOn(generateInvoice, "default")
+      .mockResolvedValue(undefined);
+
+    render(
+      <ElicensingInvoicesDataGrid
+        initialData={mockResponse}
+        isInternalUser={true}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "OBI702922" }));
+
+    expect(generateInvoiceSpy).toHaveBeenCalledWith(
+      1,
+      ComplianceInvoiceTypes.OBLIGATION,
+    );
   });
 });

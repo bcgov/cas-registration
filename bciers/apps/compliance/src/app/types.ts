@@ -228,6 +228,7 @@ export type ElicensingLastRefreshData = {
 };
 
 export type ElicensingInvoice = {
+  compliance_report_version_id: number;
   compliance_period: number;
   operator_legal_name: string;
   operation_name: string;

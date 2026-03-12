@@ -1,8 +1,10 @@
 from decimal import Decimal
-from typing import Annotated, Literal, Optional
+from typing import Annotated, Optional
+from compliance.enums import ComplianceInvoiceTypes
 
 from compliance.models.elicensing_invoice import ElicensingInvoice
 from ninja import Field, FilterSchema, ModelSchema, Schema
+from pydantic import ConfigDict
 
 
 class ElicensingInvoiceOut(ModelSchema):
@@ -28,6 +30,14 @@ class ElicensingLastRefreshOut(Schema):
 
 
 class ElicensingInvoiceListOut(ModelSchema):
+    model_config = ConfigDict(use_enum_values=True)
+    compliance_report_version_id: Optional[int] = Field(
+        None,
+        description=(
+            "Compliance Report Version ID derived from the associated record: "
+            "uses the Compliance Obligation path if present, otherwise the Penalty path."
+        ),
+    )
     compliance_period: Optional[int] = Field(
         None,
         description=(
@@ -47,16 +57,14 @@ class ElicensingInvoiceListOut(ModelSchema):
         None,
         description="Operator legal name via the linked eLicensing client operator.",
     )
-    invoice_type: Optional[Literal["Compliance obligation", "Automatic overdue penalty", "Late Submission Penalty"]] = (
-        Field(
-            None,
-            description=(
-                "Classified by association: "
-                "‘Late Submission Penalty’ when a late submission penalty link exists; "
-                "‘Automatic overdue penalty’ when a penalty link exists; "
-                "otherwise ‘Compliance obligation’."
-            ),
-        )
+    invoice_type: Optional[ComplianceInvoiceTypes] = Field(
+        None,
+        description=(
+            "Invoice classification based on associations: "
+            "'late submission penalty' when a late submission penalty exists; "
+            "'automatic overdue penalty' when an automatic overdue penalty exists; "
+            "otherwise 'obligation'."
+        ),
     )
     invoice_total: Optional[Decimal] = Field(
         None,
