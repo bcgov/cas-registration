@@ -310,7 +310,6 @@ const OperationInformationForm = ({
                 If this operation’s report is in progress, it will be deleted
                 and restarted.
               </li>
-              <li>Past years’ reports will be unaffected.</li>
             </ul>
           </>
         }

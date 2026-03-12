@@ -174,7 +174,8 @@ const OperationInformationForm = ({
         modalText={
           <>
             <div>
-              Are you sure you want to change your registration purpose?
+              Are you sure you want to change your registration purpose? If you
+              proceed,
             </div>
             <ul className="list-disc pl-5 mt-2">
               <li>
@@ -184,6 +185,7 @@ const OperationInformationForm = ({
                 If this operation’s report is in progress, it will be deleted
                 and restarted.
               </li>
+              <li>Past years’ reports will be unaffected.</li>
             </ul>
           </>
         }
