@@ -41,12 +41,23 @@ const defaultProps = {
     chargeRate: 40,
     complianceLimitStatus: "BELOW" as ComplianceLimitStatus,
     isSubmitted: false,
+    maxCreditUsagePercentage: 0.5,
   },
 } as unknown as WidgetProps;
 
 describe("ApplyComplianceUnitsWidget", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("renders the compliance usage percentage text", () => {
+    render(<ApplyComplianceUnitsWidget {...defaultProps} />);
+
+    expect(
+      screen.getByText(
+        /you may use compliance units to meet up to 50% of the compliance obligation\./i,
+      ),
+    ).toBeVisible();
   });
 
   it("renders DataGrid with correct column headers", () => {
@@ -157,7 +168,7 @@ describe("ApplyComplianceUnitsWidget", () => {
   it("does not show compliance limit message when status is BELOW", () => {
     render(<ApplyComplianceUnitsWidget {...defaultProps} />);
 
-    expect(screen.queryByText(/compliance obligation/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/monetary payment/)).not.toBeInTheDocument();
   });
 
   it("does not show compliance limit message when status is BELOW and form is submitted", () => {
@@ -171,7 +182,7 @@ describe("ApplyComplianceUnitsWidget", () => {
 
     render(<ApplyComplianceUnitsWidget {...props} />);
 
-    expect(screen.queryByText(/compliance obligation/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/monetary payment/)).not.toBeInTheDocument();
   });
 
   it("formats equivalent value using charge rate", () => {

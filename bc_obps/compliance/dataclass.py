@@ -47,6 +47,7 @@ class ComplianceUnitsPageData:
     bccr_units: List[BCCRUnit]
     compliance_unit_cap_limit: Optional[Decimal] = None
     compliance_unit_cap_remaining: Optional[Decimal] = None
+    max_credit_usage_percentage: Optional[Decimal] = None
 
 
 @dataclass

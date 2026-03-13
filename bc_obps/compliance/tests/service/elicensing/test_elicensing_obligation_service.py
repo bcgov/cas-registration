@@ -946,6 +946,7 @@ class TestElicensingObligationService:
                 "compliance_deadline": date(2024, 11, 30),
                 "start_date": date(2023, 1, 1),
                 "end_date": date(2023, 12, 31),
+                "max_credit_usage_percentage": Decimal("0.50"),
             },
         )
         # next compliance period
@@ -1035,6 +1036,7 @@ class TestElicensingObligationService:
                 "compliance_deadline": date(2027, 11, 30),
                 "start_date": date(2026, 1, 1),
                 "end_date": date(2026, 12, 31),
+                "max_credit_usage_percentage": Decimal("0.30"),
             },
         )
         ry1 = ReportingYear.objects.get(reporting_year=2025)
@@ -1055,6 +1057,7 @@ class TestElicensingObligationService:
                 "compliance_deadline": date(2027, 11, 30),
                 "start_date": date(2026, 1, 1),
                 "end_date": date(2026, 12, 31),
+                "max_credit_usage_percentage": Decimal("0.30"),
             },
         )
 

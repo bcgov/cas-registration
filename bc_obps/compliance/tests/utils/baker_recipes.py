@@ -38,6 +38,7 @@ compliance_period = Recipe(
     compliance_deadline="2025-06-30",
     invoice_generation_date="2025-11-01",
     reporting_year=foreign_key(reporting_year),
+    max_credit_usage_percentage=Decimal("0.50"),
 )
 
 # ComplianceReport recipe

@@ -58,7 +58,10 @@ export function ComplianceSummaryReviewComponent({
       uiSchema={complianceSummaryReviewUiSchema}
       formData={data}
       className="w-full"
-      formContext={{ reportingYear: data.reporting_year }}
+      formContext={{
+        reportingYear: data.reporting_year,
+        maxCreditUsagePercentage: data.max_credit_usage_percentage,
+      }}
     >
       <ComplianceStepButtons
         backUrl={backUrl}

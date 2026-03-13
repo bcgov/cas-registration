@@ -43,6 +43,7 @@ class ApplyComplianceUnitsOut(Schema):
     outstanding_balance: Optional[Decimal] = None
     compliance_unit_cap_limit: Optional[Decimal] = None
     compliance_unit_cap_remaining: Optional[Decimal] = None
+    max_credit_usage_percentage: Optional[Decimal] = None
 
 
 class ApplyComplianceUnitsIn(Schema):
