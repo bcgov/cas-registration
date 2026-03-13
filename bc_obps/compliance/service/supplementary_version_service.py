@@ -25,8 +25,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Constants
-ZERO_DECIMAL = Decimal('0')
-ONE_DECIMAL = Decimal('1')
+ZERO_DECIMAL = Decimal("0")
+ONE_DECIMAL = Decimal("1")
 MONEY = Decimal("0.01")
 EMISS = Decimal("0.0000")
 
@@ -45,10 +45,7 @@ class SupplementaryScenarioHandler(Protocol):
     ) -> Optional[ComplianceReportVersion]: ...
 
 
-# Concrete strategy for:
-# - Detecting when a previous CRV is still under manual handling (pending), and
-# - Creating a new supplementary NO_OBLIG / earned-credits CRV
-#   with an associated manual-handling record to carry that flag forward.
+# Concrete strategy when a previous CRV is under manual handling
 class ManualHandler:
     @staticmethod
     def can_handle(
@@ -56,15 +53,12 @@ class ManualHandler:
         previous_summary: ReportComplianceSummary,
     ) -> bool:
         """
-        This handler applies when the *previous* compliance report version has a manual-handling record
+        This handler applies when the *previous* compliance report version has a
+        manual-handling record that is still pending.
         """
         previous_crv = ComplianceReportVersion.objects.get(report_compliance_summary=previous_summary)
 
-        # Use the existence of the one-to-one manual_handling_record PENDING_MANUAL_HANDLING
-        return ComplianceReportVersionManualHandling.objects.filter(
-            compliance_report_version=previous_crv,
-            director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
-        ).exists()
+        return SupplementaryVersionService._has_pending_manual_handling(previous_crv)
 
     @staticmethod
     @transaction.atomic()
@@ -76,12 +70,7 @@ class ManualHandler:
     ) -> Optional[ComplianceReportVersion]:
         """
         Create a new supplementary NO_OBLIGATION_OR_EARNED_CREDITS CRV and an
-        associated manual-handling record when the previous CRV has a manual-handling record
-
-        Assumptions:
-        - The previous CRV's manual_handling_record exists
-        - We carry forward handling_type/context to the new record, but do not
-          copy analyst or director comments/dates.
+        associated manual-handling record to carry forward manual-handling flag
         """
 
         # Get the previous compliance report version
@@ -91,9 +80,6 @@ class ManualHandler:
             )
         )
 
-        # Fetch its manual-handling record
-        previous_manual_handling = previous_compliance_version.manual_handling_record
-
         # Create the new supplementary CRV
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
@@ -102,6 +88,9 @@ class ManualHandler:
             is_supplementary=True,
             previous_version=previous_compliance_version,
         )
+
+        #  Get the previous compliance report version's manual-handling record
+        previous_manual_handling = previous_compliance_version.manual_handling_record
 
         # Create a new manual-handling record for the new CRV.
         ComplianceReportVersionManualHandling.objects.create(
@@ -885,15 +874,25 @@ class IncreasedCreditHandler:
         previous_compliance_report_version = ComplianceReportVersion.objects.get(
             report_compliance_summary=previous_summary
         )
+
+        # Return False unless credited emissions increased from previous version.
+        if not (ONE_DECIMAL <= previous_summary.credited_emissions < new_summary.credited_emissions):
+            return False
+
         # Get the previous earned credit record
         previous_earned_credit_record = ComplianceEarnedCredit.objects.filter(
             compliance_report_version=previous_compliance_report_version
         ).first()
 
-        if not previous_earned_credit_record:
-            return False
-        # Return True if excess emissions increased from previous version
-        return ONE_DECIMAL <= previous_summary.credited_emissions < new_summary.credited_emissions
+        # if the previous CRV already has an earned-credit record, this handler applies
+        if previous_earned_credit_record:
+            return True
+
+        # If previous CRV has resolved manual handling for earned credits, this handler applies
+        return SupplementaryVersionService._has_resolved_manual_handling(
+            previous_compliance_report_version,
+            handling_type=ComplianceReportVersionManualHandling.HandlingType.EARNED_CREDITS,
+        )
 
     @staticmethod
     @transaction.atomic()
@@ -909,10 +908,11 @@ class IncreasedCreditHandler:
                 compliance_report, previous_summary
             )
         )
-        # Get the previous earned_credit record
-        previous_earned_credit = ComplianceEarnedCredit.objects.get(
+        # Get the previous earned_credit record if one exists on the immediately previous CRV.
+        # This may be absent when the previous CRV was a resolved earned-credits manual-handling case.
+        previous_earned_credit = ComplianceEarnedCredit.objects.filter(
             compliance_report_version=previous_compliance_version
-        )
+        ).first()
 
         credited_emission_delta = int(new_summary.credited_emissions - previous_summary.credited_emissions)
         # Create a compliance_report_version record with the 'earned credits' status (status will change if credits not requested)
@@ -925,6 +925,25 @@ class IncreasedCreditHandler:
             previous_version=previous_compliance_version,
         )
 
+        # If the previous CRV was a resolved earned-credits manual-handling case,
+        # start fresh for this supplementary increase:
+        # create a new EC record on the new CRV and do not mutate historical records.
+        if SupplementaryVersionService._has_resolved_manual_handling(
+            previous_compliance_version,
+            handling_type=ComplianceReportVersionManualHandling.HandlingType.EARNED_CREDITS,
+        ):
+            ComplianceEarnedCreditsService.create_earned_credits_record(
+                compliance_report_version, credited_emission_delta
+            )
+            return compliance_report_version
+
+        # Defensive guard for the non-manual-handling path.
+        if not previous_earned_credit:
+            raise ValueError(
+                "Expected previous earned credit record for increased credits when prior manual handling "
+                "was not resolved."
+            )
+
         if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED:
             previous_earned_credit.earned_credits_amount = (
                 previous_earned_credit.earned_credits_amount + credited_emission_delta
@@ -933,11 +952,12 @@ class IncreasedCreditHandler:
             compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
             compliance_report_version.save()
 
-        if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
+        elif previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
             ComplianceEarnedCreditsService.create_earned_credits_record(
                 compliance_report_version, credited_emission_delta
             )
-        if previous_earned_credit.issuance_status in (
+
+        elif previous_earned_credit.issuance_status in (
             ComplianceEarnedCredit.IssuanceStatus.DECLINED,
             ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
             ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
@@ -1121,6 +1141,43 @@ class SupplementaryVersionService:
         )
         return previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
 
+    @staticmethod
+    def _get_manual_handling_record(
+        compliance_report_version: ComplianceReportVersion,
+    ) -> Optional[ComplianceReportVersionManualHandling]:
+        try:
+            return compliance_report_version.manual_handling_record
+        except ComplianceReportVersionManualHandling.DoesNotExist:
+            return None
+
+    @staticmethod
+    def _has_pending_manual_handling(
+        compliance_report_version: ComplianceReportVersion,
+    ) -> bool:
+        manual_handling = SupplementaryVersionService._get_manual_handling_record(compliance_report_version)
+        return bool(
+            manual_handling
+            and manual_handling.director_decision
+            == ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING
+        )
+
+    @staticmethod
+    def _has_resolved_manual_handling(
+        compliance_report_version: ComplianceReportVersion,
+        handling_type: Optional[str] = None,
+    ) -> bool:
+        manual_handling = SupplementaryVersionService._get_manual_handling_record(compliance_report_version)
+        if not manual_handling:
+            return False
+
+        if manual_handling.director_decision != ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED:
+            return False
+
+        if handling_type and manual_handling.handling_type != handling_type:
+            return False
+
+        return True
+
     @transaction.atomic
     def handle_supplementary_version(
         self, compliance_report: ComplianceReport, report_version: ReportVersion, version_count: int
@@ -1139,7 +1196,7 @@ class SupplementaryVersionService:
         new_version_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=report_version.id)
         previous_version_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=previous_version.id)
 
-        # If the previous version was handled manually, run the manual handler & exit
+        # If the previous version is under manual handling, run the manual handler & exit
         if ManualHandler.can_handle(
             new_summary=new_version_compliance_summary, previous_summary=previous_version_compliance_summary
         ):
