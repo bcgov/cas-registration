@@ -36,9 +36,10 @@ interface Props {
 }
 
 interface ReportFieldConfig {
-  label: string;
+  label?: string;
   key?: string;
   heading?: string;
+  unit?: string;
 }
 
 interface ReportSectionConfig {
@@ -55,8 +56,8 @@ interface ReportSectionConfig {
     | OperationEmissionSummary
     | ReportPersonResponsible
     | ReportOperation;
-  fields?: ReportFieldConfig[];
-  render?: () => React.JSX.Element | null
+  fields?: (reportData: ReportData) => ReportFieldConfig[];
+  render?: () => React.JSX.Element | null;
 }
 
 export const FinalReviewReportSections: React.FC<Props> = ({
@@ -128,12 +129,12 @@ export const FinalReviewReportSections: React.FC<Props> = ({
     );
   };
 
-  const sectionConfigs : ReportSectionConfig[] = [
+  const sectionConfigs: ReportSectionConfig[] = [
     {
       title: "Reason for Change",
       condition: (reportData: ReportData) => reportData.is_supplementary_report,
       getData: (reportData: ReportData) => reportData,
-      fields: [
+      fields: () => [
         {
           label: "Reason for submitting supplementary report",
           key: "reason_for_change",
@@ -142,15 +143,13 @@ export const FinalReviewReportSections: React.FC<Props> = ({
     },
     {
       title: "Review Operation Information",
-      condition: () => true,
       getData: (reportData: ReportData) => reportData.report_operation,
-      fields: operationFields(isEIO),
+      fields: () => operationFields(isEIO),
     },
     {
       title: "Person Responsible for Submitting Report",
-      condition: () => true,
       getData: (reportData: ReportData) => reportData.report_person_responsible,
-      fields: personResponsibleFields,
+      fields: () => personResponsibleFields,
     },
     {
       title: "Electricity Import Data",
@@ -158,7 +157,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
         isEIO && !!reportData.report_electricity_import_data,
       getData: (reportData: ReportData) =>
         reportData.report_electricity_import_data[0],
-      fields: eioFields,
+      fields: () => eioFields,
     },
     {
       title: "Facility Reports",
@@ -204,7 +203,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
   return (
     <>
       {sectionConfigs.map((section) => {
-        if (!section.condition(data)) return null;
+        if (section.condition && !section.condition(data)) return null;
         if (section.render)
           return (
             <React.Fragment key={section.title}>
@@ -213,10 +212,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
           );
 
         const sectionData = section.getData!(data);
-        const sectionFields =
-          typeof section.fields === "function"
-            ? section.fields(data)
-            : section.fields;
+        const sectionFields = section.fields ? section.fields(data) : [];
 
         return (
           <SectionReview
