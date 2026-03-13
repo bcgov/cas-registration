@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.4.3](https://github.com/bcgov/cas-registration/compare/v5.4.2...v5.4.3) (2026-03-13)
+
+### Bug Fixes
+
+- pulp and paper calculations for 2024 restored to 2024 logic ([620196b](https://github.com/bcgov/cas-registration/commit/620196b94d789a41156bfb52c540b84e438c7c29))
+
 ## [5.4.2](https://github.com/bcgov/cas-registration/compare/v5.4.1...v5.4.2) (2026-03-10)
 
 ### Bug Fixes
