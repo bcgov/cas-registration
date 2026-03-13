@@ -8,7 +8,7 @@ from compliance.constants import COMPLIANCE
 from compliance.schema.elicensing_invoice import ElicensingInvoiceOut
 from compliance.models.elicensing_invoice import ElicensingInvoice
 from compliance.enums import ComplianceInvoiceTypes
-from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
+from compliance.api.permissions import approved_authorized_roles_compliance_report_version_composite_auth
 
 
 @router.get(
@@ -16,7 +16,7 @@ from compliance.api.permissions import approved_industry_user_compliance_report_
     response={200: None, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Generate a PDF invoice for a compliance report version and stream it to the client",
-    auth=approved_industry_user_compliance_report_version_composite_auth,
+    auth=approved_authorized_roles_compliance_report_version_composite_auth,
 )
 def generate_compliance_report_version_invoice(
     request: HttpRequest, compliance_report_version_id: int
@@ -36,7 +36,7 @@ def generate_compliance_report_version_invoice(
     response={200: ElicensingInvoiceOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Returns invoice info for a compliance report version id",
-    auth=approved_industry_user_compliance_report_version_composite_auth,
+    auth=approved_authorized_roles_compliance_report_version_composite_auth,
 )
 def get_invoice(
     request: HttpRequest,
