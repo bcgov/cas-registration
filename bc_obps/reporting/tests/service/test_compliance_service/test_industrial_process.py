@@ -20,13 +20,19 @@ class TestIndustrialProcess(TestCase):
     This ensures Naics Regulatory overrides are applied properly when necessary
     """
 
+    def test_returns_old_behaviour_for_2024(self):
+        report_version = make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
+        split = retrieve_pulp_and_paper_biogenic_emissions_split(report_version)
+
+        assert split == BiogenicEmissionsSplit(1, 0)
+
     def test_retrieve_biogenic_emissions_split_with_missing_report_activity(self):
-        report_version = make_recipe("reporting.tests.utils.report_version")
+        report_version = make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2025)
         with pytest.raises(
             ReportActivity.DoesNotExist,
             match='Under NAICS code 322112, there must be emissions reported under the "Pulp and Paper production" activity.',
         ):
-            retrieve_pulp_and_paper_biogenic_emissions_split(report_version.id)
+            retrieve_pulp_and_paper_biogenic_emissions_split(report_version)
 
     def test_retrieve_biogenic_emissions_split_with_utilize_lime_kiln_checked_off(self):
         report_activity = make_recipe(
@@ -37,23 +43,27 @@ class TestIndustrialProcess(TestCase):
                     "doesUtilizeLimeRecoveryKiln": False,
                 }
             },
+            report_version__report__reporting_year_id=2025,
         )
         with pytest.raises(
             ValueError,
             match="""Under NAICS code 322112 and with either 'chemical pulp' or 'lime recovered by kiln' products,
                 biogenic industrial process emission details must be reported.""",
         ):
-            retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version.id)
+            retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version)
 
     def test_retrieve_biogenic_emissions_split_with_bad_data(self):
         report_activity = make_recipe(
-            "reporting.tests.utils.report_activity", activity=Activity.objects.get(slug="pulp_and_paper"), json_data={}
+            "reporting.tests.utils.report_activity",
+            activity=Activity.objects.get(slug="pulp_and_paper"),
+            json_data={},
+            report_version__report__reporting_year_id=2025,
         )
         with pytest.raises(
             KeyError,
             match="Biogenic industrial process emissions data: key error at \'biogenicIndustrialProcessEmissions\'",
         ):
-            retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version.id)
+            retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version)
 
     def test_retrieve_biogenic_emissions_split_with_not_100_total(self):
         report_activity = make_recipe(
@@ -68,9 +78,10 @@ class TestIndustrialProcess(TestCase):
                     },
                 }
             },
+            report_version__report__reporting_year_id=2025,
         )
         with pytest.raises(ValueError, match='The biogenic emissions split reported must total to 1.'):
-            retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version.id)
+            retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version)
 
     def test_retrieve_biogenic_emissions_split_with_good_data(self):
         report_activity = make_recipe(
@@ -85,8 +96,9 @@ class TestIndustrialProcess(TestCase):
                     },
                 }
             },
+            report_version__report__reporting_year_id=2025,
         )
-        result = retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version.id)
+        result = retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version)
         assert result == BiogenicEmissionsSplit(Decimal('0.38'), Decimal('0.62'))
 
     @patch("reporting.service.compliance_service.industrial_process.retrieve_pulp_and_paper_biogenic_emissions_split")

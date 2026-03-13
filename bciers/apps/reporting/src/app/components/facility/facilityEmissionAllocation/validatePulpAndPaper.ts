@@ -25,11 +25,11 @@ const validatePulpAndPaper = (
     );
   if (!chemicalPulpAllocation)
     errors.push(
-      "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
+      "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page and report production amounts.",
     );
   else if (!limeRecoveredByKilnAllocation)
     errors.push(
-      "Missing Product: 'Pulp and paper: lime recovered by kiln'. Please add the product on the operation review page",
+      "Missing Product: 'Pulp and paper: lime recovered by kiln'. Please add the product on the operation review page and report production amounts.",
     );
   else if (
     // overlapping industrial process emissions are necessarily allocated to either of these products,
