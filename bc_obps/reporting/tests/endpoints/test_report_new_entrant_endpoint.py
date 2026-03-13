@@ -78,7 +78,7 @@ class TestNewEntrantDataApi(CommonTestSetup):
                 'assertion_statement': True,
                 'authorization_date': '2022-01-01T00:00:00',
                 'first_shipment_date': '4999-01-02T00:00:00',
-                'id': 1,
+                'id': self.report_new_entrant.id,
                 'new_entrant_period_start': '1999-01-02T00:00:00',
             },
             'products': [
@@ -151,7 +151,7 @@ class TestNewEntrantDataApi(CommonTestSetup):
                 'assertion_statement': True,
                 'authorization_date': '2022-01-01T00:00:00',
                 'first_shipment_date': '4999-01-02T00:00:00',
-                'id': 2,
+                'id': self.report_new_entrant.id,
                 'new_entrant_period_start': '1999-01-02T00:00:00',
             },
             'products': [
