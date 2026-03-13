@@ -4,7 +4,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.api.router import router
 from compliance.constants import COMPLIANCE
-from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
+from compliance.api.permissions import approved_authorized_roles_compliance_report_version_composite_auth
 
 
 @router.get(
@@ -12,7 +12,7 @@ from compliance.api.permissions import approved_industry_user_compliance_report_
     response={200: None, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Generate a PDF invoice for a compliance report version's automatic penalty and stream it to the client",
-    auth=approved_industry_user_compliance_report_version_composite_auth,
+    auth=approved_authorized_roles_compliance_report_version_composite_auth,
 )
 def generate_compliance_report_version_automatic_overdue_penalty_invoice(
     request: HttpRequest, compliance_report_version_id: int
