@@ -50,6 +50,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             upsert_obligation_notice_email_template,
             reverse_obligation_notice_email_template,
-            elidable=True,
         )
     ]

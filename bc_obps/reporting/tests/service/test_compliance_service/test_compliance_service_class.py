@@ -318,7 +318,7 @@ class TestComplianceSummaryServiceClass(TestCase):
                     'apr_dec_production': Decimal('0'),
                     'emission_intensity': Decimal('0.3822'),
                     'name': 'Pulp and paper: lime recovered by kiln',
-                    'product_id': 43,
+                    'product_id': 41,
                     'reduction_factor_override': Decimal('0.9000'),
                     'tightening_rate_override': Decimal('0.0100'),
                 },
