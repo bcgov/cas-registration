@@ -54,7 +54,7 @@ export default async function ProductionDataPage({
   if (
     orderedActivities.find(
       (activity: { id: number; name: string; slug: string }) =>
-        (activity.slug = "pulp_and_paper"),
+        activity.slug === "pulp_and_paper",
     )
   ) {
     isPulpAndPaper = true;

@@ -254,4 +254,202 @@ describe("The ProductionDataForm component", () => {
       calledProps.uiSchema.production_data.items["ui:order"],
     ).not.toContain("production_data_jan_mar");
   });
+
+  it("shows missing product error when isPulpAndPaper is true and overlappingIndustrialProcessEmissions > 0 and chemical pulp is not selected", async () => {
+    render(
+      <ProductionDataForm
+        allowedProducts={[
+          { product_id: 16, product_name: "Pulp and paper: chemical pulp" },
+          { product_id: 1, product_name: "Other Product" },
+        ]}
+        initialData={[]}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={""}
+        isPulpAndPaper={true}
+        overlappingIndustrialProcessEmissions={100}
+        reportingYear={2024}
+        isOptedOut={false}
+      />,
+    );
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+
+    let result;
+    await act(async () => {
+      result = await calledProps.onSubmit({
+        formData: {
+          product_selection: ["Other Product"],
+          production_data: [{ product_id: 1, product_name: "Other Product" }],
+        },
+      });
+    });
+
+    expect(result).toBe(false);
+    const latestCall =
+      mockMultiStepFormWithTaskList.mock.calls[
+        mockMultiStepFormWithTaskList.mock.calls.length - 1
+      ][0];
+    expect(latestCall.errors).toContain(
+      "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
+    );
+  });
+
+  it("does not show missing product error when isPulpAndPaper is false", async () => {
+    render(
+      <ProductionDataForm
+        allowedProducts={[
+          { product_id: 16, product_name: "Pulp and paper: chemical pulp" },
+          { product_id: 1, product_name: "Other Product" },
+        ]}
+        initialData={[]}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={""}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={100}
+        reportingYear={2024}
+        isOptedOut={false}
+      />,
+    );
+    const formData = {
+      formData: {
+        product_selection: ["Other Product"],
+        production_data: [{ product_id: 1, product_name: "Other Product" }],
+      },
+    };
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+    mockPostProductionData.mockResolvedValue({});
+
+    await act(async () => {
+      await calledProps.onChange(formData);
+    });
+
+    const updatedProps =
+      mockMultiStepFormWithTaskList.mock.calls[
+        mockMultiStepFormWithTaskList.mock.calls.length - 1
+      ][0];
+
+    let result;
+    await act(async () => {
+      result = await updatedProps.onSubmit(formData);
+    });
+
+    expect(result).toBe(true);
+    const latestCall =
+      mockMultiStepFormWithTaskList.mock.calls[
+        mockMultiStepFormWithTaskList.mock.calls.length - 1
+      ][0];
+    expect(latestCall.errors).toBeUndefined();
+  });
+
+  it("does not show missing product error when overlappingIndustrialProcessEmissions is 0", async () => {
+    render(
+      <ProductionDataForm
+        allowedProducts={[
+          { product_id: 16, product_name: "Pulp and paper: chemical pulp" },
+          { product_id: 1, product_name: "Other Product" },
+        ]}
+        initialData={[]}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={""}
+        isPulpAndPaper={true}
+        overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
+      />,
+    );
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+    mockPostProductionData.mockResolvedValue({});
+
+    const formData = {
+      formData: {
+        product_selection: ["Other Product"],
+        production_data: [{ product_id: 1, product_name: "Other Product" }],
+      },
+    };
+
+    await act(async () => {
+      await calledProps.onChange(formData);
+    });
+
+    const updatedProps =
+      mockMultiStepFormWithTaskList.mock.calls[
+        mockMultiStepFormWithTaskList.mock.calls.length - 1
+      ][0];
+
+    let result;
+    await act(async () => {
+      result = await updatedProps.onSubmit(formData);
+    });
+
+    expect(result).toBe(true);
+    const latestCall =
+      mockMultiStepFormWithTaskList.mock.calls[
+        mockMultiStepFormWithTaskList.mock.calls.length - 1
+      ][0];
+    expect(latestCall.errors).toBeUndefined();
+  });
+
+  it("does not show missing product error when chemical pulp is selected", async () => {
+    render(
+      <ProductionDataForm
+        allowedProducts={[
+          { product_id: 16, product_name: "Pulp and paper: chemical pulp" },
+          { product_id: 1, product_name: "Other Product" },
+        ]}
+        initialData={[]}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={""}
+        isPulpAndPaper={true}
+        overlappingIndustrialProcessEmissions={100}
+        reportingYear={2024}
+        isOptedOut={false}
+      />,
+    );
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+    mockPostProductionData.mockResolvedValue({});
+    const formData = {
+      formData: {
+        product_selection: ["Pulp and paper: chemical pulp", "Other Product"],
+        production_data: [
+          { product_id: 16, product_name: "Pulp and paper: chemical pulp" },
+          { product_id: 1, product_name: "Other Product" },
+        ],
+      },
+    };
+
+    await act(async () => {
+      await calledProps.onChange(formData);
+    });
+
+    const updatedProps =
+      mockMultiStepFormWithTaskList.mock.calls[
+        mockMultiStepFormWithTaskList.mock.calls.length - 1
+      ][0];
+
+    let result;
+    await act(async () => {
+      result = await updatedProps.onSubmit(formData);
+    });
+
+    expect(result).toBe(true);
+    const latestCall =
+      mockMultiStepFormWithTaskList.mock.calls[
+        mockMultiStepFormWithTaskList.mock.calls.length - 1
+      ][0];
+    expect(latestCall.errors).toBeUndefined();
+  });
 });
