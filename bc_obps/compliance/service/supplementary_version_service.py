@@ -60,8 +60,11 @@ class ManualHandler:
         """
         previous_crv = ComplianceReportVersion.objects.get(report_compliance_summary=previous_summary)
 
-        # Use the existence of the one-to-one manual_handling_record
-        return ComplianceReportVersionManualHandling.objects.filter(compliance_report_version=previous_crv).exists()
+        # Use the existence of the one-to-one manual_handling_record PENDING_MANUAL_HANDLING
+        return ComplianceReportVersionManualHandling.objects.filter(
+            compliance_report_version=previous_crv,
+            director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
+        ).exists()
 
     @staticmethod
     @transaction.atomic()
@@ -882,14 +885,16 @@ class IncreasedCreditHandler:
         previous_compliance_report_version = ComplianceReportVersion.objects.get(
             report_compliance_summary=previous_summary
         )
+
         # Get the previous earned credit record
-        previous_earned_credit_record = ComplianceEarnedCredit.objects.filter(
-            compliance_report_version=previous_compliance_report_version
-        ).first()
+        previous_earned_credit_record = IncreasedCreditHandler._get_previous_earned_credit(
+            previous_compliance_report_version
+        )
 
         if not previous_earned_credit_record:
             return False
-        # Return True if excess emissions increased from previous version
+
+        # Return True if credited emissions increased from previous version
         return ONE_DECIMAL <= previous_summary.credited_emissions < new_summary.credited_emissions
 
     @staticmethod
@@ -906,12 +911,15 @@ class IncreasedCreditHandler:
                 compliance_report, previous_summary
             )
         )
+
         # Get the previous earned_credit record
-        previous_earned_credit = ComplianceEarnedCredit.objects.get(
-            compliance_report_version=previous_compliance_version
-        )
+        previous_earned_credit = IncreasedCreditHandler._get_previous_earned_credit(previous_compliance_version)
+
+        if not previous_earned_credit:
+            return None
 
         credited_emission_delta = int(new_summary.credited_emissions - previous_summary.credited_emissions)
+
         # Create a compliance_report_version record with the 'earned credits' status (status will change if credits not requested)
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
@@ -923,18 +931,17 @@ class IncreasedCreditHandler:
         )
 
         if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED:
-            previous_earned_credit.earned_credits_amount = (
-                previous_earned_credit.earned_credits_amount + credited_emission_delta
-            )
+            previous_earned_credit.earned_credits_amount += credited_emission_delta
             previous_earned_credit.save()
             compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
             compliance_report_version.save()
 
-        if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
+        elif previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
             ComplianceEarnedCreditsService.create_earned_credits_record(
                 compliance_report_version, credited_emission_delta
             )
-        if previous_earned_credit.issuance_status in (
+
+        elif previous_earned_credit.issuance_status in (
             ComplianceEarnedCredit.IssuanceStatus.DECLINED,
             ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
             ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
@@ -952,6 +959,19 @@ class IncreasedCreditHandler:
                 previous_earned_credit.save()
 
         return compliance_report_version
+
+    @staticmethod
+    def _get_previous_earned_credit(
+        compliance_report_version: Optional[ComplianceReportVersion],
+    ) -> Optional[ComplianceEarnedCredit]:
+        while compliance_report_version:
+            earned_credit = ComplianceEarnedCredit.objects.filter(
+                compliance_report_version=compliance_report_version
+            ).first()
+            if earned_credit:
+                return earned_credit
+            compliance_report_version = compliance_report_version.previous_version
+        return None
 
 
 # Concrete strategy for decreased credits
