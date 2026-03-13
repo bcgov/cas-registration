@@ -22,6 +22,7 @@ interface SectionProps {
   isDeleted?: boolean;
   showModifiedValues?: boolean;
   reportingYear?: number;
+  id?: string;
 }
 
 /**
