@@ -58,6 +58,7 @@ interface ReportSectionConfig {
     | ReportOperation;
   fields?: (reportData: ReportData) => ReportFieldConfig[];
   render?: () => React.JSX.Element | null;
+  id?: string;
 }
 
 export const FinalReviewReportSections: React.FC<Props> = ({
@@ -206,9 +207,12 @@ export const FinalReviewReportSections: React.FC<Props> = ({
         if (section.condition && !section.condition(data)) return null;
         if (section.render)
           return (
-            <React.Fragment key={section.title}>
+            <div
+              key={section.title}
+              id={section.id ?? section.title.toLowerCase().replace(" ", "-")}
+            >
               {section.render()}
-            </React.Fragment>
+            </div>
           );
 
         const sectionData = section.getData!(data);
@@ -221,6 +225,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
             data={sectionData}
             fields={sectionFields}
             reportingYear={data.reporting_year}
+            id={section.id}
           />
         );
       })}

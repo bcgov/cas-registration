@@ -8,15 +8,15 @@ import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData"
 import Loading from "@bciers/components/loading/SkeletonForm";
 import { FinalReviewReportSections } from "@reporting/src/app/components/finalReview/templates/FinalReviewReportSections";
 import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
-import DownloadPdfButton from "@bciers/components/downloadPDFButton/DownloadPdfButton";
-
+import {
+  LfoDownloadPdfButton,
+  SfoDownloadPdfButton,
+} from "../finalReview/templates/PdfDownloadButtons";
 interface Props {
   version_id: number;
   flow: ReportingFlow;
   origin: "annual-report" | "submitted"; // restrict origin
 }
-
-const d = <>To save facility reports, scroll to <a href="#report-information">report information</a>, click view details on each report and then click Save as PDF.</>
 
 const ReportForm: React.FC<Props> = ({ version_id, flow, origin }) => {
   const router = useRouter();
@@ -28,7 +28,6 @@ const ReportForm: React.FC<Props> = ({ version_id, flow, origin }) => {
       const finalReviewData = await getFinalReviewData(version_id);
       setData(finalReviewData);
       setLoading(false);
-      console.log(finalReviewData)
     }
     fetchData();
   }, [version_id]);
@@ -37,7 +36,12 @@ const ReportForm: React.FC<Props> = ({ version_id, flow, origin }) => {
     <div className="flex flex-col gap-6">
       {!loading && data ? (
         <>
-          <DownloadPdfButton description={d} />
+          {data.report_operation.operation_type ===
+          "Linear Facilities Operation" ? (
+            <LfoDownloadPdfButton />
+          ) : (
+            <SfoDownloadPdfButton />
+          )}
           <FinalReviewReportSections
             version_id={version_id}
             data={data}

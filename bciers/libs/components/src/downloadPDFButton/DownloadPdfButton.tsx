@@ -3,7 +3,7 @@ import React, { JSX } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import PrintIcon from "@mui/icons-material/Print";
 
-interface Props {
+export interface Props {
   label?: string;
   description?: string | JSX.Element;
 }
