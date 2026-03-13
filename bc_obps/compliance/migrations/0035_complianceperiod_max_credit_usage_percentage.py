@@ -20,7 +20,7 @@ def set_max_credit_usage_percentage(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0034_V5_4_2'),
+        ('compliance', '0036_V5_5_0'),
     ]
 
     operations = [
