@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>partner_operator - default.erc</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.erc</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>partner_operator</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>Table containing data about operators&rsquo; partner operators. Partner operators may have a record in the Operator table. If so, that record is controlled by someone who works for that partner operator. The information in this table is controlled by BCOBPS operators who should not have access to other operator&rsquo;s records.</p>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="id">id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title='Automatically updated by the database'>√</td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="created_at">created_at</span></td>
+                                    <td>timestamptz</td>
+                                    <td>35,6</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="updated_at">updated_at</span></td>
+                                    <td>timestamptz</td>
+                                    <td>35,6</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="archived_at">archived_at</span></td>
+                                    <td>timestamptz</td>
+                                    <td>35,6</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="legal_name">legal_name</span></td>
+                                    <td>varchar</td>
+                                    <td>1000</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="partner_operator.legal_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='business_structure.html'>business_structure</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The legal name of an operator</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="trade_name">trade_name</span></td>
+                                    <td>varchar</td>
+                                    <td>1000</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="partner_operator.trade_name&#39;s name implies that it&#39;s a child of business_structure.name, but it doesn&#39;t reference that column."><a href='business_structure.html'>business_structure</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The trade name of an operator</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="cra_business_number">cra_business_number</span></td>
+                                    <td>varchar</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The CRA business number of an operator</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="bc_corporate_registry_number">bc_corporate_registry_number</span></td>
+                                    <td>varchar</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The BC corporate registry number of an operator</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="archived_by_id">archived_by_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="partner_operator.archived_by_id references user.user_guid via partner_operator_archived_by_id_4e2f045b_fk_user_user_guid"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
+                                                <td class="constraint detail">partner_operator_archived_by_id_4e2f045b_fk_user_user_guid</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="bc_obps_operator_id">bc_obps_operator_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="partner_operator.bc_obps_operator_id references operator.id via partner_operator_bc_obps_operator_id_4f1b4361_fk_operator_id"><a href='operator.html'>operator</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">partner_operator_bc_obps_operator_id_4f1b4361_fk_operator_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The operator that this partner operator is associated with</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="business_structure_id">business_structure_id</span></td>
+                                    <td>varchar</td>
+                                    <td>1000</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="partner_operator.business_structure_id references business_structure.name via partner_operator_business_structure_i_adb8646f_fk_business_"><a href='business_structure.html'>business_structure</a><span class='relatedKey'>.name</span></td>
+                                                <td class="constraint detail">partner_operator_business_structure_i_adb8646f_fk_business_</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The business structure of an operator</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="created_by_id">created_by_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="partner_operator.created_by_id references user.user_guid via partner_operator_created_by_id_c43304ba_fk_user_user_guid"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
+                                                <td class="constraint detail">partner_operator_created_by_id_c43304ba_fk_user_user_guid</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="updated_by_id">updated_by_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="partner_operator.updated_by_id references user.user_guid via partner_operator_updated_by_id_3d1e3859_fk_user_user_guid"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
+                                                <td class="constraint detail">partner_operator_updated_by_id_3d1e3859_fk_user_user_guid</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 id="Indexes" class="box-title">Indexes</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="indexes_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Type</th>
+                                    <th>Sort</th>
+                                    <th>Column(s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> partner_operator_pkey</td>
+                                    <td>Primary key</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>partner_bc_obps_operator_idx</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>bc_obps_operator_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>partner_business_structure_idx</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>business_structure_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>partner_operator_archived_by_id_4e2f045b</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>archived_by_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>partner_operator_bc_obps_operator_id_4f1b4361</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>bc_obps_operator_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>partner_operator_business_structure_id_adb8646f</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>business_structure_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>partner_operator_business_structure_id_adb8646f_like</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>business_structure_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>partner_operator_created_by_id_c43304ba</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>created_by_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>partner_operator_updated_by_id_3d1e3859</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>updated_by_id</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="operator.html" target="_top" title="operator" alt="" coords="280,76,571,487">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="11,193,230,545">
+<area shape="rect" id="node3" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,563,236,656">
+<area shape="rect" id="node4" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="615,139,1060,589">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/partner_operator.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
+<area shape="rect" id="node1" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="501,3185,755,3273">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="255,2576,370,2664">
+<area shape="rect" id="node66" href="app_role.html" target="_top" title="app_role" alt="" coords="5,2573,153,2661">
+<area shape="rect" id="node3" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="472,3012,784,3100">
+<area shape="rect" id="node4" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1424,238,1613,326">
+<area shape="rect" id="node5" href="operation.html" target="_top" title="operation" alt="" coords="972,3081,1129,3169">
+<area shape="rect" id="node21" href="operator.html" target="_top" title="operator" alt="" coords="553,913,703,1001">
+<area shape="rect" id="node34" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="485,2906,771,2994">
+<area shape="rect" id="node6" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="492,1090,764,1178">
+<area shape="rect" id="node7" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="3082,577,3370,665">
+<area shape="rect" id="node8" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2625,777,2920,865">
+<area shape="rect" id="node15" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="1844,845,2072,933">
+<area shape="rect" id="node17" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="2212,1044,2523,1132">
+<area shape="rect" id="node9" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="3097,4373,3355,4461">
+<area shape="rect" id="node10" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="1407,3729,1630,3817">
+<area shape="rect" id="node25" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="907,2236,1195,2324">
+<area shape="rect" id="node11" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="3489,4530,3728,4618">
+<area shape="rect" id="node12" href="compliance_penalty_accrual.html" target="_top" title="compliance_penalty_accrual" alt="" coords="3772,4614,4075,4702">
+<area shape="rect" id="node13" href="compliance_penalty_rate.html" target="_top" title="compliance_penalty_rate" alt="" coords="911,1617,1190,1705">
+<area shape="rect" id="node14" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="513,1604,743,1692">
+<area shape="rect" id="node16" href="report.html" target="_top" title="report" alt="" coords="1453,2388,1584,2476">
+<area shape="rect" id="node30" href="report_version.html" target="_top" title="report_version" alt="" coords="1860,3554,2056,3642">
+<area shape="rect" id="node18" href="compliance_report_version_manua_f4e36670.html" target="_top" title="compliance_report_version_manual_handling" alt="" coords="3007,682,3445,770">
+<area shape="rect" id="node19" href="contact.html" target="_top" title="contact" alt="" coords="981,404,1121,492">
+<area shape="rect" id="node20" href="address.html" target="_top" title="address" alt="" coords="242,84,383,172">
+<area shape="rect" id="node33" href="business_structure.html" target="_top" title="business_structure" alt="" coords="197,948,428,1036">
+<area shape="rect" id="node22" href="document.html" target="_top" title="document" alt="" coords="1438,1693,1599,1781">
+<area shape="rect" id="node23" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="3097,954,3355,1042">
+<area shape="rect" id="node24" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="1839,2298,2077,2386">
+<area shape="rect" id="node26" href="elicensing_payment.html" target="_top" title="elicensing_payment" alt="" coords="2249,3868,2486,3956">
+<area shape="rect" id="node27" href="facility.html" target="_top" title="facility" alt="" coords="1451,3141,1586,3229">
+<area shape="rect" id="node28" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1764,2561,2152,2649">
+<area shape="rect" id="node29" href="facility_report.html" target="_top" title="facility_report" alt="" coords="2271,3094,2463,3182">
+<area shape="rect" id="node31" href="facility_snapshot.html" target="_top" title="facility_snapshot" alt="" coords="1851,3381,2065,3469">
+<area shape="rect" id="node32" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1407,3036,1631,3124">
+<area shape="rect" id="node35" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1317,1866,1720,1954">
+<area shape="rect" id="node36" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="945,162,1156,250">
+<area shape="rect" id="node37" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="828,2613,1273,3064">
+<area shape="rect" id="node38" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2675,3710,2871,3798">
+<area shape="rect" id="node39" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="2237,3973,2498,4061">
+<area shape="rect" id="node40" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="2251,4078,2483,4166">
+<area shape="rect" id="node41" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="2196,4184,2539,4272">
+<area shape="rect" id="node42" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="2583,1128,2963,1216">
+<area shape="rect" id="node43" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="2207,4289,2528,4377">
+<area shape="rect" id="node44" href="report_emission.html" target="_top" title="report_emission" alt="" coords="4119,1132,4327,1220">
+<area shape="rect" id="node45" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3839,1777,4007,1865">
+<area shape="rect" id="node46" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="3110,3588,3342,3676">
+<area shape="rect" id="node47" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3524,2146,3693,2234">
+<area shape="rect" id="node48" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="2625,2772,2920,2860">
+<area shape="rect" id="node49" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="4371,322,4613,410">
+<area shape="rect" id="node50" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="2248,4462,2487,4550">
+<area shape="rect" id="node51" href="report_new_entrant_emission.html" target="_top" title="report_new_entrant_emission" alt="" coords="2615,4704,2931,4792">
+<area shape="rect" id="node52" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="2606,5066,2939,5154">
+<area shape="rect" id="node53" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2594,1233,2951,1321">
+<area shape="rect" id="node54" href="report_operation.html" target="_top" title="report_operation" alt="" coords="2259,4772,2475,4860">
+<area shape="rect" id="node55" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="2197,4877,2537,4965">
+<area shape="rect" id="node56" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="2222,4982,2513,5070">
+<area shape="rect" id="node57" href="report_product.html" target="_top" title="report_product" alt="" coords="2673,3178,2873,3266">
+<area shape="rect" id="node58" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="3044,3318,3408,3406">
+<area shape="rect" id="node59" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2634,1528,2911,1616">
+<area shape="rect" id="node60" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="2268,1285,2467,1373">
+<area shape="rect" id="node61" href="report_verification.html" target="_top" title="report_verification" alt="" coords="2253,2062,2482,2150">
+<area shape="rect" id="node62" href="report_verification_visit.html" target="_top" title="report_verification_visit" alt="" coords="493,4725,763,4813">
+<area shape="rect" id="node63" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1425,3382,1612,3470">
+<area shape="rect" id="node64" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1367,3556,1671,3644">
+<area shape="rect" id="node65" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1421,1994,1617,2082">
+<area shape="rect" id="node67" href="user_operator.html" target="_top" title="user_operator" alt="" coords="955,1926,1147,2014">
+<area shape="rect" id="node68" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="479,1981,777,2069">
+</map>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/partner_operator.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="operator.html" target="_top" title="operator" alt="" coords="543,103,833,513">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="280,249,499,601">
+<area shape="rect" id="node3" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,173,236,267">
+<area shape="rect" id="node4" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="877,243,1323,693">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/partner_operator.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="activity.html" target="_top" title="activity" alt="" coords="307,5301,456,5389">
+<area shape="rect" id="node2" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,5504,236,5592">
+<area shape="rect" id="node3" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="556,3436,809,3524">
+<area shape="rect" id="node4" href="user.html" target="_top" title="user" alt="" coords="324,2269,439,2357">
+<area shape="rect" id="node75" href="app_role.html" target="_top" title="app_role" alt="" coords="47,2267,195,2355">
+<area shape="rect" id="node5" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="527,3647,839,3735">
+<area shape="rect" id="node6" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1479,3232,1668,3320">
+<area shape="rect" id="node7" href="operation.html" target="_top" title="operation" alt="" coords="1027,3731,1184,3819">
+<area shape="rect" id="node23" href="operator.html" target="_top" title="operator" alt="" coords="608,5063,757,5151">
+<area shape="rect" id="node40" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="540,3541,825,3629">
+<area shape="rect" id="node8" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="547,3820,819,3908">
+<area shape="rect" id="node9" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="3137,229,3425,317">
+<area shape="rect" id="node10" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2680,476,2975,564">
+<area shape="rect" id="node17" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="1899,429,2127,517">
+<area shape="rect" id="node19" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="2267,565,2577,653">
+<area shape="rect" id="node11" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="3151,1409,3410,1497">
+<area shape="rect" id="node12" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="1462,1765,1685,1853">
+<area shape="rect" id="node28" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="961,1796,1249,1884">
+<area shape="rect" id="node13" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="3544,889,3783,977">
+<area shape="rect" id="node14" href="compliance_penalty_accrual.html" target="_top" title="compliance_penalty_accrual" alt="" coords="3827,612,4129,700">
+<area shape="rect" id="node15" href="compliance_penalty_rate.html" target="_top" title="compliance_penalty_rate" alt="" coords="966,2923,1245,3011">
+<area shape="rect" id="node16" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="568,2372,797,2460">
+<area shape="rect" id="node18" href="report.html" target="_top" title="report" alt="" coords="1508,1592,1639,1680">
+<area shape="rect" id="node34" href="report_version.html" target="_top" title="report_version" alt="" coords="1915,2708,2111,2796">
+<area shape="rect" id="node20" href="compliance_report_version_manua_f4e36670.html" target="_top" title="compliance_report_version_manual_handling" alt="" coords="3061,335,3500,423">
+<area shape="rect" id="node21" href="contact.html" target="_top" title="contact" alt="" coords="1035,5145,1175,5233">
+<area shape="rect" id="node22" href="address.html" target="_top" title="address" alt="" coords="311,5417,452,5505">
+<area shape="rect" id="node24" href="document.html" target="_top" title="document" alt="" coords="1493,3920,1654,4008">
+<area shape="rect" id="node25" href="document_type.html" target="_top" title="document_type" alt="" coords="280,5591,483,5679">
+<area shape="rect" id="node26" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="3151,785,3410,873">
+<area shape="rect" id="node27" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="1893,875,2132,963">
+<area shape="rect" id="node29" href="elicensing_payment.html" target="_top" title="elicensing_payment" alt="" coords="2303,979,2541,1067">
+<area shape="rect" id="node30" href="emission_category.html" target="_top" title="emission_category" alt="" coords="2309,4493,2535,4581">
+<area shape="rect" id="node31" href="facility.html" target="_top" title="facility" alt="" coords="1506,3413,1641,3501">
+<area shape="rect" id="node32" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1819,3988,2207,4076">
+<area shape="rect" id="node33" href="facility_report.html" target="_top" title="facility_report" alt="" coords="2326,2617,2518,2705">
+<area shape="rect" id="node35" href="facility_snapshot.html" target="_top" title="facility_snapshot" alt="" coords="1905,3324,2120,3412">
+<area shape="rect" id="node36" href="fuel_type.html" target="_top" title="fuel_type" alt="" coords="3587,4616,3739,4704">
+<area shape="rect" id="node37" href="gas_type.html" target="_top" title="gas_type" alt="" coords="3904,4633,4052,4721">
+<area shape="rect" id="node38" href="methodology.html" target="_top" title="methodology" alt="" coords="4185,4149,4370,4237">
+<area shape="rect" id="node39" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1461,5552,1685,5640">
+<area shape="rect" id="node41" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1372,56,1775,144">
+<area shape="rect" id="node42" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="1000,5483,1211,5571">
+<area shape="rect" id="node43" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="883,4677,1328,5128">
+<area shape="rect" id="node44" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="2309,4352,2535,4440">
+<area shape="rect" id="node45" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2729,4656,2925,4744">
+<area shape="rect" id="node46" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="2291,1152,2553,1240">
+<area shape="rect" id="node47" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="2306,4247,2538,4335">
+<area shape="rect" id="node48" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="2251,1325,2593,1413">
+<area shape="rect" id="node49" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="2637,701,3017,789">
+<area shape="rect" id="node50" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="2261,1499,2583,1587">
+<area shape="rect" id="node51" href="report_emission.html" target="_top" title="report_emission" alt="" coords="4173,2027,4381,2115">
+<area shape="rect" id="node52" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3894,2111,4062,2199">
+<area shape="rect" id="node53" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="3165,4567,3397,4655">
+<area shape="rect" id="node54" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3579,2027,3748,2115">
+<area shape="rect" id="node68" href="source_type.html" target="_top" title="source_type" alt="" coords="294,6028,469,6116">
+<area shape="rect" id="node55" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="2680,2195,2975,2283">
+<area shape="rect" id="node56" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="4425,1047,4668,1135">
+<area shape="rect" id="node57" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="2303,1604,2541,1692">
+<area shape="rect" id="node58" href="report_new_entrant_emission.html" target="_top" title="report_new_entrant_emission" alt="" coords="2669,1063,2985,1151">
+<area shape="rect" id="node59" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="2661,1236,2994,1324">
+<area shape="rect" id="node60" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2649,2777,3006,2865">
+<area shape="rect" id="node61" href="report_operation.html" target="_top" title="report_operation" alt="" coords="2314,3167,2530,3255">
+<area shape="rect" id="node62" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="2252,3931,2592,4019">
+<area shape="rect" id="node63" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="2277,4036,2567,4124">
+<area shape="rect" id="node64" href="report_product.html" target="_top" title="report_product" alt="" coords="2727,2300,2927,2388">
+<area shape="rect" id="node65" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="3099,2195,3463,2283">
+<area shape="rect" id="node66" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2689,2456,2966,2544">
+<area shape="rect" id="node67" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="2323,1709,2521,1797">
+<area shape="rect" id="node69" href="report_verification.html" target="_top" title="report_verification" alt="" coords="2307,4141,2537,4229">
+<area shape="rect" id="node70" href="report_verification_visit.html" target="_top" title="report_verification_visit" alt="" coords="548,2545,817,2633">
+<area shape="rect" id="node71" href="reporting_field.html" target="_top" title="reporting_field" alt="" coords="283,4785,480,4873">
+<area shape="rect" id="node72" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1480,2787,1667,2875">
+<area shape="rect" id="node73" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1421,3059,1725,3147">
+<area shape="rect" id="node74" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1475,3815,1671,3903">
+<area shape="rect" id="node76" href="user_operator.html" target="_top" title="user_operator" alt="" coords="1009,2309,1201,2397">
+<area shape="rect" id="node77" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="533,2855,832,2943">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/partner_operator.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 6.2.4</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>
