@@ -172,7 +172,8 @@ class ComplianceEarnedCredit(TimeStampedModel):
                 operation=pgtrigger.Update,
                 func="""
                     -- Populate submission info whenever the analyst comment changes
-                    if old.analyst_comment is distinct from new.analyst_comment then
+                    if (old.analyst_comment is distinct from new.analyst_comment)
+                        or (old.analyst_suggestion is distinct from new.analyst_suggestion) then
                         new.analyst_submitted_date = current_date;
                         new.analyst_submitted_by_id = (select nullif(current_setting('my.guid', true), ''));
                     end if;
