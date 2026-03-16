@@ -10,7 +10,7 @@
         "type": "object",
         "properties": {
           "emission": {
-            "title": "Emissions (tonnes)",
+            "title": "Emissions ()",
             "type": "number",
             "minimum": 0
           },
@@ -20,7 +20,7 @@
             "enum": []
           },
           "equivalentEmission": {
-            "title": "Equivalent emissions (tC02e)",
+            "title": "Equivalent Emissions (tC02e)",
             "type": "number",
             "readOnly": true,
             "description": "Computed upon saving"

@@ -10,7 +10,7 @@
         "type": "object",
         "properties": {
           "emission": {
-            "title": "Emissions (tonnes)",
+            "title": "Emissions (t)",
             "type": "number",
             "minimum": 0
           },
