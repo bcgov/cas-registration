@@ -2,16 +2,33 @@
 
 import MultiSelectWidgetWithTooltip from "@bciers/components/form/widgets/MultiSelectWidgetWithTooltip";
 import { WidgetProps } from "@rjsf/utils";
+import { FieldSchemaWithTooltip } from "@bciers/components/form/widgets/MultiSelectWidgetWithTooltip";
+
+const CHEMICAL_PULP_NAME = "Pulp and paper: chemical pulp";
+const LIME_RECOVERED_NAME = "Pulp and paper: lime recovered by kiln";
 
 const RegulatedProductMultiSelectWidget = (props: WidgetProps) => {
   const value = Array.isArray(props.value) ? props.value : [];
   const selectedIds = value.map((item) => Number(item));
 
-  const chemicalPulpProductId = 16;
-  const limeRecoveredByKilnProductId = 43;
+  const fieldSchema = props.schema?.items as FieldSchemaWithTooltip;
+  const enumIds = fieldSchema?.enum ?? [];
+  const enumNames = fieldSchema?.enumNames ?? [];
 
-  const hasChemicalPulp = selectedIds.includes(chemicalPulpProductId);
-  const hasLimeRecovered = selectedIds.includes(limeRecoveredByKilnProductId);
+  const chemicalPulpProductId =
+    enumIds[enumNames.findIndex((name) => name === CHEMICAL_PULP_NAME)];
+
+  const limeRecoveredByKilnProductId =
+    enumIds[enumNames.findIndex((name) => name === LIME_RECOVERED_NAME)];
+
+  const hasChemicalPulp =
+    chemicalPulpProductId !== undefined &&
+    selectedIds.includes(Number(chemicalPulpProductId));
+
+  const hasLimeRecovered =
+    limeRecoveredByKilnProductId !== undefined &&
+    selectedIds.includes(Number(limeRecoveredByKilnProductId));
+
   const showPulpPaperHelp =
     (hasChemicalPulp && !hasLimeRecovered) ||
     (!hasChemicalPulp && hasLimeRecovered);
