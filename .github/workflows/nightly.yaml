@@ -127,6 +127,8 @@ jobs:
     uses: ./.github/workflows/schemaspy.yaml
     secrets: inherit
   trivy:
+    uses: ./.github/workflows/trivy.yaml
+  trivy-containers:
     needs:
       [
         build-backend,
@@ -136,7 +138,7 @@ jobs:
         build-registration,
         build-reporting,
       ]
-    uses: ./.github/workflows/trivy.yaml
+    uses: ./.github/workflows/trivy-containers.yaml
   codeql:
     uses: ./.github/workflows/codeql.yaml
   notify:
@@ -154,6 +156,7 @@ jobs:
         zap-owasp,
         schemaspy,
         trivy,
+        trivy-containers,
         codeql,
       ]
     env:
@@ -169,6 +172,7 @@ jobs:
         && needs.zap-owasp.result == 'success'
         && needs.schemaspy.result == 'success'
         && needs.trivy.result == 'success'
+        && needs.trivy-containers.result == 'success'
         && needs.codeql.result == 'success'
         && 'success'
         || 'failure'
