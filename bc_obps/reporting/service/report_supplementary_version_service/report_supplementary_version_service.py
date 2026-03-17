@@ -1,7 +1,8 @@
 from django.db import transaction
 
-from reporting.models import ReportOperation, ReportVersion
+from reporting.models import ReportVersion
 from reporting.service.report_supplementary_version_service.report_supplementary_cloning import clone_all
+from service.report_version_service import ReportVersionService
 from service.reporting_year_service import ReportingYearService
 
 
@@ -31,42 +32,7 @@ class ReportSupplementaryVersionService:
                 report_version, operator_changed, purpose_changed
             )
 
-        return ReportSupplementaryVersionService._create_blank_report_version(report_version)
-
-    @staticmethod
-    @transaction.atomic
-    def _create_blank_report_version(report_version: ReportVersion) -> ReportVersion:
-        """
-        Creates a new blank Draft report version with a ReportOperation reflecting the
-        current operation's registration purpose, but no pre-populated facility or
-        personal data.
-        """
-        operation = report_version.report.operation
-        operator = report_version.report.operator
-
-        new_version = ReportVersion.objects.create(
-            report=report_version.report,
-            report_type=report_version.report_type,
-            status=ReportVersion.ReportVersionStatus.Draft,
-            is_latest_submitted=False,
-        )
-
-        report_operation = ReportOperation.objects.create(
-            operator_legal_name=operator.legal_name,
-            operator_trade_name=operator.trade_name,
-            operation_name=operation.name,
-            operation_type=operation.type,
-            operation_bcghgid=operation.bcghg_id.id if operation.bcghg_id else None,
-            bc_obps_regulated_operation_id=(
-                operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
-            ),
-            report_version=new_version,
-            registration_purpose=operation.registration_purpose or 'OBPS Regulated Operation',
-        )
-        report_operation.activities.add(*list(operation.activities.all()))
-        report_operation.regulated_products.add(*list(operation.regulated_products.all()))
-
-        return new_version
+        return ReportVersionService.create_report_version(report_version.report)
 
     @staticmethod
     @transaction.atomic

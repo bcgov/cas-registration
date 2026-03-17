@@ -6,13 +6,7 @@ from reporting.service.report_supplementary_version_service.report_supplementary
     ReportSupplementaryVersionService,
 )
 
-from reporting.models import (
-    FacilityReport,
-    ReportAdditionalData,
-    ReportOperationRepresentative,
-    ReportPersonResponsible,
-    ReportVersion,
-)
+from reporting.models import ReportVersion
 
 
 class ReportSupplementaryVersionServiceTests(TestCase):
@@ -185,45 +179,24 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             Operation.Purposes.OBPS_REGULATED_OPERATION,
         )
 
+    @patch('service.report_version_service.ReportVersionService.create_report_version')
     @patch('service.reporting_year_service.ReportingYearService.get_current_reporting_year')
-    def test_create_or_clone_purpose_changed_current_year_creates_blank(self, mock_get_year):
-        """Test that for current years with purpose change, a blank version is created (no cloned data)."""
+    def test_create_or_clone_purpose_changed_current_year_creates_blank(
+        self, mock_get_year, mock_create_report_version
+    ):
+        """Test that for current years with purpose change, ReportVersionService.create_report_version is called to create a blank version."""
 
-        # Mock the current reporting year to match the current year report's year
         mock_get_year.return_value = self.current_reporting_year
 
         self.current_year_report_version.status = ReportVersion.ReportVersionStatus.Submitted
         self.current_year_report_version.save()
 
-        # Change the operation's registration purpose so purpose_changed=True
         self.operation.registration_purpose = Operation.Purposes.NEW_ENTRANT_OPERATION
         self.operation.save()
 
-        new_current_year_report_version = ReportSupplementaryVersionService.create_or_clone_report_version(
-            self.current_year_report_version.id
-        )
+        ReportSupplementaryVersionService.create_or_clone_report_version(self.current_year_report_version.id)
 
-        self.assertEqual(
-            new_current_year_report_version.report_operation.registration_purpose,
-            Operation.Purposes.NEW_ENTRANT_OPERATION,
-        )
-
-        self.assertIsNone(
-            ReportPersonResponsible.objects.filter(report_version=new_current_year_report_version).first(),
-            "Blank version should have no ReportPersonResponsible.",
-        )
-        self.assertIsNone(
-            ReportAdditionalData.objects.filter(report_version=new_current_year_report_version).first(),
-            "Blank version should have no ReportAdditionalData.",
-        )
-        self.assertFalse(
-            FacilityReport.objects.filter(report_version=new_current_year_report_version).exists(),
-            "Blank version should have no FacilityReport.",
-        )
-        self.assertFalse(
-            ReportOperationRepresentative.objects.filter(report_version=new_current_year_report_version).exists(),
-            "Blank version should have no ReportOperationRepresentative.",
-        )
+        mock_create_report_version.assert_called_once_with(self.current_year_report_version.report)
 
     @patch('reporting.service.report_supplementary_version_service.report_supplementary_version_service.clone_all')
     def test_create_or_clone_operator_changed_purpose_changed_creates_supplementary_with_same_details(
