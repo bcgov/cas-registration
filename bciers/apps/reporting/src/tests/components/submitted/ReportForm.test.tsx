@@ -190,7 +190,9 @@ describe("The SubmittedForm component", () => {
   });
 
   it("fetches data with correct version_id", async () => {
-    (getFinalReviewData as Mock).mockResolvedValue({});
+    (getFinalReviewData as Mock).mockResolvedValue({
+      report_operation: { operation_type: "SFO" },
+    });
 
     render(
       <ReportForm
