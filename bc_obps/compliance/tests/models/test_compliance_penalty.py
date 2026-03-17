@@ -23,6 +23,7 @@ class CompliancePenaltyTest(BaseTestCase):
             ("fee_date", "fee date", None, None),
             ("penalty_type", "penalty type", 100, None),
             ("status", "status", None, None),
+            ("invoice_number", "invoice number", None, None),
         ]
 
 
