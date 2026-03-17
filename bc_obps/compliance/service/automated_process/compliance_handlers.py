@@ -154,7 +154,7 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
             PenaltyCalculationService.create_penalty(
                 obligation=obligation,
                 penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-                effective_deadline=effective_deadline,
+                effective_deadline=compliance_deadline,
             )
 
         # If we are past the deadline & the last transaction that brought the obligation to zero was also received past the deadline, create an automatic overdue penalty
