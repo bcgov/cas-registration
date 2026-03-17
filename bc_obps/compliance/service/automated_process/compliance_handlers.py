@@ -151,15 +151,24 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         if obligation.compliance_report_version.is_supplementary and has_late_submission:
             effective_deadline = invoice.due_date
             # Create a late submission penalty if a supplementary obligation was submitted late
-            PenaltyCalculationService.create_late_submission_penalty(obligation)
+            PenaltyCalculationService.create_penalty(
+                obligation=obligation,
+                penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
+                effective_deadline=effective_deadline,
+            )
 
         # If we are past the deadline & the last transaction that brought the obligation to zero was also received past the deadline, create an automatic overdue penalty
         if effective_deadline < timezone.now().date() and final_transaction_date > effective_deadline:  # type: ignore [operator]
-            PenaltyCalculationService.create_penalty(obligation, effective_deadline)
-            logger.info(f"Created penalties for obligation {obligation.obligation_id}")
+            PenaltyCalculationService.create_penalty(
+                obligation=obligation,
+                penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+                effective_deadline=effective_deadline,
+            )
+
         # After penalties may have been created (late submission and/or overdue)
         if has_outstanding_penalty(obligation.compliance_penalties.all()):
             retryable_notice_of_obligation_met_penalty_due_email.execute(obligation.id)
+            logger.info(f"Created penalties for obligation {obligation.obligation_id}")
 
 
 class ComplianceHandlerManager:
