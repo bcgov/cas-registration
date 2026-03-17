@@ -26,6 +26,7 @@ from reporting.service.compliance_service.regulatory_values import (
     get_industry_regulatory_values,
     get_product_regulatory_values_override,
 )
+from reporting.service.utils import round_using_appropriate_strategy
 
 
 @dataclass
@@ -316,15 +317,25 @@ class ComplianceService:
             else:
                 excess_emissions = Decimal(0)
                 credited_emissions = emissions_limit_total - total_allocated_for_compliance_used
-
         # Craft return object with all data
+        has_2024_reporting_year = report_version_record.report.reporting_year_id == 2024
         return_object = ComplianceData(
             emissions_attributable_for_reporting=attributable_for_reporting_total,
-            reporting_only_emissions=round(total_allocated_reporting_only, 4),
-            emissions_attributable_for_compliance=round(total_allocated_for_compliance_used, 4),
-            emissions_limit=round(emissions_limit_total, 4),
-            excess_emissions=round(excess_emissions, 4),
-            credited_emissions=round(credited_emissions, 4),
+            reporting_only_emissions=round_using_appropriate_strategy(
+                total_allocated_reporting_only, use_legacy_rounding=has_2024_reporting_year
+            ),
+            emissions_attributable_for_compliance=round_using_appropriate_strategy(
+                total_allocated_for_compliance_used, use_legacy_rounding=has_2024_reporting_year
+            ),
+            emissions_limit=round_using_appropriate_strategy(
+                emissions_limit_total, use_legacy_rounding=has_2024_reporting_year
+            ),
+            excess_emissions=round_using_appropriate_strategy(
+                excess_emissions, use_legacy_rounding=has_2024_reporting_year
+            ),
+            credited_emissions=round_using_appropriate_strategy(
+                credited_emissions, use_legacy_rounding=has_2024_reporting_year
+            ),
             industry_regulatory_values=industry_regulatory_values,
             products=compliance_product_list,
             reporting_year=report_version_record.report.reporting_year_id,

@@ -17,7 +17,7 @@ from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from reporting.models.source_type import SourceType
-from reporting.service.utils import exclude_keys, retrieve_ids
+from reporting.service.utils import exclude_keys, retrieve_ids, round_using_appropriate_strategy
 from reporting.service.emission_category_mapping_service import (
     EmissionCategoryMappingService,
 )
@@ -243,12 +243,15 @@ class ReportActivitySaveService:
     ) -> ReportEmission:
         json_data = exclude_keys(emission_data, ["gasType", "id", "methodology"])
         gas_type = GasType.objects.get(chemical_formula=emission_data["gasType"])
+        has_2024_reporting_year = self.facility_report.report_version.report.reporting_year_id == 2024
         # Set equivalent emission value (emission * gwp)
-        equivalent_emission = round(json_data["emission"] * gas_type.gwp, 4)
-        json_data["equivalentEmission"] = equivalent_emission
+        equivalent_emission = round_using_appropriate_strategy(
+            json_data["emission"] * gas_type.gwp, has_2024_reporting_year
+        )
+        json_data["equivalentEmission"] = float(equivalent_emission)
 
         # updated emission_data to include the calculated equivalent emission
-        emission_data["equivalentEmission"] = equivalent_emission
+        emission_data["equivalentEmission"] = float(equivalent_emission)
 
         report_emission_id = emission_data.get("id")
         if "methodology" not in emission_data:
