@@ -15,9 +15,9 @@ jobs:
         with:
           path: ~/.cache/trivy
           key: callee-trivy-${{ github.workflow }}-${{ github.run_id }}
-          restore-keys: trivy-
+          restore-keys: callee-trivy-${{ github.workflow }}-
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
         with:
           scan-type: fs
           scan-ref: "."
@@ -29,7 +29,7 @@ jobs:
           timeout: 10m0s
           scanners: vuln,secret,config
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-results.sarif
           category: trivy-code-scan
@@ -38,3 +38,53 @@ jobs:
         with:
           name: trivy-results
           path: trivy-results.sarif
+
+  scan-containers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: cas-reg-backend
+            category: trivy-container-backend
+          - image: cas-reg-frontend
+            category: trivy-container-registration
+          - image: cas-admin-frontend
+            category: trivy-container-administration
+          - image: cas-compliance-frontend
+            category: trivy-container-compliance
+          - image: cas-dash-frontend
+            category: trivy-container-dashboard
+          - image: cas-rep-frontend
+            category: trivy-container-reporting
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Cache Scan Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: callee-trivy-${{ github.workflow }}-${{ github.run_id }}
+          restore-keys: callee-trivy-${{ github.workflow }}-
+      - name: Run Trivy vulnerability scanner on container image
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          scan-type: image
+          image-ref: ghcr.io/bcgov/${{ matrix.image }}:${{ github.sha }}
+          format: sarif
+          output: trivy-container-results.sarif
+          exit-code: "0"
+          ignore-unfixed: false
+          severity: CRITICAL,HIGH,MEDIUM
+          timeout: 10m0s
+      - name: Upload Trivy container scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-container-results.sarif
+          category: ${{ matrix.category }}
+      - name: Upload Trivy container scan results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-container-results-${{ matrix.image }}
+          path: trivy-container-results.sarif
