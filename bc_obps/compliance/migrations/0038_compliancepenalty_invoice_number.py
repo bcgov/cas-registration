@@ -3,10 +3,19 @@
 from django.db import migrations, models
 
 
+def populate_invoice_number_for_existing_penalty_records(apps, schema_editor):
+    CompliancePenalty = apps.get_model('compliance', 'CompliancePenalty')
+
+    for penalty in CompliancePenalty.objects.all():
+        if penalty.elicensing_invoice:
+            penalty.invoice_number = penalty.elicensing_invoice.invoice_number
+            penalty.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0031_V5_3_1'),
+        ('compliance', '0037_complianceperiod_max_credit_usage_percentage'),
     ]
 
     operations = [
@@ -18,5 +27,10 @@ class Migration(migrations.Migration):
                 db_comment='The invoice number for the related elicensing invoice. Populated immediately on invoice creation in elicensing to ensure the link is not lost between invoice creation in elicensing and the refresh function that creates the elicensing_invoice record in the erc data.',
                 null=True,
             ),
+        ),
+        migrations.RunPython(
+            populate_invoice_number_for_existing_penalty_records,
+            migrations.RunPython.noop,
+            elidable=True,
         ),
     ]
