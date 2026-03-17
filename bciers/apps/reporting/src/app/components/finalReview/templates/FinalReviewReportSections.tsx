@@ -97,7 +97,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
     if (isLFO) {
       // For LFO, render the grid
       return (
-        <div id="facility-grid">
+        <div id="facility-grid" className="print:hidden">
           <FinalReviewFacilityGrid
             data={facilityReportsLFO.map(
               (facilityReport: FacilityReportLFO) => ({
@@ -165,6 +165,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
       condition: (reportData: ReportData) =>
         !isEIO && !!reportData.facility_reports,
       render: renderFacilityReportInformation,
+      id: "facility-reports",
     },
     {
       title: "Additional Reporting Data",

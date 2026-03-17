@@ -8,10 +8,7 @@ import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData"
 import Loading from "@bciers/components/loading/SkeletonForm";
 import { FinalReviewReportSections } from "@reporting/src/app/components/finalReview/templates/FinalReviewReportSections";
 import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
-import {
-  LfoDownloadPdfButton,
-  SfoDownloadPdfButton,
-} from "../finalReview/templates/PdfDownloadButtons";
+import { ReportDownloadPdfButton } from "../finalReview/templates/ReportDownloadPdfButton";
 interface Props {
   version_id: number;
   flow: ReportingFlow;
@@ -36,12 +33,14 @@ const ReportForm: React.FC<Props> = ({ version_id, flow, origin }) => {
     <div className="flex flex-col gap-6">
       {!loading && data ? (
         <>
-          {data.report_operation.operation_type ===
-          "Linear Facilities Operation" ? (
-            <LfoDownloadPdfButton />
-          ) : (
-            <SfoDownloadPdfButton />
-          )}
+          <ReportDownloadPdfButton
+            variant={
+              data.report_operation.operation_type ===
+              "Linear Facilities Operation"
+                ? "LFO"
+                : "SFO"
+            }
+          />
           <FinalReviewReportSections
             version_id={version_id}
             data={data}
@@ -52,6 +51,7 @@ const ReportForm: React.FC<Props> = ({ version_id, flow, origin }) => {
             variant="outlined"
             onClick={() => router.push(`/reporting/reports/current-reports`)}
             sx={{ width: "fit-content" }}
+            className="print:hidden"
           >
             Back to All Reports
           </Button>

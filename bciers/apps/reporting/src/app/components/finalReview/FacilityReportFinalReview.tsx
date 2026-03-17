@@ -9,6 +9,7 @@ import { Box, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacilityFinalReviewData";
+import { ReportDownloadPdfButton } from "./templates/ReportDownloadPdfButton";
 
 export interface OriginSearchParams {
   origin?: "final-review" | "submitted" | "annual-report";
@@ -59,12 +60,18 @@ export default function FacilityReportFinalReview({
 
   return (
     <div className="w-full flex">
-      <div className="hidden md:block">
+      <div className="hidden md:block print:hidden">
         <ReportingTaskList elements={taskListElements} />
       </div>
       <div className="w-full">
+        <ReportDownloadPdfButton />
         <FacilityReportSection facilityData={data} />
-        <Box display="flex" justifyContent="flex-start" mt={3}>
+        <Box
+          display="flex"
+          justifyContent="flex-start"
+          mt={3}
+          className="print:hidden"
+        >
           <Button
             variant="outlined"
             onClick={() => {

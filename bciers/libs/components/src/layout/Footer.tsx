@@ -17,7 +17,7 @@ const links = footerLinks.map((link, index) => (
 const Footer: React.FC<{ showMockTimePicker: boolean }> = ({
   showMockTimePicker,
 }) => (
-  <footer className="relative w-full">
+  <footer className="relative w-full print:hidden">
     {showMockTimePicker && (
       <div className={`flex w-64`}>
         <MockTimePicker />
