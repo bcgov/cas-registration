@@ -8,183 +8,106 @@
 # When adding a new email template via migration, add a corresponding entry here
 # with representative context values for all variables used in the template.
 
+MOCK_CONTACT = {
+    "external_user_full_name": "Jane Smith",
+    "operator_legal_name": "Acme Corp Ltd.",
+    "external_user_email_address": "jane@example.com",
+}
+
+MOCK_BORO_CONTACT = {
+    "operation_name": "Test Smelter",
+    **MOCK_CONTACT,
+}
+
+MOCK_OPERATOR_CONTACT = {
+    "operator_legal_name": "Acme Corp Ltd.",
+    "operation_name": "Test Smelter",
+}
+
+MOCK_COMPLIANCE_YEAR = "2025"
+MOCK_COMPLIANCE_PERIOD = MOCK_COMPLIANCE_YEAR
+MOCK_YEAR_DUE = "2026"
+
 TEMPLATE_CONTEXTS = {
     # --- Admin access request templates ---
-    "Admin Access Request Confirmation": {
-        "external_user_full_name": "Jane Smith",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_email_address": "jane@example.com",
-    },
-    "Admin Access Request Approved": {
-        "external_user_full_name": "Jane Smith",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_email_address": "jane@example.com",
-    },
-    "Admin Access Request Declined": {
-        "external_user_full_name": "Jane Smith",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_email_address": "jane@example.com",
-    },
+    "Admin Access Request Confirmation": MOCK_CONTACT,
+    "Admin Access Request Approved": MOCK_CONTACT,
+    "Admin Access Request Declined": MOCK_CONTACT,
     # --- Operator with admin access request templates ---
-    "Operator With Admin Access Request Confirmation": {
-        "external_user_full_name": "Jane Smith",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_email_address": "jane@example.com",
-    },
-    "Operator With Admin Access Request Approved": {
-        "external_user_full_name": "Jane Smith",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_email_address": "jane@example.com",
-    },
-    "Operator With Admin Access Request Declined": {
-        "external_user_full_name": "Jane Smith",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_email_address": "jane@example.com",
-    },
+    "Operator With Admin Access Request Confirmation": MOCK_CONTACT,
+    "Operator With Admin Access Request Approved": MOCK_CONTACT,
+    "Operator With Admin Access Request Declined": MOCK_CONTACT,
     # --- New operator and admin access request templates ---
-    "New Operator And Admin Access Request Confirmation": {
-        "external_user_full_name": "Jane Smith",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_email_address": "jane@example.com",
-    },
-    "New Operator And Admin Access Request Approved": {
-        "external_user_full_name": "Jane Smith",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_email_address": "jane@example.com",
-    },
-    "New Operator And Admin Access Request Declined": {
-        "external_user_full_name": "Jane Smith",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_email_address": "jane@example.com",
-    },
+    "New Operator And Admin Access Request Confirmation": MOCK_CONTACT,
+    "New Operator And Admin Access Request Approved": MOCK_CONTACT,
+    "New Operator And Admin Access Request Declined": MOCK_CONTACT,
     # --- BORO ID application templates ---
-    "BORO ID Application Confirmation": {
-        "operation_name": "Test Smelter",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_full_name": "Jane Smith",
-        "external_user_email_address": "jane@example.com",
-    },
-    "BORO ID Application Approved": {
-        "operation_name": "Test Smelter",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_full_name": "Jane Smith",
-        "external_user_email_address": "jane@example.com",
-    },
-    "BORO ID Application Declined": {
-        "operation_name": "Test Smelter",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_full_name": "Jane Smith",
-        "external_user_email_address": "jane@example.com",
-    },
-    "BORO ID Application Changes Requested": {
-        "operation_name": "Test Smelter",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_full_name": "Jane Smith",
-        "external_user_email_address": "jane@example.com",
-    },
+    "BORO ID Application Confirmation": MOCK_BORO_CONTACT,
+    "BORO ID Application Approved": MOCK_BORO_CONTACT,
+    "BORO ID Application Declined": MOCK_BORO_CONTACT,
+    "BORO ID Application Changes Requested": MOCK_BORO_CONTACT,
     # --- Opt-in and BORO ID application templates ---
-    "Opt-in And BORO ID Application Confirmation": {
-        "operation_name": "Test Smelter",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_full_name": "Jane Smith",
-        "external_user_email_address": "jane@example.com",
-    },
-    "Opt-in And BORO ID Application Approved": {
-        "operation_name": "Test Smelter",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_full_name": "Jane Smith",
-        "external_user_email_address": "jane@example.com",
-    },
-    "Opt-in And BORO ID Application Declined": {
-        "operation_name": "Test Smelter",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_full_name": "Jane Smith",
-        "external_user_email_address": "jane@example.com",
-    },
-    "Opt-in And BORO ID Application Changes Requested": {
-        "operation_name": "Test Smelter",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_full_name": "Jane Smith",
-        "external_user_email_address": "jane@example.com",
-    },
+    "Opt-in And BORO ID Application Confirmation": MOCK_BORO_CONTACT,
+    "Opt-in And BORO ID Application Approved": MOCK_BORO_CONTACT,
+    "Opt-in And BORO ID Application Declined": MOCK_BORO_CONTACT,
+    "Opt-in And BORO ID Application Changes Requested": MOCK_BORO_CONTACT,
     # --- Registration templates ---
-    "BORO ID Issuance": {
-        "operation_name": "Test Smelter",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_full_name": "Jane Smith",
-        "external_user_email_address": "jane@example.com",
-    },
-    "Registration Submission Acknowledgement": {
-        "external_user_full_name": "Jane Smith",
-        "operation_name": "Test Smelter",
-        "operator_legal_name": "Acme Corp Ltd.",
-        "external_user_email_address": "jane@example.com",
-    },
+    "BORO ID Issuance": MOCK_BORO_CONTACT,
+    "Registration Submission Acknowledgement": MOCK_BORO_CONTACT,
     # --- Compliance templates ---
     "Notice of Earned Credits Generated": {
-        "operator_legal_name": "Acme Corp Ltd.",
-        "operation_name": "Test Smelter",
-        "compliance_year": "2025",
+        **MOCK_OPERATOR_CONTACT,
+        "compliance_year": MOCK_COMPLIANCE_YEAR,
         "earned_credit_amount": "500",
     },
     "No Obligation No Earned Credits Generated": {
-        "operator_legal_name": "Acme Corp Ltd.",
-        "operation_name": "Test Smelter",
-        "compliance_year": "2025",
+        **MOCK_OPERATOR_CONTACT,
+        "compliance_year": MOCK_COMPLIANCE_YEAR,
     },
     "Notice of Obligation Generated": {
-        "operator_legal_name": "Acme Corp Ltd.",
-        "operation_name": "Test Smelter",
-        "compliance_year": "2025",
+        **MOCK_OPERATOR_CONTACT,
+        "compliance_year": MOCK_COMPLIANCE_YEAR,
         "invoice_generation_date": "November 1, 2026",
         "compliance_deadline": "November 30, 2026",
     },
     "Notice of Credits Requested": {
-        "operator_legal_name": "Acme Corp Ltd.",
-        "operation_name": "Test Smelter",
+        **MOCK_OPERATOR_CONTACT,
     },
     "Notice of Compliance Obligation Due": {
-        "operator_legal_name": "Acme Corp Ltd.",
-        "operation_name": "Test Smelter",
-        "compliance_period": "2025",
+        **MOCK_OPERATOR_CONTACT,
+        "compliance_period": MOCK_COMPLIANCE_PERIOD,
         "tonnes_of_co2": "1000",
         "outstanding_balance": "50000",
-        "year_due": "2026",
+        "year_due": MOCK_YEAR_DUE,
     },
     "Reminder of Compliance Obligation Due": {
-        "operator_legal_name": "Acme Corp Ltd.",
-        "operation_name": "Test Smelter",
-        "year_due": "2026",
+        **MOCK_OPERATOR_CONTACT,
+        "year_due": MOCK_YEAR_DUE,
         "tonnes_of_co2": "1000",
         "outstanding_balance": "50000",
     },
     "Notice of Obligation Met": {
-        "operator_legal_name": "Acme Corp Ltd.",
-        "operation_name": "Test Smelter",
-        "compliance_period": "2025",
+        **MOCK_OPERATOR_CONTACT,
+        "compliance_period": MOCK_COMPLIANCE_PERIOD,
     },
     "Notice of Obligation Met Penalty Due": {
-        "operator_legal_name": "Acme Corp Ltd.",
-        "operation_name": "Test Smelter",
-        "compliance_year": "2025",
+        **MOCK_OPERATOR_CONTACT,
+        "compliance_year": MOCK_COMPLIANCE_YEAR,
         "compliance_deadline": "November 30, 2026",
         "penalty_amount": "$350.25",
     },
     "Notice of Penalty Paid": {
-        "operator_legal_name": "Acme Corp Ltd.",
-        "operation_name": "Test Smelter",
+        **MOCK_OPERATOR_CONTACT,
     },
     "Compliance Obligation Due Date Passed - Penalty now Accruing": {
-        "operator_legal_name": "Acme Corp Ltd.",
-        "operation_name": "Test Smelter",
+        **MOCK_OPERATOR_CONTACT,
         "tonnes_of_co2": "1000",
         "outstanding_balance": "50000",
     },
     "Supplementary Report Submitted after Deadline": {
-        "operator_legal_name": "Acme Corp Ltd.",
-        "operation_name": "Test Smelter",
+        **MOCK_OPERATOR_CONTACT,
         "tonnes_of_co2": "1000",
         "outstanding_balance": "50000",
-        "year_due": "2026",
+        "year_due": MOCK_YEAR_DUE,
     },
 }
