@@ -18,6 +18,7 @@ from compliance.emails import (
 from task_scheduler.service.retry_task.factories import create_retryable
 from task_scheduler.service.scheduled_task.dataclass import ScheduledTaskConfig
 from service.email.email_service import EmailService
+from compliance.service.penalty_calculation_service import PenaltyCalculationService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -109,6 +110,13 @@ retryable_notice_of_supplementary_report_post_deadline_increases_emissions = cre
     tag="past_deadline_increased_emissions_email_notifications",
     max_retries=5,
     retry_delay_minutes=10,
+)
+
+retryable_create_penalty = create_retryable(
+    func=PenaltyCalculationService.create_penalty,
+    tag="create_penalty",
+    max_retries=5,
+    retry_delay_minutes=30,
 )
 
 ###################

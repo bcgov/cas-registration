@@ -391,19 +391,21 @@ class PenaltyCalculationService:
 
     @classmethod
     def create_penalty(
-        cls, obligation: ComplianceObligation, penalty_type: CompliancePenalty.PenaltyType, effective_deadline: date
+        cls, obligation_id: int, penalty_type: CompliancePenalty.PenaltyType, effective_deadline: date
     ) -> CompliancePenalty:
         """
-        Calculate the penalty, persist the penalty data to the database & generate an invoice in elicensing.
+        Create the penalty, persist the penalty data to the database & generate an invoice in elicensing.
 
         Args:
-            obligation: The compliance obligation object
+            obligation_id: The id of the compliance obligation object
+            penalty_type: The type of penalty to create (CompliancePenalty.PenaltyType)
             effective_deadline: The deadline date after which the penalty starts accruing
 
         Returns:
             CompliancePenalty Record
         """
 
+        obligation = ComplianceObligation.objects.get(id=obligation_id)
         # Refresh the elicensing data
         ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
