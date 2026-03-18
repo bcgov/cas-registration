@@ -12,14 +12,14 @@
   vulnerabilityAlerts: {
     enabled: true,
     schedule: ["at any time"],
-    labels: ["security", "dependencies"],
+    labels: ["security", "dependencies", "run-all-ci"],
   },
 
   // Ensures Renovate uses the correct tool versions when regenerating lock files.
   constraints: {
     node: "24.x",
     yarn: "4.x",
-    python: "3.12",
+    python: "3.12.11",
   },
 
   // Add packages here that should never be updated by Renovate
@@ -44,13 +44,6 @@
     schedule: ["every weekend"],
   },
 
-  // Run yarn dedupe after every dependency update to keep the lock file clean.
-  postUpgradeTasks: {
-    commands: ["yarn dedupe"],
-    fileFilters: ["yarn.lock"],
-    executionMode: "branch",
-  },
-
   // minimumReleaseAge: "3 days"
   // Waits N days before opening a PR for a newly released version.
   // Prevents chasing packages that publish a bad release and immediately patch it —
@@ -63,7 +56,7 @@
       // All @nx/* packages and nx itself must stay on the same version.
       description: "Nx packages — must stay in sync",
       matchManagers: ["npm"],
-      matchPackagePatterns: ["^@nx/", "^nx$"],
+      matchPackageNames: ["/^@nx//", "/^nx$/"],
       matchUpdateTypes: ["minor", "patch"],
       groupName: "Nx (non-major)",
       groupSlug: "nx-non-major",
