@@ -564,3 +564,63 @@ class TestPenaltyCalculationService:
             PenaltyCalculationService.calculate_late_submission_penalty(
                 obligation=self.obligation, accrual_start_date=date(2024, 12, 1), final_accrual_date=date(2025, 1, 1)
             )
+
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice")
+    def test_idempotent_penalty_creation_initial_run(self, mock_create_invoice):
+
+        test_penalty_data = CalculatedPenaltyData(
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            penalty_charge_rate=Decimal(0.01),
+            days_late=5,
+            accumulated_penalty=Decimal('1000.01'),
+            accumulated_compounding=Decimal('50.00'),
+            total_penalty=Decimal('1050.01'),
+            faa_interest=Decimal('0.00'),
+            total_amount=Decimal('1050.01'),
+            daily_accumulated_list=[],
+        )
+
+        result = PenaltyCalculationService.perform_idempotent_penalty_creation(
+            self.obligation,
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            penalty_data=test_penalty_data,
+            penalty_accrual_start_date=date(2025, 12, 1),
+            final_transaction_date=date(2025, 12, 10),
+        )
+        assert result.penalty_type == CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
+        assert result.penalty_amount == test_penalty_data.total_penalty
+        mock_create_invoice.assert_called_once()
+
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice")
+    def test_idempotent_penalty_creation_does_not_create_new_invoice_if_invoice_number_exists(
+        self, mock_create_invoice
+    ):
+
+        test_penalty_data = CalculatedPenaltyData(
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            penalty_charge_rate=Decimal(0.01),
+            days_late=5,
+            accumulated_penalty=Decimal('1000.01'),
+            accumulated_compounding=Decimal('50.00'),
+            total_penalty=Decimal('1050.01'),
+            faa_interest=Decimal('0.00'),
+            total_amount=Decimal('1050.01'),
+            daily_accumulated_list=[],
+        )
+        self.obligation.invoice_number = 'inv-001'
+
+        baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            compliance_obligation=self.obligation,
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            invoice_number='inv-001',
+        )
+
+        PenaltyCalculationService.perform_idempotent_penalty_creation(
+            self.obligation,
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            penalty_data=test_penalty_data,
+            penalty_accrual_start_date=date(2025, 12, 1),
+            final_transaction_date=date(2025, 12, 10),
+        )
+        mock_create_invoice.assert_not_called()
