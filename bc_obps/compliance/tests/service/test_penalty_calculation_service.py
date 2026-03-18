@@ -201,7 +201,7 @@ class TestPenaltyCalculationService:
         mock_refresh_by_invoice.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=penalty_invoice)
         mock_get_invoice.return_value = penalty_invoice
         PenaltyCalculationService.create_penalty(
-            obligation=self.obligation,
+            obligation_id=self.obligation.id,
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             effective_deadline=compliance_deadline,
         )
