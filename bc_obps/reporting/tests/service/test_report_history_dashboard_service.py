@@ -31,3 +31,11 @@ class TestReportingHistoryDashboardService(TestCase):
 
         self.assertEqual(report_versions[0].version, "Current Version")
         self.assertEqual(report_versions[1].version, "Version 1")
+
+    def test_get_report_versions_for_report_history_dashboard_hide_drafts(self):
+        report_versions = ReportingHistoryDashboardService.get_report_versions_for_report_history_dashboard(
+            self.report.id, True
+        )
+        self.assertEqual(len(report_versions), 1)
+        self.assertEqual(report_versions[0].status, "Submitted")
+        self.assertEqual(report_versions[0].version, "Current Version")

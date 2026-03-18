@@ -27,6 +27,11 @@ class ReportHistoryResponseBuilder(PaginatedResponseBuilder, ReportInformationMi
     auth=compose_auth(authorize("approved_authorized_roles"), check_report_ownership_in_url("report_id")),
 )
 def get_report_history(request: HttpRequest, report_id: int) -> Tuple[Literal[200], dict]:
-    report_versions = ReportingHistoryDashboardService.get_report_versions_for_report_history_dashboard(report_id)
+    is_internal_user = request.current_user.is_irc_user()  # type: ignore
+
+    report_versions = ReportingHistoryDashboardService.get_report_versions_for_report_history_dashboard(
+        report_id, hide_draft_versions=is_internal_user
+    )
+
     response = ReportHistoryResponseBuilder(request).report(report_id).payload(report_versions).build()
     return 200, response
