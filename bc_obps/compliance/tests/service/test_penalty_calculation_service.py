@@ -8,6 +8,7 @@ from compliance.service.penalty_calculation_service import (
     PenaltyCalculationService,
     CalculatedPenaltyData,
     CalculatedPenaltyAccrualData,
+    ElicensingInterestRate,
 )
 from compliance.dataclass import RefreshWrapperReturn
 
@@ -82,7 +83,6 @@ class TestPenaltyCalculationService:
             '20000.00'
         )
 
-    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.TODAY", date(2025, 12, 10))
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
     )
@@ -100,7 +100,7 @@ class TestPenaltyCalculationService:
             base_amount=Decimal("1000000.00"),
         )
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
-        result = PenaltyCalculationService.calculate_penalty(self.obligation, date(2025, 12, 1))
+        result = PenaltyCalculationService.calculate_penalty(self.obligation, date(2025, 12, 1), date(2025, 12, 10))
 
         assert result.penalty_type == CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
         assert result.penalty_charge_rate == PenaltyCalculationService.DAILY_PENALTY_RATE * 100
@@ -200,7 +200,11 @@ class TestPenaltyCalculationService:
         )
         mock_refresh_by_invoice.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=penalty_invoice)
         mock_get_invoice.return_value = penalty_invoice
-        PenaltyCalculationService.create_penalty(self.obligation, compliance_deadline)
+        PenaltyCalculationService.create_penalty(
+            obligation=self.obligation,
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            effective_deadline=compliance_deadline,
+        )
         # Calculated with correct data
         mock_calculate.assert_called_with(
             obligation=self.obligation,
@@ -349,304 +353,214 @@ class TestPenaltyCalculationService:
         assert result["faa_interest"] == Decimal("0.00")
         assert result["total_amount"] == Decimal("0.00")
 
-    # @patch(
-    #     'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
-    # )
-    # @patch(
-    #     "compliance.service.penalty_calculation_service.PenaltyCalculationService._calculate_late_submission_penalty"
-    # )
-    # @patch("compliance.service.penalty_calculation_service.CompliancePenalty.objects.get")
-    # def test_create_late_submission_penalty_uses_payment_deadline(
-    #     self, mock_get_penalty, mock_calculate, mock_refresh_data
-    # ):
-    #     """Test create_late_submission_penalty uses payment deadline (submission + 30 days) not actual payment date"""
-    #     clean_invoice = baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_invoice",
-    #         due_date=date(2024, 11, 30),
-    #         outstanding_balance=Decimal("0.00"),
-    #         invoice_interest_balance=Decimal("0.00"),
-    #     )
-    #     mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
-    #     submission_date = date(2025, 3, 15)
-    #     self.obligation.created_at = submission_date
-    #     self.obligation.save(update_fields=["created_at"])
-    #     clean_fee = baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_line_item",
-    #         elicensing_invoice=clean_invoice,
-    #         base_amount=Decimal("1000000.00"),
-    #     )
-    #     baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_payment",
-    #         elicensing_line_item=clean_fee,
-    #         amount=Decimal("1000000.00"),
-    #         received_date=date(2025, 5, 15),  # Actual payment date
-    #     )
-    #     self.obligation.elicensing_invoice = clean_invoice
-    #     mock_penalty = baker.make_recipe(
-    #         "compliance.tests.utils.compliance_penalty",
-    #         compliance_obligation=self.obligation,
-    #         penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-    #     )
-    #     mock_get_penalty.return_value = mock_penalty
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
+    )
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice")
+    def test_calculate_late_submission_penalty(self, mock_create_invoice, mock_refresh_data):
+        """Test _calculate_late_submission_penalty creates penalty with monthly compounding"""
+        clean_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2024, 11, 30),
+            outstanding_balance=Decimal("0.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
 
-    #     PenaltyCalculationService.create_late_submission_penalty(self.obligation)
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_interest_rate",
+            start_date=date(2024, 1, 1),
+            end_date=date(2025, 12, 31),
+            interest_rate=Decimal("0.0795"),
+        )
 
-    #     expected_payment_date = date(2025, 5, 15)
-    #     expected_start_date = (
-    #         self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
-    #         + timedelta(days=1)
-    #     )
+        penalty_invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
+        mock_create_invoice.return_value = penalty_invoice
 
-    #     mock_calculate.assert_called_once_with(
-    #         obligation=self.obligation,
-    #         accrual_start_date=expected_start_date,
-    #         final_accrual_date=expected_payment_date,
-    #         persist_penalty_data=True,
-    #     )
+        result = PenaltyCalculationService.calculate_late_submission_penalty(
+            obligation=self.obligation,
+            accrual_start_date=date(2024, 12, 1),
+            final_accrual_date=date(2025, 4, 14),
+        )
 
-    # @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.TODAY", date(2025, 4, 15))
-    # @patch(
-    #     'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
-    # )
-    # @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice")
-    # def test_calculate_late_submission_penalty_with_persistence(self, mock_create_invoice, mock_refresh_data):
-    #     """Test _calculate_late_submission_penalty creates penalty with monthly compounding"""
-    #     clean_invoice = baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_invoice",
-    #         due_date=date(2024, 11, 30),
-    #         outstanding_balance=Decimal("0.00"),
-    #         invoice_interest_balance=Decimal("0.00"),
-    #     )
-    #     mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
+        assert result.penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION
+        assert result.total_penalty == Decimal("29727.85")
+        assert len(result.daily_accumulated_list) == 135
 
-    #     baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_interest_rate",
-    #         start_date=date(2024, 1, 1),
-    #         end_date=date(2025, 12, 31),
-    #         interest_rate=Decimal("0.0795"),
-    #     )
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
+    )
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice")
+    def test_calculate_late_submission_penalty_with_multiple_interest_rates(
+        self, mock_create_invoice, mock_refresh_data
+    ):
+        """Test _calculate_late_submission_penalty with multiple interest rate periods during accrual."""
 
-    #     penalty_invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
-    #     mock_create_invoice.return_value = penalty_invoice
+        clean_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2024, 11, 30),
+            outstanding_balance=Decimal("0.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
 
-    #     PenaltyCalculationService._calculate_late_submission_penalty(
-    #         obligation=self.obligation,
-    #         accrual_start_date=date(2024, 12, 1),
-    #         final_accrual_date=date(2025, 4, 14),
-    #         persist_penalty_data=True,
-    #     )
+        # Rate 1: Jan 1, 2024 → Feb 28, 2025 at 6.95
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_interest_rate",
+            start_date=date(2024, 1, 1),
+            end_date=date(2025, 2, 28),
+            interest_rate=Decimal("0.0695"),
+            is_current_rate=False,
+        )
 
-    #     penalty_record = CompliancePenalty.objects.get(
-    #         compliance_obligation=self.obligation, penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION
-    #     )
+        # Rate 2: Mar 1, 2025 → May 31, 2025 at 7.95%
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_interest_rate",
+            start_date=date(2025, 3, 1),
+            end_date=date(2025, 5, 31),
+            interest_rate=Decimal("0.0795"),
+            is_current_rate=False,
+        )
 
-    #     assert penalty_record.penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION
-    #     assert penalty_record.accrual_frequency == CompliancePenalty.Frequency.DAILY
-    #     assert penalty_record.compounding_frequency == CompliancePenalty.Frequency.MONTHLY
-    #     assert penalty_record.accrual_start_date == date(2024, 12, 1)
-    #     assert penalty_record.accrual_final_date == date(2025, 4, 14)
-    #     assert penalty_record.penalty_amount == Decimal("29727.85")
-    #     assert penalty_record.compliance_penalty_accruals.count() == 135
-    #     mock_create_invoice.assert_called_once()
+        # Rate 3: Jun 1, 2025 → Dec 31, 2025 at 8.25%
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_interest_rate",
+            start_date=date(2025, 6, 1),
+            end_date=date(2025, 12, 31),
+            interest_rate=Decimal("0.0825"),
+            is_current_rate=True,
+        )
 
-    # @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.TODAY", date(2025, 4, 15))
-    # @patch(
-    #     'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
-    # )
-    # @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice")
-    # def test_calculate_late_submission_penalty_with_multiple_interest_rates(
-    #     self, mock_create_invoice, mock_refresh_data
-    # ):
-    #     """Test _calculate_late_submission_penalty with multiple interest rate periods during accrual."""
+        penalty_invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
+        mock_create_invoice.return_value = penalty_invoice
 
-    #     clean_invoice = baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_invoice",
-    #         due_date=date(2024, 11, 30),
-    #         outstanding_balance=Decimal("0.00"),
-    #         invoice_interest_balance=Decimal("0.00"),
-    #     )
-    #     mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
+        result = PenaltyCalculationService.calculate_late_submission_penalty(
+            obligation=self.obligation,
+            accrual_start_date=date(2024, 12, 1),
+            final_accrual_date=date(2025, 7, 14),
+        )
 
-    #     # Rate 1: Jan 1, 2024 → Feb 28, 2025 at 6.95
-    #     baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_interest_rate",
-    #         start_date=date(2024, 1, 1),
-    #         end_date=date(2025, 2, 28),
-    #         interest_rate=Decimal("0.0695"),
-    #         is_current_rate=False,
-    #     )
+        assert result.penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION
+        assert result.total_penalty == Decimal("46940.61")
+        assert len(result.daily_accumulated_list) == (date(2025, 7, 14) - date(2024, 12, 1)).days + 1
 
-    #     # Rate 2: Mar 1, 2025 → May 31, 2025 at 7.95%
-    #     baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_interest_rate",
-    #         start_date=date(2025, 3, 1),
-    #         end_date=date(2025, 5, 31),
-    #         interest_rate=Decimal("0.0795"),
-    #         is_current_rate=False,
-    #     )
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
+    )
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice")
+    def test_calculate_late_submission_penalty_includes_payment(self, mock_create_invoice, mock_refresh_data):
+        clean_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2024, 11, 30),
+            outstanding_balance=Decimal("0.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        clean_fee = baker.make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=clean_invoice,
+            base_amount=Decimal("1000000.00"),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=clean_fee,
+            amount=Decimal("200000.00"),
+            received_date=date(2024, 12, 15),
+        )
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_interest_rate",
+            start_date=date(2024, 1, 1),
+            end_date=date(2025, 12, 31),
+            interest_rate=Decimal("0.07"),
+            is_current_rate=True,
+        )
 
-    #     # Rate 3: Jun 1, 2025 → Dec 31, 2025 at 8.25%
-    #     baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_interest_rate",
-    #         start_date=date(2025, 6, 1),
-    #         end_date=date(2025, 12, 31),
-    #         interest_rate=Decimal("0.0825"),
-    #         is_current_rate=True,
-    #     )
+        penalty_invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
+        mock_create_invoice.return_value = penalty_invoice
 
-    #     penalty_invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
-    #     mock_create_invoice.return_value = penalty_invoice
+        result = PenaltyCalculationService.calculate_late_submission_penalty(
+            obligation=self.obligation,
+            accrual_start_date=date(2024, 12, 1),
+            final_accrual_date=date(2025, 2, 15),
+        )
 
-    #     PenaltyCalculationService._calculate_late_submission_penalty(
-    #         obligation=self.obligation,
-    #         accrual_start_date=date(2024, 12, 1),
-    #         final_accrual_date=date(2025, 7, 14),
-    #         persist_penalty_data=True,
-    #     )
+        assert result.total_penalty == Decimal("12435.15")
 
-    #     penalty_record = CompliancePenalty.objects.get(
-    #         compliance_obligation=self.obligation, penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION
-    #     )
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
+    )
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice")
+    def test_calculate_late_submission_penalty_includes_adjustment(self, mock_create_invoice, mock_refresh_data):
+        clean_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2024, 11, 30),
+            outstanding_balance=Decimal("0.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        clean_fee = baker.make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=clean_invoice,
+            base_amount=Decimal("1000000.00"),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            elicensing_line_item=clean_fee,
+            amount=Decimal("-100000.00"),
+            adjustment_date=date(2024, 12, 20),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            elicensing_line_item=clean_fee,
+            amount=Decimal("50000.00"),
+            adjustment_date=date(2025, 1, 10),
+        )
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_interest_rate",
+            start_date=date(2024, 1, 1),
+            end_date=date(2025, 12, 31),
+            interest_rate=Decimal("0.07"),
+            is_current_rate=True,
+        )
 
-    #     assert penalty_record.penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION
-    #     assert penalty_record.accrual_frequency == CompliancePenalty.Frequency.DAILY
-    #     assert penalty_record.compounding_frequency == CompliancePenalty.Frequency.MONTHLY
-    #     assert penalty_record.accrual_start_date == date(2024, 12, 1)
-    #     assert penalty_record.penalty_amount == Decimal("46940.61")
-    #     assert penalty_record.compliance_penalty_accruals.count() == (date(2025, 7, 14) - date(2024, 12, 1)).days + 1
+        penalty_invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
+        mock_create_invoice.return_value = penalty_invoice
 
-    # @patch(
-    #     'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
-    # )
-    # @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice")
-    # def test_calculate_late_submission_penalty_includes_payment(self, mock_create_invoice, mock_refresh_data):
-    #     clean_invoice = baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_invoice",
-    #         due_date=date(2024, 11, 30),
-    #         outstanding_balance=Decimal("0.00"),
-    #         invoice_interest_balance=Decimal("0.00"),
-    #     )
-    #     clean_fee = baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_line_item",
-    #         elicensing_invoice=clean_invoice,
-    #         base_amount=Decimal("1000000.00"),
-    #     )
-    #     baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_payment",
-    #         elicensing_line_item=clean_fee,
-    #         amount=Decimal("200000.00"),
-    #         received_date=date(2024, 12, 15),
-    #     )
-    #     mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
-    #     baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_interest_rate",
-    #         start_date=date(2024, 1, 1),
-    #         end_date=date(2025, 12, 31),
-    #         interest_rate=Decimal("0.07"),
-    #         is_current_rate=True,
-    #     )
+        result = PenaltyCalculationService.calculate_late_submission_penalty(
+            obligation=self.obligation, accrual_start_date=date(2024, 12, 1), final_accrual_date=date(2025, 2, 15)
+        )
 
-    #     penalty_invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
-    #     mock_create_invoice.return_value = penalty_invoice
+        assert result.total_penalty == Decimal("14070.03")
 
-    #     PenaltyCalculationService._calculate_late_submission_penalty(
-    #         obligation=self.obligation,
-    #         accrual_start_date=date(2024, 12, 1),
-    #         final_accrual_date=date(2025, 2, 15),
-    #         persist_penalty_data=True,
-    #     )
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
+    )
+    def test_calculate_late_submission_penalty_raises_when_interest_rate_does_not_cover_reference_date(
+        self, mock_refresh_data
+    ):
+        """Integration: calculation should raise when no interest rate covers the reference date."""
+        clean_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2024, 11, 30),
+            outstanding_balance=Decimal("0.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=clean_invoice,
+            base_amount=Decimal("1000000.00"),
+        )
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
 
-    #     penalty_record = CompliancePenalty.objects.get(
-    #         compliance_obligation=self.obligation,
-    #         penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-    #     )
-    #     assert penalty_record.penalty_amount == Decimal("12435.15")
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_interest_rate",
+            start_date=date(2025, 1, 1),
+            end_date=date(2025, 12, 31),
+            interest_rate=Decimal("0.0500"),
+            is_current_rate=True,
+        )
 
-    # @patch(
-    #     'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
-    # )
-    # @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice")
-    # def test_calculate_late_submission_penalty_includes_adjustment(self, mock_create_invoice, mock_refresh_data):
-    #     clean_invoice = baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_invoice",
-    #         due_date=date(2024, 11, 30),
-    #         outstanding_balance=Decimal("0.00"),
-    #         invoice_interest_balance=Decimal("0.00"),
-    #     )
-    #     clean_fee = baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_line_item",
-    #         elicensing_invoice=clean_invoice,
-    #         base_amount=Decimal("1000000.00"),
-    #     )
-    #     baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_adjustment",
-    #         elicensing_line_item=clean_fee,
-    #         amount=Decimal("-100000.00"),
-    #         adjustment_date=date(2024, 12, 20),
-    #     )
-    #     baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_adjustment",
-    #         elicensing_line_item=clean_fee,
-    #         amount=Decimal("50000.00"),
-    #         adjustment_date=date(2025, 1, 10),
-    #     )
-    #     mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
-    #     baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_interest_rate",
-    #         start_date=date(2024, 1, 1),
-    #         end_date=date(2025, 12, 31),
-    #         interest_rate=Decimal("0.07"),
-    #         is_current_rate=True,
-    #     )
-
-    #     penalty_invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
-    #     mock_create_invoice.return_value = penalty_invoice
-
-    #     PenaltyCalculationService._calculate_late_submission_penalty(
-    #         obligation=self.obligation,
-    #         accrual_start_date=date(2024, 12, 1),
-    #         final_accrual_date=date(2025, 2, 15),
-    #         persist_penalty_data=True,
-    #     )
-
-    #     penalty_record = CompliancePenalty.objects.get(
-    #         compliance_obligation=self.obligation,
-    #         penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-    #     )
-    #     assert penalty_record.penalty_amount == Decimal("14070.03")
-
-    # @patch(
-    #     'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
-    # )
-    # def test_calculate_late_submission_penalty_raises_when_interest_rate_does_not_cover_reference_date(
-    #     self, mock_refresh_data
-    # ):
-    #     """Integration: calculation should raise when no interest rate covers the reference date."""
-    #     clean_invoice = baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_invoice",
-    #         due_date=date(2024, 11, 30),
-    #         outstanding_balance=Decimal("0.00"),
-    #         invoice_interest_balance=Decimal("0.00"),
-    #     )
-    #     baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_line_item",
-    #         elicensing_invoice=clean_invoice,
-    #         base_amount=Decimal("1000000.00"),
-    #     )
-    #     mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
-
-    #     baker.make_recipe(
-    #         "compliance.tests.utils.elicensing_interest_rate",
-    #         start_date=date(2025, 1, 1),
-    #         end_date=date(2025, 12, 31),
-    #         interest_rate=Decimal("0.0500"),
-    #         is_current_rate=True,
-    #     )
-
-    #     with pytest.raises(ElicensingInterestRate.DoesNotExist):
-    #         PenaltyCalculationService._calculate_late_submission_penalty(
-    #             obligation=self.obligation,
-    #             accrual_start_date=date(2024, 12, 1),
-    #             final_accrual_date=date(2025, 1, 1),
-    #             persist_penalty_data=True,
-    #         )
+        with pytest.raises(ElicensingInterestRate.DoesNotExist):
+            PenaltyCalculationService.calculate_late_submission_penalty(
+                obligation=self.obligation, accrual_start_date=date(2024, 12, 1), final_accrual_date=date(2025, 1, 1)
+            )
