@@ -1,10 +1,7 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   // See: https://github.com/bcgov/renovate-config
-  extends: ["github>bcgov/renovate-config#2026.1"],
-  // Scopes this config to only run on this repository
-  autodiscover: true,
-  autodiscoverFilter: ["bcgov/cas-registration"],
+  extends: ["github>bcgov/renovate-config#2026.01"],
   labels: ["dependencies", "run-all-ci"],
   prConcurrentLimit: 5,
   // Prevents Renovate from creating a GitHub Issue as a dashboard.
