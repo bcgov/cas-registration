@@ -1,20 +1,17 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
-  extends: ["config:recommended", ":semanticCommits"],
-
-  // Scopes it to only run on this repository and not touch any other bcgov repos.
+  // See: https://github.com/bcgov/renovate-config
+  extends: ["github>bcgov/renovate-config#2026.1"],
+  // Scopes this config to only run on this repository
   autodiscover: true,
   autodiscoverFilter: ["bcgov/cas-registration"],
-
   labels: ["dependencies", "run-all-ci"],
-  rebaseWhen: "behind-base-branch",
-  schedule: ["every weekend"],
   prConcurrentLimit: 5,
-
   // Prevents Renovate from creating a GitHub Issue as a dashboard.
   dependencyDashboard: false,
-
-  // Security vulnerability PRs are opened immediately, regardless of the weekend schedule.
+  // This overrides bcgov's default automerge behaviour.
+  automerge: false,
+  platformAutomerge: false,
   vulnerabilityAlerts: {
     enabled: true,
     schedule: ["at any time"],
@@ -66,27 +63,6 @@
 
   packageRules: [
     {
-      description: "Catch-all: group all npm non-major updates",
-      matchManagers: ["npm"],
-      matchUpdateTypes: ["minor", "patch"],
-      groupName: "npm all non-major dependencies",
-      groupSlug: "npm-all-non-major",
-    },
-    {
-      description: "Catch-all: group all Poetry non-major updates",
-      matchManagers: ["poetry"],
-      matchUpdateTypes: ["minor", "patch"],
-      groupName: "Poetry all non-major dependencies",
-      groupSlug: "poetry-all-non-major",
-    },
-    {
-      description: "Group GitHub Actions non-major updates",
-      matchManagers: ["github-actions"],
-      matchUpdateTypes: ["minor", "patch"],
-      groupName: "GitHub Actions non-major",
-      groupSlug: "github-actions-non-major",
-    },
-    {
       // All @nx/* packages and nx itself must stay on the same version.
       description: "Nx packages — must stay in sync",
       matchManagers: ["npm"],
@@ -97,8 +73,8 @@
     },
     {
       // Each major update gets its own individual PR — never grouped.
-      // Breaking changes across unrelated packages should be reviewed and merged
-      // independently to isolate blast radius.
+      // Breaking changes across unrelated packages should be reviewed independently
+      // to isolate blast radius.
       description: "Major updates: individual PRs, never grouped",
       matchUpdateTypes: ["major"],
       groupName: null,
