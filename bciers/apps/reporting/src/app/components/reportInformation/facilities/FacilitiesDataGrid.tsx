@@ -13,7 +13,7 @@ import getFacilityColumns from "@reporting/src/app/components/datagrid/models/fa
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import facilityTableGroupColumns from "@reporting/src/app/components/datagrid/models/facilities/facilityGroupColumns";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { useOptimisticGrid } from "@bciers/hooks";
+import { useAutosaveGrid } from "@bciers/hooks";
 
 interface FacilitiesDataGridProps {
   initialData: {
@@ -42,7 +42,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // AutoSave - Optimistic Hook Config
+  // AutoSave Hook Config
   const {
     isSaving,
     errors,
@@ -50,11 +50,25 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
     requestVersionRef,
     persistChange,
     applyOverrides,
-  } = useOptimisticGrid<FacilityRow>({
+  } = useAutosaveGrid<FacilityRow>({
     endpoint: `reporting/report-version/${version_id}/facility-report-list`,
     getRecordKey: (row) => row.facility,
     debounceMs: 500,
   });
+
+  const rollbackCheckboxChange = useCallback(
+    (rowIndex: number, checked: boolean) => {
+      // Rollback on fails
+      setPageData((prev) => ({
+        ...prev,
+        rows: prev.rows.map((r, i) =>
+          i === rowIndex ? { ...r, is_completed: !checked } : r,
+        ),
+      }));
+      setCompletedCount((prev) => (checked ? prev - 1 : prev + 1));
+    },
+    [],
+  );
 
   /**
    * handleCheckboxChange
@@ -85,19 +99,10 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
       await persistChange(
         { ...currentRow, is_completed: checked },
         nextVersion,
-        () => {
-          // Rollback on fails
-          setPageData((prev) => ({
-            ...prev,
-            rows: prev.rows.map((r, i) =>
-              i === rowIndex ? { ...r, is_completed: !checked } : r,
-            ),
-          }));
-          setCompletedCount((prev) => (checked ? prev - 1 : prev + 1));
-        },
+        () => rollbackCheckboxChange(rowIndex, checked),
       );
     },
-    [pageData.rows, persistChange, requestVersionRef],
+    [pageData.rows, persistChange, requestVersionRef, rollbackCheckboxChange],
   );
 
   /**
@@ -119,13 +124,13 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
   const handleContinue = useCallback(async () => {
     try {
       setIsRedirecting(true);
-      // Wait for all queued saves (including those in the debounce window) to resolve
+      // Wait for queued saves to resolve before navigating
       await saveChain.current;
       router.push(navigationInformation.continueUrl);
     } catch {
       setIsRedirecting(false);
     }
-  }, [navigationInformation.continueUrl, router, saveChain]);
+  }, [navigationInformation.continueUrl, router]);
 
   // Grid Configurations
   const SearchCell = useMemo(
