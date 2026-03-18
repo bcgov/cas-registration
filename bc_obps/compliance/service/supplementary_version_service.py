@@ -72,7 +72,7 @@ class ManualHandler:
         version_count: int,
     ) -> Optional[ComplianceReportVersion]:
         """
-        Create a new supplementary NO_OBLIGATION_OR_EARNED_CREDITS CRV and an
+        Create a new supplementary REQUIRES_MANUAL_HANDLING CRV and an
         associated manual-handling record when the previous CRV has a manual-handling record
 
         Assumptions:
@@ -95,7 +95,7 @@ class ManualHandler:
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
-            status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+            status=ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING,
             is_supplementary=True,
             previous_version=previous_compliance_version,
         )
@@ -815,7 +815,8 @@ class DecreasedObligationHandler:
         compliance_report_version_id: int,
     ) -> None:
         """
-        Create a related ComplianceReportVersionManualHandling record.
+        Create a related ComplianceReportVersionManualHandling record and set the
+        CRV status to REQUIRES_MANUAL_HANDLING.
         """
         crv = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
 
@@ -825,6 +826,9 @@ class DecreasedObligationHandler:
             handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
             context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
         )
+
+        crv.status = ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING
+        crv.save(update_fields=['status'])
 
     @staticmethod
     def _create_earned_credits(compliance_report_version_id: int, tonnes: Decimal) -> None:

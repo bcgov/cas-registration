@@ -333,6 +333,10 @@ class ComplianceDashboardService:
                 When(
                     status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value, then=Value("Earned credits")
                 ),
+                When(
+                    status=ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING.value,
+                    then=Value("Supplementary report - action required"),
+                ),
                 default=F("status"),
                 output_field=CharField(),
             ),
