@@ -14,6 +14,7 @@ class ComplianceReportVersion(TimeStampedModel):
         OBLIGATION_PENDING_INVOICE_CREATION = "Obligation pending invoice creation"
         EARNED_CREDITS = "Earned credits"
         NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits"
+        REQUIRES_MANUAL_HANDLING = "Requires manual handling"
         SUPERCEDED = "Superceded"
 
     compliance_report = models.ForeignKey(
@@ -47,7 +48,7 @@ class ComplianceReportVersion(TimeStampedModel):
     status = models.CharField(
         max_length=100,
         choices=ComplianceStatus.choices,
-        db_comment="The status of this compliance report version. Options: [Obligation not met, Obligation fully met, Earned credits, No obligation or earned credits]",
+        db_comment="The status of this compliance report version. Options: [Obligation not met, Obligation fully met, Earned credits, No obligation or earned credits, Requires manual handling]",
     )
 
     is_supplementary = models.BooleanField(
