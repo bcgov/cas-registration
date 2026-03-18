@@ -1,4 +1,6 @@
-from django.db.models import Window, QuerySet, Case, When, Value, CharField, IntegerField
+from typing import Iterable
+
+from django.db.models import Window, Case, When, Value, CharField, IntegerField
 from django.db.models.functions import RowNumber, Cast, Concat
 from django.db.models import F
 from reporting.models import ReportVersion
@@ -10,8 +12,11 @@ class ReportingHistoryDashboardService:
     """
 
     @classmethod
-    def get_report_versions_for_report_history_dashboard(cls, report_id: int) -> QuerySet[ReportVersion]:
+    def get_report_versions_for_report_history_dashboard(
+        cls, report_id: int, hide_draft_versions: bool = False
+    ) -> Iterable[ReportVersion]:
         filtered_versions = ReportVersion.objects.filter(report_id=report_id)
+
         total_count = filtered_versions.count()
         report_versions = (
             filtered_versions.annotate(total_count=Value(total_count, output_field=IntegerField()))
@@ -25,5 +30,11 @@ class ReportingHistoryDashboardService:
             )
             .order_by("version_number")
         )
+
+        # Using the django ORM .exclude(status='Draft') would have the annotation with the version numbering
+        # applied after removing the draft versions, so we need to evaluate the queryset manually.
+        # We will never have a large number of report versions, the performance penalty is negligible
+        if hide_draft_versions:
+            return [rv for rv in report_versions if rv.status != ReportVersion.ReportVersionStatus.Draft]
 
         return report_versions

@@ -1,5 +1,4 @@
-from django.db.models import QuerySet
-from typing import Self
+from typing import Iterable, Self
 
 from django.http import HttpRequest
 from ninja.pagination import PageNumberPagination
@@ -38,10 +37,12 @@ class PaginatedResponseBuilder:
         pagination_page_size = int(request.GET.get("page_size", page_size)) if request else page_size
         self.pagination = PageNumberPagination.Input(page=pagination_page, page_size=pagination_page_size)
 
-    def payload(self, payload: QuerySet) -> Self:
+    def payload(self, payload: Iterable) -> Self:
         if self.request is None:
             raise ValueError("Request is required for pagination")
-        self.response['payload'] = PageNumberPagination().paginate_queryset(payload, self.pagination, self.request)
+        self.response['payload'] = PageNumberPagination().paginate_queryset(
+            payload, self.pagination, self.request  # type: ignore
+        )
         return self
 
     def build(self) -> dict:
