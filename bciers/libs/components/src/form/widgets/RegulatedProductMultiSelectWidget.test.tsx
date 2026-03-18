@@ -2,6 +2,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import FormBase from "@bciers/components/form/FormBase";
 import { RJSFSchema } from "@rjsf/utils";
+import {
+  CHEMICAL_PULP_NAME,
+  LIME_RECOVERED_NAME,
+} from "./RegulatedProductMultiSelectWidget";
 
 export const regulatedProductSchema = {
   type: "object",
@@ -14,11 +18,7 @@ export const regulatedProductSchema = {
       items: {
         type: "number",
         enum: [1, 16, 43],
-        enumNames: [
-          "Product 1",
-          "PnP: Chemical Pulp",
-          "PnP: Lime Recovered by Kiln",
-        ],
+        enumNames: ["Product 1", CHEMICAL_PULP_NAME, LIME_RECOVERED_NAME],
       },
     },
   },
