@@ -35,6 +35,6 @@ class ReportingHistoryDashboardService:
         # applied after removing the draft versions, so we need to evaluate the queryset manually.
         # We will never have a large number of report versions, the performance penalty is negligible
         if hide_draft_versions:
-            return [rv for rv in report_versions if rv.status != "Draft"]
+            return [rv for rv in report_versions if rv.status != ReportVersion.ReportVersionStatus.Draft]
 
         return report_versions
