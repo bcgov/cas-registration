@@ -3,6 +3,8 @@ from common.exceptions import UserError
 from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
 from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 
+DATE_FORMAT_STRING_LONG = "%Y-%m-%dT%H:%M:%S.000Z"
+
 
 class BCCarbonRegistryCreditIssuanceService:
     def __init__(self) -> None:
@@ -33,7 +35,6 @@ class BCCarbonRegistryCreditIssuanceService:
         verification_date_end = compliance_period_end_date.strftime("%d/%m/%Y")
 
         mixed_unit_data = bccr_project_data["mixedUnitList"][0]
-        DATE_FORMAT_STRING_LONG = "%Y-%m-%dT%H:%M:%S.000Z"
 
         credits_issuance_payload = {
             "account_id": earned_credit.bccr_holding_account_id,
