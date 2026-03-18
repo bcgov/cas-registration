@@ -732,7 +732,7 @@ class TestManualHandler(BaseSupplementaryVersionServiceTest):
         assert result.report_compliance_summary == new_summary
         assert result.is_supplementary is True
         assert result.previous_version == previous_crv
-        assert result.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        assert result.status == ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING
 
         # And a new manual-handling record carrying forward handling_type/context
         new_manual = ComplianceReportVersionManualHandling.objects.get(compliance_report_version=result)

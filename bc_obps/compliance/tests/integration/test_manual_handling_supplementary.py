@@ -65,7 +65,7 @@ class TestManualHandlingSupplementary(ComplianceIntegrationTestBase):
           → obligation fully paid AND leftover refund > 0 AND has_cash → manual handling
 
         Expected:
-        - New CRV with NO_OBLIGATION_OR_EARNED_CREDITS status
+        - New CRV with REQUIRES_MANUAL_HANDLING status
         - Previous CRV marked OBLIGATION_FULLY_MET
         - ManualHandling record created with handling_type=OBLIGATION,
           context=OBLIGATION_REFUND_POOL_CASH
@@ -102,7 +102,7 @@ class TestManualHandlingSupplementary(ComplianceIntegrationTestBase):
             compliance_report=self.compliance_report,
             is_supplementary=True,
         )
-        assert supp_crv.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        assert supp_crv.status == ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING
         assert supp_crv.previous_version == self.initial_crv
 
         manual_handling = ComplianceReportVersionManualHandling.objects.get(compliance_report_version=supp_crv)
