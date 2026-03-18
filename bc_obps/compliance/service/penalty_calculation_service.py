@@ -188,18 +188,18 @@ class PenaltyCalculationService:
     def create_penalty_invoice(
         compliance_penalty: CompliancePenalty,
         total_penalty: Decimal,
-        penalty_type: str = "Automatic Overdue Penalty",
+        penalty_type: CompliancePenalty.PenaltyType = CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
     ) -> None:
         """
         Create a fee and invoice for the penalty in elicensing
 
         Args:
-            obligation: The compliance obligation object
-            total_penalty: The total amount of the penalty to be applied to the invoice
-            final_accrual_date: The last day the penalty accrued
+            compliance_penalty: The compliance penalty record
+            total_penalty: The total amount of the penalty to be applied to the invoice as a fee
+            penalty_type: The type of penalty to create (CompliancePenalty.PenaltyType)
 
         Returns:
-            ElicensingInvoice Record
+            None
         """
 
         # Get the client_operator record for the responsible operator
@@ -252,17 +252,11 @@ class PenaltyCalculationService:
 
         Args:
             obligation: The compliance obligation
-            persist_penalty_data: Should the calculation persist the penalty data to the database, default False
+            accrual_start_date: The first day that the penalty begins accruing
             final_accrual_date: The last day that the penalty accrued, default None
 
         Returns:
-            Dictionary containing penalty details retrieved from eLicensing:
-                - penalty_status: Status of the penalty from the obligation
-                - penalty_type: Type of penalty ("Automatic Overdue")
-                - penalty_charge_rate: Daily penalty rate (0.38%)
-                - total_penalty: Total penalty from eLicensing
-                - faa_interest: FAA interest from eLicensing
-                - total_amount: Total penalty including FAA interest
+            CalculatedPenaltyData Dataclass
         """
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
@@ -358,6 +352,21 @@ class PenaltyCalculationService:
         penalty_accrual_start_date: date,
         final_transaction_date: date,
     ) -> CompliancePenalty:
+        """
+        Idempotently gets an existing CompliancePenalty record or creates one if it does not exist.
+        Creates an invoice in elicensing if one does not exist (no value for CompliancePenalty.invoice_number)
+        Sets the CompliancePenalty.invoice_number field immediately upon a successful invoice creation in elicensing
+
+        Args:
+            obligation: The compliance obligation
+            penalty_type: The type of penalty to create (CompliancePenalty.PenaltyType)
+            penalty_data: CalculatedPenaltyData Dataclass
+            penalty_accrual_start_date: The date the penalty began accruing
+            final_transaction_date: The date of the last transaction that paid off the obligation invoice
+
+        Returns:
+            CalculatedPenaltyData Dataclass
+        """
 
         compounding_frequency = (
             CompliancePenalty.Frequency.DAILY
@@ -511,7 +520,6 @@ class PenaltyCalculationService:
             obligation: The compliance obligation
             accrual_start_date: The date on which the penalty began accruing (Dec 1)
             final_accrual_date: The last day that the penalty accrued (payment date)
-            persist_penalty_data: Should the calculation persist the penalty data to the database, default False
 
         Returns:
             CompliancePenalty when persist_penalty_data is True; otherwise None.
