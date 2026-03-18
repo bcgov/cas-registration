@@ -41,7 +41,8 @@
       "@bciers/types/*": ["libs/types/src/*"],
       "@bciers/utils/*": ["libs/utils/*"],
       "@reporting/*": ["apps/reporting/*"],
-      "@/reporting-e2e/*": ["apps/reporting-e2e/*"]
+      "@/reporting-e2e/*": ["apps/reporting-e2e/*"],
+      "@bciers/hooks": ["libs/hooks/src/index.ts"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json"],

@@ -4,7 +4,7 @@ import { actionHandler } from "@bciers/actions";
 import { vi } from "vitest";
 import NonAttributableEmissionsForm from "@reporting/src/app/components/reportInformation/nonAttributableEmissions/NonAttributableEmissionsForm";
 import { UUID } from "crypto";
-import { dummyNavigationInformation } from "../taskList/utils";
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
 
 // Mock next/navigation and action handler
 vi.mock("next/navigation", () => ({

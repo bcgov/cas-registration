@@ -14,8 +14,12 @@ export default defineConfig({
     include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     exclude: ["node_modules", "dist", "e2e"],
     alias: {
+      "@bciers/hooks": path.resolve(__dirname, "../../libs/hooks/src/index.ts"),
       "apps/reporting/src": path.resolve(__dirname, "./src"),
-      "apps/administration/app": path.resolve(__dirname, "../administration/app"),
+      "apps/administration/app": path.resolve(
+        __dirname,
+        "../administration/app",
+      ),
       "apps/dashboard/app": path.resolve(__dirname, "../dashboard/app"),
       "apps/registration/app": path.resolve(__dirname, "../registration/app"),
       "apps/compliance/src": path.resolve(__dirname, "../compliance/src"),
