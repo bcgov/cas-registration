@@ -1,0 +1,108 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:recommended", ":semanticCommits"],
+
+  // Scopes it to only run on this repository and not touch any other bcgov repos.
+  autodiscover: true,
+  autodiscoverFilter: ["bcgov/cas-registration"],
+
+  labels: ["dependencies", "run-all-ci"],
+  rebaseWhen: "behind-base-branch",
+  schedule: ["every weekend"],
+  prConcurrentLimit: 5,
+
+  // Prevents Renovate from creating a GitHub Issue as a dashboard.
+  dependencyDashboard: false,
+
+  // Security vulnerability PRs are opened immediately, regardless of the weekend schedule.
+  vulnerabilityAlerts: {
+    enabled: true,
+    schedule: ["at any time"],
+    labels: ["security", "dependencies"],
+  },
+
+  // Ensures Renovate uses the correct tool versions when regenerating lock files.
+  constraints: {
+    node: "24.x",
+    yarn: "4.x",
+    python: "3.12",
+  },
+
+  // Add packages here that should never be updated by Renovate
+  // (e.g., intentionally pinned versions, packages with known breaking changes).
+  // Example: ignoreDeps: ["some-pinned-package"]
+  ignoreDeps: [],
+
+  ignorePaths: [
+    "helm/**",
+    "requirements.txt",
+    "data_import/**",
+    "data_import_facilities/**",
+    "disaster_recovery/**",
+    "k6_results/**",
+  ],
+
+  // Renovate will open a PR to fully regenerate yarn.lock and poetry.lock
+  // from scratch. Useful for catching transitive dependency drift.
+  // Disable if the PRs are too noisy or produce no meaningful changes over time.
+  lockFileMaintenance: {
+    enabled: true,
+    schedule: ["every weekend"],
+  },
+
+  // Run yarn dedupe after every dependency update to keep the lock file clean.
+  postUpgradeTasks: {
+    commands: ["yarn dedupe"],
+    fileFilters: ["yarn.lock"],
+    executionMode: "branch",
+  },
+
+  // minimumReleaseAge: "3 days"
+  // Waits N days before opening a PR for a newly released version.
+  // Prevents chasing packages that publish a bad release and immediately patch it —
+  // Renovate will simply wait and open a PR for the stable follow-up version instead.
+  // Re-enable if the team finds itself frequently updating to versions that get
+  // superseded within days.
+
+  packageRules: [
+    {
+      description: "Catch-all: group all npm non-major updates",
+      matchManagers: ["npm"],
+      matchUpdateTypes: ["minor", "patch"],
+      groupName: "npm all non-major dependencies",
+      groupSlug: "npm-all-non-major",
+    },
+    {
+      description: "Catch-all: group all Poetry non-major updates",
+      matchManagers: ["poetry"],
+      matchUpdateTypes: ["minor", "patch"],
+      groupName: "Poetry all non-major dependencies",
+      groupSlug: "poetry-all-non-major",
+    },
+    {
+      description: "Group GitHub Actions non-major updates",
+      matchManagers: ["github-actions"],
+      matchUpdateTypes: ["minor", "patch"],
+      groupName: "GitHub Actions non-major",
+      groupSlug: "github-actions-non-major",
+    },
+    {
+      // All @nx/* packages and nx itself must stay on the same version.
+      description: "Nx packages — must stay in sync",
+      matchManagers: ["npm"],
+      matchPackagePatterns: ["^@nx/", "^nx$"],
+      matchUpdateTypes: ["minor", "patch"],
+      groupName: "Nx (non-major)",
+      groupSlug: "nx-non-major",
+    },
+    {
+      // Each major update gets its own individual PR — never grouped.
+      // Breaking changes across unrelated packages should be reviewed and merged
+      // independently to isolate blast radius.
+      description: "Major updates: individual PRs, never grouped",
+      matchUpdateTypes: ["major"],
+      groupName: null,
+      addLabels: ["major-update"],
+    },
+  ],
+}
