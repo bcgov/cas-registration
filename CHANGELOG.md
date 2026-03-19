@@ -1,5 +1,15 @@
 # Changelog
 
+# [5.6.0](https://github.com/bcgov/cas-registration/compare/v5.5.0...v5.6.0) (2026-03-19)
+
+### Bug Fixes
+
+- use base image matching pgo ([0584faa](https://github.com/bcgov/cas-registration/commit/0584faab10d866f5bd3d73970d01be8e354c7b7d))
+
+### Features
+
+- **compliance:** add `max_credit_usage_percentage` field to CompliancePeriod model ([1af3c98](https://github.com/bcgov/cas-registration/commit/1af3c98357b1d749cb00877a62161b747e5e018b))
+
 # [5.5.0](https://github.com/bcgov/cas-registration/compare/v5.4.3...v5.5.0) (2026-03-13)
 
 ## [5.4.3](https://github.com/bcgov/cas-registration/compare/v5.4.2...v5.4.3) (2026-03-13)
