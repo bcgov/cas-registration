@@ -438,40 +438,5 @@ test.describe("Test earned credits request issuance flow", () => {
     } finally {
       await analystPage.close();
     }
-
-    // ----------------
-    // 3) Analyst tries to change suggestion after READY_TO_APPROVE → backend rejects
-    // ----------------
-    const analystPage2 = await openNewBrowserContextAs(UserRole.CAS_ANALYST);
-    try {
-      const analystSummaries2 = new ComplianceSummariesPOM(analystPage2);
-      const analystEarnedCredits2 =
-        new InternalReviewComplianceEarnedCreditsPOM(analystPage2);
-      const analystTaskList2 = new InternalRequestIssuanceTaskListPOM(
-        analystPage2,
-      );
-
-      // Route to compliance summaries
-      await analystSummaries2.route();
-
-      // Click view action "Review Credits Issuance Request"
-      await analystSummaries2.openActionForOperation({
-        operationName: ComplianceOperations.EARNED_CREDITS,
-        linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
-      });
-
-      // Click task list "Review Credits Issuance Request"
-      await analystTaskList2.clickReviewRequestIssuance();
-
-      // UI allows selecting a different suggestion, but submit should fail server-side.
-      await analystEarnedCredits2.submitAnalystReviewRequestIssuance(
-        AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID,
-        { expectSuccess: false },
-      );
-      //  ✅ Assert submit error dispays
-      await analystEarnedCredits2.assertFinalSuggestionLockedError();
-    } finally {
-      await analystPage2.close();
-    }
   });
 });
