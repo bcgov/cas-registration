@@ -204,89 +204,96 @@ class ComplianceEarnedCreditBccrFieldsTriggerTest(BaseTestCase):
 
 
 class ComplianceEarnedCreditAnalystSubmissionTriggerTest(BaseTestCase):
-    def test_populate_analyst_submission_info_when_comment_changes(self):
+    def test_populate_analyst_submission_info_when_suggestion_changes(self):
         # Arrange
         earned_credit = make_recipe(
             "compliance.tests.utils.compliance_earned_credit",
-            analyst_comment="Initial comment",
             analyst_submitted_date=None,
             analyst_submitted_by=None,
         )
 
         # Act
-        earned_credit.analyst_comment = "Updated comment"
+        earned_credit.analyst_suggestion = "Ready to approve"
         earned_credit.save()
 
         # Assert
         earned_credit.refresh_from_db()
-        self.assertEqual(earned_credit.analyst_comment, "Updated comment")
+        self.assertEqual(earned_credit.analyst_suggestion, "Ready to approve")
         self.assertIsNotNone(earned_credit.analyst_submitted_date)
         self.assertIsNotNone(earned_credit.analyst_submitted_by)
 
-    def test_does_not_populate_submission_info_when_comment_unchanged(self):
+    def test_does_not_populate_submission_info_when_suggestion_unchanged(self):
         # Arrange
         earned_credit = make_recipe(
             "compliance.tests.utils.compliance_earned_credit",
-            analyst_comment="Same comment",
+            analyst_suggestion="Requiring change of BCCR Holding Account ID",
+            analyst_comment="a comment",
             analyst_submitted_date=None,
             analyst_submitted_by=None,
         )
 
-        # Act - Update something else, not the comment
+        # Act - Update something else, not the suggestion
         earned_credit.earned_credits_amount = 200
+        earned_credit.analyst_comment = "another comment"
         earned_credit.save()
 
-        # Assert - Should not populate submission info
+        # Assert - Should not populate submission info, a comment itself is not a true submission
         earned_credit.refresh_from_db()
+        self.assertEqual(earned_credit.analyst_suggestion, "Requiring change of BCCR Holding Account ID")
+        self.assertEqual(earned_credit.analyst_comment, "another comment")
         self.assertEqual(earned_credit.earned_credits_amount, 200)
         self.assertIsNone(earned_credit.analyst_submitted_date)
         self.assertIsNone(earned_credit.analyst_submitted_by)
 
-    def test_populate_analyst_submission_info_with_different_comment_scenarios(self):
-        test_comment_scenarios = [
-            ("Updated comment", "Initial comment"),  # Should populate submission info
-            ("", "Initial comment"),  # Should populate for empty comment
-            (None, "Initial comment"),  # Should populate for null comment
+    def test_populate_analyst_submission_info_with_different_suggestion_scenarios(self):
+        test_suggest_scenarios = [
+            ("Requiring change of BCCR Holding Account ID", None),  # Should populate submission info
+            ("Ready to approve", None),  # Should populate for empty comment
+            ("Requiring supplementary report", None),  # Should populate for null comment
+            (
+                "Ready to approve",
+                "Requiring change of BCCR Holding Account ID",
+            ),  # Should populate with requiring change suggestion
         ]
-        for new_comment, initial_comment in test_comment_scenarios:
-            with self.subTest(new_comment=new_comment, initial_comment=initial_comment):
+        for new_suggestion, initial_suggestion in test_suggest_scenarios:
+            with self.subTest(new_suggestion=new_suggestion, initial_suggestion=initial_suggestion):
                 # Arrange
                 earned_credit = make_recipe(
                     "compliance.tests.utils.compliance_earned_credit",
-                    analyst_comment=initial_comment,
+                    analyst_suggestion=initial_suggestion,
                     analyst_submitted_date=None,
                     analyst_submitted_by=None,
                 )
 
                 # Act
-                earned_credit.analyst_comment = new_comment
+                earned_credit.analyst_suggestion = new_suggestion
                 earned_credit.save()
 
                 # Assert
                 earned_credit.refresh_from_db()
-                self.assertEqual(earned_credit.analyst_comment, new_comment)
+                self.assertEqual(earned_credit.analyst_suggestion, new_suggestion)
                 self.assertIsNotNone(earned_credit.analyst_submitted_date)
                 self.assertIsNotNone(earned_credit.analyst_submitted_by)
 
-    def test_analyst_submission_info_updated_when_comment_changes_with_existing_info(self):
+    def test_analyst_submission_info_updated_when_suggestion_changes_with_existing_info(self):
         # Arrange - Create with existing submission info
         original_date = date(2024, 1, 15)
         original_user = make_recipe('registration.tests.utils.cas_analyst')
         earned_credit = make_recipe(
             "compliance.tests.utils.compliance_earned_credit",
-            analyst_comment="Initial comment",
+            analyst_suggestion="Requiring change of BCCR Holding Account ID",
             analyst_submitted_date=original_date,
             analyst_submitted_by=original_user,
         )
 
-        # Act - Update comment
-        earned_credit.analyst_comment = "Updated comment"
+        # Act - Update suggestion
+        earned_credit.analyst_suggestion = "Ready to approve"
         earned_credit.save()
 
-        # Assert - Should update submission info when comment changes
+        # Assert - Should update submission info when suggestion changes
         earned_credit.refresh_from_db()
-        self.assertEqual(earned_credit.analyst_comment, "Updated comment")
-        # The trigger should update these fields when comment changes
+        self.assertEqual(earned_credit.analyst_suggestion, "Ready to approve")
+        # The trigger should update these fields when suggestion changes
         self.assertIsNotNone(earned_credit.analyst_submitted_date)
         self.assertIsNotNone(earned_credit.analyst_submitted_by)
         # Should be different from original values (new date and potentially new user)
