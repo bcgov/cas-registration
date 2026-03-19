@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0035_complianceperiod_max_credit_usage_percentage'),
+        ('compliance', '0037_complianceperiod_max_credit_usage_percentage'),
     ]
 
     operations = [
