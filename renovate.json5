@@ -13,6 +13,7 @@
     enabled: true,
     schedule: ["at any time"],
     labels: ["security", "dependencies", "run-all-ci"],
+    rangeStrategy: "bump",
   },
 
   // Ensures Renovate uses the correct tool versions when regenerating lock files.
