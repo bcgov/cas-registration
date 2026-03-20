@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
-import { actionHandler } from "@bciers/actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Typography } from "@mui/material";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
@@ -13,7 +12,8 @@ import { FacilityRow } from "@reporting/src/app/components/reportInformation/fac
 import getFacilityColumns from "@reporting/src/app/components/datagrid/models/facilities/getFacilityColumns";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import facilityTableGroupColumns from "@reporting/src/app/components/datagrid/models/facilities/facilityGroupColumns";
-import { NavigationInformation } from "../../taskList/types";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import { useAutosaveGrid } from "@bciers/hooks";
 
 interface FacilitiesDataGridProps {
   initialData: {
@@ -30,57 +30,112 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
   version_id,
   navigationInformation,
 }) => {
-  const [rows, setRows] = useState(initialData);
-  const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
-  const [allCompleted, setAllCompleted] = useState(
-    initialData.row_count === initialData.is_completed_count,
-  );
-  const [isSaving, setIsSaving] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]);
-  const [isRedirecting, setIsRedirecting] = useState(false);
-  const [updatedFacilities, setUpdatedFacilities] = useState<
-    Record<string, FacilityRow>
-  >({});
+  const router = useRouter();
   const browserSearchParams = useSearchParams();
 
-  const currentPage = Number(browserSearchParams.get("page")) || 1;
-
-  // to check if all facilities are completed
-  const [tablesData, setTablesData] = useState<Record<number, FacilityRow[]>>(
-    {},
+  // State
+  const [pageData, setPageData] = useState(initialData);
+  const [reportRowCount] = useState(initialData.row_count);
+  const [completedCount, setCompletedCount] = useState(
+    initialData.is_completed_count,
   );
+  const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // total count of all non-completed facilities for the report
-  const [globalIncompleteCount] = useState<number>(() => {
-    return initialData.row_count - initialData.is_completed_count;
+  // AutoSave Hook Config
+  const {
+    isSaving,
+    errors,
+    saveChain,
+    requestVersionRef,
+    persistChange,
+    applyOverrides,
+  } = useAutosaveGrid<FacilityRow>({
+    endpoint: `reporting/report-version/${version_id}/facility-report-list`,
+    getRecordKey: (row) => row.facility,
+    debounceMs: 500,
   });
 
-  // to keep track of the # of uncompleted facilities in a page
-  const [incompleteCountForPage, setIncompleteCountForPage] = useState<
-    Record<number, number>
-  >({});
+  const rollbackCheckboxChange = useCallback(
+    (rowIndex: number, checked: boolean) => {
+      // Rollback on fails
+      setPageData((prev) => ({
+        ...prev,
+        rows: prev.rows.map((r, i) =>
+          i === rowIndex ? { ...r, is_completed: !checked } : r,
+        ),
+      }));
+      setCompletedCount((prev) => (checked ? prev - 1 : prev + 1));
+    },
+    [],
+  );
 
-  useEffect(() => {
-    if (!(currentPage in tablesData)) {
-      setTablesData((prev) => ({
+  /**
+   * handleCheckboxChange
+   * Triggered by the DataGrid checkbox
+   * Updates UI optimistically and queues a background PATCH via the hook
+   */
+  const handleCheckboxChange = useCallback(
+    async (rowIndex: number, checked: boolean) => {
+      const currentRow = pageData.rows[rowIndex];
+      if (!currentRow || currentRow.is_completed === checked) return;
+
+      const key = currentRow.facility;
+
+      // Track the version of this specific interaction to prevent stale overwrites
+      const nextVersion = (requestVersionRef.current[key] || 0) + 1;
+      requestVersionRef.current[key] = nextVersion;
+
+      // Optimistic updates
+      setPageData((prev) => ({
         ...prev,
-        [currentPage]: initialData.rows,
+        rows: prev.rows.map((r, i) =>
+          i === rowIndex ? { ...r, is_completed: checked } : r,
+        ),
       }));
-      setIncompleteCountForPage((prev) => ({
-        ...prev,
-        [currentPage]: initialData.rows.filter(
-          (facilityRow) => !facilityRow.is_completed,
-        ).length,
-      }));
+      setCompletedCount((prev) => (checked ? prev + 1 : prev - 1));
+
+      // Persist the data
+      await persistChange(
+        { ...currentRow, is_completed: checked },
+        nextVersion,
+        () => rollbackCheckboxChange(rowIndex, checked),
+      );
+    },
+    [pageData.rows, persistChange, requestVersionRef, rollbackCheckboxChange],
+  );
+
+  /**
+   * fetchPageData
+   * Called by DataGrid on pagination/search
+   */
+  const fetchPageData = useCallback(async () => {
+    const searchParams = Object.fromEntries(browserSearchParams.entries());
+    const data = await fetchFacilitiesPageData({ version_id, searchParams });
+
+    // Ensure local "in-flight" changes persist over stale server responses
+    const mergedRows = applyOverrides(data.rows);
+    const mergedData = { ...data, rows: mergedRows };
+
+    setPageData(mergedData);
+    return mergedData;
+  }, [browserSearchParams, version_id, applyOverrides]);
+
+  const handleContinue = useCallback(async () => {
+    try {
+      setIsRedirecting(true);
+      // Wait for queued saves to resolve before navigating
+      await saveChain.current;
+      router.push(navigationInformation.continueUrl);
+    } catch {
+      setIsRedirecting(false);
     }
-  }, [initialData, currentPage]);
+  }, [navigationInformation.continueUrl, router]);
 
-  const router = useRouter();
-
+  // Grid Configurations
   const SearchCell = useMemo(
     () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
-    [lastFocusedField, setLastFocusedField],
+    [lastFocusedField],
   );
 
   const columnGroup = useMemo(
@@ -88,127 +143,20 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
     [SearchCell],
   );
 
-  const columns = useMemo(() => {
-    const handleCheckboxChange = (rowIndex: number, checked: boolean) => {
-      const updatedRows = [...rows.rows];
-      updatedRows[rowIndex] = {
-        ...updatedRows[rowIndex],
-        is_completed: checked,
-      };
-      setRows({ ...rows, rows: updatedRows });
+  const columns = useMemo(
+    () => getFacilityColumns(handleCheckboxChange, version_id),
+    [handleCheckboxChange, version_id],
+  );
 
-      //stores the changes made to the facility rows' `is_completed` status
-      setUpdatedFacilities((prevState) => ({
-        ...prevState,
-        [updatedRows[rowIndex].facility]: updatedRows[rowIndex],
-      }));
-
-      setTablesData((prev) => {
-        const updatedPage = [...(prev[currentPage] || [])];
-        updatedPage[rowIndex] = {
-          ...updatedPage[rowIndex],
-          is_completed: checked,
-        };
-        const updatedTablesData = {
-          ...prev,
-          [currentPage]: updatedPage,
-        };
-        const allRows = Object.values(updatedTablesData).flat();
-        const allPagesCompleted = allRows.every(
-          (facilityRow) => facilityRow.is_completed,
-        );
-
-        const localIncompleteCount = Object.values(incompleteCountForPage)
-          .flat()
-          .reduce((acc, curr) => acc + curr, 0);
-
-        const shouldEnableButton =
-          allPagesCompleted &&
-          globalIncompleteCount - localIncompleteCount <= 0;
-        setAllCompleted(shouldEnableButton);
-
-        return updatedTablesData;
-      });
-    };
-
-    return getFacilityColumns(handleCheckboxChange, version_id);
-  }, [
-    rows,
-    version_id,
-    tablesData,
-    incompleteCountForPage,
-    globalIncompleteCount,
-  ]);
-
-  const saveData = async (redirect: boolean) => {
-    setIsSaving(true);
-    setErrors([]);
-    try {
-      const endpoint = `reporting/report-version/${version_id}/facility-report-list`;
-      await actionHandler(endpoint, "PATCH", endpoint, {
-        body: JSON.stringify(Object.values(updatedFacilities)),
-      });
-      if (redirect) {
-        setIsRedirecting(true);
-        router.push(navigationInformation.continueUrl);
-      } else {
-        setIsSuccess(true);
-        setTimeout(() => setIsSuccess(false), 3000);
-      }
-    } catch (error: any) {
-      setErrors([error.message || "An error occurred while saving."]);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const fetchPageData = useCallback(async () => {
-    const searchParams = Object.fromEntries(browserSearchParams.entries());
-
-    const newRows = await fetchFacilitiesPageData({
-      version_id,
-      searchParams,
-    });
-
-    (newRows.rows as FacilityRow[]).forEach((r) => {
-      if (r.facility in updatedFacilities) {
-        r.is_completed = updatedFacilities[r.facility].is_completed;
-      }
-    });
-
-    setRows(newRows);
-
-    const pageNumber = searchParams.page;
-    if (!(pageNumber in tablesData)) {
-      setTablesData((prev) => {
-        return {
-          ...prev,
-          [pageNumber]: newRows.rows,
-        };
-      });
-
-      setIncompleteCountForPage((prev) => ({
-        ...prev,
-        [pageNumber]: newRows.rows.filter(
-          (facilityRow: FacilityRow) => !facilityRow.is_completed,
-        ).length,
-      }));
-    }
-    return newRows;
-  }, [version_id, browserSearchParams, tablesData]);
-
+  // Main component
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        saveData(false);
-      }}
-    >
+    <div>
       <MultiStepHeader
         stepIndex={navigationInformation.headerStepIndex}
         steps={navigationInformation.headerSteps}
       />
-      <div className="w-full form-group field field-object form-heading-label">
+
+      <div className="w-full form-group field field-object form-heading-label mt-4">
         <div className="form-heading">Report Information</div>
       </div>
 
@@ -228,31 +176,36 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
         fetchPageData={fetchPageData}
         columnGroupModel={columnGroup}
         paginationMode="server"
-        initialData={rows}
+        initialData={pageData}
         pageSize={10}
         rowSelection={false}
       />
 
+      {/* Error Display */}
       {errors.length > 0 && (
-        <div style={{ color: "red", marginBottom: "1rem" }}>
+        <div
+          className="mt-4 p-3 border border-red-500 rounded bg-red-50 text-red-700"
+          role="alert"
+        >
           {errors.map((error, idx) => (
-            <div key={idx}>{error}</div>
+            <div key={`${error}-${idx}`}>{error}</div>
           ))}
         </div>
       )}
 
+      {/* Navigation Buttons */}
       <ReportingStepButtons
+        noSaveButton={true}
         backUrl={navigationInformation.backUrl}
         continueUrl={navigationInformation.continueUrl}
         isSaving={isSaving}
-        isSuccess={isSuccess}
         isRedirecting={isRedirecting}
-        saveButtonDisabled={isSaving}
-        submitButtonDisabled={!allCompleted}
-        saveAndContinue={() => saveData(true)}
-        noFormSave={() => saveData(false)}
+        // Button is locked if any saves are in flight OR not all rows are checked
+        submitButtonDisabled={completedCount !== reportRowCount || isSaving}
+        saveAndContinue={handleContinue}
+        buttonText="Continue"
       />
-    </form>
+    </div>
   );
 };
 
