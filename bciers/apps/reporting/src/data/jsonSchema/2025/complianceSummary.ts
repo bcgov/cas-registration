@@ -1,8 +1,10 @@
-import { RJSFSchema } from "@rjsf/utils";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
 
-export const complianceSummarySchema2025: RJSFSchema = {
+export const complianceSummarySchema2025 = (
+  isOptedOut: boolean,
+): RJSFSchema => ({
   type: "object",
   title: "Compliance Summary",
   properties: {
@@ -59,10 +61,14 @@ export const complianceSummarySchema2025: RJSFSchema = {
             type: "number",
             title: "Annual production",
           },
-          jan_mar_production: {
-            type: "number",
-            title: "Production data for Jan 1 - Mar 31 2025",
-          },
+          ...(isOptedOut
+            ? {
+                jan_mar_production: {
+                  type: "number",
+                  title: "Production data for Jan 1 - Mar 31 2025",
+                },
+              }
+            : {}),
           emission_intensity: {
             type: "number",
             title: "Production-weighted average emission intensity",
@@ -79,9 +85,11 @@ export const complianceSummarySchema2025: RJSFSchema = {
       },
     },
   },
-};
+});
 
-export const complianceSummaryUiSchema2025 = {
+export const complianceSummaryUiSchema2025 = (
+  isOptedOut: boolean,
+): UiSchema => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:disabled": true,
@@ -145,11 +153,15 @@ export const complianceSummaryUiSchema2025 = {
           displayUnit: "production unit",
         },
       },
-      jan_mar_production: {
-        "ui:options": {
-          displayUnit: "production unit",
-        },
-      },
+      ...(isOptedOut
+        ? {
+            jan_mar_production: {
+              "ui:options": {
+                displayUnit: "production unit",
+              },
+            },
+          }
+        : {}),
       emission_intensity: {
         "ui:options": {
           displayUnit: "tCO2e/production unit",
@@ -167,4 +179,4 @@ export const complianceSummaryUiSchema2025 = {
       },
     },
   },
-};
+});

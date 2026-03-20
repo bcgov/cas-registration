@@ -170,18 +170,26 @@ const complianceSummaryUiSchemaDefault: UiSchema = {
 
 export const createComplianceSummarySchema = (
   reportingYear: number,
+  isOptedOut: boolean,
 ): RJSFSchema => {
   if (reportingYear === 2024) {
     return complianceSummarySchema2024;
   } else if (reportingYear === 2025) {
-    return complianceSummarySchema2025;
-  } else return complianceSummarySchemaDefault;
+    return complianceSummarySchema2025(isOptedOut);
+  } else {
+    return complianceSummarySchemaDefault;
+  }
 };
 
-export const createComplianceSummaryUiSchema = (reportingYear: number) => {
+export const createComplianceSummaryUiSchema = (
+  reportingYear: number,
+  isOptedOut: boolean,
+): UiSchema => {
   if (reportingYear === 2024) {
     return complianceSummaryUiSchema2024;
   } else if (reportingYear === 2025) {
-    return complianceSummaryUiSchema2025;
-  } else return complianceSummaryUiSchemaDefault;
+    return complianceSummaryUiSchema2025(isOptedOut);
+  } else {
+    return complianceSummaryUiSchemaDefault;
+  }
 };

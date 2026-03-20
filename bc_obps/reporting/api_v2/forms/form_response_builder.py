@@ -26,6 +26,7 @@ class ReportData:
 
 @dataclass
 class FacilityData:
+    facility_id: uuid.UUID
     facility_type: str
     facility_name: str
 
@@ -34,6 +35,7 @@ class FacilityData:
 class OperationData:
     naics_code: str | None
     operation_type: str
+    operation_opted_out_final_reporting_year: int | None = None
 
 
 class FormResponseBuilder(ResponseBuilder):
@@ -58,7 +60,9 @@ class FormResponseBuilder(ResponseBuilder):
     def facility_data(self, facility_id: uuid.UUID) -> Self:
         facility_report = FacilityReport.objects.get(report_version_id=self.report_version_id, facility_id=facility_id)
         facility_data = FacilityData(
-            facility_type=facility_report.facility_type, facility_name=facility_report.facility_name
+            facility_id=facility_id,
+            facility_type=facility_report.facility_type,
+            facility_name=facility_report.facility_name,
         )
 
         self.response["facility_data"] = dataclasses.asdict(facility_data)
@@ -77,6 +81,7 @@ class FormResponseBuilder(ResponseBuilder):
         operation_data = OperationData(
             naics_code=naics_code,
             operation_type=report_operation.operation_type,
+            operation_opted_out_final_reporting_year=report_operation.operation_opted_out_final_reporting_year,
         )
 
         self.response["operation_data"] = dataclasses.asdict(operation_data)

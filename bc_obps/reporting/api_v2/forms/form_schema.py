@@ -1,4 +1,5 @@
 from typing import Generic, Optional, TypeVar
+from uuid import UUID
 from ninja import Schema
 from reporting.api_v2.schema import ReportingResponseSchema
 
@@ -12,11 +13,14 @@ class CommonProgramDataSchema(Schema):
 
 class CommonFacilityDataSchema(Schema):
     facility_type: Optional[str]
+    facility_name: Optional[str] = None
+    facility_id: Optional[UUID] = None
 
 
 class CommonOperationDataSchema(Schema):
     naics_code: Optional[str]
     operation_type: Optional[str]
+    operation_opted_out_final_reporting_year: Optional[int] = None
 
 
 class ReportingFormSchema(ReportingResponseSchema[TPayload], Generic[TPayload]):

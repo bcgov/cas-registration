@@ -105,6 +105,11 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_compliance_summary_form_data",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
             "endpoint_name": "get_report_non_attributable_by_version_id",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
@@ -306,11 +311,6 @@ ENDPOINTS = {
             "method": "put",
             "endpoint_name": "remove_operation_representative",
             "kwargs": {"operation_id": MOCK_UUID},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "get_compliance_summary_data",
-            "kwargs": {"version_id": MOCK_INT},
         },
         {
             "method": "get",
