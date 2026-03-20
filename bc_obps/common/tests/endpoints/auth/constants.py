@@ -90,11 +90,6 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "get_emission_category"},
         {
             "method": "get",
-            "endpoint_name": "load_production_data",
-            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
-        },
-        {
-            "method": "get",
             "endpoint_name": "get_production_form_data",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
