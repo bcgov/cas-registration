@@ -15,7 +15,7 @@ def populate_invoice_number_for_existing_penalty_records(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0037_complianceperiod_max_credit_usage_percentage'),
+        ('compliance', '0039_V5_6_0'),
     ]
 
     operations = [
