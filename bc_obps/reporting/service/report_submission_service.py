@@ -1,7 +1,9 @@
+import json
 from uuid import UUID
 from django.core.exceptions import ValidationError
 from reporting.service.report_sign_off_service import ReportSignOffData, ReportSignOffService
 from reporting.models.report_version import ReportVersion
+from reporting.service.report_validation.report_validation_error import ReportValidationError
 from reporting.service.report_validation.report_validation_service import (
     ReportValidationService,
 )
@@ -25,10 +27,8 @@ class ReportSubmissionService:
 
         is_regulated_operation = report_version.report.operation.is_regulated_operation
 
-        # The validation service now returns errors, but to not change the system behaviour,
-        # we raise an error for now.
         if validation_result:
-            raise ValidationError({key: val.message for key, val in validation_result.items()})
+            ReportSubmissionService.raise_validation_errors(validation_result)
 
         ReportSignOffService.save_report_sign_off(version_id, sign_off_data)
         # Mark the previous latest submitted version as not latest
@@ -52,3 +52,22 @@ class ReportSubmissionService:
         report_submitted.send(sender=ReportSubmissionService, version_id=version_id, user_guid=user_guid)
 
         return report_version
+
+    @staticmethod
+    def raise_validation_errors(validation_result: dict[str, ReportValidationError]) -> None:
+        """
+        Raise a ValidationError with a JSON-encoded payload so that
+        the fix_url property of ReportValidationError survives the exception-handler pipeline.
+        generate_useful_error returns __all__ values unaltered, which lets the
+        frontend parse all the errors and their fix URLs.
+        """
+
+        errors = []
+        for key, val in validation_result.items():
+            error_data: dict = {"key": key, "message": val.message}
+            if val.fix_url:
+                error_data["fix_url"] = val.fix_url
+            errors.append(error_data)
+
+        error_payload: dict = {"errors": errors}
+        raise ValidationError({"__all__": json.dumps(error_payload)})
