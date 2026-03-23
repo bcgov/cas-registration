@@ -23,7 +23,9 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
 
     if val is None or val == "":
         errors["missing_supplementary_report_version_change"] = ReportValidationError(
-            Severity.ERROR, "No reason for change found for this supplementary report version."
+            Severity.ERROR,
+            "No reason for change found for this supplementary report version.",
+            fix_url=f"reporting/reports/{report_version.id}/review-changes",
         )
     else:
         pass
