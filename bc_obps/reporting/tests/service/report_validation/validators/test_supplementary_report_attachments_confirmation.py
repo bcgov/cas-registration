@@ -40,7 +40,9 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
         mock_get.assert_called_once_with(report_version_id=version.id)
         assert result == {
             "missing_supplementary_report_attachment_confirmation": ReportValidationError(
-                Severity.ERROR, "No attachment confirmation found for this supplementary report version."
+                Severity.ERROR,
+                "No attachment confirmation found for this supplementary report version.",
+                fix_url=f"reporting/reports/{version.id}/attachments",
             )
         }
 
@@ -84,7 +86,9 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
         mock_initial.assert_called_once_with(version.id)
         mock_get.assert_called_once_with(report_version_id=version.id)
         assert error_key in result
-        assert result[error_key] == ReportValidationError(Severity.ERROR, message)
+        assert result[error_key] == ReportValidationError(
+            Severity.ERROR, message, fix_url=f"reporting/reports/{version.id}/attachments"
+        )
 
     @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
     @patch("reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get")
