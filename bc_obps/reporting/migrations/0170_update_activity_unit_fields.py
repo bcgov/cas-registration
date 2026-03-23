@@ -32,9 +32,8 @@ def update_reporting_field_data(apps, schema_editor, field_name: str, update_dat
     return reporting_field
 
 
-# ----------- GSC --------------
 # forward migration
-def update_gsc_fields(apps, schema_editor):
+def update_reporting_fields(apps, schema_editor):
     # applicable to all gas types
     update_reporting_field_data(
         apps,
@@ -201,7 +200,7 @@ def update_gsc_fields(apps, schema_editor):
 
 
 # reverse migration
-def undo_update_gsc_fields(apps, schema_editor):
+def undo_update_reporting_fields(apps, schema_editor):
     # applicable to all gas types
     update_reporting_field_data(
         apps,
@@ -352,4 +351,6 @@ class Migration(migrations.Migration):
         ('reporting', '0169_V5_5_0'),
     ]
 
-    operations = []
+    operations = [
+        migrations.RunPython(update_reporting_fields, undo_update_reporting_fields),
+    ]
