@@ -20,6 +20,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         return {}
 
     errors = {}
+    ATTACHMENTS_URL = f"reporting/reports/{report_version.id}/attachments"
     # Check for the ReportAttachmentConfirmation entry
     try:
         attachment_confirmation = ReportAttachmentConfirmation.objects.get(report_version_id=report_version.id)
@@ -29,16 +30,19 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             errors["missing_required_attachment_confirmation"] = ReportValidationError(
                 Severity.ERROR,
                 "Must confirm that all required supplementary attachments have been uploaded.",
+                fix_url=ATTACHMENTS_URL,
             )
         if not attachment_confirmation.confirm_supplementary_existing_attachments_relevant:
             errors["missing_existing_attachment_confirmation"] = ReportValidationError(
                 Severity.ERROR,
                 "Must confirm that all existing attachments are still relevant to the supplementary submission.",
+                fix_url=ATTACHMENTS_URL,
             )
     except ObjectDoesNotExist:
         errors["missing_supplementary_report_attachment_confirmation"] = ReportValidationError(
             Severity.ERROR,
             "No attachment confirmation found for this supplementary report version.",
+            fix_url=ATTACHMENTS_URL,
         )
 
     return errors
