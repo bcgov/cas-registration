@@ -7,7 +7,8 @@ type ReportValidationMessageKey =
   | "gasType"
   | "missing_required_attachment_confirmation"
   | "missing_existing_attachment_confirmation"
-  | "missing_supplementary_report_attachment_confirmation";
+  | "missing_supplementary_report_attachment_confirmation"
+  | "missing_supplementary_report_version_change";
 
 const reportValidationMessagesMap: Record<ReportValidationMessageKey, string> =
   {
@@ -22,7 +23,9 @@ const reportValidationMessagesMap: Record<ReportValidationMessageKey, string> =
     missing_existing_attachment_confirmation:
       "You must confirm that all existing attachments are still relevant to the supplementary submission on the Attachments page.",
     missing_supplementary_report_attachment_confirmation:
-      "No attachment confirmation found for this report version. Please confirm the attachments on the Attachments page.", // Added the message here
+      "No attachment confirmation found for this supplementary report. Please confirm the attachments on the Attachments page.", // Added the message here
+    missing_supplementary_report_version_change:
+      "You must provide a reason for the change(s) in this supplementary report. Please provide a reason for change on the Review Changes page.",
   };
 
 type HelpfulValidationError = {
