@@ -23,5 +23,5 @@ export type ComplianceSummaryFormData = {
   };
   products: ComplianceSummaryFormProduct[];
   reporting_year: number;
-  isOptedOut: boolean;
+  is_operation_opted_out: boolean;
 };

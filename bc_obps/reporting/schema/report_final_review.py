@@ -35,6 +35,7 @@ from reporting.service.report_emission_allocation_service import (
     ReportEmissionAllocationData,
 )
 from service.report_version_service import ReportVersionService
+from reporting.utils import is_operation_opted_out
 
 
 class EmissionCategorySchema(ModelSchema):
@@ -406,6 +407,7 @@ class BaseReportVersionSchema(ModelSchema):
 
 class FinalReviewVersionSchema(BaseReportVersionSchema):
     facility_reports: Union[Dict[str, FacilityReportSchema], List[FacilityReportLFOSchema]] = {}
+    is_operation_opted_out: bool = False
 
     @staticmethod
     def resolve_facility_reports(obj: ReportVersion) -> Union[Dict[str, FacilityReport], List[FacilityReport]]:
@@ -416,6 +418,13 @@ class FinalReviewVersionSchema(BaseReportVersionSchema):
 
         facility = obj.facility_reports.first()
         return {facility.facility_name: facility} if facility else {}
+
+    @staticmethod
+    def resolve_is_operation_opted_out(obj: ReportVersion) -> bool:
+        return is_operation_opted_out(
+            operation_opted_out_final_reporting_year=obj.report_operation.operation_opted_out_final_reporting_year,
+            reporting_year=obj.report.reporting_year_id,
+        )
 
 
 class ReviewChangesVersionSchema(BaseReportVersionSchema):

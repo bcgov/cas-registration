@@ -263,7 +263,10 @@ export const reportNewEntrantFields = (
   ];
 };
 
-export const complianceSummaryFields = (products: any[] = []) => {
+export const complianceSummaryFields = (
+  products: any[] = [],
+  isOptedOut: boolean = false,
+) => {
   return [
     {
       label: "Emissions attributable for reporting",
@@ -318,16 +321,15 @@ export const complianceSummaryFields = (products: any[] = []) => {
           key: `products.${index}.annual_production`,
           unit: "production unit",
         },
-        {
-          label: "Production data for Apr 1 - Dec 31 2024",
-          key: `products.${index}.apr_dec_production`,
-          reporting_years: [2024],
-        },
-        {
-          label: "Production data for Jan 1 - Mar 31 2025",
-          key: `products.${index}.jan_mar_production`,
-          reporting_years: [2025],
-        },
+        ...(isOptedOut
+          ? [
+              {
+                label: "Production data for Jan 1 - Mar 31 2025",
+                key: `products.${index}.jan_mar_production`,
+                reporting_years: [2025],
+              },
+            ]
+          : []),
         {
           label: "Production-weighted average emission intensity",
           key: `products.${index}.emission_intensity`,

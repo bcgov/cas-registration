@@ -10,7 +10,7 @@ import {
 } from "@reporting/src/data/jsonSchema/complianceSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { ComplianceSummaryFormData } from "@reporting/src/app/types";
+import { ComplianceSummaryFormData } from "@reporting/src/app/components/complianceSummary/types";
 
 interface Props {
   summaryFormData: ComplianceSummaryFormData;
@@ -21,16 +21,15 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   summaryFormData,
   navigationInformation,
 }) => {
-  console.log(summaryFormData.isOptedOut);
   // Generate schemas based on reporting year and opted out decision
   const complianceSummarySchema = createComplianceSummarySchema(
     summaryFormData.reporting_year,
-    summaryFormData.isOptedOut,
+    summaryFormData.is_operation_opted_out,
   );
 
   const complianceSummaryUiSchema = createComplianceSummaryUiSchema(
     summaryFormData.reporting_year,
-    summaryFormData.isOptedOut,
+    summaryFormData.is_operation_opted_out,
   );
 
   return (

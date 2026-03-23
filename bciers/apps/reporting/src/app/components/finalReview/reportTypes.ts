@@ -189,4 +189,5 @@ export interface ReportData {
   report_new_entrant: ReportNewEntrant[];
   report_electricity_import_data: ReportElectricityImportData[];
   reporting_year: number;
+  is_operation_opted_out: boolean;
 }

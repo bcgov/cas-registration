@@ -1,6 +1,6 @@
 import { actionHandler } from "@bciers/actions";
 import { ReportingFormResponse } from "@reporting/src/app/utils/typesApiV2";
-import { ComplianceSummaryFormData } from "@reporting/src/app/types";
+import { ComplianceSummaryFormData } from "@reporting/src/app/components/complianceSummary/types";
 
 type ComplianceSummaryResponse =
   ReportingFormResponse<ComplianceSummaryFormData>;
