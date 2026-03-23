@@ -1,11 +1,9 @@
 import { actionHandler } from "@bciers/actions";
-import {
-  ReportingFormResponse,
-  ComplianceSummaryPayload,
-} from "@reporting/src/app/types";
+import { ReportingFormResponse } from "@reporting/src/app/utils/typesApiV2";
+import { ComplianceSummaryFormData } from "@reporting/src/app/types";
 
 type ComplianceSummaryResponse =
-  ReportingFormResponse<ComplianceSummaryPayload>;
+  ReportingFormResponse<ComplianceSummaryFormData>;
 
 export async function getComplianceData(
   reportVersionId: number,

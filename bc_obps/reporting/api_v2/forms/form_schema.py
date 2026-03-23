@@ -20,7 +20,6 @@ class CommonFacilityDataSchema(Schema):
 class CommonOperationDataSchema(Schema):
     naics_code: Optional[str]
     operation_type: Optional[str]
-    operation_opted_out_final_reporting_year: Optional[int] = None
 
 
 class ReportingFormSchema(ReportingResponseSchema[TPayload], Generic[TPayload]):

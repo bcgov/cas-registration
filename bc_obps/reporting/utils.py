@@ -7,6 +7,16 @@ from ninja import Query, Schema
 from ninja.pagination import PaginationBase
 
 
+def is_operation_opted_out(
+    operation_opted_out_final_reporting_year: int | None,
+    reporting_year: int,
+) -> bool:
+    if not operation_opted_out_final_reporting_year:
+        return False
+
+    return operation_opted_out_final_reporting_year <= reporting_year
+
+
 def validate_overlapping_records(
     object_class: Any,
     save_self: Any,

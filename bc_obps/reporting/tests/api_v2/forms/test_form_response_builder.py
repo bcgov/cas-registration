@@ -22,14 +22,20 @@ class TestFormResponseBuilder(SimpleTestCase):
         mocked_report_version.report.reporting_year_id = 1999
         mocked_report_version.id = 100
 
+        facility_id = UUID("12345678-1234-5678-1234-567812345678")
+
         mocked_facility_report = MockFacilityReport.objects.get.return_value
         mocked_facility_report.facility_type = "Facility Of Unusual Size"
         mocked_facility_report.facility_name = "Name!!"
 
         builder = FormResponseBuilder(456)
-        assert builder.facility_data(UUID('12345678-1234-5678-1234-567812345678')).build() == {
+        assert builder.facility_data(facility_id).build() == {
             "report_data": {"reporting_year": 1999, "report_version_id": 100},
-            "facility_data": {"facility_type": "Facility Of Unusual Size", "facility_name": "Name!!"},
+            "facility_data": {
+                "facility_id": facility_id,
+                "facility_type": "Facility Of Unusual Size",
+                "facility_name": "Name!!",
+            },
         }
 
     @patch("reporting.api_v2.forms.form_response_builder.NaicsCodeService")
@@ -44,12 +50,16 @@ class TestFormResponseBuilder(SimpleTestCase):
 
         mocked_report_operation = MockReportOperation.objects.select_related.return_value.get.return_value
         mocked_report_operation.operation_type = "test type"
+        mocked_report_operation.operation_opted_out_final_reporting_year = None
 
         builder = FormResponseBuilder(456).operation_data()
 
         assert builder.build() == {
             "report_data": {"reporting_year": 2001, "report_version_id": 123456789},
-            "operation_data": {"naics_code": "123456", "operation_type": "test type"},
+            "operation_data": {
+                "naics_code": "123456",
+                "operation_type": "test type",
+            },
         }
 
     @patch("reporting.api_v2.forms.form_response_builder.ReportVersion")
@@ -78,8 +88,11 @@ class TestFormResponseBuilder(SimpleTestCase):
 
         mocked_report_operation = MockReportOperation.objects.select_related.return_value.get.return_value
         mocked_report_operation.operation_type = "Operation Type"
+        mocked_report_operation.operation_opted_out_final_reporting_year = None
 
         MockNaicsCodeService.get_naics_code_by_version_id.return_value = "222333"
+
+        facility_id = UUID("12345678-1234-5678-1234-567812345678")
 
         mocked_facility_report = MockFacilityReport.objects.get.return_value
         mocked_facility_report.facility_type = "Facility Type"
@@ -89,21 +102,20 @@ class TestFormResponseBuilder(SimpleTestCase):
 
         # Build order shouldn't matter
         assert (
-            builder.payload({"c": 1})
-            .facility_data(UUID('12345678-1234-5678-1234-567812345678'))
-            .operation_data()
-            .build()
-            == builder.operation_data()
-            .facility_data(UUID('12345678-1234-5678-1234-567812345678'))
-            .payload({"c": 1})
-            .build()
+            builder.payload({"c": 1}).facility_data(facility_id).operation_data().build()
+            == builder.operation_data().facility_data(facility_id).payload({"c": 1}).build()
         )
 
-        assert builder.payload({"c": 1}).facility_data(
-            UUID('12345678-1234-5678-1234-567812345678')
-        ).operation_data().build() == {
+        assert builder.payload({"c": 1}).facility_data(facility_id).operation_data().build() == {
             "report_data": {"reporting_year": 3000, "report_version_id": 102},
-            "facility_data": {"facility_type": "Facility Type", "facility_name": "Facility Name"},
-            "operation_data": {"operation_type": "Operation Type", "naics_code": "222333"},
+            "facility_data": {
+                "facility_id": facility_id,
+                "facility_type": "Facility Type",
+                "facility_name": "Facility Name",
+            },
+            "operation_data": {
+                "operation_type": "Operation Type",
+                "naics_code": "222333",
+            },
             "payload": {"c": 1},
         }

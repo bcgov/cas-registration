@@ -4,13 +4,9 @@ import { getProductionData } from "@bciers/actions/api";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
-import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
-import {
-  HeaderStep,
-  ReportingPage,
-} from "@reporting/src/app/components/taskList/types";
+import { getNavigationInformation } from "../taskList/navigationInformation";
+import { HeaderStep, ReportingPage } from "../taskList/types";
 import { getOverlappingIndustrialProcessEmissions } from "@reporting/src/app/utils/getOverlappingIndProcessEmissions";
-import { isOperationOptedOut } from "@bciers/utils/src/isOperationOptedOut";
 
 export default async function ProductionDataPage({
   version_id,
@@ -30,11 +26,11 @@ export default async function ProductionDataPage({
   const facilityType = response.facility_data.facility_type;
 
   const reportingYear = response.report_data.reporting_year;
-  const isOptedOut = isOperationOptedOut({
-    operationOptedOutFinalReportingYear:
-      response.payload.operation_opted_out_final_reporting_year,
-    reportingYear,
-  });
+  const isOptedOut = Boolean(
+    response.payload.operation_opted_out_final_reporting_year &&
+      response.payload.operation_opted_out_final_reporting_year <=
+        reportingYear,
+  );
 
   const schema: any = buildProductionDataSchema(
     response.report_data.reporting_year,

@@ -29,6 +29,8 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
         assert response.json() == {
             'facility_data': {
+                'facility_id': str(self.facility_report.facility_id),
+                'facility_name': self.facility_report.facility.name,
                 'facility_type': 'test facility type',
             },
             'report_data': {
@@ -82,6 +84,8 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         # ✅ Check that only rp1 and rp2 are returned, not different version or different facility
         assert response.json() == {
             'facility_data': {
+                'facility_id': str(self.facility_report.facility_id),
+                'facility_name': self.facility_report.facility.name,
                 'facility_type': 'test facility type',
             },
             'report_data': {

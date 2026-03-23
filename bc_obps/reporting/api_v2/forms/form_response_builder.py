@@ -35,7 +35,6 @@ class FacilityData:
 class OperationData:
     naics_code: str | None
     operation_type: str
-    operation_opted_out_final_reporting_year: int | None = None
 
 
 class FormResponseBuilder(ResponseBuilder):
@@ -81,7 +80,6 @@ class FormResponseBuilder(ResponseBuilder):
         operation_data = OperationData(
             naics_code=naics_code,
             operation_type=report_operation.operation_type,
-            operation_opted_out_final_reporting_year=report_operation.operation_opted_out_final_reporting_year,
         )
 
         self.response["operation_data"] = dataclasses.asdict(operation_data)
