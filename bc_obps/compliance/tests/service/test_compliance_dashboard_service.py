@@ -438,102 +438,43 @@ class TestComplianceDashboardService:
     def test_get_compliance_report_versions_annotates_status_correctly(
         self,
     ):
-        # setup
         user_operator = make_recipe('registration.tests.utils.approved_user_operator')
 
-        # 1 - not met
-        test_data_1 = ComplianceTestHelper.build_test_data(
-            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
-        )
-        test_data_1.operation.operator = user_operator.operator
-        test_data_1.report.operator = user_operator.operator
-        test_data_1.operation.save()
-        test_data_1.report.save()
+        def build(crv_status):
+            td = ComplianceTestHelper.build_test_data(crv_status=crv_status)
+            td.operation.operator = user_operator.operator
+            td.report.operator = user_operator.operator
+            td.operation.save()
+            td.report.save()
+            return td
 
-        # # 2 - met
-        test_data_2 = ComplianceTestHelper.build_test_data(
-            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
-        )
-        test_data_2.operation.operator = user_operator.operator
-        test_data_2.report.operator = user_operator.operator
-        test_data_2.operation.save()
-        test_data_2.report.save()
+        # Obligation statuses
+        td_not_met = build(ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET)
+        td_fully_met = build(ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET)
+        td_pending_invoice = build(ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION)
 
-        # # 3 - pending invoice creation
-        test_data_3 = ComplianceTestHelper.build_test_data(
-            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
-        )
-        test_data_3.operation.operator = user_operator.operator
-        test_data_3.report.operator = user_operator.operator
-        test_data_3.operation.save()
-        test_data_3.report.save()
+        # Earned credits — vary by issuance_status
+        earned_credit_cases = [
+            (ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED, "Earned credits - not requested"),
+            (ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED, "Earned credits - issuance requested"),
+            (ComplianceEarnedCredit.IssuanceStatus.APPROVED, "Earned credits - approved"),
+            (ComplianceEarnedCredit.IssuanceStatus.DECLINED, "Earned credits - declined"),
+            (ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED, "Earned credits - changes required"),
+        ]
+        earned_credit_data = []
+        for issuance_status, _ in earned_credit_cases:
+            td = build(ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS)
+            td.compliance_earned_credit.issuance_status = issuance_status
+            td.compliance_earned_credit.save()
+            earned_credit_data.append(td)
 
-        # # 4 - not requested
-        test_data_4 = ComplianceTestHelper.build_test_data(
-            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
-        )
-        test_data_4.operation.operator = user_operator.operator
-        test_data_4.report.operator = user_operator.operator
-        test_data_4.compliance_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
-        test_data_4.compliance_earned_credit.save()
-        test_data_4.operation.save()
-        test_data_4.report.save()
+        # Earned credits — no issuance record
+        td_no_credit_record = build(ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS)
+        td_no_credit_record.compliance_earned_credit.delete()
 
-        # # 5 - issuance requested
-        test_data_5 = ComplianceTestHelper.build_test_data(
-            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
-        )
-        test_data_5.operation.operator = user_operator.operator
-        test_data_5.report.operator = user_operator.operator
-        test_data_5.compliance_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
-        test_data_5.compliance_earned_credit.save()
-        test_data_5.operation.save()
-        test_data_5.report.save()
+        # Requires manual handling
+        td_manual = build(ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING)
 
-        # # 6 - approved
-        test_data_6 = ComplianceTestHelper.build_test_data(
-            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
-        )
-        test_data_6.operation.operator = user_operator.operator
-        test_data_6.report.operator = user_operator.operator
-        test_data_6.compliance_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.APPROVED
-        test_data_6.compliance_earned_credit.save()
-        test_data_6.operation.save()
-        test_data_6.report.save()
-
-        # # 7 - declined
-        test_data_7 = ComplianceTestHelper.build_test_data(
-            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
-        )
-        test_data_7.operation.operator = user_operator.operator
-        test_data_7.report.operator = user_operator.operator
-        test_data_7.compliance_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.DECLINED
-        test_data_7.compliance_earned_credit.save()
-        test_data_7.operation.save()
-        test_data_7.report.save()
-
-        # # 8 - changes required
-        test_data_8 = ComplianceTestHelper.build_test_data(
-            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
-        )
-        test_data_8.operation.operator = user_operator.operator
-        test_data_8.report.operator = user_operator.operator
-        test_data_8.compliance_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED
-        test_data_8.compliance_earned_credit.save()
-        test_data_8.operation.save()
-        test_data_8.report.save()
-
-        # # 9 - earned credits
-        test_data_9 = ComplianceTestHelper.build_test_data(
-            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
-        )
-        test_data_9.operation.operator = user_operator.operator
-        test_data_9.report.operator = user_operator.operator
-        test_data_9.operation.save()
-        test_data_9.report.save()
-        test_data_9.compliance_earned_credit.delete()
-
-        # checks
         result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
             user_guid=user_operator.user_id,
             sort_field="id",
@@ -541,21 +482,14 @@ class TestComplianceDashboardService:
             filters=_NoopFilters(),
         )
 
-        assert result[0].id == test_data_1.compliance_report_version.id
-        assert result[0].display_status == "Obligation - not met"
-        assert result[1].id == test_data_2.compliance_report_version.id
-        assert result[1].display_status == "Obligation - met"
-        assert result[2].id == test_data_3.compliance_report_version.id
-        assert result[2].display_status == "Obligation - pending invoice creation"
-        assert result[3].id == test_data_4.compliance_report_version.id
-        assert result[3].display_status == "Earned credits - not requested"
-        assert result[4].id == test_data_5.compliance_report_version.id
-        assert result[4].display_status == "Earned credits - issuance requested"
-        assert result[5].id == test_data_6.compliance_report_version.id
-        assert result[5].display_status == "Earned credits - approved"
-        assert result[6].id == test_data_7.compliance_report_version.id
-        assert result[6].display_status == "Earned credits - declined"
-        assert result[7].id == test_data_8.compliance_report_version.id
-        assert result[7].display_status == "Earned credits - changes required"
-        assert result[8].id == test_data_9.compliance_report_version.id
-        assert result[8].display_status == "Earned credits"
+        expected = [
+            (td_not_met, "Obligation - not met"),
+            (td_fully_met, "Obligation - met"),
+            (td_pending_invoice, "Obligation - pending invoice creation"),
+            *zip(earned_credit_data, [status for _, status in earned_credit_cases]),
+            (td_no_credit_record, "Earned credits"),
+            (td_manual, "Supplementary report - action required"),
+        ]
+        for i, (td, expected_status) in enumerate(expected):
+            assert result[i].id == td.compliance_report_version.id
+            assert result[i].display_status == expected_status
