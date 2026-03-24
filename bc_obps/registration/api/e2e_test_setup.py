@@ -20,18 +20,19 @@ def setup(
 ) -> HttpResponse:
     if settings.CI == 'true' or settings.ENVIRONMENT == 'local':
         cache.clear()  # clear cache to avoid stale data (specifically for the current_user_middleware.py middleware)
+        TEST_SETUP_COMPLETE_MESSAGE = "Test setup complete."
         try:
             with RlsManager.bypass_rls():
                 if truncate_only:  # only truncate the tables
                     call_command('truncate_dev_data_tables')
-                    return HttpResponse("Test setup complete.", status=200)
+                    return HttpResponse(TEST_SETUP_COMPLETE_MESSAGE, status=200)
                 if load_only:  # only load the data
                     call_command('load_fixtures', workflow)
-                    return HttpResponse("Test setup complete.", status=200)
+                    return HttpResponse(TEST_SETUP_COMPLETE_MESSAGE, status=200)
                 call_command('truncate_dev_data_tables')
                 call_command('load_fixtures', workflow)
                 call_command('load_reporting_fixtures', workflow)
-                return HttpResponse("Test setup complete.", status=200)
+                return HttpResponse(TEST_SETUP_COMPLETE_MESSAGE, status=200)
         except Exception as e:
             return HttpResponse(f"Test setup failed. Reason:{e}", status=500)
     else:
