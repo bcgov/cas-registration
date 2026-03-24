@@ -25,6 +25,7 @@ from compliance.tests.integration.utils import (
     SEND_OBLIGATION_EMAIL,
     SEND_OBLIGATION_MET_EMAIL,
     REFRESH_DATA,
+    REFRESH_DATA_BY_INVOICE,
     CREATE_PENALTY_INVOICE,
 )
 from reporting.models import ReportVersion
@@ -80,21 +81,27 @@ class TestPenalty(ComplianceIntegrationTestBase):
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _fake_create_penalty_invoice(obligation, total_penalty, final_accrual_date, penalty_type=None):
+    def _fake_create_penalty_invoice(
+        compliance_penalty, total_penalty, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
+    ):
         """Create a local penalty invoice record (no eLicensing API call)."""
         client_operator = ElicensingClientOperator.objects.get(
-            operator=obligation.compliance_report_version.compliance_report.report.operator
+            operator=compliance_penalty.compliance_obligation.compliance_report_version.compliance_report.report.operator
         )
-        return ElicensingInvoice.objects.create(
+
+        invoice = ElicensingInvoice.objects.create(
             elicensing_client_operator=client_operator,
             invoice_number=f"PENALTY-{uuid.uuid4().hex[:8]}",
-            due_date=final_accrual_date + timedelta(days=30),
+            due_date=date.today() + timedelta(days=30),
             outstanding_balance=total_penalty,
             invoice_fee_balance=total_penalty,
             invoice_interest_balance=Decimal("0.00"),
             is_void=False,
             last_refreshed=timezone.now(),
         )
+        compliance_penalty.invoice_number = invoice.invoice_number
+        compliance_penalty.save()
+        return invoice
 
     # ------------------------------------------------------------------
     # Signal helpers
@@ -178,13 +185,20 @@ class TestPenalty(ComplianceIntegrationTestBase):
     # Test 1: Non-supplementary, paid before due date
     # ------------------------------------------------------------------
 
+    @patch(REFRESH_DATA_BY_INVOICE)
     @patch(SEND_OBLIGATION_MET_EMAIL)
     @patch(CREATE_PENALTY_INVOICE)
     @patch(REFRESH_DATA)
     @patch(SEND_OBLIGATION_EMAIL)
     @patch(HANDLE_OBLIGATION_INTEGRATION)
     def test_non_supplementary_paid_before_due_date(
-        self, mock_elicensing, _mock_obl_email, mock_refresh, mock_penalty_invoice, _mock_met_email
+        self,
+        mock_elicensing,
+        _mock_obl_email,
+        mock_refresh,
+        mock_penalty_invoice,
+        _mock_met_email,
+        mock_refresh_by_invoice,
     ):
         """Non-supplementary report submitted after deadline, paid before invoice due date.
 
@@ -248,13 +262,20 @@ class TestPenalty(ComplianceIntegrationTestBase):
     # Test 2: Non-supplementary, paid after due date
     # ------------------------------------------------------------------
 
+    @patch(REFRESH_DATA_BY_INVOICE)
     @patch(SEND_OBLIGATION_MET_EMAIL)
     @patch(CREATE_PENALTY_INVOICE)
     @patch(REFRESH_DATA)
     @patch(SEND_OBLIGATION_EMAIL)
     @patch(HANDLE_OBLIGATION_INTEGRATION)
     def test_non_supplementary_paid_after_due_date(
-        self, mock_elicensing, _mock_obl_email, mock_refresh, mock_penalty_invoice, _mock_met_email
+        self,
+        mock_elicensing,
+        _mock_obl_email,
+        mock_refresh,
+        mock_penalty_invoice,
+        _mock_met_email,
+        mock_refresh_by_invoice,
     ):
         """Non-supplementary report submitted after deadline, paid after invoice due date.
 
@@ -316,13 +337,20 @@ class TestPenalty(ComplianceIntegrationTestBase):
     # Test 3: Supplementary, paid before due date
     # ------------------------------------------------------------------
 
+    @patch(REFRESH_DATA_BY_INVOICE)
     @patch(SEND_OBLIGATION_MET_EMAIL)
     @patch(CREATE_PENALTY_INVOICE)
     @patch(REFRESH_DATA)
     @patch(SEND_OBLIGATION_EMAIL)
     @patch(HANDLE_OBLIGATION_INTEGRATION)
     def test_supplementary_paid_before_due_date(
-        self, mock_elicensing, _mock_obl_email, mock_refresh, mock_penalty_invoice, _mock_met_email
+        self,
+        mock_elicensing,
+        _mock_obl_email,
+        mock_refresh,
+        mock_penalty_invoice,
+        _mock_met_email,
+        mock_refresh_by_invoice,
     ):
         """Supplementary report submitted after deadline, paid before invoice due date.
 
@@ -388,13 +416,20 @@ class TestPenalty(ComplianceIntegrationTestBase):
     # Test 4: Supplementary, paid after due date
     # ------------------------------------------------------------------
 
+    @patch(REFRESH_DATA_BY_INVOICE)
     @patch(SEND_OBLIGATION_MET_EMAIL)
     @patch(CREATE_PENALTY_INVOICE)
     @patch(REFRESH_DATA)
     @patch(SEND_OBLIGATION_EMAIL)
     @patch(HANDLE_OBLIGATION_INTEGRATION)
     def test_supplementary_paid_after_due_date(
-        self, mock_elicensing, _mock_obl_email, mock_refresh, mock_penalty_invoice, _mock_met_email
+        self,
+        mock_elicensing,
+        _mock_obl_email,
+        mock_refresh,
+        mock_penalty_invoice,
+        _mock_met_email,
+        mock_refresh_by_invoice,
     ):
         """Supplementary report submitted after deadline, paid after invoice due date.
 

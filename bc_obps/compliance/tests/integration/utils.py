@@ -35,6 +35,10 @@ REFRESH_DATA = (
     "compliance.service.elicensing.elicensing_data_refresh_service"
     ".ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
 )
+REFRESH_DATA_BY_INVOICE = (
+    "compliance.service.elicensing.elicensing_data_refresh_service"
+    ".ElicensingDataRefreshService.refresh_data_by_invoice"
+)
 CREATE_PENALTY_INVOICE = (
     "compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice"
 )

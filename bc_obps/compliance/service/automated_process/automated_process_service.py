@@ -1,7 +1,6 @@
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.models.elicensing_invoice import ElicensingInvoice
 from compliance.service.automated_process.compliance_handlers import ComplianceHandlerManager
-from django.db import transaction
 import logging
 
 logger = logging.getLogger(__name__)
@@ -50,7 +49,6 @@ class AutomatedProcessService:
     @classmethod
     def _process_compliance_updates(cls, invoice: ElicensingInvoice) -> None:
         logger.info(f"Processing compliance updates for invoice {invoice.invoice_number}")
-        with transaction.atomic():
-            handler_manager = ComplianceHandlerManager()
-            handler_manager.process_compliance_updates(invoice)
+        handler_manager = ComplianceHandlerManager()
+        handler_manager.process_compliance_updates(invoice)
         logger.info(f"Completed compliance updates for invoice {invoice.invoice_number}")

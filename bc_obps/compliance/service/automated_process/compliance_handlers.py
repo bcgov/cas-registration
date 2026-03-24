@@ -8,7 +8,7 @@ from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.compliance_penalty import CompliancePenalty
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.service.compliance_obligation_service import ComplianceObligationService
-from compliance.service.penalty.queries import has_outstanding_penalty
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -44,27 +44,30 @@ class PenaltyPaidHandler(ComplianceUpdateHandler):
         """Update obligation penalty_status to PAID if ALL penalty invoices are fully paid."""
         from compliance.tasks import retryable_send_notice_of_penalty_paid_email
 
-        obligation = invoice.compliance_penalty.compliance_obligation
+        with transaction.atomic():
+            obligation = invoice.compliance_penalty.compliance_obligation
 
-        # Check if all penalties for this obligation are paid
-        all_penalties = obligation.compliance_penalties.all()
-        all_penalties_paid = all(
-            penalty.elicensing_invoice and penalty.elicensing_invoice.outstanding_balance == Decimal('0.00')
-            for penalty in all_penalties
-        )
+            # Check if all penalties for this obligation are paid
+            all_penalties = obligation.compliance_penalties.all()
+            all_penalties_paid = all(
+                penalty.elicensing_invoice and penalty.elicensing_invoice.outstanding_balance == Decimal('0.00')
+                for penalty in all_penalties
+            )
 
-        if all_penalties_paid and obligation.penalty_status != ComplianceObligation.PenaltyStatus.PAID:
-            ComplianceObligationService.update_penalty_status(obligation.pk, ComplianceObligation.PenaltyStatus.PAID)
-            logger.info(f"Updated penalty status to PAID for obligation {obligation.obligation_id}")
+            if all_penalties_paid and obligation.penalty_status != ComplianceObligation.PenaltyStatus.PAID:
+                ComplianceObligationService.update_penalty_status(
+                    obligation.pk, ComplianceObligation.PenaltyStatus.PAID
+                )
+                logger.info(f"Updated penalty status to PAID for obligation {obligation.obligation_id}")
 
-        penalty = invoice.compliance_penalty
+            penalty = invoice.compliance_penalty
 
-        # Mark the current penalty (for this invoice) as PAID
-        penalty.status = CompliancePenalty.Status.PAID
-        penalty.save(update_fields=['status'])
+            # Mark the current penalty (for this invoice) as PAID
+            penalty.status = CompliancePenalty.Status.PAID
+            penalty.save(update_fields=['status'])
 
-        # Send email notification that the penalty has been paid
-        retryable_send_notice_of_penalty_paid_email.execute(obligation.id)
+            # Send email notification that the penalty has been paid
+            retryable_send_notice_of_penalty_paid_email.execute(obligation.id)
 
 
 class PenaltyAccruingHandler(ComplianceUpdateHandler):
@@ -122,7 +125,7 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         """
         from compliance.tasks import (
             retryable_notice_of_obligation_met_email,
-            retryable_notice_of_obligation_met_penalty_due_email,
+            retryable_create_penalty,
         )
 
         obligation = invoice.compliance_obligation
@@ -147,15 +150,21 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         if obligation.compliance_report_version.is_supplementary and has_late_submission:
             effective_deadline = invoice.due_date
             # Create a late submission penalty if a supplementary obligation was submitted late
-            PenaltyCalculationService.create_late_submission_penalty(obligation)
+            retryable_create_penalty.execute(
+                obligation_id=obligation.id,
+                penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
+                effective_deadline=compliance_deadline,
+            )
+            logger.info(f"Created penalties for obligation {obligation.obligation_id}")
 
         # If we are past the deadline & the last transaction that brought the obligation to zero was also received past the deadline, create an automatic overdue penalty
         if effective_deadline < timezone.now().date() and final_transaction_date > effective_deadline:  # type: ignore [operator]
-            PenaltyCalculationService.create_penalty(obligation, effective_deadline)
+            retryable_create_penalty.execute(
+                obligation_id=obligation.id,
+                penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+                effective_deadline=effective_deadline,
+            )
             logger.info(f"Created penalties for obligation {obligation.obligation_id}")
-        # After penalties may have been created (late submission and/or overdue)
-        if has_outstanding_penalty(obligation.compliance_penalties.all()):
-            retryable_notice_of_obligation_met_penalty_due_email.execute(obligation.id)
 
 
 class ComplianceHandlerManager:
