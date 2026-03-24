@@ -1,3 +1,4 @@
+export { default as AnnualFuelAmountFieldTemplate } from "./AnnualFuelAmountFieldTemplate";
 export { default as ArrayFieldTemplate } from "./ArrayFieldTemplate";
 export { default as InlineArrayFieldTemplate } from "./InlineArrayFieldTemplate";
 export { default as PlacesAssignedFieldTemplate } from "./PlacesAssignedFieldTemplate";
