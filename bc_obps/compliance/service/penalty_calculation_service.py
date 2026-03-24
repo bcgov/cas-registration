@@ -365,7 +365,7 @@ class PenaltyCalculationService:
             final_transaction_date: The date of the last transaction that paid off the obligation invoice
 
         Returns:
-            CalculatedPenaltyData Dataclass
+            CompliancePenalty
         """
 
         compounding_frequency = (
@@ -440,6 +440,8 @@ class PenaltyCalculationService:
                 accrual_start_date=penalty_accrual_start_date,
                 final_accrual_date=final_transaction_date,
             )
+        else:
+            raise ValueError('Unrecognized PenaltyType. Must be one of CompliancePenalty.PenaltyType options')
 
         # Create the CompliancePenalty object if it does not exist & create invoice in elicensing if not previously created
         compliance_penalty_record = PenaltyCalculationService.perform_idempotent_penalty_creation(
@@ -478,7 +480,11 @@ class PenaltyCalculationService:
                     accumulated_penalty=acc.accumulated_penalty,
                     accumulated_compounded=acc.accumulated_compounded,
                 )
+        from compliance.tasks import (
+            retryable_notice_of_obligation_met_penalty_due_email,
+        )
 
+        retryable_notice_of_obligation_met_penalty_due_email.execute(obligation.id)
         return compliance_penalty_record
 
     @classmethod
@@ -505,7 +511,6 @@ class PenaltyCalculationService:
         return annual_rate / days_in_year
 
     @classmethod
-    @transaction.atomic
     def calculate_late_submission_penalty(
         cls,
         obligation: ComplianceObligation,
