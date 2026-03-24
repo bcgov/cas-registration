@@ -9,3 +9,9 @@ export interface ProductData {
   product_name: string;
   [key: string]: any;
 }
+
+export type ProductionDataFormPayload = {
+  report_products: ProductData[];
+  allowed_products: Product[];
+  is_operation_opted_out: boolean;
+};

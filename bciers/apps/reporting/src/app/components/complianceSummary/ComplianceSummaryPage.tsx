@@ -6,13 +6,14 @@ import {
   HeaderStep,
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
+import { ComplianceSummaryFormData } from "@reporting/src/app/components/complianceSummary/types";
 
 export default async function ComplianceSummaryPage({
   version_id,
 }: HasReportVersion) {
   const response = await getComplianceData(version_id);
 
-  const { payload, facility_data } = response;
+  const { payload, report_data, facility_data } = response;
 
   const facilityId = facility_data?.facility_id;
 
@@ -23,9 +24,14 @@ export default async function ComplianceSummaryPage({
     facilityId ?? "",
   );
 
+  const summaryFormData: ComplianceSummaryFormData = {
+    ...payload,
+    reporting_year: report_data.reporting_year,
+  };
+
   return (
     <ComplianceSummaryForm
-      summaryFormData={payload}
+      summaryFormData={summaryFormData}
       navigationInformation={navInfo}
     />
   );

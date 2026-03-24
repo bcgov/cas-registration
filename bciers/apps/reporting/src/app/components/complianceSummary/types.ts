@@ -10,7 +10,7 @@ export type ComplianceSummaryFormProduct = {
   tightening_rate: string;
 };
 
-export type ComplianceSummaryFormData = {
+export type ComplianceSummaryFormPayload = {
   emissions_attributable_for_reporting: string;
   reporting_only_emissions: string;
   emissions_attributable_for_compliance: string;
@@ -24,4 +24,8 @@ export type ComplianceSummaryFormData = {
   products: ComplianceSummaryFormProduct[];
   reporting_year: number;
   is_operation_opted_out: boolean;
+};
+
+export type ComplianceSummaryFormData = ComplianceSummaryFormPayload & {
+  reporting_year: number;
 };

@@ -3,9 +3,9 @@ import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWith
 import { useState } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { buildProductionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
-import { ProductData } from "@bciers/types/form/productionData";
-import { postProductionData } from "@bciers/actions/api";
-import { NavigationInformation } from "../taskList/types";
+import { ProductData } from "@reporting/src/app/components/products/types";
+import { postProductionData } from "@reporting/src/app/utils/postProductionData";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 
 interface Props {
   report_version_id: number;

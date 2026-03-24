@@ -1,7 +1,7 @@
-import { actionHandler } from "../actions";
-import { ProductData } from "../../../types/src/form/productionData";
+import { actionHandler } from "@bciers/actions";
+import { ProductData } from "@reporting/src/app/components/products/types";
 
-async function postProductionData(
+export async function postProductionData(
   report_version_id: number,
   facility_id: string,
   data: ProductData[],
@@ -12,4 +12,3 @@ async function postProductionData(
     body: JSON.stringify(data),
   });
 }
-export default postProductionData;
