@@ -2,6 +2,7 @@ from decimal import Decimal
 from registration.models import Operation
 from reporting.models import ReportingYear, ReportVersion
 from compliance.models import CompliancePeriod, ComplianceReportVersion
+from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 
 from model_bakery.baker import make_recipe
 
@@ -242,5 +243,18 @@ class ComplianceTestHelper:
                     t = BaseComplianceTestInfrastructure(reporting_year)
                 t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.SUPERCEDED
                 t.compliance_report_version.save()
+
+            case ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING:
+                if previous_data:
+                    t = SupplementaryComplianceTestInfrastructure(previous_data)
+                else:
+                    t = BaseComplianceTestInfrastructure(reporting_year)
+                t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING
+                t.compliance_report_version.save()
+                ComplianceReportVersionManualHandling.objects.create(
+                    compliance_report_version=t.compliance_report_version,
+                    handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
+                    context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
+                )
 
         return t

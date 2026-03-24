@@ -46,9 +46,9 @@ class SupplementaryScenarioHandler(Protocol):
 
 
 # Concrete strategy for:
-# - Detecting when a previous CRV is still under manual handling (pending), and
-# - Creating a new supplementary NO_OBLIG / earned-credits CRV
-#   with an associated manual-handling record to carry that flag forward.
+# - Detecting when a previous CRV has a manual-handling record, and
+# - Creating a new supplementary REQUIRES_MANUAL_HANDLING CRV
+#   carrying forward the handling_type/context from the previous record.
 class ManualHandler:
     @staticmethod
     def can_handle(
