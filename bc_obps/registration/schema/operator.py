@@ -25,16 +25,31 @@ class OperatorFilterSchema(FilterSchema):
     bc_corporate_registry_number: Annotated[str | None, Field(q='bc_corporate_registry_number__icontains')] = None
 
 
+mailing_address_alias = {
+    "street_address": "mailing_address.street_address",
+    "municipality": "mailing_address.municipality",
+    "province": "mailing_address.province",
+    "postal_code": "mailing_address.postal_code",
+}
+
+physical_address_alias = {
+    "street_address": "physical_address.street_address",
+    "municipality": "physical_address.municipality",
+    "province": "physical_address.province",
+    "postal_code": "physical_address.postal_code",
+}
+
+
 class OperatorOut(ModelSchema):
     """
     Custom schema for the operator form
     """
 
     trade_name: Optional[str] = ''
-    street_address: str = Field('', alias="mailing_address.street_address")
-    municipality: str = Field('', alias="mailing_address.municipality")
-    province: str = Field('', alias="mailing_address.province")
-    postal_code: str = Field('', alias="mailing_address.postal_code")
+    street_address: str = Field('', alias=mailing_address_alias["street_address"])
+    municipality: str = Field('', alias=mailing_address_alias["municipality"])
+    province: str = Field('', alias=mailing_address_alias["province"])
+    postal_code: str = Field('', alias=mailing_address_alias["postal_code"])
     operator_has_parent_operators: (
         bool  # we don't have this field for partner operators because it depends on business structure
     )
@@ -128,7 +143,7 @@ class OperatorIn(ModelSchema):
 
 
 class ConfirmSelectedOperatorOut(ModelSchema):
-    street_address: str = Field('', alias="mailing_address.street_address")
+    street_address: str = Field('', alias=mailing_address_alias["street_address"])
 
     class Meta:
         model = Operator
@@ -148,14 +163,14 @@ class OperatorForOperationOut(ModelSchema):
     This is used to optimize the queries and reduce the number of queries
     """
 
-    physical_street_address: Optional[str] = Field(None, alias="physical_address.street_address")
-    physical_municipality: Optional[str] = Field(None, alias="physical_address.municipality")
-    physical_province: Optional[str] = Field(None, alias="physical_address.province")
-    physical_postal_code: Optional[str] = Field(None, alias="physical_address.postal_code")
-    mailing_street_address: Optional[str] = Field(None, alias="mailing_address.street_address")
-    mailing_municipality: Optional[str] = Field(None, alias="mailing_address.municipality")
-    mailing_province: Optional[str] = Field(None, alias="mailing_address.province")
-    mailing_postal_code: Optional[str] = Field(None, alias="mailing_address.postal_code")
+    physical_street_address: Optional[str] = Field(None, alias=physical_address_alias["street_address"])
+    physical_municipality: Optional[str] = Field(None, alias=physical_address_alias["municipality"])
+    physical_province: Optional[str] = Field(None, alias=physical_address_alias["province"])
+    physical_postal_code: Optional[str] = Field(None, alias=physical_address_alias["postal_code"])
+    mailing_street_address: Optional[str] = Field(None, alias=mailing_address_alias["street_address"])
+    mailing_municipality: Optional[str] = Field(None, alias=mailing_address_alias["municipality"])
+    mailing_province: Optional[str] = Field(None, alias=mailing_address_alias["province"])
+    mailing_postal_code: Optional[str] = Field(None, alias=mailing_address_alias["postal_code"])
     mailing_address_same_as_physical: bool
     operator_has_parent_operators: bool
     parent_operators_array: Optional[List[ParentOperatorOut]] = None
