@@ -132,14 +132,16 @@ class InvoiceCreationRequest:
 @dataclass
 class PaymentDistribution:
     distributionObjectId: str
-    distributionType: str
     description: str
     transactionDate: str
     method: str
     reason: str
     amount: Decimal
     taxAmount: Decimal
-    reversedDistributionObjectId: str
+    distributionType: Optional[str] = None
+    reversedDistributionObjectId: Optional[str] = None
+    invoiceNumber: Optional[str] = None
+    reversedAmount: Optional[Decimal] = None
 
 
 @dataclass
