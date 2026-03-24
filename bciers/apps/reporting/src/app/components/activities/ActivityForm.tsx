@@ -214,6 +214,7 @@ export default function ActivityForm({
       customValidate={customValidate}
       formContext={{
         gasTypes,
+        activityFormData: formState,
       }}
       omitExtraData={true}
       buttonText={isFallbackSchema ? "Continue" : "Save and Continue"}
