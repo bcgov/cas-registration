@@ -26,6 +26,14 @@ on:
         description: "Nx project to test"
         required: true
         type: string
+      happo_api_key:
+        description: "Happo API KEY corresponding to nx_project"
+        required: true
+        type: string
+      happo_api_secret:
+        description: "Happo API Secret corresponding to nx_project"
+        required: true
+        type: string
 
 env:
   PGUSER: postgres
@@ -114,8 +122,8 @@ jobs:
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
           E2E_NEW_USER_STORAGE_STATE: ${{ secrets.E2E_NEW_USER_STORAGE_STATE}}
           # Happo env vars are only used when not running on a schedule (e.g., nightly builds)
-          HAPPO_API_KEY: ${{ github.event_name != 'schedule' && secrets.HAPPO_API_KEY || '' }}
-          HAPPO_API_SECRET: ${{ github.event_name != 'schedule' && secrets.HAPPO_API_SECRET || '' }}
+          HAPPO_API_KEY: ${{ inputs.happo_api_key }}
+          HAPPO_API_SECRET: ${{ inputs.happo_api_secret }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
         run: DEBUG=pw:api yarn nx run "$NX_PROJECT":${{ github.event_name == 'schedule' && 'e2e' || 'e2e:ci' }} -- --project=chromium
@@ -168,8 +176,8 @@ jobs:
       - name: run happo skip node script
         shell: bash
         env:
-          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
-          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+          HAPPO_API_KEY: ${{ inputs.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ inputs.HAPPO_API_SECRET }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
         run: |
