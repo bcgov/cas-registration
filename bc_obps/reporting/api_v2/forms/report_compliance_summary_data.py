@@ -65,10 +65,11 @@ def get_compliance_summary_form_data(
     payload = {
         **base_payload,
         "is_operation_opted_out": is_operation_opted_out(
+            reporting_year=report_version.report.reporting_year.reporting_year,
+            registration_purpose=report_version.report_operation.registration_purpose,
             operation_opted_out_final_reporting_year=(
                 report_version.report_operation.operation_opted_out_final_reporting_year
             ),
-            reporting_year=report_version.report.reporting_year_id,
         ),
     }
 

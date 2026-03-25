@@ -5,13 +5,26 @@ from django.db.models import Case, Count, IntegerField, QuerySet, Sum, When
 from django.http import HttpRequest
 from ninja import Query, Schema
 from ninja.pagination import PaginationBase
+from registration.models import Operation
 
 
 def is_operation_opted_out(
-    operation_opted_out_final_reporting_year: int | None,
     reporting_year: int,
+    registration_purpose: str | None,
+    operation_opted_out_final_reporting_year: int | None,
 ) -> bool:
-    if not operation_opted_out_final_reporting_year:
+    """
+    Returns True if an operation is considered opted out.
+
+    An operation is opted out only when:
+    - its registration purpose is OPTED_IN_OPERATION
+    - a final reporting year is set
+    - the final reporting year is less than or equal to the current reporting year
+    """
+    if registration_purpose != Operation.Purposes.OPTED_IN_OPERATION:
+        return False
+
+    if operation_opted_out_final_reporting_year is None:
         return False
 
     return operation_opted_out_final_reporting_year <= reporting_year

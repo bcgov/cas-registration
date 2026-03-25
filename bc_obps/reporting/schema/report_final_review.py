@@ -422,8 +422,9 @@ class FinalReviewVersionSchema(BaseReportVersionSchema):
     @staticmethod
     def resolve_is_operation_opted_out(obj: ReportVersion) -> bool:
         return is_operation_opted_out(
-            operation_opted_out_final_reporting_year=obj.report_operation.operation_opted_out_final_reporting_year,
             reporting_year=obj.report.reporting_year_id,
+            registration_purpose=obj.report_operation.registration_purpose,
+            operation_opted_out_final_reporting_year=obj.report_operation.operation_opted_out_final_reporting_year,
         )
 
 

@@ -59,7 +59,6 @@ class TestComplianceDataSchema(SimpleTestCase):
         self.assertAlmostEqual(schema_under_test.emissions_limit, 100.03)
         self.assertAlmostEqual(schema_under_test.excess_emissions, 100.04)
         self.assertAlmostEqual(schema_under_test.credited_emissions, 100.05)
-        self.assertAlmostEqual(schema_under_test.reporting_year, 2345)
 
         assert dict(schema_under_test.regulatory_values) == {
             "compliance_period": 2000,

@@ -71,7 +71,6 @@ class ComplianceData:
     credited_emissions: Decimal
     industry_regulatory_values: RegulatoryValues
     products: List[ReportProductComplianceData]
-    reporting_year: int
 
     def as_record_defaults(self) -> dict[str, Decimal | int]:
         return {
@@ -338,7 +337,6 @@ class ComplianceService:
             ),
             industry_regulatory_values=industry_regulatory_values,
             products=compliance_product_list,
-            reporting_year=report_version_record.report.reporting_year_id,
         )
 
         return return_object
