@@ -4,17 +4,27 @@ import { FieldTemplateProps } from "@rjsf/utils";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 
 /**
- * Custom FieldTemplate for the `annualFuelAmount` field
+ * Generic FieldTemplate for fuel amount fields (e.g. `annualFuelAmount`,
+ * `q1FuelAmount`, `q2FuelAmount`, etc.)
  *
  * Dynamically replaces the static "(fuel unit)" placeholder in the label with
- * the actual unit of the selected fuel
+ * the actual unit of the selected fuel (e.g. "kilolitres").
+ *
+ * ----- ****** NOTE ****** -----
+ * Label substitution only works if there is a `(fuel unit)` placeholder in the fuel field label.
+ * ----- ****** ****** -----
  *
  * Steps:
- * 1. parse the RJSF field `id` to determine the path to the parent fuel item
- * 2. traverse `formContext.activityFormData` to find `fuelType.fuelUnit`
- * 3. substitute unit into the label
+ * 1. Strip the last path segment (the field name itself) from the RJSF `id`
+ *    to obtain path to the parent fuel item object
+ * 2. traverse `formContext.activityFormData` along that path
+ * 3. read `fuelType.fuelUnit` from the fuel item
+ * 4. substitute in ${fuelUnit} into schema label (no fuelUnit will be placed if a fuel hasn't been selected yet)
+ *
+ * Because the field name is derived from the `id` at runtime, this template
+ * works for *any* fuel amount field (whether it's annual, quarterly, monthly) without modification
  */
-function AnnualFuelAmountFieldTemplate({
+function FuelAmountFieldTemplate({
   id,
   label,
   help,
@@ -40,35 +50,42 @@ function AnnualFuelAmountFieldTemplate({
   if (options?.inline) cellWidth = "lg:w-full";
   else if (options?.wide) cellWidth = "lg:w-8/12";
 
-  // Resolve fuel unit from form data using field id - example id: root_<path_segments>_fuels_<index>_annualFuelAmount
-  // Need to navigate to the parent fuel item and read fuelType.fuelUnit
+  // Resolve the fuel unit from the live form data
+  //
+  // The RJSF `id` for a field nested inside a fuel item looks like:
+  //   root_<...path...>_fuels_<index>_<fieldName>
+  //
+  // Strip "root_" and the last "_<fieldName>" segment to get the path to
+  // the parent fuel item, then navigate activityFormData along that path
   let resolvedLabel = label;
   const activityFormData = formContext?.activityFormData;
   if (activityFormData && id) {
+    // Remove the "root_" prefix and drop the last "_<fieldName>" segment
     const withoutRoot = id.replace(/^root_/, "");
-    const withoutField = withoutRoot.replace(/_annualFuelAmount$/, "");
-    // Split into path segments, converting numeric strings to array indices
-    const segments = withoutField.split("_");
+    const lastUnderscore = withoutRoot.lastIndexOf("_");
+    const parentPath =
+      lastUnderscore !== -1 ? withoutRoot.slice(0, lastUnderscore) : "";
 
-    // find the parent fuel item object in activityFormData
     let current: any = activityFormData;
-    for (const segment of segments) {
-      if (current === undefined || current === null) break;
-      const index = Number(segment);
-      if (!isNaN(index) && String(index) === segment) {
-        current = current[index];
-      } else {
-        current = current[segment];
+    if (parentPath) {
+      for (const segment of parentPath.split("_")) {
+        if (current === undefined || current === null) break;
+        const index = Number(segment);
+        current =
+          !isNaN(index) && String(index) === segment
+            ? current[index]
+            : current[segment];
       }
     }
 
-    // current should now be the fuel item object; read fuelType.fuelUnit
+    // `current` is the fuel item object
     const fuelUnit = current?.fuelType?.fuelUnit;
     if (fuelUnit) {
-      resolvedLabel = `Annual Fuel Amount (${fuelUnit})`;
+      // Replace the "(fuel unit)" placeholder with the real unit
+      resolvedLabel = label.replace(/\(fuel unit\)/i, `(${fuelUnit})`);
     } else {
-      // fuel not selected yet – display a default label
-      resolvedLabel = "Annual Fuel Amount";
+      // No fuel selected yet – strip the placeholder entirely
+      resolvedLabel = label.replace(/\s*\(fuel unit\)/i, "");
     }
   }
 
@@ -92,7 +109,7 @@ function AnnualFuelAmountFieldTemplate({
           <div
             className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
           >
-            <p>{options.displayUnit as any}</p>
+            <p>{options.displayUnit as string}</p>
           </div>
         )}
         {isErrors && (
@@ -122,4 +139,4 @@ function AnnualFuelAmountFieldTemplate({
   );
 }
 
-export default AnnualFuelAmountFieldTemplate;
+export default FuelAmountFieldTemplate;

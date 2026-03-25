@@ -2,7 +2,7 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
-import AnnualFuelAmountFieldTemplate from "@bciers/components/form/fields/AnnualFuelAmountFieldTemplate";
+import FuelAmountFieldTemplate from "@bciers/components/form/fields/AnnualFuelAmountFieldTemplate";
 import MethodologyFieldTemplate from "@bciers/components/form/fields/MethodologyFieldTemplate";
 
 const uiSchema = {
@@ -47,7 +47,7 @@ const uiSchema = {
             },
           },
           annualFuelAmount: {
-            "ui:FieldTemplate": AnnualFuelAmountFieldTemplate,
+            "ui:FieldTemplate": FuelAmountFieldTemplate,
           },
           emissions: {
             "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
