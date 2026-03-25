@@ -2,12 +2,12 @@ import { actionHandler } from "@bciers/actions";
 import { ReportingFormResponse } from "@reporting/src/app/utils/typesApiV2";
 import { ComplianceSummaryFormPayload } from "@reporting/src/app/components/complianceSummary/types";
 
-type ComplianceSummaryResponse =
+type ComplianceSummaryFormResponse =
   ReportingFormResponse<ComplianceSummaryFormPayload>;
 
 export async function getComplianceData(
   reportVersionId: number,
-): Promise<ComplianceSummaryResponse> {
+): Promise<ComplianceSummaryFormResponse> {
   const endpoint = `reporting/v2/report-version/${reportVersionId}/forms/compliance-data`;
 
   const response = await actionHandler(endpoint, "GET");
@@ -18,5 +18,5 @@ export async function getComplianceData(
     );
   }
 
-  return response as ComplianceSummaryResponse;
+  return response as ComplianceSummaryFormResponse;
 }

@@ -49,7 +49,6 @@ class TestComplianceDataSchema(SimpleTestCase):
                     tightening_rate_override=Decimal("99999.99"),
                 ),
             ],
-            reporting_year=2345,
         )
 
         schema_under_test = ComplianceDataSchemaOut.from_orm(data)

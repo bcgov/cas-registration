@@ -14,6 +14,7 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             "reporting.tests.utils.facility_report",
             report_version=self.report_version,
             facility_type="test facility type",
+            facility__name="Facility 01",
         )
         self.report_operation = make_recipe(
             "reporting.tests.utils.report_operation", report_version=self.report_version
@@ -37,7 +38,11 @@ class TestReportProductV2Endpoints(CommonTestSetup):
                 'report_version_id': self.report_version.id,
                 'reporting_year': 1222,
             },
-            'payload': {'report_products': [], 'allowed_products': []},
+            'payload': {
+                'report_products': [],
+                'allowed_products': [],
+                'is_operation_opted_out': False,
+            },
         }
 
     def test_get_returns_the_right_data_with_data(self):
@@ -137,17 +142,14 @@ class TestReportProductV2Endpoints(CommonTestSetup):
                         "is_regulated": RegulatedProduct.objects.get(id=3).is_regulated,
                     },
                 ],
+                'is_operation_opted_out': False,
             },
         }
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_production_form_data", facility_id="uuid")
 
-    def test_get_returns_operation_opted_out_final_reporting_year_when_set(self):
-        """
-        Test that when an operation's registration purpose is 'Opted-in Operation' and it has a
-        set final_reporting_year of 2025, the payload includes 'operation_opted_out_final_reporting_year' == 2025.
-        """
+    def test_get_returns_is_operation_opted_out_true_when_final_reporting_year_is_set(self):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
         )
@@ -158,4 +160,4 @@ class TestReportProductV2Endpoints(CommonTestSetup):
 
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
 
-        assert response.json()['payload']['operation_opted_out_final_reporting_year'] == 2025
+        assert response.json()['payload']['is_operation_opted_out'] is True
