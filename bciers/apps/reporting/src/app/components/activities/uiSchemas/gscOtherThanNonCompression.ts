@@ -3,7 +3,7 @@ import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArray
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
-import AnnualFuelAmountFieldTemplate from "@bciers/components/form/fields/AnnualFuelAmountFieldTemplate";
+import FuelAmountFieldTemplate from "@bciers/components/form/fields/AnnualFuelAmountFieldTemplate";
 import MethodologyFieldTemplate from "@bciers/components/form/fields/MethodologyFieldTemplate";
 
 const uiSchema = {
@@ -97,7 +97,7 @@ const uiSchema = {
                 "ui:FieldTemplate": InlineFieldTemplate,
               },
               annualFuelAmount: {
-                "ui:FieldTemplate": AnnualFuelAmountFieldTemplate,
+                "ui:FieldTemplate": FuelAmountFieldTemplate,
               },
               emissions: {
                 "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
@@ -184,7 +184,7 @@ const uiSchema = {
                 "ui:FieldTemplate": InlineFieldTemplate,
               },
               annualFuelAmount: {
-                "ui:FieldTemplate": AnnualFuelAmountFieldTemplate,
+                "ui:FieldTemplate": FuelAmountFieldTemplate,
               },
               emissions: {
                 "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
@@ -272,7 +272,7 @@ const uiSchema = {
                 "ui:FieldTemplate": InlineFieldTemplate,
               },
               annualFuelAmount: {
-                "ui:FieldTemplate": AnnualFuelAmountFieldTemplate,
+                "ui:FieldTemplate": FuelAmountFieldTemplate,
               },
               emissions: {
                 "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,

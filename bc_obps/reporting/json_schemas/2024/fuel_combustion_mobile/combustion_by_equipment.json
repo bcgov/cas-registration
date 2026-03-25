@@ -37,27 +37,27 @@
             "type": "string"
           },
           "q1FuelAmount": {
-            "title": "Q1 Fuel Amount",
+            "title": "Q1 Fuel Amount (fuel unit)",
             "type": "number",
             "minimum": 0
           },
           "q2FuelAmount": {
-            "title": "Q2 Fuel Amount",
+            "title": "Q2 Fuel Amount (fuel unit)",
             "type": "number",
             "minimum": 0
           },
           "q3FuelAmount": {
-            "title": "Q3 Fuel Amount",
+            "title": "Q3 Fuel Amount (fuel unit)",
             "type": "number",
             "minimum": 0
           },
           "q4FuelAmount": {
-            "title": "Q4 Fuel Amount",
+            "title": "Q4 Fuel Amount (fuel unit)",
             "type": "number",
             "minimum": 0
           },
           "annualFuelAmount": {
-            "title": "Annual Fuel Amount",
+            "title": "Annual Fuel Amount (fuel unit)",
             "type": "number",
             "minimum": 0,
             "readOnly": true,
