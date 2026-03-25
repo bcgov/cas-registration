@@ -15,10 +15,22 @@ spec:
       name: import-ciip-swrs-data
     spec:
       activeDeadlineSeconds: 300
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       automountServiceAccountToken: false
       containers:
         - name: import-ciip-swrs-data
-          image: ghcr.io/bcgov/cas-obps-data-import:latest
+          image: ghcr.io/bcgov/cas-obps-data-import:1.0.0
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             limits:
               cpu: 500m
