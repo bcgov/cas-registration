@@ -1,4 +1,4 @@
-import { getProductionData } from "@bciers/actions/api";
+import { getProductionData } from "@reporting/src/app/utils/getProductionData";
 import ProductionDataPage from "@reporting/src/app/components/products/ProductionDataPage";
 import { render, screen } from "@testing-library/react";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
@@ -9,7 +9,7 @@ import { getNavigationInformation } from "@reporting/src/app/components/taskList
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
 
-vi.mock("@bciers/actions/api", () => ({
+vi.mock("@reporting/src/app/utils/getProductionData", () => ({
   getProductionData: vi.fn(),
 }));
 vi.mock("@reporting/src/app/utils/getReportInformationTaskListData", () => ({
@@ -55,7 +55,7 @@ const defaultGetProductionDataMock = {
   payload: {
     allowed_products: [],
     report_products: [],
-    operation_opted_out_final_reporting_year: undefined,
+    is_operation_opted_out: false,
   },
 };
 
@@ -100,6 +100,7 @@ describe("The Production Data component", () => {
           { id: 345, name: "otherProduct" },
         ],
         report_products: [],
+        is_operation_opted_out: false,
       },
     });
     render(await ProductionDataPage(props));
@@ -126,6 +127,7 @@ describe("The Production Data component", () => {
             unit: "tonnes of tests",
           },
         ],
+        is_operation_opted_out: false,
       },
     });
 
@@ -175,6 +177,7 @@ describe("The Production Data component", () => {
             unit: "tonnes of tests",
           },
         ],
+        is_operation_opted_out: false,
       },
     });
 
@@ -198,7 +201,7 @@ describe("The Production Data component", () => {
             unit: "tonnes of tests",
           },
         ],
-        operation_opted_out_final_reporting_year: 2025,
+        is_operation_opted_out: true,
       },
     });
 
@@ -215,7 +218,7 @@ describe("The Production Data component", () => {
       report_data: { reporting_year: 2024 },
       payload: {
         ...defaultGetProductionDataMock.payload,
-        operation_opted_out_final_reporting_year: 2025,
+        is_operation_opted_out: false,
       },
     });
 
@@ -228,7 +231,7 @@ describe("The Production Data component", () => {
       report_data: { reporting_year: 2025 },
       payload: {
         ...defaultGetProductionDataMock.payload,
-        operation_opted_out_final_reporting_year: 2025,
+        is_operation_opted_out: true,
       },
     });
 
@@ -244,6 +247,7 @@ describe("The Production Data component", () => {
       payload: {
         allowed_products: [],
         report_products: [],
+        is_operation_opted_out: false,
       },
       operation_data: {
         naics_code: "322112",
@@ -267,6 +271,7 @@ describe("The Production Data component", () => {
       payload: {
         allowed_products: [],
         report_products: [],
+        is_operation_opted_out: false,
       },
     });
 
@@ -281,6 +286,7 @@ describe("The Production Data component", () => {
       payload: {
         allowed_products: [],
         report_products: [],
+        is_operation_opted_out: false,
       },
     });
 

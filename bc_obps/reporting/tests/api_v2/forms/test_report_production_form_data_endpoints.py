@@ -14,8 +14,9 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             "reporting.tests.utils.facility_report",
             report_version=self.report_version,
             facility_type="test facility type",
-            facility__name="Facility 01",
         )
+        self.facility_report.facility.name = f"Facility 01 {self.facility_report.facility_id}"
+        self.facility_report.facility.save(update_fields=["name"])
         self.report_operation = make_recipe(
             "reporting.tests.utils.report_operation", report_version=self.report_version
         )
@@ -157,6 +158,9 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         self.report_operation.operation_opted_out_final_reporting_year = 2025
         self.report_operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
         self.report_operation.save()
+
+        self.report_version.report.reporting_year.reporting_year = 2025
+        self.report_version.report.reporting_year.save()
 
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
 

@@ -11,7 +11,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("@bciers/components/form/MultiStepFormWithTaskList", () => ({
   default: vi.fn(),
 }));
-vi.mock("@bciers/actions/api", () => ({
+vi.mock("@reporting/src/app/utils/postProductionData", () => ({
   postProductionData: vi.fn(),
 }));
 
