@@ -51,7 +51,7 @@
                   }
                 },
                 "annualFuelAmount": {
-                  "title": "Annual Fuel Amount (fuel unit)",
+                  "title": "Annual Fuel Amount",
                   "type": "number",
                   "minimum": 0
                 },
