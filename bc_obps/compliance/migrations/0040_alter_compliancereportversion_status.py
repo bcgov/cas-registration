@@ -20,11 +20,15 @@ def reverse_migrate_manual_handling_status(apps, schema_editor):
     ).update(status="No obligation or earned credits")
 
 
-def drop_policy(apps, schema_editor):
+# Altering the status column's enum values causes the error "cannot alter type of a column used in a policy definition".
+# Temporarily dropping the conflicting policies first fixes the issue & the policies will be reapplied at the end of the custom_migrate() function
+def drop_conflicting_policies(apps, schema_editor):
     with connection.cursor() as cursor:
-        cursor.execute("drop policy compliance_obligation_industry_user_delete_policy on erc.compliance_obligation")
         cursor.execute(
-            "drop policy compliance_earned_credit_industry_user_delete_policy on erc.compliance_earned_credit"
+            "drop policy if exists compliance_obligation_industry_user_delete_policy on erc.compliance_obligation"
+        )
+        cursor.execute(
+            "drop policy if exists compliance_earned_credit_industry_user_delete_policy on erc.compliance_earned_credit"
         )
 
 
@@ -35,7 +39,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(drop_policy, migrations.operations.special.RunPython.noop, elidable=True),
+        migrations.RunPython(drop_conflicting_policies, migrations.operations.special.RunPython.noop, elidable=True),
         migrations.AlterField(
             model_name='compliancereportversion',
             name='status',
