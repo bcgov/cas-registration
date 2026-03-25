@@ -4,12 +4,12 @@ import { FieldTemplateProps } from "@rjsf/utils";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 
 /**
- * Custom FieldTemplate for the `annualFuelAmount` field.
+ * Custom FieldTemplate for the `annualFuelAmount` field
  *
  * Dynamically replaces the static "(fuel unit)" placeholder in the label with
  * the actual unit of the selected fuel
  *
- * Steps involved:
+ * Steps:
  * 1. parse the RJSF field `id` to determine the path to the parent fuel item
  * 2. traverse `formContext.activityFormData` to find `fuelType.fuelUnit`
  * 3. substitute unit into the label
