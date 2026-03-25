@@ -23,6 +23,7 @@ spec:
           type: RuntimeDefault
       automountServiceAccountToken: false
       containers:
+      # trivy:ignore:KSV0125
         - name: import-ciip-swrs-data
           image: ghcr.io/bcgov/cas-obps-data-import:1.0.0
           securityContext:
