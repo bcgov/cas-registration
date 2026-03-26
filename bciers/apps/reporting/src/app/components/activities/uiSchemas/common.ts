@@ -1,5 +1,5 @@
 import {
-  AnnualFuelAmountFieldTemplate,
+  FuelAmountFieldTemplate,
   FieldTemplate,
   InlineFieldTemplate,
 } from "@bciers/components/form/fields";
@@ -76,7 +76,7 @@ export const fuelsFieldsUiSchema = {
       "ui:FieldTemplate": InlineFieldTemplate,
     },
     annualFuelAmount: {
-      "ui:FieldTemplate": AnnualFuelAmountFieldTemplate,
+      "ui:FieldTemplate": FuelAmountFieldTemplate,
     },
     emissions: emissionsFieldsUiSchema,
   },
