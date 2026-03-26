@@ -1,7 +1,18 @@
 "use client";
 import React, { useEffect } from "react";
 
-import { FacilityReport, FacilityReportLFO, ReportData } from "../reportTypes";
+import {
+  FacilityReport,
+  FacilityReportLFO,
+  OperationEmissionSummary,
+  ReportAdditionalData,
+  ReportComplianceSummary,
+  ReportData,
+  ReportElectricityImportData,
+  ReportNewEntrant,
+  ReportOperation,
+  ReportPersonResponsible,
+} from "../reportTypes";
 import {
   additionalDataFields,
   complianceSummaryFields,
@@ -19,9 +30,35 @@ import { flowHelpers } from "@reporting/src/app/components/taskList/flowHelpers"
 
 interface Props {
   data: ReportData | null;
-  version_id: any;
+  version_id: number;
   origin?: "final-review" | "submitted" | "annual-report";
   flow: ReportingFlow;
+}
+
+interface ReportFieldConfig {
+  label?: string;
+  key?: string;
+  heading?: string;
+  unit?: string;
+}
+
+interface ReportSectionConfig {
+  title: string;
+  condition?: (reportData: ReportData) => boolean;
+  getData?: (
+    reportData: ReportData,
+  ) =>
+    | ReportData
+    | ReportComplianceSummary
+    | ReportElectricityImportData
+    | ReportAdditionalData
+    | ReportNewEntrant
+    | OperationEmissionSummary
+    | ReportPersonResponsible
+    | ReportOperation;
+  fields?: (reportData: ReportData) => ReportFieldConfig[];
+  render?: () => React.JSX.Element | null;
+  id?: string;
 }
 
 export const FinalReviewReportSections: React.FC<Props> = ({
@@ -60,7 +97,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
     if (isLFO) {
       // For LFO, render the grid
       return (
-        <div id="facility-grid">
+        <div id="facility-grid" className="print:hidden">
           <FinalReviewFacilityGrid
             data={facilityReportsLFO.map(
               (facilityReport: FacilityReportLFO) => ({
@@ -93,12 +130,12 @@ export const FinalReviewReportSections: React.FC<Props> = ({
     );
   };
 
-  const sectionConfigs = [
+  const sectionConfigs: ReportSectionConfig[] = [
     {
       title: "Reason for Change",
       condition: (reportData: ReportData) => reportData.is_supplementary_report,
       getData: (reportData: ReportData) => reportData,
-      fields: [
+      fields: () => [
         {
           label: "Reason for submitting supplementary report",
           key: "reason_for_change",
@@ -107,13 +144,11 @@ export const FinalReviewReportSections: React.FC<Props> = ({
     },
     {
       title: "Review Operation Information",
-      condition: () => true,
       getData: (reportData: ReportData) => reportData.report_operation,
       fields: () => operationFields(isEIO),
     },
     {
       title: "Person Responsible for Submitting Report",
-      condition: () => true,
       getData: (reportData: ReportData) => reportData.report_person_responsible,
       fields: () => personResponsibleFields,
     },
@@ -130,6 +165,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
       condition: (reportData: ReportData) =>
         !isEIO && !!reportData.facility_reports,
       render: renderFacilityReportInformation,
+      id: "facility-reports",
     },
     {
       title: "Additional Reporting Data",
@@ -169,19 +205,19 @@ export const FinalReviewReportSections: React.FC<Props> = ({
   return (
     <>
       {sectionConfigs.map((section) => {
-        if (!section.condition(data)) return null;
+        if (section.condition && !section.condition(data)) return null;
         if (section.render)
           return (
-            <React.Fragment key={section.title}>
+            <div
+              key={section.title}
+              id={section.id ?? section.title.toLowerCase().replace(" ", "-")}
+            >
               {section.render()}
-            </React.Fragment>
+            </div>
           );
 
         const sectionData = section.getData!(data);
-        const sectionFields =
-          typeof section.fields === "function"
-            ? section.fields(data)
-            : section.fields;
+        const sectionFields = section.fields ? section.fields(data) : [];
 
         return (
           <SectionReview
@@ -190,6 +226,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
             data={sectionData}
             fields={sectionFields}
             reportingYear={data.reporting_year}
+            id={section.id}
           />
         );
       })}
