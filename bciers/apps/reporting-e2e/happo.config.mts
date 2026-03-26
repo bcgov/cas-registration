@@ -1,7 +1,12 @@
 import { defineConfig, type Config } from "happo";
 import { baseConfig } from "../../happo-base.config.js";
 
+const project = "cas-reporting";
+const projectPrefix = project.replace(/-/g, "_").toUpperCase();
+
 export default defineConfig({
   ...baseConfig,
-  project: "cas-reporting",
+  apiKey: process.env[`${projectPrefix}_HAPPO_API_KEY`],
+  apiSecret: process.env[`${projectPrefix}_HAPPO_API_SECRET`],
+  project,
 } as Config);

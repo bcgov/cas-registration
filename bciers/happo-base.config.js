@@ -5,8 +5,6 @@ const VIEWPORT = "1366x768";
 const MAXHEIGHT = 20000;
 
 const baseConfig = {
-  apiKey: process.env.HAPPO_API_KEY,
-  apiSecret: process.env.HAPPO_API_SECRET,
   integration: {
     type: "playwright",
   },

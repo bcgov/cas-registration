@@ -24,9 +24,11 @@ function makeRequest(requestAttributes, { apiKey, apiSecret }) {
   });
 }
 
-const apiKey = process.env.HAPPO_API_KEY;
-const apiSecret = process.env.HAPPO_API_SECRET;
 const project = process.env.HAPPO_PROJECT;
+// Derive project-specific credentials from the project name (e.g. "cas-registration" → "CAS_REGISTRATION")
+const projectPrefix = project.replace(/-/g, "_").toUpperCase();
+const apiKey = process.env[`${projectPrefix}_HAPPO_API_KEY`];
+const apiSecret = process.env[`${projectPrefix}_HAPPO_API_SECRET`];
 const commitSha = process.env.COMMIT_SHA;
 
 // This helper will skip the current commit/project in happo
