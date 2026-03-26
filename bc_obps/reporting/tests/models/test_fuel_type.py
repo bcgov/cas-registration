@@ -41,7 +41,7 @@ class TestInitialData(TestCase):
                 "Motor Gasoline",
                 "Motor Gasoline - Off-road",
                 "Municipal Solid Waste - non-biomass component",
-                "Municipal Solide Waste - biomass component",
+                "Municipal Solid Waste - biomass component",
                 "Naphtha",
                 "Natural Gas",
                 "Natural Gas Condensate",
