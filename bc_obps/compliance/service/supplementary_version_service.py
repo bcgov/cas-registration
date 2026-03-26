@@ -389,6 +389,59 @@ class DecreasedObligationHandler:
                 strategy.earned_credits_tonnes,
             )
 
+    @staticmethod
+    def _adjust_refund_to_invoices(
+        invoices: list[dict], refund_pool: Decimal
+    ) -> tuple[list[InvoiceAdjustment], Decimal]:
+        """
+        Adjusts the refund pool to the invoices.
+
+        Returns:
+            A tuple of:
+            - A list of invoice adjustments
+            - The remaining refund pool
+        """
+        per_invoice: list[InvoiceAdjustment] = []
+
+        for inv in invoices:
+            outstanding = (inv["outstanding"] or ZERO_DECIMAL).quantize(MONEY)
+            prev_payments = (inv["paid"] or ZERO_DECIMAL).quantize(MONEY)
+
+            # If nothing left to allocate, carry current state forward
+            if refund_pool <= ZERO_DECIMAL:
+                per_invoice.append(
+                    InvoiceAdjustment(
+                        version_id=inv["version_id"],
+                        applied=ZERO_DECIMAL,
+                        net_outstanding_after=outstanding,
+                        mark_fully_met=(outstanding == ZERO_DECIMAL),
+                        should_void_invoice=False,
+                    )
+                )
+                continue
+
+            # Apply as much as possible to this invoice's outstanding
+            apply_abs = min(refund_pool, outstanding).quantize(MONEY)
+            net_outstanding_after = (outstanding - apply_abs).quantize(MONEY)
+            mark_fully_met = net_outstanding_after == ZERO_DECIMAL
+
+            # Void only if fully met and no prior cash payments
+            should_void = mark_fully_met and prev_payments == ZERO_DECIMAL
+
+            per_invoice.append(
+                InvoiceAdjustment(
+                    version_id=inv["version_id"],
+                    applied=-apply_abs,  # negative reduces outstanding
+                    net_outstanding_after=net_outstanding_after,
+                    mark_fully_met=mark_fully_met,
+                    should_void_invoice=should_void,
+                )
+            )
+
+            # Reduce the shared pool for next (older) invoice
+            refund_pool = (refund_pool - apply_abs).quantize(MONEY)
+        return per_invoice, refund_pool
+
     # -------------------------------
     # Version strategy
     # -------------------------------
@@ -433,66 +486,11 @@ class DecreasedObligationHandler:
         money_delta = (delta_emiss * rate).quantize(MONEY)
         total_refund_vs_anchor = max(-money_delta, ZERO_DECIMAL).quantize(MONEY)
 
-        def _get_initial_refund_pool(total_refund_vs_anchor: Decimal) -> Decimal:
-            # Subtract supplementary credits already applied across these invoices since the anchor
-            invoice_ids = [i["invoice_id"] for i in invoices if "invoice_id" in i]
-            anchor_for_adjustment_window = invoices[0]["version_id"] if invoices else anchor_crv_id
+        refund_pool = DecreasedObligationHandler._get_initial_refund_pool(
+            total_refund_vs_anchor, invoices, anchor_crv_id
+        )
 
-            already_applied = (
-                DecreasedObligationHandler._sum_already_applied_supplementary_adjustments_since_anchor(
-                    anchor_for_adjustment_window,
-                    invoice_ids,  # use the local window id
-                )
-                if (anchor_for_adjustment_window and invoice_ids)
-                else ZERO_DECIMAL
-            )
-            return max(total_refund_vs_anchor - already_applied, ZERO_DECIMAL).quantize(MONEY)
-
-        refund_pool = _get_initial_refund_pool(total_refund_vs_anchor)
-
-        per_invoice: list[InvoiceAdjustment] = []
-
-        def _adjust_refund_to_invoices(invoices: list[dict], refund_pool: Decimal) -> Decimal:
-            for inv in invoices:
-                outstanding = (inv["outstanding"] or ZERO_DECIMAL).quantize(MONEY)
-                prev_payments = (inv["paid"] or ZERO_DECIMAL).quantize(MONEY)
-
-                # If nothing left to allocate, carry current state forward
-                if refund_pool <= ZERO_DECIMAL:
-                    per_invoice.append(
-                        InvoiceAdjustment(
-                            version_id=inv["version_id"],
-                            applied=ZERO_DECIMAL,
-                            net_outstanding_after=outstanding,
-                            mark_fully_met=(outstanding == ZERO_DECIMAL),
-                            should_void_invoice=False,
-                        )
-                    )
-                    continue
-
-                # Apply as much as possible to this invoice's outstanding
-                apply_abs = min(refund_pool, outstanding).quantize(MONEY)
-                net_outstanding_after = (outstanding - apply_abs).quantize(MONEY)
-                mark_fully_met = net_outstanding_after == ZERO_DECIMAL
-
-                # Void only if fully met and no prior cash payments
-                should_void = mark_fully_met and prev_payments == ZERO_DECIMAL
-
-                per_invoice.append(
-                    InvoiceAdjustment(
-                        version_id=inv["version_id"],
-                        applied=-apply_abs,  # negative reduces outstanding
-                        net_outstanding_after=net_outstanding_after,
-                        mark_fully_met=mark_fully_met,
-                        should_void_invoice=should_void,
-                    )
-                )
-
-                # Reduce the shared pool for next (older) invoice
-                refund_pool = (refund_pool - apply_abs).quantize(MONEY)
-            return refund_pool
-
-        refund_pool = _adjust_refund_to_invoices(invoices, refund_pool)
+        per_invoice, refund_pool = DecreasedObligationHandler._adjust_refund_to_invoices(invoices, refund_pool)
 
         # --- Manual handling decision -------------------------------------------
         # Fully paid if no invoices OR all tracked invoices end at $0.
@@ -552,14 +550,7 @@ class DecreasedObligationHandler:
         should_create_earned_credits = False
         earned_credits_tonnes = ZERO_DECIMAL
 
-        def _check_earned_credits_greater_than_zero(
-            fully_paid_obligation: bool, has_cash: bool, over_corrected_tonnes: Decimal
-        ) -> bool:
-            if fully_paid_obligation and (not has_cash) and over_corrected_tonnes > ZERO_DECIMAL:
-                return True
-            return False
-
-        if _check_earned_credits_greater_than_zero(fully_paid_obligation, has_cash, over_corrected_tonnes):
+        if fully_paid_obligation and (not has_cash) and over_corrected_tonnes > ZERO_DECIMAL:
             should_create_earned_credits = True
             earned_credits_tonnes = over_corrected_tonnes
 
@@ -637,6 +628,53 @@ class DecreasedObligationHandler:
         return None
 
     @staticmethod
+    def _get_initial_refund_pool(
+        total_refund_vs_anchor: Decimal, invoices: list[dict], anchor_crv_id: Optional[int]
+    ) -> Decimal:
+        """
+        Determine the initial refund pool for the given invoices.
+
+        Returns:
+            The initial refund pool
+        """
+        # Subtract supplementary credits already applied across these invoices since the anchor
+        invoice_ids = [i["invoice_id"] for i in invoices if "invoice_id" in i]
+        anchor_for_adjustment_window = invoices[0]["version_id"] if invoices else anchor_crv_id
+
+        already_applied = (
+            DecreasedObligationHandler._sum_already_applied_supplementary_adjustments_since_anchor(
+                anchor_for_adjustment_window,
+                invoice_ids,  # use the local window id
+            )
+            if (anchor_for_adjustment_window and invoice_ids)
+            else ZERO_DECIMAL
+        )
+        return max(total_refund_vs_anchor - already_applied, ZERO_DECIMAL).quantize(MONEY)
+
+    @staticmethod
+    def _fetch_prior_invoices(crv_id: int) -> QuerySet[ElicensingInvoice]:
+        """
+        Fetch all invoices linked to obligations on the given CRV id.
+        """
+        return ElicensingInvoice.objects.filter(
+            compliance_obligation__compliance_report_version_id=crv_id
+        ).prefetch_related(
+            Prefetch(
+                "elicensing_line_items",
+                queryset=ElicensingLineItem.objects.filter(
+                    line_item_type=ElicensingLineItem.LineItemType.FEE
+                ).prefetch_related("elicensing_payments"),
+            )
+        )
+
+    @staticmethod
+    def _all_invoices_void(invoices: QuerySet[ElicensingInvoice]) -> bool:
+        for inv in invoices:
+            if not inv.is_void:
+                return False
+        return True
+
+    @staticmethod
     def _find_newest_non_void_prior_invoices(
         anchor_crv_id: int,
         prior_invoices: QuerySet[ElicensingInvoice],
@@ -646,39 +684,18 @@ class DecreasedObligationHandler:
         if it is void it will go to the previous in the CRV chain.
         """
 
-        def _fetch_prior_invoices(crv_id: int) -> QuerySet[ElicensingInvoice]:
-            """
-            Fetch all invoices linked to obligations on the given CRV id.
-            """
-            return ElicensingInvoice.objects.filter(
-                compliance_obligation__compliance_report_version_id=crv_id
-            ).prefetch_related(
-                Prefetch(
-                    "elicensing_line_items",
-                    queryset=ElicensingLineItem.objects.filter(
-                        line_item_type=ElicensingLineItem.LineItemType.FEE
-                    ).prefetch_related("elicensing_payments"),
-                )
-            )
-
-        def _all_invoices_void(invoices: QuerySet[ElicensingInvoice]) -> bool:
-            for inv in invoices:
-                if not inv.is_void:
-                    return False
-            return True
-
         pointer_crv_id: Optional[int] = anchor_crv_id
 
         while not prior_invoices and pointer_crv_id:
             pointer_crv_id = ComplianceReportVersion.objects.get(id=pointer_crv_id).previous_version_id
             if pointer_crv_id:
-                prior_invoices = _fetch_prior_invoices(pointer_crv_id)
+                prior_invoices = DecreasedObligationHandler._fetch_prior_invoices(pointer_crv_id)
                 # can't find any more prior invoices, break out of loop
                 if not prior_invoices:
                     break
 
                 # check if invoices we're looking at are all void, if so go back another link
-                if _all_invoices_void(prior_invoices):
+                if DecreasedObligationHandler._all_invoices_void(prior_invoices):
                     prior_invoices = ElicensingInvoice.objects.none()
 
         return prior_invoices
