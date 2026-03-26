@@ -40,6 +40,7 @@ const mockSummaryData = {
     },
   ],
   reporting_year: 2024,
+  is_operation_opted_out: false,
 };
 
 describe("ComplianceSummaryForm", () => {
@@ -186,6 +187,7 @@ describe("ComplianceSummaryForm", () => {
         },
       ],
       reporting_year: 2025,
+      is_operation_opted_out: false,
     };
 
     render(
@@ -201,7 +203,7 @@ describe("ComplianceSummaryForm", () => {
   });
 
   it("should generate schema without apr_dec_production for non-2024 years", () => {
-    const schema2025 = createComplianceSummarySchema(2025);
+    const schema2025 = createComplianceSummarySchema(2025, false);
     const productsSchema = schema2025.properties?.products as any;
     const productProperties = productsSchema?.items?.properties;
 
@@ -211,12 +213,28 @@ describe("ComplianceSummaryForm", () => {
   });
 
   it("should generate schema with apr_dec_production for 2024", () => {
-    const schema2024 = createComplianceSummarySchema(2024);
+    const schema2024 = createComplianceSummarySchema(2024, false);
     const productsSchema = schema2024.properties?.products as any;
     const productProperties = productsSchema?.items?.properties;
 
     expect(productProperties).toBeDefined();
     expect(productProperties?.apr_dec_production).toBeDefined();
     expect(productProperties?.annual_production).toBeDefined();
+  });
+
+  it("should generate schema with jan_mar_production field for 2025 when the operation is opted out", () => {
+    const schema2025 = createComplianceSummarySchema(2025, true);
+    const productsSchema = schema2025.properties?.products as any;
+    const productProperties = productsSchema?.items?.properties;
+
+    expect(productProperties).toHaveProperty("jan_mar_production");
+  });
+
+  it("should generate schema with jan_mar_production field for 2025 when the operation is not opted out", () => {
+    const schema2025 = createComplianceSummarySchema(2025, false);
+    const productsSchema = schema2025.properties?.products as any;
+    const productProperties = productsSchema?.items?.properties;
+
+    expect(productProperties).not.toHaveProperty("jan_mar_production");
   });
 });

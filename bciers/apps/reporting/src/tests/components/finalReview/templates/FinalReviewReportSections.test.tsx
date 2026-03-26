@@ -169,6 +169,8 @@ describe("The ReportSections component", () => {
     is_supplementary_report: false,
     report_new_entrant: [],
     report_electricity_import_data: [],
+    reporting_year: 2025,
+    is_operation_opted_out: false,
   };
 
   it("renders operation information section", () => {

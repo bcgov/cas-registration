@@ -321,6 +321,11 @@ export const complianceSummaryFields = (
           key: `products.${index}.annual_production`,
           unit: "production unit",
         },
+        {
+          label: "Production data for Apr 1 - Dec 31 2024",
+          key: `products.${index}.apr_dec_production`,
+          reporting_years: [2024],
+        },
         ...(isOptedOut
           ? [
               {

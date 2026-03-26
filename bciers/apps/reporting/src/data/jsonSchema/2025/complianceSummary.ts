@@ -3,7 +3,7 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 export const complianceSummarySchema2025 = (
-  isOptedOut: boolean,
+  is_opted_out: boolean,
 ): RJSFSchema => ({
   type: "object",
   title: "Compliance Summary",
@@ -61,7 +61,7 @@ export const complianceSummarySchema2025 = (
             type: "number",
             title: "Annual production",
           },
-          ...(isOptedOut
+          ...(is_opted_out
             ? {
                 jan_mar_production: {
                   type: "number",
@@ -88,7 +88,7 @@ export const complianceSummarySchema2025 = (
 });
 
 export const complianceSummaryUiSchema2025 = (
-  isOptedOut: boolean,
+  is_opted_out: boolean,
 ): UiSchema => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
@@ -153,7 +153,7 @@ export const complianceSummaryUiSchema2025 = (
           displayUnit: "production unit",
         },
       },
-      ...(isOptedOut
+      ...(is_opted_out
         ? {
             jan_mar_production: {
               "ui:options": {
