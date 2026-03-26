@@ -13,6 +13,7 @@ from registration.utils import generate_useful_error
 from registration.constants import UNAUTHORIZED_MESSAGE
 from common.exceptions import UserError
 from compliance.service.exceptions import ComplianceInvoiceError
+from reporting.service.exceptions import ReportValidationException
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,7 @@ class ExceptionResponse:
     message: Optional[Union[str, Callable[[Any], Optional[str]]]]
     status: int
     sentry_tag: Optional[str] = None
+    payload_builder: Optional[Callable[[Any], dict[str, Any]]] = None
 
 
 class ExceptionHandler:
@@ -42,6 +44,16 @@ class ExceptionHandler:
         (PermissionError,): ExceptionResponse("Permission denied.", 403),
         (InternalError, ProgrammingError, DatabaseError): ExceptionResponse(
             "Internal Server Error.", 500, "database_error"
+        ),
+        (ReportValidationException,): ExceptionResponse(
+            None,
+            422,
+            payload_builder=lambda exc: {
+                "errors": [
+                    {"key": k, "message": e.message, **({"fix_url": e.fix_url} if e.fix_url else {})}
+                    for k, e in exc.errors.items()
+                ]
+            },
         ),
     }
 
@@ -94,8 +106,11 @@ class ExceptionHandler:
         return event_id
 
     @classmethod
-    def get_response_body(cls, exc: BaseException, response_config: ExceptionResponse) -> dict:
+    def get_response_body(cls, exc: BaseException, response_config: ExceptionResponse) -> dict[str, Any]:
         """Generate response body based on exception and config."""
+        if response_config.payload_builder:
+            return response_config.payload_builder(exc)
+
         message = response_config.message
         if callable(message):
             message = message(exc)

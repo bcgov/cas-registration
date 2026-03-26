@@ -64,6 +64,12 @@ class TestExceptionHandler:
         body = ExceptionHandler.get_response_body(exc, config)
         assert body == {"message": "Test"}
 
+    def test_get_response_body_payload_builder(self):
+        exc = Exception("Test")
+        config = ExceptionResponse(None, 422, payload_builder=lambda e: {"errors": [{"message": str(e)}]})
+        body = ExceptionHandler.get_response_body(exc, config)
+        assert body == {"errors": [{"message": "Test"}]}
+
     def test_handle_unauthorized(self, mock_request):
         exc = Exception(UNAUTHORIZED_MESSAGE)
         response = ExceptionHandler.handle(mock_request, exc)
