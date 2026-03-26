@@ -2,7 +2,7 @@ import { defineConfig, type Config } from "happo";
 import { baseConfig } from "../../happo-base.config.js";
 
 const project = "cas-reporting";
-const projectPrefix = project.replace(/-/g, "_").toUpperCase();
+const projectPrefix = project.replaceAll("-", "_").toUpperCase();
 
 export default defineConfig({
   ...baseConfig,
