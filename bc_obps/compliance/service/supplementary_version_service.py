@@ -498,47 +498,7 @@ class DecreasedObligationHandler:
             e.net_outstanding_after == ZERO_DECIMAL for e in per_invoice
         )
 
-        def _determine_if_has_cash(
-            fully_paid_obligation: bool,
-            refund_pool: Decimal,
-            over_corrected_tonnes: Decimal,
-            invoices: list[dict],
-            anchor_crv_id: Optional[int],
-        ) -> bool:
-            if not (fully_paid_obligation and (refund_pool > ZERO_DECIMAL or over_corrected_tonnes > ZERO_DECIMAL)):
-                return False
-
-            # Prefer using precomputed per-invoice 'paid' when available.
-            has_cash = any((inv.get("paid") or ZERO_DECIMAL) > ZERO_DECIMAL for inv in invoices)
-            # TODO; There's the case where a supplementary report is decreasing before voiding
-
-            # Fallback when there are NO invoices but we have an anchor_crv_id
-            if not has_cash and not invoices and anchor_crv_id:
-                prior_invoices = ElicensingInvoice.objects.filter(
-                    compliance_obligation__compliance_report_version_id=anchor_crv_id
-                ).prefetch_related(
-                    Prefetch(
-                        "elicensing_line_items",
-                        queryset=ElicensingLineItem.objects.filter(
-                            line_item_type=ElicensingLineItem.LineItemType.FEE
-                        ).prefetch_related("elicensing_payments"),
-                    )
-                )
-
-                # Edge case check if supp CRV is created and anchor_crv_id is still attached to original obligation
-                if not prior_invoices:
-                    prior_invoices = DecreasedObligationHandler._find_newest_non_void_prior_invoices(
-                        anchor_crv_id, prior_invoices
-                    )
-
-                cash_total = ZERO_DECIMAL
-                for _inv in prior_invoices:
-                    cash_total += DecreasedObligationHandler._sum_invoice_cash_payments(_inv)
-                has_cash = cash_total > ZERO_DECIMAL
-
-            return has_cash
-
-        has_cash = _determine_if_has_cash(
+        has_cash = DecreasedObligationHandler._determine_if_has_cash(
             fully_paid_obligation, refund_pool, over_corrected_tonnes, invoices, anchor_crv_id
         )
         should_record_manual_handling = has_cash
@@ -564,6 +524,47 @@ class DecreasedObligationHandler:
     # ------------------------------------------------------------
     #  Collecting helpers
     # ------------------------------------------------------------
+
+    @staticmethod
+    def _determine_if_has_cash(
+        fully_paid_obligation: bool,
+        refund_pool: Decimal,
+        over_corrected_tonnes: Decimal,
+        invoices: list[dict],
+        anchor_crv_id: Optional[int],
+    ) -> bool:
+        if not (fully_paid_obligation and (refund_pool > ZERO_DECIMAL or over_corrected_tonnes > ZERO_DECIMAL)):
+            return False
+
+        # Prefer using precomputed per-invoice 'paid' when available.
+        has_cash = any((inv.get("paid") or ZERO_DECIMAL) > ZERO_DECIMAL for inv in invoices)
+        # TODO; There's the case where a supplementary report is decreasing before voiding
+
+        # Fallback when there are NO invoices but we have an anchor_crv_id
+        if not has_cash and not invoices and anchor_crv_id:
+            prior_invoices = ElicensingInvoice.objects.filter(
+                compliance_obligation__compliance_report_version_id=anchor_crv_id
+            ).prefetch_related(
+                Prefetch(
+                    "elicensing_line_items",
+                    queryset=ElicensingLineItem.objects.filter(
+                        line_item_type=ElicensingLineItem.LineItemType.FEE
+                    ).prefetch_related("elicensing_payments"),
+                )
+            )
+
+            # Edge case check if supp CRV is created and anchor_crv_id is still attached to original obligation
+            if not prior_invoices:
+                prior_invoices = DecreasedObligationHandler._find_newest_non_void_prior_invoices(
+                    anchor_crv_id, prior_invoices
+                )
+
+            cash_total = ZERO_DECIMAL
+            for _inv in prior_invoices:
+                cash_total += DecreasedObligationHandler._sum_invoice_cash_payments(_inv)
+            has_cash = cash_total > ZERO_DECIMAL
+
+        return has_cash
 
     @staticmethod
     def _find_newest_unpaid_anchor_along_chain(
@@ -669,10 +670,7 @@ class DecreasedObligationHandler:
 
     @staticmethod
     def _all_invoices_void(invoices: QuerySet[ElicensingInvoice]) -> bool:
-        for inv in invoices:
-            if not inv.is_void:
-                return False
-        return True
+        return all(inv.is_void for inv in invoices)
 
     @staticmethod
     def _find_newest_non_void_prior_invoices(
