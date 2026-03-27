@@ -333,11 +333,16 @@ export const complianceSummaryFields = (products: any[] = []) => {
           key: `products.${index}.apr_dec_production`,
           reporting_years: [2024],
         },
-        {
-          label: "Production data for Jan 1 - Mar 31 2025",
-          key: `products.${index}.jan_mar_production`,
-          reporting_years: [2025],
-        },
+        ...(product.jan_mar_production != null
+          ? [
+              {
+                label: "Production data for Jan 1 - Mar 31 2025",
+                key: `products.${index}.jan_mar_production`,
+                unit: "production unit",
+                reporting_years: [2025],
+              },
+            ]
+          : []),
         {
           label: "Production-weighted average emission intensity",
           key: `products.${index}.emission_intensity`,

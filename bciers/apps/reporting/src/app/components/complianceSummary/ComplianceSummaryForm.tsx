@@ -9,7 +9,7 @@ import {
   createComplianceSummarySchema,
 } from "@reporting/src/data/jsonSchema/complianceSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
-import { NavigationInformation } from "../taskList/types";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 
 interface Props {
   summaryFormData: {
@@ -45,13 +45,11 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   navigationInformation,
 }) => {
   // Generate schemas based on reporting year
-  const complianceSummarySchema = createComplianceSummarySchema(
-    summaryFormData.reporting_year,
-  );
+  const complianceSummarySchema =
+    createComplianceSummarySchema(summaryFormData);
 
-  const complianceSummaryUiSchema = createComplianceSummaryUiSchema(
-    summaryFormData.reporting_year,
-  );
+  const complianceSummaryUiSchema =
+    createComplianceSummaryUiSchema(summaryFormData);
 
   return (
     <Box sx={{ p: 3 }}>

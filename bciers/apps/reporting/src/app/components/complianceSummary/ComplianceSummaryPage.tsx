@@ -2,8 +2,11 @@ import ComplianceSummaryForm from "@reporting/src/app/components/complianceSumma
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getComplianceData } from "@reporting/src/app/utils/getComplianceData";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import { getNavigationInformation } from "../taskList/navigationInformation";
-import { HeaderStep, ReportingPage } from "../taskList/types";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import {
+  HeaderStep,
+  ReportingPage,
+} from "@reporting/src/app/components/taskList/types";
 
 export default async function ComplianceSummaryPage({
   version_id,
