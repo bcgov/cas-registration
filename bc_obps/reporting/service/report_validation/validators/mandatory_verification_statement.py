@@ -30,7 +30,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             errors["missing_report_verification"] = ReportValidationError(
                 Severity.ERROR,
                 "Report verification form not found in the report.",
-                fix_url=f"reporting/reports/{report_version.id}/attachments",
+                fix_url=f"reporting/reports/{report_version.id}/verification",
             )
 
         # Check for the attachment only if mandatory
