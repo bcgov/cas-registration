@@ -16,8 +16,11 @@ const MultiStepFormWithTaskList: React.FC<Props> = (props) => {
   const { initialStep, steps, taskListElements } = props;
 
   return (
-    <Box sx={{ p: 3 }}>
-      <div className="container mx-auto p-4" data-testid="facility-review">
+    <Box>
+      <div
+        className="container mx-auto pt-0 pb-4 px-4"
+        data-testid="facility-review"
+      >
         <MultiStepHeader stepIndex={initialStep} steps={steps} />
       </div>
       <div className="w-full flex">
