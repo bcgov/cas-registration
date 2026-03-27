@@ -14,6 +14,18 @@ from registration.schema import (
 )
 
 
+user_alias = {
+    "first_name": "user.first_name",
+    "last_name": "user.last_name",
+    "email": "user.email",
+    "bceid_business_name": "user.bceid_business_name",
+}
+
+operator_alias = {
+    "legal_name": "operator.legal_name",
+}
+
+
 class UserOperatorOperatorOut(Schema):
     operator_id: UUID
     user_operator_id: UUID
@@ -31,11 +43,11 @@ class UserOperatorFilterSchema(FilterSchema):
 
 
 class UserOperatorListOut(ModelSchema):
-    user__first_name: str = Field(..., alias="user.first_name")
-    user__last_name: str = Field(..., alias="user.last_name")
-    user__email: str = Field(..., alias="user.email")
-    user__bceid_business_name: str = Field(..., alias="user.bceid_business_name")
-    operator__legal_name: str = Field(..., alias="operator.legal_name")
+    user__first_name: str = Field(..., alias=user_alias["first_name"])
+    user__last_name: str = Field(..., alias=user_alias["last_name"])
+    user__email: str = Field(..., alias=user_alias["email"])
+    user__bceid_business_name: str = Field(..., alias=user_alias["bceid_business_name"])
+    operator__legal_name: str = Field(..., alias=operator_alias["legal_name"])
 
     class Meta:
         model = UserOperator
@@ -47,7 +59,7 @@ class UserOperatorOut(ModelSchema):
     Custom schema for the user operator form
     """
 
-    legal_name: str = Field(..., alias="operator.legal_name")
+    legal_name: str = Field(..., alias=operator_alias["legal_name"])
     trade_name: Optional[str] = Field("", alias="operator.trade_name")
     cra_business_number: Optional[str] = Field(
         None, pattern=CRA_BUSINESS_NUMBER_REGEX, alias="operator.cra_business_number"
@@ -67,9 +79,9 @@ class UserOperatorOut(ModelSchema):
     operator_has_partner_operators: bool
     partner_operators_array: Optional[List[PartnerOperatorOut]] = Field(None, alias="operator.partner_operators")
 
-    first_name: str = Field(..., alias="user.first_name")
-    last_name: str = Field(..., alias="user.last_name")
-    email: str = Field(..., alias="user.email")
+    first_name: str = Field(..., alias=user_alias["first_name"])
+    last_name: str = Field(..., alias=user_alias["last_name"])
+    email: str = Field(..., alias=user_alias["email"])
     phone_number: str = str(Field(None, alias="user.phone_number"))
     position_title: str = Field(..., alias="user.position_title")
     bceid_business_name: Optional[str] = Field(None, alias="user.bceid_business_name")
@@ -118,7 +130,7 @@ class UserOperatorOut(ModelSchema):
 class CurrentUserOperatorOut(ModelSchema):
     operatorId: UUID = Field(..., alias="operator.id")
     operatorStatus: str = Field(..., alias="operator.status")
-    operatorLegalName: str = Field(..., alias="operator.legal_name")
+    operatorLegalName: str = Field(..., alias=operator_alias["legal_name"])
 
     class Meta:
         model = UserOperator
@@ -147,8 +159,8 @@ class UserOperatorStatusUpdateOut(ModelSchema):
     Custom schema for the user operator form
     """
 
-    first_name: str = Field(..., alias="user.first_name")
-    last_name: str = Field(..., alias="user.last_name")
+    first_name: str = Field(..., alias=user_alias["first_name"])
+    last_name: str = Field(..., alias=user_alias["last_name"])
 
     class Meta:
         model = UserOperator
