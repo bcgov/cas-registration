@@ -98,5 +98,5 @@ __all__ = [
     "ReportComplianceSummaryProduct",
     "ReportAttachmentConfirmation",
     "ExpectedValueRangeFuelType",
-    "ExpectedValueRangeMethodology"
+    "ExpectedValueRangeMethodology",
 ]

@@ -3,6 +3,7 @@
 from django.db import migrations
 from decimal import Decimal
 
+
 def insert_validation_records(apps, schema_monitor):
     ExpectedValueRangeFuelAmount = apps.get_model('reporting', 'ExpectedValueRangeFuelAmount')
     ExpectedValueRangeMethodology = apps.get_model('reporting', 'ExpectedValueRangeMethodology')
@@ -58,13 +59,13 @@ def insert_validation_records(apps, schema_monitor):
         valid_from='2023-01-01',
         valid_to='9999-12-31',
     )
-    
 
 
 def revert_validation_records(apps, schema_monitor):
     ExpectedValueRangeFuelAmount = apps.get_model('reporting', 'ExpectedValueRangeFuelAmount')
 
     ExpectedValueRangeFuelAmount.objects.all().delete()
+
 
 class Migration(migrations.Migration):
 

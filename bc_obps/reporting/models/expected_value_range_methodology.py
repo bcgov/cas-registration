@@ -29,12 +29,12 @@ class ExpectedValueRangeMethodology(BaseModel):
         max_digits=10,
         decimal_places=4,
         default=0,
-        db_comment="The lower bound of the value range for the related methodology. The reported methodology value should not be lower than this value"
+        db_comment="The lower bound of the value range for the related methodology. The reported methodology value should not be lower than this value",
     )
     upper_bound = models.DecimalField(
         max_digits=20,
         decimal_places=4,
-        db_comment="The upper bound of the value range for the related methodology. The reported methodology value should not be greater than this value"
+        db_comment="The upper bound of the value range for the related methodology. The reported methodology value should not be greater than this value",
     )
     valid_from = models.DateField(
         db_comment="The date this range bound record took effect",
@@ -44,9 +44,7 @@ class ExpectedValueRangeMethodology(BaseModel):
     )
 
     class Meta:
-        db_table_comment = (
-            "This table contains the expected range of values by fuel_type, gas_type and methodology that a reported methodology value should fall within. Values reported outside of these bounds are to be considered extraordinary and should be reviewed."
-        )
+        db_table_comment = "This table contains the expected range of values by fuel_type, gas_type and methodology that a reported methodology value should fall within. Values reported outside of these bounds are to be considered extraordinary and should be reviewed."
         db_table = 'erc"."expected_value_range_methodology'
 
     Rls = ExpectedValueRangeMethodologyRls
