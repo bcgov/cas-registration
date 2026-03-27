@@ -3,8 +3,6 @@ import React from "react";
 type ReportValidationMessageKey =
   | "missing_report_verification"
   | "verification_statement"
-  | "fuelType"
-  | "gasType"
   | "missing_required_attachment_confirmation"
   | "missing_existing_attachment_confirmation"
   | "missing_supplementary_report_attachment_confirmation"
@@ -13,26 +11,56 @@ type ReportValidationMessageKey =
 const reportValidationMessagesMap: Record<ReportValidationMessageKey, string> =
   {
     missing_report_verification:
-      "Verification information must be completed with this report. Please complete the Verification page.",
+      "Verification information must be completed on the Verification page.",
     verification_statement:
-      "A verification statement must be uploaded with this report. Please upload a verification statement on the Attachments page.",
-    fuelType: "Fuel is missing Fuel Name.",
-    gasType: "Emission is missing Gas Type.",
+      "A verification statement must be uploaded with this report on the Attachments page.",
     missing_required_attachment_confirmation:
       "You must confirm that all required supplementary attachments have been uploaded on the Attachments page.",
     missing_existing_attachment_confirmation:
       "You must confirm that all existing attachments are still relevant to the supplementary submission on the Attachments page.",
     missing_supplementary_report_attachment_confirmation:
-      "No attachment confirmation found for this supplementary report. Please confirm the attachments on the Attachments page.", // Added the message here
+      "No attachment confirmation found for this supplementary report. Please confirm the attachments on the Attachments page.",
     missing_supplementary_report_version_change:
-      "You must provide a reason for the change(s) in this supplementary report. Please provide a reason for change on the Review Changes page.",
+      "A reason for the changes in this supplementary report must be provided on the Review Changes page.",
   };
 
+const reportValidationLinkTextMap: Partial<
+  Record<ReportValidationMessageKey, string>
+> = {
+  missing_report_verification: "Verification page",
+  verification_statement: "Attachments page",
+  missing_required_attachment_confirmation: "Attachments page",
+  missing_existing_attachment_confirmation: "Attachments page",
+  missing_supplementary_report_attachment_confirmation: "Attachments page",
+  missing_supplementary_report_version_change: "Review Changes page",
+};
+
+const ALLOCATION_MISMATCH_KEY_PREFIX = "allocation_mismatch_facility_";
+const ALLOCATION_MISMATCH_LINK_TEXT = "Allocation of Emissions page";
+
 type HelpfulValidationError = {
-  key?: string;
+  key: string;
   message: string;
   fix_url?: string;
 };
+
+function isObjectRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object";
+}
+
+function isHelpfulValidationError(
+  value: unknown,
+): value is HelpfulValidationError {
+  if (!isObjectRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.message === "string" &&
+    typeof value.key === "string" &&
+    (value.fix_url === undefined || typeof value.fix_url === "string")
+  );
+}
 
 function extractErrorKey(
   error: string,
@@ -66,22 +94,6 @@ function cleanErrorString(error: unknown): string {
   return trimmedError;
 }
 
-function getAllocationMismatchMessage(errorStr: string): string {
-  // Everything before the colon is the error key, and looks scary, so we strip it out.
-  const msgStartIndex = errorStr.indexOf(":");
-  return msgStartIndex !== -1
-    ? errorStr.substring(msgStartIndex + 1).trim()
-    : "";
-}
-
-function handleAllocationMismatchError(errorStr: string): string | undefined {
-  const prefix = "Allocation Mismatch Facility ";
-  if (errorStr.startsWith(prefix)) {
-    return `${getAllocationMismatchMessage(errorStr)}`;
-  }
-  return undefined;
-}
-
 export function getValidationErrorMessage(
   error: unknown,
 ): string | React.ReactNode {
@@ -106,6 +118,26 @@ function renderHelpfulError(
   const message = getDisplayMessage(error);
 
   if (error.fix_url) {
+    const key = error.key ? extractErrorKey(error.key) : undefined;
+    // Allocation mismatch errors have dynamic keys, so we check for the key prefix for those
+    const linkText = key
+      ? reportValidationLinkTextMap[key]
+      : error.key?.startsWith(ALLOCATION_MISMATCH_KEY_PREFIX)
+        ? ALLOCATION_MISMATCH_LINK_TEXT
+        : undefined;
+
+    if (linkText) {
+      const messageParts = message.split(linkText);
+      if (messageParts.length === 2) {
+        return React.createElement(
+          React.Fragment,
+          null,
+          messageParts[0],
+          React.createElement("a", { href: `/${error.fix_url}` }, linkText),
+          messageParts[1],
+        );
+      }
+    }
     return React.createElement(
       React.Fragment,
       null,
@@ -124,43 +156,17 @@ function renderHelpfulError(
 export function getValidationErrorMessages(
   error: unknown,
 ): (string | React.ReactNode)[] {
-  const errorString = cleanErrorString(error);
+  if (isObjectRecord(error) && Array.isArray(error.errors)) {
+    const helpfulErrors = error.errors.filter(isHelpfulValidationError);
 
-  // The submission service encodes structured errors as a JSON object so that
-  // fix_url survives the Django exception-handler pipeline.
-  try {
-    const parsed = JSON.parse(errorString);
-
-    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-      if (Array.isArray(parsed.errors)) {
-        const helpfulErrors = parsed.errors.filter(
-          (entry: unknown) =>
-            typeof entry === "object" &&
-            entry !== null &&
-            typeof (entry as HelpfulValidationError).message === "string",
-        ) as HelpfulValidationError[];
-
-        if (helpfulErrors.length > 0) {
-          return helpfulErrors.map(renderHelpfulError);
-        }
-      }
-
-      if (typeof parsed.message === "string") {
-        return [renderHelpfulError(parsed as HelpfulValidationError)];
-      }
+    if (helpfulErrors.length > 0) {
+      return helpfulErrors.map(renderHelpfulError);
     }
-  } catch {
-    // Not a structured JSON error (which are generated by the report submission validators) => fall back to general error handling.
   }
 
-  const key = extractErrorKey(errorString);
-  if (key) {
-    return [reportValidationMessagesMap[key]];
-  }
-
-  const allocationMismatchError = handleAllocationMismatchError(errorString);
-  if (allocationMismatchError) {
-    return [allocationMismatchError];
+  const cleanedError = cleanErrorString(error);
+  if (cleanedError) {
+    return [cleanedError];
   }
 
   return [`${error}`];

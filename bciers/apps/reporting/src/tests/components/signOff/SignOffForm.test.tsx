@@ -200,7 +200,7 @@ describe("SignOffForm Component (with actual schema)", () => {
 
   it("renders multiple submission validation errors with fix links", async () => {
     (postSubmitReport as Mock).mockResolvedValue({
-      error: JSON.stringify({
+      error: {
         errors: [
           {
             key: "missing_report_verification", // gitleaks:allow
@@ -214,7 +214,7 @@ describe("SignOffForm Component (with actual schema)", () => {
             fix_url: "reporting/reports/1/verification",
           },
         ],
-      }),
+      },
     });
 
     renderSignOffFormWithSchema({
@@ -232,20 +232,22 @@ describe("SignOffForm Component (with actual schema)", () => {
 
     const alerts = screen.getAllByRole("alert");
     expect(alerts[0]).toHaveTextContent(
-      "Verification information must be completed with this report. Please complete the Verification page.",
+      "Verification information must be completed on the Verification page.",
     );
     expect(alerts[1]).toHaveTextContent(
-      "A verification statement must be uploaded with this report. Please upload a verification statement on the Attachments page.",
+      "A verification statement must be uploaded with this report on the Attachments page.",
     );
 
-    const links = screen.getAllByRole("link", {
-      name: "Click here to fix this issue.",
-    });
-
-    expect(links).toHaveLength(2);
-    for (const link of links) {
-      expect(link).toHaveAttribute("href", "/reporting/reports/1/verification");
-    }
+    expect(
+      screen.getByRole("link", {
+        name: "Verification page",
+      }),
+    ).toHaveAttribute("href", "/reporting/reports/1/verification");
+    expect(
+      screen.getByRole("link", {
+        name: "Attachments page",
+      }),
+    ).toHaveAttribute("href", "/reporting/reports/1/verification");
 
     expect(mockRouterPush).not.toHaveBeenCalled();
   });
