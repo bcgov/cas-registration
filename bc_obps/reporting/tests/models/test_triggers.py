@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 import pgtrigger
 import pytest
-from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.triggers import immutable_report_version_trigger, no_overlapping_configuration_records_trigger
 
 
 class ImmutableReportVersionTriggerTest(SimpleTestCase):
@@ -64,3 +64,118 @@ class ImmutableReportVersionTriggerTest(SimpleTestCase):
             match="The immutable report version trigger path should point at the erc.report_version table",
         ):
             immutable_report_version_trigger("random_model")
+
+
+class NoOverlappingConfigurationRecordsTriggerTest(SimpleTestCase):
+    def test_generates_sql_without_additional_filters(self):
+        trigger = no_overlapping_configuration_records_trigger(message="test message")
+
+        assert trigger.name == "no_overlapping_configuration_records"
+        assert trigger.operation.operations == (pgtrigger.Insert, pgtrigger.Update)
+        assert trigger.when == pgtrigger.Before
+        assert trigger.func.func == (
+            """
+        declare
+            new_valid_from date;
+            new_valid_to date;
+        begin
+            select valid_from into new_valid_from
+            from "erc"."configuration" where id = new.valid_from_id;
+
+            select valid_to into new_valid_to
+            from "erc"."configuration" where id = new.valid_to_id;
+
+            if exists (
+                select 1
+                from "{meta.db_table}" t
+                join "erc"."configuration" cf on cf.id = t.valid_from_id
+                join "erc"."configuration" ct on ct.id = t.valid_to_id
+                where t.activity_id = new.activity_id
+        """
+            + """          and (tg_op = 'INSERT' or t.id != old.id)
+                  and new_valid_from <= ct.valid_to
+                  and new_valid_to >= cf.valid_from
+            ) then
+                raise exception 'test message', new_valid_from, new_valid_to;
+            end if;
+
+            return new;
+        end;
+        """
+        )
+
+    def test_generates_sql_with_single_additional_filter(self):
+        trigger = no_overlapping_configuration_records_trigger(
+            message="test message", additional_filters=["source_type"]
+        )
+
+        assert trigger.func.func == (
+            """
+        declare
+            new_valid_from date;
+            new_valid_to date;
+        begin
+            select valid_from into new_valid_from
+            from "erc"."configuration" where id = new.valid_from_id;
+
+            select valid_to into new_valid_to
+            from "erc"."configuration" where id = new.valid_to_id;
+
+            if exists (
+                select 1
+                from "{meta.db_table}" t
+                join "erc"."configuration" cf on cf.id = t.valid_from_id
+                join "erc"."configuration" ct on ct.id = t.valid_to_id
+                where t.activity_id = new.activity_id
+        """
+            + "  and t.source_type_id = new.source_type_id\n"
+            + """          and (tg_op = 'INSERT' or t.id != old.id)
+                  and new_valid_from <= ct.valid_to
+                  and new_valid_to >= cf.valid_from
+            ) then
+                raise exception 'test message', new_valid_from, new_valid_to;
+            end if;
+
+            return new;
+        end;
+        """
+        )
+
+    def test_generates_sql_with_multiple_additional_filters(self):
+        trigger = no_overlapping_configuration_records_trigger(
+            message="test message", additional_filters=["source_type", "gas_type", "methodology"]
+        )
+
+        assert trigger.func.func == (
+            """
+        declare
+            new_valid_from date;
+            new_valid_to date;
+        begin
+            select valid_from into new_valid_from
+            from "erc"."configuration" where id = new.valid_from_id;
+
+            select valid_to into new_valid_to
+            from "erc"."configuration" where id = new.valid_to_id;
+
+            if exists (
+                select 1
+                from "{meta.db_table}" t
+                join "erc"."configuration" cf on cf.id = t.valid_from_id
+                join "erc"."configuration" ct on ct.id = t.valid_to_id
+                where t.activity_id = new.activity_id
+        """
+            + "  and t.source_type_id = new.source_type_id\n"
+            + "  and t.gas_type_id = new.gas_type_id\n"
+            + "  and t.methodology_id = new.methodology_id\n"
+            + """          and (tg_op = 'INSERT' or t.id != old.id)
+                  and new_valid_from <= ct.valid_to
+                  and new_valid_to >= cf.valid_from
+            ) then
+                raise exception 'test message', new_valid_from, new_valid_to;
+            end if;
+
+            return new;
+        end;
+        """
+        )

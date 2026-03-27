@@ -3,6 +3,8 @@ from registration.models import Activity
 from reporting.models import ConfigurationElement, SourceType, GasType, Methodology, CustomMethodologySchema
 from reporting.tests.utils.bakers import (
     configuration_baker,
+    gas_type_baker,
+    methodology_baker,
 )
 import pytest
 
@@ -42,7 +44,7 @@ class ConfigurationElementTest(BaseTestCase):
             ("reporting_fields", "reporting fields", None, None),
         ]
 
-    def testDuplicateConfigElementForDateRange(self):
+    def test_duplicate_config_element_for_date_range(self):
         invalid_record = ConfigurationElement(
             activity=self.test_object.activity,
             source_type=self.test_object.source_type,
@@ -57,7 +59,21 @@ class ConfigurationElementTest(BaseTestCase):
             invalid_record.save()
         assert exc.match(r"^This record will result in duplicate configuration elements")
 
-    def testValidInsert(self):
+    def test_different_gas_type_and_methodology_on_same_date_range(self):
+        # Same activity, source_type, and date range but different gas_type and methodology
+        different_gas_type = gas_type_baker()
+        different_methodology = methodology_baker()
+        valid_record = ConfigurationElement(
+            activity=self.test_object.activity,
+            source_type=self.test_object.source_type,
+            gas_type=different_gas_type,
+            methodology=different_methodology,
+            valid_from=self.test_object.valid_from,
+            valid_to=self.test_object.valid_to,
+        )
+        valid_record.save()
+
+    def test_valid_insert(self):
         config = configuration_baker({'slug': '5026', 'valid_from': '5026-01-01', 'valid_to': '5026-12-31'})
         valid_record = ConfigurationElement(
             activity=self.test_object.activity,

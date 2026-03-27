@@ -2,6 +2,52 @@ from typing import Iterator
 import pgtrigger
 
 
+def no_overlapping_configuration_records_trigger(
+    message: str,
+    additional_filters: list[str] | None = None,
+) -> pgtrigger.Trigger:
+    extra_filters = "".join(f"  and t.{field}_id = new.{field}_id\n" for field in (additional_filters or []))
+    func_body = (
+        """
+        declare
+            new_valid_from date;
+            new_valid_to date;
+        begin
+            select valid_from into new_valid_from
+            from "erc"."configuration" where id = new.valid_from_id;
+
+            select valid_to into new_valid_to
+            from "erc"."configuration" where id = new.valid_to_id;
+
+            if exists (
+                select 1
+                from "{meta.db_table}" t
+                join "erc"."configuration" cf on cf.id = t.valid_from_id
+                join "erc"."configuration" ct on ct.id = t.valid_to_id
+                where t.activity_id = new.activity_id
+        """
+        + extra_filters
+        + """          and (tg_op = 'INSERT' or t.id != old.id)
+                  and new_valid_from <= ct.valid_to
+                  and new_valid_to >= cf.valid_from
+            ) then
+                raise exception '"""
+        + message
+        + """', new_valid_from, new_valid_to;
+            end if;
+
+            return new;
+        end;
+        """
+    )
+    return pgtrigger.Trigger(
+        name="no_overlapping_configuration_records",
+        operation=pgtrigger.Insert | pgtrigger.Update,
+        when=pgtrigger.Before,
+        func=pgtrigger.Func(func_body),
+    )
+
+
 def get_sql_relation_alias_generator() -> Iterator[str]:
     i = 0
     while True:
