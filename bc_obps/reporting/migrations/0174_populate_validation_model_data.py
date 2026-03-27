@@ -70,7 +70,7 @@ def revert_validation_records(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0172_fuel_type_validation_models'),
+        ('reporting', '0173_fuel_type_validation_models'),
     ]
 
     operations = [

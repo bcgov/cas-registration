@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0171_fix_municipal_solid_waste_fuel_name'),
+        ('reporting', '0172_activityjsonschema_no_overlapping_configuration_records_and_more'),
     ]
 
     operations = [
