@@ -4,7 +4,7 @@ import { vi, Mock } from "vitest";
 
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
-import { dummyNavigationInformation } from "../taskList/utils";
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
 import { createComplianceSummarySchema } from "@reporting/src/data/jsonSchema/complianceSummary";
 
 vi.mock("@bciers/actions", () => ({

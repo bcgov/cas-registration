@@ -1,9 +1,9 @@
 import { useRouter } from "next/navigation";
-import { postProductionData } from "@bciers/actions/api";
+import { postProductionData } from "@reporting/src/app/utils/productDataForm/postProductionData";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import ProductionDataForm from "@reporting/src/app/components/products/ProductionDataForm";
 import { act, render } from "@testing-library/react";
-import { dummyNavigationInformation } from "../taskList/utils";
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
@@ -11,7 +11,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("@bciers/components/form/MultiStepFormWithTaskList", () => ({
   default: vi.fn(),
 }));
-vi.mock("@bciers/actions/api", () => ({
+vi.mock("@reporting/src/app/utils/productDataForm/postProductionData", () => ({
   postProductionData: vi.fn(),
 }));
 

@@ -12,3 +12,10 @@ export type OperationData = {
   naics_code: string;
   operation_type: string;
 };
+
+export type ReportingFormResponse<TPayload> = {
+  report_data: ReportData;
+  payload: TPayload;
+  facility_data?: FacilityData;
+  operation_data?: OperationData;
+};
