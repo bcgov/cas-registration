@@ -103,6 +103,6 @@ class TestMandatoryVerificationStatementValidator:
             "missing_report_verification": ReportValidationError(
                 Severity.ERROR,
                 "Report verification form not found in the report.",
-                fix_url=f"reporting/reports/{report_version.id}/attachments",
+                fix_url=f"reporting/reports/{report_version.id}/verification",
             )
         }
