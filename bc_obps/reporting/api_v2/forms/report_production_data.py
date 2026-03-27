@@ -13,7 +13,8 @@ from reporting.schema.report_product import ReportProductSchemaOut
 from reporting.service.report_product_service import ReportProductService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
-from reporting.utils import is_operation_opted_out
+from reporting.service.utils import is_operation_opted_out, OperationContext
+from registration.models.operation import Operation
 
 from ..router import router
 
@@ -47,16 +48,24 @@ def get_production_form_data(request: HttpRequest, version_id: int, facility_id:
         "report_operation",
     ).get(id=version_id)
 
+    # Build operation context
+    ctx = OperationContext(
+        reporting_year=report_version.report.reporting_year.reporting_year,
+        registration_purpose=(
+            Operation.Purposes(report_version.report_operation.registration_purpose)
+            if report_version.report_operation.registration_purpose
+            else None
+        ),
+        opted_out_final_year=report_version.report_operation.operation_opted_out_final_reporting_year,
+    )
+
+    # Build payload
     payload = {
         "report_products": report_products,
         "allowed_products": allowed_products,
-        "is_operation_opted_out": is_operation_opted_out(
-            reporting_year=report_version.report.reporting_year.reporting_year,
-            registration_purpose=report_version.report_operation.registration_purpose,
-            operation_opted_out_final_reporting_year=(
-                report_version.report_operation.operation_opted_out_final_reporting_year
-            ),
-        ),
+        "is_operation_opted_out": is_operation_opted_out(ctx),
     }
+
+    # Build and return response
     response = FormResponseBuilder(version_id).payload(payload).facility_data(facility_id).build()
     return 200, response

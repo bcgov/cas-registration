@@ -53,7 +53,7 @@ const mock2025Data = {
   products: [
     {
       ...mockSummaryData.products[0],
-      apr_dec_production: undefined, // or delete it depending on your logic
+      apr_dec_production: undefined,
     },
   ],
 };
@@ -209,7 +209,7 @@ describe("ComplianceSummaryForm", () => {
     expect(productProperties?.annual_production).toBeDefined();
   });
 
-  it("should generate schema without jan_mar_production when 2025 data does not include a value", () => {
+  it("should generate schema without jan_mar_production when data does not include a value", () => {
     const schema2025 = createComplianceSummarySchema(mock2025Data);
     const productsSchema = schema2025.properties?.products as any;
     const productProperties = productsSchema?.items?.properties;
@@ -218,7 +218,7 @@ describe("ComplianceSummaryForm", () => {
     expect(productProperties?.jan_mar_production).toBeUndefined();
   });
 
-  it("should generate schema with jan_mar_production when 2025 data includes a value", () => {
+  it("should generate schema with jan_mar_production when data includes a value", () => {
     const mock2025DataWithJanMar = {
       ...mock2025Data,
       products: [

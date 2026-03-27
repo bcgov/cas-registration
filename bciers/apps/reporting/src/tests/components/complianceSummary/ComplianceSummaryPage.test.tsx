@@ -1,8 +1,7 @@
 import { render } from "@testing-library/react";
 import ComplianceSummaryForm from "@reporting/src/app/components/complianceSummary/ComplianceSummaryForm";
 import ComplianceSummaryPage from "@reporting/src/app/components/complianceSummary/ComplianceSummaryPage";
-import { actionHandler } from "@bciers/actions";
-import { vi } from "vitest";
+import { getComplianceData } from "@reporting/src/app/utils/complianceSummaryForm/getComplianceData";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import {
   HeaderStep,
@@ -17,46 +16,102 @@ vi.mock(
   }),
 );
 
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
-}));
+vi.mock(
+  "@reporting/src/app/utils/complianceSummaryForm/getComplianceData",
+  () => ({
+    getComplianceData: vi.fn(),
+  }),
+);
 
 vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
   getNavigationInformation: vi.fn(),
 }));
 
-const mockComplianceReportVersionIdaryForm =
-  ComplianceSummaryForm as ReturnType<typeof vi.fn>;
-const mockActionHandler = actionHandler as ReturnType<typeof vi.fn>;
+const mockComplianceSummaryForm = ComplianceSummaryForm as ReturnType<
+  typeof vi.fn
+>;
+
+const mockGetComplianceData = getComplianceData as ReturnType<typeof vi.fn>;
 
 const mockGetNavigationInformation = getNavigationInformation as ReturnType<
   typeof vi.fn
 >;
 
 describe("ComplianceSummaryPage", () => {
-  it("renders ComplianceSummaryForm with the proper tasklist", async () => {
+  it("renders ComplianceSummaryForm with the proper tasklist and summaryFormData", async () => {
     const versionId = 12345;
 
-    // Mock the data for the test
-    const complianceData = { some: "data" };
-    mockActionHandler.mockResolvedValue(complianceData);
+    const response = {
+      payload: {
+        some: "data",
+      },
+      report_data: {
+        reporting_year: 2025,
+      },
+      facility_data: {
+        facility_id: "facility-123",
+      },
+    };
+
+    mockGetComplianceData.mockResolvedValue(response);
     mockGetNavigationInformation.mockResolvedValue({ nav: true });
 
-    // Render the page
     render(await ComplianceSummaryPage({ version_id: versionId }));
 
-    // Validate that ComplianceSummaryForm was called with the expected props
-    expect(mockComplianceReportVersionIdaryForm).toHaveBeenCalledWith(
+    expect(mockGetComplianceData).toHaveBeenCalledWith(versionId);
+
+    expect(mockGetNavigationInformation).toHaveBeenCalledWith(
+      HeaderStep.ComplianceSummary,
+      ReportingPage.ComplianceSummary,
+      versionId,
+      "facility-123",
+    );
+
+    expect(mockComplianceSummaryForm).toHaveBeenCalledWith(
       {
-        summaryFormData: complianceData,
+        summaryFormData: {
+          some: "data",
+          reporting_year: 2025,
+        },
         navigationInformation: { nav: true },
       },
       undefined,
     );
+  });
+
+  it("passes an empty facility id to navigation when facility_data is missing", async () => {
+    const versionId = 12345;
+
+    const response = {
+      payload: {
+        some: "data",
+      },
+      report_data: {
+        reporting_year: 2025,
+      },
+      facility_data: undefined,
+    };
+
+    mockGetComplianceData.mockResolvedValue(response);
+    mockGetNavigationInformation.mockResolvedValue({ nav: true });
+
+    render(await ComplianceSummaryPage({ version_id: versionId }));
+
     expect(mockGetNavigationInformation).toHaveBeenCalledWith(
       HeaderStep.ComplianceSummary,
       ReportingPage.ComplianceSummary,
-      12345,
+      versionId,
+      "",
+    );
+
+    expect(mockComplianceSummaryForm).toHaveBeenCalledWith(
+      {
+        summaryFormData: {
+          some: "data",
+          reporting_year: 2025,
+        },
+        navigationInformation: { nav: true },
+      },
       undefined,
     );
   });

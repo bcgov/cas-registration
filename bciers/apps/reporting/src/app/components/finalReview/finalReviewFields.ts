@@ -333,7 +333,8 @@ export const complianceSummaryFields = (products: any[] = []) => {
           key: `products.${index}.apr_dec_production`,
           reporting_years: [2024],
         },
-        ...(product.jan_mar_production != null
+        ...(product.jan_mar_production !== null &&
+        product.jan_mar_production !== undefined
           ? [
               {
                 label: "Production data for Jan 1 - Mar 31 2025",

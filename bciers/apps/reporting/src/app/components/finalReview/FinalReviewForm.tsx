@@ -35,7 +35,6 @@ export const FinalReviewForm: React.FC<Props> = ({
     }
     fetchData();
   }, [version_id]);
-  console.log(data);
   return (
     <div className="p-6">
       <div className="container mx-auto p-4" data-testid="facility-review">

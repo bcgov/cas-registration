@@ -1,4 +1,7 @@
-import { productionDataFields } from "@reporting/src/app/components/finalReview/finalReviewFields";
+import {
+  complianceSummaryFields,
+  productionDataFields,
+} from "@reporting/src/app/components/finalReview/finalReviewFields";
 
 describe("productionDataFields", () => {
   const alwaysPresentKeys = [
@@ -139,5 +142,38 @@ describe("productionDataFields", () => {
       .map((f: any) => f.heading);
 
     expect(headings).toContain("Cement");
+  });
+});
+
+describe("complianceSummaryFields", () => {
+  it("includes Jan 1 - Mar 31 2025 production field when jan_mar_production is present", () => {
+    const fields = complianceSummaryFields([
+      {
+        name: "Product A",
+        jan_mar_production: 123,
+      },
+    ]);
+
+    expect(fields).toContainEqual({
+      label: "Production data for Jan 1 - Mar 31 2025",
+      key: "products.0.jan_mar_production",
+      unit: "production unit",
+      reporting_years: [2025],
+    });
+  });
+
+  it("does not include Jan 1 - Mar 31 2025 production field when jan_mar_production is null", () => {
+    const fields = complianceSummaryFields([
+      {
+        name: "Product A",
+        jan_mar_production: null,
+      },
+    ]);
+
+    expect(fields).not.toContainEqual(
+      expect.objectContaining({
+        key: "products.0.jan_mar_production",
+      }),
+    );
   });
 });

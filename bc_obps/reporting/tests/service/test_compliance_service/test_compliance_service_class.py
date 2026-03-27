@@ -367,3 +367,72 @@ class TestComplianceSummaryServiceClass(TestCase):
             )
             == ProductionPeriod.ANNUAL
         )
+
+    def test_returns_jan_mar_for_2025_opted_out_operation(self):
+        build_data = ComplianceTestInfrastructure.reporting_year_2025()
+
+        report_op = build_data.report_version_1.report_operation
+        report_op.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
+        report_op.operation_opted_out_final_reporting_year = 2025
+        report_op.save()
+
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        for product in result.products:
+            self.assertIsNotNone(product.jan_mar_production)
+            self.assertIsInstance(product.jan_mar_production, Decimal)
+
+    def test_returns_no_jan_mar_for_2025_when_not_opted_out(self):
+        build_data = ComplianceTestInfrastructure.reporting_year_2025()
+
+        report_op = build_data.report_version_1.report_operation
+        report_op.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
+        report_op.operation_opted_out_final_reporting_year = None
+        report_op.save()
+
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        for product in result.products:
+            self.assertIsNone(product.jan_mar_production)
+
+    def test_ignores_jan_mar_data_in_db_when_not_applicable(self):
+        build_data = ComplianceTestInfrastructure.reporting_year_2025()
+
+        report_op = build_data.report_version_1.report_operation
+        report_op.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
+        report_op.operation_opted_out_final_reporting_year = None
+        report_op.save()
+
+        build_data.report_product_1.production_data_jan_mar = Decimal("500.00")
+        build_data.report_product_1.save()
+
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        for product in result.products:
+            self.assertIsNone(product.jan_mar_production)
+
+    def test_returns_no_jan_mar_for_non_2025_reporting_year(self):
+        build_data = ComplianceTestInfrastructure.build()
+
+        report_op = build_data.report_version_1.report_operation
+        report_op.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
+        report_op.operation_opted_out_final_reporting_year = 2024
+        report_op.save()
+
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        for product in result.products:
+            self.assertIsNone(product.jan_mar_production)
+
+    def test_returns_jan_mar_for_2025_when_final_year_is_before_reporting_year(self):
+        build_data = ComplianceTestInfrastructure.reporting_year_2025()
+
+        report_op = build_data.report_version_1.report_operation
+        report_op.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
+        report_op.operation_opted_out_final_reporting_year = 2024
+        report_op.save()
+
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        for product in result.products:
+            self.assertIsNotNone(product.jan_mar_production)

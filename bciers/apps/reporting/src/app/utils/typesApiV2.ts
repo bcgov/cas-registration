@@ -1,4 +1,5 @@
 export type FacilityData = {
+  facility_id?: string;
   facility_type: string;
   facility_name: string;
 };

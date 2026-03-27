@@ -1,7 +1,12 @@
-from unittest.mock import patch
 from uuid import UUID
+from unittest.mock import patch
+
 from django.test import SimpleTestCase
+
 from reporting.api_v2.forms.form_response_builder import FormResponseBuilder
+
+
+TEST_FACILITY_ID = UUID("12345678-1234-5678-1234-567812345678")
 
 
 class TestFormResponseBuilder(SimpleTestCase):
@@ -27,9 +32,13 @@ class TestFormResponseBuilder(SimpleTestCase):
         mocked_facility_report.facility_name = "Name!!"
 
         builder = FormResponseBuilder(456)
-        assert builder.facility_data(UUID('12345678-1234-5678-1234-567812345678')).build() == {
+        assert builder.facility_data(TEST_FACILITY_ID).build() == {
             "report_data": {"reporting_year": 1999, "report_version_id": 100},
-            "facility_data": {"facility_type": "Facility Of Unusual Size", "facility_name": "Name!!"},
+            "facility_data": {
+                "facility_id": TEST_FACILITY_ID,
+                "facility_type": "Facility Of Unusual Size",
+                "facility_name": "Name!!",
+            },
         }
 
     @patch("reporting.api_v2.forms.form_response_builder.NaicsCodeService")
@@ -89,21 +98,17 @@ class TestFormResponseBuilder(SimpleTestCase):
 
         # Build order shouldn't matter
         assert (
-            builder.payload({"c": 1})
-            .facility_data(UUID('12345678-1234-5678-1234-567812345678'))
-            .operation_data()
-            .build()
-            == builder.operation_data()
-            .facility_data(UUID('12345678-1234-5678-1234-567812345678'))
-            .payload({"c": 1})
-            .build()
+            builder.payload({"c": 1}).facility_data(TEST_FACILITY_ID).operation_data().build()
+            == builder.operation_data().facility_data(TEST_FACILITY_ID).payload({"c": 1}).build()
         )
 
-        assert builder.payload({"c": 1}).facility_data(
-            UUID('12345678-1234-5678-1234-567812345678')
-        ).operation_data().build() == {
+        assert builder.payload({"c": 1}).facility_data(TEST_FACILITY_ID).operation_data().build() == {
             "report_data": {"reporting_year": 3000, "report_version_id": 102},
-            "facility_data": {"facility_type": "Facility Type", "facility_name": "Facility Name"},
+            "facility_data": {
+                "facility_id": TEST_FACILITY_ID,
+                "facility_type": "Facility Type",
+                "facility_name": "Facility Name",
+            },
             "operation_data": {"operation_type": "Operation Type", "naics_code": "222333"},
             "payload": {"c": 1},
         }

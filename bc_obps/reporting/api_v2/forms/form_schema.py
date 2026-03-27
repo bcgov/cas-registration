@@ -1,6 +1,7 @@
 from typing import Generic, Optional, TypeVar
 from ninja import Schema
 from reporting.api_v2.schema import ReportingResponseSchema
+from uuid import UUID
 
 TPayload = TypeVar('TPayload', bound='Schema')
 
@@ -11,7 +12,9 @@ class CommonProgramDataSchema(Schema):
 
 
 class CommonFacilityDataSchema(Schema):
+    facility_id: Optional[UUID] = None
     facility_type: Optional[str]
+    facility_name: Optional[str] = None
 
 
 class CommonOperationDataSchema(Schema):

@@ -26,6 +26,7 @@ class ReportData:
 
 @dataclass
 class FacilityData:
+    facility_id: uuid.UUID
     facility_type: str
     facility_name: str
 
@@ -58,7 +59,9 @@ class FormResponseBuilder(ResponseBuilder):
     def facility_data(self, facility_id: uuid.UUID) -> Self:
         facility_report = FacilityReport.objects.get(report_version_id=self.report_version_id, facility_id=facility_id)
         facility_data = FacilityData(
-            facility_type=facility_report.facility_type, facility_name=facility_report.facility_name
+            facility_id=facility_id,
+            facility_type=facility_report.facility_type,
+            facility_name=facility_report.facility_name,
         )
 
         self.response["facility_data"] = dataclasses.asdict(facility_data)
