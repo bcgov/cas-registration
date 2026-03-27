@@ -120,11 +120,12 @@ function renderHelpfulError(
   if (error.fix_url) {
     const key = error.key ? extractErrorKey(error.key) : undefined;
     // Allocation mismatch errors have dynamic keys, so we check for the key prefix for those
-    const linkText = key
-      ? reportValidationLinkTextMap[key]
-      : error.key?.startsWith(ALLOCATION_MISMATCH_KEY_PREFIX)
-        ? ALLOCATION_MISMATCH_LINK_TEXT
-        : undefined;
+    let linkText: string | undefined;
+    if (key) {
+      linkText = reportValidationLinkTextMap[key];
+    } else if (error.key?.startsWith(ALLOCATION_MISMATCH_KEY_PREFIX)) {
+      linkText = ALLOCATION_MISMATCH_LINK_TEXT;
+    }
 
     if (linkText) {
       const messageParts = message.split(linkText);
