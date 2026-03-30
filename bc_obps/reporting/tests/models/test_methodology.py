@@ -83,8 +83,6 @@ class TestInitialData(TestCase):
                 "Nitrogen in effluent",
                 "Default conversion factor",
                 "Measured conversion factor",
-                'Default emission factor',
-                'Measured emission factor',
                 "WCI.363 (c)",
                 "WCI.363 (l)",
                 "WCI.363 (m)",
