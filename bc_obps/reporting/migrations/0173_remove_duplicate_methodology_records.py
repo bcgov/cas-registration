@@ -47,4 +47,6 @@ class Migration(migrations.Migration):
         ('reporting', '0172_activityjsonschema_no_overlapping_configuration_records_and_more'),
     ]
 
-    operations = [migrations.RunPython(remove_duplicate_methodology_records, elidable=True)]
+    operations = [
+        migrations.RunPython(remove_duplicate_methodology_records, migrations.operations.special.RunPython.noop)
+    ]
