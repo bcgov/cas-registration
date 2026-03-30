@@ -17,16 +17,23 @@ def remove_duplicate_methodology_records(apps, schema_editor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     duplicate_default_ef = Methodology.objects.get(name='Default emission factor')
     duplicate_measured_ef = Methodology.objects.get(name='Measured emission factor')
+    original_default_ef = Methodology.objects.get(name='Default EF')
+    original_measured_ef = Methodology.objects.get(name='Measured EF')
+
     # Remove duplicate records if they have still not been reported at time of migration
     if ReportMethodology.objects.filter(methodology_id=duplicate_default_ef.id).count() == 0:
-        ConfigurationElement.objects.filter(methodology_id=duplicate_default_ef.id).delete()
+        ConfigurationElement.objects.filter(methodology_id=duplicate_default_ef.id).update(
+            methodology_id=original_default_ef
+        )
         duplicate_default_ef.delete()
     else:
         logger.info(
             'Cannot delete duplicate default emission factor methodology records. It has been reported in the ReportMethodology data.'
         )
     if ReportMethodology.objects.filter(methodology_id=duplicate_measured_ef.id).count() == 0:
-        ConfigurationElement.objects.filter(methodology_id=duplicate_measured_ef.id).delete()
+        ConfigurationElement.objects.filter(methodology_id=duplicate_measured_ef.id).update(
+            methodology_id=original_measured_ef
+        )
         duplicate_measured_ef.delete()
     else:
         logger.info(
