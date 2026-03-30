@@ -27,7 +27,6 @@ spec:
               seccompProfile:
                 type: RuntimeDefault
           containers:
-          # trivy:ignore:KSV0125
           - name: django-migration-test
             image: "{{ .Values.backend.image.repository }}:{{ .Chart.AppVersion | default .Values.backend.image.tag }}"
             securityContext:

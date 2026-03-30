@@ -22,10 +22,22 @@ spec:
         component: backend
     spec:
       serviceAccountName: {{ .Release.Name }}-pod-logger
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: {{ .Release.Name }}-backend
-          image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
+          image: "{{ .Values.backend.image.repository }}:{{ .Chart.AppVersion | default .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             {{- include "cas-bciers.backendEnvVars" . | nindent 12 }}
             - name: GOOGLE_APPLICATION_CREDENTIALS

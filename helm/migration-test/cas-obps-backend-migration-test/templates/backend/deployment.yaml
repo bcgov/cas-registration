@@ -27,7 +27,6 @@ spec:
           type: RuntimeDefault
       automountServiceAccountToken: false
       containers:
-        # trivy:ignore:KSV0125
         - name: {{ .Release.Name }}-backend
           image: "{{ .Values.backend.image.repository }}:{{ .Chart.AppVersion | default .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}

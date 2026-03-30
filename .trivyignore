@@ -1,0 +1,8 @@
+# Global ignore: images only from trusted domains
+KSV-0125
+
+# Frontend auth false positives, secret scanning will still fail real secrets
+# Public Keycloak URL: not a secret
+KSV-0109
+# Frontend auth metadata, also not secrets, all public
+KSV-01010
