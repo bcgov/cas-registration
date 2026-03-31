@@ -1,5 +1,11 @@
 # Changelog
 
+# [5.7.0](https://github.com/bcgov/cas-registration/compare/v5.6.0...v5.7.0) (2026-03-31)
+
+### Features
+
+- add "Requires manual handling" status to ComplianceReportVersion ([4ead9d0](https://github.com/bcgov/cas-registration/commit/4ead9d08cbde505d2581f0328c4599dbb0296c64))
+
 # [5.6.0](https://github.com/bcgov/cas-registration/compare/v5.5.0...v5.6.0) (2026-03-19)
 
 ### Bug Fixes
