@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0172_activityjsonschema_no_overlapping_configuration_records_and_more'),
+        ('reporting', '0174_V5_7_0'),
     ]
 
     operations = [
