@@ -2,7 +2,8 @@ from decimal import Decimal
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 import pytest
 from unittest.mock import patch
-from compliance.models import ComplianceReportVersion, ComplianceEarnedCredit
+from compliance.models import ComplianceReportVersion, ComplianceEarnedCredit, ComplianceChargeRate
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 from model_bakery import baker
 from registration.models import Operation
 from registration.models.operator import Operator
@@ -242,65 +243,47 @@ class TestComplianceReportVersionService:
 
     def test_calculate_outstanding_balance_tco2e_with_existing_invoice(self):
         # Arrange
-        # Create compliance report version with a linked compliance period and reporting year
-        compliance_report_version = baker.make_recipe('compliance.tests.utils.compliance_report_version')
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+        )
 
-        # Create a ComplianceChargeRate for the same reporting year
-        reporting_year = compliance_report_version.compliance_report.compliance_period.reporting_year
-        baker.make_recipe(
-            'compliance.tests.utils.compliance_charge_rate',
+        reporting_year = test_data.compliance_report.compliance_period.reporting_year
+        ComplianceChargeRate.objects.update_or_create(
             reporting_year=reporting_year,
-            rate=Decimal("50.00"),
+            defaults={"rate": Decimal("50.00")},
         )
 
-        # Create a ComplianceObligation linked to the compliance_report_version
-        obligation = baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version,
-        )
-
-        # Link an ElicensingInvoice with an outstanding balance
-        invoice = baker.make_recipe(
-            'compliance.tests.utils.elicensing_invoice',
-            outstanding_balance=Decimal("105.00"),
-            invoice_fee_balance=Decimal("100.00"),
-        )
-        obligation.elicensing_invoice = invoice
-        obligation.save()
+        test_data.invoice.outstanding_balance = Decimal("105.00")
+        test_data.invoice.invoice_fee_balance = Decimal("100.00")
+        test_data.invoice.save()
 
         # Act
-        result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version)
+        result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(test_data.compliance_report_version)
 
         # Assert
         assert result == Decimal("2.0000")  # 100.00 / 50.00
 
     def test_calculate_outstanding_balance_tco2e_zero_balance_invoice_returns_0_00(self):
         # Arrange
-        compliance_report_version = baker.make_recipe('compliance.tests.utils.compliance_report_version')
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+        )
 
-        reporting_year = compliance_report_version.compliance_report.compliance_period.reporting_year
+        reporting_year = test_data.compliance_report.compliance_period.reporting_year
         charge_rate = Decimal("50.00")
-        baker.make_recipe(
-            'compliance.tests.utils.compliance_charge_rate',
+        ComplianceChargeRate.objects.update_or_create(
             reporting_year=reporting_year,
-            rate=charge_rate,
+            defaults={"rate": charge_rate},
         )
 
-        obligation = baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version,
-        )
-
-        invoice = baker.make_recipe(
-            'compliance.tests.utils.elicensing_invoice',
-            outstanding_balance=Decimal("2.00"),
-            invoice_fee_balance=Decimal("0.00"),
-        )
-        obligation.elicensing_invoice = invoice
-        obligation.save()
+        test_data.invoice.outstanding_balance = Decimal("2.00")
+        test_data.invoice.invoice_fee_balance = Decimal("0.00")
+        test_data.invoice.save()
 
         # Act
-        result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version)
+        result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(test_data.compliance_report_version)
 
         # Assert
         assert result == Decimal("0.0000")  # Not "0E+2"
@@ -308,117 +291,79 @@ class TestComplianceReportVersionService:
 
     def test_calculate_outstanding_balance_tco2e_no_existing_invoice_initial_report(self):
         # Arrange
-        # create compliance report summary
-        report_compliance_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', excess_emissions=888
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
         )
-        # Create compliance report version with a linked compliance period and reporting year
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            excess_emissions_delta_from_previous=0,
-            report_compliance_summary=report_compliance_summary,
-        )
-
-        # Create a ComplianceObligation linked to the compliance_report_version
-        baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version,
-        )
+        test_data.report_compliance_summary.excess_emissions = Decimal("888")
+        test_data.report_compliance_summary.save()
 
         # Act
-        result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version)
+        result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(test_data.compliance_report_version)
 
         # Assert
         assert result == Decimal("888.0000")
 
     def test_calculate_outstanding_balance_tco2e_superceded(self):
         # Arrange
-        # create compliance report summary
-        report_compliance_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', excess_emissions=888
+        previous_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED,
         )
-        report_compliance_summary_2 = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', excess_emissions=999
-        )
-        # Create compliance report version with a linked compliance period and reporting year
-        compliance_report_version_1 = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            report_compliance_summary=report_compliance_summary,
-            status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED,
-        )
+        previous_data.report_compliance_summary.excess_emissions = Decimal("888")
+        previous_data.report_compliance_summary.save()
 
-        compliance_report_version_2 = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            report_compliance_summary=report_compliance_summary_2,
-            previous_version=compliance_report_version_1,
-            is_supplementary=True,
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            previous_data=previous_data,
         )
-        baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version_2,
-        )
+        test_data.report_compliance_summary.excess_emissions = Decimal("999")
+        test_data.report_compliance_summary.save()
 
         # Act
-        result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version_2)
+        result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(test_data.compliance_report_version)
 
         # Assert
         assert result == Decimal("999.0000")
 
     def test_calculate_computed_value_excess_emissions(self):
-        version_1 = baker.make_recipe('compliance.tests.utils.compliance_report_version')
-        version_1.report_compliance_summary.excess_emissions = Decimal("100.00")
-        version_1.report_compliance_summary.save()
-        invoice_1 = baker.make_recipe(
-            'compliance.tests.utils.elicensing_invoice',
+        version_1_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
         )
-        baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=version_1,
-            elicensing_invoice=invoice_1,
-        )
+        version_1_data.report_compliance_summary.excess_emissions = Decimal("100.00")
+        version_1_data.report_compliance_summary.save()
 
-        version_2 = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            is_supplementary=True,
-            excess_emissions_delta_from_previous=Decimal("2.0"),
-            previous_version=version_1,
+        version_2_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            previous_data=version_1_data,
         )
-        invoice_2 = baker.make_recipe(
-            'compliance.tests.utils.elicensing_invoice',
-        )
-        baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=version_2,
-            elicensing_invoice=invoice_2,
-        )
-        version_3 = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            is_supplementary=True,
-            excess_emissions_delta_from_previous=Decimal("-2.0"),
-            previous_version=version_2,
-        )
+        version_2_data.compliance_report_version.excess_emissions_delta_from_previous = Decimal("2.0")
+        version_2_data.compliance_report_version.save()
 
+        version_3_data = ComplianceTestHelper.build_test_data(previous_data=version_2_data)
+        version_3_data.compliance_report_version.excess_emissions_delta_from_previous = Decimal("-2.0")
+        version_3_data.compliance_report_version.save()
         # Act
-        assert ComplianceReportVersionService.calculate_computed_value_excess_emissions(version_1) == Decimal("100.00")
-        assert ComplianceReportVersionService.calculate_computed_value_excess_emissions(version_2) == Decimal("2.0")
-        assert ComplianceReportVersionService.calculate_computed_value_excess_emissions(version_3) == Decimal("0")
+        assert ComplianceReportVersionService.calculate_computed_value_excess_emissions(
+            version_1_data.compliance_report_version
+        ) == Decimal("100.00")
+        assert ComplianceReportVersionService.calculate_computed_value_excess_emissions(
+            version_2_data.compliance_report_version
+        ) == Decimal("2.0")
+        assert ComplianceReportVersionService.calculate_computed_value_excess_emissions(
+            version_3_data.compliance_report_version
+        ) == Decimal("0")
 
     def test_get_operator_by_compliance_report_version(self):
         # Arrange
-        operator = baker.make_recipe('registration.tests.utils.operator')
-        operation = baker.make_recipe('registration.tests.utils.operation', operator=operator)
-        report = baker.make_recipe('reporting.tests.utils.report', operation=operation, operator=operator)
-        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
-        )
+        test_data = ComplianceTestHelper.build_test_data()
 
         # Act
-        result = ComplianceReportVersionService.get_operator_by_compliance_report_version(compliance_report_version.id)
+        result = ComplianceReportVersionService.get_operator_by_compliance_report_version(
+            test_data.compliance_report_version.id
+        )
 
         # Assert
         assert isinstance(result, Operator)
-        assert result.id == operator.id
+        assert result.id == test_data.operation.operator.id
 
     def test_get_operator_by_compliance_report_version_nonexistent_id(self):
         # Arrange
@@ -430,36 +375,17 @@ class TestComplianceReportVersionService:
 
     def test_get_report_operation_by_compliance_report_version(self):
         # Arrange
-        operation = baker.make_recipe('registration.tests.utils.operation', name='admin name')
-        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-
-        # create the report_operation linked to the report_version
-        report_operation = baker.make_recipe(
-            'reporting.tests.utils.report_operation',
-            report_version=report_version,
-            operation_name='reporting name',
-        )
-
-        report_compliance_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', report_version=report_version
-        )
-        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
-        )
+        test_data = ComplianceTestHelper.build_test_data()
 
         # Act
         result = ComplianceReportVersionService.get_report_operation_by_compliance_report_version(
-            compliance_report_version.id
+            test_data.compliance_report_version.id
         )
 
         # Assert
         assert isinstance(result, ReportOperation)
-        assert result.id == report_operation.id
-        assert result.operation_name == 'reporting name'
+        assert result.id == test_data.report_operation.id
+        assert result.operation_name == test_data.report_operation.operation_name
 
     def test_get_report_operation_by_compliance_report_version_nonexistent_id(self):
         # Arrange
@@ -470,28 +396,21 @@ class TestComplianceReportVersionService:
             ComplianceReportVersionService.get_report_operation_by_compliance_report_version(nonexistent_id)
 
     def test_update_compliance_status(self):
-        report_compliance_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary',
-            excess_emissions=Decimal('10'),
-            credited_emissions=Decimal('5'),
-        )
-        compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report_id=report_compliance_summary.report_version.report_id
-        )
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
-            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
-        )
-        ComplianceReportVersionService.update_compliance_status(compliance_report_version)
-        compliance_report_version.refresh_from_db()
+        test_data = ComplianceTestHelper.build_test_data()
+        test_data.report_compliance_summary.excess_emissions = Decimal('10')
+        test_data.report_compliance_summary.credited_emissions = Decimal('5')
+        test_data.report_compliance_summary.save()
+        test_data.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        test_data.compliance_report_version.save()
+
+        ComplianceReportVersionService.update_compliance_status(test_data.compliance_report_version)
+        test_data.compliance_report_version.refresh_from_db()
 
         # Verify the status was updated based on the current emissions data
         # The status should be determined by _determine_compliance_status method
         expected_status = ComplianceReportVersionService._determine_compliance_status(
-            compliance_report_version.report_compliance_summary.excess_emissions,
-            compliance_report_version.report_compliance_summary.credited_emissions,
+            test_data.compliance_report_version.report_compliance_summary.excess_emissions,
+            test_data.compliance_report_version.report_compliance_summary.credited_emissions,
         )
-        assert compliance_report_version.status == expected_status
-        assert compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        assert test_data.compliance_report_version.status == expected_status
+        assert test_data.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
