@@ -62,6 +62,7 @@ class TestReportVersionEndpoint(CommonTestSetup):
             status="Draft",
             reason_for_change=payload.reason_for_change,
         )
+        baker.make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
 
         mock_save_report_version_change.return_value = report_version
