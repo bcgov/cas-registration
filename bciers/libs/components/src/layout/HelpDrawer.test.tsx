@@ -50,7 +50,7 @@ describe("Help drawer component", () => {
     });
     expect(link2).toHaveAttribute(
       "href",
-      "https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf",
+      "https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_program_and_reporting_guidance.pdf",
     );
     const link3 = screen.getByRole("link", {
       name: /Process flow diagram and facility boundary map guidance/i,
@@ -85,7 +85,7 @@ describe("Help drawer component", () => {
     });
     expect(link7).toHaveAttribute(
       "href",
-      "https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/248_2015",
+      "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/248_2015",
     );
   });
 });

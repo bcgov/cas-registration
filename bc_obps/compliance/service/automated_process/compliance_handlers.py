@@ -145,7 +145,7 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         # Effective deadline determines when the large automatic overdue penalty is applied
         # It is equal to the compliance deadline except in the case of late supplementary reports, which are granted 30 days to pay the additional obligation
         # For late supplementary reports the effective deadline becomes the due_date of the invoice (ie: 30 days after report submission/invoice creation)
-        # As per the Greenhouse Gas Emission Administrative Penalties and Appeals Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/248_2015#section2
+        # As per the Greenhouse Gas Emission Administrative Penalties and Appeals Regulation https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/248_2015#section2
         effective_deadline = compliance_deadline
         if obligation.compliance_report_version.is_supplementary and has_late_submission:
             effective_deadline = invoice.due_date
