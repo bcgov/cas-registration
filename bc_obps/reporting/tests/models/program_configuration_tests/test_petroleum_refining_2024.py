@@ -166,14 +166,14 @@ class PetroleumRefining2024Test(BaseProgramConfigurationTest, TestCase):
                     "Replacement Methodology": 1,
                 },
                 "CH4": {
-                    "Default emission factor": 0,
-                    "Measured emission factor": 0,
+                    "Default EF": 0,
+                    "Measured EF": 0,
                     "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
                 },
                 "N2O": {
-                    "Default emission factor": 0,
-                    "Measured emission factor": 0,
+                    "Default EF": 0,
+                    "Measured EF": 0,
                     "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
                 },
