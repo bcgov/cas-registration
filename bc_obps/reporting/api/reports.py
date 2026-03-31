@@ -101,7 +101,9 @@ def get_regulated_products_by_version_id(
     exclude_none=True,
 )
 def get_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], ReportVersion]:
-    report_version = ReportVersion.objects.get(id=version_id)
+    report_version = ReportVersion.objects.select_related("report_operation", "report__reporting_year").get(
+        id=version_id
+    )
     return 200, report_version
 
 
