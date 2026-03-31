@@ -48,7 +48,7 @@ from .report_compliance_summary import ReportComplianceSummary
 from .report_compliance_summary_product import ReportComplianceSummaryProduct
 from .report_attachment_confirmation import ReportAttachmentConfirmation
 from .expected_value_range_fuel_amount import ExpectedValueRangeFuelAmount
-from .expected_value_range_methodology import ExpectedValueRangeMethodology
+from .expected_value_range_methodology_field import ExpectedValueRangeMethodologyField
 
 __all__ = [
     "ReportDataBaseModel",
@@ -98,5 +98,5 @@ __all__ = [
     "ReportComplianceSummaryProduct",
     "ReportAttachmentConfirmation",
     "ExpectedValueRangeFuelAmount",
-    "ExpectedValueRangeMethodology",
+    "ExpectedValueRangeMethodologyField",
 ]

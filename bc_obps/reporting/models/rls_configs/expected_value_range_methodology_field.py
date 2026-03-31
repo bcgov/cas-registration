@@ -11,4 +11,4 @@ class Rls:
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.EXPECTED_VALUE_RANGE_METHODOLOGY)
+    grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.EXPECTED_VALUE_RANGE_METHODOLOGY_FIELD)

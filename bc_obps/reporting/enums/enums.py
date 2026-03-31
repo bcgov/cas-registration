@@ -10,7 +10,7 @@ class ReportingTableNames(Enum):
     EMISSION_CATEGORY_MAPPING = 'emission_category_mapping'
     EMISSION_CATEGORY = 'emission_category'
     EXPECTED_VALUE_RANGE_FUEL_AMOUNT = 'expected_value_range_fuel_amount'
-    EXPECTED_VALUE_RANGE_METHODOLOGY = 'expected_value_range_methodology'
+    EXPECTED_VALUE_RANGE_METHODOLOGY_FIELD = 'expected_value_range_methodology_field'
     FACILITY_REPORT = 'facility_report'
     FUEL_TYPE = 'fuel_type'
     GAS_TYPE = 'gas_type'
