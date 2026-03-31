@@ -1,6 +1,6 @@
 from django.dispatch import receiver
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
-from compliance.service.supplementary_version_service import SupplementaryVersionService
+from compliance.service.supplementary_version_service.service import SupplementaryVersionService
 from compliance.models import ComplianceReport, CompliancePeriod, ComplianceReportVersion
 from reporting.models import ReportVersion
 from reporting.signals.signals import report_submitted
