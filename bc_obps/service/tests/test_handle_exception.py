@@ -9,6 +9,8 @@ from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryErr
 from compliance.service.exceptions import ComplianceInvoiceError
 from registration.constants import UNAUTHORIZED_MESSAGE
 from common.exceptions import UserError
+from reporting.service.exceptions import ReportValidationException
+from reporting.service.report_validation.report_validation_error import ReportValidationError, Severity
 from service.error_service.handle_exception import ExceptionHandler, ExceptionResponse, handle_exception
 
 
@@ -63,12 +65,6 @@ class TestExceptionHandler:
         config = ExceptionResponse(lambda e: str(e), 400)
         body = ExceptionHandler.get_response_body(exc, config)
         assert body == {"message": "Test"}
-
-    def test_get_response_body_payload_builder(self):
-        exc = Exception("Test")
-        config = ExceptionResponse(None, 422, payload_builder=lambda e: {"errors": [{"message": str(e)}]})
-        body = ExceptionHandler.get_response_body(exc, config)
-        assert body == {"errors": [{"message": "Test"}]}
 
     def test_handle_unauthorized(self, mock_request):
         exc = Exception(UNAUTHORIZED_MESSAGE)
@@ -144,6 +140,36 @@ class TestExceptionHandler:
         assert response.status_code == 400
         assert json.loads(response.content) == {
             "message": "An unexpected error occurred while generating your compliance invoice. Please try again, or contact support if the problem persists."
+        }
+
+    def test_handle_report_validation_exception(self, mock_request):
+        errors = {
+            "emission_summary": ReportValidationError(
+                severity=Severity.ERROR,
+                message="Emission summary is incomplete",
+                fix_url="/reports/123/emission-summary",
+            ),
+            "facility_report": ReportValidationError(
+                severity=Severity.WARNING,
+                message="Facility report has warnings",
+            ),
+        }
+        exc = ReportValidationException(errors)
+        response = ExceptionHandler.handle(mock_request, exc)
+        assert response.status_code == 422
+        body = json.loads(response.content)
+        assert body == {
+            "errors": [
+                {
+                    "key": "emission_summary",
+                    "message": "Emission summary is incomplete",
+                    "fix_url": "/reports/123/emission-summary",
+                },
+                {
+                    "key": "facility_report",
+                    "message": "Facility report has warnings",
+                },
+            ]
         }
 
 
