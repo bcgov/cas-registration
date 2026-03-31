@@ -351,7 +351,7 @@ def undo_update_reporting_fields(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0170_V5_6_0'),
+        ('reporting', '0172_activityjsonschema_no_overlapping_configuration_records_and_more'),
     ]
 
     operations = [
