@@ -25,6 +25,8 @@ export const REQUEST_ISSUANCE_BUTTON_TEXT =
 
 // --- Review Request Issuance form ---
 export const ANALYST_SUGGESTION_INPUT = "#root_analyst_suggestion";
+export const ANALYST_COMMENT_INPUT = "#root_analyst_comment";
+export const ANALYST_COMMENT_VALUE = "Analyst comment for e2e testing.";
 export const CONTINUE_BUTTON_TEXT = "Continue";
 export const FINAL_SUGGESTION_LOCKED_ERROR =
   "Updates are not allowed after the analyst has provided a final suggestion";

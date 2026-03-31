@@ -4,7 +4,6 @@ import {
   EARNED_CREDITS_REQUEST_ISSUANCE_SCENARIO,
   BCCR_HOLDING_ACCOUNT_INPUT_VALUE,
   BCCR_TRADING_NAME_FIELD_VALUE,
-  REQUEST_ISSUANCE_BUTTON_TEXT,
 } from "@/compliance-e2e/utils/constants";
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
 import { getCrvIdFromUrl } from "@bciers/e2e/utils/helpers";
@@ -13,15 +12,14 @@ export class ReviewComplianceEarnedCreditsPOM {
   private readonly page: Page;
 
   private readonly issuanceStatusField: Locator;
-  private readonly requestIssuanceButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.issuanceStatusField = this.page.locator(ISSUANCE_STATUS_FIELD);
-    this.requestIssuanceButton = this.page.getByRole("button", {
-      name: REQUEST_ISSUANCE_BUTTON_TEXT,
-      exact: true,
-    });
+  }
+
+  async assertFormReady(): Promise<void> {
+    await expect(this.page.getByTestId("submit-button")).toBeVisible();
   }
 
   async assertIssuanceStatusValue(expected: string): Promise<void> {

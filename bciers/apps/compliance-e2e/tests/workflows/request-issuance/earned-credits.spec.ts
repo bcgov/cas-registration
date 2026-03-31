@@ -1,6 +1,9 @@
-import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
+import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
-import { openNewBrowserContextAs } from "@bciers/e2e/utils/helpers";
+import {
+  setupTestEnvironment,
+  takeStabilizedScreenshot,
+} from "@bciers/e2e/utils/helpers";
 import {
   ComplianceOperations,
   ComplianceDisplayStatus,
@@ -15,8 +18,13 @@ import { InternalRequestIssuanceTaskListPOM } from "@/compliance-e2e/poms/reques
 import { InternalReviewComplianceEarnedCreditsPOM } from "@/compliance-e2e/poms/request-issuance/internal/internal-review-compliance-earned-credits";
 import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
 
-// Seed environment
-const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
+// Seed environment once; each flow case re-seeds via its own beforeAll
+const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
+
+// Role-specific test fixtures — each inherits happo via setupBeforeAllTest
+// so happoScreenshot works correctly on the fixture page for that role.
+const analystTest = setupBeforeAllTest(UserRole.CAS_ANALYST);
+const directorTest = setupBeforeAllTest(UserRole.CAS_DIRECTOR);
 
 test.describe.configure({ mode: "serial" });
 
@@ -61,25 +69,31 @@ const FLOW_CASES: FlowCase[] = [
 test.describe("Test earned credits request issuance flow", () => {
   test.slow();
 
-  for (const c of FLOW_CASES) {
+  for (const [caseIndex, c] of FLOW_CASES.entries()) {
+    // eslint-disable-next-line playwright/valid-title
     const title = isReadyToApproveCase(c)
       ? `Industry submits → Analyst(${String(c.analystSuggestion)}) → Director(${String(c.directorDecision)})`
       : `Industry submits → Analyst(${String(c.analystSuggestion)})`;
 
-    // eslint-disable-next-line playwright/valid-title
-    test(String(title), async ({ request }) => {
-      // ----------------
-      // 1) Industry user submits issuance request
-      // ----------------
-      const industryPage = await openNewBrowserContextAs(
-        UserRole.INDUSTRY_USER_ADMIN,
-      );
-      try {
-        const gridReportingReports = new CurrentReportsPOM(industryPage);
-        const industrySummaries = new ComplianceSummariesPOM(industryPage);
-        const industryTaskList = new RequestIssuanceTaskListPOM(industryPage);
+    test.describe(title, () => {
+      test.describe.configure({ mode: "serial" });
+
+      // Fresh DB state before each flow case
+      test.beforeAll(async () => {
+        await setupTestEnvironment();
+      });
+
+      // ── Step 1: Industry submits issuance request ────────────────────────
+      test("1) Industry submits issuance request", async ({
+        page,
+        request,
+        happoScreenshot,
+      }) => {
+        const gridReportingReports = new CurrentReportsPOM(page);
+        const industrySummaries = new ComplianceSummariesPOM(page);
+        const industryTaskList = new RequestIssuanceTaskListPOM(page);
         const industryEarnedCredits = new ReviewComplianceEarnedCreditsPOM(
-          industryPage,
+          page,
         );
 
         // Submit report for earned credits
@@ -97,6 +111,17 @@ test.describe("Test earned credits request issuance flow", () => {
         // Click task list "Request Issuance of Earned Credits"
         await industryTaskList.clickRequestIssuance();
 
+        // Wait for form to be ready (the submit button appears once data has loaded)
+        await industryEarnedCredits.assertFormReady();
+
+        // happo screenshot - earned credits request form (same across all cases, taken once)
+        if (caseIndex === 0) {
+          await takeStabilizedScreenshot(happoScreenshot, page, {
+            component: "Compliance earned credits - request issuance",
+            variant: "Industry - request issuance form",
+          });
+        }
+
         // Submit "Request Issuance of Earned Credits"
         await industryEarnedCredits.submitRequestIssuance(request);
 
@@ -108,335 +133,320 @@ test.describe("Test earned credits request issuance flow", () => {
           ComplianceOperations.EARNED_CREDITS,
           ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
         );
-      } finally {
-        await industryPage.close();
-      }
 
-      // ----------------
-      // 2) Analyst sets suggestion
-      // ----------------
-      const analystPage = await openNewBrowserContextAs(UserRole.CAS_ANALYST);
-      try {
-        const analystSummaries = new ComplianceSummariesPOM(analystPage);
-        const analystEarnedCredits =
-          new InternalReviewComplianceEarnedCreditsPOM(analystPage);
-        const analystTaskList = new InternalRequestIssuanceTaskListPOM(
-          analystPage,
-        );
+        // happo screenshot - compliance summaries "issuance requested" (same across all cases, taken once)
+        if (caseIndex === 0) {
+          await takeStabilizedScreenshot(happoScreenshot, page, {
+            component: "Compliance earned credits - request issuance",
+            variant: "Industry - compliance summaries: issuance requested",
+          });
+        }
+      });
 
-        await analystSummaries.route();
+      // ── Step 2: Analyst sets suggestion ─────────────────────────────────
+      // Uses analystTest so the fixture page is authenticated as the analyst
+      // and happoScreenshot works correctly on that page.
+      analystTest(
+        "2) Analyst sets suggestion",
+        async ({ page, happoScreenshot }) => {
+          const analystSummaries = new ComplianceSummariesPOM(page);
+          const analystEarnedCredits =
+            new InternalReviewComplianceEarnedCreditsPOM(page);
+          const analystTaskList = new InternalRequestIssuanceTaskListPOM(page);
 
-        // ✅ Assert row status
-        await analystSummaries.assertStatusForOperation(
-          ComplianceOperations.EARNED_CREDITS,
-          ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
-        );
+          await analystSummaries.route();
 
-        // Click view action "Review Credits Issuance Request"
-        await analystSummaries.openActionForOperation({
-          operationName: ComplianceOperations.EARNED_CREDITS,
-          linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
-        });
+          // ✅ Assert row status
+          await analystSummaries.assertStatusForOperation(
+            ComplianceOperations.EARNED_CREDITS,
+            ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
+          );
 
-        // Click task list "Review Credits Issuance Request"
-        await analystTaskList.clickReviewRequestIssuance();
+          // Click view action "Review Credits Issuance Request"
+          await analystSummaries.openActionForOperation({
+            operationName: ComplianceOperations.EARNED_CREDITS,
+            linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
+          });
 
-        // Submit analyst suggestion
-        await analystEarnedCredits.submitAnalystReviewRequestIssuance(
-          c.analystSuggestion,
-        );
-      } finally {
-        await analystPage.close();
-      }
+          // Click task list "Review Credits Issuance Request"
+          await analystTaskList.clickReviewRequestIssuance();
 
-      // ----------------
-      // Branch analyst suggestion != READY_TO_APPROVE
-      // Industry user sees correct status
-      // ----------------
+          if (caseIndex === 0) {
+            await analystEarnedCredits.selectAnalystSuggestion(
+              c.analystSuggestion,
+            );
+            await takeStabilizedScreenshot(happoScreenshot, page, {
+              component: "Compliance earned credits - analyst review",
+              variant: "Analyst - review request issuance form",
+            });
+          }
+
+          // Submit analyst suggestion (also fills in the analyst comment)
+          await analystEarnedCredits.submitAnalystReviewRequestIssuance(
+            c.analystSuggestion,
+          );
+        },
+      );
+
+      // ── Step 3a: Non-READY_TO_APPROVE — industry sees changed status ─────
       if (!isReadyToApproveCase(c)) {
-        const industryPage2 = await openNewBrowserContextAs(
-          UserRole.INDUSTRY_USER_ADMIN,
-        );
-        try {
-          const industrySummaries2 = new ComplianceSummariesPOM(industryPage2);
+        test("3) Industry sees changed status", async ({
+          page,
+          happoScreenshot,
+        }) => {
           const expectedStatus =
             c.analystSuggestion ===
             AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID
               ? ComplianceDisplayStatus.EARNED_CREDITS_CHANGES_REQUIRED
               : ComplianceDisplayStatus.EARNED_CREDITS_DECLINED;
 
-          // Route to compliance summaries
-          await industrySummaries2.route();
+          const industrySummaries = new ComplianceSummariesPOM(page);
+          await industrySummaries.route();
 
           // ✅ Assert row status
-          await industrySummaries2.assertStatusForOperation(
+          await industrySummaries.assertStatusForOperation(
             ComplianceOperations.EARNED_CREDITS,
             expectedStatus,
           );
-        } finally {
-          await industryPage2.close();
-        }
 
-        return; // No director decision in this branch
-      }
-
-      // ----------------
-      // Branch analyst suggestion == READY_TO_APPROVE
-      // Director approves/declines
-      // ----------------
-      const directorPage = await openNewBrowserContextAs(UserRole.CAS_DIRECTOR);
-      try {
-        const directorSummaries = new ComplianceSummariesPOM(directorPage);
-        const directorEarnedCredits =
-          new InternalReviewComplianceEarnedCreditsPOM(directorPage);
-        const directorTaskList = new InternalRequestIssuanceTaskListPOM(
-          directorPage,
-        );
-
-        // Route to compliance summaries
-        await directorSummaries.route();
-
-        // ✅ Assert row status "Earned credits - issuance requested"
-        await directorSummaries.assertStatusForOperation(
-          ComplianceOperations.EARNED_CREDITS,
-          ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
-        );
-
-        // Click view action "Review Credits Issuance Request"
-        await directorSummaries.openActionForOperation({
-          operationName: ComplianceOperations.EARNED_CREDITS,
-          linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
+          // happo screenshot - compliance summaries after analyst decision
+          await takeStabilizedScreenshot(happoScreenshot, page, {
+            component: "Compliance earned credits - request issuance",
+            variant: `Industry - compliance summaries after analyst decision: ${title}`,
+          });
         });
 
-        // Submit director decision
-        await directorTaskList.clickReviewByDirector();
+        // ── Step 3b & 4: READY_TO_APPROVE — director decides, industry verifies
+      } else {
+        directorTest(
+          "3) Director approves/declines",
+          async ({ page, request, happoScreenshot }) => {
+            const directorSummaries = new ComplianceSummariesPOM(page);
+            const directorEarnedCredits =
+              new InternalReviewComplianceEarnedCreditsPOM(page);
+            const directorTaskList = new InternalRequestIssuanceTaskListPOM(
+              page,
+            );
 
-        // ✅ Assert Approve\Decline buttons
-        await directorEarnedCredits.assertDirectorDecisionButtonsVisible(true);
+            // Route to compliance summaries
+            await directorSummaries.route();
 
-        // Submit director decision
-        if (c.directorDecision === IssuanceStatus.APPROVED) {
-          // Attach stub + submit for Approved
-          await directorEarnedCredits.approveIssuanceDirect(request);
-        } else {
-          await directorEarnedCredits.submitDirectorReviewIssuance(
-            c.directorDecision,
-          );
-        }
+            // ✅ Assert row status "Earned credits - issuance requested"
+            await directorSummaries.assertStatusForOperation(
+              ComplianceOperations.EARNED_CREDITS,
+              ComplianceDisplayStatus.EARNED_CREDITS_REQUESTED,
+            );
 
-        // Route to compliance summaries
-        await directorSummaries.route();
+            // Click view action "Review Credits Issuance Request"
+            await directorSummaries.openActionForOperation({
+              operationName: ComplianceOperations.EARNED_CREDITS,
+              linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
+            });
 
-        // ✅ Assert row status displays director decision
-        await directorSummaries.assertStatusForOperation(
-          ComplianceOperations.EARNED_CREDITS,
-          c.expectedFinalStatus,
+            // Click task list "Review by Director"
+            await directorTaskList.clickReviewByDirector();
+
+            // ✅ Assert Approve\Decline buttons
+            await directorEarnedCredits.assertDirectorDecisionButtonsVisible(
+              true,
+            );
+
+            // happo screenshot - director review page with approve/decline buttons
+            // Taken once (APPROVED case); the page looks identical for DECLINED.
+            if (c.directorDecision === IssuanceStatus.APPROVED) {
+              await takeStabilizedScreenshot(happoScreenshot, page, {
+                component: "Compliance earned credits - director review",
+                variant: "Director - review with approve and decline buttons",
+              });
+            }
+
+            // Submit director decision
+            if (c.directorDecision === IssuanceStatus.APPROVED) {
+              // Stub fires directly (no browser nav); manually route to track-status
+              await directorEarnedCredits.approveIssuanceDirect(request);
+              await directorEarnedCredits.routeToTrackStatus();
+            } else {
+              // Button click navigates to track-status on success (waitForUrl inside)
+              await directorEarnedCredits.submitDirectorReviewIssuance(
+                c.directorDecision,
+              );
+            }
+
+            // Wait for form data to load before taking the screenshot
+            await directorEarnedCredits.assertTrackStatusLoaded();
+
+            await takeStabilizedScreenshot(happoScreenshot, page, {
+              component: "Compliance earned credits - director review",
+              variant: `Director - after ${String(c.directorDecision)}`,
+            });
+          },
         );
-      } finally {
-        await directorPage.close();
+
+        test("4) Industry verifies final status", async ({
+          page,
+          happoScreenshot,
+        }) => {
+          const industrySummaries = new ComplianceSummariesPOM(page);
+          await industrySummaries.route();
+
+          // ✅ Assert row status reflects director decision
+          await industrySummaries.assertStatusForOperation(
+            ComplianceOperations.EARNED_CREDITS,
+            c.expectedFinalStatus,
+          );
+
+          // happo screenshot - compliance summaries with final director decision status
+          await takeStabilizedScreenshot(happoScreenshot, page, {
+            component: "Compliance earned credits - request issuance",
+            variant: `Director decision - industry compliance summaries: ${title}`,
+          });
+        });
       }
     });
   }
 
-  test("Industry submits → Analyst(Requiring change of BCCR Holding Account ID)→ Industry re-submits →  Analyst(Ready to approve)", async ({
-    request,
-  }) => {
-    // ----------------
-    // 1) Industry submits issuance request
-    // ----------------
-    const industryPage = await openNewBrowserContextAs(
-      UserRole.INDUSTRY_USER_ADMIN,
-    );
-    try {
-      const gridReportingReports = new CurrentReportsPOM(industryPage);
-      const industrySummaries = new ComplianceSummariesPOM(industryPage);
-      const industryTaskList = new RequestIssuanceTaskListPOM(industryPage);
-      const industryEarnedCredits = new ReviewComplianceEarnedCreditsPOM(
-        industryPage,
-      );
+  // ─────────────────────────────────────────────────────────────────────────
+  // Re-submit flow
+  // ─────────────────────────────────────────────────────────────────────────
+  test.describe("Industry submits → Analyst(Requiring change of BCCR Holding Account ID) → Industry re-submits → Analyst(Ready to approve)", () => {
+    test.describe.configure({ mode: "serial" });
 
-      // Submit report for earned credits
+    test.beforeAll(async () => {
+      await setupTestEnvironment();
+    });
+
+    test("1) Industry submits issuance request", async ({ page, request }) => {
+      const gridReportingReports = new CurrentReportsPOM(page);
+      const industrySummaries = new ComplianceSummariesPOM(page);
+      const industryTaskList = new RequestIssuanceTaskListPOM(page);
+      const industryEarnedCredits = new ReviewComplianceEarnedCreditsPOM(page);
+
       await gridReportingReports.submitReportEarnedCredits(false, request);
-
-      // Route to compliance summaries
       await industrySummaries.route();
-
-      // Click view action "Review Credits Issuance Request"
       await industrySummaries.openActionForOperation({
         operationName: ComplianceOperations.EARNED_CREDITS,
         linkName: GridActionText.REQUEST_ISSUANCE_CREDITS,
       });
-
-      // Click task list "Request Issuance of Earned Credits"
       await industryTaskList.clickRequestIssuance();
-
-      // Submit "Request Issuance of Earned Credits"
       await industryEarnedCredits.submitRequestIssuance(request);
-    } finally {
-      await industryPage.close();
-    }
+    });
 
-    // ----------------
-    // 2) Analyst sets suggestion = REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID
-    // ----------------
-    const analystPage = await openNewBrowserContextAs(UserRole.CAS_ANALYST);
-    try {
-      const analystSummaries = new ComplianceSummariesPOM(analystPage);
-      const analystEarnedCredits = new InternalReviewComplianceEarnedCreditsPOM(
-        analystPage,
-      );
-      const analystTaskList = new InternalRequestIssuanceTaskListPOM(
-        analystPage,
-      );
+    analystTest(
+      "2) Analyst sets REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID",
+      async ({ page }) => {
+        const analystSummaries = new ComplianceSummariesPOM(page);
+        const analystEarnedCredits =
+          new InternalReviewComplianceEarnedCreditsPOM(page);
+        const analystTaskList = new InternalRequestIssuanceTaskListPOM(page);
 
-      // Route to compliance summaries
-      await analystSummaries.route();
-
-      // Click view action "Review Credits Issuance Request"
-      await analystSummaries.openActionForOperation({
-        operationName: ComplianceOperations.EARNED_CREDITS,
-        linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
-      });
-
-      // Click task list "Review Credits Issuance Request"
-      await analystTaskList.clickReviewRequestIssuance();
-
-      // Submit analyst suggestion- REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID
-      await analystEarnedCredits.submitAnalystReviewRequestIssuance(
-        AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID,
-      );
-    } finally {
-      await analystPage.close();
-    }
-
-    // ----------------
-    // 3) Industry re-submits issuance request
-    // ----------------
-    const industryPage2 = await openNewBrowserContextAs(
-      UserRole.INDUSTRY_USER_ADMIN,
+        await analystSummaries.route();
+        await analystSummaries.openActionForOperation({
+          operationName: ComplianceOperations.EARNED_CREDITS,
+          linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
+        });
+        await analystTaskList.clickReviewRequestIssuance();
+        await analystEarnedCredits.submitAnalystReviewRequestIssuance(
+          AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID,
+        );
+      },
     );
-    try {
-      const industrySummaries2 = new ComplianceSummariesPOM(industryPage2);
-      const industryEarnedCredits2 = new ReviewComplianceEarnedCreditsPOM(
-        industryPage2,
-      );
 
-      // Route to compliance summaries
-      await industrySummaries2.route();
+    test("3) Industry re-submits issuance request", async ({
+      page,
+      request,
+      happoScreenshot,
+    }) => {
+      const industrySummaries = new ComplianceSummariesPOM(page);
+      const industryEarnedCredits = new ReviewComplianceEarnedCreditsPOM(page);
+
+      await industrySummaries.route();
 
       // Open "Review Change Required"
-      await industrySummaries2.openActionForOperation({
+      await industrySummaries.openActionForOperation({
         operationName: ComplianceOperations.EARNED_CREDITS,
         linkName: GridActionText.REVIEW_CHANGE_REQUIRED,
       });
 
-      // Submit "Request Issuance of Earned Credits"
-      await industryEarnedCredits2.submitRequestIssuance(request);
-    } finally {
-      await industryPage2.close();
-    }
+      // Wait for the form to be ready before taking the screenshot
+      await industryEarnedCredits.assertFormReady();
 
-    // ----------------
-    // 4) Analyst changes suggestion to READY_TO_APPROVE
-    // ----------------
-    const analystPage2 = await openNewBrowserContextAs(UserRole.CAS_ANALYST);
-    try {
-      const analystSummaries2 = new ComplianceSummariesPOM(analystPage2);
-      const analystEarnedCredits2 =
-        new InternalReviewComplianceEarnedCreditsPOM(analystPage2);
-      const analystTaskList2 = new InternalRequestIssuanceTaskListPOM(
-        analystPage2,
-      );
-
-      // Route to compliance summaries
-      await analystSummaries2.route();
-
-      // Click view action "Review Credits Issuance Request"
-      await analystSummaries2.openActionForOperation({
-        operationName: ComplianceOperations.EARNED_CREDITS,
-        linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
+      // happo screenshot - earned credits re-submit form after change required
+      await takeStabilizedScreenshot(happoScreenshot, page, {
+        component: "Compliance earned credits - request issuance",
+        variant: "Industry - re-submit after change required",
       });
 
-      // Click task list "Review Credits Issuance Request"
-      await analystTaskList2.clickReviewRequestIssuance();
+      await industryEarnedCredits.submitRequestIssuance(request);
+    });
 
-      // ✅ Analyst can change suggestion
-      await analystEarnedCredits2.submitAnalystReviewRequestIssuance(
-        AnalystSuggestion.READY_TO_APPROVE,
-      );
-    } finally {
-      await analystPage2.close();
-    }
-  });
-  test("Industry submits → Analyst(Ready to approve) → Analyst cannot change suggestion (backend errors)", async ({
-    request,
-  }) => {
-    // ----------------
-    // 1) Industry submits issuance request
-    // ----------------
-    const industryPage = await openNewBrowserContextAs(
-      UserRole.INDUSTRY_USER_ADMIN,
+    analystTest(
+      "4) Analyst changes suggestion to READY_TO_APPROVE",
+      async ({ page }) => {
+        const analystSummaries = new ComplianceSummariesPOM(page);
+        const analystEarnedCredits =
+          new InternalReviewComplianceEarnedCreditsPOM(page);
+        const analystTaskList = new InternalRequestIssuanceTaskListPOM(page);
+
+        await analystSummaries.route();
+        await analystSummaries.openActionForOperation({
+          operationName: ComplianceOperations.EARNED_CREDITS,
+          linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
+        });
+        await analystTaskList.clickReviewRequestIssuance();
+
+        // ✅ Analyst can change suggestion
+        await analystEarnedCredits.submitAnalystReviewRequestIssuance(
+          AnalystSuggestion.READY_TO_APPROVE,
+        );
+      },
     );
-    try {
-      const gridReportingReports = new CurrentReportsPOM(industryPage);
-      const industrySummaries = new ComplianceSummariesPOM(industryPage);
-      const industryTaskList = new RequestIssuanceTaskListPOM(industryPage);
-      const industryEarnedCredits = new ReviewComplianceEarnedCreditsPOM(
-        industryPage,
-      );
+  });
 
-      // Submit report for earned credits
+  // ─────────────────────────────────────────────────────────────────────────
+  // Locked suggestion flow
+  // ─────────────────────────────────────────────────────────────────────────
+  test.describe("Industry submits → Analyst(Ready to approve) → Analyst cannot change suggestion (backend errors)", () => {
+    test.describe.configure({ mode: "serial" });
+
+    test.beforeAll(async () => {
+      await setupTestEnvironment();
+    });
+
+    test("1) Industry submits issuance request", async ({ page, request }) => {
+      const gridReportingReports = new CurrentReportsPOM(page);
+      const industrySummaries = new ComplianceSummariesPOM(page);
+      const industryTaskList = new RequestIssuanceTaskListPOM(page);
+      const industryEarnedCredits = new ReviewComplianceEarnedCreditsPOM(page);
+
       await gridReportingReports.submitReportEarnedCredits(false, request);
-
-      // Route to compliance summaries
       await industrySummaries.route();
-
-      // Click view action "Review Credits Issuance Request"
       await industrySummaries.openActionForOperation({
         operationName: ComplianceOperations.EARNED_CREDITS,
         linkName: GridActionText.REQUEST_ISSUANCE_CREDITS,
       });
-
-      // Click task list "Request Issuance of Earned Credits"
       await industryTaskList.clickRequestIssuance();
-
-      // Submit "Request Issuance of Earned Credits"
       await industryEarnedCredits.submitRequestIssuance(request);
-    } finally {
-      await industryPage.close();
-    }
+    });
 
-    // ----------------
-    // 2) Analyst sets suggestion = READY_TO_APPROVE
-    // ----------------
-    const analystPage = await openNewBrowserContextAs(UserRole.CAS_ANALYST);
-    try {
-      const analystSummaries = new ComplianceSummariesPOM(analystPage);
-      const analystEarnedCredits = new InternalReviewComplianceEarnedCreditsPOM(
-        analystPage,
-      );
-      const analystTaskList = new InternalRequestIssuanceTaskListPOM(
-        analystPage,
-      );
+    analystTest(
+      "2) Analyst sets READY_TO_APPROVE (suggestion gets locked after submit)",
+      async ({ page }) => {
+        const analystSummaries = new ComplianceSummariesPOM(page);
+        const analystEarnedCredits =
+          new InternalReviewComplianceEarnedCreditsPOM(page);
+        const analystTaskList = new InternalRequestIssuanceTaskListPOM(page);
 
-      // Route to compliance summaries
-      await analystSummaries.route();
+        await analystSummaries.route();
+        await analystSummaries.openActionForOperation({
+          operationName: ComplianceOperations.EARNED_CREDITS,
+          linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
+        });
+        await analystTaskList.clickReviewRequestIssuance();
 
-      // Click view action "Review Credits Issuance Request"
-      await analystSummaries.openActionForOperation({
-        operationName: ComplianceOperations.EARNED_CREDITS,
-        linkName: GridActionText.REVIEW_REQUEST_ISSUANCE,
-      });
-
-      // Click task list "Review Credits Issuance Request"
-      await analystTaskList.clickReviewRequestIssuance();
-
-      // Submit analyst suggestion-"Ready to Approve"
-      await analystEarnedCredits.submitAnalystReviewRequestIssuance(
-        AnalystSuggestion.READY_TO_APPROVE,
-      );
-    } finally {
-      await analystPage.close();
-    }
+        await analystEarnedCredits.submitAnalystReviewRequestIssuance(
+          AnalystSuggestion.READY_TO_APPROVE,
+        );
+      },
+    );
   });
 });

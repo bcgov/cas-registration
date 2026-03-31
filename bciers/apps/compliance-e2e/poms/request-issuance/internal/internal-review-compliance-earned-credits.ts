@@ -2,12 +2,15 @@ import { APIRequestContext, expect, Locator, Page } from "@playwright/test";
 import {
   CONTINUE_BUTTON_TEXT,
   ANALYST_SUGGESTION_INPUT,
+  ANALYST_COMMENT_INPUT,
+  ANALYST_COMMENT_VALUE,
   EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO,
   DECISION_TO_BUTTON,
   DirectorDecision,
   REVIEW_BY_DIRECTOR_URL_PATTERN,
   TRACK_ISSUANCE_URL_PATTERN,
   FINAL_SUGGESTION_LOCKED_ERROR,
+  BCCR_TRADING_NAME_FIELD_VALUE,
 } from "@/compliance-e2e/utils/constants";
 import { clickButton } from "@bciers/e2e/utils/helpers";
 import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
@@ -34,6 +37,42 @@ export class InternalReviewComplianceEarnedCreditsPOM {
     this.declineButton = this.page.getByRole("button", {
       name: DECISION_TO_BUTTON[IssuanceStatus.DECLINED],
     });
+  }
+
+  async assertAnalystSuggestionVisible(): Promise<void> {
+    await expect(this.analystSuggestionInput).toBeVisible();
+  }
+
+  async selectAnalystSuggestion(suggestion: AnalystSuggestion): Promise<void> {
+    const group = this.analystSuggestionInput;
+    await expect(group).toBeVisible();
+    const option = group.locator("label", {
+      hasText: new RegExp(suggestion, "i"),
+    });
+    await expect(option).toBeVisible();
+    await option.click();
+    const selectedText = await group
+      .locator('label:has(input[type="radio"]:checked)')
+      .innerText();
+    expect(selectedText).toMatch(new RegExp(suggestion, "i"));
+  }
+
+  /**
+   * After approveIssuanceDirect (stub), the page stays on review-by-director.
+   * Navigate to track-status-of-issuance so the screenshot shows the settled post-decision page.
+   */
+  async routeToTrackStatus(): Promise<void> {
+    const trackStatusUrl = this.page
+      .url()
+      .replace("/review-by-director", "/track-status-of-issuance");
+    await this.page.goto(trackStatusUrl);
+    await this.page.waitForURL(TRACK_ISSUANCE_URL_PATTERN);
+  }
+
+  async assertTrackStatusLoaded(): Promise<void> {
+    await expect(
+      this.page.getByText(BCCR_TRADING_NAME_FIELD_VALUE),
+    ).toBeVisible();
   }
 
   async assertAnalystSuggestionValue(expected: RegExp | string): Promise<void> {
@@ -86,6 +125,12 @@ export class InternalReviewComplianceEarnedCreditsPOM {
 
     expect(selectedText).toMatch(new RegExp(suggestion, "i"));
 
+    // Fill in the analyst comment
+    const commentField = this.page.locator(ANALYST_COMMENT_INPUT);
+    if ((await commentField.count()) > 0) {
+      await commentField.fill(ANALYST_COMMENT_VALUE);
+    }
+
     const expectSuccess = opts?.expectSuccess ?? true;
 
     // Determine expected navigation (only for success)
@@ -123,11 +168,14 @@ export class InternalReviewComplianceEarnedCreditsPOM {
   }
 
   /**
-   * Director flow: submits the director decision to update_compliance_report_version_earned_credit
+   * Director flow: submits the director decision to update_compliance_report_version_earned_credit.
+   * On success the frontend navigates to track-status-of-issuance.
    */
   async submitDirectorReviewIssuance(
     decision: DirectorDecision,
   ): Promise<void> {
-    await clickButton(this.page, DECISION_TO_BUTTON[decision]);
+    await clickButton(this.page, DECISION_TO_BUTTON[decision], {
+      waitForUrl: TRACK_ISSUANCE_URL_PATTERN,
+    });
   }
 }
