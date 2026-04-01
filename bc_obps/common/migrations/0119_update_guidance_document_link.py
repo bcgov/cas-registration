@@ -18,13 +18,6 @@ def update_guidance_document_link(apps, schema_editor):
         template.save()
 
 
-def reverse_update_guidance_document_link(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    for template in EmailNotificationTemplate.objects.filter(name__in=TEMPLATE_NAMES):
-        template.body = template.body.replace(NEW_URL, OLD_URL)
-        template.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -34,6 +27,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(
             update_guidance_document_link,
-            reverse_update_guidance_document_link,
+            migrations.RunPython.noop,
         ),
     ]
