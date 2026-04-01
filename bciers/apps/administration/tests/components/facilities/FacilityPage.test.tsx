@@ -33,7 +33,7 @@ describe("Facilities component", () => {
     });
 
     await expect(async () => {
-      await render(
+      render(
         await FacilityPage({
           operationId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
           facilityId: "garbage-bugs-dump-truck-fire",
@@ -113,6 +113,11 @@ describe("Facilities component", () => {
       }),
     );
     expect(screen.getByText(/Test Facility Name/i)).toBeVisible();
-    expect(screen.queryByText(/well/i)).toBeVisible();
+    expect(screen.getByText(/large facility/i)).toBeVisible();
+    expect(
+      screen.getByRole("button", {
+        name: /edit/i,
+      }),
+    ).toBeVisible();
   });
 });
