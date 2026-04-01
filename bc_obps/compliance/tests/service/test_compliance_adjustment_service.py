@@ -1,12 +1,12 @@
-from datetime import timedelta
 import uuid
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
-from django.utils import timezone
 from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 import pytest
 from decimal import Decimal
 from unittest.mock import patch
 from model_bakery.baker import make_recipe
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 
 # ------------------------------
 # Patch target paths
@@ -64,28 +64,15 @@ class TestComplianceAdjustmentService:
         """Test successful creation of a compliance adjustment"""
 
         # Set up
-        compliance_report_version = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
         )
         client_operator = make_recipe(
             'compliance.tests.utils.elicensing_client_operator',
         )
-        invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice',
-            last_refreshed=timezone.now() - timedelta(seconds=30),
-            elicensing_client_operator_id=client_operator.id,
-        )
-        elicensing_line_item = make_recipe(
-            'compliance.tests.utils.elicensing_line_item',
-            elicensing_invoice=invoice,
-            line_item_type="Fee",
-            object_id=9999,
-        )
-        make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version,
-            elicensing_invoice=invoice,
-        )
+        test_data.invoice.elicensing_client_operator_id = client_operator.id
+        test_data.invoice.save()
 
         mock_response = {
             'adjustments': [
@@ -102,7 +89,7 @@ class TestComplianceAdjustmentService:
 
         # API call
         ComplianceAdjustmentService.create_adjustment(
-            compliance_report_version_id=compliance_report_version.id, adjustment_total=Decimal('160')
+            compliance_report_version_id=test_data.compliance_report_version.id, adjustment_total=Decimal('160')
         )
 
         # Assertions
@@ -115,43 +102,35 @@ class TestComplianceAdjustmentService:
         assert len(request_body["adjustments"]) == 1
         adjustment = request_body["adjustments"][0]
 
-        assert adjustment["feeObjectId"] == elicensing_line_item.object_id
+        assert adjustment["feeObjectId"] == test_data.fee.object_id
         assert uuid.UUID(adjustment["adjustmentGUID"], version=4)
         assert adjustment["adjustmentTotal"] == Decimal("160.0")
         assert adjustment["reason"] == "Compliance Units Applied"
         assert adjustment["type"] == "Adjustment"
 
         mock_refresh_data_wrapper.assert_called_once_with(
-            compliance_report_version_id=compliance_report_version.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
             force_refresh=True,
             supplementary_compliance_report_version_id=None,
         )
 
     def test_create_adjustment_api_failure(self, mock_adjust_fees):
         """Test handling of API failure when creating adjustment"""
-        compliance_report_version = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
         )
         client_operator = make_recipe(
             'compliance.tests.utils.elicensing_client_operator',
         )
-        invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice',
-            last_refreshed=timezone.now() - timedelta(seconds=30),
-            elicensing_client_operator_id=client_operator.id,
-        )
-        make_recipe('compliance.tests.utils.elicensing_line_item', elicensing_invoice=invoice, line_item_type="Fee")
-        make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version,
-            elicensing_invoice=invoice,
-        )
+        test_data.invoice.elicensing_client_operator_id = client_operator.id
+        test_data.invoice.save()
 
         mock_adjust_fees.side_effect = Exception("API connection error")
 
         with pytest.raises(ValueError) as excinfo:
             ComplianceAdjustmentService.create_adjustment(
-                compliance_report_version_id=compliance_report_version.id, adjustment_total=Decimal('160')
+                compliance_report_version_id=test_data.compliance_report_version.id, adjustment_total=Decimal('160')
             )
 
         assert "Failed to adjust fees" in str(excinfo.value)
@@ -160,18 +139,13 @@ class TestComplianceAdjustmentService:
 
     def test_create_adjustment_no_invoice(self):
         """Test handling of missing invoice when creating adjustment"""
-        compliance_report_version = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-        )
-        make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version,
-            elicensing_invoice=None,
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
         )
 
         with pytest.raises(ValueError) as excinfo:
             ComplianceAdjustmentService.create_adjustment(
-                compliance_report_version_id=compliance_report_version.id, adjustment_total=Decimal('160')
+                compliance_report_version_id=test_data.compliance_report_version.id, adjustment_total=Decimal('160')
             )
 
         assert "No elicensing invoice found" in str(excinfo.value)
@@ -180,7 +154,9 @@ class TestComplianceAdjustmentService:
         """Queues retryable adjustment via transaction.on_commit for the current version."""
 
         # Arrange
-        crv = make_recipe("compliance.tests.utils.compliance_report_version")
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
         amount = Decimal("160")
 
         # Mock transaction.on_commit to execute the callback immediately
@@ -191,14 +167,14 @@ class TestComplianceAdjustmentService:
 
         # Act
         ComplianceAdjustmentService.create_adjustment_for_current_version(
-            compliance_report_version_id=crv.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
             adjustment_total=amount,
         )
 
         # Assert
         mock_transaction.on_commit.assert_called_once()
         mock_retryable_create_adjustment.execute.assert_called_once_with(
-            compliance_report_version_id=crv.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
             adjustment_total=amount,
         )
 
@@ -229,8 +205,15 @@ class TestComplianceAdjustmentService:
         """Queues retryable adjustment via transaction.on_commit."""
 
         # Arrange
-        crv = make_recipe("compliance.tests.utils.compliance_report_version")
-        supp_crv = make_recipe("compliance.tests.utils.compliance_report_version")
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+        )
+        test_supp_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+            previous_data=test_data,
+        )
         amount = Decimal("160")
         reason = ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT
 
@@ -242,18 +225,18 @@ class TestComplianceAdjustmentService:
 
         # Act
         ComplianceAdjustmentService.create_adjustment_for_target_version(
-            target_compliance_report_version_id=crv.id,
+            target_compliance_report_version_id=test_data.compliance_report_version.id,
             adjustment_total=amount,
-            supplementary_compliance_report_version_id=supp_crv.id,
+            supplementary_compliance_report_version_id=test_supp_data.compliance_report_version.id,
             reason=reason,
         )
 
         # Assert
         mock_transaction.on_commit.assert_called_once()
         mock_retryable_create_adjustment.execute.assert_called_once_with(
-            compliance_report_version_id=crv.id,
+            compliance_report_version_id=test_data.compliance_report_version.id,
             adjustment_total=amount,
-            supplementary_compliance_report_version_id=supp_crv.id,
+            supplementary_compliance_report_version_id=test_supp_data.compliance_report_version.id,
             reason=reason,
         )
 
