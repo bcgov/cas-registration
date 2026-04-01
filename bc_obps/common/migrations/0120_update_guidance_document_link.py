@@ -21,7 +21,7 @@ def update_guidance_document_link(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('common', '0118_V5_6_0'),
+        ('common', '0119_V5_7_0'),
     ]
 
     operations = [
