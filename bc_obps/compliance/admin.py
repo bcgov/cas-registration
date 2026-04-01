@@ -1,14 +1,15 @@
 from django.contrib import admin
-from compliance.models import ComplianceReportVersion
+from compliance.models import CompliancePeriod
 
 
-@admin.register(ComplianceReportVersion)
-class ComplianceReportVersionAdmin(admin.ModelAdmin):
+@admin.register(CompliancePeriod)
+class CompliancePeriodAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'compliance_report',
-        'report_compliance_summary',
-        'excess_emissions_delta_from_previous',
-        'credited_emissions_delta_from_previous',
-        'status',
+        'reporting_year',
+        'start_date',
+        'end_date',
+        'compliance_deadline',
+        'invoice_generation_date',
+        'max_credit_usage_percentage',
     )

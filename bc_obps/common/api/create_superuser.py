@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
     description="""Create a superuser with username and password. This endpoint is only available in the development environment.""",
 )
 def setup(request: HttpRequest) -> HttpResponse:
-    if settings.ENVIRONMENT == "dev":
+    if settings.ENVIRONMENT in ["dev", "test"]:
         try:
             call_command('create_superuser')
             return HttpResponse("Superuser created successfully.", status=200)
@@ -22,4 +22,4 @@ def setup(request: HttpRequest) -> HttpResponse:
             logger.error(f"An error occurred while creating the superuser: {str(e)}")
             return HttpResponse("An error occurred while creating the superuser.")
     else:
-        return HttpResponse("This endpoint only exists in the development environment.", status=404)
+        return HttpResponse("This endpoint only exists in the development and test environments.", status=404)
