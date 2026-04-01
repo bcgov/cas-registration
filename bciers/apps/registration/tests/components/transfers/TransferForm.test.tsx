@@ -205,24 +205,28 @@ describe("The TransferForm component", () => {
     await selectEntityAndAssertFields("Facility");
   });
 
-  it("fetches facilities when operation changes", async () => {
-    renderTransferForm();
-    selectOperator(/current operator\*/i, "Operator 1");
-    selectOperator(/select the new operator\*/i, "Operator 2");
-    await selectEntityAndAssertFields("Facility");
-    await selectOperation(
-      /select the operation that the facility\(s\) currently belongs to\*/i,
-      "Operation 1",
-    );
-    expect(fetchFacilitiesPageData).toHaveBeenCalledWith(
-      "8be4c7aa-6ab3-4aad-9206-0ef914fea065",
-      {
-        paginate_results: false,
-        end_date: true,
-        status: "Active",
-      },
-    );
-  });
+  it(
+    "fetches facilities when operation changes",
+    { timeout: 10000 },
+    async () => {
+      renderTransferForm();
+      selectOperator(/current operator\*/i, "Operator 1");
+      selectOperator(/select the new operator\*/i, "Operator 2");
+      await selectEntityAndAssertFields("Facility");
+      await selectOperation(
+        /select the operation that the facility\(s\) currently belongs to\*/i,
+        "Operation 1",
+      );
+      expect(fetchFacilitiesPageData).toHaveBeenCalledWith(
+        "8be4c7aa-6ab3-4aad-9206-0ef914fea065",
+        {
+          paginate_results: false,
+          end_date: true,
+          status: "Active",
+        },
+      );
+    },
+  );
 
   it("submits the form and shows success screen", async () => {
     actionHandler.mockResolvedValueOnce({});

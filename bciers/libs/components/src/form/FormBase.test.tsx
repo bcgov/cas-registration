@@ -105,4 +105,70 @@ describe("The FormBase component", () => {
     fireEvent.click(submitButton);
     expect(screen.queryByText(/^.* is required/i)).not.toBeInTheDocument();
   });
+
+  it("shows validation error alert when form is submitted with errors", () => {
+    const props = {
+      schema: testSchema,
+    } as any;
+    render(
+      <FormBase {...props}>
+        <button type="submit">Submit</button>
+      </FormBase>,
+    );
+    const submitButton = screen.getByRole("button", { name: /Submit/i });
+    fireEvent.click(submitButton);
+    expect(
+      screen.getByText(
+        /This form can't be saved yet. Please fix the errors above./i,
+      ),
+    ).toBeVisible();
+  });
+
+  it("shows a custom validation error message when validationErrorMessage prop is provided", () => {
+    const props = {
+      schema: testSchema,
+      validationErrorMessage: "Custom error message for this form.",
+    } as any;
+    render(
+      <FormBase {...props}>
+        <button type="submit">Submit</button>
+      </FormBase>,
+    );
+    const submitButton = screen.getByRole("button", { name: /Submit/i });
+    fireEvent.click(submitButton);
+    expect(
+      screen.getByText(/Custom error message for this form./i),
+    ).toBeVisible();
+    expect(
+      screen.queryByText(
+        /This form can't be saved yet. Please fix the errors above./i,
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides validation error alert after form is successfully submitted", () => {
+    const props = {
+      schema: testSchema,
+    } as any;
+    render(
+      <FormBase {...props}>
+        <button type="submit">Submit</button>
+      </FormBase>,
+    );
+    const submitButton = screen.getByRole("button", { name: /Submit/i });
+    const input = screen.getByRole("textbox", { name: "field*" });
+    fireEvent.click(submitButton);
+    expect(
+      screen.getByText(
+        /This form can't be saved yet. Please fix the errors above./i,
+      ),
+    ).toBeVisible();
+    fireEvent.change(input, { target: { value: "anything" } });
+    fireEvent.click(submitButton);
+    expect(
+      screen.getByText(
+        /This form can't be saved yet. Please fix the errors above./i,
+      ),
+    ).not.toBeVisible();
+  });
 });
