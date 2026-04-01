@@ -108,6 +108,48 @@ export const fillContactForm = async () => {
   await userEvent.type(screen.getByLabelText(/Postal Code/i), "A1B 2C3");
 };
 
+const getEditableInputByLabel = (label: RegExp) => {
+  const editableInput = screen
+    .getAllByLabelText(label)
+    .find(
+      (element) =>
+        !element.hasAttribute("readonly") && !element.hasAttribute("disabled"),
+    );
+
+  expect(editableInput).toBeDefined();
+  return editableInput as HTMLInputElement;
+};
+
+const createContactRequestBody = {
+  first_name: "John",
+  last_name: "Doe",
+  position_title: "Senior Officer",
+  email: "john.doe@example.com",
+  phone_number: "+1 604 401 1234",
+  street_address: "123 Main St",
+  municipality: "Cityville",
+  province: "AB",
+  postal_code: "A1B2C3",
+};
+
+const editNameFields = ({
+  firstName,
+  lastName,
+}: {
+  firstName: string;
+  lastName: string;
+}) => {
+  const firstNameField = getEditableInputByLabel(/First Name/i);
+  const lastNameField = getEditableInputByLabel(/Last Name/i);
+
+  return (async () => {
+    await userEvent.clear(firstNameField);
+    await userEvent.type(firstNameField, firstName);
+    await userEvent.clear(lastNameField);
+    await userEvent.type(lastNameField, lastName);
+  })();
+};
+
 const checkInlineMessage = (shouldExist = true) => {
   const message = screen.queryByText(
     /you can assign this representative to an operation directly in the operation information form\. to do so, go to the , select an operation, and go to the operation information form\./i,
@@ -261,6 +303,7 @@ describe("ContactForm component", () => {
           schema={createContactSchema(contactsSchema, true)}
           formData={{}}
           isCreating
+          allowEdit
         />,
       );
 
@@ -283,17 +326,7 @@ describe("ContactForm component", () => {
           "POST",
           "/contacts",
           {
-            body: JSON.stringify({
-              first_name: "John",
-              last_name: "Doe",
-              position_title: "Senior Officer",
-              email: "john.doe@example.com",
-              phone_number: "+1 604 401 1234",
-              street_address: "123 Main St",
-              municipality: "Cityville",
-              province: "AB",
-              postal_code: "A1B2C3",
-            }),
+            body: JSON.stringify(createContactRequestBody),
           },
         );
         expect(mockReplace).toHaveBeenCalledWith(
@@ -314,7 +347,7 @@ describe("ContactForm component", () => {
       timeout: 10000,
     },
     async () => {
-      render(
+      const { unmount } = render(
         <ContactForm
           schema={createContactSchema(contactsSchema, true)}
           formData={{}}
@@ -330,70 +363,52 @@ describe("ContactForm component", () => {
       };
       actionHandler.mockReturnValueOnce(response);
 
-      // Personal Information
-      await userEvent.type(screen.getByLabelText(/First Name/i), "John");
-      await userEvent.type(screen.getByLabelText(/Last Name/i), "Doe");
-      // Work Information
-      await userEvent.type(
-        screen.getByLabelText(/Job Title \/ Position/i),
-        "Senior Officer",
-      );
-      // Contact Information
-      await userEvent.type(
-        screen.getByLabelText(/Business Email Address/i),
-        "john.doe@example.com",
-      );
-      await userEvent.type(
-        screen.getByLabelText(/Business Telephone Number/i),
-        "+16044011234",
-      );
-
-      await userEvent.type(
-        screen.getByLabelText(/Business Mailing Address+/i),
-        "123 Street",
-      );
-      await userEvent.type(screen.getByLabelText(/Municipality+/i), "Toronto");
-
-      const provinceDropdown = screen.getByLabelText(/Province+/i);
-      await userEvent.click(provinceDropdown);
-      await userEvent.click(screen.getByText(/ontario/i));
-
-      await userEvent.type(screen.getByLabelText(/Postal Code+/i), "H0H 0H0");
+      await fillContactForm();
 
       // Submit
       await userEvent.click(screen.getByRole("button", { name: /save/i }));
 
       // assert first invocation: POST
-      expect(actionHandler).toHaveBeenNthCalledWith(
-        1,
-        "registration/contacts",
-        "POST",
-        "/contacts",
-        {
-          body: JSON.stringify({
+      await waitFor(() => {
+        expect(actionHandler).toHaveBeenNthCalledWith(
+          1,
+          "registration/contacts",
+          "POST",
+          "/contacts",
+          {
+            body: JSON.stringify(createContactRequestBody),
+          },
+        );
+      });
+
+      // Mimic app behavior after create/redirect by remounting in existing-contact mode.
+      unmount();
+      const readOnlyContactSchema = createContactSchema(contactsSchema, false);
+      render(
+        <ContactForm
+          schema={readOnlyContactSchema}
+          formData={{
+            id: 123,
             first_name: "John",
             last_name: "Doe",
             position_title: "Senior Officer",
             email: "john.doe@example.com",
             phone_number: "+1 604 401 1234",
-            street_address: "123 Street",
-            municipality: "Toronto",
-            province: "ON",
-            postal_code: "H0H0H0",
-          }),
-        },
+            street_address: "123 Main St",
+            municipality: "Cityville",
+            province: "AB",
+            postal_code: "A1B2C3",
+            places_assigned: [],
+          }}
+          allowEdit
+        />,
       );
 
-      // switch to edit mode
       await userEvent.click(screen.getByRole("button", { name: /edit/i }));
-
-      // update Personal Information
-      const firstNameField = screen.getByLabelText(/First Name/i);
-      await userEvent.clear(firstNameField);
-      await userEvent.type(firstNameField, "John updated");
-      const lastNameField = screen.getByLabelText(/Last Name/i);
-      await userEvent.clear(lastNameField);
-      await userEvent.type(lastNameField, "Doe updated");
+      await editNameFields({
+        firstName: "John updated",
+        lastName: "Doe updated",
+      });
 
       response = {
         id: 123,
@@ -407,25 +422,28 @@ describe("ContactForm component", () => {
       await userEvent.click(screen.getByRole("button", { name: /save/i }));
 
       // assert second invocation: PUT
-      expect(actionHandler).toHaveBeenNthCalledWith(
-        2,
-        "registration/contacts/123",
-        "PUT",
-        "/contacts/123",
-        {
-          body: JSON.stringify({
-            first_name: "John updated",
-            last_name: "Doe updated",
-            position_title: "Senior Officer",
-            email: "john.doe@example.com",
-            phone_number: "+1 604 401 1234",
-            street_address: "123 Street",
-            municipality: "Toronto",
-            province: "ON",
-            postal_code: "H0H0H0",
-          }),
-        },
-      );
+      await waitFor(() => {
+        expect(actionHandler).toHaveBeenNthCalledWith(
+          2,
+          "registration/contacts/123",
+          "PUT",
+          "/contacts/123",
+          {
+            body: JSON.stringify({
+              first_name: "John updated",
+              last_name: "Doe updated",
+              places_assigned: [],
+              position_title: "Senior Officer",
+              email: "john.doe@example.com",
+              phone_number: "+1 604 401 1234",
+              street_address: "123 Main St",
+              municipality: "Cityville",
+              province: "AB",
+              postal_code: "A1B2C3",
+            }),
+          },
+        );
+      });
     },
   );
   it("updates existing contact form data and hits the correct endpoint", async () => {
@@ -441,12 +459,10 @@ describe("ContactForm component", () => {
     await userEvent.click(screen.getByRole("button", { name: /edit/i }));
 
     // update Personal Information
-    const firstNameField = screen.getByLabelText(/First Name/i);
-    await userEvent.clear(firstNameField);
-    await userEvent.type(firstNameField, "John updated");
-    const lastNameField = screen.getByLabelText(/Last Name/i);
-    await userEvent.clear(lastNameField);
-    await userEvent.type(lastNameField, "Doe updated");
+    await editNameFields({
+      firstName: "John updated",
+      lastName: "Doe updated",
+    });
 
     const response = {
       id: 123,

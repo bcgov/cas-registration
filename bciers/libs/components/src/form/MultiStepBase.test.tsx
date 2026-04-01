@@ -274,7 +274,7 @@ describe("The MultiStepBase component", () => {
       name: /Save and Continue/i,
     });
     fireEvent.click(saveAndContinueButton);
-    expect(screen.getByRole("alert")).toBeVisible();
+    expect(screen.getAllByRole("alert")).toHaveLength(2); // 1 extra for FormValidationError
     expect(mockOnSubmit).not.toHaveBeenCalled(); // submit function is not called because we hit validation errors first
   });
 
