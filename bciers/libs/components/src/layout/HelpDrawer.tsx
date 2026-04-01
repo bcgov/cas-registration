@@ -1,6 +1,15 @@
 import { Button, Drawer, Link, Box } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
+import {
+  actLink,
+  bcObpsGuidanceLink,
+  bcObpsLink,
+  boundaryMapGuidanceLink,
+  ggerrLink,
+  penaltiesRegulationLink,
+  wciMethodologiesLink,
+} from "@bciers/utils/src/urls";
 
 export default function HelpDrawer() {
   const [open, setOpen] = useState(false);
@@ -24,7 +33,7 @@ export default function HelpDrawer() {
 
       <h4 className={`text-bc-bg-blue text-sm w-full`}>Getting Started</h4>
       <Link
-        href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system"
+        href={bcObpsLink}
         target="_blank"
         rel="noopener noreferrer"
         underline="hover"
@@ -47,7 +56,7 @@ export default function HelpDrawer() {
         </Box>
       </Link>
       <Link
-        href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf"
+        href={bcObpsGuidanceLink}
         target="_blank"
         rel="noopener noreferrer"
         underline="hover"
@@ -73,7 +82,7 @@ export default function HelpDrawer() {
         Administration guidance
       </h4>
       <Link
-        href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/boundary_map_guidance.pdf"
+        href={boundaryMapGuidanceLink}
         target="_blank"
         rel="noopener noreferrer"
         underline="hover"
@@ -98,7 +107,7 @@ export default function HelpDrawer() {
 
       <h4 className={`text-bc-bg-blue text-sm w-full`}>Reporting guidance</h4>
       <Link
-        href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/reporting/quantify"
+        href={wciMethodologiesLink}
         target="_blank"
         rel="noopener noreferrer"
         underline="hover"
@@ -123,7 +132,7 @@ export default function HelpDrawer() {
 
       <h4 className={`text-bc-bg-blue text-sm w-full`}>Regulations and acts</h4>
       <Link
-        href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01"
+        href={actLink}
         target="_blank"
         rel="noopener noreferrer"
         underline="hover"
@@ -141,7 +150,7 @@ export default function HelpDrawer() {
         </Box>
       </Link>
       <Link
-        href="https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015"
+        href={ggerrLink}
         target="_blank"
         rel="noopener noreferrer"
         underline="hover"
@@ -159,7 +168,7 @@ export default function HelpDrawer() {
         </Box>
       </Link>
       <Link
-        href="https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/248_2015"
+        href={penaltiesRegulationLink}
         target="_blank"
         rel="noopener noreferrer"
         underline="hover"

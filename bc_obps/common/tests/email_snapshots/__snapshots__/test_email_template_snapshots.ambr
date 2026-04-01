@@ -48,7 +48,7 @@
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
               <p>Your application to obtain a BC OBPS Regulated Operation ID (BORO ID) for Test Smelter of Acme Corp Ltd. has been approved by the Climate Action Secretariat.</p>
-              <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca/">BCIERS</a> to see Test Smelter’s assigned BORO ID. For more information on how to use the BORO ID, please refer to <a href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf">Getting Started with the B.C. Output-Based Pricing System (gov.bc.ca)</a>.</p><br>
+              <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca/">BCIERS</a> to see Test Smelter’s assigned BORO ID. For more information on how to use the BORO ID, please refer to <a href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_program_and_reporting_guidance.pdf">Getting Started with the B.C. Output-Based Pricing System (gov.bc.ca)</a>.</p><br>
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
@@ -517,7 +517,7 @@
               <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
               <p>Dear Jane Smith,</p><br>
               <p>Your application to opt-in as a reporting and regulated operation and obtain a BC OBPS Regulated Operation ID (BORO ID) for Test Smelter of Acme Corp Ltd. has been approved by the Climate Action Secretariat.</p>
-              <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca/">BCIERS</a> to see Test Smelter’s assigned BORO ID. For more information on how to use the BORO ID, please refer to <a href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf">Getting Started with the B.C. Output-Based Pricing System (gov.bc.ca)</a>.</p><br>
+              <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca/">BCIERS</a> to see Test Smelter’s assigned BORO ID. For more information on how to use the BORO ID, please refer to <a href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_program_and_reporting_guidance.pdf">Getting Started with the B.C. Output-Based Pricing System (gov.bc.ca)</a>.</p><br>
               <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
               <p>Sent to: jane@example.com</p>
               <p>On behalf of the Climate Action Secretariat</p>
