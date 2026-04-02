@@ -349,43 +349,11 @@ class ReportReviewChangesService:
         # Detect renames first (mutates prev_facilities so we don't later mark as added/removed)
         changes.extend(cls._detect_renames(prev_facilities, curr_facilities))
 
-        # Detect removed facilities
-        for fac_name, prev_fac in list(prev_facilities.items()):
-            if fac_name not in curr_facilities:
-                changes.append(
-                    {
-                        "field": f"root['facility_reports']['{fac_name}']",
-                        "old_value": prev_fac,
-                        "new_value": None,
-                        "change_type": "removed",
-                    }
-                )
-
-        # Detect added facilities
-        for fac_name, curr_fac in curr_facilities.items():
-            if fac_name not in prev_facilities:
-                changes.append(
-                    {
-                        "field": f"root['facility_reports']['{fac_name}']",
-                        "old_value": None,
-                        "new_value": curr_fac,
-                        "change_type": "added",
-                    }
-                )
+        # Detect removed and added facilities
+        changes.extend(cls._detect_removed_and_added_facilities(prev_facilities, curr_facilities))
 
         # Detect modified facilities
-        for fac_name, curr_fac in curr_facilities.items():
-            if fac_name in prev_facilities:
-                prev_fac = prev_facilities[fac_name]
-                diff = DeepDiff(prev_fac, curr_fac, ignore_order=True, exclude_regex_paths=[r".*?id'\]$"])
-                for item in cls._parse_deepdiff_items(diff, prev_fac, curr_fac):
-                    normalized_path = item.path[4:] if item.path.startswith('root') else item.path
-                    full_path = f"root['facility_reports']['{fac_name}']{normalized_path}"
-                    changes.append(
-                        cls.process_change(
-                            full_path, item.old_value, item.new_value, item.change_type, serialized_data=current
-                        )
-                    )
+        changes.extend(cls._detect_modified_facilities(prev_facilities, curr_facilities, current))
 
         # --- Compliance products added/removed/modified ---
         prev_products = {
@@ -422,16 +390,7 @@ class ReportReviewChangesService:
             )
 
         # Modified products
-        for name in prev_products.keys() & curr_products.keys():
-            prev_p = prev_products[name]
-            curr_p = curr_products[name]
-            diff = DeepDiff(prev_p, curr_p, ignore_order=True)
-            for item in cls._parse_deepdiff_items(diff, prev_p, curr_p):
-                # Keep the product name as key in path
-                field = f"root['report_compliance_summary']['products']['{name}']{item.path[4:]}"
-                changes.append(
-                    cls.process_change(field, item.old_value, item.new_value, item.change_type, serialized_data=current)
-                )
+        changes.extend(cls.detect_modified_products(prev_products, curr_products, current))
 
         # --- Top-level diff excluding facility_reports (products handled separately) ---
         diff = DeepDiff(previous, current, ignore_order=True, exclude_regex_paths=[r".*?facility_reports.*"])
@@ -442,5 +401,80 @@ class ReportReviewChangesService:
             changes.append(
                 cls.process_change(item.path, item.old_value, item.new_value, item.change_type, serialized_data=current)
             )
+
+        return changes
+
+    # --- Facility helper methods ---
+    @staticmethod
+    def _detect_removed_and_added_facilities(
+        prev_facilities: Dict[str, dict], curr_facilities: Dict[str, dict]
+    ) -> List[Dict[str, Any]]:
+        """Detect removed facilities. Returns list of removed facility change dicts."""
+        changes: List[Dict[str, Any]] = []
+
+        for fac_name, prev_fac in list(prev_facilities.items()):
+            if fac_name not in curr_facilities:
+                changes.append(
+                    {
+                        "field": f"root['facility_reports']['{fac_name}']",
+                        "old_value": prev_fac,
+                        "new_value": None,
+                        "change_type": "removed",
+                    }
+                )
+
+        for fac_name, curr_fac in curr_facilities.items():
+            if fac_name not in prev_facilities:
+                changes.append(
+                    {
+                        "field": f"root['facility_reports']['{fac_name}']",
+                        "old_value": None,
+                        "new_value": curr_fac,
+                        "change_type": "added",
+                    }
+                )
+
+        return changes
+
+    @classmethod
+    def _detect_modified_facilities(
+        cls, prev_facilities: Dict[str, dict], curr_facilities: Dict[str, dict], current: dict
+    ) -> List[Dict[str, Any]]:
+        """Detect modified facilities. Returns list of modified facility change dicts."""
+        changes: List[Dict[str, Any]] = []
+
+        for fac_name, curr_fac in curr_facilities.items():
+            if fac_name in prev_facilities:
+                prev_fac = prev_facilities[fac_name]
+                diff = DeepDiff(prev_fac, curr_fac, ignore_order=True, exclude_regex_paths=[r".*?id'\]$"])
+                for item in cls._parse_deepdiff_items(diff, prev_fac, curr_fac):
+                    normalized_path = item.path[4:] if item.path.startswith('root') else item.path
+                    full_path = f"root['facility_reports']['{fac_name}']{normalized_path}"
+                    changes.append(
+                        cls.process_change(
+                            full_path, item.old_value, item.new_value, item.change_type, serialized_data=current
+                        )
+                    )
+
+        return changes
+
+    # --- Product helper methods ---
+    @classmethod
+    def detect_modified_products(
+        cls, prev_products: Dict[str, dict], curr_products: Dict[str, dict], current: dict
+    ) -> List[Dict[str, Any]]:
+        """Detect modified products. Returns list of modified product change dicts."""
+        changes: List[Dict[str, Any]] = []
+
+        for name in prev_products.keys() & curr_products.keys():
+            prev_p = prev_products[name]
+            curr_p = curr_products[name]
+            diff = DeepDiff(prev_p, curr_p, ignore_order=True)
+            for item in cls._parse_deepdiff_items(diff, prev_p, curr_p):
+                # Keep the product name as key in path
+                field = f"root['report_compliance_summary']['products']['{name}']{item.path[4:]}"
+                changes.append(
+                    cls.process_change(field, item.old_value, item.new_value, item.change_type, serialized_data=current)
+                )
 
         return changes
