@@ -26,18 +26,23 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             self, operator=self.facility_report.report_version.report.operator
         )
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
-        data = response.json()
 
-        assert data['facility_data']['facility_id'] == str(self.facility_report.facility_id)
-        assert data['facility_data']['facility_type'] == 'test facility type'
-        assert data['report_data'] == {
-            'report_version_id': self.report_version.id,
-            'reporting_year': 1222,
-        }
-        assert data['payload'] == {
-            'report_products': [],
-            'allowed_products': [],
-            'is_operation_opted_out': False,
+        assert response.json() == {
+            "facility_data": {
+                "facility_id": str(self.facility_report.facility_id),
+                "facility_name": self.facility_report.facility_name,
+                "facility_type": "test facility type",
+            },
+            "operation_data": {
+                "naics_code": self.report_operation.report_version.report.operation.naics_code.naics_code,
+                "operation_type": self.report_operation.operation_type,
+                "is_operation_opted_out": False,
+            },
+            "report_data": {
+                "report_version_id": self.report_version.id,
+                "reporting_year": 1222,
+            },
+            "payload": {"report_products": [], "allowed_products": []},
         }
 
     def test_get_returns_the_right_data_with_data(self):
@@ -66,7 +71,7 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         # ❌ Report product with a different report version (should NOT be in the response)
         make_recipe(
             "reporting.tests.utils.report_product",
-            report_version=make_recipe("reporting.tests.utils.report_version"),  # Different report version
+            report_version=make_recipe("reporting.tests.utils.report_version"),
             facility_report=self.facility_report,
             product_id=3,
         )
@@ -75,74 +80,72 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         make_recipe(
             "reporting.tests.utils.report_product",
             report_version=self.facility_report.report_version,
-            facility_report=make_recipe("reporting.tests.utils.facility_report"),  # Different facility
+            facility_report=make_recipe("reporting.tests.utils.facility_report"),
             product_id=4,
         )
 
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
 
-        # ✅ Check that only rp1 and rp2 are returned, not different version or different facility
-        data = response.json()
-
-        # facility_data → assert stable fields + presence of facility_name
-        assert data['facility_data']['facility_id'] == str(self.facility_report.facility_id)
-        assert data['facility_data']['facility_type'] == 'test facility type'
-        assert 'facility_name' in data['facility_data']
-        assert data['facility_data']['facility_name'] is not None
-
-        # report_data → exact match (stable)
-        assert data['report_data'] == {
-            'report_version_id': self.report_version.id,
-            'reporting_year': 1222,
-        }
-
-        # payload → exact match (stable)
-        assert data['payload'] == {
-            "report_products": [
-                {
-                    "product_id": rp1.product.id,
-                    "product_name": rp1.product.name,
-                    "unit": rp1.product.unit,
-                    "is_regulated": rp1.product.is_regulated,
-                    "annual_production": rp1.annual_production,
-                    # Production data apr-dec is only serialized when present
-                    "production_methodology": rp1.production_methodology.value,
-                },
-                {
-                    "product_id": rp2.product.id,
-                    "product_name": rp2.product.name,
-                    "unit": rp2.product.unit,
-                    "is_regulated": rp2.product.is_regulated,
-                    "annual_production": rp2.annual_production,
-                    "production_data_apr_dec": rp2.production_data_apr_dec,
-                    "production_methodology": rp2.production_methodology.value,
-                    "storage_quantity_start_of_period": rp2.storage_quantity_start_of_period,
-                    "storage_quantity_end_of_period": rp2.storage_quantity_end_of_period,
-                    "quantity_sold_during_period": rp2.quantity_sold_during_period,
-                    "quantity_throughput_during_period": rp2.quantity_throughput_during_period,
-                },
-            ],
-            "allowed_products": [
-                {
-                    "id": 1,
-                    "name": RegulatedProduct.objects.get(id=1).name,
-                    "unit": RegulatedProduct.objects.get(id=1).unit,
-                    "is_regulated": RegulatedProduct.objects.get(id=1).is_regulated,
-                },
-                {
-                    "id": 2,
-                    "name": RegulatedProduct.objects.get(id=2).name,
-                    "unit": RegulatedProduct.objects.get(id=2).unit,
-                    "is_regulated": RegulatedProduct.objects.get(id=2).is_regulated,
-                },
-                {
-                    "id": 3,
-                    "name": RegulatedProduct.objects.get(id=3).name,
-                    "unit": RegulatedProduct.objects.get(id=3).unit,
-                    "is_regulated": RegulatedProduct.objects.get(id=3).is_regulated,
-                },
-            ],
-            'is_operation_opted_out': False,
+        assert response.json() == {
+            "facility_data": {
+                "facility_id": str(self.facility_report.facility_id),
+                "facility_name": self.facility_report.facility_name,
+                "facility_type": "test facility type",
+            },
+            "operation_data": {
+                "naics_code": self.report_operation.report_version.report.operation.naics_code.naics_code,
+                "operation_type": self.report_operation.operation_type,
+                "is_operation_opted_out": False,
+            },
+            "report_data": {
+                "report_version_id": self.report_version.id,
+                "reporting_year": 1222,
+            },
+            "payload": {
+                "report_products": [
+                    {
+                        "product_id": rp1.product.id,
+                        "product_name": rp1.product.name,
+                        "unit": rp1.product.unit,
+                        "is_regulated": rp1.product.is_regulated,
+                        "annual_production": rp1.annual_production,
+                        "production_methodology": rp1.production_methodology.value,
+                    },
+                    {
+                        "product_id": rp2.product.id,
+                        "product_name": rp2.product.name,
+                        "unit": rp2.product.unit,
+                        "is_regulated": rp2.product.is_regulated,
+                        "annual_production": rp2.annual_production,
+                        "production_data_apr_dec": rp2.production_data_apr_dec,
+                        "production_methodology": rp2.production_methodology.value,
+                        "storage_quantity_start_of_period": rp2.storage_quantity_start_of_period,
+                        "storage_quantity_end_of_period": rp2.storage_quantity_end_of_period,
+                        "quantity_sold_during_period": rp2.quantity_sold_during_period,
+                        "quantity_throughput_during_period": rp2.quantity_throughput_during_period,
+                    },
+                ],
+                "allowed_products": [
+                    {
+                        "id": 1,
+                        "name": RegulatedProduct.objects.get(id=1).name,
+                        "unit": RegulatedProduct.objects.get(id=1).unit,
+                        "is_regulated": RegulatedProduct.objects.get(id=1).is_regulated,
+                    },
+                    {
+                        "id": 2,
+                        "name": RegulatedProduct.objects.get(id=2).name,
+                        "unit": RegulatedProduct.objects.get(id=2).unit,
+                        "is_regulated": RegulatedProduct.objects.get(id=2).is_regulated,
+                    },
+                    {
+                        "id": 3,
+                        "name": RegulatedProduct.objects.get(id=3).name,
+                        "unit": RegulatedProduct.objects.get(id=3).unit,
+                        "is_regulated": RegulatedProduct.objects.get(id=3).is_regulated,
+                    },
+                ],
+            },
         }
 
     def test_validates_report_version_id(self):

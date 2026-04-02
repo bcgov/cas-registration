@@ -26,10 +26,11 @@ export default async function ProductionDataPage({
     unit: p.unit,
   }));
 
-  const facilityType = response.facility_data?.facility_type || "";
+  const facilityType = response.facility_data?.facility_type;
+  if (!facilityType) throw new Error("Failed to receive facility type.");
 
   const reportingYear = response.report_data.reporting_year;
-  const isOptedOut = response.payload.is_operation_opted_out;
+  const isOptedOut = response.operation_data?.is_operation_opted_out ?? false;
 
   const schema: any = buildProductionDataSchema(
     response.report_data.reporting_year,

@@ -10,10 +10,11 @@ import {
 } from "@reporting/src/data/jsonSchema/complianceSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { ComplianceSummaryFormData } from "@reporting/src/app/components/complianceSummary/types";
+import { ComplianceSummaryFormPayload } from "@reporting/src/app/components/complianceSummary/types";
+import { hasJanMarProduction } from "@reporting/src/app/utils/hasJanMarProduction";
 
 interface Props {
-  summaryFormData: ComplianceSummaryFormData;
+  summaryFormData: ComplianceSummaryFormPayload;
   navigationInformation: NavigationInformation;
 }
 
@@ -21,12 +22,16 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   summaryFormData,
   navigationInformation,
 }) => {
-  // Generate schemas based on reporting year
-  const complianceSummarySchema =
-    createComplianceSummarySchema(summaryFormData);
+  // Generate schemas based on reporting year and prescence of jan_mar_production data
+  const displayJanMarProduction = hasJanMarProduction(summaryFormData);
+  const complianceSummarySchema = createComplianceSummarySchema(
+    summaryFormData.reporting_year,
+    displayJanMarProduction,
+  );
 
-  const complianceSummaryUiSchema =
-    createComplianceSummaryUiSchema(summaryFormData);
+  const complianceSummaryUiSchema = createComplianceSummaryUiSchema(
+    summaryFormData.reporting_year,
+  );
 
   return (
     <Box sx={{ p: 3 }}>
@@ -40,6 +45,7 @@ const ComplianceSummaryForm: React.FC<Props> = ({
         <ReportingTaskList elements={navigationInformation.taskList} />
         <div className="w-full md:max-w-[60%]">
           <FormBase
+            data-testid="compliance-summary-form"
             schema={complianceSummarySchema}
             uiSchema={complianceSummaryUiSchema}
             formData={summaryFormData}

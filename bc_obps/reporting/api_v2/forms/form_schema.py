@@ -19,7 +19,8 @@ class CommonFacilityDataSchema(Schema):
 
 class CommonOperationDataSchema(Schema):
     naics_code: Optional[str]
-    operation_type: Optional[str]
+    operation_type: str
+    is_operation_opted_out: bool
 
 
 class ReportingFormSchema(ReportingResponseSchema[TPayload], Generic[TPayload]):

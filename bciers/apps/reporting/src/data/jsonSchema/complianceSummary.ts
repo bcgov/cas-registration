@@ -168,22 +168,24 @@ const complianceSummaryUiSchemaDefault: UiSchema = {
   },
 };
 
-export const createComplianceSummarySchema = (formData?: any): RJSFSchema => {
-  const reportingYear = formData?.reporting_year;
-
-  if (reportingYear === 2024) {
-    return complianceSummarySchema2024;
-  } else if (reportingYear === 2025) {
-    return complianceSummarySchema2025(formData);
-  } else return complianceSummarySchemaDefault;
+export const createComplianceSummarySchema = (
+  reportingYear?: number,
+  displayJanMarProduction = false,
+): RJSFSchema => {
+  switch (reportingYear) {
+    case 2024:
+      return complianceSummarySchema2024;
+    case 2025:
+      return complianceSummarySchema2025(displayJanMarProduction);
+    default:
+      return complianceSummarySchemaDefault;
+  }
 };
 
-export const createComplianceSummaryUiSchema = (formData?: any): UiSchema => {
-  const reportingYear = formData?.reporting_year;
-
+export const createComplianceSummaryUiSchema = (reportingYear: number) => {
   if (reportingYear === 2024) {
     return complianceSummaryUiSchema2024;
   } else if (reportingYear === 2025) {
-    return complianceSummaryUiSchema2025(formData);
+    return complianceSummaryUiSchema2025;
   } else return complianceSummaryUiSchemaDefault;
 };

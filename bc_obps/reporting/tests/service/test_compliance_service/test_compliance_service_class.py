@@ -324,7 +324,6 @@ class TestComplianceSummaryServiceClass(TestCase):
                 },
             ],
             'reporting_only_emissions': Decimal('10500.0500'),
-            'reporting_year': 2025,
         }
 
     def test_compliance_summary_rounding(self):
@@ -369,18 +368,32 @@ class TestComplianceSummaryServiceClass(TestCase):
         )
 
     def test_returns_jan_mar_for_2025_opted_out_operation(self):
-        build_data = ComplianceTestInfrastructure.reporting_year_2025()
+        build_data = ComplianceTestInfrastructure.zero_production_single_product()
 
+        # Ensure emissions context matches real scenario
+        build_data.allocation_1.emission_category = EmissionCategory.objects.get(pk=5)
+        build_data.allocation_1.save()
+        build_data.report_emission_1.emission_categories.set([5])
+
+        # Opted-in + final year = 2025
         report_op = build_data.report_version_1.report_operation
         report_op.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
         report_op.operation_opted_out_final_reporting_year = 2025
         report_op.save()
 
+        build_data.report_1.reporting_year_id = 2025
+        build_data.report_1.save()
+
+        # Set explicit production values
+        build_data.report_product_1.production_data_jan_mar = Decimal("10000")
+        build_data.report_product_1.annual_production = Decimal("40000")
+        build_data.report_product_1.save()
+
         result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
 
-        for product in result.products:
-            self.assertIsNotNone(product.jan_mar_production)
-            self.assertIsInstance(product.jan_mar_production, Decimal)
+        product = result.products[0]
+        self.assertIsNotNone(product.jan_mar_production)
+        self.assertEqual(product.jan_mar_production, Decimal("10000"))
 
     def test_returns_no_jan_mar_for_2025_when_not_opted_out(self):
         build_data = ComplianceTestInfrastructure.reporting_year_2025()
@@ -425,14 +438,29 @@ class TestComplianceSummaryServiceClass(TestCase):
             self.assertIsNone(product.jan_mar_production)
 
     def test_returns_jan_mar_for_2025_when_final_year_is_before_reporting_year(self):
-        build_data = ComplianceTestInfrastructure.reporting_year_2025()
+        build_data = ComplianceTestInfrastructure.zero_production_single_product()
 
+        build_data.allocation_1.emission_category = EmissionCategory.objects.get(pk=5)
+        build_data.allocation_1.save()
+        build_data.report_emission_1.emission_categories.set([5])
+
+        # Opted-in + final year BEFORE reporting year
         report_op = build_data.report_version_1.report_operation
         report_op.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
         report_op.operation_opted_out_final_reporting_year = 2024
         report_op.save()
 
+        build_data.report_1.reporting_year_id = 2025
+        build_data.report_1.save()
+
+        # Set explicit production values
+        build_data.report_product_1.production_data_jan_mar = Decimal("8000")
+        build_data.report_product_1.annual_production = Decimal("40000")
+        build_data.report_product_1.save()
+
         result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
 
-        for product in result.products:
-            self.assertIsNotNone(product.jan_mar_production)
+        product = result.products[0]
+
+        self.assertIsNotNone(product.jan_mar_production)
+        self.assertEqual(product.jan_mar_production, Decimal("8000"))

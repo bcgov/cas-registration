@@ -45,6 +45,7 @@ const mockSummaryData = {
 const mock2025Data = {
   ...mockSummaryData,
   reporting_year: 2025,
+  isOptedOut: false,
   regulatory_values: {
     ...mockSummaryData.regulatory_values,
     initial_compliance_period: "2025",
@@ -190,7 +191,10 @@ describe("ComplianceSummaryForm", () => {
   });
 
   it("should generate schema without apr_dec_production for non-2024 years", () => {
-    const schema2025 = createComplianceSummarySchema(mock2025Data);
+    const schema2025 = createComplianceSummarySchema(
+      mock2025Data.reporting_year,
+      mock2025Data.isOptedOut,
+    );
     const productsSchema = schema2025.properties?.products as any;
     const productProperties = productsSchema?.items?.properties;
 
@@ -200,7 +204,10 @@ describe("ComplianceSummaryForm", () => {
   });
 
   it("should generate schema with apr_dec_production for 2024", () => {
-    const schema2024 = createComplianceSummarySchema(mockSummaryData);
+    const schema2024 = createComplianceSummarySchema(
+      mockSummaryData.reporting_year,
+      mockSummaryData.isOptedOut,
+    );
     const productsSchema = schema2024.properties?.products as any;
     const productProperties = productsSchema?.items?.properties;
 
@@ -209,8 +216,11 @@ describe("ComplianceSummaryForm", () => {
     expect(productProperties?.annual_production).toBeDefined();
   });
 
-  it("should generate schema without jan_mar_production when data does not include a value", () => {
-    const schema2025 = createComplianceSummarySchema(mock2025Data);
+  it("should generate schema without jan_mar_production prescence of jan_mar_production is false", () => {
+    const schema2025 = createComplianceSummarySchema(
+      mock2025Data.reporting_year,
+      false,
+    );
     const productsSchema = schema2025.properties?.products as any;
     const productProperties = productsSchema?.items?.properties;
 
@@ -218,22 +228,16 @@ describe("ComplianceSummaryForm", () => {
     expect(productProperties?.jan_mar_production).toBeUndefined();
   });
 
-  it("should generate schema with jan_mar_production when data includes a value", () => {
-    const mock2025DataWithJanMar = {
-      ...mock2025Data,
-      products: [
-        {
-          ...mock2025Data.products[0],
-          jan_mar_production: "5000.5",
-        },
-      ],
-    };
-
-    const schema2025 = createComplianceSummarySchema(mock2025DataWithJanMar);
+  it("should generate schema with jan_mar_production prescence of jan_mar_production is true", () => {
+    const schema2025 = createComplianceSummarySchema(2025, true);
     const productsSchema = schema2025.properties?.products as any;
     const productProperties = productsSchema?.items?.properties;
 
     expect(productProperties).toBeDefined();
     expect(productProperties?.jan_mar_production).toBeDefined();
+    expect(productProperties?.jan_mar_production).toEqual({
+      type: "number",
+      title: "Production data for Jan 1 - Mar 31 2025",
+    });
   });
 });

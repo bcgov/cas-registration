@@ -31,7 +31,6 @@ class ComplianceDataSchemaOut(Schema):
     credited_emissions: float
     regulatory_values: RegulatoryValuesSchema
     products: List[ReportProductComplianceSchema]
-    reporting_year: int
 
     @staticmethod
     def resolve_regulatory_values(obj: ComplianceData) -> RegulatoryValues:

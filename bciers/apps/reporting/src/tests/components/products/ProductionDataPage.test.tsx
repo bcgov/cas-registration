@@ -193,6 +193,11 @@ describe("The Production Data component", () => {
       report_data: {
         reporting_year: 2025,
       },
+      operation_data: {
+        naics_code: "007",
+        operation_type: "test",
+        is_operation_opted_out: true,
+      },
       payload: {
         allowed_products: [],
         report_products: [
@@ -201,7 +206,6 @@ describe("The Production Data component", () => {
             unit: "tonnes of tests",
           },
         ],
-        is_operation_opted_out: true,
       },
     });
 

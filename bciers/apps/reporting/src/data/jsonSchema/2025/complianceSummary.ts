@@ -1,15 +1,10 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
-import {
-  hasJanMarProduction,
-  janMarSchemaField,
-  janMarUiSchemaField,
-} from "@reporting/src/app/utils/hasJanMarProduction";
 
-export const complianceSummarySchema2025 = (formData?: any): RJSFSchema => {
-  const hasJanMar = hasJanMarProduction(formData);
-
+export const complianceSummarySchema2025 = (
+  displayJanMarProduction: boolean,
+): RJSFSchema => {
   return {
     type: "object",
     title: "Compliance Summary",
@@ -67,7 +62,14 @@ export const complianceSummarySchema2025 = (formData?: any): RJSFSchema => {
               type: "number",
               title: "Annual production",
             },
-            ...(hasJanMar ? janMarSchemaField : {}),
+            ...(displayJanMarProduction
+              ? {
+                  jan_mar_production: {
+                    type: "number" as const,
+                    title: "Production data for Jan 1 - Mar 31 2025",
+                  },
+                }
+              : {}),
             emission_intensity: {
               type: "number",
               title: "Production-weighted average emission intensity",
@@ -87,90 +89,90 @@ export const complianceSummarySchema2025 = (formData?: any): RJSFSchema => {
   };
 };
 
-export const complianceSummaryUiSchema2025 = (formData?: any) => {
-  const hasJanMar = hasJanMarProduction(formData);
-
-  return {
+export const complianceSummaryUiSchema2025 = {
+  "ui:FieldTemplate": FieldTemplate,
+  "ui:classNames": "form-heading-label",
+  "ui:disabled": true,
+  emissions_attributable_for_reporting: {
+    "ui:options": {
+      displayUnit: "tCO2e",
+    },
+  },
+  reporting_only_emissions: {
+    "ui:options": {
+      displayUnit: "tCO2e",
+    },
+  },
+  emissions_attributable_for_compliance: {
+    "ui:options": {
+      displayUnit: "tCO2e",
+    },
+  },
+  emissions_limit: {
+    "ui:options": {
+      displayUnit: "tCO2e",
+    },
+  },
+  excess_emissions: {
+    "ui:options": {
+      displayUnit: "tCO2e",
+    },
+  },
+  credited_emissions: {
+    "ui:options": {
+      displayUnit: "tCO2e",
+    },
+  },
+  regulatory_values: {
     "ui:FieldTemplate": FieldTemplate,
-    "ui:classNames": "form-heading-label",
+    "ui:classNames": "section-heading-label",
     "ui:disabled": true,
-    emissions_attributable_for_reporting: {
-      "ui:options": {
-        displayUnit: "tCO2e",
-      },
+  },
+  products: {
+    "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:disabled": true,
+    "ui:options": {
+      label: false,
+      customItemName: true,
+      addable: false,
+      removable: false,
     },
-    reporting_only_emissions: {
-      "ui:options": {
-        displayUnit: "tCO2e",
+    items: {
+      name: {
+        "ui:widget": "hidden",
       },
-    },
-    emissions_attributable_for_compliance: {
-      "ui:options": {
-        displayUnit: "tCO2e",
+      reduction_factor: {
+        "ui:options": {},
       },
-    },
-    emissions_limit: {
-      "ui:options": {
-        displayUnit: "tCO2e",
+      tightening_rate: {
+        "ui:options": {},
       },
-    },
-    excess_emissions: {
-      "ui:options": {
-        displayUnit: "tCO2e",
-      },
-    },
-    credited_emissions: {
-      "ui:options": {
-        displayUnit: "tCO2e",
-      },
-    },
-    regulatory_values: {
-      "ui:FieldTemplate": FieldTemplate,
-      "ui:classNames": "section-heading-label",
-      "ui:disabled": true,
-    },
-    products: {
-      "ui:ArrayFieldTemplate": ArrayFieldTemplate,
-      "ui:FieldTemplate": FieldTemplate,
-      "ui:disabled": true,
-      "ui:options": {
-        label: false,
-        customItemName: true,
-        addable: false,
-        removable: false,
-      },
-      items: {
-        name: {
-          "ui:widget": "hidden",
+      annual_production: {
+        "ui:options": {
+          displayUnit: "production unit",
         },
-        reduction_factor: {
-          "ui:options": {},
+      },
+      jan_mar_production: {
+        "ui:options": {
+          displayUnit: "production unit",
         },
-        tightening_rate: {
-          "ui:options": {},
+      },
+      emission_intensity: {
+        "ui:options": {
+          displayUnit: "tCO2e/production unit",
         },
-        annual_production: {
-          "ui:options": {
-            displayUnit: "production unit",
-          },
+      },
+      allocated_industrial_process_emissions: {
+        "ui:options": {
+          displayUnit: "tCO2e",
         },
-        ...(hasJanMar ? janMarUiSchemaField : {}),
-        emission_intensity: {
-          "ui:options": {
-            displayUnit: "tCO2e/production unit",
-          },
-        },
-        allocated_industrial_process_emissions: {
-          "ui:options": {
-            displayUnit: "tCO2e",
-          },
-        },
-        allocated_compliance_emissions: {
-          "ui:options": {
-            displayUnit: "tCO2e",
-          },
+      },
+      allocated_compliance_emissions: {
+        "ui:options": {
+          displayUnit: "tCO2e",
         },
       },
     },
-  };
+  },
 };

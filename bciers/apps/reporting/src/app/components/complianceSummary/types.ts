@@ -24,7 +24,3 @@ export type ComplianceSummaryFormPayload = {
   products: ComplianceSummaryFormProduct[];
   reporting_year: number;
 };
-
-export type ComplianceSummaryFormData = ComplianceSummaryFormPayload & {
-  reporting_year: number;
-};

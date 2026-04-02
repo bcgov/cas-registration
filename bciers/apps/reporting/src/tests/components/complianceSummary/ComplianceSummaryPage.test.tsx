@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import ComplianceSummaryForm from "@reporting/src/app/components/complianceSummary/ComplianceSummaryForm";
 import ComplianceSummaryPage from "@reporting/src/app/components/complianceSummary/ComplianceSummaryPage";
 import { getComplianceData } from "@reporting/src/app/utils/complianceSummaryForm/getComplianceData";
@@ -12,7 +12,7 @@ import {
 vi.mock(
   "@reporting/src/app/components/complianceSummary/ComplianceSummaryForm",
   () => ({
-    default: vi.fn(),
+    default: vi.fn(() => <div data-testid="compliance-summary-form" />),
   }),
 );
 
@@ -48,9 +48,6 @@ describe("ComplianceSummaryPage", () => {
       report_data: {
         reporting_year: 2025,
       },
-      facility_data: {
-        facility_id: "facility-123",
-      },
     };
 
     mockGetComplianceData.mockResolvedValue(response);
@@ -58,13 +55,15 @@ describe("ComplianceSummaryPage", () => {
 
     render(await ComplianceSummaryPage({ version_id: versionId }));
 
+    expect(screen.getByTestId("compliance-summary-form")).toBeInTheDocument();
+
     expect(mockGetComplianceData).toHaveBeenCalledWith(versionId);
 
     expect(mockGetNavigationInformation).toHaveBeenCalledWith(
       HeaderStep.ComplianceSummary,
       ReportingPage.ComplianceSummary,
       versionId,
-      "facility-123",
+      "",
     );
 
     expect(mockComplianceSummaryForm).toHaveBeenCalledWith(
@@ -96,6 +95,8 @@ describe("ComplianceSummaryPage", () => {
     mockGetNavigationInformation.mockResolvedValue({ nav: true });
 
     render(await ComplianceSummaryPage({ version_id: versionId }));
+
+    expect(screen.getByTestId("compliance-summary-form")).toBeInTheDocument();
 
     expect(mockGetNavigationInformation).toHaveBeenCalledWith(
       HeaderStep.ComplianceSummary,

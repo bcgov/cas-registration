@@ -1,8 +1,7 @@
 from django.http import HttpRequest
-from typing import Literal, Tuple
 from ninja import Schema
+from typing import List, Literal, Tuple
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
-from reporting.api_v2.forms.form_response_builder import FormResponseBuilder
 from reporting.api_v2.forms.form_schema import ReportingFormSchema
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.compliance_data import (
@@ -11,14 +10,13 @@ from reporting.schema.compliance_data import (
     ReportProductComplianceSchema,
 )
 from reporting.schema.generic import Message
-from reporting.service.compliance_service.compliance_service import ComplianceService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.facility_report_service import FacilityReportService
+from reporting.api_v2.forms.form_response_builder import FormResponseBuilder
+from reporting.service.compliance_service.compliance_service import ComplianceService
 from ..router import router
 
 
-# API response schema
-class ComplianceSummaryFormPayloadSchema(Schema):
+class ComplianceDataSchemaSerialized(Schema):
     emissions_attributable_for_reporting: float
     reporting_only_emissions: float
     emissions_attributable_for_compliance: float
@@ -26,13 +24,13 @@ class ComplianceSummaryFormPayloadSchema(Schema):
     excess_emissions: float
     credited_emissions: float
     regulatory_values: RegulatoryValuesSchema
-    products: list[ReportProductComplianceSchema]
+    products: List[ReportProductComplianceSchema]
 
 
 @router.get(
     "report-version/{version_id}/forms/compliance-summary-data",
     response={
-        200: ReportingFormSchema[ComplianceSummaryFormPayloadSchema],
+        200: ReportingFormSchema[ComplianceDataSchemaSerialized],
         custom_codes_4xx: Message,
     },
     tags=EMISSIONS_REPORT_TAGS,
@@ -44,16 +42,17 @@ def get_compliance_summary_form_data(
     request: HttpRequest,
     version_id: int,
 ) -> Tuple[Literal[200], dict]:
+    # Get compliance dataclass
     compliance_data = ComplianceService.get_calculated_compliance_data(version_id)
-    facility_id = FacilityReportService.get_facility_report_by_version_id(version_id)
 
-    builder = FormResponseBuilder(version_id).operation_data()
+    # Trigger compliance schema resolvers through model_validate
+    # Return a dict for FormResponseBuilder payload through model_dump
+    payload = ComplianceDataSchemaOut.model_validate(
+        compliance_data,
+        from_attributes=True,
+    ).model_dump(exclude_none=True)
 
-    if facility_id is not None:
-        builder = builder.facility_data(facility_id)
-
-    payload = ComplianceDataSchemaOut.from_orm(compliance_data).dict()
-
-    response = builder.payload(payload).build()
+    # Build standardized form builder response
+    response = FormResponseBuilder(version_id).operation_data().payload(payload).build()
 
     return 200, response
