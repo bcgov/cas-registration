@@ -27,6 +27,8 @@ def insert_validation_records(apps, schema_monitor):
     measured_high_heating_value_field = ReportingField.objects.get(slug='fuelAnnualWeightedAverageHighHeatingValue')
     default_high_heating_value_field = ReportingField.objects.get(slug='fuelDefaultHighHeatingValue')
     cc_weight_fraction_field = ReportingField.objects.get(slug='fuelAnnualWeightedAverageCarbonContentWeightFraction')
+    annual_steam_generated_field = ReportingField.objects.get(slug='unitFuelAnnualSteamGenerated')
+    boiler_ratio_field = ReportingField.objects.get(slug='boilerRatio')
 
     ## CO2 Fields
     co2_measured_hhv_default_ef_field = ReportingField.objects.get(slug='unitFuelCo2MeasuredHhvDefaultEf')
@@ -252,7 +254,7 @@ def insert_validation_records(apps, schema_monitor):
         valid_from='2023-01-01',
         valid_to='9999-12-31',
     )
-    ## CH4 kg CH4/kl
+    ## CH4 g CH4/kl
     ### CH4 Default EF
     ExpectedValueRangeMethodologyField.objects.create(
         fuel_type=diesel,
@@ -273,7 +275,7 @@ def insert_validation_records(apps, schema_monitor):
         valid_from='2023-01-01',
         valid_to='9999-12-31',
     )
-    ## N2O kg N2O/kl
+    ## N2O g N2O/kl
     ### N2O Default EF
     ExpectedValueRangeMethodologyField.objects.create(
         fuel_type=diesel,
@@ -320,8 +322,8 @@ def insert_validation_records(apps, schema_monitor):
         fuel_type=diesel,
         methodology=measured_steam_default_ef,
         reporting_field=co2_measured_steam_default_ef_field,
-        lower_bound=Decimal('1000.0'),
-        upper_bound=Decimal('5000.0'),
+        lower_bound=Decimal('30.0'),
+        upper_bound=Decimal('150.0'),
         valid_from='2023-01-01',
         valid_to='9999-12-31',
     )
@@ -346,7 +348,7 @@ def insert_validation_records(apps, schema_monitor):
         valid_from='2023-01-01',
         valid_to='9999-12-31',
     )
-    ### N2O Measured Steam Default EF
+    ### CH4 Measured Steam Default EF
     ExpectedValueRangeMethodologyField.objects.create(
         fuel_type=diesel,
         methodology=measured_steam_default_ef,
@@ -408,7 +410,11 @@ def insert_validation_records(apps, schema_monitor):
         valid_to='9999-12-31',
     )
 
-    # Propane bounds
+    ####################
+    #     PROPANE      #
+    ####################
+
+    # Propane fuel_amount bounds
     propane = FuelType.objects.get(name='Propane')
     ExpectedValueRangeFuelAmount.objects.create(
         fuel_type=propane,
@@ -418,22 +424,380 @@ def insert_validation_records(apps, schema_monitor):
         valid_to='9999-12-31',
     )
 
-    # Field Gas bounds
-    field_gas = FuelType.objects.get(name='Field gas')
-    ExpectedValueRangeFuelAmount.objects.create(
-        fuel_type=field_gas,
-        lower_bound=Decimal('0'),
-        upper_bound=Decimal('5000.00'),
+    # Propane Methodology bounds
+    ### Measured High Heating Value
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_hhv,
+        reporting_field=measured_high_heating_value_field,
+        lower_bound=Decimal('10.0'),
+        upper_bound=Decimal('50.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### Default High Heating Value
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=default_hhv,
+        reporting_field=default_high_heating_value_field,
+        lower_bound=Decimal('10.0'),
+        upper_bound=Decimal('50.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CC Weight Fraction
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_cc,
+        reporting_field=cc_weight_fraction_field,
+        lower_bound=Decimal('200.0'),
+        upper_bound=Decimal('800.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ## CO2 kg CO2/kl
+    ### CO2 Measured HHV Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_hhv,
+        reporting_field=co2_default_ef_field,
+        lower_bound=Decimal('700.0'),
+        upper_bound=Decimal('3000.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CO2 Default HHV Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=default_hhv,
+        reporting_field=co2_default_ef_field,
+        lower_bound=Decimal('700.0'),
+        upper_bound=Decimal('3000.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CO2 Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=default_ef,
+        reporting_field=co2_default_ef_field,
+        lower_bound=Decimal('700.0'),
+        upper_bound=Decimal('3000.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CO2 Measured Steam Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_steam_default_ef,
+        reporting_field=co2_default_ef_field,
+        lower_bound=Decimal('700.0'),
+        upper_bound=Decimal('3000.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CO2 Measured Steam Measured EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_steam_measured_ef,
+        reporting_field=co2_measured_steam_measured_ef_field,
+        lower_bound=Decimal('700.0'),
+        upper_bound=Decimal('3000.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ## CH4 g CH4/kl
+    ### CH4 Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=default_ef,
+        reporting_field=ch4_default_ef_field,
+        lower_bound=Decimal('10.0'),
+        upper_bound=Decimal('50.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CH4 Measured EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_ef,
+        reporting_field=ch4_measured_ef_field,
+        lower_bound=Decimal('10.0'),
+        upper_bound=Decimal('50.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ## N2O kg N2O/kl
+    ### N2O Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=default_ef,
+        reporting_field=n2o_default_ef_field,
+        lower_bound=Decimal('50.0'),
+        upper_bound=Decimal('200.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### N2O Measured EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_ef,
+        reporting_field=n2o_measured_ef_field,
+        lower_bound=Decimal('50.0'),
+        upper_bound=Decimal('200.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ## CO2 kg CO2/GJ
+    ### CO2 Measured HHV Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_hhv,
+        reporting_field=co2_measured_hhv_default_ef_field,
+        lower_bound=Decimal('30.0'),
+        upper_bound=Decimal('120.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CO2 Default HHV Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=default_hhv,
+        reporting_field=co2_default_hhv_default_ef_field,
+        lower_bound=Decimal('30.0'),
+        upper_bound=Decimal('120.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CO2 Measured Steam Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_steam_default_ef,
+        reporting_field=co2_measured_steam_default_ef_field,
+        lower_bound=Decimal('30.0'),
+        upper_bound=Decimal('120.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ## CH4 g CH4/GJ
+    ### CH4 Measured HHV Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_hhv,
+        reporting_field=ch4_measured_hhv_default_ef_field,
+        lower_bound=Decimal('0.5'),
+        upper_bound=Decimal('2.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CH4 Default HHV Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=default_hhv,
+        reporting_field=ch4_default_hhv_default_ef_field,
+        lower_bound=Decimal('0.5'),
+        upper_bound=Decimal('2.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CH4 Measured Steam Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_steam_default_ef,
+        reporting_field=ch4_measured_steam_default_ef_field,
+        lower_bound=Decimal('0.5'),
+        upper_bound=Decimal('2.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CH4 Heat Input Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=heat_input_default_ef,
+        reporting_field=ch4_heat_input_default_ef_field,
+        lower_bound=Decimal('0.5'),
+        upper_bound=Decimal('2.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ## N2O g N2O/GJ
+    ### N2O Measured HHV Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_hhv,
+        reporting_field=n2o_measured_hhv_default_ef_field,
+        lower_bound=Decimal('2.0'),
+        upper_bound=Decimal('10.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### N2O Default HHV Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=default_hhv,
+        reporting_field=n2o_default_hhv_default_ef_field,
+        lower_bound=Decimal('2.0'),
+        upper_bound=Decimal('10.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### N2O Measured Steam Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=measured_steam_default_ef,
+        reporting_field=n2o_measured_steam_default_ef_field,
+        lower_bound=Decimal('2.0'),
+        upper_bound=Decimal('10.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### N2O Heat Input Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=propane,
+        methodology=heat_input_default_ef,
+        reporting_field=n2o_heat_input_default_ef_field,
+        lower_bound=Decimal('2.0'),
+        upper_bound=Decimal('10.0'),
         valid_from='2023-01-01',
         valid_to='9999-12-31',
     )
 
-    # Wood Waste bounds
+    ####################
+    #     Field Gas    #
+    ####################
+
+    # Field Gas fuel_amount bounds
+    field_gas = FuelType.objects.get(name='Field gas')
+    ExpectedValueRangeFuelAmount.objects.create(
+        fuel_type=field_gas,
+        lower_bound=Decimal('0'),
+        upper_bound=Decimal('5000000.00'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    # Field Gas Methodology bounds
+    ### Measured High Heating Value
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=field_gas,
+        methodology=measured_hhv,
+        reporting_field=measured_high_heating_value_field,
+        lower_bound=Decimal('0.02'),
+        upper_bound=Decimal('0.06'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### Default High Heating Value
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=field_gas,
+        methodology=default_hhv,
+        reporting_field=default_high_heating_value_field,
+        lower_bound=Decimal('0.02'),
+        upper_bound=Decimal('0.06'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CC Weight Fraction
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=field_gas,
+        methodology=measured_cc,
+        reporting_field=cc_weight_fraction_field,
+        lower_bound=Decimal('0.3'),
+        upper_bound=Decimal('1.5'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CH4 Measured HHV Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=field_gas,
+        methodology=measured_hhv,
+        reporting_field=ch4_measured_hhv_default_ef_field,
+        lower_bound=Decimal('80.0'),
+        upper_bound=Decimal('300.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### CH4 Default HHV Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=field_gas,
+        methodology=default_hhv,
+        reporting_field=ch4_default_hhv_default_ef_field,
+        lower_bound=Decimal('80.0'),
+        upper_bound=Decimal('300.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### N2O Measured HHV Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=field_gas,
+        methodology=measured_hhv,
+        reporting_field=n2o_measured_hhv_default_ef_field,
+        lower_bound=Decimal('0.4'),
+        upper_bound=Decimal('3.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### N2O Default HHV Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=field_gas,
+        methodology=default_hhv,
+        reporting_field=n2o_default_hhv_default_ef_field,
+        lower_bound=Decimal('0.4'),
+        upper_bound=Decimal('3.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+
+    ####################
+    #    Wood Waste    #
+    ####################
+
+    # Wood Waste fuel_amount bounds
     wood_waste = FuelType.objects.get(name='Wood Waste')
     ExpectedValueRangeFuelAmount.objects.create(
         fuel_type=wood_waste,
         lower_bound=Decimal('0'),
         upper_bound=Decimal('1000000.00'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    # Wood Waste Methodology bounds
+    ### Measured High Heating Value
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=wood_waste,
+        methodology=measured_hhv,
+        reporting_field=measured_high_heating_value_field,
+        lower_bound=Decimal('10.0'),
+        upper_bound=Decimal('40.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### Default High Heating Value
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=wood_waste,
+        methodology=default_hhv,
+        reporting_field=default_high_heating_value_field,
+        lower_bound=Decimal('10.0'),
+        upper_bound=Decimal('40.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### Annual Steam Generated Measured EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=wood_waste,
+        methodology=measured_steam_measured_ef,
+        reporting_field=annual_steam_generated_field,
+        lower_bound=Decimal('0.0'),
+        upper_bound=Decimal('6000000.0'),
+        valid_from='2023-01-01',
+        valid_to='9999-12-31',
+    )
+    ### Annual Steam Generated Default EF
+    ExpectedValueRangeMethodologyField.objects.create(
+        fuel_type=wood_waste,
+        methodology=measured_steam_default_ef,
+        reporting_field=boiler_ratio_field,
+        lower_bound=Decimal('3.0'),
+        upper_bound=Decimal('6.0'),
         valid_from='2023-01-01',
         valid_to='9999-12-31',
     )
