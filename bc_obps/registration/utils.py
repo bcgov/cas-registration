@@ -42,14 +42,16 @@ def update_model_instance(
     Returns:
         instance (models.Model): The updated instance.
     """
+    # Normalize input to dict
     if isinstance(fields_to_update, dict):
-        for data_key, instance_key in fields_to_update.items():
-            if data_key in data_dict and hasattr(instance, instance_key):
-                setattr(instance, instance_key, data_dict[data_key])
+        normalized_fields_to_update = fields_to_update
     else:
-        for field in fields_to_update:
-            if field in data_dict and hasattr(instance, field):
-                setattr(instance, field, data_dict[field])
+        normalized_fields_to_update = {field: field for field in fields_to_update}
+
+    for data_key, instance_key in normalized_fields_to_update.items():
+        if data_key in data_dict and hasattr(instance, instance_key):
+            setattr(instance, instance_key, data_dict[data_key])
+
     try:
         # Perform full validation of the instance based on the model's field constraints.
         instance.full_clean()

@@ -134,6 +134,7 @@ class TestUtils:
 
         return operator, owning_operation, facility
 
+    @staticmethod
     def assert_facility_db_state(facility, expect_address=None, expect_well_authorization_numbers=None):
         """
         Asserts the state of a Facility object and related models.
