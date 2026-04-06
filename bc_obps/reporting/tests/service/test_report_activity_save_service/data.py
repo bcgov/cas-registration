@@ -1,3 +1,5 @@
+KG_GJ_UNITS = "kg/GJ"
+
 test_data = {
     "test_activity_number": 12345,
     "test_activity_bool": True,
@@ -34,7 +36,7 @@ test_data = {
                                         "methodology": "Default HHV/Default EF",
                                         "fuelDefaultHighHeatingValue": 10,
                                         "unitFuelCo2DefaultEmissionFactor": 20,
-                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": KG_GJ_UNITS,
                                     },
                                 },
                             ],
@@ -59,7 +61,7 @@ test_data = {
                                         "methodology": "Default HHV/Default EF",
                                         "fuelDefaultHighHeatingValue": 11,
                                         "unitFuelCo2DefaultEmissionFactor": 23,
-                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": KG_GJ_UNITS,
                                     },
                                 },
                                 {
@@ -68,7 +70,7 @@ test_data = {
                                     "methodology": {
                                         "methodology": "Default EF",
                                         "unitFuelCo2DefaultEmissionFactor": 3,
-                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": KG_GJ_UNITS,
                                     },
                                 },
                             ],
@@ -84,7 +86,7 @@ test_data = {
                                     "methodology": {
                                         "methodology": "Measured HHV/Default EF",
                                         "unitFuelCo2DefaultEmissionFactor": 4,
-                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": KG_GJ_UNITS,
                                         "fuelAnnualWeightedAverageHighHeatingValue": 4,
                                     },
                                 },
@@ -96,7 +98,7 @@ test_data = {
                                         "unitFuelAnnualSteamGenerated": 5,
                                         "boilerRatio": 5,
                                         "unitFuelCo2EmissionFactor": 5,
-                                        "unitFuelCo2EmissionFactorFieldUnits": "kg/GJ",
+                                        "unitFuelCo2EmissionFactorFieldUnits": KG_GJ_UNITS,
                                     },
                                 },
                             ],
@@ -146,7 +148,10 @@ test_data = {
                                 {
                                     "gasType": "N2O",
                                     "emission": 1,
-                                    "methodology": {"methodology": "Replacement Methodology", "description": "nine"},
+                                    "methodology": {
+                                        "methodology": "Replacement Methodology",
+                                        "description": "nine",
+                                    },
                                 },
                             ],
                         },
