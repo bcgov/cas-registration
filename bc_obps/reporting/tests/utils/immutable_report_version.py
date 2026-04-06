@@ -4,6 +4,9 @@ import pytest
 from decimal import Decimal
 
 
+IMMUTABLE_REPORT_ERROR_MESSAGE_MATCH = r".* record is immutable after a report version has been submitted"
+
+
 # Wrapping this in an atomic transaction
 def assert_immutable_report_version(
     recipe_path: str,
@@ -43,7 +46,7 @@ def assert_immutable_report_version(
     with transaction.atomic():
         with pytest.raises(
             ProgrammingError,
-            match=r".* record is immutable after a report version has been submitted",
+            match=IMMUTABLE_REPORT_ERROR_MESSAGE_MATCH,
         ):
             if decimal_value_to_update != Decimal('0'):
                 setattr(model_under_test, str_field_to_update, decimal_value_to_update)
@@ -55,7 +58,7 @@ def assert_immutable_report_version(
     with transaction.atomic():
         with pytest.raises(
             ProgrammingError,
-            match=r".* record is immutable after a report version has been submitted",
+            match=IMMUTABLE_REPORT_ERROR_MESSAGE_MATCH,
         ):
             model_under_test.delete()
 
@@ -68,7 +71,7 @@ def assert_immutable_report_version(
 
         with pytest.raises(
             ProgrammingError,
-            match=r".* record is immutable after a report version has been submitted",
+            match=IMMUTABLE_REPORT_ERROR_MESSAGE_MATCH,
         ):
             baker.make_recipe(
                 recipe_path,
