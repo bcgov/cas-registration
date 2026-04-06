@@ -18,6 +18,7 @@ export const sfoNewEntrantFlow: ReportingFlowDescription = {
   ],
   [HeaderStep.ComplianceSummary]: [ReportingPage.ComplianceSummary],
   [HeaderStep.SignOffSubmit]: [
+    ReportingPage.Validation,
     ReportingPage.ChangeReview,
     ReportingPage.FinalReview,
     ReportingPage.Verification,

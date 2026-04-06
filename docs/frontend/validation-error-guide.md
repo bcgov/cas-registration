@@ -26,46 +26,47 @@ Validation follows a simple flow:
 
 ```json
 {
-  "error": [
-    {
-      "key": "missing_report_verification",
-      "error": {
-        "severity": "error",
-        "context": {
-          "reportVersionId": 123
+  "validation": {
+    "errors": [
+      {
+        "key": "error_operation_information",
+        "error": {
+          "severity": "error",
+          "context": {
+            "reportVersionId": 3
+          }
+        }
+      },
+      {
+        "key": "allocation_mismatch",
+        "error": {
+          "severity": "warning",
+          "context": {
+            "reportVersionId": 3,
+            "facilityId": "9f7b0848-021e-4d08-9852-10524c4e5457",
+            "facilityName": "Main Facility",
+            "emissionCategoryName": "Combustion",
+            "sourceActivityName": "non-processing and non-compression",
+            "targetProductName": "non-processing, non-compression product"
+          }
+        }
+      },
+      {
+        "key": "allocation_mismatch",
+        "error": {
+          "severity": "warning",
+          "context": {
+            "reportVersionId": 3,
+            "facilityId": "9f7b0848-021e-4d08-9852-10524c4e5457",
+            "facilityName": "Main Facility",
+            "emissionCategoryName": "Flaring",
+            "sourceActivityName": "flaring",
+            "targetProductName": "flaring product"
+          }
         }
       }
-    },
-    // Multiple allocation_mismatch keys
-    {
-      "key": "allocation_mismatch",
-      "error": {
-        "severity": "error",
-        "context": {
-          "reportVersionId": 3,
-          "facilityId": "9f7b0848-021e-4d08-9852-10524c4e5457",
-          "facilityName": "Main Facility",
-          "emissionCategoryName": "Combustion",
-          "sourceActivityName": "non-processing and non-compression",
-          "targetProductName": "non-processing, non-compression product"
-        }
-      }
-    },
-    {
-      "key": "allocation_mismatch",
-      "error": {
-        "severity": "error",
-        "context": {
-          "reportVersionId": 3,
-          "facilityId": "9f7b0848-021e-4d08-9852-10524c4e5457",
-          "facilityName": "Main Facility",
-          "emissionCategoryName": "Flaring",
-          "sourceActivityName": "flaring",
-          "targetProductName": "flaring product"
-        }
-      }
-    }
-  ]
+    ]
+  }
 }
 ```
 
