@@ -11,6 +11,10 @@ from model_bakery.baker import make_recipe, make
 from reporting.models.report_version import ReportVersion
 from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
 
+# String constants for deduplication
+REPORTING_FACILITY_REPORT_RECIPE_NAME = 'reporting.tests.utils.facility_report'
+REGISTRATION_INDUSTRY_OPERATOR_USER_RECIPE_NAME = 'registration.tests.utils.industry_operator_user'
+
 
 def get_report_unit_by_index(
     report_activity: ReportActivity, source_type_index: int, report_unit_index: int
@@ -44,12 +48,12 @@ class TestInfrastructure:
     def build(cls):
         t = TestInfrastructure()
         t.facility_report = make_recipe(
-            'reporting.tests.utils.facility_report',
+            REPORTING_FACILITY_REPORT_RECIPE_NAME,
             report_version__report__reporting_year_id=2025,
         )
         t.facility_report.refresh_from_db()
         t.report_version = t.facility_report.report_version
-        t.user = make_recipe('registration.tests.utils.industry_operator_user')
+        t.user = make_recipe(REGISTRATION_INDUSTRY_OPERATOR_USER_RECIPE_NAME)
         valid_date = get_report_valid_date_from_version_id(t.report_version.id)
         t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
         t.activity = make_recipe("reporting.tests.utils.activity")
@@ -72,12 +76,12 @@ class TestInfrastructure:
     def build_from_real_config(cls, activity_slug="gsc_non_compression_non_combustion"):
         t = TestInfrastructure()
         t.facility_report = make_recipe(
-            'reporting.tests.utils.facility_report',
+            REPORTING_FACILITY_REPORT_RECIPE_NAME,
             report_version__report__reporting_year_id=2025,
         )
         t.facility_report.refresh_from_db()
         t.report_version = t.facility_report.report_version
-        t.user = make_recipe('registration.tests.utils.industry_operator_user')
+        t.user = make_recipe(REGISTRATION_INDUSTRY_OPERATOR_USER_RECIPE_NAME)
         valid_date = get_report_valid_date_from_version_id(t.report_version.id)
         t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
         t.activity = Activity.objects.get(slug=activity_slug)
@@ -93,12 +97,12 @@ class TestInfrastructure:
     def build_with_defined_report_version(cls, report_version):
         t = TestInfrastructure()
         t.facility_report = make_recipe(
-            'reporting.tests.utils.facility_report',
+            REPORTING_FACILITY_REPORT_RECIPE_NAME,
             report_version=report_version,
         )
         t.facility_report.refresh_from_db()
         t.report_version = report_version
-        t.user = make_recipe('registration.tests.utils.industry_operator_user')
+        t.user = make_recipe(REGISTRATION_INDUSTRY_OPERATOR_USER_RECIPE_NAME)
         valid_date = get_report_valid_date_from_version_id(t.report_version.id)
         t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
         t.activity = Activity.objects.get(slug="gsc_non_compression_non_combustion")
