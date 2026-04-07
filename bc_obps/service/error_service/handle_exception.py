@@ -1,4 +1,5 @@
 import logging
+import os
 import traceback
 from typing import Union, Optional, Any, Callable
 from dataclasses import dataclass
@@ -48,7 +49,7 @@ class ExceptionHandler:
     @staticmethod
     def debug_log_exception() -> None:
         """Log exception traceback in debug mode."""
-        if not settings.DEBUG:
+        if not settings.DEBUG and os.environ.get("PYTEST_VERSION") is None:
             return
         print("-" * 48 + "ERROR START" + "-" * 48)
         print(traceback.format_exc())
