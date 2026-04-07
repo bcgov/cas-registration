@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
+from uuid import UUID
 
 
 class Severity(Enum):
@@ -8,16 +9,39 @@ class Severity(Enum):
     ERROR = "Error"
 
 
+class ReportValidationErrorKey(Enum):
+    MISSING_REPORT_VERIFICATION = "missing_report_verification"
+    VERIFICATION_STATEMENT = "verification_statement"
+    OPERATION_BORO_ID = "operation_boro_id"
+    ATTACHMENT_NOT_SCANNED = "attachment_not_scanned"
+    ALLOCATION_MISMATCH = "allocation_mismatch"
+    MISSING_REQUIRED_ATTACHMENT_CONFIRMATION = "missing_required_attachment_confirmation"
+    MISSING_EXISTING_ATTACHMENT_CONFIRMATION = "missing_existing_attachment_confirmation"
+    MISSING_SUPPLEMENTARY_REPORT_ATTACHMENT_CONFIRMATION = "missing_supplementary_report_attachment_confirmation"
+    MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE = "missing_supplementary_report_version_change"
+
+
+@dataclass
+class ErrorContext:
+    report_version_id: int
+    facility_id: Optional[UUID] = None
+    facility_name: Optional[str] = None
+    emission_category_id: Optional[int] = None
+    emission_category_name: Optional[str] = None
+    activity_id: Optional[int] = None
+
+
 @dataclass
 class ReportValidationError:
     """
-    Data type for validation error
+    Data type for validation error details
 
     - severity: whether the validation passed
     - message: human-readable explanation for the validation error
-    - fix_url: optional frontend route where the user can resolve the error
+    - context: optional data related to the report where the error occurred
     """
 
     severity: Severity
     message: str
-    fix_url: Optional[str] = None
+    key: ReportValidationErrorKey
+    context: Optional[ErrorContext] = None

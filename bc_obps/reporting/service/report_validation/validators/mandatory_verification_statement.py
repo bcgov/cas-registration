@@ -3,7 +3,9 @@ from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
+    ErrorContext,
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 from reporting.service.report_verification_service import ReportVerificationService
@@ -28,9 +30,10 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             ReportVerification.objects.get(report_version_id=report_version.id)  # attempt to get the object.
         except ObjectDoesNotExist:
             errors["missing_report_verification"] = ReportValidationError(
-                Severity.ERROR,
-                "Report verification form not found in the report.",
-                fix_url=f"reporting/reports/{report_version.id}/verification",
+                severity=Severity.ERROR,
+                message="Report verification form not found in the report.",
+                key=ReportValidationErrorKey.MISSING_REPORT_VERIFICATION,
+                context=ErrorContext(report_version_id=report_version.id),
             )
 
         # Check for the attachment only if mandatory
@@ -41,9 +44,10 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             )
         except ReportAttachment.DoesNotExist:
             errors["verification_statement"] = ReportValidationError(
-                Severity.ERROR,
-                "Mandatory verification statement document was not uploaded with this report.",
-                fix_url=f"reporting/reports/{report_version.id}/attachments",
+                severity=Severity.ERROR,
+                message="Mandatory verification statement document was not uploaded with this report.",
+                key=ReportValidationErrorKey.VERIFICATION_STATEMENT,
+                context=ErrorContext(report_version_id=report_version.id),
             )
 
     return errors

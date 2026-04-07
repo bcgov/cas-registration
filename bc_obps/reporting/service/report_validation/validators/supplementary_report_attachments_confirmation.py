@@ -2,7 +2,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from service.report_version_service import ReportVersionService
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
+    ErrorContext,
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
@@ -20,7 +22,6 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         return {}
 
     errors = {}
-    ATTACHMENTS_URL = f"reporting/reports/{report_version.id}/attachments"
     # Check for the ReportAttachmentConfirmation entry
     try:
         attachment_confirmation = ReportAttachmentConfirmation.objects.get(report_version_id=report_version.id)
@@ -30,19 +31,22 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             errors["missing_required_attachment_confirmation"] = ReportValidationError(
                 Severity.ERROR,
                 "Must confirm that all required supplementary attachments have been uploaded.",
-                fix_url=ATTACHMENTS_URL,
+                key=ReportValidationErrorKey.MISSING_REQUIRED_ATTACHMENT_CONFIRMATION,
+                context=ErrorContext(report_version_id=report_version.id),
             )
         if not attachment_confirmation.confirm_supplementary_existing_attachments_relevant:
             errors["missing_existing_attachment_confirmation"] = ReportValidationError(
                 Severity.ERROR,
                 "Must confirm that all existing attachments are still relevant to the supplementary submission.",
-                fix_url=ATTACHMENTS_URL,
+                key=ReportValidationErrorKey.MISSING_EXISTING_ATTACHMENT_CONFIRMATION,
+                context=ErrorContext(report_version_id=report_version.id),
             )
     except ObjectDoesNotExist:
         errors["missing_supplementary_report_attachment_confirmation"] = ReportValidationError(
             Severity.ERROR,
             "No attachment confirmation found for this supplementary report version.",
-            fix_url=ATTACHMENTS_URL,
+            key=ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_ATTACHMENT_CONFIRMATION,
+            context=ErrorContext(report_version_id=report_version.id),
         )
 
     return errors

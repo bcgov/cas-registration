@@ -3,7 +3,9 @@ from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_emission_allocation_service import ReportEmissionAllocationService
 from reporting.service.report_validation.report_validation_error import (
+    ErrorContext,
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 
@@ -43,6 +45,13 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                     ] = ReportValidationError(
                         Severity.ERROR,
                         f"Emissions reported for {fr.facility_name} in '{category.emission_category_name}' category do not match emissions allocated on the Allocation of Emissions page.",
-                        fix_url=f"reporting/reports/{report_version.id}/facilities/{fr.facility_id}/allocation-of-emissions",
+                        key=ReportValidationErrorKey.ALLOCATION_MISMATCH,
+                        context=ErrorContext(
+                            report_version_id=report_version.id,
+                            facility_id=fr.facility_id,
+                            facility_name=fr.facility_name,
+                            emission_category_id=category.emission_category_id,
+                            emission_category_name=category.emission_category_name,
+                        ),
                     )
     return errors
