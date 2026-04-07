@@ -46,7 +46,7 @@ spec:
                   secretKeyRef:
                     name: cas-bciers-nextauth
                     key: nextauth-secret
-          image: "{{ .Values.dashboardFrontend.image.repository }}:{{ .Chart.AppVersion | default .Values.dashboardFrontend.image.tag }}"
+          image: "{{ .Values.dashboardFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.dashboardFrontend.image.tag }}"
           imagePullPolicy: {{ .Values.dashboardFrontend.image.pullPolicy }}
           securityContext:
             readOnlyRootFilesystem: true

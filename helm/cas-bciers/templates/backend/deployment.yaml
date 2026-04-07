@@ -30,7 +30,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: {{ .Release.Name }}-backend
-          image: "{{ .Values.backend.image.repository }}:{{ .Chart.AppVersion | default .Values.backend.image.tag }}"
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           securityContext:
             readOnlyRootFilesystem: true

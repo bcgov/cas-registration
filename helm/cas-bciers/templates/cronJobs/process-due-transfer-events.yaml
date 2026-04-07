@@ -30,11 +30,11 @@ spec:
             image: "{{ .Values.backend.image.repository }}:{{ .Chart.AppVersion | default .Values.backend.image.tag }}"
             imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
             securityContext:
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
             env:
               {{- include "cas-bciers.backendEnvVars" . | nindent 14 }}
             command:

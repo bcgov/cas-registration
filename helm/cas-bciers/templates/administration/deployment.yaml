@@ -46,7 +46,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
-          image: "{{ .Values.administrationFrontend.image.repository }}:{{ .Chart.AppVersion | default .Values.administrationFrontend.image.tag }}"
+          image: "{{ .Values.administrationFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.administrationFrontend.image.tag }}"
           imagePullPolicy: {{ .Values.administrationFrontend.image.pullPolicy }}
           securityContext:
             readOnlyRootFilesystem: true

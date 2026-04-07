@@ -26,7 +26,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: check-document-file-status
-          image: "{{ .Values.backend.image.repository }}:{{ .Chart.AppVersion | default .Values.backend.image.tag }}"
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
           imagePullPolicy: IfNotPresent
           securityContext:
             readOnlyRootFilesystem: true

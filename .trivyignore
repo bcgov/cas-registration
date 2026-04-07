@@ -6,3 +6,6 @@ KSV-0125
 KSV-0109
 # Frontend auth metadata, also not secrets, all public
 KSV-01010
+
+# Image tag needs to stay that way since our makefile sets the tag
+KSV-0013
