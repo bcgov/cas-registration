@@ -4,7 +4,9 @@ from model_bakery.baker import make_recipe
 from django.core.exceptions import ObjectDoesNotExist
 
 from reporting.service.report_validation.report_validation_error import (
+    ErrorContext,
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 from reporting.service.report_validation.validators.supplementary_report_attachments_confirmation import (
@@ -42,23 +44,26 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
             "missing_supplementary_report_attachment_confirmation": ReportValidationError(
                 Severity.ERROR,
                 "No attachment confirmation found for this supplementary report version.",
-                fix_url=f"reporting/reports/{version.id}/attachments",
+                key=ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_ATTACHMENT_CONFIRMATION,
+                context=ErrorContext(report_version_id=version.id),
             )
         }
 
     @pytest.mark.parametrize(
-        "required_uploaded, existing_relevant, error_key, message",
+        "required_uploaded, existing_relevant, error_key, error_type, message",
         [
             (
                 False,
                 True,
                 "missing_required_attachment_confirmation",
+                ReportValidationErrorKey.MISSING_REQUIRED_ATTACHMENT_CONFIRMATION,
                 "Must confirm that all required supplementary attachments have been uploaded.",
             ),
             (
                 True,
                 False,
                 "missing_existing_attachment_confirmation",
+                ReportValidationErrorKey.MISSING_EXISTING_ATTACHMENT_CONFIRMATION,
                 "Must confirm that all existing attachments are still relevant to the supplementary submission.",
             ),
         ],
@@ -72,6 +77,7 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
         required_uploaded,
         existing_relevant,
         error_key,
+        error_type,
         message,
     ):
         mock_initial.return_value = False
@@ -87,7 +93,10 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
         mock_get.assert_called_once_with(report_version_id=version.id)
         assert error_key in result
         assert result[error_key] == ReportValidationError(
-            Severity.ERROR, message, fix_url=f"reporting/reports/{version.id}/attachments"
+            Severity.ERROR,
+            message,
+            key=error_type,
+            context=ErrorContext(report_version_id=version.id),
         )
 
     @patch("service.report_version_service.ReportVersionService.is_initial_report_version")

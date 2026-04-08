@@ -4,7 +4,9 @@ import pytest
 from registration.models.operation import Operation
 from reporting.models.report_operation import ReportOperation
 from reporting.service.report_validation.report_validation_error import (
+    ErrorContext,
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 from reporting.service.report_validation.validators.report_emission_allocation_validator import (
@@ -131,7 +133,14 @@ class TestReportEmissionAllocationValidator(TestCase):
             f"allocation_mismatch_facility_{self.test_infrastructure.facility_report.facility_id}_category_{self.FLARING_CATEGORY_ID}": ReportValidationError(
                 Severity.ERROR,
                 f"Emissions reported for {self.test_infrastructure.facility_report.facility_name} in 'Flaring emissions' category do not match emissions allocated on the Allocation of Emissions page.",
-                fix_url=f"reporting/reports/{self.test_infrastructure.report_version.id}/facilities/{self.test_infrastructure.facility_report.facility_id}/allocation-of-emissions",
+                key=ReportValidationErrorKey.ALLOCATION_MISMATCH,
+                context=ErrorContext(
+                    report_version_id=self.test_infrastructure.report_version.id,
+                    facility_id=self.test_infrastructure.facility_report.facility_id,
+                    facility_name=self.test_infrastructure.facility_report.facility_name,
+                    emission_category_id=self.FLARING_CATEGORY_ID,
+                    emission_category_name="Flaring emissions",
+                ),
             )
         }
         # test with allocated quantity greater than total emissions
@@ -142,7 +151,14 @@ class TestReportEmissionAllocationValidator(TestCase):
             f"allocation_mismatch_facility_{self.test_infrastructure.facility_report.facility_id}_category_{self.FLARING_CATEGORY_ID}": ReportValidationError(
                 Severity.ERROR,
                 f"Emissions reported for {self.test_infrastructure.facility_report.facility_name} in 'Flaring emissions' category do not match emissions allocated on the Allocation of Emissions page.",
-                fix_url=f"reporting/reports/{self.test_infrastructure.report_version.id}/facilities/{self.test_infrastructure.facility_report.facility_id}/allocation-of-emissions",
+                key=ReportValidationErrorKey.ALLOCATION_MISMATCH,
+                context=ErrorContext(
+                    report_version_id=self.test_infrastructure.report_version.id,
+                    facility_id=self.test_infrastructure.facility_report.facility_id,
+                    facility_name=self.test_infrastructure.facility_report.facility_name,
+                    emission_category_id=self.FLARING_CATEGORY_ID,
+                    emission_category_name="Flaring emissions",
+                ),
             )
         }
 

@@ -150,11 +150,12 @@ class TestExceptionHandler:
             "emission_summary": ReportValidationError(
                 severity=Severity.ERROR,
                 message="Emission summary is incomplete",
-                fix_url="/reports/123/emission-summary",
+                key="emission_summary",
             ),
             "facility_report": ReportValidationError(
                 severity=Severity.WARNING,
                 message="Facility report has warnings",
+                key="facility_report",
             ),
         }
         exc = ReportValidationException(errors)
@@ -165,12 +166,17 @@ class TestExceptionHandler:
             "errors": [
                 {
                     "key": "emission_summary",
-                    "message": "Emission summary is incomplete",
-                    "fix_url": "/reports/123/emission-summary",
+                    "error": {
+                        "severity": "Error",
+                        "message": "Emission summary is incomplete",
+                    },
                 },
                 {
                     "key": "facility_report",
-                    "message": "Facility report has warnings",
+                    "error": {
+                        "severity": "Warning",
+                        "message": "Facility report has warnings",
+                    },
                 },
             ]
         }

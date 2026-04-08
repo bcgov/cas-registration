@@ -4,7 +4,9 @@ import pytest
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_verification import ReportVerification
 from reporting.service.report_validation.report_validation_error import (
+    ErrorContext,
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 from reporting.service.report_validation.validators import (
@@ -79,7 +81,8 @@ class TestMandatoryVerificationStatementValidator:
             "verification_statement": ReportValidationError(
                 Severity.ERROR,
                 "Mandatory verification statement document was not uploaded with this report.",
-                fix_url=f"reporting/reports/{report_version.id}/attachments",
+                key=ReportValidationErrorKey.VERIFICATION_STATEMENT,
+                context=ErrorContext(report_version_id=report_version.id),
             )
         }
 
@@ -103,6 +106,7 @@ class TestMandatoryVerificationStatementValidator:
             "missing_report_verification": ReportValidationError(
                 Severity.ERROR,
                 "Report verification form not found in the report.",
-                fix_url=f"reporting/reports/{report_version.id}/verification",
+                key=ReportValidationErrorKey.MISSING_REPORT_VERIFICATION,
+                context=ErrorContext(report_version_id=report_version.id),
             )
         }

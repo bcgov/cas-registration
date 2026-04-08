@@ -107,7 +107,9 @@ class TestReportSubmissionService:
         "reporting.service.report_validation.report_validation_service.ReportValidationService.validate_report_version"
     )
     def test_submit_report_throws_with_errors(self, mock_validate_report_version: MagicMock):
-        mock_validate_report_version.return_value = {"test_key": ReportValidationError(Severity.ERROR, "test message")}
+        mock_validate_report_version.return_value = {
+            "test_key": ReportValidationError(Severity.ERROR, "test message", key="test_key")
+        }
 
         report_version = make_recipe("reporting.tests.utils.report_version")
 

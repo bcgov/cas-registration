@@ -3,7 +3,9 @@ from unittest.mock import patch
 from model_bakery.baker import make_recipe
 
 from reporting.service.report_validation.report_validation_error import (
+    ErrorContext,
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 from reporting.service.report_validation.validators.supplementary_report_version_change import (
@@ -40,7 +42,8 @@ class TestSupplementaryReportVersionChangeValidator:
         assert isinstance(err, ReportValidationError)
         assert err.severity == Severity.ERROR
         assert err.message == ("No reason for change found for this supplementary report version.")
-        assert err.fix_url == f"reporting/reports/{version.id}/review-changes"
+        assert err.key == ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE
+        assert err.context == ErrorContext(report_version_id=version.id)
 
     @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
     def test_none_reason_for_change_raises_error(self, mock_is_initial):
@@ -53,6 +56,13 @@ class TestSupplementaryReportVersionChangeValidator:
 
         mock_is_initial.assert_called_once_with(version.id)
         assert "missing_supplementary_report_version_change" in errors
+
+        err = errors["missing_supplementary_report_version_change"]
+        assert isinstance(err, ReportValidationError)
+        assert err.severity == Severity.ERROR
+        assert err.message == ("No reason for change found for this supplementary report version.")
+        assert err.key == ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE
+        assert err.context == ErrorContext(report_version_id=version.id)
 
     @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
     def test_present_reason_for_change_passes(self, mock_is_initial):
