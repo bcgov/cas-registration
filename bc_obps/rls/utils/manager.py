@@ -90,19 +90,19 @@ class RlsManager:
     @classmethod
     def apply_rls_for_model(cls, app_name: str, model_name: str) -> None:
         model = apps.all_models[app_name][model_name]
-        if hasattr(model, 'Rls'):
-            rls = model.Rls
-            with connection.cursor() as cursor:
-                if hasattr(rls, 'grants'):
-                    for grant in rls.grants:
-                        grant.apply_grant(cursor)
-                if hasattr(rls, 'm2m_rls_list'):
-                    for m2m_rls in rls.m2m_rls_list:
-                        cls.apply_m2m_rls(cursor, m2m_rls)
-                if hasattr(rls, 'enable_rls') and rls.enable_rls and hasattr(rls, 'policies'):
-                    cursor.execute(f'alter table {rls.schema}.{rls.table.value} enable row level security')
-                    for policy in rls.policies:
-                        policy.apply_policy(cursor)
+        if not hasattr(model, "Rls"):
+            return
+
+        rls = model.Rls
+        with connection.cursor() as cursor:
+            for grant in getattr(rls, "grants", []):
+                grant.apply_grant(cursor)
+            for m2m_rls in getattr(rls, "m2m_rls_list", []):
+                cls.apply_m2m_rls(cursor, m2m_rls)
+            if getattr(rls, "enable_rls", None) and getattr(rls, "policies", None):
+                cursor.execute(f"alter table {rls.schema}.{rls.table.value} enable row level security")
+                for policy in rls.policies:
+                    policy.apply_policy(cursor)
 
     @classmethod
     def drop_policies(cls) -> None:
