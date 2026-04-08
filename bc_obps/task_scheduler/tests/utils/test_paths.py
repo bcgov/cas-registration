@@ -6,7 +6,7 @@ from task_scheduler.utils.paths import get_function_path, resolve_function_from_
 class TestGetFunctionPath(SimpleTestCase):
     def test_get_function_path_regular_function(self):
         def test_function():
-            pass
+            pass  # This function intentionally passes to test path extraction
 
         result = get_function_path(test_function)
 
@@ -17,7 +17,7 @@ class TestGetFunctionPath(SimpleTestCase):
     def test_get_function_path_class_method(self):
         class TestClass:
             def test_method(self):
-                pass
+                pass  # This function intentionally passes to test path extraction
 
         result = get_function_path(TestClass.test_method)
 
@@ -28,7 +28,7 @@ class TestGetFunctionPath(SimpleTestCase):
         class TestClass:
             @staticmethod
             def test_static_method():
-                pass
+                pass  # This function intentionally passes to test path extraction
 
         result = get_function_path(TestClass.test_static_method)
 
@@ -38,7 +38,7 @@ class TestGetFunctionPath(SimpleTestCase):
     def test_get_function_path_bound_method(self):
         class TestClass:
             def test_method(self):
-                pass
+                pass  # This function intentionally passes to test path extraction
 
         instance = TestClass()
         result = get_function_path(instance.test_method)
