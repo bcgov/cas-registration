@@ -24,12 +24,6 @@ spec:
         layer: frontend
     spec:
       serviceAccountName: {{ .Release.Name }}-pod-logger
-      securityContext:
-        runAsUser: 10001
-        runAsGroup: 10001
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
       containers:
         - name: {{ template "cas-bciers.fullname" . }}-reporting-frontend
           envFrom:
@@ -48,12 +42,6 @@ spec:
                   key: nextauth-secret
           image: "{{ .Values.reportingFrontend.image.repository }}:{{ .Chart.AppVersion | default .Values.reportingFrontend.image.tag }}"
           imagePullPolicy: {{ .Values.reportingFrontend.image.pullPolicy }}
-          securityContext:
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
           ports:
             - containerPort: {{ .Values.reportingFrontend.service.port }}
               protocol: TCP

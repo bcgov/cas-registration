@@ -20,21 +20,9 @@ spec:
           activeDeadlineSeconds: 600
           restartPolicy: Never
           serviceAccountName: airflow-deployer
-          securityContext:
-              runAsUser: 10001
-              runAsGroup: 10001
-              runAsNonRoot: true
-              seccompProfile:
-                type: RuntimeDefault
           containers:
           - name: django-migration-test
             image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
-            securityContext:
-              readOnlyRootFilesystem: true
-              allowPrivilegeEscalation: false
-              capabilities:
-                drop:
-                  - ALL
             resources:
               requests:
                 cpu: 50m

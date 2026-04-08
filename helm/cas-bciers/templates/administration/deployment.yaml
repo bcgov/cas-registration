@@ -24,12 +24,6 @@ spec:
         layer: frontend
     spec:
       serviceAccountName: {{ .Release.Name }}-pod-logger
-      securityContext:
-        runAsUser: 10001
-        runAsGroup: 10001
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
       containers:
         - name: {{ template "cas-bciers.fullname" . }}-administration-frontend
           env:
@@ -48,12 +42,6 @@ spec:
                 name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
           image: "{{ .Values.administrationFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.administrationFrontend.image.tag }}"
           imagePullPolicy: {{ .Values.administrationFrontend.image.pullPolicy }}
-          securityContext:
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
           ports:
             - containerPort: {{ .Values.administrationFrontend.service.port }}
               protocol: TCP

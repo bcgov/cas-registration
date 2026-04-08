@@ -9,3 +9,15 @@ KSV-01010
 
 # Image tag needs to stay that way since our makefile sets the tag
 KSV-0013
+
+# Security Context related KSVs that are set in openshift already
+# Default security context
+KSV-0118
+# read only file system
+KSV-0014
+# allow privelege escalation
+KSV-0001
+# run as non root
+KSV-0012
+# Seccomp profile is set in openshift, not allowed to be set before
+KSV-0104
