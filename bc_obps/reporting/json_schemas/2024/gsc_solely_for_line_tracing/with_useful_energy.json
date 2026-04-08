@@ -48,12 +48,6 @@
                       "maxLength": 200,
                       "type": "string",
                       "readOnly": true
-                    },
-                    "fuelUnit": {
-                      "title": "Fuel Unit",
-                      "maxLength": 200,
-                      "type": "string",
-                      "readOnly": true
                     }
                   }
                 },

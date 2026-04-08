@@ -68,9 +68,6 @@ export const fuelsFieldsUiSchema = {
       fuelClassification: {
         "ui:FieldTemplate": InlineFieldTemplate,
       },
-      fuelUnit: {
-        "ui:FieldTemplate": InlineFieldTemplate,
-      },
     },
     fuelDescription: {
       "ui:FieldTemplate": InlineFieldTemplate,
