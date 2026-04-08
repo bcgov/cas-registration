@@ -56,9 +56,6 @@ const uiSchema = {
             fuelName: {
               "ui:FieldTemplate": InlineFieldTemplate,
             },
-            fuelUnit: {
-              "ui:FieldTemplate": InlineFieldTemplate,
-            },
             fuelClassification: {
               "ui:FieldTemplate": InlineFieldTemplate,
             },

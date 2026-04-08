@@ -7,12 +7,7 @@ import AlertIcon from "@bciers/components/icons/AlertIcon";
  * Generic FieldTemplate for fuel amount fields (e.g. `annualFuelAmount`,
  * `q1FuelAmount`, `q2FuelAmount`, etc.)
  *
- * Dynamically replaces the static "(fuel unit)" placeholder in the label with
- * the actual unit of the selected fuel (e.g. "kilolitres").
- *
- * ----- ****** NOTE ****** -----
- * Label substitution only works if there is a `(fuel unit)` placeholder in the fuel field label.
- * ----- ****** ****** -----
+ * Dynamically appends the label with the actual unit of the selected fuel (e.g. "kilolitres").
  *
  * Steps:
  * 1. Strip the last path segment (the field name itself) from the RJSF `id`
@@ -57,7 +52,6 @@ function FuelAmountFieldTemplate({
   //
   // Strip "root_" and the last "_<fieldName>" segment to get the path to
   // the parent fuel item, then navigate activityFormData along that path
-  let resolvedLabel = label;
   const activityFormData = formContext?.activityFormData;
   if (activityFormData && id) {
     // Remove the "root_" prefix and drop the last "_<fieldName>" segment
@@ -78,14 +72,13 @@ function FuelAmountFieldTemplate({
       }
     }
 
+    console.log(label);
+
     // `current` is the fuel item object
     const fuelUnit = current?.fuelType?.fuelUnit;
     if (fuelUnit) {
-      // Replace the "(fuel unit)" placeholder with the real unit
-      resolvedLabel = label.replace(/\(fuel unit\)/i, `(${fuelUnit})`);
-    } else {
-      // No fuel selected yet – strip the placeholder entirely
-      resolvedLabel = label.replace(/\s*\(fuel unit\)/i, "");
+      // append "(${fuelUnit})" to the label
+      label = label + ` (${fuelUnit})`;
     }
   }
 
@@ -97,7 +90,7 @@ function FuelAmountFieldTemplate({
         {isLabel && (
           <div className={`w-full ${labelClassNames}`}>
             <label htmlFor={id} className="font-bold">
-              {resolvedLabel}
+              {label}
               {required && "*"}
             </label>
           </div>
