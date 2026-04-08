@@ -6,6 +6,30 @@ import json
 from typing import Optional
 
 
+def update_activity_slug_name(apps, schema_editor, slug_name: str, updated_slug: str) -> Optional[object]:
+    """
+    Update an existing Activity record based on the slug_name.
+    This is used in this migration to revert changes made to slug names in migration 0150.
+
+    Args:
+        slug_name: The slug of the Activity to update.
+        updated_slug: The new slug for the Activity.
+
+    Returns:
+        The updated Activity instance if found, otherwise None.
+    """
+    Activity = apps.get_model('registration', 'Activity')
+
+    try:
+        activity = Activity.objects.get(slug=slug_name)
+    except Activity.DoesNotExist:
+        return None
+
+    activity.slug = updated_slug
+    activity.save()
+    return activity
+
+
 def update_reporting_field_data(apps, schema_editor, field_name: str, update_data: dict) -> Optional[object]:
     """
     Update an existing ReportingField record based on the field_name.
@@ -201,83 +225,73 @@ def update_reporting_fields(apps, schema_editor):
     )
 
 
+def update_slugs(apps, schema_editor):
+    slug_mapping = [
+        ('fuel_combustion_by_mobile', 'fuel_combustion_mobile'),
+        ('ind_wastewater_processing', 'industrial_water_processing'),
+        ('pulp_and_paper', 'pulp_and_paper_production'),
+        ('storage_petro_products', 'storage_of_petroleum_products'),
+        ('carbonate_use', 'carbonates_use'),
+        ('gsc_non_compression', 'gsc_non_compression_non_combustion'),
+        ('natural_gas_activities_other_than_non_compression', 'ng_other_than_non_compression'),
+        ('natural_gas_activities_non_compression', 'ng_non_compression'),
+        ('og_activities_other_than_non_compression', 'og_extraction_other_than_ncnp'),
+        ('og_activities_non_compression', 'og_extraction_non_compression'),
+    ]
+    for current_slug, new_slug in slug_mapping:
+        update_activity_slug_name(apps, schema_editor, current_slug, new_slug)
+
+
 def reload_activity_schema_data(apps, schema_editor):
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
     Activity = apps.get_model('registration', 'Activity')
     Configuration = apps.get_model('reporting', 'Configuration')
 
-    valid_from = Configuration.objects.get(valid_from='2023-01-01')
-    valid_to = Configuration.objects.get(valid_to='2099-12-31')
     cwd = os.getcwd()
 
     ACTIVITY_SCHEMA_MAPPING = [
-        ('General stationary combustion excluding line tracing', 'gsc_excluding_line_tracing'),
-        ('General stationary combustion solely for the purpose of line tracing', 'gsc_solely_for_line_tracing'),
-        ('Fuel combustion by mobile equipment', 'fuel_combustion_mobile'),
-        (
-            'General stationary combustion, other than non-compression and non-processing combustion',
-            'gsc_other_than_non_compression',
-        ),
-        ('Refinery fuel gas combustion', 'refinery_fuel_gas'),
-        ('Carbonate use', 'carbonates_use'),
-        ('General stationary non-compression and non-processing combustion', 'gsc_non_compression_non_combustion'),
-        ('Hydrogen production', 'hydrogen_production'),
-        ('Pulp and paper production', 'pulp_and_paper_production'),
-        ('Open pit coal mining', 'open_pit_coal_mining'),
-        ('Storage of petroleum products', 'storage_of_petroleum_products'),
-        ('Aluminum or alumina production', 'aluminum_production'),
-        (
-            'Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission',
-            'ng_non_compression',
-        ),
-        (
-            'Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities',
-            'ng_other_than_non_compression',
-        ),
-        ('LNG activities', 'lng_activities'),
-        (
-            'Non-compression and non-processing activities that are oil and gas extraction and gas processing activities',
-            'og_extraction_non_compression',
-        ),
-        (
-            'Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities',
-            'og_extraction_other_than_ncnp',
-        ),
-        ('Electricity generation', 'electricity_generation'),
-        ('Industrial wastewater processing', 'industrial_water_processing'),
-        ('Cement production', 'cement_production'),
-        ('Lime manufacturing', 'lime_manufacturing'),
-        ('Coal storage at facilities that combust coal', 'coal_storage'),
-        ('Zinc production', 'zinc_production'),
-        ('Petroleum refining', 'petroleum_refining'),
-        ('Lead production', 'lead_production'),
-        ('Electricity transmission', 'electricity_transmission'),
+        'gsc_excluding_line_tracing',
+        'gsc_solely_for_line_tracing',
+        'gsc_other_than_non_compression',
+        'refinery_fuel_gas',
+        'carbonates_use',
+        'gsc_non_compression_non_combustion',
+        'hydrogen_production',
+        'open_pit_coal_mining',
+        'storage_of_petroleum_products',
+        'aluminum_production',
+        'ng_non_compression',
+        'ng_other_than_non_compression',
+        'lng_activities',
+        'og_extraction_non_compression',
+        'og_extraction_other_than_ncnp',
+        'electricity_generation',
+        'industrial_water_processing',
+        'cement_production',
+        'lime_manufacturing',
+        'coal_storage',
+        'zinc_production',
+        'petroleum_refining',
+        'lead_production',
+        'electricity_transmission',
     ]
 
-    for activity_name, schema_slug in ACTIVITY_SCHEMA_MAPPING:
-        print(f'Loading schema for {activity_name}')
+    for schema_slug in ACTIVITY_SCHEMA_MAPPING:
         schema_path = f'{cwd}/reporting/json_schemas/2024/{schema_slug}/activity.json'
         with open(schema_path) as schema_file:
             schema = json.load(schema_file)
-        ActivitySchema.objects.create(
-            activity=Activity.objects.get(name=activity_name),
-            json_schema=schema,
-            valid_from=valid_from,
-            valid_to=valid_to,
-        )
+            ActivitySchema.objects.filter(activity=Activity.objects.get(slug=schema_slug)).update(json_schema=schema)
 
     # also load the one json file in /2025 json_schemas
-    activity_name = 'Pulp and paper production'
     schema_slug = 'pulp_and_paper_production'
     schema_path = f'{cwd}/reporting/json_schemas/2025/{schema_slug}/activity.json'
     with open(schema_path) as schema_file:
         schema = json.load(schema_file)
-    ActivitySchema.objects.create(
-        activity=Activity.objects.get(name=activity_name),
-        json_schema=schema,
-        valid_from=valid_from,
-        valid_to=valid_to,
-    )
+        ActivitySchema.objects.filter(
+            activity=Activity.objects.get(slug=schema_slug), valid_from=Configuration.objects.get(slug=2025)
+        ).update(
+            json_schema=schema,
+        )
 
 
 # reverse migration
@@ -433,6 +447,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(code=update_slugs, reverse_code=migrations.RunPython.noop),
         migrations.RunPython(code=update_reporting_fields, reverse_code=undo_update_reporting_fields),
         migrations.RunPython(
             code=reload_activity_schema_data, reverse_code=migrations.operations.special.RunPython.noop
