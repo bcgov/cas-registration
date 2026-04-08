@@ -111,11 +111,15 @@ class ReportRawActivityDataSchema(ModelSchema):
     @staticmethod
     def resolve_source_types(obj: ReportRawActivityData) -> dict:
         json_data = obj.json_data
+
+        source_type_section = json_data.get("sourceTypes", {})
+        source_type_section_keys = set(source_type_section.keys())
+
         resolved_source_types = {}
-        source_type_section_keys = set(json_data.get("sourceTypes", {}).keys())
-        for key, value in json_data.get("sourceTypes", {}).items():
+        for key, value in source_type_section.items():
             source_type = SourceType.objects.filter(json_key=key).first()
             resolved_source_types[source_type.name if source_type else key] = value
+
         source_type_json_keys = set(
             SourceType.objects.filter(json_key__in=json_data.keys()).values_list("json_key", flat=True)
         )
@@ -337,13 +341,11 @@ class ReportNewEntrantSchema(ModelSchema):
 
     @staticmethod
     def resolve_report_new_entrant_emission(obj: ReportNewEntrant) -> Dict[str, ReportNewEntrantEmission]:
-        return {
-            e.emission_category.category_name: e for e in obj.report_new_entrant_emission.all() if e.emission_category
-        }
+        return {e.emission_category.category_name: e for e in obj.report_new_entrant_emission.all()}
 
     @staticmethod
     def resolve_productions(obj: ReportNewEntrant) -> Dict[str, ReportNewEntrantProduction]:
-        return {p.product.name: p for p in obj.productions.all() if p.product}
+        return {p.product.name: p for p in obj.productions.all()}
 
     class Meta:
         model = ReportNewEntrant

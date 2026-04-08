@@ -3,7 +3,12 @@ from deepdiff import DeepDiff
 from deepdiff.helper import NotPresent
 import re
 
-_DIFF_KWARGS: Dict[str, Any] = dict(ignore_order=True, verbose_level=2, view='tree', threshold_to_diff_deeper=0)
+_DIFF_KWARGS: Dict[str, Any] = {
+    "ignore_order": True,
+    "verbose_level": 2,
+    "view": 'tree',
+    "threshold_to_diff_deeper": 0,
+}
 
 _CHANGE_TYPE_MAP: Dict[str, str] = {
     'values_changed': 'modified',
@@ -22,8 +27,8 @@ def detect_renames(prev: Dict[str, dict], curr: Dict[str, dict]) -> List[Dict[st
     Detect facilities with the same UUID but a different name key.
     Mutates prev so diff_sections doesn't produce false add+remove pairs.
     """
-    prev_by_uuid = {str(f.get('facility')): k for k, f in prev.items() if isinstance(f, dict) and f.get('facility')}
-    curr_by_uuid = {str(f.get('facility')): k for k, f in curr.items() if isinstance(f, dict) and f.get('facility')}
+    prev_by_uuid = {str(f.get('facility')): k for k, f in prev.items() if f.get('facility')}
+    curr_by_uuid = {str(f.get('facility')): k for k, f in curr.items() if f.get('facility')}
 
     changes = []
     for uuid in set(prev_by_uuid) & set(curr_by_uuid):
@@ -59,16 +64,15 @@ def diff_sections(prev: Dict[str, dict], curr: Dict[str, dict], path_root: str) 
 
     for name in prev.keys() & curr.keys():
         for diff_key, items in DeepDiff(prev[name], curr[name], **_DIFF_KWARGS).items():
-            for item in items:
-                changes.append(
-                    {
-                        "field": f"{path_root}['{name}']{item.path()[4:]}",
-                        "old_value": None if isinstance(item.t1, NotPresent) else item.t1,
-                        "new_value": None if isinstance(item.t2, NotPresent) else item.t2,
-                        "change_type": _CHANGE_TYPE_MAP.get(diff_key, 'modified'),
-                    }
-                )
-
+            changes = changes + [
+                {
+                    "field": f"{path_root}['{name}']{item.path()[4:]}",
+                    "old_value": None if isinstance(item.t1, NotPresent) else item.t1,
+                    "new_value": None if isinstance(item.t2, NotPresent) else item.t2,
+                    "change_type": _CHANGE_TYPE_MAP.get(diff_key, 'modified'),
+                }
+                for item in items
+            ]
     return changes
 
 
