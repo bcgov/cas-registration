@@ -62,11 +62,6 @@
                       "title": "Fuel Classification",
                       "type": "string",
                       "readOnly": true
-                    },
-                    "fuelUnit": {
-                      "title": "Fuel Unit",
-                      "type": "string",
-                      "readOnly": true
                     }
                   }
                 },
