@@ -56,10 +56,13 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                         )
                         if v < methodology_field_validation.lower_bound or v > methodology_field_validation.upper_bound:
                             gas_type_name = mr.report_emission.gas_type.chemical_formula
+                            reporting_field_display_name = (
+                                methodology_field_validation.reporting_field.field_display_title
+                            )
                             errors[f"report_methodology_{k}_value_outside_expected_bounds_{mr.id}"] = (
                                 ReportValidationError(
                                     Severity.WARNING,
-                                    f"Methodology Field ({k}) with value ({v}) is outside of the expected range ({methodology_field_validation.lower_bound} - {methodology_field_validation.upper_bound}) for Activity: {activity_name}, Source Type: {source_type_name}, Fuel Type: {fuel_type_name}, Gas Type: {gas_type_name}",
+                                    f"Methodology Field ({reporting_field_display_name}) with value ({v}) is outside of the expected range ({methodology_field_validation.lower_bound} - {methodology_field_validation.upper_bound}) for Activity: {activity_name}, Source Type: {source_type_name}, Fuel Type: {fuel_type_name}, Gas Type: {gas_type_name}",
                                 )
                             )
     return errors
