@@ -18,7 +18,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: import-ciip-swrs-data
-          image: ghcr.io/bcgov/cas-obps-data-import:latest
+          image: ghcr.io/bcgov/cas-obps-data-import:1.0.0
           resources:
             limits:
               cpu: 500m
