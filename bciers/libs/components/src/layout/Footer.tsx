@@ -1,6 +1,7 @@
 import Link from "@mui/material/Link";
 import MockTimePicker from "../mocks/MockTimePicker";
 import footerLinks from "@bciers/data/footer.json";
+import AppVersion from "./AppVersion";
 
 const links = footerLinks.map((link, index) => (
   <Link
@@ -24,8 +25,9 @@ const Footer: React.FC<{ showMockTimePicker: boolean }> = ({
       </div>
     )}
     <div className="bg-bc-primary-blue relative left-1/2 transform -translate-x-1/2 w-screen max-w-none">
-      <div className="max-w-page mx-auto padding-page h-fit text-lg flex align-start flex-col sm:flex-row">
-        {links}
+      <div className="max-w-page mx-auto padding-page h-fit text-lg flex align-start flex-col sm:flex-row sm:justify-between sm:items-center">
+        <div className="flex flex-col sm:flex-row">{links}</div>
+        <AppVersion />
       </div>
     </div>
   </footer>

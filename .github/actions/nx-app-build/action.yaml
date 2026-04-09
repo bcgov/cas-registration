@@ -67,6 +67,12 @@ runs:
         key: ${{ runner.os }}-buildx-bciers-${{ inputs.project }}${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-bciers-${{ inputs.project }}
+    - name: Set app version
+      id: app_version
+      shell: bash
+      run: |
+        VERSION=$(grep '^appVersion:' helm/cas-bciers/Chart.yaml | sed 's/appVersion: "\(.*\)"/\1/')
+        echo "value=${VERSION}" >> $GITHUB_OUTPUT
     - name: Build images
       shell: bash
       env:
@@ -81,6 +87,7 @@ runs:
         HOST_REGISTRATION: ${{ inputs.host_registration }}
         HOST_REPORTING: ${{ inputs.host_reporting }}
         PROJECT: ${{ inputs.project }}
+        NEXT_PUBLIC_APP_VERSION: ${{ steps.app_version.outputs.value }}
       run: |
         if ! npx nx show projects | grep -qix "$PROJECT"; then
           echo "Project not in allowed project list"
