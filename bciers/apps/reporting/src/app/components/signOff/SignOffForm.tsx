@@ -1,16 +1,16 @@
 "use client";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { IChangeEvent } from "@rjsf/core";
 import { SignOffFormItems } from "@reporting/src/app/components/signOff/types";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { getValidationErrorMessages } from "@reporting/src/app/utils/reportValidationMessages";
 import { useRouter } from "next/navigation";
 import postSubmitReport from "@bciers/actions/api/postSubmitReport";
 import { RJSFSchema } from "@rjsf/utils";
 import { signOffUiSchema } from "@reporting/src/data/jsonSchema/signOff/signOff";
+import { ReportValidationErrors } from "../shared/validation/types";
 
 interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
@@ -28,8 +28,18 @@ export default function SignOffForm({
     date: "",
     supplementary: {},
   });
-  const [errors, setErrors] = useState<(string | ReactNode)[]>();
+  const [errors, setErrors] = useState<string[] | ReportValidationErrors>([]);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+
+  const isStructuredValidationError = (
+    error: unknown,
+  ): error is { errors: ReportValidationErrors } => {
+    return (
+      !!error &&
+      typeof error === "object" &&
+      Array.isArray((error as { errors?: unknown }).errors)
+    );
+  };
 
   const allChecked = (formData: SignOffFormItems) => {
     const { supplementary, signature, ...rest } = formData;
@@ -50,14 +60,24 @@ export default function SignOffForm({
 
   const handleSubmit = async () => {
     if (!submitButtonDisabled) {
-      setErrors(undefined);
+      setErrors([]);
       setSubmitButtonDisabled(true);
 
-      const response: any = await postSubmitReport(version_id, formState);
+      const response = (await postSubmitReport(version_id, formState)) as {
+        error?: unknown;
+      };
       setSubmitButtonDisabled(false);
 
       if (response?.error) {
-        setErrors(getValidationErrorMessages(response.error));
+        if (isStructuredValidationError(response.error)) {
+          setErrors(response.error.errors);
+        } else {
+          setErrors([
+            typeof response.error === "string"
+              ? response.error
+              : "An unexpected error occurred while submitting this report.",
+          ]);
+        }
         setSubmitButtonDisabled(false);
         return false;
       }

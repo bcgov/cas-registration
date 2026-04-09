@@ -198,20 +198,30 @@ describe("SignOffForm Component (with actual schema)", () => {
     expect(checkbox).not.toBeChecked();
   });
 
-  it("renders multiple submission validation errors with fix links", async () => {
+  it("renders multiple submission validation errors with config links", async () => {
     (postSubmitReport as Mock).mockResolvedValue({
       error: {
         errors: [
           {
             key: "missing_report_verification", // gitleaks:allow
-            message: "Report verification form not found in the report.",
-            fix_url: "reporting/reports/1/verification",
+            error: {
+              severity: "Error",
+              message: "Report verification form not found in the report.",
+              context: {
+                reportVersionId: 1,
+              },
+            },
           },
           {
             key: "verification_statement",
-            message:
-              "Mandatory verification statement document was not uploaded with this report.",
-            fix_url: "reporting/reports/1/verification",
+            error: {
+              severity: "Error",
+              message:
+                "Mandatory verification statement document was not uploaded with this report.",
+              context: {
+                reportVersionId: 1,
+              },
+            },
           },
         ],
       },
@@ -242,12 +252,12 @@ describe("SignOffForm Component (with actual schema)", () => {
       screen.getByRole("link", {
         name: "Verification page",
       }),
-    ).toHaveAttribute("href", "/reporting/reports/1/verification");
+    ).toHaveAttribute("href", "/reports/1/verification");
     expect(
       screen.getByRole("link", {
         name: "Attachments page",
       }),
-    ).toHaveAttribute("href", "/reporting/reports/1/verification");
+    ).toHaveAttribute("href", "/reports/1/attachments");
 
     expect(mockRouterPush).not.toHaveBeenCalled();
   });
