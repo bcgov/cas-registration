@@ -9,4 +9,4 @@ class FuelTypeSchema(ModelSchema):
 
     class Meta:
         model = FuelType
-        fields = ["id", "name", "classification", "unit"]
+        fields = ["id", "name", "classification", "unit", "description"]

@@ -15,6 +15,11 @@ class FuelType(BaseModel):
         max_length=1000,
         db_comment="The classification (biomass/non-biomass & exempted/non-exempted) applied to the fuel as determined by GGERR Schedule C (https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleC)",
     )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        db_comment="Optional explanatory text to help users distinguish similar fuel types (e.g., Natural Gas vs Field gas).",
+    )
 
     class Meta:
         db_table_comment = "This table contains the list of fuel types that can be reported."
