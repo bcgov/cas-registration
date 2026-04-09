@@ -30,9 +30,9 @@ make install_dev_tools
 
 This command will:
 
-- Install Python 3.12.11 via asdf
-- Install Poetry 2.1.1
-- Install and configure PostgreSQL 16.2
+- Install Python via asdf
+- Install Poetry
+- Install and configure PostgreSQL
 
 2. Create PostgreSQL user:
 
@@ -112,13 +112,13 @@ You can verify your installation by checking the versions of installed component
 
 ```bash
 # Check Python version
-python --version  # Should show 3.12.11
+python --version
 
 # Check Poetry version
-poetry --version  # Should show 2.1.1
+poetry --version
 
 # Check PostgreSQL version
-psql --version   # Should show 16.2
+psql --version
 ```
 
 ## Post-Restart Steps
@@ -133,7 +133,7 @@ After system restart, you'll need to:
 2. Activate the virtual environment:
 
    ```bash
-   # Using Poetry 2.1.1 (via asdf)
+   # Using Poetry (via asdf)
    poetry env activate
 
    # Or alternatively, activate directly:
