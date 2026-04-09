@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 from uuid import UUID
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 
 
 class Severity(Enum):
@@ -21,8 +23,12 @@ class ReportValidationErrorKey(Enum):
     MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE = "missing_supplementary_report_version_change"
 
 
-@dataclass
-class ErrorContext:
+class ErrorContext(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+    )
+
     report_version_id: int
     facility_id: Optional[UUID] = None
     facility_name: Optional[str] = None

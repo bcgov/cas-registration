@@ -2,7 +2,7 @@ import logging
 import os
 import traceback
 from typing import Union, Optional, Any, Callable
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from django.conf import settings
 from django.http import HttpRequest
 from django.db.utils import InternalError, ProgrammingError, DatabaseError
@@ -59,7 +59,9 @@ class ExceptionHandler:
                         "error": {  # and then there could be a 'type' field, which would be consumed by the frontend to determine how to display the error
                             "severity": e.severity.value if hasattr(e, "severity") else "error",
                             "message": e.message,
-                            **({"context": asdict(e.context)} if e.context else {}),
+                            **(
+                                {"context": e.context.model_dump(by_alias=True, exclude_none=True)} if e.context else {}
+                            ),
                         },
                     }
                     for k, e in exc.errors.items()
