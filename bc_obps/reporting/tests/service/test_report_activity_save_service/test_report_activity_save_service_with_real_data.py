@@ -57,7 +57,7 @@ class TestReportActivitySaveService(TestCase):
             "fieldProcessVentGasLinearFacilities": True,
         }
         assert report_activity.facility_report == test_infrastructure.facility_report
-        assert report_activity.activity == Activity.objects.get(slug='gsc_non_compression')
+        assert report_activity.activity == Activity.objects.get(slug='gsc_non_compression_non_combustion')
         assert report_activity.activity_base_schema == test_infrastructure.activity_json_schema
         assert report_activity.report_version == test_infrastructure.facility_report.report_version
 

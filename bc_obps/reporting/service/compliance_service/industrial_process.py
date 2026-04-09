@@ -27,7 +27,7 @@ def retrieve_pulp_and_paper_biogenic_emissions_split_default(report_version: Rep
 
     try:
         report_activity = ReportActivity.objects.get(
-            report_version=report_version, activity=Activity.objects.get(slug='pulp_and_paper')
+            report_version=report_version, activity=Activity.objects.get(slug='pulp_and_paper_production')
         )
     except ReportActivity.DoesNotExist:
         raise ReportActivity.DoesNotExist(

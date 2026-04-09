@@ -37,7 +37,7 @@ class TestIndustrialProcess(TestCase):
     def test_retrieve_biogenic_emissions_split_with_utilize_lime_kiln_checked_off(self):
         report_activity = make_recipe(
             "reporting.tests.utils.report_activity",
-            activity=Activity.objects.get(slug="pulp_and_paper"),
+            activity=Activity.objects.get(slug="pulp_and_paper_production"),
             json_data={
                 "biogenicIndustrialProcessEmissions": {
                     "doesUtilizeLimeRecoveryKiln": False,
@@ -55,7 +55,7 @@ class TestIndustrialProcess(TestCase):
     def test_retrieve_biogenic_emissions_split_with_bad_data(self):
         report_activity = make_recipe(
             "reporting.tests.utils.report_activity",
-            activity=Activity.objects.get(slug="pulp_and_paper"),
+            activity=Activity.objects.get(slug="pulp_and_paper_production"),
             json_data={},
             report_version__report__reporting_year_id=2025,
         )
@@ -68,7 +68,7 @@ class TestIndustrialProcess(TestCase):
     def test_retrieve_biogenic_emissions_split_with_not_100_total(self):
         report_activity = make_recipe(
             "reporting.tests.utils.report_activity",
-            activity=Activity.objects.get(slug="pulp_and_paper"),
+            activity=Activity.objects.get(slug="pulp_and_paper_production"),
             json_data={
                 "biogenicIndustrialProcessEmissions": {
                     "doesUtilizeLimeRecoveryKiln": True,
@@ -86,7 +86,7 @@ class TestIndustrialProcess(TestCase):
     def test_retrieve_biogenic_emissions_split_with_good_data(self):
         report_activity = make_recipe(
             "reporting.tests.utils.report_activity",
-            activity=Activity.objects.get(slug="pulp_and_paper"),
+            activity=Activity.objects.get(slug="pulp_and_paper_production"),
             json_data={
                 "biogenicIndustrialProcessEmissions": {
                     "doesUtilizeLimeRecoveryKiln": True,

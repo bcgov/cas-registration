@@ -69,7 +69,7 @@ class TestInfrastructure:
         return t
 
     @classmethod
-    def build_from_real_config(cls, activity_slug="gsc_non_compression"):
+    def build_from_real_config(cls, activity_slug="gsc_non_compression_non_combustion"):
         t = TestInfrastructure()
         t.facility_report = make_recipe(
             'reporting.tests.utils.facility_report',
@@ -101,7 +101,7 @@ class TestInfrastructure:
         t.user = make_recipe('registration.tests.utils.industry_operator_user')
         valid_date = get_report_valid_date_from_version_id(t.report_version.id)
         t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
-        t.activity = Activity.objects.get(slug="gsc_non_compression")
+        t.activity = Activity.objects.get(slug="gsc_non_compression_non_combustion")
         # Query using the configuration's date range to find schemas valid for this configuration period
         t.activity_json_schema = ActivityJsonSchema.objects.get(
             activity=t.activity,
