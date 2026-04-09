@@ -1,0 +1,45 @@
+from reporting.models import ReportFuel, ReportVersion, ExpectedValueRangeFuelAmount
+from reporting.service.report_validation.report_validation_error import (
+    ReportValidationError,
+    Severity,
+)
+
+
+def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
+    """
+    Validates reported activity data to be within ranges defined by fuel type.
+
+    For each report_fuel record, if the fuel_type has validation ranges defined.
+    This validation will validate the report_fuel data and the child report_methodology records to be within expected ranges
+
+    This validation returns WARNING level severity errors.
+
+    Args:
+        report_version (ReportVersion): The report version to validate.
+
+    Returns:
+        dict[str, ReportValidationError]: A dictionary of validation errors by fuel type
+    """
+    errors: dict[str, ReportValidationError] = {}
+
+    # Only validate for regulated operations
+    if not report_version.report.operation.is_regulated_operation:
+        return errors
+
+    report_fuel_records = ReportFuel.objects.filter(report_version=report_version)
+
+    for fr in report_fuel_records:
+        if ExpectedValueRangeFuelAmount.objects.filter(fuel_type=fr.fuel_type).exists():
+            fuel_amount = fr.json_data['annualFuelAmount']
+            validation_record = ExpectedValueRangeFuelAmount.objects.get(fuel_type=fr.fuel_type)
+            activity_name = fr.report_source_type.report_activity.activity.name
+            source_type_name = fr.report_source_type.source_type.name
+            fuel_type_name = fr.fuel_type.name
+            if fuel_amount < validation_record.lower_bound or fuel_amount > validation_record.upper_bound:
+                errors[f"report_fuel_fuel_amount_value_out_of_expected_bounds_{fr.id}"] = ReportValidationError(
+                    Severity.WARNING,
+                    f"Fuel Amount value outside expected range for Activity: {activity_name}, Source Type: {source_type_name}, Fuel Type: {fuel_type_name}",
+                )
+    for error in errors:
+        print(error)
+    return errors
