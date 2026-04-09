@@ -297,7 +297,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='fuel_combustion_by_mobile').id
+            activity_id=Activity.objects.get(slug='fuel_combustion_mobile').id
         )
         report_source_type = make(
             ReportSourceType,
@@ -342,7 +342,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='og_activities_other_than_non_compression').id
+            activity_id=Activity.objects.get(slug='og_extraction_other_than_ncnp').id
         )
         report_source_type = make(
             ReportSourceType,
@@ -514,7 +514,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='pulp_and_paper').id
+            activity_id=Activity.objects.get(slug='pulp_and_paper_production').id
         )
         report_source_type = make(
             ReportSourceType,

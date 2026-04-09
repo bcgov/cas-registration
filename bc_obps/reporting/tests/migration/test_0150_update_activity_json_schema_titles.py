@@ -27,11 +27,11 @@ class TestMigration0150UpdateActivityJsonSchemaTitles(TestCase):
             'gsc_excluding_line_tracing': 'General stationary combustion excluding line tracing (at SFO)',
             'gsc_solely_for_line_tracing': 'General stationary combustion (line tracing)',
             'gsc_other_than_non_compression': 'General stationary combustion (compression and processing)',
-            'gsc_non_compression': 'General stationary combustion (other than compression and processing)',
-            'natural_gas_activities_other_than_non_compression': 'Natural gas transmission (compression and processing)',
-            'natural_gas_activities_non_compression': 'Natural gas transmission (other than compression and processing)',
-            'og_activities_other_than_non_compression': 'Oil & Gas extraction (compression and processing)',
-            'og_activities_non_compression': 'Oil & Gas extraction (other than compression and processing)',
+            'gsc_non_compression_non_combustion': 'General stationary combustion (other than compression and processing)',
+            'ng_other_than_non_compression': 'Natural gas transmission (compression and processing)',
+            'ng_non_compression': 'Natural gas transmission (other than compression and processing)',
+            'og_extraction_other_than_ncnp': 'Oil & Gas extraction (compression and processing)',
+            'og_extraction_non_compression': 'Oil & Gas extraction (other than compression and processing)',
         }
 
         # Set the test schema for each activity
