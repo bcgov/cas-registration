@@ -9,6 +9,7 @@ from . import (
     report_emission_allocation_validator,
     supplementary_report_attachments_confirmation,
     supplementary_report_version_change,
+    report_data_by_fuel_type_validation,
 )
 
 
@@ -22,4 +23,5 @@ __all__ = [
     "supplementary_report_attachments_confirmation",
     "report_activity_json_validation",
     "report_emission_allocation_validator",
+    "report_data_by_fuel_type_validation",
 ]
