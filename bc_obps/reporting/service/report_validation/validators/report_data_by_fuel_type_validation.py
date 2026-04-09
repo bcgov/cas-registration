@@ -42,7 +42,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             source_type_name = fr.report_source_type.source_type.name
             fuel_type_name = fr.fuel_type.name
             if fuel_amount < validation_record.lower_bound or fuel_amount > validation_record.upper_bound:
-                errors[f"report_fuel_fuel_amount_value_out_of_expected_bounds_{fr.id}"] = ReportValidationError(
+                errors[f"report_fuel_fuel_amount_value_outside_expected_bounds_{fr.id}"] = ReportValidationError(
                     Severity.WARNING,
                     f"Fuel Amount value ({fr.json_data['annualFuelAmount']}) is outside of the expected range ({validation_record.lower_bound} - {validation_record.upper_bound}) for Activity: {activity_name}, Source Type: {source_type_name}, Fuel Type: {fuel_type_name}",
                 )
@@ -55,13 +55,11 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                             fuel_type=fr.fuel_type, methodology=mr.methodology, reporting_field__slug=k
                         )
                         if v < methodology_field_validation.lower_bound or v > methodology_field_validation.upper_bound:
-                            errors[f"report_methodology_{k}_value_out_of_expected_bounds_{mr.id}"] = (
+                            gas_type_name = mr.report_emission.gas_type.chemical_formula
+                            errors[f"report_methodology_{k}_value_outside_expected_bounds_{mr.id}"] = (
                                 ReportValidationError(
                                     Severity.WARNING,
-                                    f"Methodology Field ({k}) with value ({v}) is outside of the expected range ({methodology_field_validation.lower_bound} - {methodology_field_validation.upper_bound}) for Activity: {activity_name}, Source Type: {source_type_name}, Fuel Type: {fuel_type_name}",
+                                    f"Methodology Field ({k}) with value ({v}) is outside of the expected range ({methodology_field_validation.lower_bound} - {methodology_field_validation.upper_bound}) for Activity: {activity_name}, Source Type: {source_type_name}, Fuel Type: {fuel_type_name}, Gas Type: {gas_type_name}",
                                 )
                             )
-
-    for error in errors:
-        print(error)
     return errors
