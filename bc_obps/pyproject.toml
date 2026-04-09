@@ -29,7 +29,7 @@ django-pgtrigger = "^4.13.3"
 weasyprint = "^68.0"
 jsonschema = "^4.23.0"
 types-jsonschema = "^4.23.0.20241208"
-deepdiff = "^8.6.1"
+deepdiff = "^8.6.2"
 brotli = ">=1.2.0"
 time-machine = "^3.0.0"
 
