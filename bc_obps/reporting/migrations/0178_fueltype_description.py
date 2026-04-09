@@ -16,7 +16,7 @@ def seed_fuel_type_descriptions(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0174_V5_7_0'),
+        ('reporting', '0177_populate_validation_model_data'),
     ]
 
     operations = [
