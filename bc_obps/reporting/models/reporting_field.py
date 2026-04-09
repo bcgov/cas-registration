@@ -20,6 +20,9 @@ class ReportingField(BaseModel):
         null=True,
         db_comment="Optional display title for the field to be used in forms.",
     )
+    slug = models.CharField(
+        max_length=1000, db_comment="camel-cased slug defines how this field is represented in the reported json data."
+    )
 
     def serialize(self) -> "dict[str,str| None]":
         return {"fieldName": self.field_name, "fieldType": self.field_type, "fieldUnits": self.field_units}
@@ -29,7 +32,7 @@ class ReportingField(BaseModel):
         db_table = 'erc"."reporting_field'
         constraints = [
             models.UniqueConstraint(
-                fields=['field_name', 'field_type', 'field_units'],
+                fields=['field_name', 'field_type', 'field_units', 'slug'],
                 name='unique_reporting_field',
             )
         ]

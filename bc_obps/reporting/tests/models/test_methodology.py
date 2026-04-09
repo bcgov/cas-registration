@@ -130,4 +130,5 @@ class MethodologyModelTest(BaseTestCase):
             ("name", "name", 1000, None),
             ("configuration_elements", "configuration element", None, None),
             ("reportmethodology_records", "report methodology", None, 0),
+            ("expected_value_range_methodology_field", "expected value range methodology field", None, 0),
         ]
