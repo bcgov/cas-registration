@@ -14,9 +14,7 @@ from reporting.service.report_validation.report_validation_error import (
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     """
     Validates reported activity data to be within ranges defined by fuel type.
-
-    For each report_fuel record, if the fuel_type has validation ranges defined.
-    This validation will validate the report_fuel data and the child report_methodology records to be within expected ranges
+    This validation will validate that report_fuel records and any child report_methodology records are within expected ranges.
 
     This validation returns WARNING level severity errors.
 
@@ -24,7 +22,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         report_version (ReportVersion): The report version to validate.
 
     Returns:
-        dict[str, ReportValidationError]: A dictionary of validation errors by fuel type
+        dict[str, ReportValidationError]: A dictionary of validation errors
     """
     errors: dict[str, ReportValidationError] = {}
 
