@@ -40,7 +40,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
-          image: "{{ .Values.registrationFrontend.image.repository }}:{{ .Chart.AppVersion | default .Values.registrationFrontend.image.tag }}"
+          image: "{{ .Values.registrationFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.registrationFrontend.image.tag }}"
           imagePullPolicy: {{ .Values.registrationFrontend.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.registrationFrontend.service.port }}

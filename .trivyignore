@@ -19,5 +19,5 @@ KSV-0014
 KSV-0001
 # run as non root
 KSV-0012
-# Seccomp profile is set in openshift, not allowed to be set before
+# Seccomp profile is set in openshift, not required to be set before
 KSV-0104
