@@ -42,8 +42,9 @@ class ReportValidationError:
     """
     Data type for validation error details
 
-    - severity: whether the validation passed
+    - severity: what kind of error it is (e.g. warning vs error)
     - message: human-readable explanation for the validation error
+    - key: an identifier for the type of validation error, used for frontend handling
     - context: optional data related to the report where the error occurred
     """
 
