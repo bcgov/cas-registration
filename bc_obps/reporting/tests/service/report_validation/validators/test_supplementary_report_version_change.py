@@ -40,6 +40,7 @@ class TestSupplementaryReportVersionChangeValidator:
         assert isinstance(err, ReportValidationError)
         assert err.severity == Severity.ERROR
         assert err.message == ("No reason for change found for this supplementary report version.")
+        assert err.fix_url == f"reporting/reports/{version.id}/review-changes"
 
     @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
     def test_none_reason_for_change_raises_error(self, mock_is_initial):

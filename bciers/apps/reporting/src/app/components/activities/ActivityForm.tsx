@@ -63,7 +63,9 @@ export default function ActivityForm({
   activityIndex,
 }: Readonly<Props>) {
   // 🐜 To display errors
-  const [errorList, setErrorList] = useState([] as string[]);
+  const [errorList, setErrorList] = useState(
+    [] as (string | React.ReactNode)[],
+  );
   const [formState, setFormState] = useState(activityFormData);
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
   const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(

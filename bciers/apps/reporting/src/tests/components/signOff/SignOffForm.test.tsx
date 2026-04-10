@@ -1,10 +1,17 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, type Mock } from "vitest";
 import SignOffForm from "@reporting/src/app/components/signOff/SignOffForm";
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
 import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 import { buildSignOffSchema } from "@reporting/src/data/jsonSchema/signOff/signOff";
+import postSubmitReport from "@bciers/actions/api/postSubmitReport";
+
+vi.mock("@bciers/actions/api/postSubmitReport", () => ({
+  default: vi.fn(),
+}));
+
+const mockRouterPush = vi.fn();
 
 const renderSignOffFormWithSchema = ({
   isSupplementary = false,
@@ -22,6 +29,24 @@ const renderSignOffFormWithSchema = ({
   );
 
   return schema;
+};
+
+const completeSignOffForm = async () => {
+  const checkboxes = screen.getAllByRole("checkbox");
+  checkboxes.forEach((checkbox) => fireEvent.click(checkbox));
+
+  const signatureField = screen.getByLabelText(/signature/i);
+  fireEvent.change(signatureField, {
+    target: { value: "Gimli son of Gloin" },
+  });
+
+  const submitButton = screen.getByRole("button", { name: /submit report/i });
+
+  await waitFor(() => {
+    expect(submitButton).not.toBeDisabled();
+  });
+
+  return submitButton;
 };
 
 describe("SignOffForm Component (with actual schema)", () => {
@@ -171,5 +196,59 @@ describe("SignOffForm Component (with actual schema)", () => {
     expect(checkbox).toBeChecked();
     fireEvent.click(checkbox);
     expect(checkbox).not.toBeChecked();
+  });
+
+  it("renders multiple submission validation errors with fix links", async () => {
+    (postSubmitReport as Mock).mockResolvedValue({
+      error: {
+        errors: [
+          {
+            key: "missing_report_verification", // gitleaks:allow
+            message: "Report verification form not found in the report.",
+            fix_url: "reporting/reports/1/verification",
+          },
+          {
+            key: "verification_statement",
+            message:
+              "Mandatory verification statement document was not uploaded with this report.",
+            fix_url: "reporting/reports/1/verification",
+          },
+        ],
+      },
+    });
+
+    renderSignOffFormWithSchema({
+      isSupplementary: false,
+      isRegulated: true,
+      flow: ReportingFlow.SFO,
+    });
+
+    const submitButton = await completeSignOffForm();
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getAllByRole("alert")).toHaveLength(2);
+    });
+
+    const alerts = screen.getAllByRole("alert");
+    expect(alerts[0]).toHaveTextContent(
+      "Verification information must be completed on the Verification page.",
+    );
+    expect(alerts[1]).toHaveTextContent(
+      "A verification statement must be uploaded with this report on the Attachments page.",
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Verification page",
+      }),
+    ).toHaveAttribute("href", "/reporting/reports/1/verification");
+    expect(
+      screen.getByRole("link", {
+        name: "Attachments page",
+      }),
+    ).toHaveAttribute("href", "/reporting/reports/1/verification");
+
+    expect(mockRouterPush).not.toHaveBeenCalled();
   });
 });

@@ -1,12 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { IChangeEvent } from "@rjsf/core";
 import { SignOffFormItems } from "@reporting/src/app/components/signOff/types";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
+import { getValidationErrorMessages } from "@reporting/src/app/utils/reportValidationMessages";
 import { useRouter } from "next/navigation";
 import postSubmitReport from "@bciers/actions/api/postSubmitReport";
 import { RJSFSchema } from "@rjsf/utils";
@@ -28,7 +28,7 @@ export default function SignOffForm({
     date: "",
     supplementary: {},
   });
-  const [errors, setErrors] = useState<string[]>();
+  const [errors, setErrors] = useState<(string | ReactNode)[]>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
   const allChecked = (formData: SignOffFormItems) => {
@@ -57,7 +57,7 @@ export default function SignOffForm({
       setSubmitButtonDisabled(false);
 
       if (response?.error) {
-        setErrors([getValidationErrorMessage(response.error)]);
+        setErrors(getValidationErrorMessages(response.error));
         setSubmitButtonDisabled(false);
         return false;
       }

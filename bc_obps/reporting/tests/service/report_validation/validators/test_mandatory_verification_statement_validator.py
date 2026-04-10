@@ -79,6 +79,7 @@ class TestMandatoryVerificationStatementValidator:
             "verification_statement": ReportValidationError(
                 Severity.ERROR,
                 "Mandatory verification statement document was not uploaded with this report.",
+                fix_url=f"reporting/reports/{report_version.id}/attachments",
             )
         }
 
@@ -100,6 +101,8 @@ class TestMandatoryVerificationStatementValidator:
 
         assert result == {
             "missing_report_verification": ReportValidationError(
-                Severity.ERROR, "Report verification form not found in the report."
+                Severity.ERROR,
+                "Report verification form not found in the report.",
+                fix_url=f"reporting/reports/{report_version.id}/verification",
             )
         }

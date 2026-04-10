@@ -1,8 +1,8 @@
-from django.core.exceptions import ValidationError
 from model_bakery.baker import make_recipe
 import pytest
 from unittest.mock import patch, MagicMock
 from reporting.service.report_submission_service import ReportSubmissionService
+from reporting.service.exceptions import ReportValidationException
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_sign_off_service import ReportSignOffAcknowledgements, ReportSignOffData
 import uuid
@@ -111,5 +111,8 @@ class TestReportSubmissionService:
 
         report_version = make_recipe("reporting.tests.utils.report_version")
 
-        with pytest.raises(ValidationError, match="['test message']"):
+        with pytest.raises(ReportValidationException) as exception:
             ReportSubmissionService.submit_report(report_version.id, uuid.UUID(int=0), {})
+
+        assert "test_key" in exception.value.errors
+        assert exception.value.errors["test_key"].message == "test message"
