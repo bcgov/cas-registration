@@ -94,7 +94,6 @@ function renderValidationMessage(
 export default function ReportValidationSummary({
   errors,
 }: ReportValidationSummaryProps) {
-  console.log("Rendering ReportValidationSummary with errors:", errors);
   if (!errors?.length) return null;
 
   const severityOrder: Record<ValidationSeverity, number> = {

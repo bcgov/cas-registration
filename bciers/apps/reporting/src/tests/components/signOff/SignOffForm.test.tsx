@@ -54,6 +54,7 @@ describe("SignOffForm Component (with actual schema)", () => {
     vi.resetAllMocks();
     useRouter.mockReturnValue({
       refresh: vi.fn(),
+      push: mockRouterPush,
     });
   });
 
@@ -259,6 +260,31 @@ describe("SignOffForm Component (with actual schema)", () => {
       }),
     ).toHaveAttribute("href", "/reports/1/attachments");
 
+    expect(mockRouterPush).not.toHaveBeenCalled();
+  });
+
+  it("renders a generic validation error when submit returns an unstructured error", async () => {
+    (postSubmitReport as Mock).mockResolvedValue({
+      error: "I'm afraid I can't do that, Dave.",
+    });
+
+    renderSignOffFormWithSchema({
+      isSupplementary: false,
+      isRegulated: true,
+      flow: ReportingFlow.SFO,
+    });
+
+    const submitButton = await completeSignOffForm();
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getAllByRole("alert")).toHaveLength(1);
+    });
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "I'm afraid I can't do that, Dave.",
+    );
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
     expect(mockRouterPush).not.toHaveBeenCalled();
   });
 });

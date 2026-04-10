@@ -9,11 +9,6 @@ import FormAlerts from "@bciers/components/form/FormAlerts";
 import { useRouter } from "next/navigation";
 import { Dict } from "@bciers/types/dictionary";
 import useKey from "@bciers/utils/src/useKey";
-import {
-  ReportValidationErrors,
-  ReportValidationItem,
-} from "@reporting/src/app/components/shared/validation/types";
-import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
 
 export interface NavigationFormProps
   extends Omit<FormPropsWithTheme<unknown>, "onSubmit"> {
@@ -27,7 +22,7 @@ export interface NavigationFormProps
   onSubmit?: (data: object, navigateAfterSubmit: boolean) => Promise<boolean>;
   buttonText?: string;
   onChange?: (data: object) => void;
-  errors?: (string | React.ReactNode)[] | ReportValidationErrors;
+  errors?: (string | React.ReactNode)[];
   saveButtonDisabled?: boolean;
   submitButtonDisabled?: boolean;
   noSaveButton?: boolean;
@@ -59,31 +54,6 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
   const formRef = useRef<Form>(null);
   const shouldNavigateRef = useRef(false);
   const router = useRouter();
-
-  const isReportValidationErrors = (
-    value: NavigationFormProps["errors"],
-  ): value is ReportValidationErrors => {
-    if (!Array.isArray(value) || value.length === 0) {
-      return false;
-    }
-
-    return value.every((item): item is ReportValidationItem => {
-      if (!item || typeof item !== "object") {
-        return false;
-      }
-
-      const candidate = item as {
-        key?: unknown;
-        error?: { severity?: unknown };
-      };
-
-      return (
-        typeof candidate.key === "string" &&
-        !!candidate.error &&
-        typeof candidate.error.severity === "string"
-      );
-    });
-  };
 
   const handleFormSave = async (data: any, navigateAfterSubmit: boolean) => {
     setIsSaving(true);
@@ -161,12 +131,8 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
         noSaveButton={noSaveButton}
         backButtonText={backButtonText}
       />
-      {/* Render validation summary when structured report validation errors are present; otherwise render standard alerts. */}
-      {isReportValidationErrors(errors) ? (
-        <ReportValidationSummary errors={errors} />
-      ) : (
-        <FormAlerts key="alerts" errors={errors} />
-      )}
+      {/* Render form alerts */}
+      <FormAlerts key="alerts" errors={errors} />
     </FormBase>
   );
 };

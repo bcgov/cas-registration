@@ -11,6 +11,8 @@ import postSubmitReport from "@bciers/actions/api/postSubmitReport";
 import { RJSFSchema } from "@rjsf/utils";
 import { signOffUiSchema } from "@reporting/src/data/jsonSchema/signOff/signOff";
 import { ReportValidationErrors } from "../shared/validation/types";
+import ReportValidationSummary from "../shared/validation/ReportValidationSummary";
+import { createGenericReportValidationError } from "../shared/validation/utils";
 
 interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
@@ -28,7 +30,8 @@ export default function SignOffForm({
     date: "",
     supplementary: {},
   });
-  const [errors, setErrors] = useState<string[] | ReportValidationErrors>([]);
+  const [validationError, setValidationErrors] =
+    useState<ReportValidationErrors>([]);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
   const isStructuredValidationError = (
@@ -60,7 +63,7 @@ export default function SignOffForm({
 
   const handleSubmit = async () => {
     if (!submitButtonDisabled) {
-      setErrors([]);
+      setValidationErrors([]);
       setSubmitButtonDisabled(true);
 
       const response = (await postSubmitReport(version_id, formState)) as {
@@ -70,12 +73,10 @@ export default function SignOffForm({
 
       if (response?.error) {
         if (isStructuredValidationError(response.error)) {
-          setErrors(response.error.errors);
+          setValidationErrors(response.error.errors);
         } else {
-          setErrors([
-            typeof response.error === "string"
-              ? response.error
-              : "An unexpected error occurred while submitting this report.",
+          setValidationErrors([
+            createGenericReportValidationError(response.error as string),
           ]);
         }
         setSubmitButtonDisabled(false);
@@ -102,7 +103,12 @@ export default function SignOffForm({
       submitButtonDisabled={submitButtonDisabled}
       continueUrl={navigationInformation.continueUrl}
       backUrl={navigationInformation.backUrl}
-      errors={errors}
+      errors={[
+        <ReportValidationSummary
+          key="report-validation-summary" // gitleaks:allow
+          errors={validationError}
+        />,
+      ]}
     />
   );
 }
