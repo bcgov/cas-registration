@@ -1,4 +1,7 @@
-import { ActivityItem } from "@reporting/src/app/components/changeReview/constants/types";
+import {
+  ActivityItem,
+  ChangeType,
+} from "@reporting/src/app/components/changeReview/constants/types";
 
 // types/reportTypes.ts
 export interface ReportOperation {
@@ -213,7 +216,7 @@ export interface ActivitiesViewProps {
   activity_data: ActivityItem[] | Record<string, any>;
   isAdded?: boolean;
   isDeleted?: boolean;
-  changeType?: "added" | "removed" | "modified";
+  changeType?: ChangeType;
   sourceTypeChange?: {
     name: string;
     type: "added" | "removed" | "modified";
