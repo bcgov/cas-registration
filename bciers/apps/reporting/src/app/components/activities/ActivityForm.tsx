@@ -19,7 +19,6 @@ import {
   validateEmissionsMethodology,
 } from "@bciers/utils/src/activityFormValidators";
 import { NavigationInformation } from "../taskList/types";
-import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
 import { Dict } from "@bciers/types/dictionary";
 
 const CUSTOM_FIELDS = {
@@ -63,9 +62,7 @@ export default function ActivityForm({
   activityIndex,
 }: Readonly<Props>) {
   // 🐜 To display errors
-  const [errorList, setErrorList] = useState(
-    [] as (string | React.ReactNode)[],
-  );
+  const [errorList, setErrorList] = useState([] as string[]);
   const [formState, setFormState] = useState(activityFormData);
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
   const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(
@@ -189,7 +186,7 @@ export default function ActivityForm({
     });
 
     if (response.error) {
-      setErrorList([getValidationErrorMessage(response.error)]);
+      setErrorList([response.error]);
       return false;
     }
     if (response) {
