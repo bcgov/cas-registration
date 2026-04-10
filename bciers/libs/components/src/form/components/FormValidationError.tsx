@@ -1,14 +1,11 @@
-import { Alert } from "@mui/material";
-import AlertIcon from "@bciers/components/icons/AlertIcon";
+import FormAlerts from "@bciers/components/form/FormAlerts";
 
 interface FormValidationErrorProps {
-  message: string;
+  message?: string;
 }
 
-const FormValidationError = ({ message }: FormValidationErrorProps) => (
-  <Alert severity="error" className="my-2 items-center" icon={<AlertIcon />}>
-    {message}
-  </Alert>
-);
+const FormValidationError = ({
+  message = "This form can't be saved yet. Please fix the errors above.",
+}: FormValidationErrorProps) => <FormAlerts errors={[message]} />;
 
 export default FormValidationError;

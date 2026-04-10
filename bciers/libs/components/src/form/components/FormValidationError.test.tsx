@@ -1,17 +1,23 @@
 import { render, screen } from "@testing-library/react";
 import FormValidationError from "./FormValidationError";
 
-vi.mock("@bciers/components/icons/AlertIcon", () => ({
-  default: () => <svg data-testid="alert-icon" />,
-}));
-
 describe("FormValidationError", () => {
-  it("renders the alert with error styling, icon, and provided message", () => {
-    render(<FormValidationError message="Something went wrong." />);
+  it("renders the alert with the default message", () => {
+    render(<FormValidationError />);
+    expect(
+      screen.getByText(
+        /This form can't be saved yet. Please fix the errors above./i,
+      ),
+    ).toBeVisible();
+  });
 
-    const alert = screen.getByRole("alert");
-    expect(alert).toBeVisible();
-    expect(screen.getByText("Something went wrong.")).toBeVisible();
-    expect(screen.getByTestId("alert-icon")).toBeVisible();
+  it("renders the alert with a custom message when provided", () => {
+    render(<FormValidationError message="Custom error." />);
+    expect(screen.getByText("Custom error.")).toBeVisible();
+    expect(
+      screen.queryByText(
+        /This form can't be saved yet. Please fix the errors above./i,
+      ),
+    ).not.toBeInTheDocument();
   });
 });

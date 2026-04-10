@@ -47,7 +47,7 @@ export interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
   validator?: any;
   formRef?: any;
   setErrorReset?: (error: undefined) => void;
-  validationErrorMessage?: string;
+  validationErrorMessage?: string; // overrides the default message in FormValidationError
 }
 
 // For efficiency, we pre-compute the themed form components
@@ -68,7 +68,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     readonly,
     setErrorReset,
     theme,
-    validationErrorMessage = "This form can't be saved yet. Please fix the errors above.",
+    validationErrorMessage,
   } = props;
   if (theme && theme !== defaultTheme && theme !== readOnlyTheme) {
     throw new Error("Unsupported form theme");
