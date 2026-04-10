@@ -106,7 +106,6 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
       }
     }
   };
-
   return (
     <FormBase
       {...props}
@@ -117,6 +116,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
         shouldNavigateRef.current = false; // Reset after submission
       }}
     >
+      <FormAlerts key="alerts" errors={errors} />
       <ReportingStepButtons
         key="form-buttons"
         backUrl={backUrl}
@@ -131,8 +131,6 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
         noSaveButton={noSaveButton}
         backButtonText={backButtonText}
       />
-      {/* Render form alerts */}
-      <FormAlerts key="alerts" errors={errors} />
     </FormBase>
   );
 };

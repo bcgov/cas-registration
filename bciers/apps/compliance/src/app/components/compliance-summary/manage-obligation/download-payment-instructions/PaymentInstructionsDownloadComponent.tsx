@@ -124,6 +124,7 @@ export default function PaymentInstructionsDownloadComponent({
         ].includes(invoiceType as ComplianceInvoiceTypes),
       }}
     >
+      <FormAlerts key="alerts" errors={errors} />
       <ComplianceStepButtons
         key="form-buttons"
         backUrl={backUrl}
@@ -134,7 +135,6 @@ export default function PaymentInstructionsDownloadComponent({
         middleButtonText={"Download Payment Instructions"}
         onMiddleButtonClick={handleDownloadInstructions}
       />
-      <FormAlerts key="alerts" errors={errors} />
     </FormBase>
   );
 }

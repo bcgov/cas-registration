@@ -57,6 +57,7 @@ const InterestSummaryReviewComponent = ({
       formData={formData}
       className="w-full"
     >
+      <FormAlerts key="alerts" errors={errors} />
       <ComplianceStepButtons
         backUrl={backUrl}
         continueUrl={continueUrl}
@@ -69,8 +70,6 @@ const InterestSummaryReviewComponent = ({
         onMiddleButtonClick={handleGenerateInterestInvoice}
         className="mt-44"
       />
-      {/* Render any errors */}
-      <FormAlerts key="alerts" errors={errors} />
     </FormBase>
   );
 };

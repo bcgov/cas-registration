@@ -63,6 +63,7 @@ export function ComplianceSummaryReviewComponent({
         maxCreditUsagePercentage: data.max_credit_usage_percentage,
       }}
     >
+      <FormAlerts key="alerts" errors={errors} />
       <ComplianceStepButtons
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
@@ -74,9 +75,6 @@ export function ComplianceSummaryReviewComponent({
         }
         onMiddleButtonClick={handleGenerateInvoice}
       />
-
-      {/* Render any errors */}
-      <FormAlerts key="alerts" errors={errors} />
     </FormBase>
   );
 }
