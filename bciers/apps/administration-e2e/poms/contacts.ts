@@ -138,7 +138,7 @@ export class ContactsPOM {
   // ###  Assertions ###
 
   async urlIsCorrect() {
-    const path = await this.url;
+    const path = this.url;
     const currentUrl = this.page.url();
     expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
