@@ -56,6 +56,7 @@ export const PartialActivityDiffView: React.FC<ActivityDiffViewProps> = ({
       {Object.entries(activityGroup.sourceTypes).map(
         ([sourceTypeName, stGroup]) => (
           <SourceTypeDiffView
+            key={sourceTypeName}
             sourceTypeGroup={stGroup}
             sourceTypeName={sourceTypeName}
           />

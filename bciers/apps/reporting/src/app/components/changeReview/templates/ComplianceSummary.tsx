@@ -3,6 +3,7 @@ import { Box, Typography, Divider } from "@mui/material";
 import { ChangeItemDisplay } from "./ChangeItemDisplay";
 import StatusLabel from "@bciers/components/form/fields/StatusLabel";
 import { SectionReview } from "@reporting/src/app/components/finalReview/templates/SectionReview";
+import { ChangeItem, ChangeItemValue } from "../constants/types";
 
 const COMPLIANCE_LABELS: Record<string, string> = {
   emissions_attributable_for_reporting: "Emissions Attributable for Reporting",
@@ -32,25 +33,27 @@ const REGULATORY_LABELS: Record<string, string> = {
   "regulatory_values.compliance_period": "Compliance period",
 };
 
-const getProductName = (item: any) =>
-  item.newValue?.name ??
-  item.oldValue?.name ??
+const getProductName = (item: ChangeItem) =>
+  (item.newValue as Record<string, any>)?.name ??
+  (item.oldValue as Record<string, any>)?.name ??
   item.field.match(/\['products']\['([^']+)']/)?.[1] ??
   "Unknown Product";
 
 const isProductField = (field: string) => field.includes("['products']");
 
-const skipChange = (oldVal: any, newVal: any) => {
-  const o = parseFloat(oldVal),
-    n = parseFloat(newVal);
-  return !isNaN(o) && !isNaN(n) && o.toFixed(4) === n.toFixed(4);
+const skipChange = (oldVal: ChangeItemValue, newVal: ChangeItemValue) => {
+  const o = Number(oldVal);
+  const n = Number(newVal);
+  return !Number.isNaN(o) && !Number.isNaN(n) && o.toFixed(4) === n.toFixed(4);
 };
 
-const ComplianceSummary: React.FC<{ changes: any[] }> = ({ changes }) => {
+const ComplianceSummary: React.FC<{ changes: ChangeItem[] }> = ({
+  changes,
+}) => {
   if (!changes?.length) return null;
 
-  const productChanges: Record<string, any[]> = {};
-  const nonProductChanges: any[] = [];
+  const productChanges: Record<string, ChangeItem[]> = {};
+  const nonProductChanges: ChangeItem[] = [];
 
   changes.forEach((item) => {
     if (isProductField(item.field)) {
@@ -118,7 +121,8 @@ const ComplianceSummary: React.FC<{ changes: any[] }> = ({ changes }) => {
                 {productName} <StatusLabel type={first.change_type} />
               </Typography>
               <SectionReview
-                data={data}
+                // Product change items always always have a value of type dict
+                data={data as Record<string, any>}
                 fields={Object.entries(PRODUCT_LABELS).map(([key, label]) => ({
                   key,
                   label,

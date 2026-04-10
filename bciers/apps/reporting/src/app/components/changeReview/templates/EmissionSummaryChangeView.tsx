@@ -65,7 +65,7 @@ const FIELD_LABELS: Record<string, string> = {
 const getFieldKey = (field: string): string => {
   const after = field.split("emission_summary']['")[1];
   if (!after) return "";
-  return after.replace(/'\]\['/g, ".").replace(/['[\]]/g, "");
+  return after.replaceAll(/'\]\['/g, ".").replaceAll(/['[\]]/g, "");
 };
 
 export const EmissionSummaryChangeView: React.FC<{ data: ChangeItem[] }> = ({
@@ -90,7 +90,7 @@ export const EmissionSummaryChangeView: React.FC<{ data: ChangeItem[] }> = ({
         Emissions Summary (in tCO2e)
       </Typography>
       {sections.map((section, idx) => (
-        <React.Fragment key={idx}>
+        <React.Fragment key={`section-${idx}`}>
           {section.heading && (
             <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-2">
               {section.heading}

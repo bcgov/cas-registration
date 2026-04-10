@@ -37,6 +37,7 @@ export const SimpleActivityDiff: React.FC<SimpleActivityDiffProps> = ({
 
           {Object.entries(activities).map(([activityName, activityGroup]) => (
             <ActivityDiffView
+              key={activityName}
               activityName={activityName}
               activityGroup={activityGroup}
             />

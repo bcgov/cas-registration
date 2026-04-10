@@ -12,7 +12,6 @@ import { renderObject } from "../utils/activityRenderUtils";
 import { Box } from "@mui/material";
 
 interface SharedSourceTypeDiffViewProps {
-  key: string;
   classNames: string;
   label: string;
   readonly: boolean;
@@ -73,7 +72,6 @@ export const SourceTypeDiffView: React.FC<SourceTypeDiffViewProps> = (
 ) => {
   const { sourceTypeGroup, sourceTypeName } = props;
   const sharedProps: SharedSourceTypeDiffViewProps = {
-    key: sourceTypeName,
     classNames: "source-type-box",
     label: sourceTypeName,
     readonly: false,

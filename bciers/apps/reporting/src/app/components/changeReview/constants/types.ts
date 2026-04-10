@@ -2,10 +2,16 @@
 
 export type ChangeType = "added" | "deleted" | "modified" | "removed";
 
+export type ChangeItemValue =
+  | string
+  | Record<string, any>
+  | any[]
+  | null
+  | number;
 export interface ChangeItem {
   field: string;
-  oldValue: string | Record<string, any> | any[] | null | number;
-  newValue: string | Record<string, any> | any[] | null | number;
+  oldValue: ChangeItemValue;
+  newValue: ChangeItemValue;
   change_type: ChangeType;
   displayLabel?: string;
   isNewAddition?: boolean;
