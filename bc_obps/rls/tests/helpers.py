@@ -120,51 +120,50 @@ def assert_policies_for_industry_user(
     if not hasattr(model_name.Rls, 'enable_rls') or not model_name.Rls.enable_rls:
         return
 
+    rls_operation_to_functions_map = {
+        RlsOperations.SELECT: (select_function, forbidden_select_function),
+        RlsOperations.INSERT: (insert_function, forbidden_insert_function),
+        RlsOperations.UPDATE: (update_function, forbidden_update_function),
+        RlsOperations.DELETE: (delete_function, forbidden_delete_function),
+    }
+
     with connection.cursor() as cursor:
         RlsMiddleware._set_user_guid_and_role(cursor, user)
         operations = model_name.Rls.role_grants_mapping[RlsRoles.INDUSTRY_USER]
 
-        if RlsOperations.SELECT in operations:
-            if select_function is noop or forbidden_select_function is noop:
-                raise ValueError(
-                    "SELECT operation granted, but no select_function or forbidden_select_function provided."
-                )
-            run_with_rollback(cursor, select_function)
-            with pytest.raises(ObjectDoesNotExist):
-                run_with_rollback(cursor, forbidden_select_function)
+        for operation, (
+            function,
+            forbidden_function,
+        ) in rls_operation_to_functions_map.items():
+            if operation not in operations:
+                continue
 
-        if RlsOperations.INSERT in operations:
-            if insert_function is noop or forbidden_insert_function is noop:
+            if function is noop or forbidden_function is noop:
                 raise ValueError(
-                    "INSERT operation granted, but no insert_function or forbidden_insert_function provided."
-                )
-            run_with_rollback(cursor, insert_function)
-            with pytest.raises(
-                ProgrammingError,
-                match=r"new row violates row-level security policy for ",
-            ):
-                run_with_rollback(cursor, forbidden_insert_function)
-
-        if RlsOperations.UPDATE in operations:
-            if update_function is noop or forbidden_update_function is noop:
-                raise ValueError(
-                    "UPDATE operation granted, but no update_function or forbidden_update_function provided."
+                    f"{operation.name} operation granted, but no {operation.name.lower()}_function or {operation.name.lower()}_forbidden_function provided."
                 )
 
-            permitted_updated_records_count = run_with_rollback(cursor, update_function)
-            assert (
-                permitted_updated_records_count == 1
-            ), f"Expected 1 updated record, but got {permitted_updated_records_count} (did you remember to return in the update function?)"
+            if operation == RlsOperations.SELECT:
+                run_with_rollback(cursor, function)
+                with pytest.raises(ObjectDoesNotExist):
+                    run_with_rollback(cursor, forbidden_function)
+            elif operation == RlsOperations.INSERT:
+                run_with_rollback(cursor, function)
+                with pytest.raises(
+                    ProgrammingError,
+                    match=r"new row violates row-level security policy for ",
+                ):
+                    run_with_rollback(cursor, forbidden_function)
+            elif operation == RlsOperations.UPDATE:
+                permitted_updated_records_count = run_with_rollback(cursor, function)
+                assert (
+                    permitted_updated_records_count == 1
+                ), f"Expected 1 updated record, but got {permitted_updated_records_count} (did you remember to return in the update function?)"
 
-            forbidden_updated_records_count = run_with_rollback(cursor, forbidden_update_function)
-            assert (
-                forbidden_updated_records_count == 0
-            ), f"Expected 0 updated records, but got {permitted_updated_records_count} (did you remember to return in the update function?)"
-
-        if RlsOperations.DELETE in operations:
-            if delete_function is noop or forbidden_delete_function is noop:
-                raise ValueError(
-                    "DELETE operation granted, but no delete_function or forbidden_delete_function provided."
-                )
-            run_with_rollback(cursor, delete_function)
-            run_with_rollback(cursor, forbidden_delete_function)
+                forbidden_updated_records_count = run_with_rollback(cursor, forbidden_function)
+                assert (
+                    forbidden_updated_records_count == 0
+                ), f"Expected 0 updated records, but got {permitted_updated_records_count} (did you remember to return in the update function?)"
+            elif operation == RlsOperations.DELETE:
+                run_with_rollback(cursor, function)
+                run_with_rollback(cursor, forbidden_function)
