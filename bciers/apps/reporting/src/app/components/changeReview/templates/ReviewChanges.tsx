@@ -258,7 +258,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
                       {nonAttributableChanges.map(
                         (change: any, idx: number) => (
                           <NonAttributableEmissionItem
-                            key={idx}
+                            key={`${change.field}-${idx}`}
                             change={change}
                           />
                         ),

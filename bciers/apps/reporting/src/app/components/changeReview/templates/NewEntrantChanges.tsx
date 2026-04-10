@@ -35,6 +35,12 @@ const renderEmission = (change: any) => {
     typeof value === "object"
       ? value?.emission_category
       : getEmissionName(change.field);
+
+  let newValue;
+  if (change.change_type === "added") newValue = emission;
+  else if (change.change_type === "modified") newValue = change.newValue;
+  else newValue = null;
+
   return (
     <ChangeItemDisplay
       item={{
@@ -43,12 +49,7 @@ const renderEmission = (change: any) => {
           change.change_type === "removed"
             ? emission
             : (change.oldValue ?? null),
-        newValue:
-          change.change_type === "added"
-            ? emission
-            : change.change_type === "modified"
-              ? change.newValue
-              : null,
+        newValue: newValue,
         change_type: change.change_type,
         displayLabel: label,
       }}
@@ -82,15 +83,17 @@ const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
       const name = getProductName(c.field)!;
       products[name] = products[name] || { emissions: [] };
       const isWholeObject = typeof getValue(c) === "object";
-      products[name].production = isWholeObject
-        ? {
-            ...c,
-            oldValue: c.oldValue?.production_amount ?? null,
-            newValue: c.newValue?.production_amount ?? null,
-          }
-        : c.field.includes("production_amount")
-          ? c
-          : undefined;
+
+      if (isWholeObject)
+        products[name].production = {
+          ...c,
+          oldValue: c.oldValue?.production_amount ?? null,
+          newValue: c.newValue?.production_amount ?? null,
+        };
+      else if (c.field.includes("production_amount"))
+        products[name].production = c;
+      else products[name].production = undefined;
+
       if (!isWholeObject && !c.field.includes("production_amount"))
         products[name].emissions.push(c);
     });

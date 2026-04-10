@@ -6,6 +6,14 @@ interface ListDiffDisplayProps {
   newValue: string;
 }
 
+const parseActivities = (value: string): string[] =>
+  value
+    ? value
+        .split(";")
+        .map((a) => a.trim())
+        .filter(Boolean)
+    : [];
+
 /**
  * Renders a diff view for semicolon-separated list strings.
  * Removed items appear with strikethrough; added ones are labeled "(Added)".
@@ -14,14 +22,6 @@ export const ListDiffDisplay: React.FC<ListDiffDisplayProps> = ({
   oldValue,
   newValue,
 }) => {
-  const parseActivities = (value: string): string[] =>
-    value
-      ? value
-          .split(";")
-          .map((a) => a.trim())
-          .filter(Boolean)
-      : [];
-
   const oldActivities = parseActivities(oldValue);
   const newActivities = parseActivities(newValue);
 

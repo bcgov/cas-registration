@@ -263,6 +263,29 @@ export const BranchNode: React.FC<{
 );
 
 /**
+ * Method to build a group information based on two paths
+ *
+ * @param first first path
+ * @param second second path
+ * @returns [groupKey, groupLabel, isIndexed] and array with the group's key,
+ * label and a flag whether the group is indexed
+ */
+const buildGroupInfo = (
+  first: string,
+  second: string,
+): [string, string, boolean] => {
+  const isIndexedGroup = second !== undefined && /^\d+$/.test(second);
+  const groupKey = isIndexedGroup ? `${first}[${second}]` : first;
+
+  let groupLabel: string;
+  if (isIndexedGroup)
+    groupLabel = `${singularizeLabel(first)} ${Number(second) + 1}`;
+  else if (/^\d+$/.test(first)) groupLabel = `#${Number(first) + 1}`;
+  else groupLabel = formatKey(first);
+
+  return [groupKey, groupLabel, isIndexedGroup];
+};
+/**
  * Recursively renders a list of segmented changes as a labelled diff tree.
  *
  * - Items with no remaining segments are rendered as leaf nodes
@@ -286,18 +309,15 @@ export const renderDiffTree = (items: SegmentedChange[]): React.ReactNode => {
     if (first === undefined) continue;
 
     // If the second segment is a numeric index, group by "field[index]"
-    const isIndexedGroup = second !== undefined && /^\d+$/.test(second);
-    const groupKey = isIndexedGroup ? `${first}[${second}]` : first;
-    const groupLabel = isIndexedGroup
-      ? `${singularizeLabel(first)} ${Number(second) + 1}`
-      : /^\d+$/.test(first)
-        ? `#${Number(first) + 1}`
-        : formatKey(first);
+    const [groupKey, groupLabel, isIndexedGroup] = buildGroupInfo(
+      first,
+      second,
+    );
     const childSegs = isIndexedGroup
       ? rest
-      : second !== undefined
-        ? [second, ...rest]
-        : [];
+      : second === undefined
+        ? []
+        : [second, ...rest];
 
     if (grouped.has(groupKey)) {
       grouped

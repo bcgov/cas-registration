@@ -26,12 +26,12 @@ export const NonAttributableEmissionItem: React.FC<Props> = ({ change }) => {
       : null;
 
   const inferredKey =
-    change.field
-      .split(/[[\]']+/)
-      .filter(Boolean)
-      .at(-1) ?? "value";
-  const changeType: ChangeType =
-    oldObj && !newObj ? "removed" : !oldObj && newObj ? "added" : "modified";
+    change.field.split(/[[\]']+/).findLast(Boolean) ?? "value";
+
+  let changeType: ChangeType;
+  if (oldObj && !newObj) changeType = "removed";
+  else if (!oldObj && newObj) changeType = "added";
+  else changeType = "modified";
 
   // Object case: grouped entry — show one badge for the group, suppress per-field badges
   if (newObj || oldObj) {

@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, Divider } from "@mui/material";
 import { ChangeItemDisplay } from "./ChangeItemDisplay";
-import { ChangeItem } from "../constants/types";
+import { ChangeItem, ChangeType } from "../constants/types";
 import { SectionReview } from "../../finalReview/templates/SectionReview";
 import { productionDataFields } from "../../finalReview/finalReviewFields";
 import { StatusLabel } from "@bciers/components/form/fields/StatusLabel";
@@ -19,7 +19,7 @@ interface ProductionDataChangeViewProps {
 interface ProcessedProduct {
   productName: string;
   changes: DisplayChangeItem[];
-  changeType: "added" | "modified" | "removed";
+  changeType: ChangeType;
   productData?: any;
 }
 
@@ -35,17 +35,18 @@ const getFieldKey = (field: string) => {
 };
 // Derive display flags directly from the API change_type
 const getChangeMeta = (change: ChangeItem) => ({
-  changeType: change.change_type as "added" | "removed" | "modified",
+  changeType: change.change_type,
   isNewAddition: change.change_type === "added",
   isDeletion: change.change_type === "removed",
 });
 
 // Infer change type from values for synthetic object diffs (Case 1)
-const inferChangeType = (
-  oldVal: any,
-  newVal: any,
-): "added" | "removed" | "modified" =>
-  oldVal == null ? "added" : newVal == null ? "removed" : "modified";
+const inferChangeType = (oldVal: any, newVal: any): ChangeType => {
+  if (oldVal === null) return "added";
+  if (newVal === null) return "removed";
+  return "modified";
+};
+
 export const ProductionDataChangeView: React.FC<
   ProductionDataChangeViewProps
 > = ({ data }) => {
