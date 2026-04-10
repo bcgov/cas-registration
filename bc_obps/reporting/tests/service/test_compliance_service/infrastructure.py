@@ -324,7 +324,7 @@ class ComplianceTestInfrastructure:
         t.report_activity = make_recipe(
             "reporting.tests.utils.report_activity",
             report_version=t.report_version_1,
-            activity=Activity.objects.get(slug="pulp_and_paper_production"),
+            activity=Activity.objects.get(slug="pulp_and_paper"),
             json_data={
                 "biogenicIndustrialProcessEmissions": {
                     "doesUtilizeLimeRecoveryKiln": True,
