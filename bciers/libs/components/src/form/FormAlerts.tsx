@@ -1,5 +1,6 @@
 import React from "react";
 import { Alert } from "@mui/material";
+import AlertIcon from "@bciers/components/icons/AlertIcon";
 
 interface FormAlertsProps {
   errors: (string | React.ReactNode)[] | undefined;
@@ -19,7 +20,12 @@ const FormAlerts: React.FC<FormAlertsProps> = ({ errors }) => {
   return (
     <div className="min-h-[48px] box-border mt-4">
       {errors.map((error, index) => (
-        <Alert key={index} severity="error">
+        <Alert
+          key={index}
+          severity="error"
+          className="my-2 items-center"
+          icon={<AlertIcon />}
+        >
           {error}
         </Alert>
       ))}
