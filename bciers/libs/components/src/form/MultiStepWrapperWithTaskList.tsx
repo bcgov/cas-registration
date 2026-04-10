@@ -50,7 +50,7 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
   noSaveButton,
   submitButtonDisabled,
   validationError,
-  validationErrorMessage = "This form can't be saved yet. Please fix the errors above.",
+  validationErrorMessage,
 }) => {
   return (
     <Box sx={{ p: 3 }}>
