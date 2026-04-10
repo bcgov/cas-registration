@@ -111,4 +111,5 @@ class FuelTypeModelTest(BaseTestCase):
             ("reportfuel_records", "report fuel", None, 0),
             ("expected_value_range_fuel_amount", "expected value range fuel amount", None, 0),
             ("expected_value_range_methodology_field", "expected value range methodology field", None, 0),
+            ("description", "description", None, None),
         ]
