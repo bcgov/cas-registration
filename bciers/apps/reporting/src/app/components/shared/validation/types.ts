@@ -14,7 +14,8 @@ export type ReportValidationMessageKey =
   | "allocation_mismatch"
   | "error_operation_information"
   | "error_lime_kiln"
-  | "error_activity_value";
+  | "error_activity_value"
+  | "generic_error";
 
 // Additional metadata returned from backend used for dynamic content
 // (links, expected values, etc.)

@@ -1,8 +1,10 @@
 import { validationUIConfig } from "./config";
 import type {
   ReportValidationError,
+  ReportValidationItem,
   ReportValidationMessageKey,
   ValidationUIConfig,
+  ValidationSeverity,
 } from "./types";
 
 // Returns full UI config for a validation key
@@ -51,4 +53,17 @@ export function getFormattedValidationMessage(
   }
 
   return message;
+}
+
+export function createGenericReportValidationError(
+  message: string,
+  severity: ValidationSeverity = "Error",
+): ReportValidationItem {
+  return {
+    key: "generic_error",
+    error: {
+      severity,
+      message,
+    },
+  };
 }

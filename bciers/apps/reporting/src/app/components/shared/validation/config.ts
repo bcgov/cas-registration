@@ -131,4 +131,11 @@ export const validationUIConfig: Partial<
     getMessage: () =>
       'Error in Pulp and Paper Production. To proceed, select "Yes" to the question "Does this operation utilize a lime recovery kiln?"',
   },
+
+  generic_error: {
+    renderMode: "message_only",
+    getMessage: (error) =>
+      error.message ??
+      "An internal server error has occurred. Please contact ghgregulator@gov.bc.ca for help.",
+  },
 };
