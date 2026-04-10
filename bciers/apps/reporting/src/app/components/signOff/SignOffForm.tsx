@@ -30,19 +30,9 @@ export default function SignOffForm({
     date: "",
     supplementary: {},
   });
-  const [validationError, setValidationErrors] =
+  const [validationErrors, setValidationErrors] =
     useState<ReportValidationErrors>([]);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
-
-  const isStructuredValidationError = (
-    error: unknown,
-  ): error is { errors: ReportValidationErrors } => {
-    return (
-      !!error &&
-      typeof error === "object" &&
-      Array.isArray((error as { errors?: unknown }).errors)
-    );
-  };
 
   const allChecked = (formData: SignOffFormItems) => {
     const { supplementary, signature, ...rest } = formData;
@@ -66,22 +56,20 @@ export default function SignOffForm({
       setValidationErrors([]);
       setSubmitButtonDisabled(true);
 
-      const response = (await postSubmitReport(version_id, formState)) as {
-        error?: unknown;
-      };
+      const response = await postSubmitReport(version_id, formState);
       setSubmitButtonDisabled(false);
 
-      if (response?.error) {
-        if (isStructuredValidationError(response.error)) {
-          setValidationErrors(response.error.errors);
+      if (response?.error || response?.validation) {
+        if (response?.validation) {
+          setValidationErrors(response.validation.errors);
         } else {
           setValidationErrors([
             createGenericReportValidationError(response.error as string),
           ]);
         }
-        setSubmitButtonDisabled(false);
         return false;
       }
+
       router.push(navigationInformation.continueUrl);
       return true;
     }
@@ -106,7 +94,7 @@ export default function SignOffForm({
       errors={[
         <ReportValidationSummary
           key="report-validation-summary" // gitleaks:allow
-          errors={validationError}
+          errors={validationErrors}
         />,
       ]}
     />

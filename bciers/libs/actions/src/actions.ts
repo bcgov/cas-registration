@@ -120,7 +120,7 @@ export async function actionHandler(
           if ("message" in res) return { error: res.message };
 
           // Handle structured validation errors (e.g. { errors: [...] })
-          if ("errors" in res) return { error: res };
+          if ("errors" in res) return { validation: res };
 
           // Handle HTTP errors, e.g., response.status is not in the 200-299 range
           return { error: `HTTP error! Status: ${response.status}` };

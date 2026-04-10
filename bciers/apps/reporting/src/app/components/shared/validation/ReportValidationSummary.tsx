@@ -9,12 +9,7 @@ import type {
   ReportValidationMessageKey,
   ValidationSeverity,
 } from "./types";
-import {
-  getFormattedValidationMessage,
-  getValidationErrorHref,
-  getValidationErrorLabel,
-  getValidationUIConfig,
-} from "./utils";
+import { validationUIConfig } from "./config";
 
 type ReportValidationSummaryProps = {
   errors?: ReportValidationErrors;
@@ -62,11 +57,10 @@ function renderValidationMessage(
   key: ReportValidationMessageKey,
   error: ReportValidationError,
 ) {
-  const config = getValidationUIConfig(key);
-  const label = getValidationErrorLabel(key, error);
-  const href = getValidationErrorHref(key, error);
-  const message = getFormattedValidationMessage(key, error);
-
+  const config = validationUIConfig[key];
+  const label = config?.resolveLabel(error);
+  const href = config?.resolveHref(error);
+  const message = config?.resolveFormattedMessage(error, key) || "";
   switch (config?.renderMode) {
     case "inline_link":
       return renderMessageWithInlineLink(message, label, href);
@@ -93,7 +87,7 @@ function renderValidationMessage(
 
 export default function ReportValidationSummary({
   errors,
-}: ReportValidationSummaryProps) {
+}: Readonly<ReportValidationSummaryProps>) {
   if (!errors?.length) return null;
 
   const severityOrder: Record<ValidationSeverity, number> = {

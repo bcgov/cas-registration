@@ -201,7 +201,7 @@ describe("SignOffForm Component (with actual schema)", () => {
 
   it("renders multiple submission validation errors with config links", async () => {
     (postSubmitReport as Mock).mockResolvedValue({
-      error: {
+      validation: {
         errors: [
           {
             key: "missing_report_verification", // gitleaks:allow
@@ -242,9 +242,11 @@ describe("SignOffForm Component (with actual schema)", () => {
     });
 
     const alerts = screen.getAllByRole("alert");
+
     expect(alerts[0]).toHaveTextContent(
       "Verification information must be completed on the Verification page.",
     );
+
     expect(alerts[1]).toHaveTextContent(
       "A verification statement must be uploaded with this report on the Attachments page.",
     );
@@ -254,6 +256,7 @@ describe("SignOffForm Component (with actual schema)", () => {
         name: "Verification page",
       }),
     ).toHaveAttribute("href", "/reports/1/verification");
+
     expect(
       screen.getByRole("link", {
         name: "Attachments page",

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, StrEnum
 from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict
@@ -11,7 +11,7 @@ class Severity(Enum):
     ERROR = "Error"
 
 
-class ReportValidationErrorKey(Enum):
+class ReportValidationErrorKey(StrEnum):
     MISSING_REPORT_VERIFICATION = "missing_report_verification"
     VERIFICATION_STATEMENT = "verification_statement"
     OPERATION_BORO_ID = "operation_boro_id"

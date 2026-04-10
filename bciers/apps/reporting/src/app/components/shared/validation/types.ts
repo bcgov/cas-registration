@@ -19,22 +19,9 @@ export type ReportValidationMessageKey =
 
 // Additional metadata returned from backend used for dynamic content
 // (links, expected values, etc.)
-export interface ReportValidationErrorContext {
-  reportVersionId?: number;
-  facilityId?: string;
-  activityId?: number;
-
-  activityName?: string;
-  fuelType?: string;
-  fieldName?: string;
-  expectedRange?: string;
-  userInput?: string | number | null;
-
-  facilityName?: string;
-  emissionCategoryName?: string;
-  emissionCategoryId?: number;
-  sourceActivityName?: string;
-  targetProductName?: string;
+interface ReportValidationErrorContext {
+  reportVersionId: number;
+  [key: string]: string | number | undefined;
 }
 
 // Structured validation error stored in state and passed through components
@@ -73,10 +60,26 @@ export type ValidationTextArgs = {
  * - backend validation keys
  * - frontend rendering
  */
+
 export type ValidationUIConfig = {
-  label?: string | ((error: ReportValidationError) => string | undefined);
-  getHref?: (ctx?: ReportValidationErrorContext) => string | undefined;
+  label?: string | ((error: ReportValidationError) => string);
+  renderMode: ValidationRenderMode;
+  getHref?: (ctx: ReportValidationError["context"]) => string | undefined;
   getMessage?: (error: ReportValidationError) => string;
-  renderMode?: ValidationRenderMode;
-  formatMessage?: (args: ValidationTextArgs) => string;
+  formatMessage?: (args: {
+    label?: string;
+    message: string;
+    error: ReportValidationError;
+  }) => string;
+
+  resolveHref: (error: ReportValidationError) => string | undefined;
+  resolveLabel: (error: ReportValidationError) => string | undefined;
+  resolveMessage: (
+    error: ReportValidationError,
+    key: ReportValidationMessageKey,
+  ) => string;
+  resolveFormattedMessage: (
+    error: ReportValidationError,
+    key: ReportValidationMessageKey,
+  ) => string;
 };
