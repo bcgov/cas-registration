@@ -34,16 +34,15 @@ class ReportReviewChangesService:
         # All remaining top-level fields (registration_purpose included — DeepDiff handles it natively)
         diff = DeepDiff(previous, current, exclude_regex_paths=[r".*?facility_reports.*"], **_DIFF_KWARGS)
         for diff_key, items in diff.items():
-            for item in items:
-                if item.path().startswith(prod_root):
-                    continue
-                changes.append(
-                    {
-                        "field": fix_facility_uuid_in_path(item.path(), current),
-                        "old_value": None if isinstance(item.t1, NotPresent) else item.t1,
-                        "new_value": None if isinstance(item.t2, NotPresent) else item.t2,
-                        "change_type": _CHANGE_TYPE_MAP.get(diff_key, 'modified'),
-                    }
-                )
+            changes = changes + [
+                {
+                    "field": fix_facility_uuid_in_path(item.path(), current),
+                    "old_value": None if isinstance(item.t1, NotPresent) else item.t1,
+                    "new_value": None if isinstance(item.t2, NotPresent) else item.t2,
+                    "change_type": _CHANGE_TYPE_MAP.get(diff_key, 'modified'),
+                }
+                for item in items
+                if not item.path().startswith(prod_root)
+            ]
 
         return changes
