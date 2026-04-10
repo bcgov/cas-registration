@@ -67,7 +67,7 @@ class TestReportActivitySaveService(TestCase):
         assert report_source_types.count() == 2
 
         assert report_source_types[0].activity_source_type_base_schema == ActivitySourceTypeJsonSchema.objects.get(
-            activity=Activity.objects.get(slug='gsc_non_compression'),
+            activity=Activity.objects.get(slug='gsc_non_compression_non_combustion'),
             source_type=SourceType.objects.get(json_key="gscFuelOrWasteLinearFacilitiesUsefulEnergy"),
             valid_from__valid_from__lte=test_infrastructure.configuration.valid_from,
             valid_to__valid_to__gte=test_infrastructure.configuration.valid_to,
@@ -82,7 +82,7 @@ class TestReportActivitySaveService(TestCase):
         }
 
         assert report_source_types[1].activity_source_type_base_schema == ActivitySourceTypeJsonSchema.objects.get(
-            activity=Activity.objects.get(slug='gsc_non_compression'),
+            activity=Activity.objects.get(slug='gsc_non_compression_non_combustion'),
             source_type=SourceType.objects.get(json_key="fieldProcessVentGasLinearFacilities"),
             valid_from__valid_from__lte=test_infrastructure.configuration.valid_from,
             valid_to__valid_to__gte=test_infrastructure.configuration.valid_to,

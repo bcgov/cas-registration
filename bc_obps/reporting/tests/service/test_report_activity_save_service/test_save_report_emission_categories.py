@@ -514,7 +514,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='pulp_and_paper_production').id
+            activity_id=Activity.objects.get(slug='pulp_and_paper').id
         )
         report_source_type = make(
             ReportSourceType,
