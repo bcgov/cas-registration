@@ -64,6 +64,7 @@ const AttachmentsForm: React.FC<Props> = ({
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
   const [errors, setErrors] = useState<string[]>();
+  const [hasValidationError, setHasValidationError] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{
     [fileType: string]: string;
   }>({});
@@ -92,9 +93,11 @@ const AttachmentsForm: React.FC<Props> = ({
       setValidationErrors({
         verification_statement: "Verification statement is required",
       });
+      setHasValidationError(true);
       return false;
     } else {
       setValidationErrors({});
+      setHasValidationError(false);
       return true;
     }
   };
@@ -177,123 +180,122 @@ const AttachmentsForm: React.FC<Props> = ({
   );
 
   return (
-    <>
-      <MultiStepWrapperWithTaskList
-        steps={navigationInformation.headerSteps}
-        initialStep={navigationInformation.headerStepIndex}
-        taskListElements={navigationInformation.taskList}
-        onSubmit={() => handleSubmit(true)}
-        cancelUrl="#"
-        backUrl={navigationInformation.backUrl}
-        continueUrl={navigationInformation.continueUrl}
-        errors={errors}
-        isSaving={isSaving}
-        isRedirecting={isRedirecting}
-        noFormSave={() => handleSubmit(false)}
-        submitButtonDisabled={submitDisabled}
-      >
-        <div className="w-full form-group field field-object form-heading-label">
-          <div className="form-heading">Attachments</div>
-        </div>
-        {isSupplementaryReport && (
-          <Alert severity="warning" icon={<AlertIcon fill="#635231" />}>
-            Review your attachments and replace any that are no longer
-            applicable to this report.
-          </Alert>
-        )}
-        <p>
-          Please upload any of the documents below that is applicable to your
-          report:
-        </p>
-        {buildAttachmentElement(
-          "Verification Statement",
-          "verification_statement",
-          {
-            required: isVerificationStatementMandatory,
-            error: validationErrors.verification_statement,
-          },
-        )}
-        {buildAttachmentElement("WCI.352 and WCI.362", "wci_352_362")}
-        {buildAttachmentElement(
-          "Additional reportable information",
-          "additional_reportable_information",
-        )}
-        {buildAttachmentElement(
-          "Confidentiality request, if you are requesting confidentiality of this report under the B.C. Reg. 249/2015 Reporting Regulation",
-          "confidentiality_request",
-        )}
-        <p>
-          <b>Note:</b>
-        </p>
-        <ul>
-          <li>
-            An operator may claim that disclosure of the information referred to
-            in Section 44(2)(a) to (d) be prohibited under Section 21 of the
-            Freedom of Information and Protection of Privacy Act (FOIPPA) and
-            request that the information be kept confidential
-          </li>
-          <li>
-            A claim must be done in accordance with Section 44(5) of the
-            Regulation
-          </li>
-          <li>
-            The Director under GGIRCA will be in contact with you regarding your
-            request
-          </li>
-        </ul>{" "}
-        {isSupplementaryReport && (
-          <div className="mt-4 border-t pt-4">
-            <p>
-              Before clicking &apos;Save & Continue&apos;, please confirm that
-              you understand and agree with the following statements:
-            </p>
-            <div className="flex items-start mt-3">
-              <Checkbox
-                id="confirm-relevant-attachment-check"
-                checked={confirmExistingAttachmentsRelevant}
-                onChange={(e) =>
-                  setConfirmExistingAttachmentsRelevant(e.target.checked)
-                }
-                inputProps={{
-                  "aria-labelledby":
-                    "confirm-existing-attachments-relevant-label",
-                }}
-              />
-              <label
-                id="confirm-existing-attachments-relevant-label"
-                className="ml-2"
-                htmlFor="confirm-relevant-attachment-check"
-              >
-                I confirm that I have uploaded any attachments that are required
-                to be updated for the new submission of this report.
-              </label>
-            </div>
-            <div className="flex items-start mt-3">
-              <Checkbox
-                id="confirm-required-attachment-check"
-                checked={confirmRequiredAttachmentsUploaded}
-                onChange={(e) =>
-                  setConfirmRequiredAttachmentsUploaded(e.target.checked)
-                }
-                inputProps={{
-                  "aria-labelledby":
-                    "confirm-required-attachments-uploaded-label",
-                }}
-              />
-              <label
-                id="confirm-required-attachments-uploaded-label"
-                className="ml-2"
-                htmlFor="confirm-required-attachment-check"
-              >
-                I confirm that any previously uploaded attachments that have not
-                been updated are still relevant to the new submission of this
-                report.
-              </label>
-            </div>
+    <MultiStepWrapperWithTaskList
+      steps={navigationInformation.headerSteps}
+      initialStep={navigationInformation.headerStepIndex}
+      taskListElements={navigationInformation.taskList}
+      onSubmit={() => handleSubmit(true)}
+      cancelUrl="#"
+      backUrl={navigationInformation.backUrl}
+      continueUrl={navigationInformation.continueUrl}
+      errors={errors}
+      validationError={hasValidationError}
+      isSaving={isSaving}
+      isRedirecting={isRedirecting}
+      noFormSave={() => handleSubmit(false)}
+      submitButtonDisabled={submitDisabled}
+    >
+      <div className="w-full form-group field field-object form-heading-label">
+        <div className="form-heading">Attachments</div>
+      </div>
+      {isSupplementaryReport && (
+        <Alert severity="warning" icon={<AlertIcon fill="#635231" />}>
+          Review your attachments and replace any that are no longer applicable
+          to this report.
+        </Alert>
+      )}
+      <p>
+        Please upload any of the documents below that is applicable to your
+        report:
+      </p>
+      {buildAttachmentElement(
+        "Verification Statement",
+        "verification_statement",
+        {
+          required: isVerificationStatementMandatory,
+          error: validationErrors.verification_statement,
+        },
+      )}
+      {buildAttachmentElement("WCI.352 and WCI.362", "wci_352_362")}
+      {buildAttachmentElement(
+        "Additional reportable information",
+        "additional_reportable_information",
+      )}
+      {buildAttachmentElement(
+        "Confidentiality request, if you are requesting confidentiality of this report under the B.C. Reg. 249/2015 Reporting Regulation",
+        "confidentiality_request",
+      )}
+      <p>
+        <b>Note:</b>
+      </p>
+      <ul>
+        <li>
+          An operator may claim that disclosure of the information referred to
+          in Section 44(2)(a) to (d) be prohibited under Section 21 of the
+          Freedom of Information and Protection of Privacy Act (FOIPPA) and
+          request that the information be kept confidential
+        </li>
+        <li>
+          A claim must be done in accordance with Section 44(5) of the
+          Regulation
+        </li>
+        <li>
+          The Director under GGIRCA will be in contact with you regarding your
+          request
+        </li>
+      </ul>{" "}
+      {isSupplementaryReport && (
+        <div className="mt-4 border-t pt-4">
+          <p>
+            Before clicking &apos;Save & Continue&apos;, please confirm that you
+            understand and agree with the following statements:
+          </p>
+          <div className="flex items-start mt-3">
+            <Checkbox
+              id="confirm-relevant-attachment-check"
+              checked={confirmExistingAttachmentsRelevant}
+              onChange={(e) =>
+                setConfirmExistingAttachmentsRelevant(e.target.checked)
+              }
+              inputProps={{
+                "aria-labelledby":
+                  "confirm-existing-attachments-relevant-label",
+              }}
+            />
+            <label
+              id="confirm-existing-attachments-relevant-label"
+              className="ml-2"
+              htmlFor="confirm-relevant-attachment-check"
+            >
+              I confirm that I have uploaded any attachments that are required
+              to be updated for the new submission of this report.
+            </label>
           </div>
-        )}
-      </MultiStepWrapperWithTaskList>
-    </>
+          <div className="flex items-start mt-3">
+            <Checkbox
+              id="confirm-required-attachment-check"
+              checked={confirmRequiredAttachmentsUploaded}
+              onChange={(e) =>
+                setConfirmRequiredAttachmentsUploaded(e.target.checked)
+              }
+              inputProps={{
+                "aria-labelledby":
+                  "confirm-required-attachments-uploaded-label",
+              }}
+            />
+            <label
+              id="confirm-required-attachments-uploaded-label"
+              className="ml-2"
+              htmlFor="confirm-required-attachment-check"
+            >
+              I confirm that any previously uploaded attachments that have not
+              been updated are still relevant to the new submission of this
+              report.
+            </label>
+          </div>
+        </div>
+      )}
+    </MultiStepWrapperWithTaskList>
   );
 };
 
