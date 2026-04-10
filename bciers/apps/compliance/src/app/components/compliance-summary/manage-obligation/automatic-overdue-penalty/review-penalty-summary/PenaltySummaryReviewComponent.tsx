@@ -69,6 +69,7 @@ const PenaltySummaryReviewComponent = ({
         formData={formData}
         className="w-full"
       >
+        <FormAlerts key="alerts" errors={errors} />
         <ComplianceStepButtons
           backUrl={backUrl}
           continueUrl={saveAndContinueUrl}
@@ -81,8 +82,6 @@ const PenaltySummaryReviewComponent = ({
           onMiddleButtonClick={handleGeneratePenaltyInvoice}
           className="mt-44"
         />
-        {/* Render any errors */}
-        <FormAlerts key="alerts" errors={errors} />
       </FormBase>
     </>
   );
