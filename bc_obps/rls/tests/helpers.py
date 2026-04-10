@@ -24,7 +24,7 @@ def get_models_for_rls(app_name=None):
 
 
 def noop(*args, **kwargs):
-    pass
+    pass  # explicitly pass as no-op "do nothing" function
 
 
 def run_with_rollback(cursor, fn):
@@ -72,6 +72,13 @@ def assert_policies_for_cas_roles(
 
     user = baker.make_recipe('registration.tests.utils.cas_admin')
 
+    rls_operation_to_function_map = {
+        RlsOperations.SELECT: select_function,
+        RlsOperations.INSERT: insert_function,
+        RlsOperations.UPDATE: update_function,
+        RlsOperations.DELETE: delete_function,
+    }
+
     with connection.cursor() as cursor:
         for role, operations in model.Rls.role_grants_mapping.items():
             user.app_role = AppRole.objects.get(role_name=role.value)
@@ -82,25 +89,15 @@ def assert_policies_for_cas_roles(
 
             RlsMiddleware._set_user_guid_and_role(cursor, user)
 
-            if RlsOperations.SELECT in operations:
-                if select_function is noop:
-                    raise ValueError("SELECT operation granted, but no select_function provided.")
-                run_with_rollback(cursor, select_function)
+            for operation, function in rls_operation_to_function_map.items():
+                if operation not in operations:
+                    continue
 
-            if RlsOperations.INSERT in operations:
-                if insert_function is noop:
-                    raise ValueError(f"INSERT operation granted for role {role}, but no insert_function provided.")
-                run_with_rollback(cursor, insert_function)
-
-            if RlsOperations.UPDATE in operations:
-                if update_function is noop:
-                    raise ValueError(f"UPDATE operation granted for role {role}, but no update_function provided.")
-                run_with_rollback(cursor, update_function)
-
-            if RlsOperations.DELETE in operations:
-                if delete_function is noop:
-                    raise ValueError(f"DELETE operation granted for role {role}, but no delete_function provided.")
-                run_with_rollback(cursor, delete_function)
+                if function is noop:
+                    raise ValueError(
+                        f"{operation.name} operation granted for role {role}, but no {operation.name.lower()}_function provided."
+                    )
+                run_with_rollback(cursor, function)
 
 
 def assert_policies_for_industry_user(
