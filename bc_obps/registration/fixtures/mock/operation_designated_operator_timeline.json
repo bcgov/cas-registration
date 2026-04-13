@@ -420,5 +420,15 @@
       "created_at": "2024-06-05T23:21:02.353Z",
       "start_date": "2023-06-05T23:20:57Z"
     }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "e2e1f000-e2e0-1f00-e2e0-1f01f01f01f0",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2023-06-05T23:20:57Z"
+    }
   }
 ]

@@ -645,5 +645,19 @@
       "latitude_of_largest_emissions": 32,
       "longitude_of_largest_emissions": 32
     }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "e2e1f000-e2e0-1f00-e2e0-e2e2e2e2e2e2",
+    "fields": {
+      "operation": "e2e1f000-e2e0-1f00-e2e0-1f01f01f01f0",
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "E2E LFO Facility",
+      "type": "Large Facility",
+      "swrs_facility_id": 1500,
+      "latitude_of_largest_emissions": 32,
+      "longitude_of_largest_emissions": 32
+    }
   }
 ]
