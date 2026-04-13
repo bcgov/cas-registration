@@ -8,6 +8,8 @@ from reporting.models import (
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
     Severity,
+    ReportValidationErrorKey,
+    ErrorContext,
 )
 
 
@@ -42,6 +44,17 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                 errors[f"report_fuel_fuel_amount_value_outside_expected_bounds_{fr.id}"] = ReportValidationError(
                     Severity.WARNING,
                     f"Fuel Amount value ({fr.json_data['annualFuelAmount']}) is outside of the expected range ({validation_record.lower_bound} - {validation_record.upper_bound}) for Activity: {activity_name}, Source Type: {source_type_name}, Fuel Type: {fuel_type_name}",
+                    key=ReportValidationErrorKey.REPORT_DATA_OUT_OF_BOUNDS_BY_FUEL_TYPE,
+                    context=ErrorContext(
+                        report_version_id=report_version.id,
+                        facility_id=fr.report_source_type.report_activity.facility_report.facility_id,
+                        facility_name=fr.report_source_type.report_activity.facility_report.facility_name,
+                        activity_id=fr.report_source_type.report_activity.activity.id,
+                        activity_name=activity_name,
+                        source_type_id=fr.report_source_type.source_type_id,
+                        source_type_name=source_type_name,
+                        fuel_type_name=fuel_type_name,
+                    ),
                 )
             # For each report_methodology record related to the report_fuel record
             for mr in ReportMethodology.objects.filter(report_emission__report_fuel_id=fr.id):
@@ -63,6 +76,20 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                                 ReportValidationError(
                                     Severity.WARNING,
                                     f"Methodology Field ({reporting_field_display_name}) with value ({v}) is outside of the expected range ({methodology_field_validation.lower_bound} - {methodology_field_validation.upper_bound}) for Activity: {activity_name}, Source Type: {source_type_name}, Fuel Type: {fuel_type_name}, Gas Type: {gas_type_name}",
+                                    key=ReportValidationErrorKey.REPORT_DATA_OUT_OF_BOUNDS_BY_FUEL_TYPE,
+                                    context=ErrorContext(
+                                        report_version_id=report_version.id,
+                                        facility_id=fr.report_source_type.report_activity.facility_report.facility_id,
+                                        facility_name=fr.report_source_type.report_activity.facility_report.facility_name,
+                                        activity_id=fr.report_source_type.report_activity.activity.id,
+                                        activity_name=activity_name,
+                                        source_type_id=fr.report_source_type.source_type_id,
+                                        source_type_name=source_type_name,
+                                        fuel_type_name=fuel_type_name,
+                                        gas_type_name=gas_type_name,
+                                        methodology_name=mr.methodology.name,
+                                        reporting_field=reporting_field_display_name,
+                                    ),
                                 )
                             )
     return errors
