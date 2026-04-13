@@ -72,8 +72,6 @@ function FuelAmountFieldTemplate({
       }
     }
 
-    console.log(label);
-
     // `current` is the fuel item object
     const fuelUnit = current?.fuelType?.fuelUnit;
     if (fuelUnit) {
