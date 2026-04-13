@@ -164,6 +164,17 @@ export class CurrentReportsPOM {
   }
 
   /**
+   * Creates a new report for a given operation name.
+   * This assumes the operation doesn't have a report in progress.
+   *
+   *
+   *
+   */
+  async startNewReport(operationName: string) {
+    await expect(1).toBe(2);
+  }
+
+  /**
    * Completes all sign-off fields required for the Submit button to become enabled,
    * based on the sign-off schema variant.
    *
