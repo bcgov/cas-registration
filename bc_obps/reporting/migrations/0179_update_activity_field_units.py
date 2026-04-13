@@ -442,7 +442,7 @@ def undo_update_reporting_fields(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0177_populate_validation_model_data'),
+        ('reporting', '0178_fueltype_description'),
     ]
 
     operations = [
