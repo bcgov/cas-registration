@@ -37,6 +37,13 @@ class ErrorContext(BaseModel):
     emission_category_id: Optional[int] = None
     emission_category_name: Optional[str] = None
     activity_id: Optional[int] = None
+    activity_name: Optional[str] = None
+    source_type_id: Optional[int] = None
+    source_type_name: Optional[str] = None
+    fuel_type_name: Optional[str] = None
+    gas_type_name: Optional[str] = None
+    methodology_name: Optional[str] = None
+    reporting_field: Optional[str] = None
 
 
 @dataclass

@@ -1,10 +1,20 @@
 from django.test import TestCase
 from model_bakery.baker import make_recipe, make
 import pytest
-from reporting.models import ReportOperation, FuelType, ReportFuel, ReportMethodology, Methodology, GasType
+from reporting.models import (
+    ReportOperation,
+    FuelType,
+    ReportFuel,
+    ReportMethodology,
+    Methodology,
+    GasType,
+    ReportingField,
+)
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
     Severity,
+    ReportValidationErrorKey,
+    ErrorContext,
 )
 from reporting.service.report_validation.validators.report_data_by_fuel_type_validator import (
     validate,
@@ -72,24 +82,44 @@ class TestReportDataByFueltypeValidator(TestCase):
     def test_errors_when_fuel_amount_above_expected_bound(self):
         ReportFuel.objects.all().update(json_data={"annualFuelAmount": 15000})
         report_fuel = ReportFuel.objects.all().first()
-        print(report_fuel.json_data)
         result = validate(self.test_infrastructure.report_version)
         assert result == {
             f"report_fuel_fuel_amount_value_outside_expected_bounds_{report_fuel.id}": ReportValidationError(
                 Severity.WARNING,
                 f"Fuel Amount value ({report_fuel.json_data['annualFuelAmount']}) is outside of the expected range (0.00 - 5000.00) for Activity: {report_fuel.report_source_type.report_activity.activity.name}, Source Type: {report_fuel.report_source_type.source_type.name}, Fuel Type: Diesel",
+                key=ReportValidationErrorKey.REPORT_DATA_OUT_OF_BOUNDS_BY_FUEL_TYPE,
+                context=ErrorContext(
+                    report_version_id=report_fuel.report_version.id,
+                    facility_id=report_fuel.report_source_type.report_activity.facility_report.facility_id,
+                    facility_name=report_fuel.report_source_type.report_activity.facility_report.facility_name,
+                    activity_id=report_fuel.report_source_type.report_activity.activity.id,
+                    activity_name=report_fuel.report_source_type.report_activity.activity.name,
+                    source_type_id=report_fuel.report_source_type.source_type_id,
+                    source_type_name=report_fuel.report_source_type.source_type.name,
+                    fuel_type_name=report_fuel.fuel_type.name,
+                ),
             )
         }
 
     def test_errors_when_fuel_amount_below_expected_bound(self):
         ReportFuel.objects.all().update(json_data={"annualFuelAmount": -15000})
         report_fuel = ReportFuel.objects.all().first()
-        print(report_fuel.json_data)
         result = validate(self.test_infrastructure.report_version)
         assert result == {
             f"report_fuel_fuel_amount_value_outside_expected_bounds_{report_fuel.id}": ReportValidationError(
                 Severity.WARNING,
                 f"Fuel Amount value ({report_fuel.json_data['annualFuelAmount']}) is outside of the expected range (0.00 - 5000.00) for Activity: {report_fuel.report_source_type.report_activity.activity.name}, Source Type: {report_fuel.report_source_type.source_type.name}, Fuel Type: Diesel",
+                key=ReportValidationErrorKey.REPORT_DATA_OUT_OF_BOUNDS_BY_FUEL_TYPE,
+                context=ErrorContext(
+                    report_version_id=report_fuel.report_version.id,
+                    facility_id=report_fuel.report_source_type.report_activity.facility_report.facility_id,
+                    facility_name=report_fuel.report_source_type.report_activity.facility_report.facility_name,
+                    activity_id=report_fuel.report_source_type.report_activity.activity.id,
+                    activity_name=report_fuel.report_source_type.report_activity.activity.name,
+                    source_type_id=report_fuel.report_source_type.source_type_id,
+                    source_type_name=report_fuel.report_source_type.source_type.name,
+                    fuel_type_name=report_fuel.fuel_type.name,
+                ),
             )
         }
 
@@ -103,6 +133,20 @@ class TestReportDataByFueltypeValidator(TestCase):
             f"report_methodology_unitFuelCo2DefaultEf_value_outside_expected_bounds_{report_methodology.id}": ReportValidationError(
                 Severity.WARNING,
                 f"Methodology Field (CO2 Default EF) with value (20000) is outside of the expected range (1000.0000 - 5000.0000) for Activity: {report_methodology.report_emission.report_source_type.report_activity.activity.name}, Source Type: {report_methodology.report_emission.report_source_type.source_type.name}, Fuel Type: Diesel, Gas Type: CO2",
+                key=ReportValidationErrorKey.REPORT_DATA_OUT_OF_BOUNDS_BY_REPORTING_FIELD,
+                context=ErrorContext(
+                    report_version_id=report_methodology.report_version.id,
+                    facility_id=report_methodology.report_emission.report_source_type.report_activity.facility_report.facility_id,
+                    facility_name=self.test_infrastructure.facility_report.facility_name,
+                    activity_id=report_methodology.report_emission.report_source_type.report_activity.activity.id,
+                    activity_name=report_methodology.report_emission.report_source_type.report_activity.activity.name,
+                    source_type_id=report_methodology.report_emission.report_source_type.source_type_id,
+                    source_type_name=report_methodology.report_emission.report_source_type.source_type.name,
+                    fuel_type_name=report_methodology.report_emission.report_fuel.fuel_type.name,
+                    gas_type_name=report_methodology.report_emission.gas_type.chemical_formula,
+                    methodology_name=report_methodology.methodology.name,
+                    reporting_field=ReportingField.objects.get(slug='unitFuelCo2DefaultEf').field_display_title,
+                ),
             )
         }
 
@@ -116,5 +160,19 @@ class TestReportDataByFueltypeValidator(TestCase):
             f"report_methodology_unitFuelCo2DefaultEf_value_outside_expected_bounds_{report_methodology.id}": ReportValidationError(
                 Severity.WARNING,
                 f"Methodology Field (CO2 Default EF) with value (2) is outside of the expected range (1000.0000 - 5000.0000) for Activity: {report_methodology.report_emission.report_source_type.report_activity.activity.name}, Source Type: {report_methodology.report_emission.report_source_type.source_type.name}, Fuel Type: Diesel, Gas Type: CO2",
+                key=ReportValidationErrorKey.REPORT_DATA_OUT_OF_BOUNDS_BY_REPORTING_FIELD,
+                context=ErrorContext(
+                    report_version_id=report_methodology.report_version.id,
+                    facility_id=report_methodology.report_emission.report_source_type.report_activity.facility_report.facility_id,
+                    facility_name=self.test_infrastructure.facility_report.facility_name,
+                    activity_id=report_methodology.report_emission.report_source_type.report_activity.activity.id,
+                    activity_name=report_methodology.report_emission.report_source_type.report_activity.activity.name,
+                    source_type_id=report_methodology.report_emission.report_source_type.source_type_id,
+                    source_type_name=report_methodology.report_emission.report_source_type.source_type.name,
+                    fuel_type_name=report_methodology.report_emission.report_fuel.fuel_type.name,
+                    gas_type_name=report_methodology.report_emission.gas_type.chemical_formula,
+                    methodology_name=report_methodology.methodology.name,
+                    reporting_field=ReportingField.objects.get(slug='unitFuelCo2DefaultEf').field_display_title,
+                ),
             )
         }
