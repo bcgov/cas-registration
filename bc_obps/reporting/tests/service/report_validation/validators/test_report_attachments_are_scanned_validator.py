@@ -3,6 +3,7 @@ import pytest
 from reporting.models.report_attachment import ReportAttachment
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 from reporting.service.report_validation.validators.report_attachments_are_scanned import (
@@ -23,6 +24,7 @@ class TestReportAttachmentsAreScannedValidator:
             "attachment_verification_statement": ReportValidationError(
                 Severity.ERROR,
                 "The verification_statement file hasn't been scanned yet, try resubmitting in a few minutes.",
+                key=ReportValidationErrorKey.ATTACHMENT_NOT_SCANNED,
             )
         }
 

@@ -1,7 +1,7 @@
 import type { ReactNode, FC, PropsWithChildren } from "react";
 import { AlertIcon } from "@bciers/components/icons";
 import { Alert, SvgIconProps } from "@mui/material";
-import { BC_GOV_TEXT } from "@bciers/styles";
+import { BC_GOV_SEMANTICS_RED, BC_GOV_TEXT } from "@bciers/styles";
 import { ErrorRounded, InfoRounded, WarningRounded } from "@mui/icons-material";
 
 export type AlertType = "INFO" | "ALERT" | "ERROR" | "DEFAULT";
@@ -16,7 +16,7 @@ export interface AlertNoteProps {
 const bgClassMap: { [key in AlertType]: string } = {
   INFO: "bg-bc-light-blue",
   ALERT: "bg-bc-light-yellow",
-  ERROR: "bg-bc-error-red",
+  ERROR: "bg-bc-light-red border border-[#F1B5B8]",
   DEFAULT: "bg-bc-light-blue",
 };
 
@@ -27,7 +27,9 @@ const defaultIconProps: SvgIconProps = {
 const iconMap: { [key in AlertType]: ReactNode } = {
   INFO: <InfoRounded {...defaultIconProps} />,
   ALERT: <WarningRounded {...defaultIconProps} />,
-  ERROR: <ErrorRounded {...defaultIconProps} />,
+  ERROR: (
+    <ErrorRounded {...defaultIconProps} sx={{ color: BC_GOV_SEMANTICS_RED }} />
+  ),
   DEFAULT: <AlertIcon width="25" height="25" />,
 };
 
@@ -61,6 +63,16 @@ const AlertNote: FC<PropsWithChildren<AlertNoteProps>> = ({
       id={id}
       className={`${bgClassMap[alertType]} text-bc-text mb-2 items-center`}
       icon={defaultedIcon}
+      // MUI Alert applies its own default error background styles,
+      // so the ERROR state needs an sx override to render ERROR alertType background
+      sx={
+        alertType === "ERROR"
+          ? {
+              backgroundColor: "#FBEAEA",
+              border: "1px solid #F1B5B8",
+            }
+          : undefined
+      }
     >
       {children}
     </Alert>

@@ -19,7 +19,6 @@ import {
   validateEmissionsMethodology,
 } from "@bciers/utils/src/activityFormValidators";
 import { NavigationInformation } from "../taskList/types";
-import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
 import { Dict } from "@bciers/types/dictionary";
 
 const CUSTOM_FIELDS = {
@@ -187,7 +186,7 @@ export default function ActivityForm({
     });
 
     if (response.error) {
-      setErrorList([getValidationErrorMessage(response.error)]);
+      setErrorList([response.error]);
       return false;
     }
     if (response) {

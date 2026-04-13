@@ -10,6 +10,12 @@ const FormAlerts: React.FC<FormAlertsProps> = ({ errors }) => {
     return null; // Don't render anything if there are no errors
   }
 
+  // If caller passed a single rendered component in an array
+  // (for example [<ReportValidationSummary />]), render it directly
+  if (errors.length === 1 && React.isValidElement(errors[0])) {
+    return <div className="mt-4">{errors[0]}</div>;
+  }
+
   return (
     <div className="min-h-[48px] box-border mt-4">
       {errors.map((error, index) => (

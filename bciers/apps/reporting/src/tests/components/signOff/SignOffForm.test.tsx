@@ -1,10 +1,17 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, type Mock } from "vitest";
 import SignOffForm from "@reporting/src/app/components/signOff/SignOffForm";
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
 import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 import { buildSignOffSchema } from "@reporting/src/data/jsonSchema/signOff/signOff";
+import postSubmitReport from "@bciers/actions/api/postSubmitReport";
+
+vi.mock("@bciers/actions/api/postSubmitReport", () => ({
+  default: vi.fn(),
+}));
+
+const mockRouterPush = vi.fn();
 
 const renderSignOffFormWithSchema = ({
   isSupplementary = false,
@@ -24,11 +31,30 @@ const renderSignOffFormWithSchema = ({
   return schema;
 };
 
+const completeSignOffForm = async () => {
+  const checkboxes = screen.getAllByRole("checkbox");
+  checkboxes.forEach((checkbox) => fireEvent.click(checkbox));
+
+  const signatureField = screen.getByLabelText(/signature/i);
+  fireEvent.change(signatureField, {
+    target: { value: "Gimli son of Gloin" },
+  });
+
+  const submitButton = screen.getByRole("button", { name: /submit report/i });
+
+  await waitFor(() => {
+    expect(submitButton).not.toBeDisabled();
+  });
+
+  return submitButton;
+};
+
 describe("SignOffForm Component (with actual schema)", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     useRouter.mockReturnValue({
       refresh: vi.fn(),
+      push: mockRouterPush,
     });
   });
 
@@ -171,5 +197,97 @@ describe("SignOffForm Component (with actual schema)", () => {
     expect(checkbox).toBeChecked();
     fireEvent.click(checkbox);
     expect(checkbox).not.toBeChecked();
+  });
+
+  it("renders multiple submission validation errors with config links", async () => {
+    (postSubmitReport as Mock).mockResolvedValue({
+      validation: {
+        errors: [
+          {
+            key: "missing_report_verification", // gitleaks:allow
+            error: {
+              severity: "Error",
+              message: "Report verification form not found in the report.",
+              context: {
+                reportVersionId: 1,
+              },
+            },
+          },
+          {
+            key: "verification_statement",
+            error: {
+              severity: "Error",
+              message:
+                "Mandatory verification statement document was not uploaded with this report.",
+              context: {
+                reportVersionId: 1,
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    renderSignOffFormWithSchema({
+      isSupplementary: false,
+      isRegulated: true,
+      flow: ReportingFlow.SFO,
+    });
+
+    const submitButton = await completeSignOffForm();
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getAllByRole("alert")).toHaveLength(2);
+    });
+
+    const alerts = screen.getAllByRole("alert");
+
+    expect(alerts[0]).toHaveTextContent(
+      "Verification information must be completed on the Verification page.",
+    );
+
+    expect(alerts[1]).toHaveTextContent(
+      "A verification statement must be uploaded with this report on the Attachments page.",
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Verification page",
+      }),
+    ).toHaveAttribute("href", "/reports/1/verification");
+
+    expect(
+      screen.getByRole("link", {
+        name: "Attachments page",
+      }),
+    ).toHaveAttribute("href", "/reports/1/attachments");
+
+    expect(mockRouterPush).not.toHaveBeenCalled();
+  });
+
+  it("renders a generic validation error when submit returns an unstructured error", async () => {
+    (postSubmitReport as Mock).mockResolvedValue({
+      error: "I'm afraid I can't do that, Dave.",
+    });
+
+    renderSignOffFormWithSchema({
+      isSupplementary: false,
+      isRegulated: true,
+      flow: ReportingFlow.SFO,
+    });
+
+    const submitButton = await completeSignOffForm();
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getAllByRole("alert")).toHaveLength(1);
+    });
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "I'm afraid I can't do that, Dave.",
+    );
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(mockRouterPush).not.toHaveBeenCalled();
   });
 });

@@ -1,5 +1,5 @@
 from uuid import UUID
-from django.core.exceptions import ValidationError
+from reporting.service.exceptions import ReportValidationException
 from reporting.service.report_sign_off_service import ReportSignOffData, ReportSignOffService
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_service import (
@@ -25,10 +25,8 @@ class ReportSubmissionService:
 
         is_regulated_operation = report_version.report.operation.is_regulated_operation
 
-        # The validation service now returns errors, but to not change the system behaviour,
-        # we raise an error for now.
         if validation_result:
-            raise ValidationError({key: val.message for key, val in validation_result.items()})
+            raise ReportValidationException(validation_result)
 
         ReportSignOffService.save_report_sign_off(version_id, sign_off_data)
         # Mark the previous latest submitted version as not latest

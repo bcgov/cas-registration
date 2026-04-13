@@ -3,6 +3,7 @@ import pytest
 from registration.models.operation import Operation
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 from reporting.service.report_validation.validators import (
@@ -45,6 +46,7 @@ class TestOperationBoroIdValidator:
             "operation_boro_id": ReportValidationError(
                 Severity.ERROR,
                 "Report is missing BORO ID, please make sure one has been assigned to your operation.",
+                key=ReportValidationErrorKey.OPERATION_BORO_ID,
             )
         }
 
@@ -64,6 +66,7 @@ class TestOperationBoroIdValidator:
             "operation_boro_id": ReportValidationError(
                 Severity.ERROR,
                 "Report is missing BORO ID, please make sure one has been assigned to your operation.",
+                key=ReportValidationErrorKey.OPERATION_BORO_ID,
             )
         }
 

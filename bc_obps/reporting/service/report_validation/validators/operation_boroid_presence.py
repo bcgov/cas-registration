@@ -3,6 +3,7 @@ from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 
@@ -22,8 +23,9 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         and not report_operation.bc_obps_regulated_operation_id
     ):
         errors["operation_boro_id"] = ReportValidationError(
-            Severity.ERROR,
-            "Report is missing BORO ID, please make sure one has been assigned to your operation.",
+            severity=Severity.ERROR,
+            message="Report is missing BORO ID, please make sure one has been assigned to your operation.",
+            key=ReportValidationErrorKey.OPERATION_BORO_ID,
         )
 
     return errors
