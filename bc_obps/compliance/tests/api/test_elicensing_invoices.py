@@ -2,10 +2,10 @@ from datetime import date
 from decimal import Decimal
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 from registration.utils import custom_reverse_lazy
 from unittest.mock import patch
 
-from reporting.models.reporting_year import ReportingYear
 
 MOCK_REPORTING_YEAR = date.today().year - 1
 
@@ -17,25 +17,8 @@ class TestElicensingInvoicesEndpoint(CommonTestSetup):
     def test_get_elicensing_invoices_list_success_for_irc_user(self, mock_get_invoices):
         # Arrange
         # first invoice
+        test_data = ComplianceTestHelper.build_test_data(reporting_year=MOCK_REPORTING_YEAR)
 
-        report_1 = make_recipe(
-            "compliance.tests.utils.report",
-            reporting_year=ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR),
-        )
-
-        report_version_1 = make_recipe("reporting.tests.utils.report_version", report=report_1)
-
-        compliance_report_1 = make_recipe("compliance.tests.utils.compliance_report", report=report_1)
-
-        report_compliance_summary_1 = make_recipe(
-            "compliance.tests.utils.report_compliance_summary", report_version=report_version_1
-        )
-
-        compliance_report_version_1 = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report_1,
-            report_compliance_summary=report_compliance_summary_1,
-        )
         invoice_1 = make_recipe(
             "compliance.tests.utils.elicensing_invoice",
             due_date=date(2025, 7, 1),
@@ -43,7 +26,7 @@ class TestElicensingInvoicesEndpoint(CommonTestSetup):
         # obligation
         make_recipe(
             "compliance.tests.utils.compliance_obligation",
-            compliance_report_version=compliance_report_version_1,
+            compliance_report_version=test_data.compliance_report_version,
             fee_amount_dollars=Decimal("300.00"),
             fee_date=date(2025, 6, 1),
             obligation_id="25-0001-2",
@@ -51,24 +34,8 @@ class TestElicensingInvoicesEndpoint(CommonTestSetup):
         )
 
         # second invoice
-        report_2 = make_recipe(
-            "compliance.tests.utils.report",
-            reporting_year=ReportingYear.objects.get(reporting_year=date.today().year - 1),
-        )
+        test_data_2 = ComplianceTestHelper.build_test_data(reporting_year=MOCK_REPORTING_YEAR)
 
-        report_version_2 = make_recipe("reporting.tests.utils.report_version", report=report_2)
-
-        compliance_report_2 = make_recipe("compliance.tests.utils.compliance_report", report=report_2)
-
-        report_compliance_summary_2 = make_recipe(
-            "compliance.tests.utils.report_compliance_summary", report_version=report_version_2
-        )
-
-        compliance_report_version_2 = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report_2,
-            report_compliance_summary=report_compliance_summary_2,
-        )
         invoice_2 = make_recipe(
             "compliance.tests.utils.elicensing_invoice",
             due_date=date(2025, 7, 1),
@@ -76,7 +43,7 @@ class TestElicensingInvoicesEndpoint(CommonTestSetup):
         # obligation
         make_recipe(
             "compliance.tests.utils.compliance_obligation",
-            compliance_report_version=compliance_report_version_2,
+            compliance_report_version=test_data_2.compliance_report_version,
             fee_amount_dollars=Decimal("300.00"),
             fee_date=date(2025, 6, 1),
             obligation_id="25-0001-2",
