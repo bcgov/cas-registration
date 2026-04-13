@@ -137,12 +137,6 @@ export class ContactsPOM {
 
   // ###  Assertions ###
 
-  async urlIsCorrect() {
-    const path = this.url;
-    const currentUrl = this.page.url();
-    expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
-  }
-
   async assertFootnoteIsVisible(input: boolean) {
     const footnote = ContactFootnote.CONTACT_FOOTNOTE;
     if (input) {
