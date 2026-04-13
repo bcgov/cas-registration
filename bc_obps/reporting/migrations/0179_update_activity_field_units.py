@@ -137,6 +137,33 @@ def update_reporting_fields(apps, schema_editor):
         field_name="Unit-Fuel-CO2 Measured Steam-Default EF",
         update_data={"field_display_title": "CO2 Default Emission Factor", "field_units": "kgCO2/GJ"},
     )
+    update_reporting_field_data(
+        apps,
+        schema_editor,
+        field_name="Fuel Annual Weighted Average Carbon Content (weight fraction)",
+        update_data={
+            "field_display_title": "Annual Weighted Average Carbon Content",
+            "field_units": "kgC/Sm3 or kgC/kilolitre or kgC/tonne",
+        },
+    )
+    update_reporting_field_data(
+        apps,
+        schema_editor,
+        field_name="Annual Weighted Average Carbon Content",
+        update_data={"field_display_title": "Annual Weighted Average Carbon Content (kg C/kg fuel)"},
+    )
+    update_reporting_field_data(
+        apps,
+        schema_editor,
+        field_name="Annual Weighted Average Molecular Weight",
+        update_data={"field_display_title": "Annual Weighted Average Molecular Weight (kg/kg-mole)"},
+    )
+    update_reporting_field_data(
+        apps,
+        schema_editor,
+        field_name="Molar Volume Conversion Factor",
+        update_data={"field_display_title": "Molar Volume Conversion Factor (Sm3/kg-mole)"},
+    )
     # CH4-specific
     update_reporting_field_data(
         apps,
@@ -362,6 +389,30 @@ def undo_update_reporting_fields(apps, schema_editor):
         schema_editor,
         field_name="Unit-Fuel-CO2 Measured Steam-Default EF",
         update_data={"field_display_title": "CO2 Measured Steam-Default EF", "field_units": "kg/GJ"},
+    )
+    update_reporting_field_data(
+        apps,
+        schema_editor,
+        field_name="Fuel Annual Weighted Average Carbon Content (weight fraction)",
+        update_data={"field_display_title": None, "field_units": "kg carbon/fuel unit"},
+    )
+    update_reporting_field_data(
+        apps,
+        schema_editor,
+        field_name="Annual Weighted Average Carbon Content",
+        update_data={"field_display_title": None, "field_units": None},
+    )
+    update_reporting_field_data(
+        apps,
+        schema_editor,
+        field_name="Annual Weighted Average Molecular Weight",
+        update_data={"field_display_title": None, "field_units": None},
+    )
+    update_reporting_field_data(
+        apps,
+        schema_editor,
+        field_name="Molar Volume Conversion Factor",
+        update_data={"field_display_title": None, "field_units": None},
     )
     # CH4-specific
     update_reporting_field_data(
