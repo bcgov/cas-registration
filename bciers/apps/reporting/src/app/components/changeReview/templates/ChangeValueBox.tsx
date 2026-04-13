@@ -22,7 +22,7 @@ export const ChangeValueBox: React.FC<ChangeValueBoxProps> = ({
   };
 
   const isAddedItem = changeType === "added";
-  const isDeletedItem = changeType === "deleted";
+  const isDeletedItem = changeType === "removed";
   const isModifiedItem = changeType === "modified" || !changeType;
 
   const deletedStyles = isDeleted

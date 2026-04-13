@@ -16,12 +16,29 @@ vi.mock(
 );
 
 vi.mock(
-  "@reporting/src/app/components/changeReview/templates/FacilityReportChanges",
+  "@reporting/src/app/components/changeReview/components/SimpleActivityDiff",
   () => ({
-    FacilityReportChanges: ({ facilityName }: any) => (
-      <div data-testid={`facility-${facilityName}`}>
-        Facility: {facilityName}
+    SimpleActivityDiff: ({ changes }: any) => (
+      <div data-testid="simple-activity-diff">
+        Activity changes: {changes.length}
       </div>
+    ),
+  }),
+);
+
+vi.mock("@reporting/src/app/components/shared/FacilityReportSection", () => ({
+  FacilityReportSection: ({ facilityName, isAdded, isRemoved }: any) => (
+    <div data-testid={`facility-section-${facilityName}`}>
+      {isAdded ? "added" : isRemoved ? "removed" : "modified"}: {facilityName}
+    </div>
+  ),
+}));
+
+vi.mock(
+  "@reporting/src/app/components/finalReview/templates/SectionReview",
+  () => ({
+    SectionReview: ({ title, children }: any) => (
+      <div data-testid={`section-${title}`}>{children}</div>
     ),
   }),
 );
@@ -71,39 +88,12 @@ vi.mock(
 vi.mock("@reporting/src/app/components/changeReview/utils/utils", () => ({
   filterExcludedFields: vi.fn((changes) => changes),
   getSection: vi.fn((field) => {
-    if (field.includes("person_responsible")) return "Person Responsible";
-    if (field.includes("contact")) return "Contact Information";
+    if (field.includes("report_operation")) return "Report Operation";
     return "Other";
   }),
   groupPersonResponsibleChanges: vi.fn((changes) => changes),
   normalizeChangeKeys: vi.fn((changes) => changes),
 }));
-
-vi.mock(
-  "@reporting/src/app/components/changeReview/templates/facilityReportOrganizer",
-  () => ({
-    organizeFacilityReportChanges: vi.fn(() => ({
-      "Test Facility": {
-        facilityName: "Test Facility",
-        activities: {},
-        emissionSummary: [],
-        productionData: [],
-        emissionAllocation: [],
-        nonAttributableEmissions: [],
-        changeType: "modified",
-      },
-    })),
-  }),
-);
-
-vi.mock(
-  "@reporting/src/app/components/changeReview/templates/facilityReportParser",
-  () => ({
-    detectAddedActivitiesInModifiedFacility: vi.fn(() => null),
-    detectSourceTypeChanges: vi.fn(() => []),
-    detectActivityChangesInModifiedFacility: vi.fn(() => null),
-  }),
-);
 
 describe("ReviewChanges", () => {
   const mockChanges: ChangeItem[] = [
@@ -111,57 +101,38 @@ describe("ReviewChanges", () => {
       field: "root['report_person_responsible']['name']",
       oldValue: "old_name",
       newValue: "new_name",
-      facilityName: "",
       change_type: "modified",
-      deletedActivities: [],
-    },
-    {
-      field: "root['report_information']['test_field']",
-      oldValue: "oldValue",
-      newValue: "newValue",
-      facilityName: "Mock Facility",
-      change_type: "modified",
-      deletedActivities: [],
     },
     {
       field: "root['report_compliance_summary']['compliance_field']",
       oldValue: "old_compliance",
       newValue: "new_compliance",
-      facilityName: "",
       change_type: "modified",
-      deletedActivities: [],
     },
     {
-      field: "root['facility_reports']['facility_1']['some_field']",
+      field:
+        "root['facility_reports']['facility_1']['activity_data']['Some Activity']",
       oldValue: "old_facility",
       newValue: "new_facility",
-      facilityName: "Mock Facility",
       change_type: "modified",
-      deletedActivities: [],
     },
     {
       field: "root['report_electricity_import_data']['electricity_field']",
       oldValue: "old_electricity",
       newValue: "new_electricity",
-      facilityName: "",
       change_type: "modified",
-      deletedActivities: [],
     },
     {
       field: "root['report_new_entrant']['new_entrant_field']",
       oldValue: "old_entrant",
       newValue: "new_entrant",
-      facilityName: "",
       change_type: "modified",
-      deletedActivities: [],
     },
     {
       field: "root['operation_emission_summary']['emission_field']",
       oldValue: "old_emission",
       newValue: "new_emission",
-      facilityName: "",
       change_type: "modified",
-      deletedActivities: [],
     },
   ];
 
@@ -178,14 +149,18 @@ describe("ReviewChanges", () => {
         "change-item-root['report_person_responsible']['name']",
       ),
     ).toBeInTheDocument();
-
     expect(screen.getByTestId("compliance-summary")).toBeInTheDocument();
     expect(
       screen.getByTestId("operation-emission-summary"),
     ).toBeInTheDocument();
     expect(screen.getByTestId("electricity-import-data")).toBeInTheDocument();
     expect(screen.getByTestId("new-entrant-changes")).toBeInTheDocument();
-    expect(screen.getByTestId("facility-Test Facility")).toBeInTheDocument();
+    // Facility section rendered via SectionReview
+    expect(
+      screen.getByTestId("section-Report Information - facility_1"),
+    ).toBeInTheDocument();
+    // Activity diff rendered inside facility section
+    expect(screen.getByTestId("simple-activity-diff")).toBeInTheDocument();
   });
 
   it("renders empty state when no changes are provided", () => {
@@ -209,8 +184,6 @@ describe("ReviewChanges", () => {
         oldValue: "oldValue",
         newValue: "newValue",
         change_type: "modified",
-        facilityName: "Mock Facility",
-        deletedActivities: [],
       },
     ];
 
@@ -231,25 +204,26 @@ describe("ReviewChanges", () => {
     expect(screen.queryByTestId("new-entrant-changes")).not.toBeInTheDocument();
   });
 
-  it("handles non-object change values gracefully", () => {
-    const invalidChanges: ChangeItem[] = [
+  it("renders FacilityReportSection for a whole-facility addition", () => {
+    const addedFacilityChanges: ChangeItem[] = [
       {
-        field: "root['facility_reports']",
+        field: "root['facility_reports']['New Facility']",
         oldValue: null,
-        newValue: "invalid_value",
-        change_type: "modified",
-        facilityName: "Test Facility",
-        deletedActivities: [],
+        newValue: { facility_name: "New Facility", activity_data: {} },
+        change_type: "added",
       },
     ];
 
     render(
       <ReviewChanges
-        changes={invalidChanges}
+        changes={addedFacilityChanges}
         registrationPurpose={REGULATED_OPERATION_REGISTRATION_PURPOSE}
       />,
     );
 
-    expect(screen.getByTestId("facility-Test Facility")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("facility-section-New Facility"),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/added/)).toBeInTheDocument();
   });
 });

@@ -7,7 +7,7 @@ import {
 } from "@bciers/styles";
 
 interface StatusLabelProps {
-  type: "added" | "deleted" | "modified";
+  type: "added" | "deleted" | "modified" | "removed";
 }
 
 export const StatusLabel: React.FC<StatusLabelProps> = ({ type }) => {
@@ -16,11 +16,15 @@ export const StatusLabel: React.FC<StatusLabelProps> = ({ type }) => {
       case "added":
         return BC_GOV_SEMANTICS_GREEN;
       case "deleted":
+      case "removed":
         return BC_GOV_SEMANTICS_RED;
       default:
         return "warning.main";
     }
   };
+
+  // "removed" from the API is displayed as "DELETED" to the user
+  const label = type === "removed" ? "DELETED" : type.toUpperCase();
 
   return (
     <Typography
@@ -36,7 +40,7 @@ export const StatusLabel: React.FC<StatusLabelProps> = ({ type }) => {
         bgcolor: getBgColor(),
       }}
     >
-      ({type.toUpperCase()})
+      ({label})
     </Typography>
   );
 };

@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Typography, Grid, Divider } from "@mui/material";
 import { ChangeItem } from "../constants/types";
 import { ChangeValueBox } from "./ChangeValueBox";
+import { ListDiffDisplay } from "./ListDiffDisplay";
 import { getContextualLabel } from "../utils/utils";
 import { StatusLabel } from "@bciers/components/form/fields/StatusLabel";
 
@@ -18,7 +19,7 @@ export const ChangeItemDisplay: React.FC<ChangeItemDisplayProps> = ({
   isDeleted = false,
   parentWholeObjectStatus = false,
 }) => {
-  const isDeletedItem = item.change_type === "deleted" || isDeleted;
+  const isDeletedItem = item.change_type === "removed" || isDeleted;
 
   // Use displayLabel if provided, otherwise generate a clean label
   const fieldLabel =
@@ -36,7 +37,7 @@ export const ChangeItemDisplay: React.FC<ChangeItemDisplayProps> = ({
             }}
           >
             {fieldLabel}
-            {isDeletedItem && <StatusLabel type="deleted" />}
+            {isDeletedItem && <StatusLabel type="removed" />}
             {!parentWholeObjectStatus &&
               (item.change_type === "added" || item.isNewAddition) && (
                 <StatusLabel type="added" />
@@ -44,12 +45,23 @@ export const ChangeItemDisplay: React.FC<ChangeItemDisplayProps> = ({
           </Typography>
         </Grid>
         <Grid item xs={12} md={9}>
-          <ChangeValueBox
-            oldValue={item.oldValue}
-            newValue={item.newValue}
-            changeType={item.change_type}
-            isDeleted={isDeleted}
-          />
+          {(item.field.endsWith("['activities']") ||
+            item.field.endsWith("['regulated_products']")) &&
+          item.change_type === "modified" &&
+          typeof item.oldValue === "string" &&
+          typeof item.newValue === "string" ? (
+            <ListDiffDisplay
+              oldValue={item.oldValue}
+              newValue={item.newValue}
+            />
+          ) : (
+            <ChangeValueBox
+              oldValue={item.oldValue}
+              newValue={item.newValue}
+              changeType={item.change_type}
+              isDeleted={isDeleted}
+            />
+          )}
         </Grid>
       </Grid>
       <Divider sx={{ mt: 2 }} />

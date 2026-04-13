@@ -1,3 +1,5 @@
+import { ReportAdditionalData } from "@reporting/src/app/components/finalReview/reportTypes";
+
 const FIELD_KEYS = {
   // Emission categories
   flaring: "emission_categories.flaring",
@@ -150,27 +152,35 @@ export const personResponsibleFields = [
   { label: "Postal Code", key: "postal_code" },
 ];
 
-export const additionalDataFields = [
-  { label: "Did you capture emissions?", key: FIELD_KEYS.captureEmissions },
-  {
-    label: "Emissions (t) captured for on-site use",
-    key: FIELD_KEYS.emissionsOnSiteUse,
-  },
-  {
-    label: "Emissions (t) captured for on-site sequestration",
-    key: FIELD_KEYS.emissionsOnSiteSequestration,
-  },
-  {
-    label: "Emissions (t) captured for off-site transfer",
-    key: FIELD_KEYS.emissionsOffSiteTransfer,
-  },
-  { heading: "Additional data" },
-  {
-    label: "Electricity Generated",
-    key: FIELD_KEYS.electricityGenerated,
-    unit: "GWh",
-  },
-];
+export const additionalDataFields = (data?: ReportAdditionalData) => {
+  const captureEmissions = data?.capture_emissions;
+
+  return [
+    { label: "Did you capture emissions?", key: FIELD_KEYS.captureEmissions },
+    ...(captureEmissions
+      ? [
+          {
+            label: "Emissions (t) captured for on-site use",
+            key: FIELD_KEYS.emissionsOnSiteUse,
+          },
+          {
+            label: "Emissions (t) captured for on-site sequestration",
+            key: FIELD_KEYS.emissionsOnSiteSequestration,
+          },
+          {
+            label: "Emissions (t) captured for off-site transfer",
+            key: FIELD_KEYS.emissionsOffSiteTransfer,
+          },
+        ]
+      : []),
+    { heading: "Additional data" },
+    {
+      label: "Electricity Generated",
+      key: FIELD_KEYS.electricityGenerated,
+      unit: "GWh",
+    },
+  ];
+};
 
 export const eioFields = [
   ...electricityFields("import", "specified"),

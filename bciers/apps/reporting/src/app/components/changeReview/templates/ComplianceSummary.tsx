@@ -3,8 +3,9 @@ import { Box, Typography, Divider } from "@mui/material";
 import { ChangeItemDisplay } from "./ChangeItemDisplay";
 import StatusLabel from "@bciers/components/form/fields/StatusLabel";
 import { SectionReview } from "@reporting/src/app/components/finalReview/templates/SectionReview";
+import { ChangeItem, ChangeItemValue } from "../constants/types";
 
-const complianceSummaryLabels: Record<string, string> = {
+const COMPLIANCE_LABELS: Record<string, string> = {
   emissions_attributable_for_reporting: "Emissions Attributable for Reporting",
   reporting_only_emissions: "Reporting Only Emissions",
   emissions_attributable_for_compliance:
@@ -14,7 +15,7 @@ const complianceSummaryLabels: Record<string, string> = {
   credited_emissions: "Credited Emissions",
 };
 
-const productFieldLabels: Record<string, string> = {
+const PRODUCT_LABELS: Record<string, string> = {
   name: "Product Name",
   annual_production: "Annual Production",
   jan_mar_production: "Production data for Jan 1 - Mar 31 2025",
@@ -25,76 +26,44 @@ const productFieldLabels: Record<string, string> = {
   allocated_compliance_emissions: "Allocated Compliance Emissions",
 };
 
-const regulatoryFields = [
-  { label: "Reduction factor", key: "regulatory_values.reduction_factor" },
-  { label: "Tightening rate", key: "regulatory_values.tightening_rate" },
-  {
-    label: "Initial compliance period",
-    key: "regulatory_values.initial_compliance_period",
-  },
-  { label: "Compliance period", key: "regulatory_values.compliance_period" },
-];
+const REGULATORY_LABELS: Record<string, string> = {
+  "regulatory_values.reduction_factor": "Reduction factor",
+  "regulatory_values.tightening_rate": "Tightening rate",
+  "regulatory_values.initial_compliance_period": "Initial compliance period",
+  "regulatory_values.compliance_period": "Compliance period",
+};
 
-interface ComplianceSummaryProps {
-  changes: any[];
-}
+const getProductName = (item: ChangeItem) =>
+  (item.newValue as Record<string, any>)?.name ??
+  (item.oldValue as Record<string, any>)?.name ??
+  item.field.match(/\['products']\['([^']+)']/)?.[1] ??
+  "Unknown Product";
 
-const ComplianceSummary: React.FC<ComplianceSummaryProps> = ({ changes }) => {
-  if (!changes || changes.length === 0) return null;
+const isProductField = (field: string) => field.includes("['products']");
 
-  const isRecord = (value: any): value is Record<string, any> =>
-    typeof value === "object" && value !== null && !Array.isArray(value);
+const skipChange = (oldVal: ChangeItemValue, newVal: ChangeItemValue) => {
+  const o = Number(oldVal);
+  const n = Number(newVal);
+  return !Number.isNaN(o) && !Number.isNaN(n) && o.toFixed(4) === n.toFixed(4);
+};
 
-  const getProductName = (item: any) => {
-    if (item.newValue?.name) return item.newValue.name;
-    if (item.oldValue?.name) return item.oldValue.name;
-    const match = item.field.match(/\['products']\['([^']+)']/);
-    return match ? match[1] : "Unknown Product";
-  };
+const ComplianceSummary: React.FC<{ changes: ChangeItem[] }> = ({
+  changes,
+}) => {
+  if (!changes?.length) return null;
 
-  const getComplianceFieldDetails = (field: string) => {
-    const productFieldMatch = field.match(
-      /\['products']\[(?:'([^']+)'|(\d+))\](?:\['([^']+)'])?/,
-    );
-    if (productFieldMatch) {
-      return {
-        isProduct: true,
-        productName: productFieldMatch[1] || productFieldMatch[2],
-        fieldKey: productFieldMatch[3] || null,
-      };
-    }
-    const fieldMatch = field.match(/\['([^']+)']$/);
-    if (fieldMatch) {
-      const fieldName = fieldMatch[1];
-      return {
-        isProduct: false,
-        label: complianceSummaryLabels[fieldName] || fieldName,
-      };
-    }
-    return null;
-  };
-
-  const productChangesMap: Record<string, any[]> = {};
-  const nonProductChanges: any[] = [];
+  const productChanges: Record<string, ChangeItem[]> = {};
+  const nonProductChanges: ChangeItem[] = [];
 
   changes.forEach((item) => {
-    const fieldInfo = getComplianceFieldDetails(item.field);
-    if (fieldInfo?.isProduct) {
-      const productName = getProductName(item);
-      if (!productChangesMap[productName]) productChangesMap[productName] = [];
-      productChangesMap[productName].push(item);
+    if (isProductField(item.field)) {
+      const name = getProductName(item);
+      productChanges[name] = productChanges[name] || [];
+      productChanges[name].push(item);
     } else {
       nonProductChanges.push(item);
     }
   });
-
-  const isFullProductChange = (item: any) =>
-    (item.change_type === "added" &&
-      item.oldValue == null &&
-      item.newValue != null) ||
-    (item.change_type === "removed" &&
-      item.oldValue != null &&
-      item.newValue == null);
 
   let regulatoryHeadingRendered = false;
 
@@ -105,138 +74,80 @@ const ComplianceSummary: React.FC<ComplianceSummaryProps> = ({ changes }) => {
       </Typography>
       <Divider sx={{ mb: 2 }} />
 
-      {/* Render non-product fields */}
       {nonProductChanges.map((item, idx) => {
-        const fieldInfo = getComplianceFieldDetails(item.field);
-        const fieldKey = fieldInfo?.label || item.field;
+        const key = item.field.match(/\['([^']+)'\]$/)?.[1] ?? "";
+        const regulatoryLabel = REGULATORY_LABELS[`regulatory_values.${key}`];
 
-        const regulatoryField = regulatoryFields.find(
-          (f) => f.key === item.field,
-        );
-        if (regulatoryField) {
-          if (!regulatoryHeadingRendered) {
-            regulatoryHeadingRendered = true;
-            return (
-              <Box key={"regulatory-heading-" + idx} mb={2}>
-                <Typography className="font-bold text-bc-bg-blue mt-4 mb-2">
-                  Regulatory values
-                </Typography>
-                <ChangeItemDisplay
-                  key={item.field + idx}
-                  item={{ ...item, displayLabel: regulatoryField.label }}
-                />
-              </Box>
+        if (regulatoryLabel) {
+          const heading = !regulatoryHeadingRendered &&
+            (regulatoryHeadingRendered = true) && (
+              <Typography
+                key="reg-heading"
+                className="font-bold text-bc-bg-blue mt-4 mb-2"
+              >
+                Regulatory values
+              </Typography>
             );
-          }
           return (
-            <ChangeItemDisplay
-              key={item.field + idx}
-              item={{ ...item, displayLabel: regulatoryField.label }}
-            />
+            <React.Fragment key={item.field + idx}>
+              {heading}
+              <ChangeItemDisplay
+                item={{ ...item, displayLabel: regulatoryLabel }}
+              />
+            </React.Fragment>
           );
         }
 
         return (
           <ChangeItemDisplay
             key={item.field + idx}
-            item={{ ...item, displayLabel: fieldKey }}
+            item={{ ...item, displayLabel: COMPLIANCE_LABELS[key] ?? key }}
           />
         );
       })}
 
-      {/* Render product changes */}
-      {Object.entries(productChangesMap).map(([productName, items], idx) => {
-        const firstItem = items[0];
+      {Object.entries(productChanges).map(([productName, items]) => {
+        const first = items[0];
+        const isFullChange =
+          (first.change_type === "added" && first.oldValue == null) ||
+          (first.change_type === "removed" && first.newValue == null);
 
-        if (isFullProductChange(firstItem)) {
-          const statusType =
-            firstItem.change_type === "removed" ? "deleted" : "added";
-          const productData =
-            statusType === "added" ? firstItem.newValue : firstItem.oldValue;
-
+        if (isFullChange) {
+          const data =
+            first.change_type === "added" ? first.newValue : first.oldValue;
           return (
-            <Box key={productName + idx} mb={4}>
+            <Box key={productName} mb={4}>
               <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-2">
-                {productName} <StatusLabel type={statusType} />
+                {productName} <StatusLabel type={first.change_type} />
               </Typography>
               <SectionReview
-                data={productData}
-                fields={Object.entries(productFieldLabels).map(
-                  ([key, label]) => ({ key, label }),
-                )}
-                isAdded={statusType === "added"}
-                isDeleted={statusType === "deleted"}
+                // Product change items always always have a value of type dict
+                data={data as Record<string, any>}
+                fields={Object.entries(PRODUCT_LABELS).map(([key, label]) => ({
+                  key,
+                  label,
+                }))}
+                isAdded={first.change_type === "added"}
+                isDeleted={first.change_type === "removed"}
               />
             </Box>
           );
         }
 
-        // Modified product → display only changed fields
         return (
-          <Box key={productName + idx} mb={2}>
+          <Box key={productName} mb={2}>
             <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-4">
               {productName}
             </Typography>
             {items.map((item) => {
-              // If it's an object, render per field
-              if (isRecord(item.newValue) || isRecord(item.oldValue)) {
-                const newValObj = isRecord(item.newValue) ? item.newValue : {};
-                const oldValObj = isRecord(item.oldValue) ? item.oldValue : {};
-
-                return Object.entries({ ...newValObj, ...oldValObj })
-                  .filter(([key]) => key !== "name")
-                  .map(([key]) => {
-                    const oldVal = oldValObj[key]?.toString();
-                    const newVal = newValObj[key]?.toString();
-
-                    if (
-                      oldVal &&
-                      newVal &&
-                      parseFloat(oldVal).toFixed(4) ===
-                        parseFloat(newVal).toFixed(4)
-                    )
-                      return null;
-
-                    return (
-                      <ChangeItemDisplay
-                        key={item.field + key}
-                        item={{
-                          field: key,
-                          oldValue: oldVal,
-                          newValue: newVal,
-                          change_type: item.change_type,
-                          displayLabel: productFieldLabels[key] || key,
-                        }}
-                      />
-                    );
-                  });
-              } else {
-                const fieldKey =
-                  getComplianceFieldDetails(item.field)?.fieldKey || item.field;
-                const oldVal = item.oldValue?.toString();
-                const newVal = item.newValue?.toString();
-
-                if (
-                  oldVal &&
-                  newVal &&
-                  parseFloat(oldVal).toFixed(4) ===
-                    parseFloat(newVal).toFixed(4)
-                )
-                  return null;
-
-                return (
-                  <ChangeItemDisplay
-                    key={item.field}
-                    item={{
-                      field: fieldKey,
-                      oldValue: item.oldValue,
-                      newValue: item.newValue,
-                      change_type: item.change_type,
-                      displayLabel: productFieldLabels[fieldKey] || fieldKey,
-                    }}
-                  />
-                );
-              }
+              if (skipChange(item.oldValue, item.newValue)) return null;
+              const key = item.field.match(/\['([^']+)'\]$/)?.[1] ?? item.field;
+              return (
+                <ChangeItemDisplay
+                  key={item.field}
+                  item={{ ...item, displayLabel: PRODUCT_LABELS[key] ?? key }}
+                />
+              );
             })}
           </Box>
         );

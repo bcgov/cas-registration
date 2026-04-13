@@ -1,70 +1,36 @@
 import React from "react";
 import { Box, Typography, Divider } from "@mui/material";
 import { ChangeItemDisplay } from "./ChangeItemDisplay";
+import { ChangeItem } from "../constants/types";
 
-interface AdditionalReportingDataProps {
-  changes: any[];
-}
+const FIELD_LABELS: Record<string, string> = {
+  capture_emissions: "Did you capture emissions?",
+  emissions_on_site_use: "Emissions (t) captured for on-site use",
+  emissions_on_site_sequestration:
+    "Emissions (t) captured for on-site sequestration",
+  emissions_off_site_transfer: "Emissions (t) captured for off-site transfer",
+  electricity_generated: "Electricity Generated (GWh)",
+  unknown: "Unknown field",
+};
 
-export const additionalDataFields = [
-  { label: "Did you capture emissions?", key: "capture_emissions" },
-  {
-    label: "Emissions (t) captured for on-site use",
-    key: "emissions_on_site_use",
-  },
-  {
-    label: "Emissions (t) captured for on-site sequestration",
-    key: "emissions_on_site_sequestration",
-  },
-  {
-    label: "Emissions (t) captured for off-site transfer",
-    key: "emissions_off_site_transfer",
-  },
-  { heading: "Additional data" },
-  { label: "Electricity Generated", key: "electricity_generated", unit: "GWh" },
-];
-
-const AdditionalReportingData: React.FC<AdditionalReportingDataProps> = ({
+const AdditionalReportingData: React.FC<{ changes: ChangeItem[] }> = ({
   changes,
 }) => {
-  if (!changes || changes.length === 0) return null;
+  if (!changes.length) return null;
   return (
     <Box mb={4}>
       <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue">
         Additional Reporting Data
       </Typography>
       <Divider sx={{ mb: 2 }} />
-
       {changes.map((item, idx) => {
-        // Extract all keys from the field path
-        const keyMatches = item.field.match(/\['([^']+)'\]/g);
-        const keys = keyMatches?.map((k: string) => k.replace(/[['\]]/g, ""));
-
-        // Use the second key as the field under 'report_additional_data'
-        const key = keys?.[1];
-        if (!key) return null;
-
-        // Find the corresponding label and unit
-        const fieldDef = additionalDataFields.find((f) => f.key === key);
-        if (!fieldDef) return null;
-
-        const label = fieldDef.label || key;
-        const unit = fieldDef.unit ? ` (${fieldDef.unit})` : "";
-
-        const changeType =
-          item.oldValue === null && item.newValue !== null
-            ? "added"
-            : item.oldValue !== null && item.newValue === null
-              ? "deleted"
-              : item.change_type;
+        const key = item.field.match(/\['([^']+)'\]$/)?.[1] ?? "unknown";
+        const label = FIELD_LABELS[key];
+        if (!label) return null;
         return (
           <ChangeItemDisplay
             key={item.field + idx}
-            item={{
-              ...item,
-              displayLabel: `${label}${unit}`,
-              change_type: changeType,
-            }}
+            item={{ ...item, displayLabel: label }}
           />
         );
       })}
@@ -72,4 +38,5 @@ const AdditionalReportingData: React.FC<AdditionalReportingDataProps> = ({
   );
 };
 
+export { FIELD_LABELS as additionalDataFields };
 export default AdditionalReportingData;

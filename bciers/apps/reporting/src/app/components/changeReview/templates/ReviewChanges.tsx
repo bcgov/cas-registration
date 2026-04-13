@@ -1,24 +1,20 @@
 import React from "react";
 import { Box, Typography, Divider } from "@mui/material";
-import { ReviewChangesProps, SourceTypeChange } from "../constants/types";
+import { ReviewChangesProps } from "../constants/types";
 import { ChangeItemDisplay } from "./ChangeItemDisplay";
-import { FacilityReportChanges } from "./FacilityReportChanges";
-import { organizeFacilityReportChanges } from "./facilityReportOrganizer";
-import {
-  detectActivityChangesInModifiedFacility,
-  detectSourceTypeChanges,
-} from "./facilityReportParser";
-import {
-  filterExcludedFields,
-  getSection,
-  groupPersonResponsibleChanges,
-  normalizeChangeKeys,
-} from "../utils/utils";
+import { FacilityReportSection } from "../../shared/FacilityReportSection";
+import { SectionReview } from "../../finalReview/templates/SectionReview";
+import { FieldDisplay } from "../../finalReview/templates/FieldDisplay";
+import { SimpleActivityDiff } from "../components/SimpleActivityDiff";
+import { EmissionSummaryChangeView } from "./EmissionSummaryChangeView";
+import { ProductionDataChangeView } from "./ProductionDataChangeView";
+import { EmissionAllocationChangeView } from "./EmissionAllocationChangeView";
+import { NonAttributableEmissionItem } from "./NonAttributableEmission";
 import OperationEmissionSummary from "./OperationEmissionSummary";
 import ElectricityImportData from "./ElectricityImportData";
 import NewEntrantChanges from "./NewEntrantChanges";
-import AdditionalReportingData from "@reporting/src/app/components/changeReview/templates/AdditionalReportingData";
-import ComplianceSummary from "@reporting/src/app/components/changeReview/templates/ComplianceSummary";
+import AdditionalReportingData from "./AdditionalReportingData";
+import ComplianceSummary from "./ComplianceSummary";
 import {
   complianceNote,
   reviewChangesNote,
@@ -28,22 +24,39 @@ import {
   REGULATED_OPERATION_REGISTRATION_PURPOSE,
   REPORTING_OPERATION,
 } from "@reporting/src/app/utils/constants";
+import {
+  filterExcludedFields,
+  getSection,
+  groupPersonResponsibleChanges,
+  normalizeChangeKeys,
+} from "../utils/utils";
+
+// ─── Group facility-level changes by facility name ───────────────
+function groupByFacility(changes: any[]): Record<string, any[]> {
+  const out: Record<string, any[]> = {};
+  for (const c of changes) {
+    const m = (c.field as string).match(/\['facility_reports']\['([^']+)']/);
+    if (!m) continue;
+    const name = m[1];
+    if (!out[name]) out[name] = [];
+    out[name].push(c);
+  }
+  return out;
+}
 
 export const ReviewChanges: React.FC<ReviewChangesProps> = ({
   changes,
   registrationPurpose,
 }) => {
-  // Normalize keys for all changes at the root level
   const normalizedChanges = normalizeChangeKeys(filterExcludedFields(changes));
-  const showChangesPurposes = [
+
+  const showChanges = [
     REGULATED_OPERATION_REGISTRATION_PURPOSE,
     OPTED_IN_OPERATION,
-  ];
-  const showChanges = showChangesPurposes.includes(registrationPurpose);
+  ].includes(registrationPurpose);
 
   const isReportingOnly = registrationPurpose === REPORTING_OPERATION;
 
-  // Helper to filter changes by field prefix or inclusion
   const filterByField = (prefixes: string[], includes: string[] = []) =>
     normalizedChanges.filter(
       (c: { field: string }) =>
@@ -51,7 +64,6 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
         includes.some((inc) => c.field.includes(inc)),
     );
 
-  // Filter Person Responsible changes, ignore trivial ones like report_version
   const personResponsibleItems = filterByField([
     "root['report_person_responsible']",
   ]).filter(
@@ -62,29 +74,14 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
   const complianceChanges = filterByField([
     "root['report_compliance_summary']",
   ]);
-
   const facilityReportChanges = filterByField([], ["['facility_reports']"]);
-
   const electricityImportChanges = filterByField([
     "root['report_electricity_import_data']",
   ]);
-
   const additionalReportingDataChanges = filterByField([
     "root['report_additional_data']",
   ]);
-
   const newEntrantChanges = filterByField(["root['report_new_entrant']"]);
-
-  const reportInformationChanges = filterByField(
-    ["root['report_information']"],
-    [
-      "['report_operation_information']",
-      "['reporting_window_start']",
-      "['reporting_window_end']",
-      "['report_type']",
-    ],
-  );
-
   const operationEmissionSummaryChanges = filterByField([
     "root['operation_emission_summary']",
   ]);
@@ -96,12 +93,10 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
         ...complianceChanges,
         ...electricityImportChanges,
         ...newEntrantChanges,
-        ...reportInformationChanges,
         ...operationEmissionSummaryChanges,
       ].includes(c),
   );
 
-  // Organize other changes into sections
   const sectioned: Record<string, any[]> = {};
   otherChanges.forEach((change: any) => {
     const section = getSection(change.field);
@@ -109,60 +104,6 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
     sectioned[section].push(change);
   });
 
-  const modifiedFacilityReportsWithAddedActivities: Record<string, any[]> = {};
-  const modifiedFacilityReportsWithDeletedActivities: Record<string, any[]> =
-    {};
-  const sourceTypeChanges: SourceTypeChange[] = [];
-
-  facilityReportChanges.forEach((change: any) => {
-    const activityResult = detectActivityChangesInModifiedFacility(change);
-    if (activityResult) {
-      const { facilityName, addedActivities, removedActivities } =
-        activityResult;
-
-      if (addedActivities?.length) {
-        if (!modifiedFacilityReportsWithAddedActivities[facilityName])
-          modifiedFacilityReportsWithAddedActivities[facilityName] = [];
-
-        addedActivities.forEach((activity) => {
-          const exists = modifiedFacilityReportsWithAddedActivities[
-            facilityName
-          ].some((a) => a.activity === activity.activity);
-          if (!exists) {
-            modifiedFacilityReportsWithAddedActivities[facilityName].push(
-              structuredClone(activity),
-            );
-          }
-        });
-      }
-
-      if (removedActivities?.length) {
-        if (!modifiedFacilityReportsWithDeletedActivities[facilityName])
-          modifiedFacilityReportsWithDeletedActivities[facilityName] = [];
-
-        modifiedFacilityReportsWithDeletedActivities[facilityName].push(
-          ...structuredClone(removedActivities),
-        );
-      }
-    }
-
-    if (change.field.includes("activity_data")) {
-      const sourceTypeResult = detectSourceTypeChanges(change);
-      sourceTypeChanges.push(...sourceTypeResult);
-    }
-  });
-
-  const organizedFacilityReports = organizeFacilityReportChanges(
-    facilityReportChanges,
-  );
-
-  const bulkFacilityChanges = facilityReportChanges.filter(
-    (c: any) =>
-      c.field === "root['facility_reports']" && c.change_type === "modified",
-  );
-
-  const isRecord = (value: any): value is Record<string, any> =>
-    typeof value === "object" && value !== null && !Array.isArray(value);
   const renderSection = (
     title: string,
     items: any[],
@@ -178,14 +119,18 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
           {title}
         </Typography>
         <Divider sx={{ mb: 2 }} />
-        {processedItems.map((item, idx) => (
+        {processedItems.map((item: any, idx: number) => (
           <ChangeItemDisplay key={item.field + idx} item={item} />
         ))}
       </Box>
     );
   };
 
+  // ─── per-facility rendering ───────────────────────────────────
+  const facilityGroups = groupByFacility(facilityReportChanges);
+
   const reportOperationItems = sectioned["Report Operation"] || [];
+
   return (
     <Box className="w-full">
       <div className="form-heading text-xl font-bold flex items-center">
@@ -194,98 +139,139 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
       <div className="form-group w-full my-8">
         {showChanges ? complianceNote : reviewChangesNote}
       </div>
+
       {renderSection("Review Operation Information", reportOperationItems)}
       {renderSection("Person Responsible", personResponsibleItems, true)}
 
-      {/* Facility Reports */}
-      {Object.entries(organizedFacilityReports).map(
-        ([facilityName, facilityData]: [string, any]) => {
-          // Get added and deleted activities for this facility
-          const addedActivities =
-            modifiedFacilityReportsWithAddedActivities[facilityName] || [];
-          const deletedActivities =
-            modifiedFacilityReportsWithDeletedActivities[facilityName] || [];
-
-          // Filter sourceTypeChanges for this facility
-          const facilitySourceTypeChanges = sourceTypeChanges.filter(
-            (c) => c.facilityName === facilityName,
-          );
-
-          // Ensure facilityData does not include added or deleted activities
-          const cleanFacilityData = {
-            ...facilityData, // Keep the rest of the core data
-            activities: facilityData.activities, // Explicitly include the activities (assuming they are part of core data)
-            // Do not include addedActivities and deletedActivities here
-          };
-
+      {/* ── Facility Reports ── */}
+      {Object.entries(facilityGroups).map(([facilityName, facilityChanges]) => {
+        // Whole-facility add / remove
+        const wholeFacility = facilityChanges.find(
+          (c) => c.field === `root['facility_reports']['${facilityName}']`,
+        );
+        if (wholeFacility) {
+          const val =
+            wholeFacility.change_type === "removed"
+              ? (wholeFacility.oldValue ?? wholeFacility.old_value)
+              : (wholeFacility.newValue ?? wholeFacility.new_value);
           return (
-            <Box key={facilityName} mb={4} className="w-full">
-              <FacilityReportChanges
+            <Box key={facilityName} mb={4}>
+              <FacilityReportSection
                 facilityName={facilityName}
-                facilityData={cleanFacilityData} // Pass clean data (without added/deleted activities)
-                addedActivities={addedActivities} // Pass added activities separately
-                deletedActivities={deletedActivities} // Pass deleted activities separately
-                sourceTypeChanges={facilitySourceTypeChanges}
-                isReportingOnly={isReportingOnly}
+                facilityData={val ?? {}}
+                isAdded={wholeFacility.change_type === "added"}
+                isRemoved={wholeFacility.change_type === "removed"}
+                showWhenNotReportingOnly={!isReportingOnly}
               />
             </Box>
           );
-        },
-      )}
-      {/* Bulk Facility Changes */}
-      {bulkFacilityChanges.map((change: any, idx: number) => {
-        const oldFacilities = isRecord(change.oldValue) ? change.oldValue : {};
-        const newFacilities = isRecord(change.newValue) ? change.newValue : {};
+        }
 
-        return Array.from(
-          new Set([
-            ...Object.keys(oldFacilities),
-            ...Object.keys(newFacilities),
-          ]),
-        ).map((facilityName: string) => (
-          <Box key={`bulk-${facilityName}-${idx}`} mb={4}>
-            <FacilityReportChanges
-              facilityName={facilityName}
-              facilityData={{
-                facilityName,
-                activities: {},
-                emissionSummary: [],
-                productionData: [],
-                emissionAllocation: [],
-                nonAttributableEmissions: [],
-                facilityNameChange: {
-                  field: "",
-                  oldValue: null,
-                  newValue: null,
-                  change_type: "modified",
-                },
-              }}
-              modifiedFacilityData={{
-                field: `facility_reports.${facilityName}`,
-                oldValue: {
-                  [facilityName]: (oldFacilities as Record<string, any>)[
-                    facilityName
-                  ],
-                },
-                newValue: {
-                  [facilityName]: (newFacilities as Record<string, any>)[
-                    facilityName
-                  ],
-                },
-                change_type: "modified",
-              }}
-              addedActivities={
-                modifiedFacilityReportsWithAddedActivities[facilityName]
-              }
-              deletedActivities={
-                modifiedFacilityReportsWithDeletedActivities[facilityName]
-              }
-              sourceTypeChanges={sourceTypeChanges}
-              isReportingOnly={isReportingOnly}
-            />
+        // Partition changes into sections
+        const activityChanges = facilityChanges.filter((c) =>
+          c.field.includes("['activity_data']"),
+        );
+        const emissionSummaryChanges = facilityChanges.filter((c) =>
+          c.field.includes("['emission_summary']"),
+        );
+        const productionDataChanges = facilityChanges.filter((c) =>
+          c.field.includes("['report_products']"),
+        );
+        const emissionAllocationChanges = facilityChanges.filter((c) =>
+          c.field.includes("['report_emission_allocation']"),
+        );
+        const nonAttributableChanges = facilityChanges.filter((c) =>
+          c.field.includes("['reportnonattributableemissions_records']"),
+        );
+        const facilityNameChange = facilityChanges.find((c) =>
+          c.field.endsWith("['facility_name']"),
+        );
+
+        return (
+          <Box key={facilityName} mb={4}>
+            <SectionReview
+              title={`Report Information - ${facilityName}`}
+              fields={[]}
+              data={{}}
+              expandable={true}
+            >
+              {/* Facility name change */}
+              {facilityNameChange && (
+                <Box ml={2}>
+                  <ChangeItemDisplay
+                    item={{
+                      ...facilityNameChange,
+                      displayLabel: "Facility Name",
+                    }}
+                  />
+                </Box>
+              )}
+
+              {/* Activity data */}
+              {activityChanges.length > 0 && (
+                <Box mb={3}>
+                  <SimpleActivityDiff
+                    changes={activityChanges}
+                    hideFacilityHeaders
+                  />
+                </Box>
+              )}
+
+              {/* Emission summary */}
+              {emissionSummaryChanges.length > 0 && (
+                <Box mb={3}>
+                  <EmissionSummaryChangeView data={emissionSummaryChanges} />
+                </Box>
+              )}
+
+              {/* Production data */}
+              {!isReportingOnly && productionDataChanges.length > 0 && (
+                <Box mb={3}>
+                  <ProductionDataChangeView data={productionDataChanges} />
+                </Box>
+              )}
+
+              {/* Emission allocation */}
+              {!isReportingOnly && emissionAllocationChanges.length > 0 && (
+                <Box mb={3}>
+                  <EmissionAllocationChangeView
+                    data={emissionAllocationChanges}
+                  />
+                </Box>
+              )}
+
+              {/* Non-attributable emissions */}
+              {nonAttributableChanges.length > 0 && (
+                <Box mb={3}>
+                  <SectionReview
+                    title="Non-Attributable Emissions"
+                    data={{}}
+                    fields={[]}
+                  >
+                    <Box ml={2}>
+                      <FieldDisplay
+                        label="Did your non-attributable emissions exceed 100 tCO2e?"
+                        value={nonAttributableChanges.some(
+                          (c: any) => c.change_type !== "removed",
+                        )}
+                      />
+                      {nonAttributableChanges.map(
+                        (change: any, idx: number) => (
+                          <NonAttributableEmissionItem
+                            key={`${change.field}-${idx}`}
+                            change={change}
+                          />
+                        ),
+                      )}
+                    </Box>
+                  </SectionReview>
+                </Box>
+              )}
+            </SectionReview>
           </Box>
-        ));
+        );
       })}
+
       {additionalReportingDataChanges.length > 0 && (
         <AdditionalReportingData changes={additionalReportingDataChanges} />
       )}

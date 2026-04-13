@@ -3,138 +3,56 @@ import { Box, Typography, Divider } from "@mui/material";
 import { ChangeItemDisplay } from "./ChangeItemDisplay";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 
-const newEntrantFieldLabels: Record<string, string> = {
+const FIELD_LABELS: Record<string, string> = {
   authorization_date: "Authorization Date",
   first_shipment_date: "Date of first shipment",
   new_entrant_period_start: "Date new entrant period began",
   assertion_statement: "Assertion statement",
   production_amount: "Production after new entrant period began",
-  unit: "Unit",
-  emission: "Emission",
 };
 
-const BASIC_FIELD_ORDER = [
+const BASIC_FIELDS = [
   "authorization_date",
   "first_shipment_date",
   "new_entrant_period_start",
 ];
 
-// Extract product/emission names from field path
-const parseFieldPath = (field: string) => ({
-  productName: field.match(/\['productions'\]\['([^']+)'\]/)?.[1],
-  emissionName: field.match(
-    /\['report_new_entrant_emission'\]\['([^']+)'\]/,
-  )?.[1],
-});
+// For removed items the value lives in old_value; normalise to a single "value"
+const getValue = (change: any) =>
+  change.change_type === "removed" ? change.oldValue : change.newValue;
 
-// Group changes by type
-const groupChanges = (changes: any[]) => {
-  const basicFields: any[] = [];
-  const products: Record<string, { production?: any; emissions: any[] }> = {};
-  const standaloneEmissions: any[] = [];
+const getEmissionName = (field: string) =>
+  field.match(/\['report_new_entrant_emission'\]\['([^']+)'\]/)?.[1];
 
-  changes.forEach((change) => {
-    const { productName, emissionName } = parseFieldPath(change.field);
+const getProductName = (field: string) =>
+  field.match(/\['productions'\]\['([^']+)'\]/)?.[1];
 
-    if (BASIC_FIELD_ORDER.some((key) => change.field.includes(key))) {
-      basicFields.push(change);
-    } else if (productName && change.field.includes("production_amount")) {
-      products[productName] = products[productName] || { emissions: [] };
-      products[productName].production = change;
-    } else if (emissionName) {
-      const target = productName
-        ? (products[productName] = products[productName] || { emissions: [] })
-            .emissions
-        : standaloneEmissions;
-      target.push({ ...change, emissionName });
-    }
-  });
+const renderEmission = (change: any) => {
+  const value = getValue(change);
+  // Whole emission object added/removed: { emission_category, emission }
+  const emission = typeof value === "object" ? value?.emission : value;
+  const label =
+    typeof value === "object"
+      ? value?.emission_category
+      : getEmissionName(change.field);
 
-  return { basicFields, products, standaloneEmissions };
-};
+  let newValue;
+  if (change.change_type === "added") newValue = emission;
+  else if (change.change_type === "modified") newValue = change.newValue;
+  else newValue = null;
 
-// Order and deduplicate basic fields
-const getOrderedBasicFields = (basicFields: any[]) => {
-  const seen = new Set<string>();
-  return BASIC_FIELD_ORDER.map((key) =>
-    basicFields.find((f) => f.field.includes(key)),
-  )
-    .filter(Boolean)
-    .filter((item) => {
-      const label =
-        newEntrantFieldLabels[item.field.match(/\['([^']+)'\]$/)?.[1]] ||
-        item.field;
-      if (seen.has(label)) return false;
-      seen.add(label);
-      return true;
-    });
-};
-
-// Render ChangeItemDisplay
-const renderValue = (
-  change: any,
-  label?: string,
-  formatDateField?: boolean,
-) => {
-  // Format date for basic fields
-  if (formatDateField && change.newValue) {
-    change = {
-      ...change,
-      newValue: formatDate(change.newValue, "YYYY-MM-DD"),
-      oldValue: change.oldValue
-        ? formatDate(change.oldValue, "YYYY-MM-DD")
-        : change.oldValue,
-    };
-  }
-
-  // Handle emissions (added/deleted/modified) or any object with 'emission'
-  if (
-    typeof change.newValue === "object" &&
-    change.newValue?.emission !== undefined
-  ) {
-    return (
-      <ChangeItemDisplay
-        item={{
-          field: change.newValue.emission_category,
-          oldValue: change.oldValue?.emission ?? null,
-          newValue: change.newValue.emission,
-          change_type: change.change_type,
-          displayLabel: change.newValue.emission_category,
-          isNewAddition: change.change_type === "added",
-        }}
-      />
-    );
-  }
-
-  // Generic added objects
-  if (
-    change.change_type === "added" &&
-    typeof change.newValue === "object" &&
-    change.newValue
-  ) {
-    return (
-      <Box sx={{ pl: 2 }}>
-        {Object.entries(change.newValue).map(([k, v]) => (
-          <ChangeItemDisplay
-            key={k}
-            item={{
-              field: k,
-              oldValue: null,
-              newValue:
-                typeof v === "string" || typeof v === "object" ? v : String(v),
-              change_type: "added",
-              displayLabel: k,
-            }}
-          />
-        ))}
-      </Box>
-    );
-  }
-
-  // Default
   return (
     <ChangeItemDisplay
-      item={{ ...change, displayLabel: label || change.field }}
+      item={{
+        field: change.field,
+        oldValue:
+          change.change_type === "removed"
+            ? emission
+            : (change.oldValue ?? null),
+        newValue: newValue,
+        change_type: change.change_type,
+        displayLabel: label,
+      }}
     />
   );
 };
@@ -146,8 +64,41 @@ interface NewEntrantChangesProps {
 const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
   if (!changes?.length) return null;
 
-  const { basicFields, products, standaloneEmissions } = groupChanges(changes);
-  const orderedBasicFields = getOrderedBasicFields(basicFields);
+  // Drop internal category metadata fields — they're surfaced via emission_category label
+  const filtered = changes.filter(
+    (c) =>
+      !c.field.endsWith("['emission_category']") &&
+      !c.field.endsWith("['category_type']"),
+  );
+
+  const basicFields = BASIC_FIELDS.map((key) =>
+    filtered.find((c) => c.field.includes(key)),
+  ).filter(Boolean);
+  const emissions = filtered.filter((c) => getEmissionName(c.field));
+  const products: Record<string, { production?: any; emissions: any[] }> = {};
+
+  filtered
+    .filter((c) => getProductName(c.field))
+    .forEach((c) => {
+      const name = getProductName(c.field)!;
+      products[name] = products[name] || { emissions: [] };
+      const isWholeObject = typeof getValue(c) === "object";
+
+      if (isWholeObject)
+        products[name].production = {
+          ...c,
+          oldValue: c.oldValue?.production_amount ?? null,
+          newValue: c.newValue?.production_amount ?? null,
+        };
+      else if (c.field.includes("production_amount"))
+        products[name].production = c;
+      else products[name].production = undefined;
+
+      if (!isWholeObject && !c.field.includes("production_amount"))
+        products[name].emissions.push(c);
+    });
+
+  const standaloneEmissions = emissions.filter((c) => !getProductName(c.field));
 
   return (
     <Box mb={4}>
@@ -156,15 +107,19 @@ const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
       </Typography>
       <Divider sx={{ mb: 2 }} />
 
-      {orderedBasicFields.map((item) => {
+      {basicFields.map((item: any) => {
         const key = item.field.match(/\['([a-zA-Z0-9_]+)'\]$/)?.[1];
+        const fmt = (v: any) => (v ? formatDate(v, "YYYY-MM-DD") : v);
         return (
           <Box key={item.field} mb={1}>
-            {renderValue(
-              item,
-              key ? newEntrantFieldLabels[key] : item.field,
-              true,
-            )}
+            <ChangeItemDisplay
+              item={{
+                ...item,
+                oldValue: fmt(item.oldValue),
+                newValue: fmt(item.newValue),
+                displayLabel: FIELD_LABELS[key] ?? key,
+              }}
+            />
           </Box>
         );
       })}
@@ -174,22 +129,19 @@ const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
           <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-2">
             Product: {productName}
           </Typography>
-
           {data.production && (
             <Box mb={1}>
-              {renderValue(
-                data.production,
-                newEntrantFieldLabels.production_amount,
-              )}
+              <ChangeItemDisplay
+                item={{
+                  ...data.production,
+                  displayLabel: FIELD_LABELS.production_amount,
+                }}
+              />
             </Box>
           )}
-
           {data.emissions.map((item) => (
             <Box key={item.field} mb={1}>
-              <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
-                {item.emissionName}
-              </Typography>
-              {renderValue(item, item.emissionName)}
+              {renderEmission(item)}
             </Box>
           ))}
         </Box>
@@ -202,7 +154,7 @@ const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
           </Typography>
           {standaloneEmissions.map((item) => (
             <Box key={item.field} mb={1}>
-              {renderValue(item, item.emissionName)}
+              {renderEmission(item)}
             </Box>
           ))}
         </Box>

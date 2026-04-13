@@ -1,3 +1,8 @@
+import {
+  ActivityItem,
+  ChangeType,
+} from "@reporting/src/app/components/changeReview/constants/types";
+
 // types/reportTypes.ts
 export interface ReportOperation {
   activities: string;
@@ -143,13 +148,29 @@ export interface ReportProductEmissionAllocationTotal {
   allocated_quantity: number;
 }
 
+export interface ReportNewEntrantEmissionEntry {
+  emission_category: string;
+  category_type: string;
+  emission: number;
+}
+
+export interface ReportNewEntrantProductionEntry {
+  product: string;
+  unit: string;
+  production_amount: number;
+}
+
 export interface ReportNewEntrant {
   authorization_date: string;
   first_shipment_date: string;
   new_entrant_period_start: string;
   assertion_statement: boolean;
-  report_new_entrant_emission: [];
-  productions: [];
+  productions:
+    | Record<string, ReportNewEntrantProductionEntry>
+    | ReportNewEntrantProductionEntry[];
+  report_new_entrant_emission:
+    | Record<string, ReportNewEntrantEmissionEntry>
+    | ReportNewEntrantEmissionEntry[];
 }
 
 export interface ReportEmissionAllocation {
@@ -189,4 +210,16 @@ export interface ReportData {
   report_new_entrant: ReportNewEntrant[];
   report_electricity_import_data: ReportElectricityImportData[];
   reporting_year: number;
+}
+
+export interface ActivitiesViewProps {
+  activity_data: ActivityItem[] | Record<string, any>;
+  isAdded?: boolean;
+  isDeleted?: boolean;
+  changeType?: ChangeType;
+  sourceTypeChange?: {
+    name: string;
+    type: "added" | "removed" | "modified";
+    deletedSourceTypes?: Array<{ name: string; data: Record<string, any> }>;
+  };
 }
