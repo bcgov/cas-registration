@@ -80,7 +80,7 @@ def handle_methodologies(
 
         else:
             for reporting_field in reporting_fields:
-                property_field = str_to_camel_case(reporting_field.field_name)
+                property_field = reporting_field.slug
                 methodology_object["properties"][property_field] = {
                     "type": reporting_field.field_type,
                     "title": reporting_field.field_display_title or reporting_field.field_name,
