@@ -1,4 +1,5 @@
 export type FacilityData = {
+  facility_id: string;
   facility_type: string;
   facility_name: string;
 };
@@ -11,4 +12,12 @@ export type ReportData = {
 export type OperationData = {
   naics_code: string;
   operation_type: string;
+  is_operation_opted_out: boolean;
+};
+
+export type ReportingFormResponse<TPayload> = {
+  report_data: ReportData;
+  payload: TPayload;
+  facility_data?: FacilityData;
+  operation_data?: OperationData;
 };

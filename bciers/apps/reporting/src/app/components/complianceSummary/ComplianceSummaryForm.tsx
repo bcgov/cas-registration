@@ -9,34 +9,12 @@ import {
   createComplianceSummarySchema,
 } from "@reporting/src/data/jsonSchema/complianceSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
-import { NavigationInformation } from "../taskList/types";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import { ComplianceSummaryFormPayload } from "@reporting/src/app/components/complianceSummary/types";
+import { hasJanMarProduction } from "@reporting/src/app/utils/hasJanMarProduction";
 
 interface Props {
-  summaryFormData: {
-    emissions_attributable_for_reporting: string;
-    reporting_only_emissions: string;
-    emissions_attributable_for_compliance: string;
-    emissions_limit: string;
-    excess_emissions: string;
-    credited_emissions: string;
-    regulatory_values: {
-      initial_compliance_period: string;
-      compliance_period: string;
-    };
-    products: {
-      name: string;
-      customUnit: string;
-      annual_production: string;
-      jan_mar_production?: string;
-      apr_dec_production?: string;
-      emission_intensity: string;
-      allocated_industrial_process_emissions: string;
-      allocated_compliance_emissions: string;
-      reduction_factor: string;
-      tightening_rate: string;
-    }[];
-    reporting_year: number;
-  };
+  summaryFormData: ComplianceSummaryFormPayload;
   navigationInformation: NavigationInformation;
 }
 
@@ -44,9 +22,11 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   summaryFormData,
   navigationInformation,
 }) => {
-  // Generate schemas based on reporting year
+  // Generate schemas based on reporting year and prescence of jan_mar_production data
+  const displayJanMarProduction = hasJanMarProduction(summaryFormData);
   const complianceSummarySchema = createComplianceSummarySchema(
     summaryFormData.reporting_year,
+    displayJanMarProduction,
   );
 
   const complianceSummaryUiSchema = createComplianceSummaryUiSchema(
@@ -65,6 +45,7 @@ const ComplianceSummaryForm: React.FC<Props> = ({
         <ReportingTaskList elements={navigationInformation.taskList} />
         <div className="w-full md:max-w-[60%]">
           <FormBase
+            data-testid="compliance-summary-form"
             schema={complianceSummarySchema}
             uiSchema={complianceSummaryUiSchema}
             formData={summaryFormData}

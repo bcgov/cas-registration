@@ -1,5 +1,4 @@
 from model_bakery.baker import make_recipe
-from registration.models import Operation
 from registration.models.regulated_product import RegulatedProduct
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
@@ -27,15 +26,23 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             self, operator=self.facility_report.report_version.report.operator
         )
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
+
         assert response.json() == {
-            'facility_data': {
-                'facility_type': 'test facility type',
+            "facility_data": {
+                "facility_id": str(self.facility_report.facility_id),
+                "facility_name": self.facility_report.facility_name,
+                "facility_type": "test facility type",
             },
-            'report_data': {
-                'report_version_id': self.report_version.id,
-                'reporting_year': 1222,
+            "operation_data": {
+                "naics_code": self.report_operation.report_version.report.operation.naics_code.naics_code,
+                "operation_type": self.report_operation.operation_type,
+                "is_operation_opted_out": False,
             },
-            'payload': {'report_products': [], 'allowed_products': []},
+            "report_data": {
+                "report_version_id": self.report_version.id,
+                "reporting_year": 1222,
+            },
+            "payload": {"report_products": [], "allowed_products": []},
         }
 
     def test_get_returns_the_right_data_with_data(self):
@@ -64,7 +71,7 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         # ❌ Report product with a different report version (should NOT be in the response)
         make_recipe(
             "reporting.tests.utils.report_product",
-            report_version=make_recipe("reporting.tests.utils.report_version"),  # Different report version
+            report_version=make_recipe("reporting.tests.utils.report_version"),
             facility_report=self.facility_report,
             product_id=3,
         )
@@ -73,22 +80,28 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         make_recipe(
             "reporting.tests.utils.report_product",
             report_version=self.facility_report.report_version,
-            facility_report=make_recipe("reporting.tests.utils.facility_report"),  # Different facility
+            facility_report=make_recipe("reporting.tests.utils.facility_report"),
             product_id=4,
         )
 
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
 
-        # ✅ Check that only rp1 and rp2 are returned, not different version or different facility
         assert response.json() == {
-            'facility_data': {
-                'facility_type': 'test facility type',
+            "facility_data": {
+                "facility_id": str(self.facility_report.facility_id),
+                "facility_name": self.facility_report.facility_name,
+                "facility_type": "test facility type",
             },
-            'report_data': {
-                'report_version_id': self.report_version.id,
-                'reporting_year': 1222,
+            "operation_data": {
+                "naics_code": self.report_operation.report_version.report.operation.naics_code.naics_code,
+                "operation_type": self.report_operation.operation_type,
+                "is_operation_opted_out": False,
             },
-            'payload': {
+            "report_data": {
+                "report_version_id": self.report_version.id,
+                "reporting_year": 1222,
+            },
+            "payload": {
                 "report_products": [
                     {
                         "product_id": rp1.product.id,
@@ -96,7 +109,6 @@ class TestReportProductV2Endpoints(CommonTestSetup):
                         "unit": rp1.product.unit,
                         "is_regulated": rp1.product.is_regulated,
                         "annual_production": rp1.annual_production,
-                        # Production data apr-dec is only serialized when present
                         "production_methodology": rp1.production_methodology.value,
                     },
                     {
@@ -138,20 +150,3 @@ class TestReportProductV2Endpoints(CommonTestSetup):
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_production_form_data", facility_id="uuid")
-
-    def test_get_returns_operation_opted_out_final_reporting_year_when_set(self):
-        """
-        Test that when an operation's registration purpose is 'Opted-in Operation' and it has a
-        set final_reporting_year of 2025, the payload includes 'operation_opted_out_final_reporting_year' == 2025.
-        """
-        TestUtils.authorize_current_user_as_operator_user(
-            self, operator=self.facility_report.report_version.report.operator
-        )
-        # Set the operation_opted_out_final_reporting_year on the report_operation
-        self.report_operation.operation_opted_out_final_reporting_year = 2025
-        self.report_operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
-        self.report_operation.save()
-
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
-
-        assert response.json()['payload']['operation_opted_out_final_reporting_year'] == 2025

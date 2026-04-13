@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import ComplianceSummaryForm from "@reporting/src/app/components/complianceSummary/ComplianceSummaryForm";
-import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
+import { vi, Mock } from "vitest";
 
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
-import { dummyNavigationInformation } from "../taskList/utils";
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
 import { createComplianceSummarySchema } from "@reporting/src/data/jsonSchema/complianceSummary";
 
 vi.mock("@bciers/actions", () => ({
@@ -40,6 +40,23 @@ const mockSummaryData = {
     },
   ],
   reporting_year: 2024,
+};
+
+const mock2025Data = {
+  ...mockSummaryData,
+  reporting_year: 2025,
+  isOptedOut: false,
+  regulatory_values: {
+    ...mockSummaryData.regulatory_values,
+    initial_compliance_period: "2025",
+    compliance_period: "2025",
+  },
+  products: [
+    {
+      ...mockSummaryData.products[0],
+      apr_dec_production: undefined,
+    },
+  ],
 };
 
 describe("ComplianceSummaryForm", () => {
@@ -161,33 +178,6 @@ describe("ComplianceSummaryForm", () => {
   });
 
   it("should not show apr_dec_production field for years other than 2024", async () => {
-    const mock2025Data = {
-      emissions_attributable_for_reporting: "1000.5",
-      reporting_only_emissions: "2000.75",
-      emissions_attributable_for_compliance: "3000.25",
-      emissions_limit: "4000",
-      excess_emissions: "5000.5",
-      credited_emissions: "6000.75",
-      regulatory_values: {
-        initial_compliance_period: "2025",
-        compliance_period: "2025",
-      },
-      products: [
-        {
-          name: "Pucks",
-          customUnit: "Goals",
-          reduction_factor: "7000.1",
-          tightening_rate: "8000.2",
-          annual_production: "11000.5",
-          // apr_dec_production should not exist for non-2024 years
-          emission_intensity: "13000.7",
-          allocated_industrial_process_emissions: "14000.8",
-          allocated_compliance_emissions: "15000.9",
-        },
-      ],
-      reporting_year: 2025,
-    };
-
     render(
       <ComplianceSummaryForm
         summaryFormData={mock2025Data}
@@ -201,7 +191,10 @@ describe("ComplianceSummaryForm", () => {
   });
 
   it("should generate schema without apr_dec_production for non-2024 years", () => {
-    const schema2025 = createComplianceSummarySchema(2025);
+    const schema2025 = createComplianceSummarySchema(
+      mock2025Data.reporting_year,
+      mock2025Data.isOptedOut,
+    );
     const productsSchema = schema2025.properties?.products as any;
     const productProperties = productsSchema?.items?.properties;
 
@@ -211,12 +204,40 @@ describe("ComplianceSummaryForm", () => {
   });
 
   it("should generate schema with apr_dec_production for 2024", () => {
-    const schema2024 = createComplianceSummarySchema(2024);
+    const schema2024 = createComplianceSummarySchema(
+      mockSummaryData.reporting_year,
+      mockSummaryData.isOptedOut,
+    );
     const productsSchema = schema2024.properties?.products as any;
     const productProperties = productsSchema?.items?.properties;
 
     expect(productProperties).toBeDefined();
     expect(productProperties?.apr_dec_production).toBeDefined();
     expect(productProperties?.annual_production).toBeDefined();
+  });
+
+  it("should generate schema without jan_mar_production prescence of jan_mar_production is false", () => {
+    const schema2025 = createComplianceSummarySchema(
+      mock2025Data.reporting_year,
+      false,
+    );
+    const productsSchema = schema2025.properties?.products as any;
+    const productProperties = productsSchema?.items?.properties;
+
+    expect(productProperties).toBeDefined();
+    expect(productProperties?.jan_mar_production).toBeUndefined();
+  });
+
+  it("should generate schema with jan_mar_production prescence of jan_mar_production is true", () => {
+    const schema2025 = createComplianceSummarySchema(2025, true);
+    const productsSchema = schema2025.properties?.products as any;
+    const productProperties = productsSchema?.items?.properties;
+
+    expect(productProperties).toBeDefined();
+    expect(productProperties?.jan_mar_production).toBeDefined();
+    expect(productProperties?.jan_mar_production).toEqual({
+      type: "number",
+      title: "Production data for Jan 1 - Mar 31 2025",
+    });
   });
 });

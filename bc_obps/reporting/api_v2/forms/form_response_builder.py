@@ -7,7 +7,7 @@ from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
 from reporting.service.naics_code import NaicsCodeService
-
+from reporting.service.report_operation_opt_out_service import ReportOperationOptOutService
 
 """
     Basic implementation of a builder pattern to put together API
@@ -26,6 +26,7 @@ class ReportData:
 
 @dataclass
 class FacilityData:
+    facility_id: uuid.UUID
     facility_type: str
     facility_name: str
 
@@ -34,6 +35,7 @@ class FacilityData:
 class OperationData:
     naics_code: str | None
     operation_type: str
+    is_operation_opted_out: bool
 
 
 class FormResponseBuilder(ResponseBuilder):
@@ -58,7 +60,9 @@ class FormResponseBuilder(ResponseBuilder):
     def facility_data(self, facility_id: uuid.UUID) -> Self:
         facility_report = FacilityReport.objects.get(report_version_id=self.report_version_id, facility_id=facility_id)
         facility_data = FacilityData(
-            facility_type=facility_report.facility_type, facility_name=facility_report.facility_name
+            facility_id=facility_id,
+            facility_type=facility_report.facility_type,
+            facility_name=facility_report.facility_name,
         )
 
         self.response["facility_data"] = dataclasses.asdict(facility_data)
@@ -77,6 +81,7 @@ class FormResponseBuilder(ResponseBuilder):
         operation_data = OperationData(
             naics_code=naics_code,
             operation_type=report_operation.operation_type,
+            is_operation_opted_out=ReportOperationOptOutService.is_operation_opted_out(report_operation.report_version),
         )
 
         self.response["operation_data"] = dataclasses.asdict(operation_data)

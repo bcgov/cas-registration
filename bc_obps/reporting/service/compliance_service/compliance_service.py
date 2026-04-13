@@ -17,7 +17,7 @@ from reporting.models import ReportComplianceSummary, ReportComplianceSummaryPro
 from registration.models import RegulatedProduct, Operation
 from decimal import Decimal
 from django.db.models import Sum
-from typing import Dict, List
+from typing import Dict, List, Optional
 from django.db import transaction
 from dataclasses import dataclass
 
@@ -27,6 +27,7 @@ from reporting.service.compliance_service.regulatory_values import (
     get_product_regulatory_values_override,
 )
 from reporting.service.utils import round_using_appropriate_strategy
+from reporting.service.report_operation_opt_out_service import ReportOperationOptOutService
 
 
 @dataclass
@@ -34,7 +35,7 @@ class ReportProductComplianceData:
     name: str
     product_id: int
     annual_production: Decimal
-    jan_mar_production: Decimal
+    jan_mar_production: Optional[Decimal]
     apr_dec_production: Decimal
     emission_intensity: Decimal
     allocated_industrial_process_emissions: Decimal
@@ -45,7 +46,9 @@ class ReportProductComplianceData:
     def as_record_defaults(self) -> dict[str, Decimal | None]:
         return {
             "annual_production": ComplianceParameters.round(self.annual_production),
-            "jan_mar_production": ComplianceParameters.round(self.jan_mar_production),
+            "jan_mar_production": (
+                ComplianceParameters.round(self.jan_mar_production) if self.jan_mar_production is not None else None
+            ),
             "apr_dec_production": ComplianceParameters.round(self.apr_dec_production),
             "emission_intensity": ComplianceParameters.round(self.emission_intensity),
             "allocated_industrial_process_emissions": ComplianceParameters.round(
@@ -71,7 +74,6 @@ class ComplianceData:
     credited_emissions: Decimal
     industry_regulatory_values: RegulatoryValues
     products: List[ReportProductComplianceData]
-    reporting_year: int
 
     def as_record_defaults(self) -> dict[str, Decimal | int]:
         return {
@@ -192,6 +194,8 @@ class ComplianceService:
         report_version_record = ReportVersion.objects.select_related("report__reporting_year", "report_operation").get(
             pk=report_version_id
         )
+        # Determine whether Jan–Mar production data should be included
+        include_jan_mar = ReportOperationOptOutService.should_include_jan_mar_production(report_version_record)
 
         # Get regulatory values (periods are global, but RF/TR will be applied per product)
         industry_regulatory_values = get_industry_regulatory_values(report_version_record)
@@ -276,7 +280,7 @@ class ComplianceService:
                     name=rp.product.name,
                     product_id=rp.product_id,
                     annual_production=production_totals["annual_amount"],
-                    jan_mar_production=production_totals["jan_mar"],
+                    jan_mar_production=production_totals["jan_mar"] if include_jan_mar else None,
                     apr_dec_production=production_totals["apr_dec"],
                     emission_intensity=ei,
                     allocated_industrial_process_emissions=industrial_process,
@@ -338,7 +342,6 @@ class ComplianceService:
             ),
             industry_regulatory_values=industry_regulatory_values,
             products=compliance_product_list,
-            reporting_year=report_version_record.report.reporting_year_id,
         )
 
         return return_object

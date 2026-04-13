@@ -14,8 +14,6 @@ export { default as getContact } from "./getContact";
 export { default as archiveContact } from "./archiveContact";
 export { default as getContacts } from "./getContacts";
 export { default as getOperationRepresentatives } from "./getOperationRepresentatives";
-export { default as getProductionData } from "./getProductionData";
-export { default as postProductionData } from "./postProductionData";
 export { default as fetchOperationsPageData } from "./fetchOperationsPageData";
 export { default as handleInteralAccessRequest } from "./handleInternalAccessRequest";
 export { default as getInternalAccessRequests } from "./getInteralAccessRequests";

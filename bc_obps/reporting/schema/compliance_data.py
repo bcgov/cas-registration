@@ -1,5 +1,5 @@
 import dataclasses
-from typing import List
+from typing import List, Optional
 from ninja import Schema
 from reporting.service.compliance_service.compliance_service import ComplianceData
 from reporting.service.compliance_service.regulatory_values import RegulatoryValues
@@ -13,7 +13,7 @@ class RegulatoryValuesSchema(Schema):
 class ReportProductComplianceSchema(Schema):
     name: str
     annual_production: float
-    jan_mar_production: float
+    jan_mar_production: Optional[float] = None
     apr_dec_production: float
     emission_intensity: float
     allocated_industrial_process_emissions: float
@@ -31,7 +31,6 @@ class ComplianceDataSchemaOut(Schema):
     credited_emissions: float
     regulatory_values: RegulatoryValuesSchema
     products: List[ReportProductComplianceSchema]
-    reporting_year: int
 
     @staticmethod
     def resolve_regulatory_values(obj: ComplianceData) -> RegulatoryValues:

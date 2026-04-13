@@ -169,13 +169,17 @@ const complianceSummaryUiSchemaDefault: UiSchema = {
 };
 
 export const createComplianceSummarySchema = (
-  reportingYear: number,
+  reportingYear?: number,
+  displayJanMarProduction = false,
 ): RJSFSchema => {
-  if (reportingYear === 2024) {
-    return complianceSummarySchema2024;
-  } else if (reportingYear === 2025) {
-    return complianceSummarySchema2025;
-  } else return complianceSummarySchemaDefault;
+  switch (reportingYear) {
+    case 2024:
+      return complianceSummarySchema2024;
+    case 2025:
+      return complianceSummarySchema2025(displayJanMarProduction);
+    default:
+      return complianceSummarySchemaDefault;
+  }
 };
 
 export const createComplianceSummaryUiSchema = (reportingYear: number) => {

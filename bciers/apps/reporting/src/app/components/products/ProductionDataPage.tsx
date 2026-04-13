@@ -1,11 +1,14 @@
 import ProductionDataForm from "@reporting/src/app/components/products/ProductionDataForm";
 import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
-import { getProductionData } from "@bciers/actions/api";
+import { getProductionData } from "@reporting/src/app/utils/productDataForm/getProductionData";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
-import { getNavigationInformation } from "../taskList/navigationInformation";
-import { HeaderStep, ReportingPage } from "../taskList/types";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import {
+  HeaderStep,
+  ReportingPage,
+} from "@reporting/src/app/components/taskList/types";
 import { getOverlappingIndustrialProcessEmissions } from "@reporting/src/app/utils/getOverlappingIndProcessEmissions";
 
 export default async function ProductionDataPage({
@@ -23,14 +26,11 @@ export default async function ProductionDataPage({
     unit: p.unit,
   }));
 
-  const facilityType = response.facility_data.facility_type;
+  const facilityType = response.facility_data?.facility_type;
+  if (!facilityType) throw new Error("Failed to receive facility type.");
 
   const reportingYear = response.report_data.reporting_year;
-  const isOptedOut = Boolean(
-    response.payload.operation_opted_out_final_reporting_year &&
-      response.payload.operation_opted_out_final_reporting_year <=
-        reportingYear,
-  );
+  const isOptedOut = response.operation_data?.is_operation_opted_out ?? false;
 
   const schema: any = buildProductionDataSchema(
     response.report_data.reporting_year,
