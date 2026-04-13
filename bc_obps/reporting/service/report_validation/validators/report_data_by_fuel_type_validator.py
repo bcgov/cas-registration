@@ -76,7 +76,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                                 ReportValidationError(
                                     Severity.WARNING,
                                     f"Methodology Field ({reporting_field_display_name}) with value ({v}) is outside of the expected range ({methodology_field_validation.lower_bound} - {methodology_field_validation.upper_bound}) for Activity: {activity_name}, Source Type: {source_type_name}, Fuel Type: {fuel_type_name}, Gas Type: {gas_type_name}",
-                                    key=ReportValidationErrorKey.REPORT_DATA_OUT_OF_BOUNDS_BY_FUEL_TYPE,
+                                    key=ReportValidationErrorKey.REPORT_DATA_OUT_OF_BOUNDS_BY_REPORTING_FIELD,
                                     context=ErrorContext(
                                         report_version_id=report_version.id,
                                         facility_id=fr.report_source_type.report_activity.facility_report.facility_id,
