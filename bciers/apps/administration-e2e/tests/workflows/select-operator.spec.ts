@@ -17,6 +17,7 @@ import {
   assertSuccessfulSnackbar,
   linkIsVisible,
   takeStabilizedScreenshot,
+  urlIsCorrect,
 } from "@bciers/e2e/utils/helpers";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 import { FrontendMessages } from "@bciers/utils/src/enums";
@@ -36,7 +37,7 @@ test.describe("Test select operator paths", () => {
     // 🛸 Navigates to select operator
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
-    await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
+    await urlIsCorrect(page, selectOperatorPage.url);
 
     // 👉 Action search by legal name
     await selectOperatorPage.selectByLegalName(
@@ -76,7 +77,7 @@ test.describe("Test select operator paths", () => {
     // 🛸 Navigates to select operator
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
-    await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
+    await urlIsCorrect(page, selectOperatorPage.url);
 
     // 👉 Action search by CRA number (Delta Innovations)
     await selectOperatorPage.selectByCraNumber("987654323");
@@ -135,7 +136,7 @@ test.describe("Declined access request", () => {
   }) => {
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
-    await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
+    await urlIsCorrect(page, selectOperatorPage.url);
 
     // 👉 Action search by legal name — navigates to confirm page
     await selectOperatorPage.selectByLegalName(
