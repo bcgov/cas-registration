@@ -5,6 +5,7 @@ import {
   analyzeAccessibility,
   takeStabilizedScreenshot,
   linkIsVisible,
+  urlIsCorrect,
 } from "@bciers/e2e/utils/helpers";
 import { DashboardPOM } from "@/dashboard-e2e/poms/dashboard";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
@@ -37,6 +38,7 @@ userRoles.forEach((role) => {
       // 🛸 Navigate to dashboard page
       const dashboardPage = new DashboardPOM(page);
       await dashboardPage.route();
+      await urlIsCorrect(page, dashboardPage.url);
       let component = "";
 
       // Say cheese!
