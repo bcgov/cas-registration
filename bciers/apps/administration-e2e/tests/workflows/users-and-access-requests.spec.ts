@@ -6,6 +6,7 @@ import {
   getRowByUniqueCellValue,
   openNewBrowserContextAs,
   takeStabilizedScreenshot,
+  urlIsCorrect,
 } from "@bciers/e2e/utils/helpers";
 import {
   UserAccessRequestActions,
@@ -40,6 +41,7 @@ test.describe("External User", () => {
     // 🤣🛸 Navigate to Users and Access Requests from dashboard
     const accessRequestPage = new UsersAccessRequestPOM(page);
     await accessRequestPage.goToUserAccessRequestPage();
+    await urlIsCorrect(page, accessRequestPage.userAccessRequestURL);
     await accessRequestPage.pageIsStable();
 
     // Get specific row that has the unique email
