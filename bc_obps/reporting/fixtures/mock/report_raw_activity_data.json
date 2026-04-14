@@ -23,9 +23,7 @@
                         "gasType": "CO2",
                         "emission": 11000,
                         "methodology": {
-                          "methodology": "Default EF",
-                          "unitFuelCo2DefaultEf": 1,
-                          "unitFuelCo2DefaultEfFieldUnits": "kg/fuel units"
+                          "methodology": "Default EF"
                         }
                       }
                     ],
@@ -72,9 +70,7 @@
                         "gasType": "CO2",
                         "emission": 250000,
                         "methodology": {
-                          "methodology": "Default EF",
-                          "unitFuelCo2DefaultEf": 1,
-                          "unitFuelCo2DefaultEfFieldUnits": "kg/fuel units"
+                          "methodology": "Default EF"
                         }
                       }
                     ],
@@ -121,9 +117,7 @@
                         "gasType": "CO2",
                         "emission": 0.0,
                         "methodology": {
-                          "methodology": "Default EF",
-                          "unitFuelCo2DefaultEf": 1,
-                          "unitFuelCo2DefaultEfFieldUnits": "kg/fuel units"
+                          "methodology": "Default EF"
                         }
                       }
                     ],

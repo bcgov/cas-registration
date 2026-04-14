@@ -40,11 +40,6 @@ def enable_jsonschema_draft_2020_validation(schema: Any) -> None:
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    logger.warning(
-        "Report activity json validation has been suspended until the jsonschema draft2020 can be fully implemented."
-    )
-    return {}
-
     errors = {}
 
     for facility_report in report_version.facility_reports.all():
