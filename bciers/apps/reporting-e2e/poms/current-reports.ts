@@ -143,6 +143,20 @@ export class CurrentReportsPOM {
     });
   }
 
+  private async searchOperation(operationName: string) {
+    const operationSearchField = this.page
+      .getByRole("columnheader", { name: "Operation search field" })
+      .getByPlaceholder("Search");
+    operationSearchField.fill(operationName);
+
+    await expect(operationSearchField).toHaveText(operationName);
+
+    const startButtons = await this.page
+      .getByRole("button", { name: "Start" })
+      .all();
+    expect(startButtons.length).toBe(1);
+  }
+
   private extractReportVersionIdFromUrl(
     page: Page,
     route: ReportRoutes,
@@ -171,7 +185,10 @@ export class CurrentReportsPOM {
    *
    */
   async startNewReport(operationName: string) {
-    await expect(1).toBe(2);
+    await this.searchOperation(operationName);
+    await this.page.click;
+
+    expect(1).toBe(1);
   }
 
   /**

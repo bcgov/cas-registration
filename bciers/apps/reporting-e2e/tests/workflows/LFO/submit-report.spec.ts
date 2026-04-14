@@ -8,6 +8,9 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Submit LFO report", () => {
   test("Submit LFO report", async ({ page, happoScreenshot }) => {
     const reportingPage = new CurrentReportsPOM(page);
-    reportingPage.startNewReport("LFO Operation");
+
+    await reportingPage.route();
+
+    reportingPage.startNewReport("E2E LFO");
   });
 });
