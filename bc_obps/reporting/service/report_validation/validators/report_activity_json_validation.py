@@ -6,6 +6,7 @@ from reporting.models.report_version import ReportVersion
 from reporting.models.source_type import SourceType
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 from service.form_builder_service import FormBuilderService
@@ -71,6 +72,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                     ReportValidationError(
                         severity=Severity.ERROR,
                         message=f"Validation error: {e.message} at: {' > '.join(str(elt) for elt in e.path)}",
+                        key=ReportValidationErrorKey.ACTIVITY_JSON_SCHEMA_VALIDATION_ERROR,
                     )
                 )
 
