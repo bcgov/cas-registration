@@ -11,7 +11,103 @@ interface ActionCellProps extends GridRenderCellParams<ComplianceSummary> {
   isAllowedCas?: boolean;
 }
 
-function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
+interface ActionCellConfig {
+  cellText: string;
+  basePath?: string;
+}
+
+// Helper functions
+function obligationReportCell(
+  basePath: string,
+  isPenaltyAccruingOrNotPaid: boolean,
+  isAllowedCas?: boolean,
+  status?: string,
+): ActionCellConfig {
+  if (!isAllowedCas) {
+    if (
+      status === ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION
+    ) {
+      return {
+        cellText: "Pending Invoice Creation",
+        basePath: "#",
+      };
+    } else if (
+      status === ComplianceSummaryStatus.OBLIGATION_NOT_MET ||
+      (status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET &&
+        isPenaltyAccruingOrNotPaid)
+    ) {
+      return {
+        cellText: "Manage Obligation",
+        basePath: `${basePath}/review-compliance-obligation-report`,
+      };
+    } else if (status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET) {
+      return {
+        cellText: "View Details",
+        basePath: `${basePath}/review-compliance-obligation-report`,
+      };
+    }
+  }
+  if (status === ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION) {
+    return {
+      cellText: "Pending Invoice Creation",
+      basePath: "#",
+    };
+  } else if (
+    status === ComplianceSummaryStatus.OBLIGATION_NOT_MET ||
+    status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET
+  ) {
+    return {
+      cellText: "View Details",
+      basePath: `${basePath}/review-compliance-obligation-report`,
+    };
+  }
+  return {
+    cellText: "View Details",
+    basePath: `${basePath}/review-compliance-no-obligation-report`,
+  };
+}
+
+function earnedCreditsCell(
+  basePath: string,
+  isAllowedCas?: boolean,
+  issuanceStatus?: IssuanceStatus,
+): ActionCellConfig {
+  let cellText = "View Details";
+  let pathSuffix = "/review-compliance-earned-credits-report";
+
+  if (isAllowedCas && issuanceStatus === IssuanceStatus.ISSUANCE_REQUESTED) {
+    cellText = "Review Credits Issuance Request";
+  } else if (
+    !isAllowedCas &&
+    issuanceStatus === IssuanceStatus.CREDITS_NOT_ISSUED
+  ) {
+    cellText = "Request Issuance of Credits";
+  } else if (
+    !isAllowedCas &&
+    issuanceStatus === IssuanceStatus.CHANGES_REQUIRED
+  ) {
+    cellText = "Review Change Required";
+    pathSuffix = "/request-issuance-of-earned-credits";
+  }
+
+  if (
+    issuanceStatus === IssuanceStatus.APPROVED ||
+    issuanceStatus === IssuanceStatus.DECLINED
+  ) {
+    pathSuffix = "/track-status-of-issuance";
+  }
+
+  return {
+    cellText,
+    basePath: `${basePath}${pathSuffix}`,
+  };
+}
+
+// Main function
+function getActionCellConfig(
+  row: ComplianceSummary,
+  isAllowedCas?: boolean,
+): ActionCellConfig {
   const {
     obligation_id: obligationId,
     status,
@@ -66,83 +162,17 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
 
   // Obligation logic
   if (obligationId) {
-    if (!isAllowedCas) {
-      if (
-        status === ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION
-      ) {
-        return {
-          cellText: "Pending Invoice Creation",
-          basePath: "#",
-        };
-      } else if (
-        status === ComplianceSummaryStatus.OBLIGATION_NOT_MET ||
-        (status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET &&
-          isPenaltyAccruingOrNotPaid)
-      ) {
-        return {
-          cellText: "Manage Obligation",
-          basePath: `${basePath}/review-compliance-obligation-report`,
-        };
-      } else if (status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET) {
-        return {
-          cellText: "View Details",
-          basePath: `${basePath}/review-compliance-obligation-report`,
-        };
-      }
-      return {
-        cellText: "View Details",
-        basePath: `${basePath}/review-compliance-no-obligation-report`,
-      };
-    }
-    if (
-      status === ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION
-    ) {
-      return {
-        cellText: "Pending Invoice Creation",
-        basePath: "#",
-      };
-    } else if (
-      status === ComplianceSummaryStatus.OBLIGATION_NOT_MET ||
-      status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET
-    ) {
-      return {
-        cellText: "View Details",
-        basePath: `${basePath}/review-compliance-obligation-report`,
-      };
-    }
+    return obligationReportCell(
+      basePath,
+      isPenaltyAccruingOrNotPaid,
+      isAllowedCas,
+      status,
+    );
   }
 
   // Earned Credits logic
   if (status === ComplianceSummaryStatus.EARNED_CREDITS) {
-    let cellText = "View Details";
-    let pathSuffix = "/review-compliance-earned-credits-report";
-
-    if (isAllowedCas && issuanceStatus === IssuanceStatus.ISSUANCE_REQUESTED) {
-      cellText = "Review Credits Issuance Request";
-    } else if (
-      !isAllowedCas &&
-      issuanceStatus === IssuanceStatus.CREDITS_NOT_ISSUED
-    ) {
-      cellText = "Request Issuance of Credits";
-    } else if (
-      !isAllowedCas &&
-      issuanceStatus === IssuanceStatus.CHANGES_REQUIRED
-    ) {
-      cellText = "Review Change Required";
-      pathSuffix = "/request-issuance-of-earned-credits";
-    }
-
-    if (
-      issuanceStatus === IssuanceStatus.APPROVED ||
-      issuanceStatus === IssuanceStatus.DECLINED
-    ) {
-      pathSuffix = "/track-status-of-issuance";
-    }
-
-    return {
-      cellText,
-      basePath: `${basePath}${pathSuffix}`,
-    };
+    return earnedCreditsCell(basePath, isAllowedCas, issuanceStatus);
   }
 
   // Default
