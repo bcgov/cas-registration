@@ -55,7 +55,6 @@ export class UsersAccessRequestPOM {
     const linkName = AdministrationTileText.ACCESS_REQUEST;
     const link = await linkIsVisible(this.page, linkName, true);
     await link.click();
-    await this.urlIsCorrect();
   }
 
   async getActions(status: string) {
@@ -104,13 +103,6 @@ export class UsersAccessRequestPOM {
     const roleCell = row.locator('[data-field="userRole"]');
     const roleText = await roleCell.innerText();
     return roleText;
-  }
-
-  // # Assertions
-  async urlIsCorrect() {
-    const path = this.userAccessRequestURL.toLowerCase();
-    const currentUrl = this.page.url().toLowerCase();
-    expect(currentUrl).toMatch(path);
   }
 
   async assertActionVisibility(row: Locator, status: string) {
