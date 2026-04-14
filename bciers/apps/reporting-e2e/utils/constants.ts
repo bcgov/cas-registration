@@ -1,5 +1,3 @@
-export const REPORTING_TAB = "reporting";
-
 export const SIGN_OFF_SIGNATURE_LABEL =
   "Please add your signature by typing your name here:";
 
@@ -39,3 +37,10 @@ export const FORM_BUTTON_TEXT = {
 // Scenario name used by the Django stub to call to external API
 export const SIGN_OFF_REPORT_SCENARIO = "submit_report";
 export const REPORTING_REPORTS_BASE_PATH = "/reporting/reports";
+
+// Action button text on the current reports grid
+export const ACTION_BUTTON_TEXT = {
+  START: "Start",
+  CONTINUE: "Continue",
+  VIEW_DETAILS: "View Details",
+} as const;

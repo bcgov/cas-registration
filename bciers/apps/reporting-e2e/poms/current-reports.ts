@@ -9,6 +9,7 @@ import {
   SignOffCheckboxLabel,
 } from "@/reporting-e2e/utils/enums";
 import {
+  ACTION_BUTTON_TEXT,
   DIALOG_BUTTON_TEXT,
   DIALOG_TITLES,
   FORM_BUTTON_TEXT,
@@ -112,6 +113,46 @@ export class CurrentReportsPOM {
   // -----------------
   // navigation
   // -----------------
+
+  /**
+   * Finds the operation row in the current reports grid and clicks "Start"
+   * to create a new report for the current reporting year.
+   *
+   * Waits for navigation to the review-operation-information page and returns
+   * the new report version ID extracted from the URL.
+   */
+  async startNewReportForOperation(operationName: string): Promise<number> {
+    await waitForGridReady(this.page);
+
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .first();
+    await expect(row).toBeVisible();
+
+    const startButton = row.getByRole("button", {
+      name: new RegExp(ACTION_BUTTON_TEXT.START, "i"),
+    });
+    await expect(startButton).toBeVisible();
+    await expect(startButton).toBeEnabled();
+
+    await Promise.all([
+      this.page.waitForURL(
+        (u) =>
+          new RegExp(
+            `${REPORTING_REPORTS_BASE_PATH}/\\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
+            "i",
+          ).test(u.toString()),
+        { waitUntil: "domcontentloaded" },
+      ),
+      startButton.click(),
+    ]);
+
+    return this.extractReportVersionIdFromUrl(
+      this.page,
+      ReportRoutes.REVIEW_OPERATION_INFORMATION,
+    );
+  }
 
   // Navigate to the production data route for this report id and facility id
   async gotoProductionData(reportId: string | number, facilityId: string) {
