@@ -80,8 +80,8 @@ class TestReportDataByFueltypeValidator(TestCase):
         assert result == {}
 
     def test_errors_when_fuel_amount_above_expected_bound(self):
-        ReportFuel.objects.all().update(json_data={"annualFuelAmount": 15000})
-        report_fuel = ReportFuel.objects.all().first()
+        ReportFuel.objects.update(json_data={"annualFuelAmount": 15000})
+        report_fuel = ReportFuel.objects.first()
         result = validate(self.test_infrastructure.report_version)
         assert result == {
             f"report_fuel_fuel_amount_value_outside_expected_bounds_{report_fuel.id}": ReportValidationError(
@@ -102,8 +102,8 @@ class TestReportDataByFueltypeValidator(TestCase):
         }
 
     def test_errors_when_fuel_amount_below_expected_bound(self):
-        ReportFuel.objects.all().update(json_data={"annualFuelAmount": -15000})
-        report_fuel = ReportFuel.objects.all().first()
+        ReportFuel.objects.update(json_data={"annualFuelAmount": -15000})
+        report_fuel = ReportFuel.objects.first()
         result = validate(self.test_infrastructure.report_version)
         assert result == {
             f"report_fuel_fuel_amount_value_outside_expected_bounds_{report_fuel.id}": ReportValidationError(
@@ -124,10 +124,10 @@ class TestReportDataByFueltypeValidator(TestCase):
         }
 
     def test_errors_when_methodology_field_above_expected_bound(self):
-        ReportMethodology.objects.all().update(
+        ReportMethodology.objects.update(
             json_data={"unitFuelCo2DefaultEf": 20000},
         )
-        report_methodology = ReportMethodology.objects.all().first()
+        report_methodology = ReportMethodology.objects.first()
         result = validate(self.test_infrastructure.report_version)
         assert result == {
             f"report_methodology_unitFuelCo2DefaultEf_value_outside_expected_bounds_{report_methodology.id}": ReportValidationError(
@@ -151,10 +151,10 @@ class TestReportDataByFueltypeValidator(TestCase):
         }
 
     def test_errors_when_methodology_field_below_expected_bound(self):
-        ReportMethodology.objects.all().update(
+        ReportMethodology.objects.update(
             json_data={"unitFuelCo2DefaultEf": 2},
         )
-        report_methodology = ReportMethodology.objects.all().first()
+        report_methodology = ReportMethodology.objects.first()
         result = validate(self.test_infrastructure.report_version)
         assert result == {
             f"report_methodology_unitFuelCo2DefaultEf_value_outside_expected_bounds_{report_methodology.id}": ReportValidationError(
