@@ -44,8 +44,6 @@ export class DashboardPOM {
   // ###  Assertions ###
 
   async urlIsCorrect() {
-    const path = this.url;
-    const currentUrl = this.page.url();
-    expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
+    await expect(this.page).toHaveURL(this.url, { ignoreCase: true });
   }
 }

@@ -25,14 +25,6 @@ export class DashboardPOM {
 
   // ###  Assertions ###
 
-  async urlIsCorrect(expectedPath: string, fromBaseUrl?: boolean) {
-    if (fromBaseUrl) {
-      expectedPath = process.env.E2E_BASEURL + expectedPath;
-    }
-    const currentUrl = this.page.url();
-    expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
-  }
-
   async goToPage(url: string) {
     await this.page.goto(process.env.E2E_BASEURL + url);
   }
