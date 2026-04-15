@@ -4,9 +4,7 @@ import {
   FacilityIDs,
   ReportRoutes,
 } from "@/reporting-e2e/utils/enums";
-import {
-  FORM_BUTTON_TEXT,
-} from "@/reporting-e2e/utils/constants";
+import { FORM_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
 import {
   clickButton,
   selectItemFromAutocomplete,
@@ -72,38 +70,6 @@ export class CurrentReportPOM {
       new RegExp(this.activitiesUrl(versionId, FacilityIDs.BUGLE_SFO, 0)),
     );
   }
-
-  // -----------------
-  // Page 3 — Activities (GSC excluding line tracing)
-  // -----------------
-
-  async fillGscActivity(): Promise<void> {}
-
-  // -----------------
-  // Page 4 — Non-Attributable Emissions
-  // -----------------
-
-  async fillNonAttributable(): Promise<void> {}
-
-  // -----------------
-  // Page 5 — Emission Summary (read-only)
-  // -----------------
-
-  async continueFromEmissionSummary(
-  ): Promise<void> {}
-
-  // -----------------
-  // Page 6 — Production Data
-  // -----------------
-
-  async fillProductionData(
-  ): Promise<void> {}
-
-  // -----------------
-  // Page 7 — Allocation of Emissions
-  // -----------------
-
-  async fillAllocationOfEmissions(): Promise<void> {}
 
   // -----------------
   // Page 8 — Additional Reporting Data
