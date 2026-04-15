@@ -205,6 +205,27 @@ export class CurrentReportsPOM {
   }
 
   /**
+   * Searches for an operation name in the grid, making sure it appears
+   * on the list of available rows if there are more than one page.
+   */
+
+  async searchByOperationName(operationName: string) {
+    const operationSearchField = this.page
+      .getByRole("columnheader", { name: "Operation search field" })
+      .getByPlaceholder("Search");
+    operationSearchField.fill(operationName);
+
+    await expect(operationSearchField).toHaveValue(operationName);
+
+    const row = await this.page
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .all();
+
+    expect(row.length).toBeGreaterThanOrEqual(1);
+  }
+
+  /**
    * Completes all sign-off fields required for the Submit button to become enabled,
    * based on the sign-off schema variant.
    *
