@@ -109,6 +109,16 @@ jobs:
       nx_app_port: 7000
       nx_project: compliance
     secrets: inherit
+  test-reporting-e2e:
+    needs:
+      [build-backend, build-dashboard-e2e, build-reporting]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      docker_compose_file: "docker-compose-bciers-apps.yaml"
+      image_url: "ghcr.io/bcgov/cas-rep-frontend"
+      is_nx_affected: true
+      nx_project: reporting
+    secrets: inherit
   zap-owasp:
     needs:
       [
@@ -152,6 +162,7 @@ jobs:
         test-registration-e2e,
         test-dashboard-e2e,
         test-compliance-e2e,
+        test-reporting-e2e,
         build-dashboard,
         zap-owasp,
         schemaspy,
@@ -168,6 +179,7 @@ jobs:
         && needs.test-registration-e2e.result == 'success'
         && needs.test-dashboard-e2e.result == 'success'
         && needs.test-compliance-e2e.result == 'success'
+        && needs.test-reporting-e2e.result == 'success'
         && needs.build-dashboard.result == 'success'
         && needs.zap-owasp.result == 'success'
         && needs.schemaspy.result == 'success'
