@@ -59,7 +59,7 @@
       "regulated_products": [2, 6, 7, 8],
       "status": "Registered",
       "bc_obps_regulated_operation": "23-0001",
-      "activities": [1, 2],
+      "activities": [1],
       "registration_purpose": "OBPS Regulated Operation",
       "contacts": [3, 4]
     }
