@@ -1,6 +1,5 @@
 from ninja import ModelSchema
 from pydantic import alias_generators, ConfigDict
-
 from reporting.models import ReportPersonResponsible
 
 
@@ -20,7 +19,6 @@ class ReportPersonResponsibleOut(ModelSchema):
         return str(obj.phone_number)
 
     class Meta:
-        # alias_generator = to_snake
         model = ReportPersonResponsible
         fields = [
             'street_address',
@@ -43,22 +41,11 @@ class ReportPersonResponsibleIn(ModelSchema):
     """
 
     report_version: int
-    street_address: str
-    municipality: str
-    province: str
-    postal_code: str
-    first_name: str
-    phone_number: str
-    last_name: str
-    email: str
-    position_title: str
-    business_role: str
 
     class Meta:
         alias_generator = to_snake
         model = ReportPersonResponsible
         fields = [
-            'report_version',
             'street_address',
             'municipality',
             'province',
