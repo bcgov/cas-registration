@@ -6,7 +6,7 @@ export class FacilityReportsPOM {
   readonly page: Page;
   readonly url: string;
 
-  constructor(page: Page, versionId: string) {
+  constructor(page: Page, versionId: number) {
     this.page = page;
     this.url = `${process.env.E2E_BASEURL}${AppRoutes.GRID_REPORTING_CURRENT_REPORTS}/
                             ${versionId}/${ReportRoutes.FACILITY_REPORT_GRID}`;

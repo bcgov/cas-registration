@@ -23,6 +23,7 @@ export enum ReportRoutes {
   SIGN_OFF = "sign-off",
   SUBMISSION = "submission",
   REVIEW_OPERATION_INFORMATION = "review-operation-information",
+  REVIEW_FACILITY_INFORMATION = "review-facility-information",
   PERSON_RESPONSIBLE = "person-responsible",
   FACILITY_REPORT_GRID = "facilities/report-information",
   FACILITIES = "facilities",
@@ -71,7 +72,7 @@ export const OPERATION_NAMES = {
   EARNED_CREDITS: "Compliance SFO - Earned credits",
   NO_OBLIGATION: "Compliance SFO - No obligation",
   BUGLE_SFO: "Bugle SFO - Registered",
-  AIRPLANE_LFO: "Airplane LFO - Registered - name from admin",
+  BAT_LFO: "Bat LFO - Registered - name from admin",
 } as const;
 
 export const REPORT_ID_TO_OPERATION_NAME: Record<ReportIDs, string> = {
