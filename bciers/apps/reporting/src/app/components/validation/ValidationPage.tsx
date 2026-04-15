@@ -8,6 +8,8 @@ import {
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
 import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
+import { getReportValidationData } from "@reporting/src/app/utils/reportValidationForm/getReportValidationData";
+import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
 
 export default async function ValidationPage({ version_id }: HasReportVersion) {
   // Check if is a supplementary report
@@ -17,6 +19,7 @@ export default async function ValidationPage({ version_id }: HasReportVersion) {
   const { show_verification_page: showVerificationPage } =
     await getReportVerificationStatus(version_id);
 
+  // Build task navigator
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
     ReportingPage.Validation,
@@ -28,42 +31,20 @@ export default async function ValidationPage({ version_id }: HasReportVersion) {
     },
   );
 
-  const validationErrors: ReportValidationErrors = {
-    error_operation_information: {
-      severity: "error",
-      context: {
-        reportVersionId: 3,
-      },
-    },
-
-    error_activity_value: {
-      severity: "warning",
-      context: {
-        reportVersionId: 3,
-        facilityId: "9f7b0848-021e-4d08-9852-10524c4e5457",
-        activityName: "Boiler 1",
-        fieldName: "fuel type",
-        expectedRange: "10–20",
-        userInput: "42",
-      },
-    },
-
-    error_lime_kiln: {
-      severity: "error",
-      context: {
-        reportVersionId: 3,
-        facilityId: "9f7b0848-021e-4d08-9852-10524c4e5457",
-      },
-    },
-
-    error_allocation: {
-      severity: "warning",
-      context: {
-        reportVersionId: 3,
-        facilityId: "9f7b0848-021e-4d08-9852-10524c4e5457",
-      },
-    },
-  };
+  // Get form data - report validation data
+  let validationErrors: ReportValidationErrors = [];
+  try {
+    const response = await getReportValidationData(version_id);
+    validationErrors = response.payload.errors;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Failed to load validation data", error);
+    validationErrors = [
+      createGenericReportValidationError(
+        "Failed to load report validation data.",
+      ),
+    ];
+  }
 
   return (
     <ValidationForm

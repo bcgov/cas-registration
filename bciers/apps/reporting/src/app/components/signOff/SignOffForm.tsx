@@ -18,6 +18,7 @@ interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
   schema: RJSFSchema;
 }
+
 export default function SignOffForm({
   version_id,
   navigationInformation,

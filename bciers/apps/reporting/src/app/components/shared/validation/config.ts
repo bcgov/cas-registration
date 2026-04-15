@@ -45,8 +45,8 @@ export const validationUIConfig: Partial<
     label: "Verification page",
     renderMode: "inline_link",
     getHref: (ctx) =>
-      ctx?.reportVersionId
-        ? `/reports/${ctx.reportVersionId}/verification`
+      ctx?.report_version_id
+        ? `/reports/${ctx.report_version_id}/verification`
         : undefined,
     getMessage: () =>
       "Verification information must be completed on the Verification page.",
@@ -56,8 +56,8 @@ export const validationUIConfig: Partial<
     label: "Attachments page",
     renderMode: "inline_link",
     getHref: (ctx) =>
-      ctx?.reportVersionId
-        ? `/reports/${ctx.reportVersionId}/attachments`
+      ctx?.report_version_id
+        ? `/reports/${ctx.report_version_id}/attachments`
         : undefined,
     getMessage: () =>
       "A verification statement must be uploaded with this report on the Attachments page.",
@@ -67,8 +67,8 @@ export const validationUIConfig: Partial<
     label: "Review Changes page",
     renderMode: "inline_link",
     getHref: (ctx) =>
-      ctx?.reportVersionId
-        ? `/reports/${ctx.reportVersionId}/review-changes`
+      ctx?.report_version_id
+        ? `/reports/${ctx.report_version_id}/review-changes`
         : undefined,
     getMessage: () =>
       "A reason for the changes in this supplementary report must be added on the Review Changes page.",
@@ -78,8 +78,8 @@ export const validationUIConfig: Partial<
     label: "Attachments page",
     renderMode: "inline_link",
     getHref: (ctx) =>
-      ctx?.reportVersionId
-        ? `/reports/${ctx.reportVersionId}/attachments`
+      ctx?.report_version_id
+        ? `/reports/${ctx.report_version_id}/attachments`
         : undefined,
     getMessage: () =>
       "You must confirm that all required supplementary attachments have been uploaded on the Attachments page.",
@@ -89,8 +89,8 @@ export const validationUIConfig: Partial<
     label: "Attachments page",
     renderMode: "inline_link",
     getHref: (ctx) =>
-      ctx?.reportVersionId
-        ? `/reports/${ctx.reportVersionId}/attachments`
+      ctx?.report_version_id
+        ? `/reports/${ctx.report_version_id}/attachments`
         : undefined,
     getMessage: () =>
       "You must confirm that all existing attachments are still relevant to the supplementary submission on the Attachments page.",
@@ -101,30 +101,38 @@ export const validationUIConfig: Partial<
       label: "Attachments page",
       renderMode: "inline_link",
       getHref: (ctx) =>
-        ctx?.reportVersionId
-          ? `/reports/${ctx.reportVersionId}/attachments`
+        ctx?.report_version_id
+          ? `/reports/${ctx.report_version_id}/attachments`
           : undefined,
       getMessage: () =>
         "You must confirm that all required supplementary attachments have been uploaded and existing attachments are still relevant to the supplementary submission on the Attachments page.",
     }),
 
-  error_operation_information: createValidationUIConfig({
+  error_report_operation_information: createValidationUIConfig({
     label: "review operation information",
     renderMode: "inline_link",
     getHref: (ctx) =>
-      ctx?.reportVersionId
-        ? `/reports/${ctx.reportVersionId}/review-operation-information`
+      ctx?.report_version_id
+        ? `/reports/${ctx.report_version_id}/review-operation-information`
         : undefined,
-    getMessage: () =>
-      "Required fields are empty on review operation information.",
+    getMessage: (error) => {
+      console.log("report operation error", error);
+      console.log("report operation context", error.context);
+
+      const missingFields = error.context?.missing_fields;
+
+      return Array.isArray(missingFields) && missingFields.length > 0
+        ? `Required fields are empty on review operation information: ${missingFields.join(", ")}.`
+        : "Required fields are empty on review operation information.";
+    },
   }),
 
   error_activity_value: createValidationUIConfig({
     label: (error) => String(error.context?.activityName ?? "activity name"),
     renderMode: "inline_link",
     getHref: (ctx) =>
-      ctx?.reportVersionId && ctx?.facilityId && ctx?.activityId !== undefined
-        ? `/reporting/reports/${ctx.reportVersionId}/facilities/${ctx.facilityId}/activities?activity_id=${ctx.activityId}`
+      ctx?.report_version_id && ctx?.facilityId && ctx?.activityId !== undefined
+        ? `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facilityId}/activities?activity_id=${ctx.activityId}`
         : undefined,
     getMessage: (error) => {
       const ctx = error.context;
@@ -143,8 +151,8 @@ export const validationUIConfig: Partial<
     label: () => "Allocation of Emissions page",
     renderMode: "inline_link",
     getHref: (ctx) =>
-      ctx?.reportVersionId && ctx?.facilityId
-        ? `/reporting/reports/${ctx.reportVersionId}/facilities/${ctx.facilityId}/allocation-of-emissions`
+      ctx?.report_version_id && ctx?.facilityId
+        ? `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facilityId}/allocation-of-emissions`
         : undefined,
     getMessage: (error) => {
       const ctx = error.context;
@@ -161,8 +169,8 @@ export const validationUIConfig: Partial<
     label: "Pulp and Paper Production",
     renderMode: "inline_link",
     getHref: (ctx) =>
-      ctx?.reportVersionId && ctx?.facilityId
-        ? `/reports/${ctx.reportVersionId}/facilities/${ctx.facilityId}/production-data`
+      ctx?.report_version_id && ctx?.facilityId
+        ? `/reports/${ctx.report_version_id}/facilities/${ctx.facilityId}/production-data`
         : undefined,
     getMessage: () =>
       'Error in Pulp and Paper Production. To proceed, select "Yes" to the question "Does this operation utilize a lime recovery kiln?"',

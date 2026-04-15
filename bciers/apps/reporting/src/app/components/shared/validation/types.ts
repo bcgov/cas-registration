@@ -12,7 +12,7 @@ export type ReportValidationMessageKey =
   | "missing_supplementary_report_attachment_confirmation"
   // Errors (data issues / validation failures)
   | "allocation_mismatch"
-  | "error_operation_information"
+  | "error_report_operation_information"
   | "error_lime_kiln"
   | "error_activity_value"
   | "generic_error";
@@ -20,8 +20,9 @@ export type ReportValidationMessageKey =
 // Additional metadata returned from backend used for dynamic content
 // (links, expected values, etc.)
 interface ReportValidationErrorContext {
-  reportVersionId: number;
-  [key: string]: string | number | undefined;
+  report_version_id?: number;
+  missing_fields?: string[];
+  [key: string]: string | number | string[] | undefined;
 }
 
 // Structured validation error stored in state and passed through components
