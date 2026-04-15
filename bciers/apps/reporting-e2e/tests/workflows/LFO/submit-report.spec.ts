@@ -4,7 +4,7 @@ import { OPERATION_NAMES } from "@/reporting-e2e/utils/enums";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
-import { FacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
+import { LFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
@@ -38,7 +38,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
 
     //
     //
-    const facilityReport = new FacilityReportPOM(page, "");
+    const facilityReport = new LFOFacilityReportPOM(page, "");
     // ... TODO: move methods below to the facility report POM
 
     // ── 5. Activities — GSC with 1 unit, 1 fuel (Diesel), 1 emission (CO2) ──
