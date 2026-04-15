@@ -135,7 +135,7 @@ export class CurrentReportsPOM {
       this.page.waitForURL(
         (u) =>
           new RegExp(
-            `${REPORTING_REPORTS_BASE_PATH}/\\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
+            String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
             "i",
           ).test(u.toString()),
         { waitUntil: "domcontentloaded" },
@@ -459,7 +459,7 @@ export class CurrentReportsPOM {
     // Click Confirm and wait for the review-operation-information URL
     await clickButton(this.page, DIALOG_BUTTON_TEXT.CONFIRM, {
       waitForUrl: new RegExp(
-        `${REPORTING_REPORTS_BASE_PATH}/\\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
+        String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
         "i",
       ),
     });
