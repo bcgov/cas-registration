@@ -1,5 +1,13 @@
 # Changelog
 
+# [5.8.0](https://github.com/bcgov/cas-registration/compare/v5.7.0...v5.8.0) (2026-04-15)
+
+### Features
+
+- add app version in footer ([76e72bc](https://github.com/bcgov/cas-registration/commit/76e72bc8c9a72fe572c9289410f6cdab335a0d18))
+- add help text to natural and field gas ([2455ccb](https://github.com/bcgov/cas-registration/commit/2455ccb759b7e145857b25915bce94ac6112e393))
+- append operation name and version id to reporting flow ([b60d1bb](https://github.com/bcgov/cas-registration/commit/b60d1bb97b263a50adcecc81e36d07f5fba15887))
+
 # [5.7.0](https://github.com/bcgov/cas-registration/compare/v5.6.0...v5.7.0) (2026-03-31)
 
 ### Features
