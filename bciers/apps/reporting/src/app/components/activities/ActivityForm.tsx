@@ -217,7 +217,7 @@ export default function ActivityForm({
         activityFormData: formState,
       }}
       omitExtraData={true}
-      buttonText={isFallbackSchema ? "Continue" : "Save and Continue"}
+      buttonText={isFallbackSchema ? "Continue" : "Save & Continue"}
     />
   );
 }
