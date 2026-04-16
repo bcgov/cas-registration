@@ -28,6 +28,7 @@ export enum ReportRoutes {
   FACILITY_REPORT_GRID = "facilities/report-information",
   FACILITIES = "facilities",
   ACTIVITIES = "activities",
+  NON_ATTRIBUTABLE = "non-attributable",
   PRODUCTION_DATA = "production-data",
   ALLOCATION_OF_EMISSIONS = "allocation-of-emissions",
   REVIEW_CHANGES = "review-changes",
