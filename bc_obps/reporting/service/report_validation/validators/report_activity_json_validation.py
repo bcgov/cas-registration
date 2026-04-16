@@ -9,8 +9,11 @@ from reporting.service.report_validation.report_validation_error import (
     Severity,
 )
 from service.form_builder_service import FormBuilderService
+from reporting.service.report_validation.report_validation_tags import ValidationTags
 
 logger = logging.getLogger(__name__)
+
+TAGS = [ValidationTags.ON_SUBMIT]
 
 
 def enable_jsonschema_draft_2020_validation(schema: Any) -> None:
