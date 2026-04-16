@@ -1,4 +1,5 @@
 [run]
+patch = subprocess
 omit =
   *apps.py,
   */migrations/*,
