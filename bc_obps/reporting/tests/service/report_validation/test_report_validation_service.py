@@ -19,6 +19,7 @@ class TestReportValidationService:
             "reporting.service.report_validation.validators.supplementary_report_attachments_confirmation",
             "reporting.service.report_validation.validators.report_activity_json_validation",
             "reporting.service.report_validation.validators.report_emission_allocation_validator",
+            'reporting.service.report_validation.validators.report_data_by_fuel_type_validator',
         ]
 
     def test_validates_the_report_with_the_registered_plugins(self):
@@ -27,6 +28,7 @@ class TestReportValidationService:
         mock_validation_plugins = [
             MagicMock(TAGS=[ValidationTags.ON_SUBMIT]),
             MagicMock(TAGS=[ValidationTags.ON_SUBMIT]),
+            MagicMock(TAGS=[ValidationTags.FINAL_REVIEW]),
             MagicMock(TAGS=[]),
         ]
         mock_validation_plugins[0].validate.return_value = {"mock_key": "mock_errors"}
@@ -40,6 +42,7 @@ class TestReportValidationService:
         mock_validation_plugins[0].validate.assert_called_once()
         mock_validation_plugins[1].validate.assert_called_once()
         mock_validation_plugins[2].validate.assert_not_called()
+        mock_validation_plugins[3].validate.assert_not_called()
         assert errors == {"mock_key": "mock_errors", "mock_key2": "mock_errors2"}
 
         ReportValidationService.validation_plugins = original_plugins
