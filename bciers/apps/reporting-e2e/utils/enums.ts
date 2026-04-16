@@ -26,6 +26,7 @@ export enum ReportRoutes {
   REVIEW_FACILITY_INFORMATION = "review-facility-information",
   PERSON_RESPONSIBLE = "person-responsible",
   FACILITY_REPORT_GRID = "facilities/report-information",
+  REVIEW_FACILITIES = "facilities/review-facilities",
   FACILITIES = "facilities",
   ACTIVITIES = "activities",
   NON_ATTRIBUTABLE = "non-attributable",
