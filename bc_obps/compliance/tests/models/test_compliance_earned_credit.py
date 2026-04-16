@@ -332,7 +332,7 @@ class ComplianceEarnedCreditIssuanceDateTriggerTest(BaseTestCase):
 
     def test_populate_issued_date_issued_by_when_not_approved(self):
         for status in self.other_statuses:
-            with self.subTest(status=status):
+            with self.subTest(status=status.value):
                 # Arrange
                 earned_credit = make_recipe(
                     "compliance.tests.utils.compliance_earned_credit",
@@ -384,7 +384,7 @@ class ComplianceEarnedCreditIssuanceRequestedDateTriggerTest(BaseTestCase):
 
     def test_populate_issuance_requested_date_when_not_requested(self):
         for status in self.other_statuses:
-            with self.subTest(status=status):
+            with self.subTest(status=status.value):
                 # Arrange
                 earned_credit = make_recipe(
                     "compliance.tests.utils.compliance_earned_credit",

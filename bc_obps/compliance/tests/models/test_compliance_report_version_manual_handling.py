@@ -14,7 +14,6 @@ from compliance.models.compliance_report_version_manual_handling import (
     ComplianceReportVersionManualHandling,
 )
 
-
 # ---------------------------------------------------------------------------
 # Basic field / meta tests
 # ---------------------------------------------------------------------------
@@ -154,7 +153,7 @@ class ComplianceReportVersionManualHandlingDirectorDecisionTriggerTest(BaseTestC
 
     def test_does_not_populate_decision_fields_when_not_resolved(self):
         for status in self.other_statuses:
-            with self.subTest(status=status):
+            with self.subTest(status=status.value):
                 manual = make_recipe(
                     "compliance.tests.utils.compliance_report_version_manual_handling",
                     director_decision=ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
