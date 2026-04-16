@@ -77,6 +77,7 @@ export async function fillComboxboxWidget(
   page: Page,
   labelText: string | RegExp,
   value: string,
+  exact: boolean = false,
 ) {
   const input = page.getByRole("combobox", {
     name: labelText,
@@ -84,7 +85,7 @@ export async function fillComboxboxWidget(
   await expect(input).toBeVisible();
   await expect(input).toBeEnabled();
   await input.fill(value);
-  const option = page.getByRole("option", { name: value });
+  const option = page.getByRole("option", { name: value, exact });
   await expect(option).toBeVisible();
   await option.click();
 }
