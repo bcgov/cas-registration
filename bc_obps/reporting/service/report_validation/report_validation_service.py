@@ -5,6 +5,7 @@ from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
 )
+from reporting.service.report_validation.report_validation_tags import ValidationTags
 from . import validators
 
 
@@ -35,13 +36,14 @@ class ReportValidationService:
     validation_plugins = collect_validation_plugins()
 
     @staticmethod
-    def validate_report_version(version_id: int) -> dict[str, ReportValidationError]:
+    def validate_report_version(version_id: int, tag: ValidationTags | None = None) -> dict[str, ReportValidationError]:
 
         report_version = ReportVersion.objects.get(id=version_id)
 
         results: List[dict[str, ReportValidationError]] = [
             validation_plugin.validate(report_version)
             for validation_plugin in ReportValidationService.validation_plugins
+            if tag in validation_plugin.TAGS or tag is None
         ]
 
         # Aggregate the results in one dictionary, by key

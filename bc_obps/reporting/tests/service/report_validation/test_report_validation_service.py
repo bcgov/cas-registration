@@ -4,6 +4,7 @@ import pytest
 from reporting.service.report_validation.report_validation_service import (
     ReportValidationService,
 )
+from reporting.service.report_validation.report_validation_tags import ValidationTags
 
 
 @pytest.mark.django_db
@@ -23,7 +24,11 @@ class TestReportValidationService:
     def test_validates_the_report_with_the_registered_plugins(self):
         original_plugins = ReportValidationService.validation_plugins
 
-        mock_validation_plugins = [MagicMock(), MagicMock(), MagicMock()]
+        mock_validation_plugins = [
+            MagicMock(TAGS=[ValidationTags.ON_SUBMIT]),
+            MagicMock(TAGS=[ValidationTags.ON_SUBMIT]),
+            MagicMock(TAGS=[]),
+        ]
         mock_validation_plugins[0].validate.return_value = {"mock_key": "mock_errors"}
         mock_validation_plugins[1].validate.return_value = {"mock_key2": "mock_errors2"}
 
@@ -31,9 +36,30 @@ class TestReportValidationService:
 
         report_version = make_recipe("reporting.tests.utils.report_version")
 
-        errors = ReportValidationService.validate_report_version(report_version.id)
+        errors = ReportValidationService.validate_report_version(report_version.id, ValidationTags.ON_SUBMIT)
         mock_validation_plugins[0].validate.assert_called_once()
         mock_validation_plugins[1].validate.assert_called_once()
+        mock_validation_plugins[2].validate.assert_not_called()
         assert errors == {"mock_key": "mock_errors", "mock_key2": "mock_errors2"}
+
+        ReportValidationService.validation_plugins = original_plugins
+
+    def test_validates_the_report_with_the_all_plugins_if_tag_is_none(self):
+        original_plugins = ReportValidationService.validation_plugins
+
+        mock_validation_plugins = [
+            MagicMock(TAGS=[ValidationTags.ON_SUBMIT]),
+            MagicMock(TAGS=[]),
+            MagicMock(TAGS=[]),
+        ]
+
+        ReportValidationService.validation_plugins = mock_validation_plugins
+
+        report_version = make_recipe("reporting.tests.utils.report_version")
+        ReportValidationService.validate_report_version(report_version.id)
+
+        mock_validation_plugins[0].validate.assert_called_once()
+        mock_validation_plugins[1].validate.assert_called_once()
+        mock_validation_plugins[2].validate.assert_called_once()
 
         ReportValidationService.validation_plugins = original_plugins
