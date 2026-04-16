@@ -163,6 +163,11 @@ def handle_gas_types(
         gas_type_schema = {
             "properties": {
                 "gasType": {"enum": [gas_type_chemical_formula]},
+                "emission": {
+                    "title": f"Emissions (t{gas_type_chemical_formula})",
+                    "type": "number",
+                    "minimum": 0,
+                },
                 "methodology": {
                     "type": "object",
                     "properties": {

@@ -48,12 +48,6 @@
                       "maxLength": 200,
                       "type": "string",
                       "readOnly": true
-                    },
-                    "fuelUnit": {
-                      "title": "Fuel Unit",
-                      "maxLength": 200,
-                      "type": "string",
-                      "readOnly": true
                     }
                   }
                 },
@@ -82,7 +76,7 @@
                         "type": "number"
                       },
                       "equivalentEmission": {
-                        "title": "Equivalent Emission",
+                        "title": "Equivalent Emissions (tCO2e)",
                         "type": "number",
                         "readOnly": true,
                         "description": "Computed upon saving"
