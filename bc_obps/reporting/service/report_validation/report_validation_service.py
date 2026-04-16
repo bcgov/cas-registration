@@ -10,7 +10,7 @@ from . import validators
 
 
 def collect_validation_plugins() -> List[Any]:
-    validation_plugins = [validators.__dict__.get(plugin_name) for plugin_name in validators.__errors__]
+    validation_plugins = [validators.__dict__.get(plugin_name) for plugin_name in validators.__all__]
 
     for plugin in validation_plugins:
         if not plugin:
