@@ -156,7 +156,7 @@ describe("The FacilityReview component", () => {
     expect(mockActionHandler).toHaveBeenCalled();
 
     await waitFor(() => {
-      expect(getByText("Some error occurred")).toBeInTheDocument();
+      expect(getByText("Some error occurred")).toBeVisible();
     });
   });
 
@@ -167,9 +167,7 @@ describe("The FacilityReview component", () => {
     await act(() => calledProps.onSubmit());
 
     await waitFor(() => {
-      expect(
-        getByText("You must select at least one activity"),
-      ).toBeInTheDocument();
+      expect(getByText("You must select at least one activity.")).toBeVisible();
     });
     expect(mockActionHandler).not.toHaveBeenCalled();
   });

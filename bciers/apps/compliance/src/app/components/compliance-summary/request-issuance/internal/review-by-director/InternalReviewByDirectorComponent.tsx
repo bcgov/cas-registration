@@ -63,7 +63,7 @@ const InternalReviewByDirectorComponent = ({
 
   const handleSubmit = async (decision: "Approved" | "Declined") => {
     if (!isCasDirector) {
-      setErrors(["You are not authorized to submit this request"]);
+      setErrors(["You are not authorized to submit this request."]);
       return;
     }
     if (isSubmitting) {
@@ -83,7 +83,7 @@ const InternalReviewByDirectorComponent = ({
     if (response && !response.error) {
       router.push(continueUrl);
     } else {
-      setErrors([response.error || "Failed to submit request"]);
+      setErrors([response.error || "Failed to submit request."]);
       setIsSubmitting(false);
     }
   };
