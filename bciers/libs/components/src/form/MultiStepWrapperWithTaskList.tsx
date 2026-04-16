@@ -7,6 +7,7 @@ import { Box } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import FormAlerts from "@bciers/components/form/FormAlerts";
+import FormValidationError from "@bciers/components/form/components/FormValidationError";
 /**
  * Similar to the MultiStepFormWithTaskList,
  * except doesn't display a form, but can be used as a wrapper for any other page for a consistent look.
@@ -29,6 +30,8 @@ interface Props {
   noFormSave?: () => void;
   noSaveButton?: boolean;
   submitButtonDisabled?: boolean;
+  validationError?: boolean;
+  validationErrorMessage?: string;
 }
 
 const MultiStepWrapperWithTaskList: React.FC<Props> = ({
@@ -46,6 +49,8 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
   noFormSave,
   noSaveButton,
   submitButtonDisabled,
+  validationError,
+  validationErrorMessage,
 }) => {
   return (
     <Box sx={{ p: 3 }}>
@@ -59,6 +64,10 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
         </div>
         <div className="w-full">
           {children}
+          {validationError && (
+            <FormValidationError message={validationErrorMessage} />
+          )}
+          <FormAlerts errors={errors} />
           <ReportingStepButtons
             backUrl={backUrl}
             continueUrl={continueUrl}
@@ -70,9 +79,6 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
             noSaveButton={noSaveButton}
             submitButtonDisabled={submitButtonDisabled}
           />
-
-          {/* Render form alerts */}
-          <FormAlerts errors={errors} />
         </div>
       </div>
     </Box>

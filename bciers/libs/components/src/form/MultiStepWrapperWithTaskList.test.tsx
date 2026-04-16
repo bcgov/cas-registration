@@ -123,6 +123,65 @@ describe("MultiStepFormWithTaskList", () => {
     expect(screen.queryByRole("button", { name: "Back" })).toBeNull();
   });
 
+  it("does not render validation error when validationError is false", () => {
+    render(
+      <MultiStepWrapperWithTaskList
+        initialStep={0}
+        steps={["Step 1"]}
+        taskListElements={taskListElements}
+        onSubmit={mockOnSubmit}
+        continueUrl={""}
+        validationError={false}
+      />,
+    );
+
+    expect(
+      screen.queryByText(
+        /This form can't be saved yet. Please fix the errors above./i,
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders default validation error message when validationError is true", () => {
+    render(
+      <MultiStepWrapperWithTaskList
+        initialStep={0}
+        steps={["Step 1"]}
+        taskListElements={taskListElements}
+        onSubmit={mockOnSubmit}
+        continueUrl={""}
+        validationError={true}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        /This form can't be saved yet. Please fix the errors above./i,
+      ),
+    ).toBeVisible();
+  });
+
+  it("renders custom validation error message when validationErrorMessage is provided", () => {
+    render(
+      <MultiStepWrapperWithTaskList
+        initialStep={0}
+        steps={["Step 1"]}
+        taskListElements={taskListElements}
+        onSubmit={mockOnSubmit}
+        continueUrl={""}
+        validationError={true}
+        validationErrorMessage="Custom validation message."
+      />,
+    );
+
+    expect(screen.getByText("Custom validation message.")).toBeVisible();
+    expect(
+      screen.queryByText(
+        /This form can't be saved yet. Please fix the errors above./i,
+      ),
+    ).not.toBeInTheDocument();
+  });
+
   it("renders an alternave text for the save button if provided", () => {
     render(
       <MultiStepWrapperWithTaskList

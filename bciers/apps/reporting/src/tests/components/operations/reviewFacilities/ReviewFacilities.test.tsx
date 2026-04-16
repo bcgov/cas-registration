@@ -89,25 +89,25 @@ describe("LFOFacilitiesForm", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText("Review Facilities")).toBeInTheDocument();
+      expect(screen.getByText("Review Facilities")).toBeVisible();
     });
 
     expect(
       screen.getByText(
         "List of facilities currently assigned to this operation",
       ),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Facility 1")).toBeInTheDocument();
-    expect(screen.getByText("Facility 2")).toBeInTheDocument();
+    ).toBeVisible();
+    expect(screen.getByText("Facility 1")).toBeVisible();
+    expect(screen.getByText("Facility 2")).toBeVisible();
     expect(
       screen.getByText("Past facilities that belonged to this operation"),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Facility 3")).toBeInTheDocument();
-    expect(screen.getByText("Facility 4")).toBeInTheDocument();
+    ).toBeVisible();
+    expect(screen.getByText("Facility 3")).toBeVisible();
+    expect(screen.getByText("Facility 4")).toBeVisible();
 
     expect(
       screen.getByText("Sync latest data from Administration"),
-    ).toBeInTheDocument();
+    ).toBeVisible();
 
     expectButton(config.buttons.back, true);
     expectButton(config.buttons.saveAndContinue, true);
@@ -134,7 +134,7 @@ describe("LFOFacilitiesForm", () => {
     fireEvent.click(checkbox1);
     fireEvent.click(checkbox3);
 
-    expect(screen.getByText("No facilities selected")).toBeInTheDocument();
+    expect(screen.getByText("No facilities selected.")).toBeVisible();
     expectButton(config.buttons.continue, false);
     expectButton(config.buttons.save, false);
   });
@@ -166,11 +166,11 @@ describe("LFOFacilitiesForm", () => {
       fireEvent.click(saveButton);
       // Assert that the confirmation modal is displayed
       await waitFor(() => {
-        expect(screen.getByText("Confirmation")).toBeInTheDocument();
+        expect(screen.getByText("Confirmation")).toBeVisible();
       });
       expect(
         screen.getByText("You have deselected the following facilities:"),
-      ).toBeInTheDocument();
+      ).toBeVisible();
       // Assert that the deselected facility is displayed
       expect(screen.getAllByText("Facility 1")).toHaveLength(2);
       // Assert that the unselected facility (was not and still is not selected) is not displayed
@@ -190,7 +190,7 @@ describe("LFOFacilitiesForm", () => {
       });
       fireEvent.click(saveAndContinueButton);
       await waitFor(() => {
-        expect(screen.getByText("Confirmation")).toBeInTheDocument();
+        expect(screen.getByText("Confirmation")).toBeVisible();
       });
       const continueButton = screen.getByRole("button", {
         name: config.buttons.continue,
@@ -244,7 +244,7 @@ describe("LFOFacilitiesForm", () => {
     });
     fireEvent.click(saveAndContinueButton);
     await waitFor(() => {
-      expect(screen.getByText("Confirmation")).toBeInTheDocument();
+      expect(screen.getByText("Confirmation")).toBeVisible();
     });
 
     const cancelButton = screen.getByRole("button", {
@@ -283,8 +283,8 @@ describe("LFOFacilitiesForm", () => {
     });
 
     // Ensure that current facilities are still rendered
-    expect(screen.getByText("Facility 1")).toBeInTheDocument();
-    expect(screen.getByText("Facility 2")).toBeInTheDocument();
+    expect(screen.getByText("Facility 1")).toBeVisible();
+    expect(screen.getByText("Facility 2")).toBeVisible();
   });
 
   it("should hide sync button when is_sync_allowed is false", async () => {
@@ -303,7 +303,7 @@ describe("LFOFacilitiesForm", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Review Facilities")).toBeInTheDocument();
+      expect(screen.getByText("Review Facilities")).toBeVisible();
     });
 
     // Sync button should not be present

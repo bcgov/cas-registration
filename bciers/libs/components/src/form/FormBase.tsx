@@ -1,10 +1,11 @@
 import defaultTheme from "./theme/defaultTheme";
 import readOnlyTheme from "./theme/readOnlyTheme";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
 import customTransformErrors from "@bciers/utils/src/customTransformErrors";
 import { RJSFValidationError } from "@rjsf/utils";
+import FormValidationError from "./components/FormValidationError";
 
 // Best I can do for manual text validation for the DateWidget
 const currentYear = new Date().getFullYear();
@@ -46,6 +47,7 @@ export interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
   validator?: any;
   formRef?: any;
   setErrorReset?: (error: undefined) => void;
+  validationErrorMessage?: string; // overrides the default message in FormValidationError
 }
 
 // For efficiency, we pre-compute the themed form components
@@ -56,6 +58,7 @@ const ReadOnlyForm = withTheme(readOnlyTheme);
 // formbase with forwardRef
 const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   const {
+    children,
     disabled,
     formData,
     omitExtraData,
@@ -65,6 +68,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     readonly,
     setErrorReset,
     theme,
+    validationErrorMessage,
   } = props;
   if (theme && theme !== defaultTheme && theme !== readOnlyTheme) {
     throw new Error("Unsupported form theme");
@@ -75,14 +79,23 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
       : DefaultForm;
   const [formState, setFormState] = useState(formData ?? {});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const validationErrorRef = useRef<HTMLDivElement>(null);
 
   // Handling form state externally as RJSF was resetting the form data on submission and
   // creating buggy behaviour if there was an API error and the user attempted to resubmit
   const handleSubmit = (e: IChangeEvent) => {
+    if (validationErrorRef.current) validationErrorRef.current.hidden = true;
     setIsSubmitting(true);
     setFormState(e.formData);
     if (setErrorReset) setErrorReset(undefined); // Reset error state on form submission
     if (onSubmit) onSubmit(e, formState);
+  };
+
+  // Use imperative DOM update instead of state to avoid triggering a React re-render.
+  // A re-render would pass changed children to RJSF, causing it to re-derive form state
+  // and reset conditional fields (e.g. toggled sections driven by dependencies).
+  const handleError = () => {
+    if (validationErrorRef.current) validationErrorRef.current.hidden = false;
   };
 
   const handleChange = (e: IChangeEvent) => {
@@ -103,6 +116,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
       onChange={handleChange}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
+      onError={handleError}
       onSubmit={handleSubmit}
       showErrorList={false}
       transformErrors={transformErrors}
@@ -113,7 +127,16 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
           constAsDefaults: "never",
         } as any
       }
-    />
+    >
+      {children ? (
+        <>
+          <div ref={validationErrorRef} hidden>
+            <FormValidationError message={validationErrorMessage} />
+          </div>
+          {children}
+        </>
+      ) : null}
+    </Form>
   );
 };
 

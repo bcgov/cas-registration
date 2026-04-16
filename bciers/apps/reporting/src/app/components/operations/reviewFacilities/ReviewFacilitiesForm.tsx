@@ -132,7 +132,7 @@ export default function LFOFacilitiesForm({
     setFormData({ ...e.formData });
     const anyFacilitySelected = isAnyFacilitySelected(e.formData);
     if (!anyFacilitySelected) {
-      setErrors(["No facilities selected"]);
+      setErrors(["No facilities selected."]);
       setSubmittingDisabled(true);
     } else {
       setErrors(undefined);
