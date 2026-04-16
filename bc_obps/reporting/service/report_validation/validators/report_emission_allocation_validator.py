@@ -46,7 +46,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                     errors[
                         f"allocation_mismatch_facility_{fr.facility_id}_category_{category.emission_category_id}"
                     ] = ReportValidationError(
-                        Severity.ERROR,
+                        Severity.WARNING,
                         f"Emissions reported for {fr.facility_name} in '{category.emission_category_name}' category do not match emissions allocated on the Allocation of Emissions page.",
                         key=ReportValidationErrorKey.ALLOCATION_MISMATCH,
                         context=ErrorContext(

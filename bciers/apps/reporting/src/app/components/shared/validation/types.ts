@@ -21,7 +21,6 @@ export type ReportValidationMessageKey =
 // (links, expected values, etc.)
 interface ReportValidationErrorContext {
   report_version_id?: number;
-  missing_fields?: string[];
   [key: string]: string | number | string[] | undefined;
 }
 

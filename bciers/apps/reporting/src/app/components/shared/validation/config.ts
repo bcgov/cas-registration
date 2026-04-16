@@ -116,9 +116,6 @@ export const validationUIConfig: Partial<
         ? `/reports/${ctx.report_version_id}/review-operation-information`
         : undefined,
     getMessage: (error) => {
-      console.log("report operation error", error);
-      console.log("report operation context", error.context);
-
       const missingFields = error.context?.missing_fields;
 
       return Array.isArray(missingFields) && missingFields.length > 0
@@ -148,20 +145,18 @@ export const validationUIConfig: Partial<
   }),
 
   allocation_mismatch: createValidationUIConfig({
-    label: () => "Allocation of Emissions page",
+    label: () => "allocation of emissions",
     renderMode: "inline_link",
     getHref: (ctx) =>
-      ctx?.report_version_id && ctx?.facilityId
-        ? `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facilityId}/allocation-of-emissions`
+      ctx?.report_version_id && ctx?.facility_id
+        ? `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/allocation-of-emissions`
         : undefined,
-    getMessage: (error) => {
+    formatMessage: ({ label, error }) => {
       const ctx = error.context;
 
-      return `Emissions reported for ${
-        ctx?.facilityName ?? "[facility name]"
-      } in '${
-        ctx?.emissionCategoryName ?? "[emissions category]"
-      }' category do not match the emissions allocated on the Allocation of Emissions page.`;
+      const category = ctx?.emission_category_name ?? "[emission category]";
+
+      return `Please review the ${label} and ensure that emissions from ${category} activity are allocated to the ${category} product. If they are allocated, you may save & continue.`;
     },
   }),
 

@@ -10,13 +10,14 @@ from . import (
     report_emission_allocation_validator,
     supplementary_report_attachments_confirmation,
     supplementary_report_version_change,
-    required_fields_report_operation,  # noqa: F401
+    required_fields_report_operation,
 )
 
 
 __all__ = [
     # Example:
     # "example_validator",
+    "required_fields_report_operation",
     "operation_boroid_presence",
     "mandatory_verification_statement",
     "report_attachments_are_scanned",
@@ -29,5 +30,7 @@ __all__ = [
 
 
 __section_validators__ = {
+    # add report validations sections...
     "report_operation": ["required_fields_report_operation"],
+    "allocation_of_emissions": ["report_emission_allocation_validator"],
 }

@@ -32,11 +32,13 @@ def get_report_validation_data(
     request: HttpRequest,
     version_id: int,
 ) -> Tuple[Literal[200], dict[str, Any]]:
-    errors = ReportValidationService.validate_report_section(
+    errors = ReportValidationService.validate_report_sections(
         version_id,
-        "report_operation",
+        [
+            "report_operation",
+            "allocation_of_emissions",
+        ],
     )
-
     payload_errors: list[dict[str, Any]] = []
 
     for key, error in errors.items():
@@ -50,7 +52,12 @@ def get_report_validation_data(
                 exclude_none=True,
             )
 
-        payload_errors.append({"key": key, "error": error_data})
+            payload_errors.append(
+                {
+                    "key": error.key.value,
+                    "error": error_data,
+                }
+            )
 
     payload: dict[str, Any] = {"errors": payload_errors}
 
