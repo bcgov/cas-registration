@@ -132,7 +132,7 @@ class TestReportDataByFueltypeValidator(TestCase):
         assert result == {
             f"report_methodology_unitFuelCo2DefaultEf_value_outside_expected_bounds_{report_methodology.id}": ReportValidationError(
                 Severity.WARNING,
-                f"Methodology Field (CO2 Default EF) with value (20000) is outside of the expected range (1000.0000 - 5000.0000) for Activity: {report_methodology.report_emission.report_source_type.report_activity.activity.name}, Source Type: {report_methodology.report_emission.report_source_type.source_type.name}, Fuel Type: Diesel, Gas Type: CO2",
+                f"Methodology Field (CO2 Default Emission Factor) with value (20000) is outside of the expected range (1000.0000 - 5000.0000) for Activity: {report_methodology.report_emission.report_source_type.report_activity.activity.name}, Source Type: {report_methodology.report_emission.report_source_type.source_type.name}, Fuel Type: Diesel, Gas Type: CO2",
                 key=ReportValidationErrorKey.REPORT_DATA_OUT_OF_BOUNDS_BY_REPORTING_FIELD,
                 context=ErrorContext(
                     report_version_id=report_methodology.report_version.id,
@@ -159,7 +159,7 @@ class TestReportDataByFueltypeValidator(TestCase):
         assert result == {
             f"report_methodology_unitFuelCo2DefaultEf_value_outside_expected_bounds_{report_methodology.id}": ReportValidationError(
                 Severity.WARNING,
-                f"Methodology Field (CO2 Default EF) with value (2) is outside of the expected range (1000.0000 - 5000.0000) for Activity: {report_methodology.report_emission.report_source_type.report_activity.activity.name}, Source Type: {report_methodology.report_emission.report_source_type.source_type.name}, Fuel Type: Diesel, Gas Type: CO2",
+                f"Methodology Field (CO2 Default Emission Factor) with value (2) is outside of the expected range (1000.0000 - 5000.0000) for Activity: {report_methodology.report_emission.report_source_type.report_activity.activity.name}, Source Type: {report_methodology.report_emission.report_source_type.source_type.name}, Fuel Type: Diesel, Gas Type: CO2",
                 key=ReportValidationErrorKey.REPORT_DATA_OUT_OF_BOUNDS_BY_REPORTING_FIELD,
                 context=ErrorContext(
                     report_version_id=report_methodology.report_version.id,
