@@ -169,7 +169,7 @@ export default function ApplyComplianceUnitsComponent({
     );
     if (!response || response.error) {
       setStatus("idle");
-      setErrors([response?.error || "Failed to get compliance units data"]);
+      setErrors([response?.error || "Failed to get compliance units data."]);
     } else {
       // Set the remaining cap from the response (what’s left to apply)
       setRemainingCap(Number(response.compliance_unit_cap_remaining));
@@ -210,7 +210,7 @@ export default function ApplyComplianceUnitsComponent({
     );
     if (!response || response.error) {
       setStatus("submitted");
-      setErrors([response.error || "Failed to apply compliance units"]);
+      setErrors([response.error || "Failed to apply compliance units."]);
     } else {
       setStatus("applied");
       setErrors(undefined);
