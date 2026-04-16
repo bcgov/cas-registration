@@ -50,7 +50,7 @@ export const FacilityReview: React.FC<Props> = ({
     const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
     const pathToRevalidate = `reporting/reports/${version_id}/facilities/${facility_id}/review-facility-information`;
     if (formData.activities.length === 0) {
-      setErrors(["You must select at least one activity"]);
+      setErrors(["You must select at least one activity."]);
       return false;
     }
 
@@ -88,7 +88,7 @@ export const FacilityReview: React.FC<Props> = ({
     );
 
     if (getUpdatedFacilityData.error) {
-      setErrors(["Unable to sync data"]);
+      setErrors(["Unable to sync data."]);
       return;
     }
 

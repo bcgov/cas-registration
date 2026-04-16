@@ -77,7 +77,7 @@ const ProductionDataForm: React.FC<Props> = ({
       !["Small Aggregate", "Medium Facility"].includes(facilityType) &&
       formData.product_selection.length < 1
     ) {
-      setErrors(["A product must be selected"]);
+      setErrors(["A product must be selected."]);
       return false;
     }
     const response = await postProductionData(

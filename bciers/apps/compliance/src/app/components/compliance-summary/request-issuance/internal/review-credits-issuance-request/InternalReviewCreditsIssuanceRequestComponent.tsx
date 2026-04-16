@@ -77,7 +77,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
     if (response && !response.error) {
       router.push(continueUrl);
     } else {
-      setErrors([response.error || "Failed to submit request"]);
+      setErrors([response.error || "Failed to submit request."]);
       setIsSubmitting(false);
     }
   };

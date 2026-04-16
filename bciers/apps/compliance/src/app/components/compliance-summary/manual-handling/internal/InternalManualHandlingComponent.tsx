@@ -72,7 +72,7 @@ const InternalManualHandlingComponent = ({
     });
 
     if (response?.error) {
-      setErrors([response.error || "Failed to submit request"]);
+      setErrors([response.error || "Failed to submit request."]);
     } else {
       setErrors(undefined);
 

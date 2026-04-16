@@ -105,7 +105,7 @@ export default function OperationReviewForm({
   const handleSync = async () => {
     const newData = await getUpdatedReportOperationDetails(version_id);
     if (newData.error) {
-      setErrors(["Unable to sync data"]);
+      setErrors(["Unable to sync data."]);
       return;
     }
     setPageSchema(
