@@ -33,11 +33,22 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
     const report = new CurrentReportPOM(page);
 
-    // ── 3. Review Operation Information ──
-    await report.continueFromOperationInfo(versionId);
+    // 1. Operation Information
 
-    // ── 4. Person Responsible — select "Bill Blue" (contact linked to the op) ──
-    await report.fillPersonResponsible(versionId, "Bill Blue");
+    // Review Operation Information
+    await report.saveAndContinue(
+      new RegExp(report.personResponsibleUrl(versionId)),
+    );
+
+    // Person Responsible — select "Bill Blue" (contact linked to the op)
+    await report.fillPersonResponsible("Bill Blue");
+    await report.saveAndContinue(
+      new RegExp(report.reviewFacilitiesUrl(versionId)),
+    );
+
+    // Review Facilities
+    await report.click;
+    await report.saveAndContinue();
 
     // LFO Specific flow items
     //
