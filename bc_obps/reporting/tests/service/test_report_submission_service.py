@@ -8,6 +8,7 @@ from reporting.service.report_sign_off_service import ReportSignOffAcknowledgeme
 import uuid
 
 from reporting.service.report_validation.report_validation_error import ReportValidationError, Severity
+from reporting.service.report_validation.report_validation_tags import ValidationTags
 
 
 @pytest.mark.django_db
@@ -70,7 +71,7 @@ class TestReportSubmissionService:
         result = ReportSubmissionService.submit_report(version_id, user_guid, fake_sign_off_data)
 
         # Assert that validate_report was called.
-        mock_validate_report_version.assert_called_once_with(version_id)
+        mock_validate_report_version.assert_called_once_with(version_id=version_id, tag=ValidationTags.ON_SUBMIT)
 
         # Assert that save_report_sign_off was called with the correct parameters.
         mock_save_report_sign_off.assert_called_once_with(version_id, fake_sign_off_data)
