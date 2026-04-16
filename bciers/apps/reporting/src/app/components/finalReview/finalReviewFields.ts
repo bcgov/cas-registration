@@ -59,6 +59,7 @@ const FIELD_KEYS = {
 
   // Production data
   productionMethodology: "production_methodology",
+  productionMethodologyDescription: "production_methodology_description",
   storageQuantityStart: "storage_quantity_start_of_period",
   storageQuantityEnd: "storage_quantity_end_of_period",
   quantitySold: "quantity_sold_during_period",
@@ -409,6 +410,15 @@ export const productionDataFields = (product: any = []) => {
       label: "Production Quantification Methodology",
       key: FIELD_KEYS.productionMethodology,
     },
+    ...(product.production_methodology_description !== null &&
+    product.production_methodology_description !== undefined
+      ? [
+          {
+            label: "Production Quantification Methodology Description",
+            key: FIELD_KEYS.productionMethodologyDescription,
+          },
+        ]
+      : []),
     {
       label:
         "Quantity in storage at the beginning of the compliance period [Jan 1], if applicable",
