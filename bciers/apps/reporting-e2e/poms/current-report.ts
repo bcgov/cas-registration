@@ -1,103 +1,57 @@
 import { Page } from "@playwright/test";
-import {
-  AppRoutes,
-  FacilityIDs,
-  ReportRoutes,
-} from "@/reporting-e2e/utils/enums";
+import { ReportRoutes } from "@/reporting-e2e/utils/enums";
 import { FORM_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
-import {
-  clickButton,
-  selectItemFromAutocomplete,
-} from "@bciers/e2e/utils/helpers";
+import { clickButton } from "@bciers/e2e/utils/helpers";
+import { PersonResponsiblePOM } from "@/reporting-e2e/poms/person-responsible";
+import { ReportOperationPOM } from "@/reporting-e2e/poms/report-operation";
 
 export class CurrentReportPOM {
   readonly page: Page;
 
-  private readonly baseUrl: string;
-
   constructor(page: Page) {
     this.page = page;
-    this.baseUrl =
-      process.env.E2E_BASEURL + AppRoutes.GRID_REPORTING_CURRENT_REPORTS;
   }
 
   // -----------------
   // URL builders
   // -----------------
-  private personResponsibleUrl(versionId: number): string {
-    return `${this.baseUrl}/${versionId}/${ReportRoutes.PERSON_RESPONSIBLE}`;
+
+  personResponsibleUrl(versionId: number): string {
+    return `/reports/${versionId}/${ReportRoutes.PERSON_RESPONSIBLE}`;
   }
 
-  private activitiesUrl(
-    versionId: number,
-    facilityId: string,
-    step = 0,
-  ): string {
-    return `${this.baseUrl}/${versionId}/${ReportRoutes.FACILITIES}/${facilityId}/${ReportRoutes.ACTIVITIES}?step=${step}`;
+  activitiesUrl(versionId: number, facilityId: string): string {
+    return `/reports/${versionId}/${ReportRoutes.FACILITIES}/${facilityId}/${ReportRoutes.ACTIVITIES}`;
   }
 
   // -----------------
   // Shared helpers
   // -----------------
 
-  private async saveAndContinue(waitForUrl?: RegExp): Promise<void> {
+  async saveAndContinue(waitForUrl?: RegExp): Promise<void> {
     await clickButton(this.page, FORM_BUTTON_TEXT.SAVE_AND_CONTINUE, {
       inForm: true,
       waitForUrl,
     });
   }
 
-  // -----------------
-  // Page 1 — Review Operation Information
-  // -----------------
-
-  async continueFromOperationInfo(versionId: number): Promise<void> {
-    await this.saveAndContinue(
-      new RegExp(this.personResponsibleUrl(versionId)),
-    );
+  async verifyBugleSfoOperationInfo(): Promise<void> {
+    const operationReview = new ReportOperationPOM(this.page);
+    await operationReview.verifyBugleSfoFields();
   }
 
-  // -----------------
-  // Page 2 — Person Responsible
-  // -----------------
-
-  async fillPersonResponsible(
-    versionId: number,
-    contactName: string,
-  ): Promise<void> {
-    await selectItemFromAutocomplete(this.page, contactName);
-    await this.saveAndContinue(
-      new RegExp(this.activitiesUrl(versionId, FacilityIDs.BUGLE_SFO, 0)),
-    );
+  async fillPersonResponsible(contactName: string): Promise<void> {
+    const personResponsible = new PersonResponsiblePOM(this.page);
+    await personResponsible.selectContact(contactName);
   }
-
-  // -----------------
-  // Page 8 — Additional Reporting Data
-  // -----------------
 
   async fillAdditionalData(): Promise<void> {}
 
-  // -----------------
-  // Page 9 — Compliance Summary (read-only)
-  // -----------------
-
   async continueFromComplianceSummary(): Promise<void> {}
-
-  // -----------------
-  // Page 10 — Final Review (read-only)
-  // -----------------
 
   async continueFromFinalReview(): Promise<void> {}
 
-  // -----------------
-  // Page 11 — Verification
-  // -----------------
-
   async fillVerification(): Promise<void> {}
-
-  // -----------------
-  // Page 12 — Attachments
-  // -----------------
 
   async uploadVerificationStatement(): Promise<void> {}
 }
