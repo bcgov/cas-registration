@@ -132,5 +132,5 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         **(fuel_amount_errors if fuel_amount_errors is not None else {}),
         **(methodology_field_errors if methodology_field_errors is not None else {}),
     }
-    print(errors)
+
     return errors
