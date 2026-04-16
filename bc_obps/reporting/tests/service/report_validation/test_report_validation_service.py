@@ -27,7 +27,7 @@ class TestReportValidationService:
         mock_validation_plugins = [
             MagicMock(TAGS=[ValidationTags.ON_SUBMIT]),
             MagicMock(TAGS=[ValidationTags.ON_SUBMIT]),
-            MagicMock(TAGS=[ValidationTags.ON_SUBMIT]),
+            MagicMock(TAGS=[]),
         ]
         mock_validation_plugins[0].validate.return_value = {"mock_key": "mock_errors"}
         mock_validation_plugins[1].validate.return_value = {"mock_key2": "mock_errors2"}
@@ -39,6 +39,7 @@ class TestReportValidationService:
         errors = ReportValidationService.validate_report_version(report_version.id, ValidationTags.ON_SUBMIT)
         mock_validation_plugins[0].validate.assert_called_once()
         mock_validation_plugins[1].validate.assert_called_once()
+        mock_validation_plugins[2].validate.assert_not_called()
         assert errors == {"mock_key": "mock_errors", "mock_key2": "mock_errors2"}
 
         ReportValidationService.validation_plugins = original_plugins
