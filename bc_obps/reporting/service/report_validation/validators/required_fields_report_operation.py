@@ -8,6 +8,7 @@ from reporting.service.report_validation.report_validation_error import (
     Severity,
 )
 from reporting.service.report_validation.types import RequiredFieldConfig
+from reporting.service.report_validation.utils import is_blank_scalar
 
 
 REQUIRED_REPORT_OPERATION_FIELDS: list[RequiredFieldConfig] = [
@@ -39,28 +40,35 @@ REQUIRED_REPORT_OPERATION_FIELDS: list[RequiredFieldConfig] = [
 ]
 
 
+SECTION = "review_operation_information"
+SECTION_TITLE = "Review operation information"
+
+
 def _build_error(
     *,
     report_version_id: int,
     missing_field_labels: list[str],
 ) -> ReportValidationError:
+    print(
+        "BUILD ERROR CONTEXT",
+        ErrorContext(
+            report_version_id=report_version_id,
+            missing_fields=missing_field_labels,
+            section=SECTION,
+            section_title=SECTION_TITLE,
+        ).model_dump(),
+    )
     return ReportValidationError(
         severity=Severity.ERROR,
-        message="Required fields are empty on review operation information.",
-        key=ReportValidationErrorKey.ERROR_REPORT_OPERATION_INFORMATION,
+        message="Required fields are empty.",
+        key=ReportValidationErrorKey.ERROR_REQUIRED_FIELDS,
         context=ErrorContext(
             report_version_id=report_version_id,
             missing_fields=missing_field_labels,
+            section=SECTION,
+            section_title=SECTION_TITLE,
         ),
     )
-
-
-def _is_blank_scalar(value: object) -> bool:
-    if value is None:
-        return True
-    if isinstance(value, str):
-        return not value.strip()
-    return False
 
 
 def _is_missing_operation_representative(report_version_id: int) -> bool:
@@ -83,7 +91,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
 
         if field_type == "scalar":
             value = getattr(report_operation, field_name, None)
-            is_missing = _is_blank_scalar(value)
+            is_missing = is_blank_scalar(value)
 
         elif field_type == "m2m":
             relation = getattr(report_operation, field_name, None)
@@ -100,7 +108,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         return {}
 
     return {
-        "error_report_operation_information": _build_error(
+        f"error_required_fields_{SECTION}": _build_error(
             report_version_id=report_version.id,
             missing_field_labels=missing_field_labels,
         )

@@ -108,42 +108,6 @@ export const validationUIConfig: Partial<
         "You must confirm that all required supplementary attachments have been uploaded and existing attachments are still relevant to the supplementary submission on the Attachments page.",
     }),
 
-  error_report_operation_information: createValidationUIConfig({
-    label: "review operation information",
-    renderMode: "inline_link",
-    getHref: (ctx) =>
-      ctx?.report_version_id
-        ? `/reports/${ctx.report_version_id}/review-operation-information`
-        : undefined,
-    getMessage: (error) => {
-      const missingFields = error.context?.missing_fields;
-
-      return Array.isArray(missingFields) && missingFields.length > 0
-        ? `Required fields are empty on review operation information: ${missingFields.join(", ")}.`
-        : "Required fields are empty on review operation information.";
-    },
-  }),
-
-  error_activity_value: createValidationUIConfig({
-    label: (error) => String(error.context?.activityName ?? "activity name"),
-    renderMode: "inline_link",
-    getHref: (ctx) =>
-      ctx?.report_version_id && ctx?.facilityId && ctx?.activityId !== undefined
-        ? `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facilityId}/activities?activity_id=${ctx.activityId}`
-        : undefined,
-    getMessage: (error) => {
-      const ctx = error.context;
-
-      return `Unusual value detected for ${
-        ctx?.activityName ?? "[activity name]"
-      }. Expected ${ctx?.fuelType ?? "[fuel type]"} ${
-        ctx?.fieldName ?? "[field]"
-      } value to be between ${
-        ctx?.expectedRange ?? "[range]"
-      } but input was ${ctx?.userInput ?? "[user input]"}. Please ensure you have selected the correct fuel name and the value is accurate. If the value is accurate, you may save & continue.`;
-    },
-  }),
-
   allocation_mismatch: createValidationUIConfig({
     label: () => "allocation of emissions",
     renderMode: "inline_link",
@@ -160,15 +124,29 @@ export const validationUIConfig: Partial<
     },
   }),
 
-  error_lime_kiln: createValidationUIConfig({
-    label: "Pulp and Paper Production",
+  error_required_fields: createValidationUIConfig({
+    label: (error) => String(error.context?.section_title ?? "review section"),
     renderMode: "inline_link",
-    getHref: (ctx) =>
-      ctx?.report_version_id && ctx?.facilityId
-        ? `/reports/${ctx.report_version_id}/facilities/${ctx.facilityId}/production-data`
-        : undefined,
-    getMessage: () =>
-      'Error in Pulp and Paper Production. To proceed, select "Yes" to the question "Does this operation utilize a lime recovery kiln?"',
+    getHref: (ctx) => {
+      if (!ctx?.report_version_id || !ctx?.section) return undefined;
+
+      const section = ctx.section as string;
+
+      const sectionRoutes: Record<string, string> = {
+        review_operation_information: `/reports/${ctx.report_version_id}/review-operation-information`,
+        person_responsible: `/reports/${ctx.report_version_id}/person-responsible`,
+      };
+
+      return sectionRoutes[section];
+    },
+    getMessage: (error) => {
+      const sectionTitle = error.context?.section_title ?? "this section";
+      const missingFields = error.context?.missing_fields;
+
+      return Array.isArray(missingFields) && missingFields.length > 0
+        ? `Required fields are empty on ${sectionTitle}: ${missingFields.join(", ")}.`
+        : `Required fields are empty on ${sectionTitle}.`;
+    },
   }),
 
   generic_error: createValidationUIConfig({

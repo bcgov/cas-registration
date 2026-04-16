@@ -12,9 +12,7 @@ export type ReportValidationMessageKey =
   | "missing_supplementary_report_attachment_confirmation"
   // Errors (data issues / validation failures)
   | "allocation_mismatch"
-  | "error_report_operation_information"
-  | "error_lime_kiln"
-  | "error_activity_value"
+  | "error_required_fields"
   | "generic_error";
 
 // Additional metadata returned from backend used for dynamic content

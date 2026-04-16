@@ -7,7 +7,7 @@ from reporting.api_v2.forms.form_response_builder import FormResponseBuilder
 from reporting.api_v2.forms.form_schema import ReportingFormSchema
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from reporting.schema.report_validation import ReportValidationPayloadSchema
+from reporting.schema.report_validation_data import ReportValidationPayloadSchema
 from reporting.service.report_validation.report_validation_service import (
     ReportValidationService,
 )
@@ -36,9 +36,11 @@ def get_report_validation_data(
         version_id,
         [
             "report_operation",
+            "person-responsible",
             "allocation_of_emissions",
         ],
     )
+
     payload_errors: list[dict[str, Any]] = []
 
     for key, error in errors.items():
@@ -50,14 +52,15 @@ def get_report_validation_data(
         if error.context:
             error_data["context"] = error.context.model_dump(
                 exclude_none=True,
+                by_alias=False,
             )
 
-            payload_errors.append(
-                {
-                    "key": error.key.value,
-                    "error": error_data,
-                }
-            )
+        payload_errors.append(
+            {
+                "key": getattr(error.key, "value", error.key),
+                "error": error_data,
+            }
+        )
 
     payload: dict[str, Any] = {"errors": payload_errors}
 
