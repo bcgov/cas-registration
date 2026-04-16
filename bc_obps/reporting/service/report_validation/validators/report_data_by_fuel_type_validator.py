@@ -12,6 +12,10 @@ from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
 )
 
+from reporting.service.report_validation.report_validation_tags import ValidationTags
+
+TAGS = [ValidationTags.FINAL_REVIEW]
+
 
 def validate_fuel_amount(
     fuel_record: ReportFuel, activity_name: str, source_type_name: str, fuel_type_name: str
