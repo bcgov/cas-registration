@@ -6,6 +6,11 @@ from reporting.service.report_validation.report_validation_error import (
     ReportValidationErrorKey,
     Severity,
 )
+from reporting.service.report_validation.report_validation_tags import ValidationTags
+
+# The list of TAGS define where this validator should run.
+# For example the ON_SUBMIT tag will cause this validator to run when called from the report version submission function.
+TAGS = [ValidationTags.ON_SUBMIT]
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:

@@ -9,6 +9,7 @@ from reporting.signals.signals import report_submitted
 from common.lib import pgtrigger
 from django.db import transaction
 from reporting.service.compliance_service import ComplianceService
+from reporting.service.report_validation.report_validation_tags import ValidationTags
 
 
 class ReportSubmissionService:
@@ -21,7 +22,9 @@ class ReportSubmissionService:
     def submit_report(version_id: int, user_guid: UUID, sign_off_data: ReportSignOffData) -> ReportVersion:
         report_version = ReportVersion.objects.get(id=version_id)
 
-        validation_result = ReportValidationService.validate_report_version(version_id)
+        validation_result = ReportValidationService.validate_report_version(
+            version_id=version_id, tag=ValidationTags.ON_SUBMIT
+        )
 
         is_regulated_operation = report_version.report.operation.is_regulated_operation
 
