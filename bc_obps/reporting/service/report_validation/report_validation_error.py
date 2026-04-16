@@ -21,6 +21,8 @@ class ReportValidationErrorKey(StrEnum):
     MISSING_EXISTING_ATTACHMENT_CONFIRMATION = "missing_existing_attachment_confirmation"
     MISSING_SUPPLEMENTARY_REPORT_ATTACHMENT_CONFIRMATION = "missing_supplementary_report_attachment_confirmation"
     MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE = "missing_supplementary_report_version_change"
+    REPORT_DATA_OUT_OF_BOUNDS_BY_FUEL_TYPE = "report_data_out_of_bounds_by_fuel_type"
+    REPORT_DATA_OUT_OF_BOUNDS_BY_REPORTING_FIELD = "report_data_out_of_bounds_by_reporting_field"
 
 
 class ErrorContext(BaseModel):
@@ -35,6 +37,13 @@ class ErrorContext(BaseModel):
     emission_category_id: Optional[int] = None
     emission_category_name: Optional[str] = None
     activity_id: Optional[int] = None
+    activity_name: Optional[str] = None
+    source_type_id: Optional[int] = None
+    source_type_name: Optional[str] = None
+    fuel_type_name: Optional[str] = None
+    gas_type_name: Optional[str] = None
+    methodology_name: Optional[str] = None
+    reporting_field: Optional[str] = None
 
 
 @dataclass
