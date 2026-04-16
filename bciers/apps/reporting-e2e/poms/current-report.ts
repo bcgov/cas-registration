@@ -8,16 +8,16 @@ import { ReportOperationPOM } from "@/reporting-e2e/poms/report-operation";
 export class CurrentReportPOM {
   readonly page: Page;
 
-  constructor(page: Page) {
-    this.page = page;
-  }
-
   // -----------------
   // URL builders
   // -----------------
 
   personResponsibleUrl(versionId: number): string {
     return `/reports/${versionId}/${ReportRoutes.PERSON_RESPONSIBLE}`;
+  }
+
+  reviewFacilitiesUrl(versionId: number): string {
+    return `/reports/${versionId}/${ReportRoutes.REVIEW_FACILITIES}`;
   }
 
   activitiesUrl(versionId: number, facilityId: string): string {
