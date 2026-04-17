@@ -116,7 +116,7 @@ def get_all_attachments(
             mapped_sort_field = "report_version__report__operator__legal_name"
         case "operation":
             mapped_sort_field = "report_version__report__operation__name"
-        case "reporting_year":
+        case "reporting_year_id":
             mapped_sort_field = "report_version__report__reporting_year_id"
         case _:
             mapped_sort_field = sort_field or "id"
