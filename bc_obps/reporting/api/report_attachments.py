@@ -111,11 +111,15 @@ def get_all_attachments(
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[ReportAttachment]:
 
-    mapped_sort_field = (
-        "report_version__report__operator__legal_name"
-        if sort_field == "operator"
-        else "report_version__report__operation__name" if sort_field == "operation" else sort_field
-    )
+    match sort_field:
+        case "operator":
+            mapped_sort_field = "report_version__report__operator__legal_name"
+        case "operation":
+            mapped_sort_field = "report_version__report__operation__name"
+        case "reporting_year":
+            mapped_sort_field = "report_version__report__reporting_year_id"
+        case _:
+            mapped_sort_field = sort_field or "id"
 
     sort_direction = "-" if sort_order == "desc" else ""
     sort_by = f"{sort_direction}{mapped_sort_field}"
@@ -124,6 +128,10 @@ def get_all_attachments(
         "report_version",
         "report_version__report__operation",
         "report_version__report__operator",
-    ).filter(report_version__status=ReportVersion.ReportVersionStatus.Submitted)
+        "report_version__report__reporting_year",
+    ).filter(
+        report_version__status=ReportVersion.ReportVersionStatus.Submitted,
+        report_version__report__reporting_year__isnull=False,
+    )
 
     return filters.filter(attachments_query).order_by(sort_by)
