@@ -106,23 +106,25 @@ def get_report_attachment_url(request: HttpRequest, version_id: int, file_id: in
 def get_all_attachments(
     request: HttpRequest,
     filters: InternalReportAttachmentFilterSchema = Query(...),
-    sort_field: Optional[str] = "id",
+    sort_field: Optional[str] | Optional[(str)] = "id",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[ReportAttachment]:
 
-    match sort_field:
-        case "operator":
-            mapped_sort_field = "report_version__report__operator__legal_name"
-        case "operation":
-            mapped_sort_field = "report_version__report__operation__name"
-        case "reporting_year_id":
-            mapped_sort_field = "report_version__report__reporting_year_id"
-        case _:
-            mapped_sort_field = sort_field or "id"
+    # match sort_field:
+    #     case "operator":
+    #         mapped_sort_field = "report_version__report__operator__legal_name"
+    #     case "operation":
+    #         mapped_sort_field = "report_version__report__operation__name"
+    #     case "reporting_year_id":
+    #         mapped_sort_field = "report_version__report__reporting_year_id"
+    #     case _:
+    #         mapped_sort_field = sort_field or "reporting_year_id"
 
-    sort_direction = "-" if sort_order == "desc" else ""
-    sort_by = f"{sort_direction}{mapped_sort_field}"
+    # sort_direction = "-" if sort_order == "desc" else ""
+    # sort_by = f"{sort_direction}{mapped_sort_field}"
+
+    sort_by = ["-report_version__report__reporting_year_id", "-report_version_id"]
 
     attachments_query = ReportAttachment.objects.select_related(
         "report_version",
@@ -134,4 +136,6 @@ def get_all_attachments(
         report_version__report__reporting_year__isnull=False,
     )
 
-    return filters.filter(attachments_query).order_by(sort_by)
+    print(f"\n\n\nsort_by = {sort_by}\n\n\n")
+
+    return filters.filter(attachments_query).order_by(*sort_by)
