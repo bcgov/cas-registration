@@ -9,9 +9,12 @@ from reporting.service.report_validation.report_validation_error import (
 )
 from reporting.service.report_validation.types import RequiredFieldConfig
 from reporting.service.report_validation.utils import is_blank_scalar
+from reporting.service.report_validation.report_validation_tags import ValidationTags
+
+TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 
-REQUIRED_REPORT_OPERATION_FIELDS: list[RequiredFieldConfig] = [
+REQUIRED_FIELDS: list[RequiredFieldConfig] = [
     {
         "field": "operation_representative_name",
         "label": "Operation representative name",
@@ -49,15 +52,6 @@ def _build_error(
     report_version_id: int,
     missing_field_labels: list[str],
 ) -> ReportValidationError:
-    print(
-        "BUILD ERROR CONTEXT",
-        ErrorContext(
-            report_version_id=report_version_id,
-            missing_fields=missing_field_labels,
-            section=SECTION,
-            section_title=SECTION_TITLE,
-        ).model_dump(),
-    )
     return ReportValidationError(
         severity=Severity.ERROR,
         message="Required fields are empty.",
@@ -82,7 +76,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     report_operation: ReportOperation = report_version.report_operation
     missing_field_labels: list[str] = []
 
-    for item in REQUIRED_REPORT_OPERATION_FIELDS:
+    for item in REQUIRED_FIELDS:
         field_name = item["field"]
         field_label = item["label"]
         field_type = item["field_type"]

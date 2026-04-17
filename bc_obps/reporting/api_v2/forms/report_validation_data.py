@@ -12,11 +12,11 @@ from reporting.service.report_validation.report_validation_service import (
     ReportValidationService,
 )
 from service.error_service.custom_codes_4xx import custom_codes_4xx
+from reporting.service.report_validation.report_validation_tags import ValidationTags
 
 from ..router import router
 
 
-# WIP
 @router.get(
     "report-version/{version_id}/forms/validation-data",
     response={
@@ -32,15 +32,9 @@ def get_report_validation_data(
     request: HttpRequest,
     version_id: int,
 ) -> Tuple[Literal[200], dict[str, Any]]:
-    errors = ReportValidationService.validate_report_sections(
-        version_id,
-        [
-            "report_operation",
-            "person-responsible",
-            "allocation_of_emissions",
-        ],
+    errors = ReportValidationService.validate_report_version(
+        version_id=version_id, tag=ValidationTags.REPORT_VALIDATION
     )
-
     payload_errors: list[dict[str, Any]] = []
 
     for key, error in errors.items():

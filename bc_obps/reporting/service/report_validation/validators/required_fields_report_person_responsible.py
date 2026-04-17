@@ -8,9 +8,12 @@ from reporting.service.report_validation.report_validation_error import (
 )
 from reporting.service.report_validation.types import RequiredFieldConfig
 from reporting.service.report_validation.utils import is_blank_scalar
+from reporting.service.report_validation.report_validation_tags import ValidationTags
+
+TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 
-REQUIRED_REPORT_PERSON_RESPONSIBLE_FIELDS: list[RequiredFieldConfig] = [
+REQUIRED_FIELDS: list[RequiredFieldConfig] = [
     {
         "field": "first_name",
         "label": "First name",
@@ -88,13 +91,13 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         return {
             f"error_required_fields_{SECTION}": _build_error(
                 report_version_id=report_version.id,
-                missing_field_labels=[item["label"] for item in REQUIRED_REPORT_PERSON_RESPONSIBLE_FIELDS],
+                missing_field_labels=[item["label"] for item in REQUIRED_FIELDS],
             )
         }
 
     missing_field_labels: list[str] = []
 
-    for item in REQUIRED_REPORT_PERSON_RESPONSIBLE_FIELDS:
+    for item in REQUIRED_FIELDS:
         field_name = item["field"]
         field_label = item["label"]
         field_type = item["field_type"]
