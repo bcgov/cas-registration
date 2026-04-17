@@ -29,24 +29,44 @@ class ReportValidationService:
     """
     A service to validate reports before submission
 
-    Strategy: independent, plug-in validators are collected at start-up time, then run in a sequence.
-    Errors are collected then returned in a dictionary.
+    Strategy:
+    - validators are collected at startup
+    - filtered by TAGS (broad filtering)
+    - optionally filtered by `applies()` (flow / section applicability)
+    - then executed
     """
 
     validation_plugins = collect_validation_plugins()
 
     @staticmethod
-    def validate_report_version(version_id: int, tag: ValidationTags | None = None) -> dict[str, ReportValidationError]:
+    def validate_report_version(
+        version_id: int,
+        tag: ValidationTags | None = None,
+    ) -> dict[str, ReportValidationError]:
 
         report_version = ReportVersion.objects.get(id=version_id)
 
-        results: List[dict[str, ReportValidationError]] = [
-            validation_plugin.validate(report_version)
-            for validation_plugin in ReportValidationService.validation_plugins
-            if tag in validation_plugin.TAGS or tag is None
-        ]
+        results: List[dict[str, ReportValidationError]] = []
+
+        for validation_plugin in ReportValidationService.validation_plugins:
+
+            # Tag filtering
+            if tag is not None and tag not in getattr(validation_plugin, "TAGS", []):
+                continue
+
+            # Applicability filtering
+            applies = getattr(validation_plugin, "applies", None)
+            if callable(applies):
+                try:
+                    if not applies(report_version):
+                        continue
+                except Exception as e:
+                    print(f"Validator applies() failed: {validation_plugin} - {e}")
+                    continue
+
+            # Execute validator
+            result = validation_plugin.validate(report_version)
+            results.append(result)
 
         # Aggregate the results in one dictionary, by key
-        error_dictionary: dict[str, ReportValidationError] = reduce(lambda acc, curr: {**acc, **curr}, results, {})
-
-        return error_dictionary
+        return reduce(lambda acc, curr: {**acc, **curr}, results, {})

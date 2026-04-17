@@ -6,11 +6,23 @@ from reporting.service.report_validation.report_validation_error import (
     ReportValidationErrorKey,
     Severity,
 )
-from reporting.service.report_validation.types import RequiredFieldConfig
-from reporting.service.report_validation.utils import is_blank_scalar
 from reporting.service.report_validation.report_validation_tags import ValidationTags
+from reporting.service.report_validation.validators.required_fields.types import (
+    RequiredFieldConfig,
+)
+from reporting.service.report_validation.validators.required_fields.utils import (
+    collect_missing_fields,
+)
+from reporting.service.reporting_flow_service import resolve_flow
+from reporting.service.reporting_flow_applicability import (
+    SECTION_APPLICABLE_FLOWS,
+)
+
 
 TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
+
+SECTION = "person_responsible"
+SECTION_TITLE = "Person responsible"
 
 
 REQUIRED_FIELDS: list[RequiredFieldConfig] = [
@@ -62,8 +74,9 @@ REQUIRED_FIELDS: list[RequiredFieldConfig] = [
 ]
 
 
-SECTION = "person_responsible"
-SECTION_TITLE = "Person responsible"
+def applies(report_version: ReportVersion) -> bool:
+    flow = resolve_flow(report_version)
+    return flow in SECTION_APPLICABLE_FLOWS[SECTION]
 
 
 def _build_error(
@@ -95,21 +108,10 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             )
         }
 
-    missing_field_labels: list[str] = []
-
-    for item in REQUIRED_FIELDS:
-        field_name = item["field"]
-        field_label = item["label"]
-        field_type = item["field_type"]
-
-        is_missing = False
-
-        if field_type == "scalar":
-            value = getattr(report_person_responsible, field_name, None)
-            is_missing = is_blank_scalar(value)
-
-        if is_missing:
-            missing_field_labels.append(field_label)
+    missing_field_labels = collect_missing_fields(
+        report_person_responsible,
+        REQUIRED_FIELDS,
+    )
 
     if not missing_field_labels:
         return {}

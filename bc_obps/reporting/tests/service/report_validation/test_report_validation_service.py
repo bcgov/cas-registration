@@ -20,6 +20,9 @@ class TestReportValidationService:
             "reporting.service.report_validation.validators.report_activity_json_validation",
             "reporting.service.report_validation.validators.report_emission_allocation_validator",
             'reporting.service.report_validation.validators.report_data_by_fuel_type_validator',
+            "required_fields_report_operation",
+            "required_fields_report_person_responsible",
+            "required_fields_report_non_attributable_emissions",
         ]
 
     def test_validates_the_report_with_the_registered_plugins(self):

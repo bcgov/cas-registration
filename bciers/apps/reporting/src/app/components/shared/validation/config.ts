@@ -135,6 +135,7 @@ export const validationUIConfig: Partial<
       const sectionRoutes: Record<string, string> = {
         review_operation_information: `/reports/${ctx.report_version_id}/review-operation-information`,
         person_responsible: `/reports/${ctx.report_version_id}/person-responsible`,
+        non_attributable_emissions: `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/non-attributable`,
       };
 
       return sectionRoutes[section];

@@ -1,5 +1,7 @@
 from reporting.models.report_operation import ReportOperation
-from reporting.models.report_operation_representative import ReportOperationRepresentative
+from reporting.models.report_operation_representative import (
+    ReportOperationRepresentative,
+)
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -7,19 +9,28 @@ from reporting.service.report_validation.report_validation_error import (
     ReportValidationErrorKey,
     Severity,
 )
-from reporting.service.report_validation.types import RequiredFieldConfig
-from reporting.service.report_validation.utils import is_blank_scalar
-from reporting.service.report_validation.report_validation_tags import ValidationTags
+from reporting.service.report_validation.report_validation_tags import (
+    ValidationTags,
+)
+from reporting.service.report_validation.validators.required_fields.types import (
+    RequiredFieldConfig,
+)
+from reporting.service.report_validation.validators.required_fields.utils import (
+    collect_missing_fields,
+)
+from reporting.service.reporting_flow_service import resolve_flow
+from reporting.service.reporting_flow_applicability import (
+    SECTION_APPLICABLE_FLOWS,
+)
+
 
 TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
+SECTION = "review_operation_information"
+SECTION_TITLE = "Review operation information"
+
 
 REQUIRED_FIELDS: list[RequiredFieldConfig] = [
-    {
-        "field": "operation_representative_name",
-        "label": "Operation representative name",
-        "field_type": "custom",
-    },
     {
         "field": "operation_name",
         "label": "Operation name",
@@ -43,8 +54,9 @@ REQUIRED_FIELDS: list[RequiredFieldConfig] = [
 ]
 
 
-SECTION = "review_operation_information"
-SECTION_TITLE = "Review operation information"
+def applies(report_version: ReportVersion) -> bool:
+    flow = resolve_flow(report_version)
+    return flow in SECTION_APPLICABLE_FLOWS[SECTION]
 
 
 def _build_error(
@@ -73,30 +85,23 @@ def _is_missing_operation_representative(report_version_id: int) -> bool:
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    report_operation: ReportOperation = report_version.report_operation
-    missing_field_labels: list[str] = []
+    try:
+        report_operation: ReportOperation = report_version.report_operation
+    except ReportOperation.DoesNotExist:
+        return {
+            f"error_required_fields_{SECTION}": _build_error(
+                report_version_id=report_version.id,
+                missing_field_labels=[item["label"] for item in REQUIRED_FIELDS] + ["Operation representative name"],
+            )
+        }
 
-    for item in REQUIRED_FIELDS:
-        field_name = item["field"]
-        field_label = item["label"]
-        field_type = item["field_type"]
+    missing_field_labels = collect_missing_fields(
+        report_operation,
+        REQUIRED_FIELDS,
+    )
 
-        is_missing = False
-
-        if field_type == "scalar":
-            value = getattr(report_operation, field_name, None)
-            is_missing = is_blank_scalar(value)
-
-        elif field_type == "m2m":
-            relation = getattr(report_operation, field_name, None)
-            is_missing = relation is None or not relation.exists()
-
-        elif field_type == "custom":
-            if field_name == "operation_representative_name":
-                is_missing = _is_missing_operation_representative(report_version.id)
-
-        if is_missing:
-            missing_field_labels.append(field_label)
+    if _is_missing_operation_representative(report_version.id):
+        missing_field_labels.append("Operation representative name")
 
     if not missing_field_labels:
         return {}
