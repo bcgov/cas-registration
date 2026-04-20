@@ -57,20 +57,22 @@ class TestReportAttachmentInternalEndpoints(CommonTestSetup):
             "count": 2,
             "items": [
                 {
-                    "attachment_name": "test_conf_req.txt",
-                    "attachment_type": "confidentiality_request",
-                    "id": attachment2.id,
-                    "operation": "test operation",
-                    "operator": "test operator",
-                    "report_version_id": report_version.id,
-                },
-                {
                     "attachment_name": "test_attachment.txt",
                     "attachment_type": "verification_statement",
                     "id": attachment.id,
                     "operation": "test operation",
                     "operator": "test operator",
                     "report_version_id": report_version.id,
+                    "reporting_year_id": report_version.report.reporting_year.reporting_year,
+                },
+                {
+                    "attachment_name": "test_conf_req.txt",
+                    "attachment_type": "confidentiality_request",
+                    "id": attachment2.id,
+                    "operation": "test operation",
+                    "operator": "test operator",
+                    "report_version_id": report_version.id,
+                    "reporting_year_id": report_version.report.reporting_year.reporting_year,
                 },
             ],
         }

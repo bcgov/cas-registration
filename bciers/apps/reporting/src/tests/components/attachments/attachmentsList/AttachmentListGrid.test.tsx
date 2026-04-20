@@ -37,15 +37,14 @@ describe("The AttachmentsListGrid component", () => {
     render(<AttachmentsListGrid {...props} />);
 
     for (const column of [
+      "Reporting Year",
       "Operator",
       "Operation",
       "Version ID",
       "Type",
       "Download",
     ]) {
-      expect(
-        screen.getByRole("columnheader", { name: column }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("columnheader", { name: column })).toBeVisible();
     }
 
     // 5 for the headers and 5 for the search cells
@@ -58,6 +57,7 @@ describe("The AttachmentsListGrid component", () => {
         rows: [
           {
             id: 1,
+            reporting_year_id: 2024,
             operator: "Operator 1",
             operation: "Operaion 1",
             report_version_id: 123,
@@ -66,6 +66,7 @@ describe("The AttachmentsListGrid component", () => {
           },
           {
             id: 2,
+            reporting_year_id: 2025,
             operator: "Operator 2",
             operation: "Operation 2",
             report_version_id: 456,
