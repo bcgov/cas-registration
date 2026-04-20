@@ -5,13 +5,14 @@ import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
 import { LFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
-import { FacilityReportsPOM } from "@/reporting-e2e/poms/facility-reports";
+import { ReviewFacilitiesPOM } from "@/reporting-e2e/poms/LFO/review-facilities";
+import { FacilityGridPOM } from "@/reporting-e2e/poms/LFO/facility-grid";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
 test.describe.configure({ mode: "serial" });
 
-test.describe("SFO: create and submit a new report for the current reporting year", () => {
+test.describe("LFO: create and submit a new report for the current reporting year", () => {
   test("Industry user starts, fills, and submits a new SFO report", async ({
     page,
     request,
@@ -47,17 +48,20 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // Review Facilities
-    await report.click;
-    await report.saveAndContinue();
+    const reviewFacility = new ReviewFacilitiesPOM(page);
+    reviewFacility.selectFacilities(["Facility 40"]);
+    await report.saveAndContinue(
+      new RegExp(report.facilitiesGridUrl(versionId)),
+    );
 
     // LFO Specific flow items
     //
-    const facilityGrid = new FacilityReportsPOM(page, versionId);
+    const facilityGrid = new FacilityGridPOM(page, versionId);
     const facilityId =
       await facilityGrid.continueReportForFacility("Facility 40");
 
     const facilityReport = new LFOFacilityReportPOM(page, facilityId);
-    // ... TODO: move methods below to the facility report POM
+    await facilityReport.fillReviewFacilityInformation();
 
     // ── 5. Activities — GSC with 1 unit, 1 fuel (Diesel), 1 emission (CO2) ──
     await facilityReport.fillGscActivity();

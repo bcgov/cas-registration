@@ -8,6 +8,10 @@ import { ReportOperationPOM } from "@/reporting-e2e/poms/report-operation";
 export class CurrentReportPOM {
   readonly page: Page;
 
+  constructor(page: Page) {
+    this.page = page;
+  }
+
   // -----------------
   // URL builders
   // -----------------
@@ -18,6 +22,10 @@ export class CurrentReportPOM {
 
   reviewFacilitiesUrl(versionId: number): string {
     return `/reports/${versionId}/${ReportRoutes.REVIEW_FACILITIES}`;
+  }
+
+  facilitiesGridUrl(versionId: number): string {
+    return `/reports/${versionId}/${ReportRoutes.FACILITY_REPORT_GRID}`;
   }
 
   activitiesUrl(versionId: number, facilityId: string): string {
@@ -31,6 +39,13 @@ export class CurrentReportPOM {
   async saveAndContinue(waitForUrl?: RegExp): Promise<void> {
     await clickButton(this.page, FORM_BUTTON_TEXT.SAVE_AND_CONTINUE, {
       inForm: true,
+      waitForUrl,
+    });
+  }
+
+  async continue(waitForUrl?: RegExp): Promise<void> {
+    await clickButton(this.page, FORM_BUTTON_TEXT.CONTINUE, {
+      inForm: false,
       waitForUrl,
     });
   }

@@ -1,8 +1,8 @@
 import { Page, expect } from "@playwright/test";
-import { AppRoutes, ReportRoutes } from "../utils/enums";
+import { AppRoutes, ReportRoutes } from "../../utils/enums";
 import { waitForGridReady } from "@bciers/e2e/utils/helpers";
 
-export class FacilityReportsPOM {
+export class FacilityGridPOM {
   readonly page: Page;
   readonly url: string;
 
@@ -36,13 +36,20 @@ export class FacilityReportsPOM {
       continueButton.click(),
       this.page.waitForURL(
         (url) =>
-          url.toString().endsWith(ReportRoutes.REVIEW_FACILITY_INFORMATION),
-        { waitUntil: "domcontentloaded" },
+          new RegExp(".*review-facility-information").test(url.toString()),
+        { waitUntil: "domcontentloaded", timeout: 60_000 },
       ),
     ]);
 
+    await expect(async () => {
+      await expect(
+        this.page.getByText("Review Facility Information"),
+      ).toBeVisible();
+    }).toPass({ timeout: 30_000 });
     return this.extractFacilityIdFromUrl(this.page);
   }
+
+  async markFacilityComplete(facilityName: string) {}
 
   // Utils
   private extractFacilityIdFromUrl(page: Page): string {
