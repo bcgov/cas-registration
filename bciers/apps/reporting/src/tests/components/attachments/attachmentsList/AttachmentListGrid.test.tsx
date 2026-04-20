@@ -47,8 +47,8 @@ describe("The AttachmentsListGrid component", () => {
       expect(screen.getByRole("columnheader", { name: column })).toBeVisible();
     }
 
-    // 5 for the headers and 5 for the search cells
-    expect(screen.queryAllByRole("columnheader")).toHaveLength(10);
+    // 6 for the headers and 6 for the search cells
+    expect(screen.queryAllByRole("columnheader")).toHaveLength(12);
   });
 
   it("Displays one row per attachment returned by the server", async () => {
