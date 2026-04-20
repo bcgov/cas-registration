@@ -1,4 +1,5 @@
 from typing import List, Literal, Optional, Tuple
+from reporting.models.report_attachment import ReportAttachment
 from common.api.utils.current_user_utils import get_current_user_guid
 from common.permissions import authorize
 from django.db import transaction
@@ -8,8 +9,6 @@ from ninja import File, Form, Query, UploadedFile
 from ninja.pagination import paginate
 from registration.utils import CustomPagination
 from reporting.constants import EMISSIONS_REPORT_TAGS
-from reporting.models.report_attachment import ReportAttachment
-from reporting.models.report_version import ReportVersion
 from reporting.schema.generic import Message
 from reporting.schema.report_attachment import (
     AttachmentsWithConfirmationOut,
@@ -23,6 +22,16 @@ from reporting.api.permissions import (
     approved_industry_user_report_version_composite_auth,
     approved_authorized_roles_report_version_composite_auth,
 )
+
+# Mapping of filter field names to model lookup paths
+FILTER_LOOKUPS = {
+    "operator": "report_version__report__operator__legal_name__icontains",
+    "operation": "report_version__report__operation__name__icontains",
+    "report_version_id": "report_version__id",
+    "reporting_year_id": "report_version__report__reporting_year__reporting_year",
+    "attachment_type": "attachment_type__icontains",
+    "attachment_name": "attachment_name__icontains",
+}
 
 
 @router.post(
@@ -74,7 +83,7 @@ def get_report_attachments(
     request: HttpRequest,
     version_id: int,
 ) -> Tuple[int, dict]:
-    attachments = ReportAttachmentService.get_attachments(version_id)
+    attachments = ReportAttachmentService.get_attachments_by_version(version_id)
     confirmation = ReportAttachmentService.get_attachment_confirmation(version_id)
 
     response_data = {
@@ -97,7 +106,7 @@ def get_report_attachment_url(request: HttpRequest, version_id: int, file_id: in
 
 @router.get(
     "attachments",
-    response={200: list[InternalReportAttachmentOut], custom_codes_4xx: Message},
+    response={200: List[InternalReportAttachmentOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns the list of all attachments for all reports.""",
     auth=authorize("authorized_irc_user"),
@@ -111,27 +120,10 @@ def get_all_attachments(
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[ReportAttachment]:
 
-    match sort_field:
-        case "operator":
-            mapped_sort_field = "report_version__report__operator__legal_name"
-        case "operation":
-            mapped_sort_field = "report_version__report__operation__name"
-        case "reporting_year_id":
-            mapped_sort_field = "report_version__report__reporting_year_id"
-        case _:
-            mapped_sort_field = sort_field or "report_version_id"
+    filter_params = {
+        FILTER_LOOKUPS[field]: value
+        for field, value in filters.model_dump(exclude_none=True).items()
+        if value is not None
+    }
 
-    sort_direction = "-" if sort_order == "desc" else ""
-    sort_by = f"{sort_direction}{mapped_sort_field}"
-
-    attachments_query = ReportAttachment.objects.select_related(
-        "report_version",
-        "report_version__report__operation",
-        "report_version__report__operator",
-        "report_version__report__reporting_year",
-    ).filter(
-        report_version__status=ReportVersion.ReportVersionStatus.Submitted,
-        report_version__report__reporting_year__isnull=False,
-    )
-
-    return filters.filter(attachments_query).order_by(sort_by)
+    return ReportAttachmentService.get_all_attachments(filter_params, sort_field, sort_order)
