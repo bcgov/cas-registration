@@ -181,5 +181,9 @@ export class LFOFacilityReportPOM extends SFOFacilityReportPOM {
   // Page 1 — Facility specific information
   // -----------------
 
-  async fillReviewFacilityInformation(): Promise<void> {}
+  async fillReviewFacilityInformation(): Promise<void> {
+    this.page
+      .getByRole("combobox", { name: "Facility type" })
+      .selectOption("Medium Facility");
+  }
 }

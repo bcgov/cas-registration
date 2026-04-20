@@ -32,6 +32,7 @@ export const FORM_BUTTON_TEXT = {
   SAVE_AND_CONTINUE: "Save & Continue",
   SAVE: "Save",
   BACK: "Back",
+  CONTINUE: "Continue",
 } as const;
 
 // Scenario name used by the Django stub to call to external API
