@@ -22,7 +22,9 @@ class TestReportValidationService:
             'reporting.service.report_validation.validators.report_data_by_fuel_type_validator',
             "required_fields_report_operation",
             "required_fields_report_person_responsible",
+            "required_fields_report_facility",
             "required_fields_report_non_attributable_emissions",
+            "required_fields_report_product",
         ]
 
     def test_validates_the_report_with_the_registered_plugins(self):

@@ -17,6 +17,7 @@ from .required_fields import (
     required_fields_report_person_responsible,
     required_fields_report_facility,
     required_fields_report_non_attributable_emissions,
+    required_fields_report_product,
 )
 
 __all__ = [
@@ -36,4 +37,5 @@ __all__ = [
     "required_fields_report_person_responsible",
     "required_fields_report_facility",
     "required_fields_report_non_attributable_emissions",
+    "required_fields_report_product",
 ]

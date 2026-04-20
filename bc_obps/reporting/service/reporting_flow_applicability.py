@@ -37,6 +37,12 @@ SECTION_APPLICABLE_FLOWS: dict[str, set[ReportingFlow]] = {
         ReportingFlow.REPORTING_ONLY_SFO,
         ReportingFlow.REPORTING_ONLY_LFO,
     },
+    "production_data": {
+        ReportingFlow.SFO,
+        ReportingFlow.LFO,
+        ReportingFlow.NEW_ENTRANT_SFO,
+        ReportingFlow.NEW_ENTRANT_LFO,
+    },
     "allocation_of_emissions": {
         ReportingFlow.SFO,
         ReportingFlow.LFO,
