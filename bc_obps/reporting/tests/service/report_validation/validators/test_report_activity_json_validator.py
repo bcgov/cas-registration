@@ -216,7 +216,6 @@ class TestReportActivityJsonValidator:
                                 {
                                     "fuelType": {
                                         "fuelName": "Acid Gas",
-                                        "fuelUnit": "Sm^3",
                                         "fuelClassification": "Non-biomass",
                                     },
                                     "emissions": [
@@ -250,7 +249,6 @@ class TestReportActivityJsonValidator:
                                 {
                                     "fuelType": {
                                         "fuelName": "Diesel",
-                                        "fuelUnit": "kilolitres",
                                         "fuelClassification": "Non-biomass",
                                     },
                                     "emissions": [

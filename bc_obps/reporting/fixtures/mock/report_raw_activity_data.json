@@ -15,7 +15,6 @@
                   {
                     "fuelType": {
                       "fuelName": "Diesel",
-                      "fuelUnit": "kilolitres",
                       "fuelClassification": "Non-biomass"
                     },
                     "emissions": [
@@ -62,7 +61,6 @@
                   {
                     "fuelType": {
                       "fuelName": "Diesel",
-                      "fuelUnit": "kilolitres",
                       "fuelClassification": "Non-biomass"
                     },
                     "emissions": [
@@ -109,7 +107,6 @@
                   {
                     "fuelType": {
                       "fuelName": "Diesel",
-                      "fuelUnit": "kilolitres",
                       "fuelClassification": "Non-biomass"
                     },
                     "emissions": [
