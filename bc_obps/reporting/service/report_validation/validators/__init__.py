@@ -15,6 +15,7 @@ from . import (
 from .required_fields import (
     required_fields_report_operation,
     required_fields_report_person_responsible,
+    required_fields_report_facility,
     required_fields_report_non_attributable_emissions,
 )
 
@@ -33,5 +34,6 @@ __all__ = [
     "report_data_by_fuel_type_validator",
     "required_fields_report_operation",
     "required_fields_report_person_responsible",
+    "required_fields_report_facility",
     "required_fields_report_non_attributable_emissions",
 ]

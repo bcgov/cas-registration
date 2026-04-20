@@ -1,7 +1,4 @@
-from reporting.models.report_operation import ReportOperation
-from reporting.models.report_operation_representative import (
-    ReportOperationRepresentative,
-)
+from reporting.models.facility_report import FacilityReport
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -16,7 +13,7 @@ from reporting.service.report_validation.validators.required_fields.types import
     RequiredFieldConfig,
 )
 from reporting.service.report_validation.validators.required_fields.utils import (
-    collect_missing_fields,
+    collect_missing_fields_many,
 )
 from reporting.service.reporting_flow_service import resolve_flow
 from reporting.service.reporting_flow_applicability import (
@@ -26,19 +23,19 @@ from reporting.service.reporting_flow_applicability import (
 
 TAGS = [ValidationTags.REPORT_VALIDATION]
 
-SECTION = "review_operation_information"
-SECTION_TITLE = "Review operation information"
+SECTION = "review_facilities"
+SECTION_TITLE = "Review facilities"
 
 
 REQUIRED_FIELDS: list[RequiredFieldConfig] = [
     {
-        "field": "operation_name",
-        "label": "Operation name",
+        "field": "facility_name",
+        "label": "Facility name",
         "field_type": "scalar",
     },
     {
-        "field": "operator_legal_name",
-        "label": "Operator legal name",
+        "field": "facility_type",
+        "label": "Facility type",
         "field_type": "scalar",
     },
     {
@@ -46,17 +43,12 @@ REQUIRED_FIELDS: list[RequiredFieldConfig] = [
         "label": "Activities",
         "field_type": "m2m",
     },
-    {
-        "field": "regulated_products",
-        "label": "Regulated products",
-        "field_type": "m2m",
-    },
 ]
 
 
 def applies(report_version: ReportVersion) -> bool:
     flow = resolve_flow(report_version)
-    return flow in SECTION_APPLICABLE_FLOWS[SECTION]
+    return flow in SECTION_APPLICABLE_FLOWS.get(SECTION, set())
 
 
 def _build_error(
@@ -77,31 +69,21 @@ def _build_error(
     )
 
 
-def _is_missing_operation_representative(report_version_id: int) -> bool:
-    return not ReportOperationRepresentative.objects.filter(
-        report_version__id=report_version_id,
-        selected_for_report=True,
-    ).exists()
-
-
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    try:
-        report_operation: ReportOperation = report_version.report_operation
-    except ReportOperation.DoesNotExist:
+    facility_reports = FacilityReport.objects.filter(report_version=report_version)
+
+    if not facility_reports.exists():
         return {
             f"error_required_fields_{SECTION}": _build_error(
                 report_version_id=report_version.id,
-                missing_field_labels=[item["label"] for item in REQUIRED_FIELDS] + ["Operation representative name"],
+                missing_field_labels=[item["label"] for item in REQUIRED_FIELDS],
             )
         }
 
-    missing_field_labels = collect_missing_fields(
-        report_operation,
+    missing_field_labels = collect_missing_fields_many(
+        facility_reports,
         REQUIRED_FIELDS,
     )
-
-    if _is_missing_operation_representative(report_version.id):
-        missing_field_labels.append("Operation representative name")
 
     if not missing_field_labels:
         return {}

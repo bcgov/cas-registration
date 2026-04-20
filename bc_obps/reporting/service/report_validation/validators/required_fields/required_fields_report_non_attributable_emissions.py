@@ -15,7 +15,7 @@ from reporting.service.report_validation.validators.required_fields.types import
 from reporting.service.report_validation.validators.required_fields.utils import collect_missing_fields_many
 
 
-TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
+TAGS = [ValidationTags.REPORT_VALIDATION]
 
 
 REQUIRED_FIELDS: list[RequiredFieldConfig] = [

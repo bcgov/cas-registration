@@ -19,7 +19,7 @@ from reporting.service.reporting_flow_applicability import (
 )
 
 
-TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
+TAGS = [ValidationTags.REPORT_VALIDATION]
 
 SECTION = "person_responsible"
 SECTION_TITLE = "Person responsible"
