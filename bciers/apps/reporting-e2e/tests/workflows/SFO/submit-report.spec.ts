@@ -1,6 +1,10 @@
 import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
-import { FacilityIDs, OPERATION_NAMES } from "@/reporting-e2e/utils/enums";
+import {
+  FacilityIDs,
+  OPERATION_NAMES,
+  ReportRoutes,
+} from "@/reporting-e2e/utils/enums";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { SFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
@@ -57,30 +61,44 @@ test.describe("SFO: create and submit a new report for the current reporting yea
 
     // ── 6. Non-Attributable Emissions (no entries needed) ──
     await facilityReport.fillNonAttributable();
+    // TODO: add happo screenshot here
+    await facilityReport.saveAndContinue(
+      new RegExp(
+        `/facilities/${FacilityIDs.BUGLE_SFO}/${ReportRoutes.EMISSION_SUMMARY}`,
+      ),
+    );
 
     // ── 7. Emission Summary (read-only) ──
     await facilityReport.continueFromEmissionSummary();
+    // TODO: add happo screenshot here
 
     // ── 8. Production Data — select Cement equivalent, fill annual production ──
     await facilityReport.fillProductionData();
+    // TODO: add happo screenshot here
 
     // ── 9. Allocation of Emissions (no entries needed for minimal test) ──
     await facilityReport.fillAllocationOfEmissions();
+    // TODO: add happo screenshot here
 
     // ── 10. Additional Reporting Data — no captured emissions ──
     await report.fillAdditionalData();
+    // TODO: add happo screenshot here
 
     // ── 11. Compliance Summary (read-only) ──
     await report.continueFromComplianceSummary();
+    // TODO: add happo screenshot here
 
     // ── 12. Final Review (read-only) ──
     await report.continueFromFinalReview();
+    // TODO: add happo screenshot here
 
     // ── 13. Verification ──
     await report.fillVerification();
+    // TODO: add happo screenshot here
 
     // ── 14. Attachments — upload verification statement PDF ──
     await report.uploadVerificationStatement();
+    // TODO: add happo screenshot here
 
     // ── 15. Sign-off and submit (submission stubbed to avoid external calls) ──
     await grid.submitReportById(request, versionId, false, false, true);
