@@ -21,7 +21,9 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         "reporting.service.report_attachment_service.ReportAttachmentService.save_attachment_confirmation",
         autospec=True,
     )
-    @patch("reporting.service.report_attachment_service.ReportAttachmentService.get_attachments", autospec=True)
+    @patch(
+        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachments_by_version", autospec=True
+    )
     @patch(
         "reporting.service.report_attachment_service.ReportAttachmentService.get_attachment_confirmation", autospec=True
     )
@@ -85,7 +87,9 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
             },
         }
 
-    @patch("reporting.service.report_attachment_service.ReportAttachmentService.get_attachments", autospec=True)
+    @patch(
+        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachments_by_version", autospec=True
+    )
     @patch(
         "reporting.service.report_attachment_service.ReportAttachmentService.get_attachment_confirmation", autospec=True
     )
