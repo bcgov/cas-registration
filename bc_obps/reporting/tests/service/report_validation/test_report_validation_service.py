@@ -20,11 +20,16 @@ class TestReportValidationService:
             "reporting.service.report_validation.validators.report_activity_json_validation",
             "reporting.service.report_validation.validators.report_emission_allocation_validator",
             'reporting.service.report_validation.validators.report_data_by_fuel_type_validator',
-            "required_fields_report_operation",
-            "required_fields_report_person_responsible",
-            "required_fields_report_facility",
-            "required_fields_report_non_attributable_emissions",
-            "required_fields_report_product",
+            "reporting.service.report_validation.validators.required_fields.required_fields_report_operation_information",
+            "reporting.service.report_validation.validators.required_fields.required_fields_report_person_responsible",
+            "reporting.service.report_validation.validators.required_fields.required_fields_report_review_facilities",
+            "reporting.service.report_validation.validators.required_fields.required_fields_report_review_facility_information",
+            "reporting.service.report_validation.validators.required_fields.required_fields_report_non_attributable_emissions",
+            "reporting.service.report_validation.validators.required_fields.required_fields_report_production_data",
+            "reporting.service.report_validation.validators.required_fields.required_fields_report_emission_allocation",
+            "reporting.service.report_validation.validators.required_fields.required_fields_report_additional_data",
+            "reporting.service.report_validation.validators.required_fields.required_fields_report_new_entrant_information",
+            "reporting.service.report_validation.validators.required_fields.required_fields_report_electricity_import_data",
         ]
 
     def test_validates_the_report_with_the_registered_plugins(self):

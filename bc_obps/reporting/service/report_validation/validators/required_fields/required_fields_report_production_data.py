@@ -1,5 +1,5 @@
 from uuid import UUID
-
+from django.db.models import QuerySet
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_product import ReportProduct
 from reporting.models.report_version import ReportVersion
@@ -86,10 +86,67 @@ def _build_error(
     )
 
 
+def _build_facility_error(
+    *,
+    report_version: ReportVersion,
+    facility_report: FacilityReport,
+    missing_field_labels: list[str],
+) -> ReportValidationError:
+    return _build_error(
+        report_version_id=report_version.id,
+        facility_id=facility_report.facility_id,
+        facility_name=facility_report.facility_name,
+        missing_field_labels=missing_field_labels,
+    )
+
+
+def _get_product_missing_fields(
+    *,
+    report_product: ReportProduct,
+    reporting_year_id: int,
+    requires_jan_mar: bool,
+) -> list[str]:
+    missing_fields: list[str] = []
+
+    if reporting_year_id == 2024 and report_product.production_data_apr_dec is None:
+        missing_fields.append("Apr-Dec production data")
+
+    if requires_jan_mar and report_product.production_data_jan_mar is None:
+        missing_fields.append("Jan-Mar production data")
+
+    if (
+        report_product.production_methodology == ReportProduct.ProductionMethodologyChoices.OTHER
+        and not report_product.production_methodology_description
+    ):
+        missing_fields.append("Production methodology description")
+
+    return missing_fields
+
+
+def _get_facility_missing_fields(
+    *,
+    queryset: QuerySet[ReportProduct],
+    report_version: ReportVersion,
+    requires_jan_mar: bool,
+) -> list[str]:
+    missing_field_labels = collect_missing_fields_many(queryset, REQUIRED_FIELDS)
+
+    for report_product in queryset:
+        missing_field_labels.extend(
+            _get_product_missing_fields(
+                report_product=report_product,
+                reporting_year_id=report_version.report.reporting_year_id,
+                requires_jan_mar=requires_jan_mar,
+            )
+        )
+
+    return sorted(set(missing_field_labels))
+
+
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     errors: dict[str, ReportValidationError] = {}
-
     facility_reports = FacilityReport.objects.filter(report_version=report_version)
+    requires_jan_mar = _requires_jan_mar(report_version)
 
     for facility_report in facility_reports:
         queryset = ReportProduct.objects.filter(
@@ -97,40 +154,26 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             facility_report=facility_report,
         )
 
+        error_key = f"error_required_fields_{SECTION}_facility_{facility_report.facility_id}"
+
         if not queryset.exists():
-            errors[f"error_required_fields_{SECTION}_facility_{facility_report.facility_id}"] = _build_error(
-                report_version_id=report_version.id,
-                facility_id=facility_report.facility_id,
-                facility_name=facility_report.facility_name,
+            errors[error_key] = _build_facility_error(
+                report_version=report_version,
+                facility_report=facility_report,
                 missing_field_labels=[item["label"] for item in REQUIRED_FIELDS],
             )
             continue
 
-        missing_field_labels = collect_missing_fields_many(
-            queryset,
-            REQUIRED_FIELDS,
+        missing_field_labels = _get_facility_missing_fields(
+            queryset=queryset,
+            report_version=report_version,
+            requires_jan_mar=requires_jan_mar,
         )
 
-        for report_product in queryset:
-            if report_version.report.reporting_year_id == 2024 and report_product.production_data_apr_dec is None:
-                missing_field_labels.append("Apr-Dec production data")
-
-            if _requires_jan_mar(report_version) and report_product.production_data_jan_mar is None:
-                missing_field_labels.append("Jan-Mar production data")
-
-            if (
-                report_product.production_methodology == ReportProduct.ProductionMethodologyChoices.OTHER
-                and not report_product.production_methodology_description
-            ):
-                missing_field_labels.append("Production methodology description")
-
-        missing_field_labels = sorted(set(missing_field_labels))
-
         if missing_field_labels:
-            errors[f"error_required_fields_{SECTION}_facility_{facility_report.facility_id}"] = _build_error(
-                report_version_id=report_version.id,
-                facility_id=facility_report.facility_id,
-                facility_name=facility_report.facility_name,
+            errors[error_key] = _build_facility_error(
+                report_version=report_version,
+                facility_report=facility_report,
                 missing_field_labels=missing_field_labels,
             )
 

@@ -3,7 +3,6 @@ from enum import Enum, StrEnum
 from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
 
 
 class Severity(Enum):
@@ -28,7 +27,6 @@ class ReportValidationErrorKey(StrEnum):
 
 class ErrorContext(BaseModel):
     model_config = ConfigDict(
-        alias_generator=to_camel,
         populate_by_name=True,
     )
 

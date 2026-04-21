@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import ReportValidationSummary from "./ReportValidationSummary";
+import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
 import type { ReportValidationErrors } from "./types";
 
 describe("ReportValidationSummary", () => {
@@ -16,7 +16,7 @@ describe("ReportValidationSummary", () => {
         key: "missing_report_verification", // gitleaks:allow
         error: {
           severity: "Warning",
-          context: { reportVersionId: 12 },
+          context: { report_version_id: 12 },
         },
       },
       {
@@ -45,7 +45,7 @@ describe("ReportValidationSummary", () => {
         key: "missing_report_verification", // gitleaks:allow
         error: {
           severity: "Error",
-          context: { reportVersionId: 42 },
+          context: { report_version_id: 42 },
         },
       },
     ];

@@ -2,6 +2,7 @@ from registration.models.operation import Operation
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
+    ErrorContext,
     ReportValidationError,
     ReportValidationErrorKey,
     Severity,
@@ -29,6 +30,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             severity=Severity.ERROR,
             message="Report is missing BORO ID, please make sure one has been assigned to your operation.",
             key=ReportValidationErrorKey.OPERATION_BORO_ID,
+            context=ErrorContext(report_version_id=report_version.id),
         )
 
     return errors

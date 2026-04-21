@@ -15,6 +15,7 @@ from registration.constants import UNAUTHORIZED_MESSAGE
 from common.exceptions import UserError
 from compliance.service.exceptions import ComplianceInvoiceError
 from reporting.service.exceptions import ReportValidationException
+from reporting.service.report_validation.report_validation_error import ReportValidationErrorKey
 
 logger = logging.getLogger(__name__)
 
@@ -52,11 +53,15 @@ class ExceptionHandler:
             payload_builder=lambda exc: {
                 "errors": [
                     {
-                        "key": (e.key),  # This could be the actual error key, supporting static or dynamic keys
+                        "key": (
+                            e.key.value if isinstance(e.key, ReportValidationErrorKey) else e.key
+                        ),  # This could be the actual error key, supporting static or dynamic keys
                         "error": {  # and then there could be a 'type' field, which would be consumed by the frontend to determine how to display the error
                             "severity": e.severity.value if hasattr(e, "severity") else "error",
                             "message": e.message,
-                            **({"context": e.context.model_dump(exclude_none=True)} if e.context else {}),
+                            **(
+                                {"context": e.context.model_dump(by_alias=True, exclude_none=True)} if e.context else {}
+                            ),
                         },
                     }
                     for k, e in exc.errors.items()

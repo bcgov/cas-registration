@@ -209,7 +209,7 @@ describe("SignOffForm Component (with actual schema)", () => {
               severity: "Error",
               message: "Report verification form not found in the report.",
               context: {
-                reportVersionId: 1,
+                report_version_id: 1,
               },
             },
           },
@@ -220,7 +220,7 @@ describe("SignOffForm Component (with actual schema)", () => {
               message:
                 "Mandatory verification statement document was not uploaded with this report.",
               context: {
-                reportVersionId: 1,
+                report_version_id: 1,
               },
             },
           },

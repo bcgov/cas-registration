@@ -2,6 +2,7 @@ from model_bakery.baker import make_recipe
 import pytest
 from registration.models.operation import Operation
 from reporting.service.report_validation.report_validation_error import (
+    ErrorContext,
     ReportValidationError,
     ReportValidationErrorKey,
     Severity,
@@ -47,6 +48,7 @@ class TestOperationBoroIdValidator:
                 Severity.ERROR,
                 "Report is missing BORO ID, please make sure one has been assigned to your operation.",
                 key=ReportValidationErrorKey.OPERATION_BORO_ID,
+                context=ErrorContext(report_version_id=report_operation.report_version.id),
             )
         }
 
@@ -67,6 +69,7 @@ class TestOperationBoroIdValidator:
                 Severity.ERROR,
                 "Report is missing BORO ID, please make sure one has been assigned to your operation.",
                 key=ReportValidationErrorKey.OPERATION_BORO_ID,
+                context=ErrorContext(report_version_id=report_operation.report_version.id),
             )
         }
 

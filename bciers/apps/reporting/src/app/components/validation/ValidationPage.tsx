@@ -11,7 +11,9 @@ import { ReportValidationErrors } from "@reporting/src/app/components/shared/val
 import { getReportValidationData } from "@reporting/src/app/utils/reportValidationForm/getReportValidationData";
 import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
 
-export default async function ValidationPage({ version_id }: HasReportVersion) {
+export default async function ValidationPage({
+  version_id,
+}: Readonly<HasReportVersion>) {
   // Check if is a supplementary report
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);
 
@@ -45,7 +47,6 @@ export default async function ValidationPage({ version_id }: HasReportVersion) {
       ),
     ];
   }
-
   return (
     <ValidationForm
       navigationInformation={navInfo}

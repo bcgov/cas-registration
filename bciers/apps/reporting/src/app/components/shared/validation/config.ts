@@ -41,6 +41,16 @@ function createValidationUIConfig(
 export const validationUIConfig: Partial<
   Record<ReportValidationMessageKey, ValidationUIConfig>
 > = {
+  operation_boro_id: createValidationUIConfig({
+    label: "operation",
+    renderMode: "inline_link",
+    getHref: (ctx) =>
+      ctx?.report_version_id
+        ? `/reports/${ctx.report_version_id}/review-operation-information`
+        : undefined,
+    // no getMessage → use backend message
+  }),
+
   missing_report_verification: createValidationUIConfig({
     label: "Verification page",
     renderMode: "inline_link",
@@ -61,6 +71,12 @@ export const validationUIConfig: Partial<
         : undefined,
     getMessage: () =>
       "A verification statement must be uploaded with this report on the Attachments page.",
+  }),
+
+  attachment_not_scanned: createValidationUIConfig({
+    label: "Attachments page",
+    renderMode: "message_only",
+    // no getMessage → use backend message which containes file name
   }),
 
   missing_supplementary_report_version_change: createValidationUIConfig({
@@ -130,23 +146,66 @@ export const validationUIConfig: Partial<
     getHref: (ctx) => {
       if (!ctx?.report_version_id || !ctx?.section) return undefined;
 
-      const section = ctx.section as string;
+      const reportVersionId = String(ctx.report_version_id);
 
-      const sectionRoutes: Record<string, string> = {
-        review_operation_information: `/reports/${ctx.report_version_id}/review-operation-information`,
-        person_responsible: `/reports/${ctx.report_version_id}/person-responsible`,
-        non_attributable_emissions: `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/non-attributable`,
+      const facilityId =
+        typeof ctx.facility_id === "string" ? ctx.facility_id : undefined;
+
+      const section = String(ctx.section);
+
+      // report-level pages
+      const reportLevelRoutes: Record<string, string> = {
+        review_operation_information: `/reports/${reportVersionId}/review-operation-information`,
+        person_responsible: `/reports/${reportVersionId}/person-responsible`,
+        review_facility_information: `/reports/${reportVersionId}/review-facility-information`,
+        electricity_import_data: `/reports/${reportVersionId}/electricity-import-data`,
+        new_entrant_information: `/reports/${reportVersionId}/new-entrant-information`,
       };
 
-      return sectionRoutes[section];
+      // facility collection page (no facility_id)
+      const facilityCollectionRoutes: Record<string, string> = {
+        review_facilities: `/reporting/reports/${reportVersionId}/facilities/review-facilities`,
+      };
+
+      // facility-specific pages
+      const facilitySectionRoutes: Record<
+        string,
+        (facilityId: string) => string
+      > = {
+        non_attributable_emissions: (id) =>
+          `/reporting/reports/${reportVersionId}/facilities/${id}/non-attributable`,
+        production_data: (id) =>
+          `/reporting/reports/${reportVersionId}/facilities/${id}/production-data`,
+        allocation_of_emissions: (id) =>
+          `/reporting/reports/${reportVersionId}/facilities/${id}/allocation-of-emissions`,
+      };
+
+      if (section in reportLevelRoutes) {
+        return reportLevelRoutes[section];
+      }
+
+      if (section in facilityCollectionRoutes) {
+        return facilityCollectionRoutes[section];
+      }
+
+      if (facilityId && section in facilitySectionRoutes) {
+        return facilitySectionRoutes[section](facilityId);
+      }
+
+      return undefined;
     },
     getMessage: (error) => {
       const sectionTitle = error.context?.section_title ?? "this section";
+      const facilityName = error.context?.facility_name;
       const missingFields = error.context?.missing_fields;
 
+      const location = facilityName
+        ? `${sectionTitle} for ${facilityName}`
+        : sectionTitle;
+
       return Array.isArray(missingFields) && missingFields.length > 0
-        ? `Required fields are empty on ${sectionTitle}: ${missingFields.join(", ")}.`
-        : `Required fields are empty on ${sectionTitle}.`;
+        ? `Required fields are empty on ${location}: ${missingFields.join(", ")}.`
+        : `Required fields are empty on ${location}.`;
     },
   }),
 

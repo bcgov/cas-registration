@@ -21,6 +21,11 @@ SECTION_APPLICABLE_FLOWS: dict[str, set[ReportingFlow]] = {
         ReportingFlow.REPORTING_ONLY_LFO,
     },
     "review_facilities": {
+        ReportingFlow.LFO,
+        ReportingFlow.NEW_ENTRANT_LFO,
+        ReportingFlow.REPORTING_ONLY_LFO,
+    },
+    "review_facility_information": {
         ReportingFlow.EIO,
         ReportingFlow.SFO,
         ReportingFlow.LFO,
@@ -49,14 +54,17 @@ SECTION_APPLICABLE_FLOWS: dict[str, set[ReportingFlow]] = {
         ReportingFlow.NEW_ENTRANT_SFO,
         ReportingFlow.NEW_ENTRANT_LFO,
     },
-    "new_entrant_information": {
-        ReportingFlow.NEW_ENTRANT_SFO,
-        ReportingFlow.NEW_ENTRANT_LFO,
-    },
-    "compliance_summary": {
+    "additional_reporting_data": {
         ReportingFlow.SFO,
         ReportingFlow.LFO,
         ReportingFlow.NEW_ENTRANT_SFO,
         ReportingFlow.NEW_ENTRANT_LFO,
+        ReportingFlow.REPORTING_ONLY_SFO,
+        ReportingFlow.REPORTING_ONLY_LFO,
     },
+    "new_entrant_information": {
+        ReportingFlow.NEW_ENTRANT_SFO,
+        ReportingFlow.NEW_ENTRANT_LFO,
+    },
+    "electricity-import-data": {ReportingFlow.EIO},
 }

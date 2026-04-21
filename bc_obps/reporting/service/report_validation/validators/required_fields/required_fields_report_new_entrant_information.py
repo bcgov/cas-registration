@@ -1,4 +1,4 @@
-from reporting.models.facility_report import FacilityReport
+from reporting.models.report_new_entrant import ReportNewEntrant
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -13,42 +13,40 @@ from reporting.service.report_validation.validators.required_fields.types import
     RequiredFieldConfig,
 )
 from reporting.service.report_validation.validators.required_fields.utils import (
-    collect_missing_fields_many,
+    collect_missing_fields,
 )
 from reporting.service.reporting_flow_service import resolve_flow
 from reporting.service.reporting_flow_applicability import (
     SECTION_APPLICABLE_FLOWS,
 )
 
-
 TAGS = [ValidationTags.REPORT_VALIDATION]
 
-SECTION = "review_facilities"
-SECTION_TITLE = "Review facilities"
-
+SECTION = "new_entrant_information"
+SECTION_TITLE = "New entrant information"
 
 REQUIRED_FIELDS: list[RequiredFieldConfig] = [
     {
-        "field": "facility_name",
-        "label": "Facility name",
+        "field": "authorization_date",
+        "label": "Authorization date",
         "field_type": "scalar",
     },
     {
-        "field": "facility_type",
-        "label": "Facility type",
+        "field": "first_shipment_date",
+        "label": "Date of first shipment",
         "field_type": "scalar",
     },
     {
-        "field": "activities",
-        "label": "Activities",
-        "field_type": "m2m",
+        "field": "new_entrant_period_start",
+        "label": "Date new entrant period began",
+        "field_type": "scalar",
     },
 ]
 
 
 def applies(report_version: ReportVersion) -> bool:
     flow = resolve_flow(report_version)
-    return flow in SECTION_APPLICABLE_FLOWS.get(SECTION, set())
+    return flow in SECTION_APPLICABLE_FLOWS[SECTION]
 
 
 def _build_error(
@@ -70,9 +68,9 @@ def _build_error(
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    facility_reports = FacilityReport.objects.filter(report_version=report_version)
-
-    if not facility_reports.exists():
+    try:
+        report_new_entrant: ReportNewEntrant = report_version.report_new_entrant.get()
+    except ReportNewEntrant.DoesNotExist:
         return {
             f"error_required_fields_{SECTION}": _build_error(
                 report_version_id=report_version.id,
@@ -80,8 +78,8 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             )
         }
 
-    missing_field_labels = collect_missing_fields_many(
-        facility_reports,
+    missing_field_labels = collect_missing_fields(
+        report_new_entrant,
         REQUIRED_FIELDS,
     )
 

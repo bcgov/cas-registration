@@ -4,8 +4,6 @@ export type ValidationSeverity = "Error" | "Warning";
 // Keys used to identify validation errors returned from backend
 export type ReportValidationMessageKey =
   // Missing required inputs / confirmations
-  | "operation_boro_id"
-  | "attachment_not_scanned"
   | "missing_report_verification"
   | "verification_statement"
   | "missing_required_attachment_confirmation"

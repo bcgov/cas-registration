@@ -28,14 +28,25 @@ function toAlertType(severity: ValidationSeverity): AlertType {
 }
 
 // Replaces label text in message with a clickable link (inline)
-// Note: validationUIConfig label must exactly match the text in the validationUIConfig message
+// Else fall back to label as link
 function renderMessageWithInlineLink(
   text: string,
   label?: string,
   href?: string,
 ) {
-  if (!label || !href || !text.includes(label)) {
+  if (!label || !href) {
     return <span>{text}</span>;
+  }
+
+  if (!text.includes(label)) {
+    return (
+      <span>
+        {text}{" "}
+        <Link href={href} className="underline">
+          {label}
+        </Link>
+      </span>
+    );
   }
 
   const [before, ...rest] = text.split(label);
