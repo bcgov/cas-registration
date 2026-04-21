@@ -69,8 +69,13 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 7. Emission Summary (read-only) ──
-    await facilityReport.continueFromEmissionSummary();
+    await facilityReport.verifyEmissionSummary();
     // TODO: add happo screenshot here
+    await facilityReport.clickContinue(
+      new RegExp(
+        `/facilities/${FacilityIDs.BUGLE_SFO}/${ReportRoutes.PRODUCTION_DATA}`,
+      ),
+    );
 
     // ── 8. Production Data — select Cement equivalent, fill annual production ──
     await facilityReport.fillProductionData();
