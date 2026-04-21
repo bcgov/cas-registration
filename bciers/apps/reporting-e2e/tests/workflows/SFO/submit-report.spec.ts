@@ -101,8 +101,11 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 11. Compliance Summary (read-only) ──
-    await report.continueFromComplianceSummary();
+    await report.verifyComplianceSummary();
     // TODO: add happo screenshot here
+    await report.continue(
+      new RegExp(`${versionId}/${ReportRoutes.FINAL_REVIEW}`),
+    );
 
     // ── 12. Final Review (read-only) ──
     await report.continueFromFinalReview();
