@@ -120,6 +120,7 @@ describe("VerificationPage component", () => {
         initialData: mockInitialData,
         navigationInformation: dummyNavigationInformation,
         isSupplementaryReport: await mockGetIsSupplementaryReport(),
+        isEIO: false,
       },
       undefined,
     );
