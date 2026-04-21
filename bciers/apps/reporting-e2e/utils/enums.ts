@@ -37,6 +37,7 @@ export enum ReportRoutes {
   ALLOCATION_OF_EMISSIONS = "allocation-of-emissions",
   ADDITIONAL_REPORTING_DATA = "additional-reporting-data",
   REVIEW_CHANGES = "review-changes",
+  COMPLIANCE_SUMMARY = "compliance-summary",
   FINAL_REVIEW = "final-review",
   ATTACHMENTS = "attachments",
 }
