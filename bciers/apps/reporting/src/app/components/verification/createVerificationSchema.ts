@@ -13,7 +13,7 @@ export const createVerificationSchema = (
 ): RJSFSchema => {
   const schema = schemaType === OperationTypes.SFO ? sfoSchema : lfoSchema;
 
-  if (isSupplementaryReport) {
+  if (isSupplementaryReport || isEIO) {
     schema.properties = schema.properties || {};
     schema.properties.info_note = { type: "object", readOnly: true };
   }
