@@ -39,11 +39,14 @@ export class ProductionDataPOM {
     this.page = page;
   }
 
-  async fillProducts(productsToSelect: string[]): Promise<void> {
+  async fillProducts(
+    productsToSelect: string[],
+    productsAvailable: string[] | undefined = undefined,
+  ): Promise<void> {
     await assertFieldVisibility(this.page, [PRODUCTION_DATA.PAGE_TITLE], true);
 
     // Assert all expected products appear as checkboxes
-    for (const product of PRODUCTION_DATA.ALL_PRODUCTS) {
+    for (const product of productsAvailable ?? PRODUCTION_DATA.ALL_PRODUCTS) {
       await expect(
         this.page.getByRole("checkbox", { name: product }),
       ).toBeVisible();
