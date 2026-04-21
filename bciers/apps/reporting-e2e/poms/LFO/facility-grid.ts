@@ -34,11 +34,10 @@ export class FacilityGridPOM {
 
     await Promise.all([
       continueButton.click(),
-      this.page.waitForURL(
-        (url) =>
-          new RegExp(".*review-facility-information").test(url.toString()),
-        { waitUntil: "domcontentloaded", timeout: 60_000 },
-      ),
+      // this.page.waitForURL(
+      //   ("**review-facility-information"),
+      //   { waitUntil: "domcontentloaded", timeout: 60_000 },
+      // ),
     ]);
 
     await expect(async () => {
@@ -49,7 +48,9 @@ export class FacilityGridPOM {
     return this.extractFacilityIdFromUrl(this.page);
   }
 
-  async markFacilityComplete(facilityName: string) {}
+  async markFacilityComplete(facilityName: string) {
+    throw `${facilityName}`;
+  }
 
   // Utils
   private extractFacilityIdFromUrl(page: Page): string {

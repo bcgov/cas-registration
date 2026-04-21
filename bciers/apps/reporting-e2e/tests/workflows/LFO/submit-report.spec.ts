@@ -1,6 +1,6 @@
 import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
-import { OPERATION_NAMES } from "@/reporting-e2e/utils/enums";
+import { FacilityIDs, OPERATION_NAMES } from "@/reporting-e2e/utils/enums";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
@@ -62,6 +62,9 @@ test.describe("LFO: create and submit a new report for the current reporting yea
 
     const facilityReport = new LFOFacilityReportPOM(page, facilityId);
     await facilityReport.fillReviewFacilityInformation();
+    await report.saveAndContinue(
+      new RegExp(report.activitiesUrl(versionId, FacilityIDs.BAT_LFO), "i"),
+    );
 
     // ── 5. Activities — GSC with 1 unit, 1 fuel (Diesel), 1 emission (CO2) ──
     await facilityReport.fillGscActivity();
