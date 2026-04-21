@@ -57,7 +57,7 @@ describe("The AttachmentsListGrid component", () => {
         rows: [
           {
             id: 1,
-            reporting_year_id: 2024,
+            reporting_year: 2024,
             operator: "Operator 1",
             operation: "Operaion 1",
             report_version_id: 123,
@@ -66,7 +66,7 @@ describe("The AttachmentsListGrid component", () => {
           },
           {
             id: 2,
-            reporting_year_id: 2025,
+            reporting_year: 2025,
             operator: "Operator 2",
             operation: "Operation 2",
             report_version_id: 456,
@@ -100,6 +100,7 @@ describe("The AttachmentsListGrid component", () => {
             report_version_id: 123,
             attachment_type: "verification_statement",
             attachment_name: "somefile.pdf",
+            reporting_year: 2024,
           },
         ],
         row_count: 2,

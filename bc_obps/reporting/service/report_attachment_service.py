@@ -1,8 +1,10 @@
 from typing import Literal, Optional
 from uuid import UUID
+from ninja import Query
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
 from django.db.models import QuerySet
+from reporting.schema.report_attachment import InternalReportAttachmentFilterSchema
 from reporting.constants import MAX_UPLOAD_SIZE
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
@@ -50,7 +52,7 @@ class ReportAttachmentService:
     @classmethod
     def get_all_attachments(
         cls,
-        filter_params: Optional[dict] = {},
+        filters: InternalReportAttachmentFilterSchema = Query(...),
         sort_field: Optional[str] | Optional[(str)] = "report_version_id",
         sort_order: Optional[Literal["desc", "asc"]] = "desc",
     ) -> QuerySet[ReportAttachment]:
@@ -68,7 +70,7 @@ class ReportAttachmentService:
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{mapped_sort_field}"
 
-        query = ReportAttachment.objects.select_related(
+        queryset = ReportAttachment.objects.select_related(
             "report_version",
             "report_version__report",
             "report_version__report__operation",
@@ -78,10 +80,10 @@ class ReportAttachmentService:
             report_version__status=ReportVersion.ReportVersionStatus.Submitted,
         )
 
-        if filter_params:
-            query = query.filter(**filter_params)
+        if filters:
+            queryset = filters.filter(queryset)
 
-        return query.order_by(sort_by)
+        return queryset.order_by(sort_by)
 
     @classmethod
     def save_attachment_confirmation(

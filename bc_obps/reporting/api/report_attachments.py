@@ -23,16 +23,6 @@ from reporting.api.permissions import (
     approved_authorized_roles_report_version_composite_auth,
 )
 
-# Mapping of filter field names to model lookup paths
-FILTER_LOOKUPS = {
-    "operator": "report_version__report__operator__legal_name__icontains",
-    "operation": "report_version__report__operation__name__icontains",
-    "report_version_id": "report_version__id",
-    "reporting_year_id": "report_version__report__reporting_year__reporting_year",
-    "attachment_type": "attachment_type__icontains",
-    "attachment_name": "attachment_name__icontains",
-}
-
 
 @router.post(
     "report-version/{version_id}/attachments",
@@ -120,10 +110,4 @@ def get_all_attachments(
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[ReportAttachment]:
 
-    filter_params = {
-        FILTER_LOOKUPS[field]: value
-        for field, value in filters.model_dump(exclude_none=True).items()
-        if value is not None
-    }
-
-    return ReportAttachmentService.get_all_attachments(filter_params, sort_field, sort_order)
+    return ReportAttachmentService.get_all_attachments(filters, sort_field, sort_order)
