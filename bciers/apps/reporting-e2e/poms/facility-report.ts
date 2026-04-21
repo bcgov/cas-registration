@@ -86,6 +86,18 @@ export class SFOFacilityReportPOM {
     return `/facilities/${this.facilityId}/${ReportRoutes.NON_ATTRIBUTABLE}`;
   }
 
+  emissionsSummaryUrl(): string {
+    return `facilities/${this.facilityId}/${ReportRoutes.EMISSION_SUMMARY}`;
+  }
+
+  productionDataUrl(): string {
+    return `/facilities/${this.facilityId}/${ReportRoutes.PRODUCTION_DATA}`;
+  }
+
+  allocationOfEmissionsUrl(): string {
+    return `/facilities/${this.facilityId}/${ReportRoutes.ALLOCATION_OF_EMISSIONS}`;
+  }
+
   async fillGscActivity(): Promise<void> {
     // Check the GSC source type checkbox
     await checkCheckboxByLabel(this.page, GSC_ACTIVITY.SOURCE_TYPE_LABEL);
@@ -208,6 +220,14 @@ export class LFOFacilityReportPOM extends SFOFacilityReportPOM {
   }
 
   // -----------------
+  // URL builders
+  // -----------------
+
+  facilityReportCompletedUrl(): string {
+    return `/facilities/${this.facilityId}/${ReportRoutes.FACILITY_REPORT_COMPLETED}`;
+  }
+
+  // -----------------
   // Page 1 — Facility specific information
   // -----------------
 
@@ -221,6 +241,15 @@ export class LFOFacilityReportPOM extends SFOFacilityReportPOM {
         name: "General stationary combustion excluding line tracing (at SFO) General",
       }),
     ).toBeChecked();
-    expect(this.page.getByRole("checkbox", { checked: true }).count()).toBe(1);
+
+    await this.page
+      .getByRole("checkbox", {
+        name: "Ammonia",
+      })
+      .setChecked(false);
+
+    expect(
+      await this.page.getByRole("checkbox", { checked: true }).count(),
+    ).toBe(1);
   }
 }
