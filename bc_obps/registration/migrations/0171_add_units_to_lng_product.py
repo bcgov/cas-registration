@@ -6,7 +6,7 @@ from django.db import migrations
 def update_lng_product_units(apps, schema_monitor):
     RegulatedProduct = apps.get_model('registration', 'RegulatedProduct')
     lng_product = RegulatedProduct.objects.get(name='Liquefied natural gas')
-    lng_product.unit = 'Tonne Liquefied natural gas'
+    lng_product.unit = 'Tonne liquefied natural gas'
     lng_product.save()
 
 
