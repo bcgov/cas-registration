@@ -2,6 +2,7 @@ import { Page, expect } from "@playwright/test";
 import { AppRoutes, ReportRoutes } from "../utils/enums";
 import { waitForGridReady } from "@bciers/e2e/utils/helpers";
 import { FORM_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
+import { ProductionDataPOM } from "@/reporting-e2e/poms/production-data";
 import {
   assertFieldVisibility,
   checkCheckboxByLabel,
@@ -178,7 +179,12 @@ export class SFOFacilityReportPOM {
     await assertFieldVisibility(this.page, [EMISSION_SUMMARY.TITLE], true);
   }
 
-  async fillProductionData(): Promise<void> {}
+  async fillProductionData(
+    productsToSelect: string[] = ["Cement equivalent"],
+  ): Promise<void> {
+    const productionData = new ProductionDataPOM(this.page);
+    await productionData.fillProducts(productsToSelect);
+  }
 
   async fillAllocationOfEmissions(): Promise<void> {}
 }
