@@ -96,6 +96,9 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     // ── 10. Additional Reporting Data — no captured emissions ──
     await report.fillAdditionalData();
     // TODO: add happo screenshot here
+    await report.saveAndContinue(
+      new RegExp(`${versionId}/${ReportRoutes.COMPLIANCE_SUMMARY}`),
+    );
 
     // ── 11. Compliance Summary (read-only) ──
     await report.continueFromComplianceSummary();
