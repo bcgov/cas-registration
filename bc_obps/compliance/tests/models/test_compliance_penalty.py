@@ -1,8 +1,9 @@
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from compliance.models.compliance_penalty import CompliancePenalty
+from compliance.models import CompliancePenalty, ComplianceReportVersion
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from model_bakery.baker import make_recipe
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 
 
 class CompliancePenaltyTest(BaseTestCase):
@@ -30,28 +31,32 @@ class CompliancePenaltyTest(BaseTestCase):
 #  RLS tests
 class TestCompliancePenaltyRls(BaseTestCase):
     def test_compliance_penalty_rls_industry_user(self):
+        test_data_new_operator = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        )
+
         # create two user_operators to set up for transfers
-        new_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        new_user_operator = make_recipe(
+            'registration.tests.utils.approved_user_operator', operator=test_data_new_operator.operation.operator
+        )
         old_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
 
-        # operation
-        operation = make_recipe(
-            'registration.tests.utils.operation', operator=new_user_operator.operator, status="Registered"
-        )
         # timeline of current and historical ownership
         make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            operation=operation,
+            operation=test_data_new_operator.operation,
             operator=old_user_operator.operator,
         )
         make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            operation=operation,
+            operation=test_data_new_operator.operation,
             operator=new_user_operator.operator,
         )
         # old operator's data
         old_operator_report = make_recipe(
-            'reporting.tests.utils.report', operation=operation, operator=old_user_operator.operator
+            'reporting.tests.utils.report',
+            operation=test_data_new_operator.operation,
+            operator=old_user_operator.operator,
         )
         old_operator_compliance_report = make_recipe(
             'compliance.tests.utils.compliance_report', report=old_operator_report
@@ -68,25 +73,10 @@ class TestCompliancePenaltyRls(BaseTestCase):
         old_operator_compliance_penalty = make_recipe(
             'compliance.tests.utils.compliance_penalty', compliance_obligation=old_operator_compliance_obligation
         )
-        # new operator's data
-        new_operator_report = make_recipe(
-            'reporting.tests.utils.report', operation=operation, operator=new_user_operator.operator
-        )
-        new_operator_compliance_report = make_recipe(
-            'compliance.tests.utils.compliance_report', report=new_operator_report
-        )
-
-        new_operator_compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=new_operator_compliance_report
-        )
-
-        new_operator_compliance_obligation = make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=new_operator_compliance_report_version,
-        )
 
         new_operator_compliance_penalty = make_recipe(
-            'compliance.tests.utils.compliance_penalty', compliance_obligation=new_operator_compliance_obligation
+            'compliance.tests.utils.compliance_penalty',
+            compliance_obligation=test_data_new_operator.compliance_obligation,
         )
 
         def select_function(cursor):
@@ -116,17 +106,12 @@ class TestCompliancePenaltyRls(BaseTestCase):
         )
 
     def test_compliance_penalty_rls_cas_users(self):
-        operator = make_recipe('registration.tests.utils.operator')
-        operation = make_recipe('registration.tests.utils.operation', operator=operator)
-        report = make_recipe('reporting.tests.utils.report', operation=operation)
-        compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=report)
-        compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
         )
-        compliance_obligation = make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=compliance_report_version
+        make_recipe(
+            'compliance.tests.utils.compliance_penalty', id=888, compliance_obligation=test_data.compliance_obligation
         )
-        make_recipe('compliance.tests.utils.compliance_penalty', id=888, compliance_obligation=compliance_obligation)
 
         def select_function(cursor):
             assert CompliancePenalty.objects.count() == 1
