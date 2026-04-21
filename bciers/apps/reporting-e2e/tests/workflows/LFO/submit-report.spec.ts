@@ -27,10 +27,10 @@ test.describe("LFO: create and submit a new report for the current reporting yea
 
     // ── 2. Click "Start" for Bugle SFO — creates the report and navigates to
     //       review-operation-information; ──
-    await grid.searchByOperationName(OPERATION_NAMES.BAT_LFO);
+    await grid.searchByOperationName(OPERATION_NAMES.BEES_LFO);
 
     const versionId = await grid.startNewReportForOperation(
-      OPERATION_NAMES.BAT_LFO,
+      OPERATION_NAMES.BEES_LFO,
     );
     const report = new CurrentReportPOM(page);
 
@@ -49,7 +49,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
 
     // Review Facilities
     const reviewFacility = new ReviewFacilitiesPOM(page);
-    reviewFacility.selectFacilities(["Facility 40"]);
+    reviewFacility.selectFacilities(["Facility 38"]);
     await report.saveAndContinue(
       new RegExp(report.facilitiesGridUrl(versionId)),
     );
@@ -63,17 +63,26 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     const facilityReport = new LFOFacilityReportPOM(page, facilityId);
     await facilityReport.fillReviewFacilityInformation();
     await report.saveAndContinue(
-      new RegExp(report.activitiesUrl(versionId, FacilityIDs.BAT_LFO), "i"),
+      new RegExp(report.activitiesUrl(versionId, FacilityIDs.BEES_LFO), "i"),
     );
 
     // ── 5. Activities — GSC with 1 unit, 1 fuel (Diesel), 1 emission (CO2) ──
     await facilityReport.fillGscActivity();
+    await report.saveAndContinue(
+      new RegExp(facilityReport.nonAttributableUrl()),
+    );
 
     // ── 6. Non-Attributable Emissions (no entries needed) ──
     await facilityReport.fillNonAttributable();
+    await report.saveAndContinue(
+      new RegExp(facilityReport.emissionsSummaryUrl()),
+    );
 
     // ── 7. Emission Summary (read-only) ──
-    await facilityReport.continueFromEmissionSummary();
+    await facilityReport.verifyEmissionSummary();
+    await facilityReport.clickContinue(
+      new RegExp(facilityReport.productionDataUrl()),
+    );
 
     // ── 8. Production Data — select Cement equivalent, fill annual production ──
     await facilityReport.fillProductionData();

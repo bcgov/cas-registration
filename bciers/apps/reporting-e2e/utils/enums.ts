@@ -16,7 +16,7 @@ export enum FacilityIDs {
   EARNED_CREDITS = "1",
   NO_OBLIGATION = "2",
   BUGLE_SFO = "f486f2fb-62ed-438d-bb3e-0819b51e3aff",
-  BAT_LFO = "b66d0364-ad1d-42f4-93d9-82bf185c4304",
+  BEES_LFO = "d477f3d9-2917-4f36-b5ae-166d47dc8172",
 }
 
 // Report workflow routes
@@ -28,6 +28,7 @@ export enum ReportRoutes {
   PERSON_RESPONSIBLE = "person-responsible",
   FACILITY_REPORT_GRID = "facilities/report-information",
   REVIEW_FACILITIES = "facilities/review-facilities",
+  FACILITY_REPORT_COMPLETED = "end-of-facility-report",
   FACILITIES = "facilities",
   ACTIVITIES = "activities",
   NON_ATTRIBUTABLE = "non-attributable",
@@ -76,7 +77,7 @@ export const OPERATION_NAMES = {
   EARNED_CREDITS: "Compliance SFO - Earned credits",
   NO_OBLIGATION: "Compliance SFO - No obligation",
   BUGLE_SFO: "Bugle SFO - Registered",
-  BAT_LFO: "Bat LFO - Registered - name from admin",
+  BEES_LFO: "Bees LFO - Registered - name from admin",
 } as const;
 
 export const REPORT_ID_TO_OPERATION_NAME: Record<ReportIDs, string> = {
