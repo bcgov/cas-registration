@@ -58,9 +58,7 @@ export class ProductionDataPOM {
     for (const product of productsToSelect) {
       const unit = PRODUCT_UNITS[product];
       if (unit) {
-        await expect(
-          this.page.getByText(unit, { exact: true }),
-        ).toBeVisible();
+        await expect(this.page.getByText(unit, { exact: true })).toBeVisible();
       }
     }
 
