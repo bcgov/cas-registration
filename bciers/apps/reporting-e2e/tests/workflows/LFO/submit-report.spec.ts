@@ -58,23 +58,23 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     //
     const facilityGrid = new FacilityGridPOM(page, versionId);
     const facilityId =
-      await facilityGrid.continueReportForFacility("Facility 40");
+      await facilityGrid.continueReportForFacility("Facility 38");
 
     const facilityReport = new LFOFacilityReportPOM(page, facilityId);
     await facilityReport.fillReviewFacilityInformation();
-    await report.saveAndContinue(
+    await facilityReport.saveAndContinue(
       new RegExp(report.activitiesUrl(versionId, FacilityIDs.BEES_LFO), "i"),
     );
 
     // ── 5. Activities — GSC with 1 unit, 1 fuel (Diesel), 1 emission (CO2) ──
     await facilityReport.fillGscActivity();
-    await report.saveAndContinue(
+    await facilityReport.saveAndContinue(
       new RegExp(facilityReport.nonAttributableUrl()),
     );
 
     // ── 6. Non-Attributable Emissions (no entries needed) ──
     await facilityReport.fillNonAttributable();
-    await report.saveAndContinue(
+    await facilityReport.saveAndContinue(
       new RegExp(facilityReport.emissionsSummaryUrl()),
     );
 
@@ -85,10 +85,22 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     );
 
     // ── 8. Production Data — select Cement equivalent, fill annual production ──
-    await facilityReport.fillProductionData();
+    await facilityReport.fillProductionData(
+      ["Compression, positive displacement - consumed energy"],
+      ["Compression, positive displacement - consumed energy"],
+    );
+    await facilityReport.clickContinue(
+      new RegExp(facilityReport.allocationOfEmissionsUrl()),
+    );
 
     // ── 9. Allocation of Emissions (no entries needed for minimal test) ──
     await facilityReport.fillAllocationOfEmissions();
+    await facilityReport.clickContinue(
+      new RegExp(facilityReport.facilityReportCompletedUrl()),
+    );
+
+    // -- 10. Facility report completed
+    await facilityReport.verifyFacilityReportCompleted();
 
     // ── 10. Additional Reporting Data — no captured emissions ──
     await report.fillAdditionalData();
