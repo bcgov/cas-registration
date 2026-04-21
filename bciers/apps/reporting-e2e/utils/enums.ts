@@ -38,6 +38,7 @@ export enum ReportRoutes {
   ADDITIONAL_REPORTING_DATA = "additional-reporting-data",
   REVIEW_CHANGES = "review-changes",
   VALIDATION = "report-validation",
+  COMPLIANCE_SUMMARY = "compliance-summary",
   FINAL_REVIEW = "final-review",
   ATTACHMENTS = "attachments",
 }

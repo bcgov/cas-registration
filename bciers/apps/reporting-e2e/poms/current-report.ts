@@ -4,6 +4,7 @@ import { FORM_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
 import { clickButton } from "@bciers/e2e/utils/helpers";
 import { PersonResponsiblePOM } from "@/reporting-e2e/poms/person-responsible";
 import { ReportOperationPOM } from "@/reporting-e2e/poms/report-operation";
+import { AdditionalReportingDataPOM } from "@/reporting-e2e/poms/additional-reporting-data";
 
 export class CurrentReportPOM {
   readonly page: Page;
@@ -60,7 +61,10 @@ export class CurrentReportPOM {
     await personResponsible.selectContact(contactName);
   }
 
-  async fillAdditionalData(): Promise<void> {}
+  async fillAdditionalData(): Promise<void> {
+    const additionalReportingData = new AdditionalReportingDataPOM(this.page);
+    await additionalReportingData.fill();
+  }
 
   async continueFromComplianceSummary(): Promise<void> {}
 
