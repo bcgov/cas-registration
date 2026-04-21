@@ -16,6 +16,7 @@ export enum FacilityIDs {
   EARNED_CREDITS = "1",
   NO_OBLIGATION = "2",
   BUGLE_SFO = "f486f2fb-62ed-438d-bb3e-0819b51e3aff",
+  BAT_LFO = "b66d0364-ad1d-42f4-93d9-82bf185c4304",
 }
 
 // Report workflow routes

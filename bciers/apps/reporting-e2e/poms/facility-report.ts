@@ -207,20 +207,20 @@ export class LFOFacilityReportPOM extends SFOFacilityReportPOM {
                     ${this.facilityId}/${ReportRoutes.FACILITY_REPORT_GRID}`;
   }
 
-  // Utils
-
-  async route(): Promise<void> {
-    await this.page.goto(this.url);
-    await waitForGridReady(this.page, { timeout: 30_000 });
-  }
-
   // -----------------
   // Page 1 — Facility specific information
   // -----------------
 
   async fillReviewFacilityInformation(): Promise<void> {
-    this.page
+    await this.page
       .getByRole("combobox", { name: "Facility type" })
-      .selectOption("Medium Facility");
+      .fill("Medium Facility");
+
+    await expect(
+      this.page.getByRole("checkbox", {
+        name: "General stationary combustion excluding line tracing (at SFO) General",
+      }),
+    ).toBeChecked();
+    expect(this.page.getByRole("checkbox", { checked: true }).count()).toBe(1);
   }
 }
