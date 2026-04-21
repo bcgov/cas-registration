@@ -80,6 +80,11 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     // ── 8. Production Data — select Cement equivalent, fill annual production ──
     await facilityReport.fillProductionData();
     // TODO: add happo screenshot here
+    await facilityReport.saveAndContinue(
+      new RegExp(
+        `/facilities/${FacilityIDs.BUGLE_SFO}/${ReportRoutes.ALLOCATION_OF_EMISSIONS}`,
+      ),
+    );
 
     // ── 9. Allocation of Emissions (no entries needed for minimal test) ──
     await facilityReport.fillAllocationOfEmissions();
