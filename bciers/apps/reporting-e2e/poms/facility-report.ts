@@ -197,9 +197,10 @@ export class SFOFacilityReportPOM {
 
   async fillProductionData(
     productsToSelect: string[] = ["Cement equivalent"],
+    productsAvailable: string[] | undefined = undefined,
   ): Promise<void> {
     const productionData = new ProductionDataPOM(this.page);
-    await productionData.fillProducts(productsToSelect);
+    await productionData.fillProducts(productsToSelect, productsAvailable);
   }
 
   async fillAllocationOfEmissions(
@@ -228,7 +229,7 @@ export class LFOFacilityReportPOM extends SFOFacilityReportPOM {
   }
 
   // -----------------
-  // Page 1 — Facility specific information
+  // LFO-specific page: Facility specific information
   // -----------------
 
   async fillReviewFacilityInformation(): Promise<void> {
@@ -251,5 +252,13 @@ export class LFOFacilityReportPOM extends SFOFacilityReportPOM {
     expect(
       await this.page.getByRole("checkbox", { checked: true }).count(),
     ).toBe(1);
+  }
+
+  // -----------------
+  // LFO-specific page: Facility Report Completed
+  // -----------------
+
+  async verifyFacilityReportCompleted(): Promise<void> {
+    throw "Argh";
   }
 }
