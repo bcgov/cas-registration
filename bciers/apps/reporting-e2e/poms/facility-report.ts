@@ -49,6 +49,10 @@ const NON_ATTRIBUTABLE = {
   EXCEEDED_LABEL: "Did your non-attributable emissions exceed 100 tCO2e?",
 } as const;
 
+const EMISSION_SUMMARY = {
+  TITLE: "Emissions Summary (in tCO2e)",
+} as const;
+
 export class SFOFacilityReportPOM {
   readonly page: Page;
   readonly facilityId: string;
@@ -63,6 +67,10 @@ export class SFOFacilityReportPOM {
       inForm: true,
       waitForUrl,
     });
+  }
+
+  async clickContinue(waitForUrl?: RegExp): Promise<void> {
+    await clickButton(this.page, FORM_BUTTON_TEXT.CONTINUE, { waitForUrl });
   }
 
   // -----------------
@@ -166,7 +174,9 @@ export class SFOFacilityReportPOM {
     await noLabel.click();
   }
 
-  async continueFromEmissionSummary(): Promise<void> {}
+  async verifyEmissionSummary(): Promise<void> {
+    await assertFieldVisibility(this.page, [EMISSION_SUMMARY.TITLE], true);
+  }
 
   async fillProductionData(): Promise<void> {}
 
