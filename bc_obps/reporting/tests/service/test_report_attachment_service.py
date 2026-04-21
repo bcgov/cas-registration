@@ -6,6 +6,7 @@ from model_bakery.baker import make_recipe
 from ninja import UploadedFile
 import pytest
 from registration.models.user import User
+from reporting.models.report_version import ReportVersion
 from reporting.models.report_attachment import ReportAttachment
 from reporting.service.report_attachment_service import ReportAttachmentService
 from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
@@ -85,33 +86,189 @@ class TestReportAttachmentService:
         response = ReportAttachmentService.get_attachments_by_version(self.report_version.id)
         assert list(response.all()) == [r, r2]
 
-    def test_get_all_attachments(self):
-        uploaded_files = []
-        for i in range(5):
-            file = ContentFile(b"asdhfjh", f"test_file_{i}.txt")
-            uploaded_file = InMemoryUploadedFile(
-                file,
-                size=file.size,
-                field_name='attachment',
-                name=f"test_file_{i}.txt",
-                content_type="a",
-                charset="utf-8",
-            )
-            uploaded_files.append(uploaded_file)
+    def test_get_all_attachments_filters(self):
+        # ARRANGE
+        rv1 = self.report_version
+        rv2 = make_recipe("reporting.tests.utils.report_version")
 
-        attachments = []
-        for i in range(5):
-            r = ReportAttachment(
-                report_version=self.report_version,
-                attachment=uploaded_files[i],
-                attachment_type="verification_statement",
-                attachment_name=f"some_test_file_{i}.pdf",
-            )
-            r.save()
-            attachments.append(r)
+        file = ContentFile(b"fasjdfh", "test_file.txt")
 
-        response = ReportAttachmentService.get_all_attachments()
-        assert list(response.all()) == attachments
+        up_file1 = InMemoryUploadedFile(
+            file, size=file.size, field_name='attachment', name="test_file_1.txt", content_type='a', charset='utf-8'
+        )
+        up_file2 = InMemoryUploadedFile(
+            file, size=file.size, field_name='attachment', name="test_file_2.txt", content_type='a', charset='utf-8'
+        )
+
+        a1 = baker.make(
+            ReportAttachment,
+            report_version=rv1,
+            attachment=up_file1,
+            attachment_type="verification_statement",
+            attachment_name="test_file_1.pdf",
+        )
+        a2 = baker.make(
+            ReportAttachment,
+            report_version=rv2,
+            attachment=up_file2,
+            attachment_type="verification_statement",
+            attachment_name="test_file_2.pdf",
+        )
+
+        a1.save()
+        a2.save()
+        rv1.status = ReportVersion.ReportVersionStatus.Submitted
+        rv2.status = ReportVersion.ReportVersionStatus.Submitted
+        rv1.save(update_fields=['status'])
+        rv2.save(update_fields=['status'])
+
+        # ACT/ASSERT
+        # first try with no filters
+        result = ReportAttachmentService.get_all_attachments()
+        assert list(result) == [a2, a1]
+
+        # now filter by report_version_id
+        result = ReportAttachmentService.get_all_attachments(filter_params={"report_version_id": rv1.id})
+        assert list(result) == [a1]
+
+    def test_get_all_attachments_default_sort_by_report_version_id(self):
+        # ARRANGE
+        rv1 = self.report_version
+        rv2 = make_recipe("reporting.tests.utils.report_version")
+
+        file = ContentFile(b"fasjdfh", "test_file.txt")
+
+        up_file1 = InMemoryUploadedFile(
+            file, size=file.size, field_name='attachment', name="test_file_1.txt", content_type='a', charset='utf-8'
+        )
+        up_file2 = InMemoryUploadedFile(
+            file, size=file.size, field_name='attachment', name="test_file_2.txt", content_type='a', charset='utf-8'
+        )
+
+        a1 = baker.make(
+            ReportAttachment,
+            report_version=rv1,
+            attachment=up_file1,
+            attachment_type="verification_statement",
+            attachment_name="test_file_1.pdf",
+        )
+        a2 = baker.make(
+            ReportAttachment,
+            report_version=rv2,
+            attachment=up_file2,
+            attachment_type="verification_statement",
+            attachment_name="test_file_2.pdf",
+        )
+
+        a1.save()
+        a2.save()
+        rv1.status = ReportVersion.ReportVersionStatus.Submitted
+        rv2.status = ReportVersion.ReportVersionStatus.Submitted
+        rv1.save(update_fields=['status'])
+        rv2.save(update_fields=['status'])
+
+        # ACT/ASSERT
+        # first test default sort order (desc)
+        result = list(ReportAttachmentService.get_all_attachments({}, "report_version_id", "desc"))
+        assert result == sorted([a1, a2], key=lambda x: x.report_version_id, reverse=True)
+
+        # now test ascending sort order
+        result = list(ReportAttachmentService.get_all_attachments({}, "report_version_id", "asc"))
+        assert result == sorted([a1, a2], key=lambda x: x.report_version_id)
+
+    def test_get_all_attachments_sort_by_operation_name(self):
+        # ARRANGE
+        op_a = make_recipe("reporting.tests.utils.report_operation", operation_name="Chocolate Factory")
+        op_b = make_recipe("reporting.tests.utils.report_operation", operation_name="Licorice Factory")
+
+        rv1 = make_recipe("reporting.tests.utils.report_version", report_operation=op_a)
+        rv2 = make_recipe("reporting.tests.utils.report_version", report_operation=op_b)
+
+        file = ContentFile(b"fasjdfh", "test_file.txt")
+
+        up_file1 = InMemoryUploadedFile(
+            file, size=file.size, field_name='attachment', name="test_file_1.txt", content_type='a', charset='utf-8'
+        )
+        up_file2 = InMemoryUploadedFile(
+            file, size=file.size, field_name='attachment', name="test_file_2.txt", content_type='a', charset='utf-8'
+        )
+
+        a1 = baker.make(
+            ReportAttachment,
+            report_version=rv1,
+            attachment=up_file1,
+            attachment_type="verification_statement",
+            attachment_name="test_file_1.pdf",
+        )
+        a2 = baker.make(
+            ReportAttachment,
+            report_version=rv2,
+            attachment=up_file2,
+            attachment_type="verification_statement",
+            attachment_name="test_file_2.pdf",
+        )
+
+        a1.save()
+        a2.save()
+        rv1.status = ReportVersion.ReportVersionStatus.Submitted
+        rv2.status = ReportVersion.ReportVersionStatus.Submitted
+        rv1.save(update_fields=['status'])
+        rv2.save(update_fields=['status'])
+
+        # ACT
+        result = list(ReportAttachmentService.get_all_attachments({}, "operation", "asc"))
+
+        # ASSERT
+        assert result == [a1, a2]  # Chocolate Factory before Licorice Factory
+
+    def test_get_all_attachments_only_returns_submitted_ones(self):
+        # ARRANGE
+        # need to first set status to Draft so we can still make attachments to it
+        submitted_rv = make_recipe(
+            "reporting.tests.utils.report_version", status=ReportVersion.ReportVersionStatus.Draft
+        )
+        draft_rv = make_recipe("reporting.tests.utils.report_version", status=ReportVersion.ReportVersionStatus.Draft)
+
+        file = ContentFile(b"fasjdfh", "test_file.txt")
+
+        up_file1 = InMemoryUploadedFile(
+            file, size=file.size, field_name='attachment', name="test_file_1.txt", content_type='a', charset='utf-8'
+        )
+        up_file2 = InMemoryUploadedFile(
+            file, size=file.size, field_name='attachment', name="test_file_2.txt", content_type='a', charset='utf-8'
+        )
+
+        a1 = baker.make(
+            ReportAttachment,
+            report_version=submitted_rv,
+            attachment=up_file1,
+            attachment_type="wci_352_362",
+            attachment_name="test_file_1.pdf",
+        )
+        baker.make(
+            ReportAttachment,
+            report_version=draft_rv,
+            attachment=up_file2,
+            attachment_type="confidentiality_request",
+            attachment_name="test_file_2.pdf",
+        )
+
+        submitted_rv.status = ReportVersion.ReportVersionStatus.Submitted
+        submitted_rv.save(update_fields=['status'])
+
+        # ACT
+        result = list(ReportAttachmentService.get_all_attachments())
+
+        # ASSERT
+        assert result == [a1]
+
+    def test_get_all_attachments_empty(self):
+        result = list(ReportAttachmentService.get_all_attachments())
+        assert result == []
+
+    def test_get_all_attachments_invalid_sort_field(self):
+        with pytest.raises(Exception):
+            ReportAttachmentService.get_all_attachments({}, "silly_field", "desc")
 
     def test_get_attachment_returns_the_right_record(self):
         file = ContentFile(b"somedefinitelyrandombytes", "test_file.txt")

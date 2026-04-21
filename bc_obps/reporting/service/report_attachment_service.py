@@ -50,7 +50,7 @@ class ReportAttachmentService:
     @classmethod
     def get_all_attachments(
         cls,
-        filter_params: dict,
+        filter_params: Optional[dict] = {},
         sort_field: Optional[str] | Optional[(str)] = "report_version_id",
         sort_order: Optional[Literal["desc", "asc"]] = "desc",
     ) -> QuerySet[ReportAttachment]:
