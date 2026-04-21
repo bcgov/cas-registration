@@ -14,6 +14,20 @@ from reporting.models.reporting_year import ReportingYear
 from reporting.models.emission_category import EmissionCategory
 from model_bakery.baker import make_recipe
 
+# String constants for deduplication
+REGISTRATION_OPERATION_RECIPE_NAME = "registration.tests.utils.operation"
+REPORTING_REPORT_RECIPE_NAME = "reporting.tests.utils.report"
+REPORTING_REPORT_VERSION_RECIPE_NAME = "reporting.tests.utils.report_version"
+REPORTING_REPORT_OPERATION_RECIPE_NAME = "reporting.tests.utils.report_operation"
+REPORTING_REPORT_EMISSION_RECIPE_NAME = "reporting.tests.utils.report_emission"
+REPORTING_REPORT_PRODUCT_RECIPE_NAME = "reporting.tests.utils.report_product"
+REPORTING_REPORT_EMISSION_ALLOCATION_RECIPE_NAME = "reporting.tests.utils.report_emission_allocation"
+REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME = "reporting.tests.utils.report_product_emission_allocation"
+
+# Mock data constants for deduplication
+MOCK_SFO_NAME = "test sfo"
+MOCK_SFO_TYPE = "Single Facility Operation"
+
 
 class ComplianceTestInfrastructure:
     operation_1: Operation
@@ -53,37 +67,39 @@ class ComplianceTestInfrastructure:
     def build(cls):
         t = ComplianceTestInfrastructure()
         t.operation_1 = make_recipe(
-            'registration.tests.utils.operation',
-            name='test sfo',
+            REGISTRATION_OPERATION_RECIPE_NAME,
+            name=MOCK_SFO_NAME,
             naics_code=NaicsCode.objects.get(pk=1),
-            type='Single Facility Operation',
+            type=MOCK_SFO_TYPE,
         )
         t.report_1 = make_recipe(
-            "reporting.tests.utils.report", operation=t.operation_1, reporting_year=ReportingYear.objects.get(pk=2024)
+            REPORTING_REPORT_RECIPE_NAME,
+            operation=t.operation_1,
+            reporting_year=ReportingYear.objects.get(pk=2024),
         )
-        t.report_version_1 = make_recipe("reporting.tests.utils.report_version", report=t.report_1)
+        t.report_version_1 = make_recipe(REPORTING_REPORT_VERSION_RECIPE_NAME, report=t.report_1)
         # Create ReportOperation for the report_version
-        t.report_operation_1 = make_recipe("reporting.tests.utils.report_operation", report_version=t.report_version_1)
+        t.report_operation_1 = make_recipe(REPORTING_REPORT_OPERATION_RECIPE_NAME, report_version=t.report_version_1)
         t.report_emission_1 = make_recipe(
-            "reporting.tests.utils.report_emission",
+            REPORTING_REPORT_EMISSION_RECIPE_NAME,
             report_version=t.report_version_1,
             gas_type_id=1,
             json_data={"equivalentEmission": 10000.0001},
         )
         t.report_emission_2 = make_recipe(
-            "reporting.tests.utils.report_emission",
+            REPORTING_REPORT_EMISSION_RECIPE_NAME,
             report_version=t.report_version_1,
             gas_type_id=2,
             json_data={"equivalentEmission": 10000.9988},
         )
         t.report_emission_3 = make_recipe(
-            "reporting.tests.utils.report_emission",
+            REPORTING_REPORT_EMISSION_RECIPE_NAME,
             report_version=t.report_version_1,
             gas_type_id=2,
             json_data={"equivalentEmission": 100000.0088},
         )
         t.report_emission_4 = make_recipe(
-            "reporting.tests.utils.report_emission",
+            REPORTING_REPORT_EMISSION_RECIPE_NAME,
             report_version=t.report_version_1,
             gas_type_id=3,
             json_data={"equivalentEmission": 3000.05},
@@ -95,21 +111,21 @@ class ComplianceTestInfrastructure:
         t.report_emission_4.emission_categories.set([5, 12])
 
         t.report_product_1 = make_recipe(
-            "reporting.tests.utils.report_product",
+            REPORTING_REPORT_PRODUCT_RECIPE_NAME,
             report_version=t.report_version_1,
             product_id=1,
             annual_production=Decimal('100000'),
             production_data_apr_dec=Decimal('50000'),
         )
         t.report_product_2 = make_recipe(
-            "reporting.tests.utils.report_product",
+            REPORTING_REPORT_PRODUCT_RECIPE_NAME,
             report_version=t.report_version_1,
             product_id=2,
             annual_production=Decimal('100000'),
             production_data_apr_dec=Decimal('25000'),
         )
         t.report_product_3 = make_recipe(
-            "reporting.tests.utils.report_product",
+            REPORTING_REPORT_PRODUCT_RECIPE_NAME,
             report_version=t.report_version_1,
             product_id=3,
             annual_production=Decimal('20000'),
@@ -117,10 +133,10 @@ class ComplianceTestInfrastructure:
         )
 
         t.report_emission_allocation = make_recipe(
-            "reporting.tests.utils.report_emission_allocation", report_version=t.report_version_1
+            REPORTING_REPORT_EMISSION_ALLOCATION_RECIPE_NAME, report_version=t.report_version_1
         )
         t.allocation_1 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             report_product=t.report_product_1,
@@ -128,7 +144,7 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('10000.0001'),
         )
         t.allocation_2 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=3),  # Industrial Process Product 2
@@ -136,7 +152,7 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('10000.9988'),
         )
         t.allocation_3 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=4),  # Mobile Product 3
@@ -144,7 +160,7 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('75000.0088'),
         )
         t.allocation_4 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=5),  # GSC Product 1
@@ -152,7 +168,7 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('3000.05'),
         )
         t.allocation_5 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=12),  # Excluded nonbio Product 1
@@ -160,7 +176,7 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('3000.05'),
         )
         t.allocation_6 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             report_product=t.report_product_2,
@@ -235,7 +251,7 @@ class ComplianceTestInfrastructure:
     def unregulated_product_and_funny_category_13(cls):
         t = cls.build()
         t.report_emission_5 = make_recipe(
-            "reporting.tests.utils.report_emission",
+            REPORTING_REPORT_EMISSION_RECIPE_NAME,
             report_version=t.report_version_1,
             gas_type_id=3,
             json_data={"equivalentEmission": 55.55},
@@ -243,14 +259,14 @@ class ComplianceTestInfrastructure:
         t.report_emission_5.emission_categories.set([5, 13])
 
         t.report_product_4 = make_recipe(
-            "reporting.tests.utils.report_product",
+            REPORTING_REPORT_PRODUCT_RECIPE_NAME,
             report_version=t.report_version_1,
             product_id=40,  # Unregulated product
             annual_production=Decimal('500'),
             production_data_apr_dec=Decimal('300'),
         )
         t.allocation_7 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             report_product=t.report_product_4,
@@ -263,19 +279,21 @@ class ComplianceTestInfrastructure:
     def decimal_places(cls):
         t = ComplianceTestInfrastructure()
         t.operation_1 = make_recipe(
-            'registration.tests.utils.operation',
-            name='test sfo',
+            REGISTRATION_OPERATION_RECIPE_NAME,
+            name=MOCK_SFO_NAME,
             naics_code=NaicsCode.objects.get(pk=1),
-            type='Single Facility Operation',
+            type=MOCK_SFO_TYPE,
         )
         t.report_1 = make_recipe(
-            "reporting.tests.utils.report", operation=t.operation_1, reporting_year=ReportingYear.objects.get(pk=2024)
+            REPORTING_REPORT_RECIPE_NAME,
+            operation=t.operation_1,
+            reporting_year=ReportingYear.objects.get(pk=2024),
         )
-        t.report_version_1 = make_recipe("reporting.tests.utils.report_version", report=t.report_1)
+        t.report_version_1 = make_recipe(REPORTING_REPORT_VERSION_RECIPE_NAME, report=t.report_1)
         # Create ReportOperation for the report_version
-        t.report_operation_1 = make_recipe("reporting.tests.utils.report_operation", report_version=t.report_version_1)
+        t.report_operation_1 = make_recipe(REPORTING_REPORT_OPERATION_RECIPE_NAME, report_version=t.report_version_1)
         t.report_emission_1 = make_recipe(
-            "reporting.tests.utils.report_emission",
+            REPORTING_REPORT_EMISSION_RECIPE_NAME,
             report_version=t.report_version_1,
             gas_type_id=1,
             json_data={"equivalentEmission": 10000.555555555555},
@@ -283,17 +301,17 @@ class ComplianceTestInfrastructure:
         t.report_emission_1.emission_categories.set([1])
 
         t.report_product_1 = make_recipe(
-            "reporting.tests.utils.report_product",
+            REPORTING_REPORT_PRODUCT_RECIPE_NAME,
             report_version=t.report_version_1,
             product_id=1,
             annual_production=Decimal('100000'),
             production_data_apr_dec=Decimal('50000'),
         )
         t.report_emission_allocation = make_recipe(
-            "reporting.tests.utils.report_emission_allocation", report_version=t.report_version_1
+            REPORTING_REPORT_EMISSION_ALLOCATION_RECIPE_NAME, report_version=t.report_version_1
         )
         t.allocation_1 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             report_product=t.report_product_1,
@@ -307,19 +325,19 @@ class ComplianceTestInfrastructure:
     def build_pulp_and_paper_2025(cls):
         t = ComplianceTestInfrastructure()
         t.operation_1 = make_recipe(
-            'registration.tests.utils.operation',
-            name='test sfo',
-            naics_code=NaicsCode.objects.get(naics_code='322112'),
-            type='Single Facility Operation',
+            REGISTRATION_OPERATION_RECIPE_NAME,
+            name=MOCK_SFO_NAME,
+            naics_code=NaicsCode.objects.get(naics_code="322112"),
+            type=MOCK_SFO_TYPE,
         )
         t.report_1 = make_recipe(
-            "reporting.tests.utils.report",
+            REPORTING_REPORT_RECIPE_NAME,
             operation=t.operation_1,
             reporting_year_id=2025,
         )
-        t.report_version_1 = make_recipe("reporting.tests.utils.report_version", report=t.report_1)
+        t.report_version_1 = make_recipe(REPORTING_REPORT_VERSION_RECIPE_NAME, report=t.report_1)
         # Create ReportOperation for the report_version
-        t.report_operation_1 = make_recipe("reporting.tests.utils.report_operation", report_version=t.report_version_1)
+        t.report_operation_1 = make_recipe(REPORTING_REPORT_OPERATION_RECIPE_NAME, report_version=t.report_version_1)
 
         t.report_activity = make_recipe(
             "reporting.tests.utils.report_activity",
@@ -338,7 +356,7 @@ class ComplianceTestInfrastructure:
 
         ## 4 Emissions, 2 GSC and 2 industrial process
         t.report_emission_1 = make_recipe(
-            "reporting.tests.utils.report_emission",
+            REPORTING_REPORT_EMISSION_RECIPE_NAME,
             report_version=t.report_version_1,
             gas_type_id=1,
             json_data={"equivalentEmission": 10000.0001},
@@ -347,7 +365,7 @@ class ComplianceTestInfrastructure:
         t.report_emission_1.emission_categories.set([5])
 
         t.report_emission_2 = make_recipe(
-            "reporting.tests.utils.report_emission",
+            REPORTING_REPORT_EMISSION_RECIPE_NAME,
             report_version=t.report_version_1,
             report_source_type__report_activity=t.report_activity,
             gas_type_id=1,
@@ -357,7 +375,7 @@ class ComplianceTestInfrastructure:
         t.report_emission_2.emission_categories.set([3])
 
         t.report_emission_3 = make_recipe(
-            "reporting.tests.utils.report_emission",
+            REPORTING_REPORT_EMISSION_RECIPE_NAME,
             report_version=t.report_version_1,
             report_source_type__report_activity=t.report_activity,
             gas_type_id=1,
@@ -367,7 +385,7 @@ class ComplianceTestInfrastructure:
         t.report_emission_3.emission_categories.set([3, 10])
 
         t.report_emission_4 = make_recipe(
-            "reporting.tests.utils.report_emission",
+            REPORTING_REPORT_EMISSION_RECIPE_NAME,
             report_version=t.report_version_1,
             report_source_type__report_activity=t.report_activity,
             gas_type_id=1,
@@ -378,29 +396,29 @@ class ComplianceTestInfrastructure:
         t.report_emission_4.emission_categories.set([5, 11])
 
         t.report_product_1 = make_recipe(
-            "reporting.tests.utils.report_product",
+            REPORTING_REPORT_PRODUCT_RECIPE_NAME,
             report_version=t.report_version_1,
             product=RegulatedProduct.objects.get(name='Pulp and paper: chemical pulp'),
             annual_production=Decimal('10000'),
         )
         t.report_product_2 = make_recipe(
-            "reporting.tests.utils.report_product",
+            REPORTING_REPORT_PRODUCT_RECIPE_NAME,
             report_version=t.report_version_1,
             product=RegulatedProduct.objects.get(name='Pulp and paper: lime recovered by kiln'),
             annual_production=Decimal('15000'),
         )
         t.report_product_3 = make_recipe(
-            "reporting.tests.utils.report_product",
+            REPORTING_REPORT_PRODUCT_RECIPE_NAME,
             report_version=t.report_version_1,
             product_id=3,  # PWAEI = 1.07
             annual_production=Decimal('200'),
         )
 
         t.report_emission_allocation = make_recipe(
-            "reporting.tests.utils.report_emission_allocation", report_version=t.report_version_1
+            REPORTING_REPORT_EMISSION_ALLOCATION_RECIPE_NAME, report_version=t.report_version_1
         )
         t.allocation_1 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             report_product=t.report_product_1,
@@ -408,7 +426,7 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('10000.048'),
         )
         t.allocation_1_2 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             report_product=t.report_product_1,
@@ -416,7 +434,7 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('2100'),
         )
         t.allocation_2 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=3),  # Industrial Process
@@ -424,7 +442,7 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('20001.0008'),
         )
         t.allocation_2_2 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=5),  # GSC (both taxable and excluded)
@@ -432,7 +450,7 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('2100'),
         )
         t.allocation_3 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=5),  # GSC (both taxable and excluded)
@@ -440,7 +458,7 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('6300.0001'),
         )
         t.allocation_4 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=10),  # Excluded woody biomass
@@ -448,7 +466,7 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('4100.02'),  # Industrial emission + GSC both from woody biomass
         )
         t.allocation_5 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=10),  # Excluded woody biomass
@@ -456,7 +474,7 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('6100.03'),  # Industrial emission + GSC both from woody biomass
         )
         t.allocation_6 = make_recipe(
-            "reporting.tests.utils.report_product_emission_allocation",
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
             report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             report_product=t.report_product_3,

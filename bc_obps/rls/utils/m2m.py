@@ -1,4 +1,4 @@
-from typing import Any, List, TypedDict
+from typing import Any, List, Optional, TypedDict
 from common.enums import Schemas
 from rls.utils.grant import RlsGrant
 from rls.utils.policy import RlsPolicy
@@ -17,13 +17,13 @@ class M2mRls:
     def __init__(
         self,
         grants: List[RlsGrant],
-        policies: List[RlsPolicy] = [],
+        policies: Optional[List[RlsPolicy]] = None,
         table: Any = None,
         enable_rls: bool = False,
         schema: Schemas = Schemas.ERC,
     ):
         self.grants = grants
-        self.policies = policies
+        self.policies = policies if policies is not None else []
         self.table = table.value if table is not None else None
         self.enable_rls = enable_rls
         self.schema = schema.value
