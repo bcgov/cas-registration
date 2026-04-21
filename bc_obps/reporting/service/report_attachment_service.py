@@ -1,6 +1,5 @@
 from typing import Literal, Optional
 from uuid import UUID
-from ninja import Query
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
 from django.db.models import QuerySet
@@ -52,7 +51,7 @@ class ReportAttachmentService:
     @classmethod
     def get_all_attachments(
         cls,
-        filters: InternalReportAttachmentFilterSchema = Query(...),
+        filters: Optional[InternalReportAttachmentFilterSchema] = None,
         sort_field: Optional[str] | Optional[(str)] = "report_version_id",
         sort_order: Optional[Literal["desc", "asc"]] = "desc",
     ) -> QuerySet[ReportAttachment]:

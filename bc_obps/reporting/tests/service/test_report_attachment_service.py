@@ -1,6 +1,7 @@
 from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from reporting.schema.report_attachment import InternalReportAttachmentFilterSchema
 from model_bakery import baker
 from model_bakery.baker import make_recipe
 from ninja import UploadedFile
@@ -128,7 +129,8 @@ class TestReportAttachmentService:
         assert list(result) == [a2, a1]
 
         # now filter by report_version_id
-        result = ReportAttachmentService.get_all_attachments(filter_params={"report_version_id": rv1.id})
+        filters = InternalReportAttachmentFilterSchema(report_version_id=rv1.id)
+        result = ReportAttachmentService.get_all_attachments(filters=filters)
         assert list(result) == [a1]
 
     def test_get_all_attachments_default_sort_by_report_version_id(self):
@@ -257,13 +259,13 @@ class TestReportAttachmentService:
         submitted_rv.save(update_fields=['status'])
 
         # ACT
-        result = list(ReportAttachmentService.get_all_attachments())
+        result = list(ReportAttachmentService.get_all_attachments({}))
 
         # ASSERT
         assert result == [a1]
 
     def test_get_all_attachments_empty(self):
-        result = list(ReportAttachmentService.get_all_attachments())
+        result = list(ReportAttachmentService.get_all_attachments({}))
         assert result == []
 
     def test_get_all_attachments_invalid_sort_field(self):
