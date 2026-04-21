@@ -43,6 +43,12 @@ const GSC_ACTIVITY = {
   METHODOLOGY_VALUE: "Default HHV/Default EF",
 } as const;
 
+const NON_ATTRIBUTABLE = {
+  INFO_NOTE:
+    "Report activities for which the facility emissions exceed 100 t CO2e and are not captured by one of the reportable activities.",
+  EXCEEDED_LABEL: "Did your non-attributable emissions exceed 100 tCO2e?",
+} as const;
+
 export class SFOFacilityReportPOM {
   readonly page: Page;
   readonly facilityId: string;
@@ -152,7 +158,13 @@ export class SFOFacilityReportPOM {
     );
   }
 
-  async fillNonAttributable(): Promise<void> {}
+  async fillNonAttributable(): Promise<void> {
+    await assertFieldVisibility(this.page, [NON_ATTRIBUTABLE.INFO_NOTE], true);
+
+    const noLabel = this.page.locator("label").filter({ hasText: /^No$/ });
+    await expect(noLabel).toBeVisible();
+    await noLabel.click();
+  }
 
   async continueFromEmissionSummary(): Promise<void> {}
 

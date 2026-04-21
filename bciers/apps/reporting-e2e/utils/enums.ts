@@ -30,6 +30,7 @@ export enum ReportRoutes {
   FACILITIES = "facilities",
   ACTIVITIES = "activities",
   NON_ATTRIBUTABLE = "non-attributable",
+  EMISSION_SUMMARY = "emission-summary",
   PRODUCTION_DATA = "production-data",
   ALLOCATION_OF_EMISSIONS = "allocation-of-emissions",
   REVIEW_CHANGES = "review-changes",
