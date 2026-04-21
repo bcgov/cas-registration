@@ -4,6 +4,10 @@ import { waitForGridReady } from "@bciers/e2e/utils/helpers";
 import { FORM_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
 import { ProductionDataPOM } from "@/reporting-e2e/poms/production-data";
 import {
+  AllocationOfEmissionsPOM,
+  AllocationMethodology,
+} from "@/reporting-e2e/poms/allocation-of-emissions";
+import {
   assertFieldVisibility,
   checkCheckboxByLabel,
   checkFormFieldsReadOnly,
@@ -186,7 +190,12 @@ export class SFOFacilityReportPOM {
     await productionData.fillProducts(productsToSelect);
   }
 
-  async fillAllocationOfEmissions(): Promise<void> {}
+  async fillAllocationOfEmissions(
+    methodology: AllocationMethodology = "OBPS Allocation Calculator",
+  ): Promise<void> {
+    const allocationOfEmissions = new AllocationOfEmissionsPOM(this.page);
+    await allocationOfEmissions.fill(methodology);
+  }
 }
 
 export class LFOFacilityReportPOM extends SFOFacilityReportPOM {

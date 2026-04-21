@@ -89,6 +89,9 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     // ── 9. Allocation of Emissions (no entries needed for minimal test) ──
     await facilityReport.fillAllocationOfEmissions();
     // TODO: add happo screenshot here
+    await facilityReport.saveAndContinue(
+      new RegExp(`${versionId}/${ReportRoutes.ADDITIONAL_REPORTING_DATA}`),
+    );
 
     // ── 10. Additional Reporting Data — no captured emissions ──
     await report.fillAdditionalData();
