@@ -33,6 +33,7 @@ export const FORM_BUTTON_TEXT = {
   SAVE: "Save",
   BACK: "Back",
   CONTINUE: "Continue",
+  RETURN_TO_FACILITY_REPORTS: "Return To All Facility Reports",
 } as const;
 
 // Scenario name used by the Django stub to call to external API

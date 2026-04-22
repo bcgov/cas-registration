@@ -1,6 +1,7 @@
 import { Page, expect } from "@playwright/test";
 import { AppRoutes, ReportRoutes } from "../../utils/enums";
-import { waitForGridReady } from "@bciers/e2e/utils/helpers";
+import { clickButton, waitForGridReady } from "@bciers/e2e/utils/helpers";
+import { FORM_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
 
 export class FacilityGridPOM {
   readonly page: Page;
@@ -49,7 +50,16 @@ export class FacilityGridPOM {
   }
 
   async markFacilityComplete(facilityName: string) {
-    throw `${facilityName}`;
+    await this.page
+      .getByRole("row")
+      .filter({ hasText: facilityName })
+      .first()
+      .getByRole("checkbox", { name: "Report Status" })
+      .setChecked(true);
+  }
+
+  async clickContinue(waitForUrl?: RegExp): Promise<void> {
+    await clickButton(this.page, FORM_BUTTON_TEXT.CONTINUE, { waitForUrl });
   }
 
   // Utils
