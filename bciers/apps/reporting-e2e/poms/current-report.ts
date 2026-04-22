@@ -1,7 +1,8 @@
 import { Page } from "@playwright/test";
 import { ReportRoutes } from "@/reporting-e2e/utils/enums";
 import { FORM_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
-import { assertFieldVisibility, clickButton } from "@bciers/e2e/utils/helpers";
+import { clickButton } from "@bciers/e2e/utils/helpers";
+import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { PersonResponsiblePOM } from "@/reporting-e2e/poms/person-responsible";
 import { ReportOperationPOM } from "@/reporting-e2e/poms/report-operation";
 import { AdditionalReportingDataPOM } from "@/reporting-e2e/poms/additional-reporting-data";
@@ -67,7 +68,7 @@ export class CurrentReportPOM {
   }
 
   async verifyComplianceSummary(): Promise<void> {
-    await assertFieldVisibility(this.page, ["Compliance Summary"], true);
+    await verifyFormTitle(this.page, "Compliance Summary");
   }
 
   async continueFromFinalReview(): Promise<void> {}

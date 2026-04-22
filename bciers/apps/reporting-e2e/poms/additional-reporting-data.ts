@@ -6,8 +6,6 @@ import {
 } from "@bciers/e2e/utils/helpers";
 
 const ADDITIONAL_REPORTING_DATA = {
-  PAGE_TITLE: "Additional Reporting Data",
-
   CAPTURE_EMISSIONS_SECTION_TITLE: "Captured Emissions (If applicable)",
   CAPTURE_EMISSIONS_INFO_NOTE:
     "Captured emissions means the emissions that otherwise would be released into the atmosphere, that is captured instead for further applications such as geological deposit and as an industrial material.",
@@ -35,7 +33,6 @@ export class AdditionalReportingDataPOM {
     await assertFieldVisibility(
       this.page,
       [
-        ADDITIONAL_REPORTING_DATA.PAGE_TITLE,
         ADDITIONAL_REPORTING_DATA.CAPTURE_EMISSIONS_SECTION_TITLE,
         ADDITIONAL_REPORTING_DATA.CAPTURE_EMISSIONS_INFO_NOTE,
         ADDITIONAL_REPORTING_DATA.CAPTURE_EMISSIONS_LABEL,

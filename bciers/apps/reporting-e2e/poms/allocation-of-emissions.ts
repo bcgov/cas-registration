@@ -6,8 +6,6 @@ import {
 } from "@bciers/e2e/utils/helpers";
 
 const ALLOCATION_OF_EMISSIONS = {
-  PAGE_TITLE: "Allocation of Emissions",
-
   // Alert note at top of form — text is split by an embedded link, so verified in two parts
   MISSING_PRODUCT_ALERT_LINK: "production data page",
   MISSING_PRODUCT_ALERT_NOTE:
@@ -40,7 +38,6 @@ export class AllocationOfEmissionsPOM {
     await assertFieldVisibility(
       this.page,
       [
-        ALLOCATION_OF_EMISSIONS.PAGE_TITLE,
         ALLOCATION_OF_EMISSIONS.MISSING_PRODUCT_ALERT_LINK,
         ALLOCATION_OF_EMISSIONS.MISSING_PRODUCT_ALERT_NOTE,
       ],
