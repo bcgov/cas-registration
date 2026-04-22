@@ -23,9 +23,7 @@ const CheckboxWidgetLeft: React.FC<WidgetProps> = ({
           onChange(event.target.checked)
         }
       />
-      <label htmlFor={id} className="font-bold mr-4">
-        {label}
-      </label>
+      <label className="font-bold mr-4">{label}</label>
     </div>
   );
 };
