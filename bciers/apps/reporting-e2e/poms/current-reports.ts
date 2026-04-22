@@ -26,6 +26,7 @@ import {
 
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
 import {
+  assertFieldVisibility,
   checkCheckboxByLabel,
   clickButton,
   fillInputValueByLabel,
@@ -172,6 +173,35 @@ export class CurrentReportsPOM {
   // Navigate to the sign-off route for this report id
   async gotoSignOff(reportId: string | number) {
     await this.page.goto(this.getSignOffUrl(reportId));
+  }
+
+  async verifySubmissionPage(): Promise<void> {
+    await assertFieldVisibility(
+      this.page,
+      [
+        SUBMISSION_SUCCESS_TEXT,
+        "You successfully submitted your report.",
+        "Submission time:",
+        "Return to report table",
+      ],
+      true,
+    );
+  }
+
+  async verifyReportStatus(
+    operationName: string,
+    expectedStatus: string,
+  ): Promise<void> {
+    await waitForGridReady(this.page);
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .first();
+    await expect(row).toBeVisible();
+    await expect(row.getByText(expectedStatus)).toBeVisible();
+    await expect(
+      row.getByRole("button", { name: ACTION_BUTTON_TEXT.VIEW_DETAILS }),
+    ).toBeVisible();
   }
 
   // -----------------
