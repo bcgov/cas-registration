@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 import { ReportRoutes } from "@/reporting-e2e/utils/enums";
 import { FORM_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
 import { clickButton } from "@bciers/e2e/utils/helpers";
@@ -71,7 +71,11 @@ export class CurrentReportPOM {
     await verifyFormTitle(this.page, "Compliance Summary");
   }
 
-  async continueFromFinalReview(): Promise<void> {}
+  async verifyFinalReview(): Promise<void> {
+    await expect(
+      this.page.getByRole("button", { name: /save as pdf/i }),
+    ).toBeVisible();
+  }
 
   async fillVerification(): Promise<void> {}
 

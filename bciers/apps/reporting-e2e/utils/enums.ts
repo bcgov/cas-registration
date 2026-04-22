@@ -39,6 +39,7 @@ export enum ReportRoutes {
   REVIEW_CHANGES = "review-changes",
   COMPLIANCE_SUMMARY = "compliance-summary",
   FINAL_REVIEW = "final-review",
+  VERIFICATION = "verification",
   ATTACHMENTS = "attachments",
 }
 
