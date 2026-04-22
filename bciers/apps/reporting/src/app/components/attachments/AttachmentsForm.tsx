@@ -112,7 +112,7 @@ const AttachmentsForm: React.FC<Props> = ({
     ) {
       // Nothing to submit
       if (canContinue) return router.push(navigationInformation.continueUrl);
-      else return;
+      return;
     }
 
     const formData = new FormData();
@@ -125,11 +125,11 @@ const AttachmentsForm: React.FC<Props> = ({
     if (isSupplementaryReport) {
       formData.append(
         "confirm_supplementary_required_attachments_uploaded",
-        confirmRequiredAttachmentsUploaded ? "true" : "false",
+        String(confirmRequiredAttachmentsUploaded),
       );
       formData.append(
         "confirm_supplementary_existing_attachments_relevant",
-        confirmExistingAttachmentsRelevant ? "true" : "false",
+        String(confirmExistingAttachmentsRelevant),
       );
     }
     const response = await postAttachments(version_id, formData);
