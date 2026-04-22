@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { useRouter } from "@bciers/testConfig/mocks";
 import {
   sfoUiSchema,
@@ -32,8 +32,16 @@ const config = {
 
 // Mock operationType
 let mockOperationType = OperationTypes.SFO;
-const getUiSchema = (operationType: string) =>
-  operationType === OperationTypes.SFO ? sfoUiSchema : lfoUiSchema;
+const getUiSchema = (operationType: string) => {
+  const schema =
+    operationType === OperationTypes.SFO ? sfoUiSchema : lfoUiSchema;
+  if (operationType === OperationTypes.EIO) {
+    schema.properties = schema.properties || {};
+    schema.properties.info_note = { type: "object", readOnly: true };
+    schema.required = [];
+  }
+  return schema;
+};
 
 // 🏷 Common Fields
 const commonMandatoryFormFields = [
@@ -79,6 +87,7 @@ const renderVerificationForm = (operationType: string) => {
         } as any
       }
       isSupplementaryReport={false}
+      isEIO={operationType === OperationTypes.EIO}
     />,
   );
 };
@@ -106,5 +115,15 @@ describe("VerificationForm component", () => {
     expectField(commonMandatoryFormFields.map((field) => field.label));
     expectButton(config.buttons.cancel);
     expectButton(config.buttons.saveAndContinue);
+  });
+
+  it("renders the form with EIO description text", () => {
+    mockOperationType = OperationTypes.EIO; // Set to EIO
+    renderVerificationForm(mockOperationType);
+    expect(
+      screen.getByText(
+        "The following fields are only required if your emissions were over 25kt.",
+      ),
+    ).toBeVisible();
   });
 });
