@@ -1,6 +1,6 @@
 import { Page, expect } from "@playwright/test";
 import { AppRoutes, ReportRoutes } from "../utils/enums";
-import { waitForGridReady } from "@bciers/e2e/utils/helpers";
+import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { FORM_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
 import { ProductionDataPOM } from "@/reporting-e2e/poms/production-data";
 import {
@@ -192,7 +192,7 @@ export class SFOFacilityReportPOM {
   }
 
   async verifyEmissionSummary(): Promise<void> {
-    await assertFieldVisibility(this.page, [EMISSION_SUMMARY.TITLE], true);
+    await verifyFormTitle(this.page, EMISSION_SUMMARY.TITLE);
   }
 
   async fillProductionData(

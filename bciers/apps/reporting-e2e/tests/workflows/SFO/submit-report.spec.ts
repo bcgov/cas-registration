@@ -9,6 +9,10 @@ import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { SFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
+import {
+  verifyFieldTemplateLabel,
+  verifyFormTitle,
+} from "@/reporting-e2e/utils/helpers";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
@@ -39,6 +43,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 3. Review Operation Information ──
+    await verifyFormTitle(page, "Review Operation Information");
     await report.verifyBugleSfoOperationInfo();
     // TODO: Add happo screenshot here
     await report.saveAndContinue(
@@ -46,6 +51,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 4. Person Responsible — select "Bill Blue" (contact linked to the op) ──
+    await verifyFormTitle(page, "Person Responsible");
     await report.fillPersonResponsible("Bill Blue");
     // TODO: add happo screenshot here
     await report.saveAndContinue(
@@ -53,6 +59,10 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 5. Activities — GSC with 1 unit, 1 fuel (Diesel), 1 emission (CO2) ──
+    await verifyFieldTemplateLabel(
+      page,
+      "General stationary combustion excluding line tracing (at SFO)",
+    );
     await facilityReport.fillGscActivity();
     // TODO: add happo screenshot here
     await facilityReport.saveAndContinue(
@@ -60,6 +70,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 6. Non-Attributable Emissions (no entries needed) ──
+    await verifyFieldTemplateLabel(page, "Non-Attributable Emissions");
     await facilityReport.fillNonAttributable();
     // TODO: add happo screenshot here
     await facilityReport.saveAndContinue(
@@ -78,6 +89,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 8. Production Data — select Cement equivalent, fill annual production ──
+    await verifyFormTitle(page, "Production Data");
     await facilityReport.fillProductionData();
     // TODO: add happo screenshot here
     await facilityReport.saveAndContinue(
@@ -87,6 +99,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 9. Allocation of Emissions (no entries needed for minimal test) ──
+    await verifyFormTitle(page, "Allocation of Emissions");
     await facilityReport.fillAllocationOfEmissions();
     // TODO: add happo screenshot here
     await facilityReport.saveAndContinue(
@@ -94,6 +107,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 10. Additional Reporting Data — no captured emissions ──
+    await verifyFormTitle(page, "Additional Reporting Data");
     await report.fillAdditionalData();
     // TODO: add happo screenshot here
     await report.saveAndContinue(
