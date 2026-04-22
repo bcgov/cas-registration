@@ -273,5 +273,9 @@ export class LFOFacilityReportPOM extends SFOFacilityReportPOM {
     ).toBeVisible();
   }
 
-  async returnToAllFacilityReports(): Promise<void> {}
+  async returnToAllFacilityReports(): Promise<void> {
+    await clickButton(this.page, FORM_BUTTON_TEXT.RETURN_TO_FACILITY_REPORTS, {
+      waitForUrl: new RegExp(ReportRoutes.FACILITY_REPORT_GRID),
+    });
+  }
 }
