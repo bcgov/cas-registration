@@ -10,7 +10,7 @@ dynamic = ["dependencies"]
 [tool.poetry.dependencies]
 python = "~3.12.11"
 Django = "~5.1.15"
-python-dotenv = "^1.0.0"
+python-dotenv = "^1.2.2"
 django-ninja = "~1.5.3"
 psycopg = "^3.1.10"
 psycopg-binary = "^3.1.10"
