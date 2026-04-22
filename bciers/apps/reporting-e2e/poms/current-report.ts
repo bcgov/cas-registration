@@ -7,6 +7,7 @@ import { PersonResponsiblePOM } from "@/reporting-e2e/poms/person-responsible";
 import { ReportOperationPOM } from "@/reporting-e2e/poms/report-operation";
 import { AdditionalReportingDataPOM } from "@/reporting-e2e/poms/additional-reporting-data";
 import { VerificationPOM } from "@/reporting-e2e/poms/verification";
+import { AttachmentsPOM } from "@/reporting-e2e/poms/attachments";
 
 export class CurrentReportPOM {
   readonly page: Page;
@@ -39,9 +40,12 @@ export class CurrentReportPOM {
   // Shared helpers
   // -----------------
 
-  async saveAndContinue(waitForUrl?: RegExp): Promise<void> {
+  async saveAndContinue(
+    waitForUrl?: RegExp,
+    inForm: boolean = true,
+  ): Promise<void> {
     await clickButton(this.page, FORM_BUTTON_TEXT.SAVE_AND_CONTINUE, {
-      inForm: true,
+      inForm,
       waitForUrl,
     });
   }
@@ -83,5 +87,8 @@ export class CurrentReportPOM {
     await verification.fill();
   }
 
-  async uploadVerificationStatement(): Promise<void> {}
+  async uploadVerificationStatement(): Promise<void> {
+    const attachments = new AttachmentsPOM(this.page);
+    await attachments.uploadVerificationStatement();
+  }
 }

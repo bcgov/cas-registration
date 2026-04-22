@@ -136,6 +136,10 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     // ── 14. Attachments — upload verification statement PDF ──
     await report.uploadVerificationStatement();
     // TODO: add happo screenshot here
+    await report.saveAndContinue(
+      new RegExp(`${versionId}/${ReportRoutes.SIGN_OFF}`),
+      false,
+    );
 
     // ── 15. Sign-off and submit (submission stubbed to avoid external calls) ──
     await grid.submitReportById(request, versionId, false, false, true);
