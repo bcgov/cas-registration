@@ -6,6 +6,7 @@ import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { PersonResponsiblePOM } from "@/reporting-e2e/poms/person-responsible";
 import { ReportOperationPOM } from "@/reporting-e2e/poms/report-operation";
 import { AdditionalReportingDataPOM } from "@/reporting-e2e/poms/additional-reporting-data";
+import { VerificationPOM } from "@/reporting-e2e/poms/verification";
 
 export class CurrentReportPOM {
   readonly page: Page;
@@ -77,7 +78,10 @@ export class CurrentReportPOM {
     ).toBeVisible();
   }
 
-  async fillVerification(): Promise<void> {}
+  async fillVerification(): Promise<void> {
+    const verification = new VerificationPOM(this.page);
+    await verification.fill();
+  }
 
   async uploadVerificationStatement(): Promise<void> {}
 }

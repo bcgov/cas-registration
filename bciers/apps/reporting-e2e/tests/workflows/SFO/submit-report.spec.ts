@@ -126,8 +126,12 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 13. Verification ──
+    await verifyFormTitle(page, "Verification");
     await report.fillVerification();
     // TODO: add happo screenshot here
+    await report.saveAndContinue(
+      new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
+    );
 
     // ── 14. Attachments — upload verification statement PDF ──
     await report.uploadVerificationStatement();
