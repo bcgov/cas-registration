@@ -35,6 +35,12 @@ class SubmitReportScenario(ScenarioHandler):
             ReportSignOffAcknowledgements,
             ReportSignOffData,
         )
+        from reporting.models.report_attachment import ReportAttachment
+
+        # Mark any uploaded attachments as CLEAN so the scan validator doesn't block submission
+        ReportAttachment.objects.filter(report_version_id=int(report_version_id)).update(
+            status=ReportAttachment.FileStatus.CLEAN
+        )
 
         signoff = ReportSignOffData(
             acknowledgements=ReportSignOffAcknowledgements(
