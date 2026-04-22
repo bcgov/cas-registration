@@ -207,6 +207,7 @@ export class SFOFacilityReportPOM {
     methodology: AllocationMethodology = "OBPS Allocation Calculator",
   ): Promise<void> {
     const allocationOfEmissions = new AllocationOfEmissionsPOM(this.page);
+    await allocationOfEmissions.validateProductAlertVisible();
     await allocationOfEmissions.fill(methodology);
   }
 }
@@ -254,11 +255,23 @@ export class LFOFacilityReportPOM extends SFOFacilityReportPOM {
     ).toBe(1);
   }
 
+  override async fillAllocationOfEmissions(
+    methodology: AllocationMethodology = "OBPS Allocation Calculator",
+  ): Promise<void> {
+    const allocationOfEmissions = new AllocationOfEmissionsPOM(this.page);
+    await allocationOfEmissions.validateProductAlertVisible(false);
+    await allocationOfEmissions.fill(methodology);
+  }
+
   // -----------------
   // LFO-specific page: Facility Report Completed
   // -----------------
 
   async verifyFacilityReportCompleted(): Promise<void> {
-    throw "Argh";
+    await expect(
+      this.page.getByText("End of facility report for:"),
+    ).toBeVisible();
   }
+
+  async returnToAllFacilityReports(): Promise<void> {}
 }

@@ -32,18 +32,20 @@ export class AllocationOfEmissionsPOM {
     this.page = page;
   }
 
-  async fill(
-    methodology: AllocationMethodology = "OBPS Allocation Calculator",
-  ): Promise<void> {
+  async validateProductAlertVisible(visible: boolean = true) {
     await assertFieldVisibility(
       this.page,
       [
         ALLOCATION_OF_EMISSIONS.MISSING_PRODUCT_ALERT_LINK,
         ALLOCATION_OF_EMISSIONS.MISSING_PRODUCT_ALERT_NOTE,
       ],
-      true,
+      visible,
     );
+  }
 
+  async fill(
+    methodology: AllocationMethodology = "OBPS Allocation Calculator",
+  ): Promise<void> {
     // SelectWidget renders as MUI Autocomplete — use fillComboxboxWidget
     await fillComboxboxWidget(
       this.page,
