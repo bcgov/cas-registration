@@ -1,12 +1,17 @@
 import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
-import { FacilityIDs, OPERATION_NAMES } from "@/reporting-e2e/utils/enums";
+import {
+  FacilityIDs,
+  OPERATION_NAMES,
+  ReportRoutes,
+} from "@/reporting-e2e/utils/enums";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
 import { LFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReviewFacilitiesPOM } from "@/reporting-e2e/poms/LFO/review-facilities";
 import { FacilityGridPOM } from "@/reporting-e2e/poms/LFO/facility-grid";
+import { OperationEmissionSummaryPOM } from "@/reporting-e2e/poms/LFO/operation-emissions-summary";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
@@ -101,12 +106,27 @@ test.describe("LFO: create and submit a new report for the current reporting yea
 
     // -- 10. Facility report completed
     await facilityReport.verifyFacilityReportCompleted();
+    await facilityReport.returnToAllFacilityReports();
+
+    await facilityGrid.markFacilityComplete("Facility 38");
+    await facilityGrid.clickContinue();
 
     // ── 10. Additional Reporting Data — no captured emissions ──
     await report.fillAdditionalData();
+    await report.saveAndContinue();
+
+    // ── 11. Operation Emission Summary (read-only) ──
+    const operationEmissionSummary = new OperationEmissionSummaryPOM(page);
+    await operationEmissionSummary.validateEmissionSummary();
+    await operationEmissionSummary.continue(
+      new RegExp(`${versionId}/${ReportRoutes.COMPLIANCE_SUMMARY}`),
+    );
 
     // ── 11. Compliance Summary (read-only) ──
-    await report.continueFromComplianceSummary();
+    await report.verifyComplianceSummary();
+    await report.continue(
+      new RegExp(`${versionId}/${ReportRoutes.FINAL_REVIEW}`),
+    );
 
     // ── 12. Final Review (read-only) ──
     await report.continueFromFinalReview();
