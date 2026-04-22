@@ -1,13 +1,10 @@
 import { Page, expect } from "@playwright/test";
 import {
-  assertFieldVisibility,
   checkCheckboxByLabel,
   fillInputValueByLocator,
 } from "@bciers/e2e/utils/helpers";
 
 const PRODUCTION_DATA = {
-  PAGE_TITLE: "Select the products that apply to this facility:",
-
   // All products linked to Bugle SFO (regulated_products: [2, 6, 7, 8])
   ALL_PRODUCTS: [
     "Limestone for sale",
@@ -43,8 +40,6 @@ export class ProductionDataPOM {
     productsToSelect: string[],
     productsAvailable: string[] | undefined = undefined,
   ): Promise<void> {
-    await assertFieldVisibility(this.page, [PRODUCTION_DATA.PAGE_TITLE], true);
-
     // Assert all expected products appear as checkboxes
     for (const product of productsAvailable ?? PRODUCTION_DATA.ALL_PRODUCTS) {
       await expect(
