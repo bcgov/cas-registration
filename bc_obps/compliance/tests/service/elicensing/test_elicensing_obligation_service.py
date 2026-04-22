@@ -171,7 +171,7 @@ def mock_retryable_penalty_accrual_execute():
 
 
 @dataclass
-class TestInvoiceResponse:
+class InvoiceResponseStub:
     invoiceNumber: str
 
 
@@ -271,7 +271,7 @@ class TestElicensingObligationService:
 
         mock_create_fees.return_value = mock_fee_response
 
-        mock_invoice_response = TestInvoiceResponse(invoiceNumber='inv-001')
+        mock_invoice_response = InvoiceResponseStub(invoiceNumber='inv-001')
         mock_create_invoice.return_value = mock_invoice_response
 
         mock_refresh_by_invoice.return_value = None
@@ -336,7 +336,7 @@ class TestElicensingObligationService:
 
         mock_create_fees.return_value = mock_fee_response
 
-        mock_invoice_response = TestInvoiceResponse(invoiceNumber='inv-001')
+        mock_invoice_response = InvoiceResponseStub(invoiceNumber='inv-001')
         mock_create_invoice.return_value = mock_invoice_response
 
         mock_refresh_by_invoice.return_value = None
@@ -996,7 +996,7 @@ class TestElicensingObligationService:
         )
 
         mock_create_fees.return_value = mock_fee_response
-        mock_invoice_response = TestInvoiceResponse(invoiceNumber='inv-001')
+        mock_invoice_response = InvoiceResponseStub(invoiceNumber='inv-001')
         mock_create_invoice.return_value = mock_invoice_response
         make_recipe('compliance.tests.utils.elicensing_invoice', invoice_number='inv-001')
 
@@ -1041,7 +1041,7 @@ class TestElicensingObligationService:
         )
 
         mock_create_fees.return_value = mock_fee_response
-        mock_invoice_response = TestInvoiceResponse(invoiceNumber='inv-001')
+        mock_invoice_response = InvoiceResponseStub(invoiceNumber='inv-001')
         mock_create_invoice.return_value = mock_invoice_response
         make_recipe('compliance.tests.utils.elicensing_invoice', invoice_number='inv-001')
 
