@@ -19,18 +19,7 @@ class ReportContactService:
 
         report_person_responsible, created = ReportPersonResponsible.objects.update_or_create(
             report_version=report_version,
-            defaults={
-                'first_name': data.first_name,
-                'last_name': data.last_name,
-                'email': data.email,
-                'phone_number': data.phone_number,
-                'position_title': data.position_title,
-                'business_role': data.business_role,
-                'street_address': data.street_address,
-                'municipality': data.municipality,
-                'province': data.province,
-                'postal_code': data.postal_code,
-            },
+            defaults=data.model_dump(exclude={'report_version'}),
         )
 
         return report_person_responsible
