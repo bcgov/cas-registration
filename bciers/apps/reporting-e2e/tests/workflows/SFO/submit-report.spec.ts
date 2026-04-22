@@ -122,8 +122,11 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 12. Final Review (read-only) ──
-    await report.continueFromFinalReview();
+    await report.verifyFinalReview();
     // TODO: add happo screenshot here
+    await report.continue(
+      new RegExp(`${versionId}/${ReportRoutes.VERIFICATION}`),
+    );
 
     // ── 13. Verification ──
     await report.fillVerification();
