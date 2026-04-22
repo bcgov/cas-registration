@@ -9,10 +9,7 @@ import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { SFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
-import {
-  verifyFieldTemplateLabel,
-  verifyFormTitle,
-} from "@/reporting-e2e/utils/helpers";
+import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
@@ -51,7 +48,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 4. Person Responsible — select "Bill Blue" (contact linked to the op) ──
-    await verifyFormTitle(page, "Person Responsible");
+    await verifyFormTitle(page, "Person Responsible for Submitting Report");
     await report.fillPersonResponsible("Bill Blue");
     // TODO: add happo screenshot here
     await report.saveAndContinue(
@@ -59,7 +56,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 5. Activities — GSC with 1 unit, 1 fuel (Diesel), 1 emission (CO2) ──
-    await verifyFieldTemplateLabel(
+    await verifyFormTitle(
       page,
       "General stationary combustion excluding line tracing (at SFO)",
     );
@@ -70,7 +67,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
     );
 
     // ── 6. Non-Attributable Emissions (no entries needed) ──
-    await verifyFieldTemplateLabel(page, "Non-Attributable Emissions");
+    await verifyFormTitle(page, "Non-Attributable Emissions");
     await facilityReport.fillNonAttributable();
     // TODO: add happo screenshot here
     await facilityReport.saveAndContinue(
