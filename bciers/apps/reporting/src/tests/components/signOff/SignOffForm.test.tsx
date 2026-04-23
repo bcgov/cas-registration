@@ -207,7 +207,8 @@ describe("SignOffForm Component (with actual schema)", () => {
             key: "missing_report_verification", // gitleaks:allow
             error: {
               severity: "Error",
-              message: "Report verification form not found in the report.",
+              message:
+                "Verification information must be completed on the Verification page.",
               context: {
                 report_version_id: 1,
               },
@@ -218,7 +219,7 @@ describe("SignOffForm Component (with actual schema)", () => {
             error: {
               severity: "Error",
               message:
-                "Mandatory verification statement document was not uploaded with this report.",
+                "A verification statement must be uploaded with this report on the Attachments page.",
               context: {
                 report_version_id: 1,
               },

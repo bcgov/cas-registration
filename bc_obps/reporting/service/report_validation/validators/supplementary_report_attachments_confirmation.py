@@ -33,21 +33,21 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         if not attachment_confirmation.confirm_supplementary_required_attachments_uploaded:
             errors["missing_required_attachment_confirmation"] = ReportValidationError(
                 Severity.ERROR,
-                "Must confirm that all required supplementary attachments have been uploaded.",
+                "You must confirm that all required supplementary attachments have been uploaded on the Attachments page.",
                 key=ReportValidationErrorKey.MISSING_REQUIRED_ATTACHMENT_CONFIRMATION,
                 context=ErrorContext(report_version_id=report_version.id),
             )
         if not attachment_confirmation.confirm_supplementary_existing_attachments_relevant:
             errors["missing_existing_attachment_confirmation"] = ReportValidationError(
                 Severity.ERROR,
-                "Must confirm that all existing attachments are still relevant to the supplementary submission.",
+                "You must confirm that all existing attachments are still relevant to the supplementary submission on the Attachments page.",
                 key=ReportValidationErrorKey.MISSING_EXISTING_ATTACHMENT_CONFIRMATION,
                 context=ErrorContext(report_version_id=report_version.id),
             )
     except ObjectDoesNotExist:
         errors["missing_supplementary_report_attachment_confirmation"] = ReportValidationError(
             Severity.ERROR,
-            "No attachment confirmation found for this supplementary report version.",
+            "You must confirm that all required supplementary attachments have been uploaded and existing attachments are still relevant to the supplementary submission on the Attachments page.",
             key=ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_ATTACHMENT_CONFIRMATION,
             context=ErrorContext(report_version_id=report_version.id),
         )

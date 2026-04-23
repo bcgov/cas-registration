@@ -24,7 +24,7 @@ class TestReportAttachmentsAreScannedValidator:
         assert validate(report_attachment.report_version) == {
             "attachment_verification_statement": ReportValidationError(
                 Severity.ERROR,
-                "The verification_statement file hasn't been scanned yet, try resubmitting in a few minutes.",
+                "The verification_statement attachment is being scanned for security. This may take a few minutes, please wait before submitting.",
                 key=ReportValidationErrorKey.ATTACHMENT_NOT_SCANNED,
                 context=ErrorContext(report_version_id=report_attachment.report_version.id),
             )

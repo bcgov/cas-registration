@@ -42,13 +42,12 @@ export const validationUIConfig: Partial<
   Record<ReportValidationMessageKey, ValidationUIConfig>
 > = {
   operation_boro_id: createValidationUIConfig({
-    label: "operation",
+    label: "Review Operation Information",
     renderMode: "inline_link",
     getHref: (ctx) =>
       ctx?.report_version_id
         ? `/reports/${ctx.report_version_id}/review-operation-information`
         : undefined,
-    // no getMessage → use backend message
   }),
 
   missing_report_verification: createValidationUIConfig({
@@ -58,8 +57,6 @@ export const validationUIConfig: Partial<
       ctx?.report_version_id
         ? `/reports/${ctx.report_version_id}/verification`
         : undefined,
-    getMessage: () =>
-      "Verification information must be completed on the Verification page.",
   }),
 
   verification_statement: createValidationUIConfig({
@@ -69,14 +66,11 @@ export const validationUIConfig: Partial<
       ctx?.report_version_id
         ? `/reports/${ctx.report_version_id}/attachments`
         : undefined,
-    getMessage: () =>
-      "A verification statement must be uploaded with this report on the Attachments page.",
   }),
 
   attachment_not_scanned: createValidationUIConfig({
     label: "Attachments page",
     renderMode: "message_only",
-    // no getMessage → use backend message which containes file name
   }),
 
   missing_supplementary_report_version_change: createValidationUIConfig({
@@ -86,8 +80,6 @@ export const validationUIConfig: Partial<
       ctx?.report_version_id
         ? `/reports/${ctx.report_version_id}/review-changes`
         : undefined,
-    getMessage: () =>
-      "A reason for the changes in this supplementary report must be added on the Review Changes page.",
   }),
 
   missing_required_attachment_confirmation: createValidationUIConfig({
@@ -97,8 +89,6 @@ export const validationUIConfig: Partial<
       ctx?.report_version_id
         ? `/reports/${ctx.report_version_id}/attachments`
         : undefined,
-    getMessage: () =>
-      "You must confirm that all required supplementary attachments have been uploaded on the Attachments page.",
   }),
 
   missing_existing_attachment_confirmation: createValidationUIConfig({
@@ -108,8 +98,6 @@ export const validationUIConfig: Partial<
       ctx?.report_version_id
         ? `/reports/${ctx.report_version_id}/attachments`
         : undefined,
-    getMessage: () =>
-      "You must confirm that all existing attachments are still relevant to the supplementary submission on the Attachments page.",
   }),
 
   missing_supplementary_report_attachment_confirmation:
@@ -120,8 +108,6 @@ export const validationUIConfig: Partial<
         ctx?.report_version_id
           ? `/reports/${ctx.report_version_id}/attachments`
           : undefined,
-      getMessage: () =>
-        "You must confirm that all required supplementary attachments have been uploaded and existing attachments are still relevant to the supplementary submission on the Attachments page.",
     }),
 
   allocation_mismatch: createValidationUIConfig({
@@ -131,13 +117,6 @@ export const validationUIConfig: Partial<
       ctx?.report_version_id && ctx?.facility_id
         ? `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/allocation-of-emissions`
         : undefined,
-    formatMessage: ({ label, error }) => {
-      const ctx = error.context;
-
-      const category = ctx?.emission_category_name ?? "[emission category]";
-
-      return `Please review the ${label} and ensure that emissions from ${category} activity are allocated to the ${category} product. If they are allocated, you may save & continue.`;
-    },
   }),
 
   error_required_fields: createValidationUIConfig({

@@ -16,6 +16,8 @@ describe("ReportValidationSummary", () => {
         key: "missing_report_verification", // gitleaks:allow
         error: {
           severity: "Warning",
+          message:
+            "Verification information must be completed on the Verification page.",
           context: { report_version_id: 12 },
         },
       },
@@ -45,7 +47,11 @@ describe("ReportValidationSummary", () => {
         key: "missing_report_verification", // gitleaks:allow
         error: {
           severity: "Error",
-          context: { report_version_id: 42 },
+          message:
+            "Verification information must be completed on the Verification page.",
+          context: {
+            report_version_id: 42,
+          },
         },
       },
     ];
