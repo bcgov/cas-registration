@@ -110,14 +110,14 @@ class TestIndustrialProcess(TestCase):
                     "doesUtilizeLimeRecoveryKiln": True,
                     "biogenicEmissionsSplit": {
                         "chemicalPulpPercentage": 10.78,
-                        "limeRecoveredByKilnPercentage": 79.22,
+                        "limeRecoveredByKilnPercentage": 89.22,
                     },
                 }
             },
             report_version__report__reporting_year_id=2025,
         )
         result = retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version)
-        assert result == BiogenicEmissionsSplit(Decimal('0.1078'), Decimal('0.7922'))
+        assert result == BiogenicEmissionsSplit(Decimal('0.1078'), Decimal('0.8922'))
 
     @patch("reporting.service.compliance_service.industrial_process.retrieve_pulp_and_paper_biogenic_emissions_split")
     def test_compute_industrial_process_emissions(self, mock_split_function: MagicMock):
