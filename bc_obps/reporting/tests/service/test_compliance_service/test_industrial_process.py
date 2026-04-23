@@ -101,6 +101,24 @@ class TestIndustrialProcess(TestCase):
         result = retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version)
         assert result == BiogenicEmissionsSplit(Decimal('0.38'), Decimal('0.62'))
 
+    def test_retrieve_biogenic_emissions_split_with_floating_point(self):
+        report_activity = make_recipe(
+            "reporting.tests.utils.report_activity",
+            activity=Activity.objects.get(slug="pulp_and_paper"),
+            json_data={
+                "biogenicIndustrialProcessEmissions": {
+                    "doesUtilizeLimeRecoveryKiln": True,
+                    "biogenicEmissionsSplit": {
+                        "chemicalPulpPercentage": 10.78,
+                        "limeRecoveredByKilnPercentage": 89.22,
+                    },
+                }
+            },
+            report_version__report__reporting_year_id=2025,
+        )
+        result = retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version)
+        assert result == BiogenicEmissionsSplit(Decimal('0.1078'), Decimal('0.8922'))
+
     @patch("reporting.service.compliance_service.industrial_process.retrieve_pulp_and_paper_biogenic_emissions_split")
     def test_compute_industrial_process_emissions(self, mock_split_function: MagicMock):
         ## SETUP ##

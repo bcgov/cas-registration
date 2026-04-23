@@ -42,8 +42,8 @@ def retrieve_pulp_and_paper_biogenic_emissions_split_default(report_version: Rep
             )
 
         split_data = report_activity.json_data["biogenicIndustrialProcessEmissions"]["biogenicEmissionsSplit"]
-        chemical_pulp_percentage = Decimal(split_data["chemicalPulpPercentage"])
-        lime_recovered_by_kiln_percentage = Decimal(split_data["limeRecoveredByKilnPercentage"])
+        chemical_pulp_percentage = Decimal(str(split_data["chemicalPulpPercentage"]))
+        lime_recovered_by_kiln_percentage = Decimal(str(split_data["limeRecoveredByKilnPercentage"]))
 
     except KeyError as e:
         # Issues with the format of the data
