@@ -117,4 +117,46 @@ describe("AdditionalReportingData Component", () => {
     await waitFor(() => expect(actionHandler).toHaveBeenCalled());
     expect(mockPush).toHaveBeenCalledWith(`continue`);
   });
+
+  it("renders No selected when initialFormData.capture_emissions is false", async () => {
+    render(
+      <AdditionalReportingDataForm
+        versionId={versionId}
+        includeElectricityGenerated={false}
+        initialFormData={{
+          captured_emissions_section: {
+            capture_emissions: false,
+          },
+        }}
+        navigationInformation={dummyNavigationInformation}
+      />,
+    );
+
+    const yesRadioButton = await screen.findByLabelText("Yes");
+    const noRadioButton = await screen.findByLabelText("No");
+
+    expect(noRadioButton).toBeChecked();
+    expect(yesRadioButton).not.toBeChecked();
+  });
+
+  it("renders Yes selected when initialFormData.capture_emissions is true", async () => {
+    render(
+      <AdditionalReportingDataForm
+        versionId={versionId}
+        includeElectricityGenerated={false}
+        initialFormData={{
+          captured_emissions_section: {
+            capture_emissions: true,
+          },
+        }}
+        navigationInformation={dummyNavigationInformation}
+      />,
+    );
+
+    const yesRadioButton = await screen.findByLabelText("Yes");
+    const noRadioButton = await screen.findByLabelText("No");
+
+    expect(yesRadioButton).toBeChecked();
+    expect(noRadioButton).not.toBeChecked();
+  });
 });
