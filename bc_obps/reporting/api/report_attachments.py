@@ -105,7 +105,7 @@ def get_report_attachment_url(request: HttpRequest, version_id: int, file_id: in
 def get_all_attachments(
     request: HttpRequest,
     filters: InternalReportAttachmentFilterSchema = Query(...),
-    sort_field: Optional[str] | Optional[(str)] = "report_version_id",
+    sort_field: Optional[str] = "report_version_id",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[ReportAttachment]:
