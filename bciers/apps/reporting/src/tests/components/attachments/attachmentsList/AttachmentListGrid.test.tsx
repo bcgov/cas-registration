@@ -37,19 +37,18 @@ describe("The AttachmentsListGrid component", () => {
     render(<AttachmentsListGrid {...props} />);
 
     for (const column of [
+      "Reporting Year",
       "Operator",
       "Operation",
       "Version ID",
       "Type",
       "Download",
     ]) {
-      expect(
-        screen.getByRole("columnheader", { name: column }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("columnheader", { name: column })).toBeVisible();
     }
 
-    // 5 for the headers and 5 for the search cells
-    expect(screen.queryAllByRole("columnheader")).toHaveLength(10);
+    // 6 for the headers and 6 for the search cells
+    expect(screen.queryAllByRole("columnheader")).toHaveLength(12);
   });
 
   it("Displays one row per attachment returned by the server", async () => {
@@ -58,6 +57,7 @@ describe("The AttachmentsListGrid component", () => {
         rows: [
           {
             id: 1,
+            reporting_year: 2024,
             operator: "Operator 1",
             operation: "Operaion 1",
             report_version_id: 123,
@@ -66,6 +66,7 @@ describe("The AttachmentsListGrid component", () => {
           },
           {
             id: 2,
+            reporting_year: 2025,
             operator: "Operator 2",
             operation: "Operation 2",
             report_version_id: 456,
@@ -99,6 +100,7 @@ describe("The AttachmentsListGrid component", () => {
             report_version_id: 123,
             attachment_type: "verification_statement",
             attachment_name: "somefile.pdf",
+            reporting_year: 2024,
           },
         ],
         row_count: 2,

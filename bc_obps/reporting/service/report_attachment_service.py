@@ -1,11 +1,13 @@
-from typing import Optional
+from typing import Literal, Optional
 from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
 from django.db.models import QuerySet
+from reporting.schema.report_attachment import InternalReportAttachmentFilterSchema
 from reporting.constants import MAX_UPLOAD_SIZE
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
+from reporting.models.report_version import ReportVersion
 
 
 class ReportAttachmentService:
@@ -39,12 +41,48 @@ class ReportAttachmentService:
         attachment.save()
 
     @classmethod
-    def get_attachments(cls, report_version_id: int) -> QuerySet[ReportAttachment]:
+    def get_attachments_by_version(cls, report_version_id: int) -> QuerySet[ReportAttachment]:
         return ReportAttachment.objects.filter(report_version_id=report_version_id).all()
 
     @classmethod
     def get_attachment(cls, report_version_id: int, attachment_id: int) -> ReportAttachment:
         return ReportAttachment.objects.get(report_version_id=report_version_id, id=attachment_id)
+
+    @classmethod
+    def get_all_attachments(
+        cls,
+        filters: Optional[InternalReportAttachmentFilterSchema] = None,
+        sort_field: Optional[str] | Optional[(str)] = "report_version_id",
+        sort_order: Optional[Literal["desc", "asc"]] = "desc",
+    ) -> QuerySet[ReportAttachment]:
+
+        match sort_field:
+            case "operator":
+                mapped_sort_field = "report_version__report__operator__legal_name"
+            case "operation":
+                mapped_sort_field = "report_version__report__operation__name"
+            case "reporting_year_id":
+                mapped_sort_field = "report_version__report__reporting_year_id"
+            case _:
+                mapped_sort_field = sort_field or "report_version_id"
+
+        sort_direction = "-" if sort_order == "desc" else ""
+        sort_by = f"{sort_direction}{mapped_sort_field}"
+
+        queryset = ReportAttachment.objects.select_related(
+            "report_version",
+            "report_version__report",
+            "report_version__report__operation",
+            "report_version__report__operator",
+            "report_version__report__reporting_year",
+        ).filter(
+            report_version__status=ReportVersion.ReportVersionStatus.Submitted,
+        )
+
+        if filters:
+            queryset = filters.filter(queryset)
+
+        return queryset.order_by(sort_by)
 
     @classmethod
     def save_attachment_confirmation(

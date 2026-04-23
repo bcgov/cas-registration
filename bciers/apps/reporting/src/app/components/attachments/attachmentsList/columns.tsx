@@ -23,6 +23,11 @@ const AttachmentDownloadCell = (params: GridRenderCellParams) => {
 
 export const attachmentsGridColumns: GridColDef[] = [
   {
+    field: "reporting_year_id",
+    headerName: "Reporting Year",
+    flex: 1,
+  },
+  {
     field: "operator",
     headerName: "Operator",
     flex: 1,

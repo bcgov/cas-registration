@@ -5,6 +5,7 @@ import AttachmentsListGrid from "./AttachmentsListGrid";
 
 export type Attachment = {
   id: number;
+  reporting_year: number;
   operator: string;
   operation: string;
   report_version_id: number;
