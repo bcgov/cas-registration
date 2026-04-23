@@ -6,7 +6,6 @@ import {
 } from "@reporting/src/data/jsonSchema/verification/verification";
 
 export const createVerificationSchema = (
-  facilities: string[],
   schemaType: string,
   isSupplementaryReport: boolean,
   isEIO: boolean,
