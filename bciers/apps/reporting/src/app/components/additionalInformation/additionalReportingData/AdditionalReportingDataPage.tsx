@@ -26,7 +26,7 @@ export function transformReportAdditionalData(reportAdditionalData: any) {
   return {
     captured_emissions_section: {
       capture_type: captureType,
-      capture_emissions: !!captureType.length,
+      capture_emissions: reportAdditionalData.capture_emissions ?? null,
       emissions_on_site_use: reportAdditionalData.emissions_on_site_use || null,
       emissions_on_site_sequestration:
         reportAdditionalData.emissions_on_site_sequestration || null,
