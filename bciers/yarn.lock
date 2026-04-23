@@ -1519,7 +1519,6 @@ __metadata:
     "@types/react": "npm:^19.0.0"
     "@types/react-dom": "npm:^19.0.0"
     "@types/react-outside-click-handler": "npm:^1.3.3"
-    "@types/uuid": "npm:^9.0.8"
     "@typescript-eslint/eslint-plugin": "npm:^8.52.0"
     "@typescript-eslint/parser": "npm:^8.52.0"
     "@typescript-eslint/utils": "npm:^8.50.0"
@@ -1565,7 +1564,7 @@ __metadata:
     ts-node: "npm:^10.9.1"
     tslib: "npm:^2.3.0"
     typescript: "npm:5.9.3"
-    uuid: "npm:^9.0.1"
+    uuid: "npm:^14.0.0"
     vite: "npm:7.3.2"
     vitest: "npm:^4.1.3"
     vitest-fetch-mock: "npm:^0.4.5"
@@ -6920,13 +6919,6 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10c0/d2914f8e9b5b998e4275ec5f0130cba1c2fb47e75616b5c125a65ef6c1db2f1dc3f978c7900693856a15d72bbb4f4e94f805537a4ecb6dc126c64415d31c0590
-  languageName: node
-  linkType: hard
-
-"@types/uuid@npm:^9.0.8":
-  version: 9.0.8
-  resolution: "@types/uuid@npm:9.0.8"
-  checksum: 10c0/b411b93054cb1d4361919579ef3508a1f12bf15b5fdd97337d3d351bece6c921b52b6daeef89b62340fd73fd60da407878432a1af777f40648cbe53a01723489
   languageName: node
   linkType: hard
 
@@ -18236,6 +18228,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uuid@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "uuid@npm:14.0.0"
+  bin:
+    uuid: dist-node/bin/uuid
+  checksum: 10c0/a57ae7794c45005c1a9208989196c5baf79a7679c30f43c1bee9033a2c4d113a2cea216fa6fcc9663b08b0d55635df1a7c6eb7e7f3d21c3e50688c698fa39a50
+  languageName: node
+  linkType: hard
+
 "uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
@@ -18245,7 +18246,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^9.0.0, uuid@npm:^9.0.1":
+"uuid@npm:^9.0.0":
   version: 9.0.1
   resolution: "uuid@npm:9.0.1"
   bin:
