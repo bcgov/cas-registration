@@ -83,7 +83,7 @@ jobs:
           else
               touch .git/COMMIT_EDITMSG
           fi
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: |
             ./.pre-commit-cache
