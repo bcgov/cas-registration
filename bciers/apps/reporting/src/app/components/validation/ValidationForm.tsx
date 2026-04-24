@@ -2,7 +2,7 @@
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import type { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
-import ReportValidationSummary from "../shared/validation/ReportValidationSummary";
+import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import { CheckCircleRounded } from "@mui/icons-material";
 

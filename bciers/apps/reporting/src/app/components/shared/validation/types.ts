@@ -3,17 +3,18 @@ export type ValidationSeverity = "Error" | "Warning";
 
 // Keys used to identify validation errors returned from backend
 export type ReportValidationMessageKey =
-  // Missing required inputs / confirmations
-  | "operation_boro_id"
-  | "attachment_not_scanned"
   | "missing_report_verification"
   | "verification_statement"
-  | "missing_required_attachment_confirmation"
-  | "missing_existing_attachment_confirmation"
-  | "missing_supplementary_report_version_change"
-  | "missing_supplementary_report_attachment_confirmation"
-  // Errors (data issues / validation failures)
+  | "operation_boro_id"
+  | "report_activity_json_validation"
+  | "attachment_not_scanned"
+  | "report_data_out_of_bounds_by_fuel_type"
+  | "report_data_out_of_bounds_by_reporting_field"
   | "allocation_mismatch"
+  | "missing_supplementary_report_required_attachment_confirmation"
+  | "missing_supplementary_report_existing_attachment_confirmation"
+  | "missing_supplementary_report_attachments_confirmation"
+  | "missing_supplementary_report_version_change"
   | "error_required_fields"
   | "generic_error";
 
@@ -63,6 +64,7 @@ export type ValidationTextArgs = {
 
 export type ValidationUIConfig = {
   label?: string | ((error: ReportValidationError) => string);
+  priority?: number;
   renderMode: ValidationRenderMode;
   getHref?: (ctx: ReportValidationError["context"]) => string | undefined;
   getMessage?: (error: ReportValidationError) => string;

@@ -16,9 +16,13 @@ class ReportValidationErrorKey(StrEnum):
     OPERATION_BORO_ID = "operation_boro_id"
     ATTACHMENT_NOT_SCANNED = "attachment_not_scanned"
     ALLOCATION_MISMATCH = "allocation_mismatch"
-    MISSING_REQUIRED_ATTACHMENT_CONFIRMATION = "missing_required_attachment_confirmation"
-    MISSING_EXISTING_ATTACHMENT_CONFIRMATION = "missing_existing_attachment_confirmation"
-    MISSING_SUPPLEMENTARY_REPORT_ATTACHMENT_CONFIRMATION = "missing_supplementary_report_attachment_confirmation"
+    MISSING_SUPPLEMENTARY_REPORT_REQUIRED_ATTACHMENT_CONFIRMATION = (
+        "missing_supplementary_report_required_attachment_confirmation"
+    )
+    MISSING_SUPPLEMENTARY_REPORT_EXISTING_ATTACHMENT_CONFIRMATION = (
+        "missing_supplementary_report_existing_attachment_confirmation"
+    )
+    MISSING_SUPPLEMENTARY_REPORT_ATTACHMENTS_CONFIRMATION = "missing_supplementary_report_attachments_confirmation"
     MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE = "missing_supplementary_report_version_change"
     REPORT_DATA_OUT_OF_BOUNDS_BY_FUEL_TYPE = "report_data_out_of_bounds_by_fuel_type"
     REPORT_DATA_OUT_OF_BOUNDS_BY_REPORTING_FIELD = "report_data_out_of_bounds_by_reporting_field"

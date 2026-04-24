@@ -38,7 +38,7 @@ class TestReportValidationService:
         mock_validation_plugins = [
             MagicMock(TAGS=[ValidationTags.ON_SUBMIT]),
             MagicMock(TAGS=[ValidationTags.ON_SUBMIT]),
-            MagicMock(TAGS=[ValidationTags.FINAL_REVIEW]),
+            MagicMock(TAGS=[ValidationTags.REPORT_VALIDATION]),
             MagicMock(TAGS=[]),
         ]
         mock_validation_plugins[0].validate.return_value = {"mock_key": "mock_errors"}
@@ -56,6 +56,28 @@ class TestReportValidationService:
         assert errors == {"mock_key": "mock_errors", "mock_key2": "mock_errors2"}
 
         ReportValidationService.validation_plugins = original_plugins
+
+    def test_validator_runs_if_it_has_multiple_tags_including_requested_tag(self):
+        original_plugins = ReportValidationService.validation_plugins
+
+        mock_plugin = MagicMock(TAGS=[ValidationTags.ON_SUBMIT, ValidationTags.REPORT_VALIDATION])
+        mock_plugin.validate.return_value = {"multi_tag": "error"}
+
+        report_version = make_recipe("reporting.tests.utils.report_version")
+
+        try:
+            ReportValidationService.validation_plugins = [mock_plugin]
+
+            errors = ReportValidationService.validate_report_version(
+                report_version.id,
+                ValidationTags.ON_SUBMIT,
+            )
+
+            mock_plugin.validate.assert_called_once_with(report_version)
+            assert errors == {"multi_tag": "error"}
+
+        finally:
+            ReportValidationService.validation_plugins = original_plugins
 
     def test_validates_the_report_with_the_all_plugins_if_tag_is_none(self):
         original_plugins = ReportValidationService.validation_plugins

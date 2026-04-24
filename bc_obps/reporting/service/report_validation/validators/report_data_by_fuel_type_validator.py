@@ -14,7 +14,7 @@ from reporting.service.report_validation.report_validation_error import (
 
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
-TAGS = [ValidationTags.FINAL_REVIEW]
+TAGS = [ValidationTags.REPORT_VALIDATION]
 
 
 def validate_fuel_amount(
