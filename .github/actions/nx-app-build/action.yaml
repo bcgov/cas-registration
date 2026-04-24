@@ -57,7 +57,7 @@ runs:
         cd bciers && yarn install --immutable
     - uses: actions/setup-node@v6
     - name: Derive appropriate SHAs for base and head for `nx affected` commands
-      uses: nrwl/nx-set-shas@v4
+      uses: nrwl/nx-set-shas@v5
       with:
         main-branch-name: "develop"
     - name: Cache Docker layers
