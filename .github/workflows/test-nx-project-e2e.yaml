@@ -164,7 +164,7 @@ jobs:
 #      - name: 💾 save chromium report artifact
 #        # prefer to upload the report only in case of test failure
 #        if: failure()
-#        uses: actions/upload-artifact@v4
+#        uses: actions/upload-artifact@v7
 #        with:
 #          # Store all of the reports separately by reconfiguring the report name
 #          name: blob-report-${{ inputs.nx_project }}-chromium
@@ -178,7 +178,7 @@ jobs:
 #    if: ${{ always() && contains(needs.*.result, 'failure') && inputs.is_nx_affected }}
 #    steps:
 #      - name: Download blob reports from GitHub Actions Artifacts
-#        uses: actions/download-artifact@v4
+#        uses: actions/download-artifact@v8
 #        with:
 #          path: all-blob-reports
 #          # To minimize the report file size only download Chromium reports
@@ -189,7 +189,7 @@ jobs:
 #      - name: Merge into HTML Report
 #        run: npx playwright merge-reports --reporter html ./all-blob-reports
 #      - name: Upload HTML report
-#        uses: actions/upload-artifact@v4
+#        uses: actions/upload-artifact@v7
 #        with:
 #          name: playwright-report-${{ inputs.nx_project }}
 #          path: playwright-report
