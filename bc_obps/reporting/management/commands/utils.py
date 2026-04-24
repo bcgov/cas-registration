@@ -21,7 +21,7 @@ def submit_report_from_fixture(report_version: ReportVersion, submitting_user: U
         "verification_statement",
         ContentFile(b"data1", "file1.pdf"),
     )
-    verification_statement = ReportAttachmentService.get_attachments(report_version.id).first()
+    verification_statement = ReportAttachmentService.get_attachments_by_version(report_version.id).first()
     verification_statement.status = 'Clean'
     verification_statement.save()
 

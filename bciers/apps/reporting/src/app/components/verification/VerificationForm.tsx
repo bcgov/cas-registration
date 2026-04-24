@@ -21,6 +21,7 @@ interface Props {
   initialData: any;
   navigationInformation: NavigationInformation;
   isSupplementaryReport: boolean;
+  isEIO: boolean;
 }
 
 export default function VerificationForm({
@@ -30,6 +31,7 @@ export default function VerificationForm({
   initialData,
   navigationInformation,
   isSupplementaryReport,
+  isEIO,
 }: Props) {
   const [formData, setFormData] = useState(initialData);
   const [errors, setErrors] = useState<string[]>();
@@ -46,6 +48,7 @@ export default function VerificationForm({
   const uiSchema = createVerificationUISchema(
     operationType,
     isSupplementaryReport,
+    isEIO,
   );
 
   // 🛠️ Function to handle form submit

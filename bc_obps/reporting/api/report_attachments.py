@@ -1,4 +1,5 @@
 from typing import List, Literal, Optional, Tuple
+from reporting.models.report_attachment import ReportAttachment
 from common.api.utils.current_user_utils import get_current_user_guid
 from common.permissions import authorize
 from django.db import transaction
@@ -8,8 +9,6 @@ from ninja import File, Form, Query, UploadedFile
 from ninja.pagination import paginate
 from registration.utils import CustomPagination
 from reporting.constants import EMISSIONS_REPORT_TAGS
-from reporting.models.report_attachment import ReportAttachment
-from reporting.models.report_version import ReportVersion
 from reporting.schema.generic import Message
 from reporting.schema.report_attachment import (
     AttachmentsWithConfirmationOut,
@@ -74,7 +73,7 @@ def get_report_attachments(
     request: HttpRequest,
     version_id: int,
 ) -> Tuple[int, dict]:
-    attachments = ReportAttachmentService.get_attachments(version_id)
+    attachments = ReportAttachmentService.get_attachments_by_version(version_id)
     confirmation = ReportAttachmentService.get_attachment_confirmation(version_id)
 
     response_data = {
@@ -97,7 +96,7 @@ def get_report_attachment_url(request: HttpRequest, version_id: int, file_id: in
 
 @router.get(
     "attachments",
-    response={200: list[InternalReportAttachmentOut], custom_codes_4xx: Message},
+    response={200: List[InternalReportAttachmentOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns the list of all attachments for all reports.""",
     auth=authorize("authorized_irc_user"),
@@ -106,24 +105,9 @@ def get_report_attachment_url(request: HttpRequest, version_id: int, file_id: in
 def get_all_attachments(
     request: HttpRequest,
     filters: InternalReportAttachmentFilterSchema = Query(...),
-    sort_field: Optional[str] = "id",
+    sort_field: Optional[str] = "report_version_id",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[ReportAttachment]:
 
-    mapped_sort_field = (
-        "report_version__report__operator__legal_name"
-        if sort_field == "operator"
-        else "report_version__report__operation__name" if sort_field == "operation" else sort_field
-    )
-
-    sort_direction = "-" if sort_order == "desc" else ""
-    sort_by = f"{sort_direction}{mapped_sort_field}"
-
-    attachments_query = ReportAttachment.objects.select_related(
-        "report_version",
-        "report_version__report__operation",
-        "report_version__report__operator",
-    ).filter(report_version__status=ReportVersion.ReportVersionStatus.Submitted)
-
-    return filters.filter(attachments_query).order_by(sort_by)
+    return ReportAttachmentService.get_all_attachments(filters, sort_field, sort_order)

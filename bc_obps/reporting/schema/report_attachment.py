@@ -29,6 +29,7 @@ class InternalReportAttachmentOut(ModelSchema):
     operator: str = Field(..., alias="report_version.report.operator.legal_name")
     operation: str = Field(..., alias="report_version.report.operation.name")
     report_version_id: int = Field(..., alias="report_version.id")
+    reporting_year_id: Optional[int] = Field(None, alias="report_version.report.reporting_year.reporting_year")
 
     class Meta:
         model = ReportAttachment
@@ -43,5 +44,8 @@ class InternalReportAttachmentFilterSchema(FilterSchema):
     operator: Annotated[str | None, Field(q="report_version__report__operator__legal_name__icontains")] = None
     operation: Annotated[str | None, Field(q="report_version__report__operation__name__icontains")] = None
     report_version_id: Annotated[int | None, Field(q="report_version__id")] = None
+    reporting_year_id: Annotated[
+        int | None, Field(q="report_version__report__reporting_year__reporting_year__icontains")
+    ] = None
     attachment_type: Annotated[str | None, Field(q="attachment_type__icontains")] = None
     attachment_name: Annotated[str | None, Field(q="attachment_name__icontains")] = None
