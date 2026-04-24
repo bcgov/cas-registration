@@ -47,6 +47,7 @@ export enum AppRoutes {
   REVIEW = "/final-review",
   SUBMITTED = "/submitted",
   VERIFICATION = "/verification",
+  VALIDATION = "/report-validation",
 }
 
 // App routes restricted to LFO operations
@@ -81,6 +82,7 @@ export const reportRoutesReportingOperation = [
   "non-attributable",
   "emission-summary",
   "additional-reporting-data",
+  "report-validation",
   "review-changes",
   "final-review",
   "verification",
@@ -95,6 +97,7 @@ export const reportRoutesEIO = [
   "review-operation-information",
   "person-responsible",
   "electricity-import-data",
+  "report-validation",
   "review-changes",
   "final-review",
   "verification",

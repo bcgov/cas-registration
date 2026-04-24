@@ -8,7 +8,7 @@ from reporting.service.report_validation.report_validation_error import (
 )
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
-TAGS = [ValidationTags.ON_SUBMIT]
+TAGS = [ValidationTags.ON_SUBMIT, ValidationTags.REPORT_VALIDATION]
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
@@ -29,7 +29,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     if val is None or val == "":
         errors["missing_supplementary_report_version_change"] = ReportValidationError(
             Severity.ERROR,
-            "No reason for change found for this supplementary report version.",
+            "A reason for the changes in this supplementary report must be added on the Review Changes page.",
             key=ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE,
             context=ErrorContext(report_version_id=report_version.id),
         )

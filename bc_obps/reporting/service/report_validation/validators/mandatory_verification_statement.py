@@ -34,7 +34,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         except ObjectDoesNotExist:
             errors["missing_report_verification"] = ReportValidationError(
                 severity=Severity.ERROR,
-                message="Report verification form not found in the report.",
+                message="Verification information must be completed on the Verification page.",
                 key=ReportValidationErrorKey.MISSING_REPORT_VERIFICATION,
                 context=ErrorContext(report_version_id=report_version.id),
             )
@@ -48,7 +48,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         except ReportAttachment.DoesNotExist:
             errors["verification_statement"] = ReportValidationError(
                 severity=Severity.ERROR,
-                message="Mandatory verification statement document was not uploaded with this report.",
+                message="A verification statement must be uploaded with this report on the Attachments page.",
                 key=ReportValidationErrorKey.VERIFICATION_STATEMENT,
                 context=ErrorContext(report_version_id=report_version.id),
             )

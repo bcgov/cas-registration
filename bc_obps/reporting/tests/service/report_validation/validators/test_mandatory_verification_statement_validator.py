@@ -80,7 +80,7 @@ class TestMandatoryVerificationStatementValidator:
         assert result == {
             "verification_statement": ReportValidationError(
                 Severity.ERROR,
-                "Mandatory verification statement document was not uploaded with this report.",
+                "A verification statement must be uploaded with this report on the Attachments page.",
                 key=ReportValidationErrorKey.VERIFICATION_STATEMENT,
                 context=ErrorContext(report_version_id=report_version.id),
             )
@@ -105,7 +105,7 @@ class TestMandatoryVerificationStatementValidator:
         assert result == {
             "missing_report_verification": ReportValidationError(
                 Severity.ERROR,
-                "Report verification form not found in the report.",
+                "Verification information must be completed on the Verification page.",
                 key=ReportValidationErrorKey.MISSING_REPORT_VERIFICATION,
                 context=ErrorContext(report_version_id=report_version.id),
             )

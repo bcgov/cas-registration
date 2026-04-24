@@ -10,12 +10,20 @@ export const signOffSubmitPageFactories: {
       },
       element: {
         type: "Page",
-        title: "Review Changes",
+        title: "Review changes",
         link: `/reports/${reportVersionId}/review-changes`,
         isActive: activePage === ReportingPage.ChangeReview,
       },
     };
   },
+  [ReportingPage.Validation]: (activePage, reportVersionId) => ({
+    element: {
+      type: "Page",
+      title: "Report validation",
+      link: `/reports/${reportVersionId}/report-validation`,
+      isActive: activePage === ReportingPage.Validation,
+    },
+  }),
   [ReportingPage.FinalReview]: (activePage, reportVersionId) => ({
     element: {
       type: "Page", // Set the type to "Page"

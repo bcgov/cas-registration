@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import ReportValidationSummary from "./ReportValidationSummary";
-import type { ReportValidationErrors } from "./types";
+import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
+import type { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
 
 describe("ReportValidationSummary", () => {
   it("renders nothing when there are no errors", () => {
@@ -16,7 +16,9 @@ describe("ReportValidationSummary", () => {
         key: "missing_report_verification", // gitleaks:allow
         error: {
           severity: "Warning",
-          context: { reportVersionId: 12 },
+          message:
+            "Verification information must be completed on the Verification page.",
+          context: { report_version_id: 12 },
         },
       },
       {
@@ -39,13 +41,77 @@ describe("ReportValidationSummary", () => {
     );
   });
 
+  it("sorts by priority within the same severity", () => {
+    const errors: ReportValidationErrors = [
+      {
+        // priority 4
+        key: "missing_report_verification", // gitleaks:allow
+        error: {
+          severity: "Error",
+          message: "lower priority message",
+          context: { report_version_id: 1 },
+        },
+      },
+      {
+        // priority 2
+        key: "operation_boro_id", // gitleaks:allow
+        error: {
+          severity: "Error",
+          message: "higher priority message",
+          context: { report_version_id: 1 },
+        },
+      },
+    ];
+
+    render(<ReportValidationSummary errors={errors} />);
+
+    const alerts = screen.getAllByRole("alert");
+
+    expect(alerts[0]).toHaveTextContent("higher priority message");
+    expect(alerts[1]).toHaveTextContent("lower priority message");
+  });
+
+  it("keeps original order when severity and priority are equal", () => {
+    const errors: ReportValidationErrors = [
+      {
+        // priority 4
+        key: "missing_report_verification", // gitleaks:allow
+        error: {
+          severity: "Error",
+          message: "first",
+          context: { report_version_id: 1 },
+        },
+      },
+      {
+        // priority 4
+        key: "verification_statement", // gitleaks:allow
+        error: {
+          severity: "Error",
+          message: "second",
+          context: { report_version_id: 1 },
+        },
+      },
+    ];
+
+    render(<ReportValidationSummary errors={errors} />);
+
+    const alerts = screen.getAllByRole("alert");
+
+    expect(alerts[0]).toHaveTextContent("first");
+    expect(alerts[1]).toHaveTextContent("second");
+  });
+
   it("renders inline link messages with expected destination", () => {
     const errors: ReportValidationErrors = [
       {
         key: "missing_report_verification", // gitleaks:allow
         error: {
           severity: "Error",
-          context: { reportVersionId: 42 },
+          message:
+            "Verification information must be completed on the Verification page.",
+          context: {
+            report_version_id: 42,
+          },
         },
       },
     ];

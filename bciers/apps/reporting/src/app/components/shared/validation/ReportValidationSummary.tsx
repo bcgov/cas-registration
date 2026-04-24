@@ -28,14 +28,25 @@ function toAlertType(severity: ValidationSeverity): AlertType {
 }
 
 // Replaces label text in message with a clickable link (inline)
-// Note: validationUIConfig label must exactly match the text in the validationUIConfig message
+// Else fall back to label as link
 function renderMessageWithInlineLink(
   text: string,
   label?: string,
   href?: string,
 ) {
-  if (!label || !href || !text.includes(label)) {
+  if (!label || !href) {
     return <span>{text}</span>;
+  }
+
+  if (!text.includes(label)) {
+    return (
+      <span>
+        {text}{" "}
+        <Link href={href} className="underline">
+          {label}
+        </Link>
+      </span>
+    );
   }
 
   const [before, ...rest] = text.split(label);
@@ -95,9 +106,21 @@ export default function ReportValidationSummary({
     Warning: 1,
   };
 
-  const sortedEntries = [...errors].sort(
-    (a, b) => severityOrder[a.error.severity] - severityOrder[b.error.severity],
-  );
+  const sortedEntries = errors
+    .map((entry, index) => ({ ...entry, originalIndex: index }))
+    .sort((a, b) => {
+      const severityDiff =
+        severityOrder[a.error.severity] - severityOrder[b.error.severity];
+
+      if (severityDiff !== 0) return severityDiff;
+
+      const priorityA = validationUIConfig[a.key]?.priority ?? 999;
+      const priorityB = validationUIConfig[b.key]?.priority ?? 999;
+
+      if (priorityA !== priorityB) return priorityA - priorityB;
+
+      return a.originalIndex - b.originalIndex;
+    });
 
   return (
     <div className="space-y-3 mt-4">

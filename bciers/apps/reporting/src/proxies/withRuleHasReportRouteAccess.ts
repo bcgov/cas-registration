@@ -255,7 +255,7 @@ export const permissionRules: PermissionRule[] = [
     redirect: (reportVersionId, request) =>
       NextResponse.redirect(
         new URL(
-          `${REPORT_APP_BASE}${reportVersionId}${AppRoutes.REVIEW}`,
+          `${REPORT_APP_BASE}${reportVersionId}${AppRoutes.VALIDATION}`,
           request.url,
         ),
       ),

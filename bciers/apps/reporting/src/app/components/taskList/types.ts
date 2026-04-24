@@ -30,6 +30,7 @@ export enum ReportingPage {
   Attachments = "Attachments",
   FinalReview = "FinalReview",
   SignOff = "SignOff",
+  Validation = "Validation",
 }
 
 export enum ReportingFlow {
