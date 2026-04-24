@@ -65,6 +65,7 @@ export default async function VerificationPage({
         initialData={transformedData}
         navigationInformation={navInfo}
         isSupplementaryReport={isSupplementaryReport}
+        isEIO={isEIO}
       />
     </>
   );
