@@ -3,6 +3,14 @@ import { ReportingPage, TaskListPageFactory } from "../types";
 export const signOffSubmitPageFactories: {
   [Page in ReportingPage]?: TaskListPageFactory;
 } = {
+  [ReportingPage.Validation]: (activePage, reportVersionId) => ({
+    element: {
+      type: "Page",
+      title: "Report validation",
+      link: `/reports/${reportVersionId}/report-validation`,
+      isActive: activePage === ReportingPage.Validation,
+    },
+  }),
   [ReportingPage.ChangeReview]: (activePage, reportVersionId, _, context) => {
     return {
       extraOptions: {
@@ -10,7 +18,7 @@ export const signOffSubmitPageFactories: {
       },
       element: {
         type: "Page",
-        title: "Review Changes",
+        title: "Review changes",
         link: `/reports/${reportVersionId}/review-changes`,
         isActive: activePage === ReportingPage.ChangeReview,
       },

@@ -2,6 +2,7 @@ from django.db.models import QuerySet
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
+    ErrorContext,
     ReportValidationError,
     ReportValidationErrorKey,
     Severity,
@@ -20,8 +21,9 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         if a.status != ReportAttachment.FileStatus.CLEAN:
             errors[f"attachment_{a.attachment_type}"] = ReportValidationError(
                 Severity.ERROR,
-                f"The {a.attachment_type} file hasn't been scanned yet, try resubmitting in a few minutes.",
+                f"Your {a.attachment_type} attachment is being scanned for security. This may take a few minutes, please wait before submitting.",
                 key=ReportValidationErrorKey.ATTACHMENT_NOT_SCANNED,
+                context=ErrorContext(report_version_id=report_version.id),
             )
 
     return errors

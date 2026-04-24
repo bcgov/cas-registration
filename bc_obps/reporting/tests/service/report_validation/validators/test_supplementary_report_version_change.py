@@ -41,7 +41,9 @@ class TestSupplementaryReportVersionChangeValidator:
         err = errors["missing_supplementary_report_version_change"]
         assert isinstance(err, ReportValidationError)
         assert err.severity == Severity.ERROR
-        assert err.message == ("No reason for change found for this supplementary report version.")
+        assert err.message == (
+            "A reason for the changes in this supplementary report must be added on the Review Changes page."
+        )
         assert err.key == ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE
         assert err.context == ErrorContext(report_version_id=version.id)
 
@@ -60,7 +62,9 @@ class TestSupplementaryReportVersionChangeValidator:
         err = errors["missing_supplementary_report_version_change"]
         assert isinstance(err, ReportValidationError)
         assert err.severity == Severity.ERROR
-        assert err.message == ("No reason for change found for this supplementary report version.")
+        assert err.message == (
+            "A reason for the changes in this supplementary report must be added on the Review Changes page."
+        )
         assert err.key == ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE
         assert err.context == ErrorContext(report_version_id=version.id)
 

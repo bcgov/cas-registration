@@ -10,7 +10,7 @@ from reporting.service.report_validation.report_validation_error import (
 )
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
-TAGS = [ValidationTags.ON_SUBMIT]
+TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
@@ -47,7 +47,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                         f"allocation_mismatch_facility_{fr.facility_id}_category_{category.emission_category_id}"
                     ] = ReportValidationError(
                         Severity.ERROR,
-                        f"Emissions reported for {fr.facility_name} in '{category.emission_category_name}' category do not match emissions allocated on the Allocation of Emissions page.",
+                        f"Please review the allocation of emissions and ensure that the emissions for '{category.emission_category_name}' activity are allocated to the '{category.emission_category_name}' product. If they are allocated, you may save & continue.",
                         key=ReportValidationErrorKey.ALLOCATION_MISMATCH,
                         context=ErrorContext(
                             report_version_id=report_version.id,
