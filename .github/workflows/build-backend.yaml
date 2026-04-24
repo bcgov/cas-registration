@@ -49,7 +49,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-bc_obps
       - name: Build image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         with:
           context: bc_obps
           builder: ${{ steps.buildx.outputs.name }}
