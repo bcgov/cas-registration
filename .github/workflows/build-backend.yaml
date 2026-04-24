@@ -24,7 +24,7 @@ jobs:
           install: true
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ghcr.io/bcgov/cas-reg-backend
           tags: |
