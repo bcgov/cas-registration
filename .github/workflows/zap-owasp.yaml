@@ -9,6 +9,7 @@ on:
         type: number
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
   NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
   KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}

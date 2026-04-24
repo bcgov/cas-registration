@@ -9,6 +9,9 @@ on:
         type: string
         default: latest
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   docker-build:
     runs-on: ubuntu-latest
