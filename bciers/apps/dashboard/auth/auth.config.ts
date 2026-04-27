@@ -61,6 +61,24 @@ declare module "next-auth" {
 export const AUTH_BASE_PATH = "/api/auth";
 export const OAUTH_TOKEN_ROTATION_INTERVAL_SECONDS = 60;
 
+async function isUserAdmin(userGuid: string | undefined) {
+  try {
+    // 🚀 API call: check if user is admin approved
+    const responseAdmin = await actionHandler(
+      `registration/user-operators/current/is-current-user-approved-admin/${userGuid}`,
+      "GET",
+    );
+    if (responseAdmin?.approved) {
+      return true; // note: industry_user_admin a front-end only role. In the db, all industry users have an industry_user app_role, and their permissions are further defined by UserOperator.role
+    } else {
+      // Default app_role (industry_user) if the API call fails
+    }
+  } catch (_error) {
+    // Default app_role (industry_user) if there's an error in the API call
+  }
+  return false;
+}
+
 export default {
   //In a Docker environment, make sure to set either trustHost: true in your Auth.js configuration or the AUTH_TRUST_HOST environment variable to true.
   trustHost: true,
@@ -135,22 +153,13 @@ export default {
           if (responseRole?.role_name) {
             // user found in table, assign role to token (note: all industry users have the same app role of `industry_user`, and their permissions are further defined by their role in the UserOperator model)
             token.app_role = responseRole.role_name;
+
             //for bceid users, augment with admin based on operator-user table
-            if (token.identity_provider === IDP.BCEIDBUSINESS) {
-              try {
-                // 🚀 API call: check if user is admin approved
-                const responseAdmin = await actionHandler(
-                  `registration/user-operators/current/is-current-user-approved-admin/${token.user_guid}`,
-                  "GET",
-                );
-                if (responseAdmin?.approved) {
-                  token.app_role = "industry_user_admin"; // note: industry_user_admin a front-end only role. In the db, all industry users have an industry_user app_role, and their permissions are further defined by UserOperator.role
-                } else {
-                  // Default app_role (industry_user) if the API call fails
-                }
-              } catch (_error) {
-                // Default app_role (industry_user) if there's an error in the API call
-              }
+            if (
+              token.identity_provider === IDP.BCEIDBUSINESS &&
+              (await isUserAdmin(token.user_guid))
+            ) {
+              token.app_role = "industry_user_admin";
             }
           } else {
             // 🛸 Routing: no app_role user found; so, user will be routed to dashboard\profile
