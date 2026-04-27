@@ -72,6 +72,5 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                 facility_report=facility_report,
                 missing_field_labels=["Activity data"],
             )
-            continue
 
     return errors

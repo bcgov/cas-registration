@@ -27,7 +27,7 @@ class TestRequiredFieldsActivityDataValidator:
             "reporting.tests.utils.facility_report",
             report_version=self.report_version,
         )
-        self.error_key = f"error_required_fields_{SECTION}_facility_" f"{self.facility_report.facility_id}"
+        self.error_key = f"error_required_fields_{SECTION}_facility_{self.facility_report.facility_id}"
 
     def test_applies_returns_true_when_section_is_applicable(self):
         with patch(APPLIES_TO_SECTION_PATH, return_value=True) as mock_applies:

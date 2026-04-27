@@ -23,7 +23,7 @@ def update_chemical_pulp_pwaei_for_2025(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0179_V5_8_0'),
+        ('reporting', '0180_update_activity_field_units'),
     ]
 
     operations = [migrations.RunPython(update_chemical_pulp_pwaei_for_2025, migrations.RunPython.noop)]
