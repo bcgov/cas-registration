@@ -39,42 +39,7 @@ export const withAuthorizationDashboard: ProxyFactory = (next: NextProxy) => {
 
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
-    if (token) {
-      // Handle user without token.user.app_role
-      if (!token.app_role || token.app_role === "") {
-        if (pathname.endsWith(`/${paths.profile}`)) {
-          // 🛸 Route to next proxy
-          return next(request, _next);
-        } else {
-          // 🛸 Redirect to profile
-          return NextResponse.redirect(
-            new URL(`/administration/${paths.profile}`, request.url),
-          );
-        }
-      }
-      // Handle user with token.user.app_role = cas_pending
-      if (token.app_role === FrontEndRoles.CAS_PENDING) {
-        if (isInAllowedPath(pathname, authAllowedPaths)) {
-          // 🛸 Route to next proxy
-          return next(request, _next);
-        } else {
-          // 🛸 Redirect to dashboard
-          return NextResponse.redirect(
-            new URL(`/${paths.dashboard}`, request.url),
-          );
-        }
-      }
-
-      if (pathname === "/" || pathname === `/${paths.onboarding}`) {
-        // 🛸 Redirect to dashboard
-        return NextResponse.redirect(
-          new URL(`/${paths.dashboard}`, request.url),
-        );
-      } else {
-        // 🛸 Route to next proxy
-        return next(request, _next);
-      }
-    } else {
+    if (!token) {
       if (pathname.endsWith(`/${paths.onboarding}`)) {
         // 🛸 Route to next proxy
         return next(request, _next);
@@ -84,6 +49,39 @@ export const withAuthorizationDashboard: ProxyFactory = (next: NextProxy) => {
           new URL(`/${paths.onboarding}`, request.url),
         );
       }
+    }
+
+    // Handle user without token.user.app_role
+    if (!token.app_role || token.app_role === "") {
+      if (pathname.endsWith(`/${paths.profile}`)) {
+        // 🛸 Route to next proxy
+        return next(request, _next);
+      } else {
+        // 🛸 Redirect to profile
+        return NextResponse.redirect(
+          new URL(`/administration/${paths.profile}`, request.url),
+        );
+      }
+    }
+    // Handle user with token.user.app_role = cas_pending
+    if (token.app_role === FrontEndRoles.CAS_PENDING) {
+      if (isInAllowedPath(pathname, authAllowedPaths)) {
+        // 🛸 Route to next proxy
+        return next(request, _next);
+      } else {
+        // 🛸 Redirect to dashboard
+        return NextResponse.redirect(
+          new URL(`/${paths.dashboard}`, request.url),
+        );
+      }
+    }
+
+    if (pathname === "/" || pathname === `/${paths.onboarding}`) {
+      // 🛸 Redirect to dashboard
+      return NextResponse.redirect(new URL(`/${paths.dashboard}`, request.url));
+    } else {
+      // 🛸 Route to next proxy
+      return next(request, _next);
     }
   };
 };
