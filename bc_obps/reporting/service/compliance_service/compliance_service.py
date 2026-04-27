@@ -12,7 +12,10 @@ from reporting.service.compliance_service.industrial_process import (
     compute_industrial_process_emissions,
     get_allocated_emissions_by_report_product_emission_category,
 )
-from reporting.service.compliance_service.parameters import ComplianceParameters, ProductionPeriod
+from reporting.service.compliance_service.parameters import (
+    ComplianceParameters,
+    ProductionPeriod,
+)
 from reporting.models import ReportComplianceSummary, ReportComplianceSummaryProduct
 from registration.models import RegulatedProduct, Operation
 from decimal import Decimal
@@ -27,7 +30,9 @@ from reporting.service.compliance_service.regulatory_values import (
     get_product_regulatory_values_override,
 )
 from reporting.service.utils import round_using_appropriate_strategy
-from reporting.service.report_operation_opt_out_service import ReportOperationOptOutService
+from reporting.service.report_operation_opt_out_service import (
+    ReportOperationOptOutService,
+)
 
 
 @dataclass
@@ -170,7 +175,9 @@ class ComplianceService:
 
     @staticmethod
     def get_production_period(
-        report_version_id: int, registration_purpose: Operation.Purposes, final_reporting_year: int
+        report_version_id: int,
+        registration_purpose: Operation.Purposes,
+        final_reporting_year: int,
     ) -> ProductionPeriod:
         """
         Determine which production period to use for compliance calculations based on operation criteria.
@@ -196,6 +203,7 @@ class ComplianceService:
         )
         # Determine whether Jan–Mar production data should be included
         include_jan_mar = ReportOperationOptOutService.should_include_jan_mar_production(report_version_record)
+        reporting_year = report_version_record.report.reporting_year.reporting_year
 
         # Get regulatory values (periods are global, but RF/TR will be applied per product)
         industry_regulatory_values = get_industry_regulatory_values(report_version_record)
@@ -226,8 +234,10 @@ class ComplianceService:
                 report_version_record, rp.product_id
             )
             ei = ProductEmissionIntensity.objects.get(
-                product_id=rp.product_id
+                product_id=rp.product_id,
                 # TEMPORAL CHECKS
+                valid_from__year__lte=reporting_year,
+                valid_to__year__gte=reporting_year,
             ).product_weighted_average_emission_intensity
 
             industrial_process = compute_industrial_process_emissions(rp)
@@ -243,10 +253,12 @@ class ComplianceService:
 
             # Calculate prorated_allocated limit (if applicable), depending on reporting year and operation criteria.
 
-            production_for_limit, prorated_allocated, allocated_compliance_emissions_value = (
-                ComplianceParameters.resolve_compliance_parameters(
-                    production_period, allocated_for_compliance, production_totals
-                )
+            (
+                production_for_limit,
+                prorated_allocated,
+                allocated_compliance_emissions_value,
+            ) = ComplianceParameters.resolve_compliance_parameters(
+                production_period, allocated_for_compliance, production_totals
             )
 
             # Compute emissions limit with the product-specific regulatory values,
@@ -326,10 +338,12 @@ class ComplianceService:
         return_object = ComplianceData(
             emissions_attributable_for_reporting=attributable_for_reporting_total,
             reporting_only_emissions=round_using_appropriate_strategy(
-                total_allocated_reporting_only, use_legacy_rounding=has_2024_reporting_year
+                total_allocated_reporting_only,
+                use_legacy_rounding=has_2024_reporting_year,
             ),
             emissions_attributable_for_compliance=round_using_appropriate_strategy(
-                total_allocated_for_compliance_used, use_legacy_rounding=has_2024_reporting_year
+                total_allocated_for_compliance_used,
+                use_legacy_rounding=has_2024_reporting_year,
             ),
             emissions_limit=round_using_appropriate_strategy(
                 emissions_limit_total, use_legacy_rounding=has_2024_reporting_year
