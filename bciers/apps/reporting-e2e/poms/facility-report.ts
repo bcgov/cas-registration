@@ -9,7 +9,7 @@ import {
 } from "@/reporting-e2e/poms/allocation-of-emissions";
 import {
   assertFieldVisibility,
-  checkCheckboxByLabel,
+  checkCheckboxById,
   checkFormFieldsReadOnly,
   clickButton,
   fillComboxboxWidget,
@@ -20,6 +20,7 @@ import {
 const GSC_ACTIVITY = {
   SOURCE_TYPE_LABEL:
     "General stationary combustion of fuel or waste with production of useful energy",
+  SOURCE_TYPE_SLUG: "gscWithProductionOfUsefulEnergy",
 
   UNIT_NAME_LABEL: "GSC Unit Name",
   UNIT_TYPE_LABEL: "GSC Unit Type",
@@ -34,6 +35,7 @@ const GSC_ACTIVITY = {
   FUEL_DESCRIPTION_LABEL: "Fuel Description",
   FUEL_DESCRIPTION_VALUE: "Diesel fuel for stationary combustion",
   ANNUAL_FUEL_AMOUNT_INPUT_NAME: "annualFuelAmount",
+  ANNUAL_FUEL_AMOUNT_FIELD_LABEL: /^Annual Fuel Amount \(kilolitres\)$/,
   ANNUAL_FUEL_AMOUNT_VALUE: 12000,
 
   GAS_TYPE_LABEL: "Gas Type",
@@ -100,7 +102,8 @@ export class SFOFacilityReportPOM {
 
   async fillGscActivity(): Promise<void> {
     // Check the GSC source type checkbox
-    await checkCheckboxByLabel(this.page, GSC_ACTIVITY.SOURCE_TYPE_LABEL);
+
+    await checkCheckboxById(this.page, `root_${GSC_ACTIVITY.SOURCE_TYPE_SLUG}`);
 
     // Fill unit name
     await fillInputValueByLabel(
@@ -124,18 +127,13 @@ export class SFOFacilityReportPOM {
       true,
     );
 
-    // Verify fuel unit and fuel classification are read-only
-    const fuelUnit = this.page.getByRole("textbox", {
-      name: GSC_ACTIVITY.FUEL_UNIT_LABEL,
-    });
     const fuelClassification = this.page.getByRole("textbox", {
       name: GSC_ACTIVITY.FUEL_CLASSIFICATION_LABEL,
     });
-    await expect(fuelUnit).toHaveValue(GSC_ACTIVITY.FUEL_UNIT_VALUE);
     await expect(fuelClassification).toHaveValue(
       GSC_ACTIVITY.FUEL_CLASSIFICATION_VALUE,
     );
-    await checkFormFieldsReadOnly([fuelUnit, fuelClassification]);
+    await checkFormFieldsReadOnly([fuelClassification]);
 
     // Fill fuel description
     await fillInputValueByLabel(
@@ -144,7 +142,10 @@ export class SFOFacilityReportPOM {
       GSC_ACTIVITY.FUEL_DESCRIPTION_VALUE,
     );
 
-    // Fill annual fuel amount (targeted by name — RJSF deep nesting breaks label association)
+    // Check fuel unit and Fill annual fuel amount (targeted by name — RJSF deep nesting breaks label association)
+    await expect(
+      this.page.getByText(GSC_ACTIVITY.ANNUAL_FUEL_AMOUNT_FIELD_LABEL),
+    ).toBeVisible();
     await fillInputValueByLocator(
       this.page.getByRole("textbox", {
         name: GSC_ACTIVITY.ANNUAL_FUEL_AMOUNT_INPUT_NAME,
