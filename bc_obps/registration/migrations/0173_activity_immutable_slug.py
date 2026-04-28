@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0171_add_units_to_lng_product'),
+        ('registration', '0172_V5_9_0'),
     ]
 
     operations = [
