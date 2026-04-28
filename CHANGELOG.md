@@ -1,5 +1,27 @@
 # Changelog
 
+# [5.9.0](https://github.com/bcgov/cas-registration/compare/v5.8.0...v5.9.0) (2026-04-28)
+
+### Bug Fixes
+
+- Correct ProductEmissionIntensity for RY2025, Chemical Pulp product ([4cb9ddc](https://github.com/bcgov/cas-registration/commit/4cb9ddcbaaf670c12f0678351168ba54210bb744))
+- **deps:** update dependency python-dotenv to ^1.2.2 [security] ([ccaf82f](https://github.com/bcgov/cas-registration/commit/ccaf82f2a41871d6d5daf9fea6f0b275749d2bf2))
+- **deps:** update dependency uuid to v14 [security] ([a27762f](https://github.com/bcgov/cas-registration/commit/a27762fe25a706ba7acd51a87a1c26b94084330e))
+- preserve boolean capture_emissions in transformReportAdditionalData ([f0b3daf](https://github.com/bcgov/cas-registration/commit/f0b3dafd82b848cfbaf42b87c523fd9acf6a2366))
+- production methodology other description now shows up on final review page ([b4a4fb1](https://github.com/bcgov/cas-registration/commit/b4a4fb11316024526e4cdb42c6b08900ec683073))
+
+### Features
+
+- add validation by fuel type for report_fuel/report_methodology records ([9aeee75](https://github.com/bcgov/cas-registration/commit/9aeee75f63512905d0945c3a224fc2675f02321a))
+- added emission to gas_type_schema in form_builder so that emission label is generated dynamically based on selected gas type ([80e1031](https://github.com/bcgov/cas-registration/commit/80e1031b6e6332336754c62e6a3c4f1b0f9c463c))
+- added Reporting Year to internal users' Attachments grid with filtering ([b38e62c](https://github.com/bcgov/cas-registration/commit/b38e62cb6291091995b86a04f64390d92cb301b7))
+- displays verification page description info text on EIO report ([2934f2e](https://github.com/bcgov/cas-registration/commit/2934f2ebd9966ad9663f58ad661fb75d49845361))
+- make error message noticeable ([1413f94](https://github.com/bcgov/cas-registration/commit/1413f94dd9abde4e7e1e6108827e954e45608802))
+
+### Reverts
+
+- Revert "chore: limit nested formData to section properties" ([265ee9d](https://github.com/bcgov/cas-registration/commit/265ee9d4643b705385c088ef5f71673a87a950fb))
+
 # [5.8.0](https://github.com/bcgov/cas-registration/compare/v5.7.0...v5.8.0) (2026-04-15)
 
 ### Features
