@@ -26,6 +26,7 @@ class RegulatedProduct(BaseModel):
                 name="unique_product_on_name_unit",
             )
         ]
+        ordering = ['name']
 
     Rls = RegulatedProductRls
 
