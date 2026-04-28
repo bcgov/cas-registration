@@ -5,6 +5,10 @@
   "tags": [],
   "implicitDependencies": ["registration"],
   "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {}
+    },
     "e2e:ci": {
       "executor": "nx:run-commands",
       "options": {
