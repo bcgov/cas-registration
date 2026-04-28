@@ -4,6 +4,7 @@ from django.db import migrations
 import os
 import json
 from typing import Optional
+from common.lib import pgtrigger
 
 
 def update_activity_slug_name(apps, schema_editor, slug_name: str, updated_slug: str) -> Optional[object]:
@@ -24,9 +25,9 @@ def update_activity_slug_name(apps, schema_editor, slug_name: str, updated_slug:
         activity = Activity.objects.get(slug=slug_name)
     except Activity.DoesNotExist:
         return None
-
-    activity.slug = updated_slug
-    activity.save()
+    with pgtrigger.ignore("registration.Activity:immutable_slug"):
+        activity.slug = updated_slug
+        activity.save()
     return activity
 
 
@@ -492,9 +493,7 @@ def undo_update_reporting_fields(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('reporting', '0180_update_chemical_pulp_pwaei'),
-    ]
+    dependencies = [('reporting', '0180_update_chemical_pulp_pwaei'), ('registration', '0172_activity_immutable_slug')]
 
     operations = [
         migrations.RunPython(code=update_slugs, reverse_code=migrations.RunPython.noop),
