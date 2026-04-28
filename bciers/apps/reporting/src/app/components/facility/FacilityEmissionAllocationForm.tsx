@@ -82,6 +82,41 @@ const validateFormData = (
   return newErrors;
 };
 
+// Helper function
+const appendAllocatedQuantity = (
+  product: Product,
+  isBasicCategory: boolean,
+  productAllocations: Record<string, number>,
+) => {
+  const allocatedQuantity =
+    Number.parseFloat(product.allocated_quantity as any) || 0;
+
+  // Accumulate the reportable allocated quantity for this report_product_id
+  if (isBasicCategory) {
+    productAllocations[product.report_product_id] =
+      (productAllocations[product.report_product_id] || 0) + allocatedQuantity;
+  }
+  return {
+    ...product,
+    allocated_quantity: allocatedQuantity,
+  };
+};
+
+const recalculateCategoryEmissions = (
+  formData: any,
+  isBasicCategory: boolean,
+  productAllocations: Record<string, number>,
+) => {
+  return formData
+    .map((item: EmissionAllocationData) => ({
+      ...item,
+      products: item.products.map((product) =>
+        appendAllocatedQuantity(product, isBasicCategory, productAllocations),
+      ),
+    }))
+    .map(calculateEmissionData); // Recalculate emissions data
+};
+
 export default function FacilityEmissionAllocationForm({
   version_id,
   facility_id,
@@ -203,26 +238,13 @@ export default function FacilityEmissionAllocationForm({
 
       // Iterate through each category and recalculate allocated emissions data for the category
       updatedDataKeys.forEach((key) => {
-        updatedFormData[key] = updatedFormData[key]
-          .map((item: EmissionAllocationData) => ({
-            ...item,
-            products: item.products.map((product) => {
-              const allocatedQuantity =
-                parseFloat(product.allocated_quantity as any) || 0;
+        const isBasicCategory = key === BASIC_CATEGORY_DATA;
 
-              // Accumulate the reportable allocated quantity for this report_product_id
-              if (key == BASIC_CATEGORY_DATA) {
-                productAllocations[product.report_product_id] =
-                  (productAllocations[product.report_product_id] || 0) +
-                  allocatedQuantity;
-              }
-              return {
-                ...product,
-                allocated_quantity: allocatedQuantity,
-              };
-            }),
-          }))
-          .map(calculateEmissionData); // Recalculate emissions data
+        updatedFormData[key] = recalculateCategoryEmissions(
+          updatedFormData[key],
+          isBasicCategory,
+          productAllocations,
+        );
       });
 
       // Recompute total allocations for each product
@@ -231,7 +253,7 @@ export default function FacilityEmissionAllocationForm({
           updatedFormData.total_emission_allocations.products.map(
             (product: { report_product_id: number }) => ({
               ...product,
-              allocated_quantity: parseFloat(
+              allocated_quantity: Number.parseFloat(
                 (productAllocations[product.report_product_id] || 0).toFixed(4),
               ),
             }),
@@ -271,7 +293,7 @@ export default function FacilityEmissionAllocationForm({
                     return {
                       report_product_id: product.report_product_id,
                       product_name: product.product_name,
-                      allocated_quantity: parseFloat(
+                      allocated_quantity: Number.parseFloat(
                         product.allocated_quantity,
                       ),
                     };
