@@ -19,7 +19,6 @@ BASE_PATH = "reporting.service.report_validation.validators.required_fields.requ
 APPLIES_TO_SECTION_PATH = f"{BASE_PATH}.applies_to_section"
 
 
-@pytest.mark.django_db
 class TestRequiredFieldsActivityDataValidator:
     def setup_method(self):
         self.report_version = baker.make_recipe("reporting.tests.utils.report_version")

@@ -22,7 +22,6 @@ export function transformReportAdditionalData(reportAdditionalData: any) {
   if (reportAdditionalData.emissions_off_site_transfer !== null) {
     captureType.push("Off-site transfer");
   }
-
   return {
     captured_emissions_section: {
       capture_type: captureType,
@@ -34,7 +33,8 @@ export function transformReportAdditionalData(reportAdditionalData: any) {
         reportAdditionalData.emissions_off_site_transfer || null,
     },
     additional_data_section: {
-      electricity_generated: reportAdditionalData.electricity_generated,
+      electricity_generated:
+        reportAdditionalData.electricity_generated ?? undefined,
     },
   };
 }

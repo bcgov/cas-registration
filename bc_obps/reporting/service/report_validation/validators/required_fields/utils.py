@@ -1,7 +1,6 @@
-from typing import Any, Iterable, Callable
+from typing import Any, Iterable
 from uuid import UUID
 
-from reporting.models.facility_report import FacilityReport
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -93,51 +92,3 @@ def build_required_fields_error(
             section_title=section_title,
         ),
     )
-
-
-def validate_required_fields_per_facility(
-    *,
-    report_version: ReportVersion,
-    section: str,
-    section_title: str,
-    required_fields: list[RequiredFieldConfig],
-    queryset_getter: Callable[[ReportVersion, FacilityReport], Any],
-) -> dict[str, ReportValidationError]:
-    errors: dict[str, ReportValidationError] = {}
-
-    facility_reports = FacilityReport.objects.filter(report_version=report_version)
-
-    for facility_report in facility_reports:
-        queryset = queryset_getter(report_version, facility_report)
-
-        if not queryset.exists():
-            errors[f"error_required_fields_{section}_facility_{facility_report.facility_id}"] = (
-                build_required_fields_error(
-                    report_version_id=report_version.id,
-                    facility_id=facility_report.facility_id,
-                    facility_name=facility_report.facility_name,
-                    section=section,
-                    section_title=section_title,
-                    missing_field_labels=[item["label"] for item in required_fields],
-                )
-            )
-            continue
-
-        missing_field_labels = collect_missing_fields_many(
-            queryset,
-            required_fields,
-        )
-
-        if missing_field_labels:
-            errors[f"error_required_fields_{section}_facility_{facility_report.facility_id}"] = (
-                build_required_fields_error(
-                    report_version_id=report_version.id,
-                    facility_id=facility_report.facility_id,
-                    facility_name=facility_report.facility_name,
-                    section=section,
-                    section_title=section_title,
-                    missing_field_labels=missing_field_labels,
-                )
-            )
-
-    return errors

@@ -2,7 +2,7 @@ import type { ReactNode, FC, PropsWithChildren } from "react";
 import { AlertIcon } from "@bciers/components/icons";
 import { Alert, SvgIconProps } from "@mui/material";
 import { BC_GOV_SEMANTICS_RED, BC_GOV_TEXT } from "@bciers/styles";
-import { ErrorRounded, InfoRounded, WarningRounded } from "@mui/icons-material";
+import { InfoRounded, WarningRounded } from "@mui/icons-material";
 
 export type AlertType = "INFO" | "ALERT" | "ERROR" | "DEFAULT";
 
@@ -28,7 +28,10 @@ const iconMap: { [key in AlertType]: ReactNode } = {
   INFO: <InfoRounded {...defaultIconProps} />,
   ALERT: <WarningRounded {...defaultIconProps} />,
   ERROR: (
-    <ErrorRounded {...defaultIconProps} sx={{ color: BC_GOV_SEMANTICS_RED }} />
+    <WarningRounded
+      {...defaultIconProps}
+      sx={{ color: BC_GOV_SEMANTICS_RED }}
+    />
   ),
   DEFAULT: <AlertIcon width="25" height="25" />,
 };
@@ -51,7 +54,7 @@ const AlertNote: FC<PropsWithChildren<AlertNoteProps>> = ({
             case "ALERT":
               return <WarningRounded fontSize="inherit" sx={{ color }} />;
             case "ERROR":
-              return <ErrorRounded fontSize="inherit" sx={{ color }} />;
+              return <WarningRounded fontSize="inherit" sx={{ color }} />;
             default:
               return <AlertIcon width="25" height="25" fill={color} />;
           }

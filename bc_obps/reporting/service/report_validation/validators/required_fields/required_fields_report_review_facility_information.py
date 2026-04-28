@@ -19,8 +19,13 @@ from reporting.service.report_validation.validators.required_fields.utils import
 from reporting.service.reporting_flow_service import resolve_flow, ReportingFlow
 
 TAGS = [ValidationTags.REPORT_VALIDATION]
+
 SECTION = "review_facility_information"
 SECTION_TITLE = "Review facility"
+
+REVIEW_FACILITIES_SECTION = "review_facility_report_information"
+REVIEW_FACILITIES_SECTION_TITLE = "Report Information"
+
 REQUIRED_FIELDS: list[RequiredFieldConfig] = [
     {
         "field": "facility_name",
@@ -38,7 +43,7 @@ REQUIRED_FIELDS: list[RequiredFieldConfig] = [
         "field_type": "m2m",
     },
 ]
-# Flows that require all facility to be completed
+
 LFO_COMPLETION_REQUIRED_FLOWS = {
     ReportingFlow.LFO,
     ReportingFlow.NEW_ENTRANT_LFO,
@@ -54,6 +59,8 @@ def _build_error(
     *,
     report_version_id: int,
     missing_field_labels: list[str],
+    section: str = SECTION,
+    section_title: str = SECTION_TITLE,
 ) -> ReportValidationError:
     return ReportValidationError(
         severity=Severity.ERROR,
@@ -62,44 +69,42 @@ def _build_error(
         context=ErrorContext(
             report_version_id=report_version_id,
             missing_fields=missing_field_labels,
-            section=SECTION,
-            section_title=SECTION_TITLE,
+            section=section,
+            section_title=section_title,
         ),
     )
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
+    errors: dict[str, ReportValidationError] = {}
     facility_reports = FacilityReport.objects.filter(report_version=report_version)
 
-    # No facilities at all
     if not facility_reports.exists():
-        return {
-            f"error_required_fields_{SECTION}": _build_error(
-                report_version_id=report_version.id,
-                missing_field_labels=[item["label"] for item in REQUIRED_FIELDS],
-            )
-        }
+        errors[f"error_required_fields_{SECTION}"] = _build_error(
+            report_version_id=report_version.id,
+            missing_field_labels=[item["label"] for item in REQUIRED_FIELDS],
+        )
+        return errors
 
-    # Required field validation
     missing_field_labels = collect_missing_fields_many(
         facility_reports,
         REQUIRED_FIELDS,
     )
 
-    # LFO-only completion rule
-    flow = resolve_flow(report_version)
-    if flow in LFO_COMPLETION_REQUIRED_FLOWS:
-        if facility_reports.filter(is_completed=False).exists():
-            missing_field_labels.append("All facilities must be marked complete")
-
-    # No errors
-    if not missing_field_labels:
-        return {}
-
-    # Return validation error
-    return {
-        f"error_required_fields_{SECTION}": _build_error(
+    if missing_field_labels:
+        errors[f"error_required_fields_{SECTION}"] = _build_error(
             report_version_id=report_version.id,
             missing_field_labels=sorted(set(missing_field_labels)),
         )
-    }
+
+    flow = resolve_flow(report_version)
+    if flow in LFO_COMPLETION_REQUIRED_FLOWS:
+        if facility_reports.filter(is_completed=False).exists():
+            errors[f"error_required_fields_{REVIEW_FACILITIES_SECTION}"] = _build_error(
+                report_version_id=report_version.id,
+                missing_field_labels=["All facilities must be marked complete"],
+                section=REVIEW_FACILITIES_SECTION,
+                section_title=REVIEW_FACILITIES_SECTION_TITLE,
+            )
+
+    return errors

@@ -7,6 +7,9 @@ from reporting.service.report_validation.report_validation_error import (
 )
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 from . import validators
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def collect_validation_plugins() -> List[Any]:
@@ -61,7 +64,7 @@ class ReportValidationService:
                     if not applies(report_version):
                         continue
                 except Exception as e:
-                    print(f"Validator applies() failed: {validation_plugin} - {e}")
+                    logger.error(f'Validator applies() failed: {validation_plugin} - {str(e)}')
                     continue
 
             # Execute validator

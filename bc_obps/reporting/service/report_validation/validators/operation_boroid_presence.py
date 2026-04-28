@@ -9,7 +9,7 @@ from reporting.service.report_validation.report_validation_error import (
 )
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
-TAGS = [ValidationTags.ON_SUBMIT]
+TAGS = [ValidationTags.ON_SUBMIT, ValidationTags.REPORT_VALIDATION]
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:

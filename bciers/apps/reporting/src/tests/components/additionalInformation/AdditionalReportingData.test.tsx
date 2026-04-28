@@ -71,8 +71,7 @@ describe("AdditionalReportingData Component", () => {
 
     expect(yesRadioButton).toBeChecked();
 
-    const captureTypeField = await screen.findByText("Capture type");
-    expect(captureTypeField).toBeInTheDocument();
+    expect(await screen.findByLabelText(/capture type/i)).toBeVisible();
   });
 
   it("updates schema dynamically based on registration purpose", async () => {

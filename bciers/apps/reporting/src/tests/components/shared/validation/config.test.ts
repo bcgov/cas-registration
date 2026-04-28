@@ -5,24 +5,25 @@ const sortAlphabetically = (a: string, b: string) => a.localeCompare(b);
 
 describe("validationUIConfig", () => {
   const expectedKeys: ReportValidationMessageKey[] = [
-    "missing_report_verification",
-    "verification_statement",
+    "error_required_fields",
     "operation_boro_id",
+    "activity_data_coverage",
     "report_activity_json_validation",
-    "attachment_not_scanned",
     "report_data_out_of_bounds_by_fuel_type",
     "report_data_out_of_bounds_by_reporting_field",
     "allocation_mismatch",
+    "missing_report_verification",
+    "verification_statement",
+    "attachment_not_scanned",
     "missing_supplementary_report_required_attachment_confirmation",
     "missing_supplementary_report_existing_attachment_confirmation",
     "missing_supplementary_report_attachments_confirmation",
     "missing_supplementary_report_version_change",
-    "error_required_fields",
     "generic_error",
   ];
 
   it("has the expected number of configs", () => {
-    expect(Object.keys(validationUIConfig)).toHaveLength(14);
+    expect(Object.keys(validationUIConfig)).toHaveLength(15);
   });
 
   it("has a config for every validation key", () => {

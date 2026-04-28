@@ -3,6 +3,7 @@ from django.db.models import QuerySet
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_product import ReportProduct
 from reporting.models.report_version import ReportVersion
+from registration.models.operation import Operation
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
 )
@@ -20,7 +21,7 @@ from reporting.service.report_validation.validators.required_fields.utils import
 TAGS = [ValidationTags.REPORT_VALIDATION]
 SECTION = "production_data"
 SECTION_TITLE = "Production data"
-OPTED_IN_OPERATION = "Opted-in Operation"
+OPTED_IN_OPERATION = Operation.Purposes.OPTED_IN_OPERATION
 REQUIRED_FIELDS: list[RequiredFieldConfig] = [
     {
         "field": "product",

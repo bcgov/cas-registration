@@ -45,8 +45,18 @@ export const additionalReportingDataSchema: RJSFSchema = {
                   },
                 },
               },
-              required: ["capture_type"],
               allOf: [
+                // require capture_type after the "true" branch is selected
+                {
+                  if: {
+                    properties: {
+                      capture_emissions: { const: true },
+                    },
+                  },
+                  then: {
+                    required: ["capture_type"],
+                  },
+                },
                 {
                   if: {
                     properties: {

@@ -3,19 +3,20 @@ export type ValidationSeverity = "Error" | "Warning";
 
 // Keys used to identify validation errors returned from backend
 export type ReportValidationMessageKey =
-  | "missing_report_verification"
-  | "verification_statement"
+  | "error_required_fields"
   | "operation_boro_id"
-  | "report_activity_json_validation"
-  | "attachment_not_scanned"
+  | "activity_data_coverage"
   | "report_data_out_of_bounds_by_fuel_type"
   | "report_data_out_of_bounds_by_reporting_field"
   | "allocation_mismatch"
+  | "missing_report_verification"
+  | "verification_statement"
+  | "report_activity_json_validation"
+  | "attachment_not_scanned"
   | "missing_supplementary_report_required_attachment_confirmation"
   | "missing_supplementary_report_existing_attachment_confirmation"
   | "missing_supplementary_report_attachments_confirmation"
   | "missing_supplementary_report_version_change"
-  | "error_required_fields"
   | "generic_error";
 
 // Additional metadata returned from backend used for dynamic content

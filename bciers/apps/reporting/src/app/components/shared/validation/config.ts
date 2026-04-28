@@ -41,24 +41,79 @@ function createValidationUIConfig(
 export const validationUIConfig: Partial<
   Record<ReportValidationMessageKey, ValidationUIConfig>
 > = {
-  missing_report_verification: createValidationUIConfig({
-    label: "Verification page",
-    priority: 4,
+  error_required_fields: createValidationUIConfig({
+    label: (error) => String(error.context?.section_title ?? "review section"),
+    priority: 1,
     renderMode: "inline_link",
-    getHref: (ctx) =>
-      ctx?.report_version_id
-        ? `/reports/${ctx.report_version_id}/verification`
-        : undefined,
-  }),
+    getHref: (ctx) => {
+      if (!ctx?.report_version_id || !ctx?.section) return undefined;
 
-  verification_statement: createValidationUIConfig({
-    label: "Attachments page",
-    priority: 4,
-    renderMode: "inline_link",
-    getHref: (ctx) =>
-      ctx?.report_version_id
-        ? `/reports/${ctx.report_version_id}/attachments`
-        : undefined,
+      const reportVersionId = String(ctx.report_version_id);
+
+      const facilityId =
+        typeof ctx.facility_id === "string" ? ctx.facility_id : undefined;
+
+      const section = String(ctx.section);
+
+      // report-level pages
+      const reportLevelRoutes: Record<string, string> = {
+        review_operation_information: `/reports/${reportVersionId}/review-operation-information`,
+        person_responsible: `/reports/${reportVersionId}/person-responsible`,
+        additional_reporting_data: `/reports/${reportVersionId}/additional-reporting-data`,
+        electricity_import_data: `/reports/${reportVersionId}/electricity-import-data`,
+        new_entrant_information: `/reports/${reportVersionId}/new-entrant-information`,
+      };
+
+      // all facilities pages
+      const facilityCollectionRoutes: Record<string, string> = {
+        review_facilities: `/reports/${reportVersionId}/facilities/review-facilities`,
+        review_facility_report_information: `/reports/${reportVersionId}/facilities/report-information`,
+      };
+
+      // facility-specific pages
+      const facilitySectionRoutes: Record<
+        string,
+        (facilityId: string) => string
+      > = {
+        review_facility_information: (id) =>
+          `/reports/${reportVersionId}/facilities/${id}/review-facility-information`,
+        activity_data: (id) =>
+          `/reports/${reportVersionId}/facilities/${id}/activities`,
+        non_attributable_emissions: (id) =>
+          `/reports/${reportVersionId}/facilities/${id}/non-attributable`,
+        production_data: (id) =>
+          `/reports/${reportVersionId}/facilities/${id}/production-data`,
+        allocation_of_emissions: (id) =>
+          `/reports/${reportVersionId}/facilities/${id}/allocation-of-emissions`,
+      };
+
+      if (section in reportLevelRoutes) {
+        return reportLevelRoutes[section];
+      }
+
+      if (section in facilityCollectionRoutes) {
+        return facilityCollectionRoutes[section];
+      }
+
+      if (facilityId && section in facilitySectionRoutes) {
+        return facilitySectionRoutes[section](facilityId);
+      }
+
+      return undefined;
+    },
+    getMessage: (error) => {
+      const sectionTitle = error.context?.section_title ?? "this section";
+      const facilityName = error.context?.facility_name;
+      const missingFields = error.context?.missing_fields;
+
+      const location = facilityName
+        ? `${sectionTitle} for ${facilityName}`
+        : sectionTitle;
+
+      return Array.isArray(missingFields) && missingFields.length > 0
+        ? `Required fields are empty on ${location}: ${missingFields.join(", ")}.`
+        : `Required fields are empty on ${location}.`;
+    },
   }),
 
   operation_boro_id: createValidationUIConfig({
@@ -71,6 +126,25 @@ export const validationUIConfig: Partial<
         : undefined,
   }),
 
+  activity_data_coverage: createValidationUIConfig({
+    label: (error) => String(error.context?.section_title ?? "Activities"),
+    priority: 2,
+    renderMode: "inline_link",
+
+    getHref: (ctx) =>
+      ctx?.report_version_id && ctx?.facility_id
+        ? `/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/activities`
+        : undefined,
+
+    formatMessage: ({ error }) => {
+      const ctx = error.context;
+
+      return `Missing activity data for ${String(
+        ctx?.facility_name ?? "facility",
+      )}. Not all required activities have been reported in Activities.`;
+    },
+  }),
+
   report_activity_json_validation: createValidationUIConfig({
     label: (error) => String(error.context?.activity_name ?? "Activity data"),
     priority: 3,
@@ -78,7 +152,7 @@ export const validationUIConfig: Partial<
 
     getHref: (ctx) =>
       ctx?.report_version_id && ctx?.facility_id && ctx?.activity_id
-        ? `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/activities/${ctx.activity_id}`
+        ? `/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/activities/${ctx.activity_id}`
         : undefined,
 
     formatMessage: ({ error }) => {
@@ -92,11 +166,6 @@ export const validationUIConfig: Partial<
     },
   }),
 
-  attachment_not_scanned: createValidationUIConfig({
-    label: "Attachments page",
-    renderMode: "message_only",
-  }),
-
   report_data_out_of_bounds_by_fuel_type: createValidationUIConfig({
     label: (error) => String(error.context?.activity_name ?? "activity data"),
     priority: 3,
@@ -104,7 +173,7 @@ export const validationUIConfig: Partial<
 
     getHref: (ctx) =>
       ctx?.report_version_id && ctx?.facility_id && ctx?.activity_id
-        ? `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/activities/${ctx.activity_id}`
+        ? `/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/activities/${ctx.activity_id}`
         : undefined,
 
     formatMessage: ({ label, error }) => {
@@ -125,7 +194,7 @@ If the value is correct, you may save & continue.`;
 
     getHref: (ctx) =>
       ctx?.report_version_id && ctx?.facility_id && ctx?.activity_id
-        ? `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/activities/${ctx.activity_id}`
+        ? `/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/activities/${ctx.activity_id}`
         : undefined,
 
     formatMessage: ({ error }) => {
@@ -145,8 +214,33 @@ If the value is correct, you may save & continue.`;
     renderMode: "inline_link",
     getHref: (ctx) =>
       ctx?.report_version_id && ctx?.facility_id
-        ? `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/allocation-of-emissions`
+        ? `/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/allocation-of-emissions`
         : undefined,
+  }),
+
+  missing_report_verification: createValidationUIConfig({
+    label: "Verification page",
+    priority: 4,
+    renderMode: "inline_link",
+    getHref: (ctx) =>
+      ctx?.report_version_id
+        ? `/reports/${ctx.report_version_id}/verification`
+        : undefined,
+  }),
+
+  verification_statement: createValidationUIConfig({
+    label: "Attachments page",
+    priority: 4,
+    renderMode: "inline_link",
+    getHref: (ctx) =>
+      ctx?.report_version_id
+        ? `/reports/${ctx.report_version_id}/attachments`
+        : undefined,
+  }),
+
+  attachment_not_scanned: createValidationUIConfig({
+    label: "Attachments page",
+    renderMode: "message_only",
   }),
 
   missing_supplementary_report_required_attachment_confirmation:
@@ -190,79 +284,6 @@ If the value is correct, you may save & continue.`;
       ctx?.report_version_id
         ? `/reports/${ctx.report_version_id}/review-changes`
         : undefined,
-  }),
-
-  error_required_fields: createValidationUIConfig({
-    label: (error) => String(error.context?.section_title ?? "review section"),
-    priority: 1,
-    renderMode: "inline_link",
-    getHref: (ctx) => {
-      if (!ctx?.report_version_id || !ctx?.section) return undefined;
-
-      const reportVersionId = String(ctx.report_version_id);
-
-      const facilityId =
-        typeof ctx.facility_id === "string" ? ctx.facility_id : undefined;
-
-      const section = String(ctx.section);
-
-      // report-level pages
-      const reportLevelRoutes: Record<string, string> = {
-        review_operation_information: `/reports/${reportVersionId}/review-operation-information`,
-        person_responsible: `/reports/${reportVersionId}/person-responsible`,
-        additional_reporting_data: `/reports/${reportVersionId}/additional-reporting-data`,
-        review_facility_information: `/reports/${reportVersionId}/review-facility-information`,
-        electricity_import_data: `/reports/${reportVersionId}/electricity-import-data`,
-        new_entrant_information: `/reports/${reportVersionId}/new-entrant-information`,
-      };
-
-      // facility collection page (no facility_id)
-      const facilityCollectionRoutes: Record<string, string> = {
-        review_facilities: `/reporting/reports/${reportVersionId}/facilities/review-facilities`,
-      };
-
-      // facility-specific pages
-      const facilitySectionRoutes: Record<
-        string,
-        (facilityId: string) => string
-      > = {
-        activity_data: (id) =>
-          `/reporting/reports/${reportVersionId}/facilities/${id}/activities`,
-        non_attributable_emissions: (id) =>
-          `/reporting/reports/${reportVersionId}/facilities/${id}/non-attributable`,
-        production_data: (id) =>
-          `/reporting/reports/${reportVersionId}/facilities/${id}/production-data`,
-        allocation_of_emissions: (id) =>
-          `/reporting/reports/${reportVersionId}/facilities/${id}/allocation-of-emissions`,
-      };
-
-      if (section in reportLevelRoutes) {
-        return reportLevelRoutes[section];
-      }
-
-      if (section in facilityCollectionRoutes) {
-        return facilityCollectionRoutes[section];
-      }
-
-      if (facilityId && section in facilitySectionRoutes) {
-        return facilitySectionRoutes[section](facilityId);
-      }
-
-      return undefined;
-    },
-    getMessage: (error) => {
-      const sectionTitle = error.context?.section_title ?? "this section";
-      const facilityName = error.context?.facility_name;
-      const missingFields = error.context?.missing_fields;
-
-      const location = facilityName
-        ? `${sectionTitle} for ${facilityName}`
-        : sectionTitle;
-
-      return Array.isArray(missingFields) && missingFields.length > 0
-        ? `Required fields are empty on ${location}: ${missingFields.join(", ")}.`
-        : `Required fields are empty on ${location}.`;
-    },
   }),
 
   generic_error: createValidationUIConfig({
