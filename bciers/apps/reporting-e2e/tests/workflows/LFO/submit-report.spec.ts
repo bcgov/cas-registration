@@ -129,7 +129,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     );
 
     // ── 12. Final Review (read-only) ──
-    await report.continueFromFinalReview();
+    await report.verifyFinalReview();
 
     // ── 13. Verification ──
     await report.fillVerification();
