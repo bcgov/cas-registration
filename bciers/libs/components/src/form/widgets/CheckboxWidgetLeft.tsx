@@ -1,5 +1,6 @@
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 const CheckboxWidgetLeft: React.FC<WidgetProps> = ({
   disabled,
@@ -11,20 +12,22 @@ const CheckboxWidgetLeft: React.FC<WidgetProps> = ({
   readonly,
 }) => {
   return (
-    <div className="flex items-center">
-      <Checkbox
-        id={id}
-        checked={typeof value === "undefined" ? false : value}
-        value={value}
-        required={required}
-        aria-label={label}
-        disabled={disabled || readonly}
-        onChange={(event: { target: { checked: any } }) =>
-          onChange(event.target.checked)
-        }
-      />
-      <label className="font-bold mr-4">{label}</label>
-    </div>
+    <FormControlLabel
+      control={
+        <Checkbox
+          inputProps={{ id }}
+          checked={typeof value === "undefined" ? false : value}
+          value={value}
+          required={required}
+          disabled={disabled || readonly}
+          onChange={(event: { target: { checked: boolean } }) =>
+            onChange(event.target.checked)
+          }
+        />
+      }
+      label={label}
+      sx={{ "& .MuiFormControlLabel-label": { fontWeight: "bold" } }}
+    />
   );
 };
 
