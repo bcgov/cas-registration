@@ -157,6 +157,6 @@ test.describe("LFO: create and submit a new report for the current reporting yea
 
     // ── 17. Return to grid and verify report status ──
     await page.getByRole("link", { name: "Return to report table" }).click();
-    await grid.verifyReportStatus(OPERATION_NAMES.BUGLE_SFO, "Submitted");
+    await grid.verifyReportStatus(OPERATION_NAMES.BEES_LFO, "Submitted");
   });
 });
