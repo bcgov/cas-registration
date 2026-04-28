@@ -18,7 +18,7 @@ const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 test.describe.configure({ mode: "serial" });
 
 test.describe("LFO: create and submit a new report for the current reporting year", () => {
-  test("Industry user starts, fills, and submits a new SFO report", async ({
+  test("Industry user starts, fills, and submits a new LFO report", async ({
     page,
     request,
   }) => {
