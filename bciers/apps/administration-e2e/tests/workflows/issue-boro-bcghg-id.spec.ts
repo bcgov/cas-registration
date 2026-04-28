@@ -13,6 +13,7 @@ import {
   assertSuccessfulSnackbar,
   clickButton,
   urlIsCorrect,
+  waitForSnackbarToHide,
 } from "@bciers/e2e/utils/helpers";
 
 const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR);
@@ -58,6 +59,9 @@ test.describe("Issue BCGHG and BORO ID", () => {
       component: "BORO ID and BCGHG ID issued",
       variant: "default",
     });
+
+    await waitForSnackbarToHide(page, SnackbarMessages.ISSUED_BCGHG_ID);
+    await waitForSnackbarToHide(page, SnackbarMessages.ISSUED_BORO_ID);
     await analyzeAccessibility(page);
   });
 });

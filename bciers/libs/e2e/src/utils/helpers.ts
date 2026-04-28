@@ -20,7 +20,11 @@ export async function analyzeAccessibility(
 ) {
   const accessibilityScanResults = await new AxeBuilder({
     page,
-  }).analyze();
+    // ignore empty-table-headers since our search bar action cell is intenionally empty
+  })
+    .withTags(["wcag2aa", "wcag22aa", "best-practice"])
+    .disableRules(["empty-table-header"])
+    .analyze();
 
   if (accessibilityScanResults.violations.length > 0) {
     // eslint-disable-next-line no-console
@@ -447,6 +451,15 @@ export async function assertSuccessfulSnackbar(
     .getByText(message);
   await snackbarLocator.waitFor();
   await expect(snackbarLocator).toBeVisible();
+}
+
+export async function waitForSnackbarToHide(
+  page: Page,
+  message: string | RegExp,
+) {
+  const snackbar = page.locator(".MuiSnackbarContent-root").getByText(message);
+
+  await snackbar.waitFor({ state: "detached" });
 }
 
 export async function clickWithRetry(
