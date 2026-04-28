@@ -1,6 +1,8 @@
 from reporting.models import Configuration
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+import pytest
+from django.db import ProgrammingError
 
 
 class ConfigurationTest(TestCase):
@@ -28,3 +30,11 @@ class ConfigurationTest(TestCase):
     def testValidRecordInsert(self):
         valid_record = Configuration(slug='validRecord', valid_from='5026-01-01', valid_to='5026-12-31')
         valid_record.save()
+
+    def testSlugIsImmutable(self):
+        self.test_object.slug = 'immutable'
+        with pytest.raises(
+            ProgrammingError,
+            match='slug field is immutable',
+        ):
+            self.test_object.save()

@@ -1,5 +1,7 @@
 from common.tests.utils.helpers import BaseTestCase
 from reporting.models import ReportingField
+import pytest
+from django.db import ProgrammingError
 
 
 class ReportingFieldTest(BaseTestCase):
@@ -18,3 +20,12 @@ class ReportingFieldTest(BaseTestCase):
             ("configuration_elements", "configuration element", None, None),
             ("expected_value_range_methodology_field", "expected value range methodology field", None, 0),
         ]
+
+    def testSlugIsImmutable(self):
+
+        self.test_object.slug = 'immutable'
+        with pytest.raises(
+            ProgrammingError,
+            match='slug field is immutable',
+        ):
+            self.test_object.save()
