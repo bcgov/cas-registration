@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0181_update_activity_field_units'),
+        ('reporting', '0182_more_activity_field_updates'),
     ]
 
     operations = [
