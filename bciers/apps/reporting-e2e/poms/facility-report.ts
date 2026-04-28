@@ -27,8 +27,6 @@ const GSC_ACTIVITY = {
 
   FUEL_NAME_LABEL: "Fuel Name",
   FUEL_NAME_VALUE: "Diesel",
-  FUEL_UNIT_LABEL: "Fuel Unit",
-  FUEL_UNIT_VALUE: "kilolitres",
   FUEL_CLASSIFICATION_LABEL: "Fuel Classification",
   FUEL_CLASSIFICATION_VALUE: "Non-biomass",
   FUEL_DESCRIPTION_LABEL: "Fuel Description",
@@ -124,18 +122,17 @@ export class SFOFacilityReportPOM {
       true,
     );
 
-    // Verify fuel unit and fuel classification are read-only
-    const fuelUnit = this.page.getByRole("textbox", {
-      name: GSC_ACTIVITY.FUEL_UNIT_LABEL,
-    });
+    await expect(
+      this.page.getByText(/^Annual Fuel Amount \(kilolitres\)$/),
+    ).toBeVisible();
+
     const fuelClassification = this.page.getByRole("textbox", {
       name: GSC_ACTIVITY.FUEL_CLASSIFICATION_LABEL,
     });
-    await expect(fuelUnit).toHaveValue(GSC_ACTIVITY.FUEL_UNIT_VALUE);
     await expect(fuelClassification).toHaveValue(
       GSC_ACTIVITY.FUEL_CLASSIFICATION_VALUE,
     );
-    await checkFormFieldsReadOnly([fuelUnit, fuelClassification]);
+    await checkFormFieldsReadOnly([fuelClassification]);
 
     // Fill fuel description
     await fillInputValueByLabel(
