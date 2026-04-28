@@ -2,6 +2,7 @@ import type { DefaultSession, NextAuthConfig } from "next-auth";
 import Keycloak, { KeycloakProfile } from "next-auth/providers/keycloak";
 import { Errors, IDP } from "@bciers/utils/src/enums";
 import { actionHandler } from "@bciers/actions";
+import "next-auth/jwt";
 
 /*
 📌 Module Augmentation
@@ -35,7 +36,9 @@ declare module "next-auth" {
        */
     } & DefaultSession["user"];
   }
-  /** Returned by getToken from "@auth/core/jwt */
+}
+/** Returned by getToken from "@auth/core/jwt */
+declare module "next-auth/jwt" {
   interface JWT {
     /** OpenID ID Token */
     idToken?: string;

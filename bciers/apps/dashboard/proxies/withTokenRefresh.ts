@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { encode, getToken } from "next-auth/jwt";
+import { encode, getToken, JWT } from "next-auth/jwt";
 import { ProxyFactory } from "@bciers/proxies";
-import { JWT } from "next-auth";
 import { OAUTH_TOKEN_ROTATION_INTERVAL_SECONDS } from "../auth/auth.config";
 import isInAllowedPath from "@bciers/utils/src/isInAllowedList";
 
