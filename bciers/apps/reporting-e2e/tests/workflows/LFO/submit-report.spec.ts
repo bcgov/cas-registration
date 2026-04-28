@@ -12,6 +12,7 @@ import { LFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReviewFacilitiesPOM } from "@/reporting-e2e/poms/LFO/review-facilities";
 import { FacilityGridPOM } from "@/reporting-e2e/poms/LFO/facility-grid";
 import { OperationEmissionSummaryPOM } from "@/reporting-e2e/poms/LFO/operation-emissions-summary";
+import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
@@ -129,15 +130,33 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     );
 
     // ── 12. Final Review (read-only) ──
-    await report.continueFromFinalReview();
+    await report.verifyFinalReview();
+    await report.continue(
+      new RegExp(`${versionId}/${ReportRoutes.VERIFICATION}`),
+    );
 
     // ── 13. Verification ──
+    await verifyFormTitle(page, "Verification");
     await report.fillVerification();
+    await report.saveAndContinue(
+      new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
+    );
 
     // ── 14. Attachments — upload verification statement PDF ──
     await report.uploadVerificationStatement();
+    await report.saveAndContinue(
+      new RegExp(`${versionId}/${ReportRoutes.SIGN_OFF}`),
+      false,
+    );
 
     // ── 15. Sign-off and submit ──
     await grid.submitReportById(request, versionId, false, false, true);
+
+    // ── 16. Submission page — verify success content ──
+    await grid.verifySubmissionPage();
+
+    // ── 17. Return to grid and verify report status ──
+    await page.getByRole("link", { name: "Return to report table" }).click();
+    await grid.verifyReportStatus(OPERATION_NAMES.BUGLE_SFO, "Submitted");
   });
 });
