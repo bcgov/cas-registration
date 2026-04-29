@@ -1,5 +1,5 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import { NestedArrayFieldTemplate } from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 import FuelAmountFieldTemplate from "@bciers/components/form/fields/FuelAmountFieldTemplate";
