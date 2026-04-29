@@ -2,6 +2,7 @@ DO $$
 DECLARE
 op_id UUID;
   fac_id UUID;
+  created_at_ts TIMESTAMPTZ := '2025-03-11T19:54:04.734Z';
 BEGIN
   -- Loop through creating operations
 FOR i IN 1..999 LOOP
@@ -15,7 +16,7 @@ INSERT INTO erc.operation (
 )
 VALUES (
            op_id,
-           '2025-03-11T19:54:04.734Z',
+           created_at_ts,
            concat('test operation ', i),
            'Linear Facilities Operation',
            '4242ea9d-b917-4129-93c2-db00b7451051',
@@ -47,7 +48,7 @@ INSERT INTO erc.facility (
 )
 VALUES (
            fac_id,
-           '2025-03-11T19:54:04.734Z',
+           created_at_ts,
            concat('Test Facility ', i, '-', j),
            'Large Facility',
            op_id
@@ -60,7 +61,7 @@ INSERT INTO erc.facility_designated_operation_timeline (
 VALUES (
            fac_id,
            op_id,
-           '2025-03-11T19:54:04.734Z',
+           created_at_ts,
            NULL
        );
 
