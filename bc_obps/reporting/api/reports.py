@@ -74,7 +74,7 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
 )
 def get_all_reporting_years(
     request: HttpRequest, exclude_past: Optional[bool] = None
-) -> Tuple[Literal[200], List[ReportingYear]]:
+) -> Tuple[Literal[200], QuerySet[ReportingYear]]:
     return 200, ReportingYearService.get_all_reporting_years(exclude_past or False)
 
 

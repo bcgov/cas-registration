@@ -29,5 +29,6 @@ class ReportingYear(BaseModel):
     class Meta:
         db_table_comment = "Reporting year"
         db_table = 'erc"."reporting_year'
+        ordering = ['reporting_year']
 
     Rls = ReportingYearRls
