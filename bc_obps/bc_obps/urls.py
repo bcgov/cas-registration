@@ -21,6 +21,8 @@ from django.urls import path, include
 from .api import api
 
 
-urlpatterns = [path("admin/", admin.site.urls), path("api/", api.urls)]
+urlpatterns = [path("api/", api.urls)]
+if settings.NON_PROD_ENVIRONMENT:
+    urlpatterns += [path("admin/", admin.site.urls)]
 if settings.DEBUG:
     urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]

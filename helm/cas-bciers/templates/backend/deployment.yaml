@@ -30,7 +30,7 @@ spec:
             {{- include "cas-bciers.backendEnvVars" . | nindent 12 }}
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: "/attachment-credentials/attachment-credentials.json"
-            {{- if hasSuffix "-dev" .Release.Namespace }}
+            {{- if or (hasSuffix "-dev" .Release.Namespace) (hasSuffix "-test" .Release.Namespace) }}
             - name: DJANGO_SUPERUSER_USERNAME
               valueFrom:
                 secretKeyRef:

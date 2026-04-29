@@ -1,4 +1,4 @@
-{{- if (hasSuffix "-dev" .Release.Namespace)}}
+{{- if or (hasSuffix "-dev" .Release.Namespace) (hasSuffix "-test" .Release.Namespace)}}
 
 apiVersion: batch/v1
 kind: Job
