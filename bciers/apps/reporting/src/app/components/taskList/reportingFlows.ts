@@ -28,6 +28,25 @@ export const reportingFlows: {
   [ReportingFlow.ReportingOnlyLFO]: lfoReportingOnlyFlow,
 };
 
+const reportingFlowLookup: Record<string, Record<string, ReportingFlow>> = {
+  "Single Facility Operation": {
+    [POTENTIAL_REPORTING_OPERATION]: ReportingFlow.PotentialReportingSFO,
+    [OPTED_IN_OPERATION]: ReportingFlow.OptedInSFO,
+    [NEW_ENTRANT_REGISTRATION_PURPOSE]: ReportingFlow.NewEntrantSFO,
+    [REPORTING_OPERATION]: ReportingFlow.ReportingOnlySFO,
+    DEFAULT: ReportingFlow.SFO,
+  },
+  "Linear Facilities Operation": {
+    [POTENTIAL_REPORTING_OPERATION]: ReportingFlow.PotentialReportingLFO,
+    [OPTED_IN_OPERATION]: ReportingFlow.OptedInLFO,
+    [NEW_ENTRANT_REGISTRATION_PURPOSE]: ReportingFlow.NewEntrantLFO,
+    [REPORTING_OPERATION]: ReportingFlow.ReportingOnlyLFO,
+    DEFAULT: ReportingFlow.LFO,
+  },
+};
+
+const newCasesPurposes = [POTENTIAL_REPORTING_OPERATION, OPTED_IN_OPERATION];
+
 /**
  * Resolves the appropriate ReportingFlow based on operation type and registration purpose.
  * Optionally includes new cases like POTENTIAL_REPORTING_OPERATION and OPTED_IN_OPERATION.
@@ -46,40 +65,21 @@ function resolveFlow(
   if (registrationPurpose === ELECTRICITY_IMPORT_OPERATION)
     return ReportingFlow.EIO;
 
-  // Single Facility Operation
-  if (operationType === "Single Facility Operation") {
-    if (includeNewCases) {
-      if (registrationPurpose === POTENTIAL_REPORTING_OPERATION)
-        return ReportingFlow.PotentialReportingSFO;
-      if (registrationPurpose === OPTED_IN_OPERATION)
-        return ReportingFlow.OptedInSFO;
-    }
-    switch (registrationPurpose) {
-      case NEW_ENTRANT_REGISTRATION_PURPOSE:
-        return ReportingFlow.NewEntrantSFO;
-      case REPORTING_OPERATION:
-        return ReportingFlow.ReportingOnlySFO;
-      default:
-        return ReportingFlow.SFO;
-    }
-  }
+  const isNewCasePurpose = newCasesPurposes.includes(registrationPurpose);
+  const operationFlow = reportingFlowLookup[operationType];
 
-  // Linear Facilities Operation
-  if (operationType === "Linear Facilities Operation") {
-    if (includeNewCases) {
-      if (registrationPurpose === POTENTIAL_REPORTING_OPERATION)
-        return ReportingFlow.PotentialReportingLFO;
-      if (registrationPurpose === OPTED_IN_OPERATION)
-        return ReportingFlow.OptedInLFO;
+  if (operationFlow) {
+    if (includeNewCases && isNewCasePurpose) {
+      return operationFlow[registrationPurpose];
     }
-    switch (registrationPurpose) {
-      case NEW_ENTRANT_REGISTRATION_PURPOSE:
-        return ReportingFlow.NewEntrantLFO;
-      case REPORTING_OPERATION:
-        return ReportingFlow.ReportingOnlyLFO;
-      default:
-        return ReportingFlow.LFO;
-    }
+
+    const useDefault =
+      (!includeNewCases && isNewCasePurpose) ||
+      !operationFlow[registrationPurpose];
+
+    return useDefault
+      ? operationFlow.DEFAULT
+      : operationFlow[registrationPurpose];
   }
 
   throw new Error(
