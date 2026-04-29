@@ -117,6 +117,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
 
     // ── 9. Allocation of Emissions ──
     await verifyFormTitle(page, "Allocation of Emissions");
+    await facilityReport.verifyAllocationAlerts();
     await facilityReport.fillAllocationOfEmissions();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "SFO Report - Allocation of Emissions",
