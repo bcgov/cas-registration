@@ -52,6 +52,7 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
 
         mock_product = ReportProductComplianceData(
             name="Test Product",
+            unit="tonnes of product",
             product_id=1,
             annual_production=Decimal("5000.0"),
             jan_mar_production=None,
@@ -115,6 +116,7 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
         assert len(payload["products"]) == 1
         product = payload["products"][0]
         assert product["name"] == "Test Product"
+        assert product["unit"] == "tonnes of product"
         assert product["reduction_factor"] == approx(0.9)
         assert product["tightening_rate"] == approx(0.01)
 

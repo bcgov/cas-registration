@@ -51,8 +51,6 @@ class ReportProductComplianceData:
 
     def as_record_defaults(self) -> dict[str, Decimal | str | None]:
         return {
-            "name": self.name,
-            "unit": self.unit,
             "annual_production": ComplianceParameters.round(self.annual_production),
             "jan_mar_production": (
                 ComplianceParameters.round(self.jan_mar_production) if self.jan_mar_production is not None else None
