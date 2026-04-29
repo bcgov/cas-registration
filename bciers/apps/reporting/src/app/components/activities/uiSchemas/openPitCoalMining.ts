@@ -1,6 +1,6 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import MethodologyFieldTemplate from "@bciers/components/form/fields/MethodologyFieldTemplate";
-import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import { NestedArrayFieldTemplate } from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
 import ReadOnlyWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyWidget";

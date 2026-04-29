@@ -3,7 +3,7 @@ import {
   FieldTemplate,
   InlineFieldTemplate,
 } from "@bciers/components/form/fields";
-import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import { NestedArrayFieldTemplate } from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import { RadioWidget } from "@bciers/components/form/widgets";
 import BiogenicEmissionsSplitFieldTemplate from "@bciers/components/form/fields/BiogenicEmissionsSplitFieldTemplate";

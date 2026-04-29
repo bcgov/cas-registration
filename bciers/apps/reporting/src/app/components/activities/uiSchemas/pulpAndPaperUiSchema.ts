@@ -1,6 +1,6 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
-import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import { NestedArrayFieldTemplate } from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import { InlineFieldTemplate } from "@bciers/components/form/fields";
 import MethodologyFieldTemplate from "@bciers/components/form/fields/MethodologyFieldTemplate";
 
