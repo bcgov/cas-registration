@@ -1,4 +1,4 @@
-import Dialog from "@mui/material/Dialog";
+import Dialog, { DialogProps } from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import IconButton from "@mui/material/IconButton";
@@ -9,9 +9,19 @@ interface Props {
   onClose?: () => void;
   open: boolean;
   title?: string;
+  maxWidth?: DialogProps["maxWidth"];
+  fullWidth?: boolean;
 }
 
-const Modal: React.FC<Props> = ({ children, id, onClose, open, title }) => {
+const Modal: React.FC<Props> = ({
+  children,
+  id,
+  onClose,
+  open,
+  title,
+  maxWidth = "xl",
+  fullWidth = false,
+}) => {
   return (
     <Dialog
       id={id}
@@ -19,7 +29,8 @@ const Modal: React.FC<Props> = ({ children, id, onClose, open, title }) => {
       open={open}
       closeAfterTransition
       aria-labelledby={title}
-      maxWidth="xl"
+      maxWidth={maxWidth}
+      fullWidth={fullWidth}
       data-testid="modal"
       PaperProps={{ sx: { borderRadius: "2px" } }}
     >

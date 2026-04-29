@@ -1,4 +1,5 @@
 import { Button, DialogActions, DialogContentText } from "@mui/material";
+import { DialogProps } from "@mui/material/Dialog";
 import Modal from "./Modal";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 import React from "react";
@@ -14,6 +15,8 @@ interface Props extends React.PropsWithChildren {
   textComponentType?: "p" | "span" | "div";
   dialogContentClassName?: string;
   isSubmitting?: boolean;
+  maxWidth?: DialogProps["maxWidth"];
+  fullWidth?: boolean;
 }
 
 const SimpleModal: React.FC<Props> = ({
@@ -28,9 +31,11 @@ const SimpleModal: React.FC<Props> = ({
   children,
   dialogContentClassName,
   isSubmitting = false,
+  maxWidth = "md",
+  fullWidth = true,
 }) => {
   return (
-    <Modal open={open} title={title}>
+    <Modal open={open} title={title} maxWidth={maxWidth} fullWidth={fullWidth}>
       <DialogContentText
         className={`m-4 ${dialogContentClassName}`}
         component={textComponentType}
