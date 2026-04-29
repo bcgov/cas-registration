@@ -5,9 +5,6 @@ on:
     inputs:
       run_id:
         required: true
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-
 jobs:
   retry-on-failure:
     runs-on: ubuntu-latest

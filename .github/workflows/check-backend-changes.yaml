@@ -7,9 +7,6 @@ on:
         description: "Whether any files in bc_obps directory have changed"
         value: ${{ jobs.check.outputs.has_changes }}
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-
 jobs:
   check:
     runs-on: ubuntu-latest
