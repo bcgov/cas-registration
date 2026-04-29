@@ -17,14 +17,16 @@ import path from "node:path";
 export async function analyzeAccessibility(
   page: Page,
   description: string = "",
+  disableRules?: string[],
 ) {
-  const accessibilityScanResults = await new AxeBuilder({
+  const builder = new AxeBuilder({
     page,
-    // ignore empty-table-headers since our search bar action cell is intenionally empty
-  })
-    .withTags(["wcag2aa", "wcag22aa", "best-practice"])
-    .disableRules(["empty-table-header"])
-    .analyze();
+  });
+
+  if (disableRules && disableRules.length > 0)
+    builder.disableRules(disableRules);
+
+  const accessibilityScanResults = await builder.analyze();
 
   if (accessibilityScanResults.violations.length > 0) {
     // eslint-disable-next-line no-console
