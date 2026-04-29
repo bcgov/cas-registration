@@ -63,7 +63,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
 
     // ── 5. Review Facilities
     const reviewFacility = new ReviewFacilitiesPOM(page);
-    reviewFacility.selectFacilities(["Facility 38"]);
+    await reviewFacility.selectFacilities(["Facility 38"]);
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Review Facilities",
       variant: "filled",
