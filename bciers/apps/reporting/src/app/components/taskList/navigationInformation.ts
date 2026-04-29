@@ -48,6 +48,102 @@ const splitHeaderElements = (
   ];
 };
 
+type pageElementFactoryContext = {
+  page: ReportingPage;
+  reportVersionId: number;
+  facilityId: string;
+  context: TaskListPageFactoryContext;
+};
+
+/**
+ * Utility functions to find the back links for the tasklist.
+ * - either from the current page factory itself
+ * - or from the next and previous in the list
+ * - or from the next and previous taskListFactory
+ *
+ */
+const determineBackUrl = async (
+  flowData: ReportingFlowDescription,
+  tasklistPages: TaskListPageFactoryData[],
+  pageIndex: number,
+  step: HeaderStep,
+  previousPageContext: pageElementFactoryContext,
+) => {
+  const availableFlows = Object.keys(flowData);
+  const { page, reportVersionId, facilityId, context } = previousPageContext;
+
+  const backUrl = tasklistPages[pageIndex].backUrl;
+
+  if (backUrl !== undefined) {
+    return backUrl;
+  }
+
+  if (pageIndex != 0)
+    return getTasklistElementLink(tasklistPages[pageIndex - 1].element, "last");
+
+  // last element of previous step
+  const previousStepIndex = availableFlows.indexOf(step) - 1;
+  if (previousStepIndex >= 0) {
+    const previousStep = availableFlows[previousStepIndex];
+    const lastPageOfPreviousStep = flowData[previousStep as HeaderStep]?.at(
+      -1,
+    ) as ReportingPage;
+
+    const previousPage = await pageElementFactory(
+      lastPageOfPreviousStep,
+      page,
+      reportVersionId,
+      facilityId,
+      context,
+    );
+
+    return getTasklistElementLink(previousPage.element, "last");
+  }
+
+  return backUrl;
+};
+
+const determineContinueUrl = async (
+  flowData: ReportingFlowDescription,
+  tasklistPages: TaskListPageFactoryData[],
+  pageIndex: number,
+  step: HeaderStep,
+  nextPageContext: pageElementFactoryContext,
+) => {
+  const availableFlows = Object.keys(flowData);
+  const { page, reportVersionId, facilityId, context } = nextPageContext;
+  const continueUrl = tasklistPages[pageIndex].continueUrl;
+
+  if (continueUrl !== undefined) {
+    return continueUrl;
+  }
+
+  if (pageIndex != tasklistPages.length - 1) {
+    return getTasklistElementLink(
+      tasklistPages[pageIndex + 1].element,
+      "first",
+    );
+  }
+  // first element of next step
+  const nextStepIndex = availableFlows.indexOf(step) + 1;
+  if (nextStepIndex < availableFlows.length) {
+    const nextStep = availableFlows[nextStepIndex];
+    const firstPageOfNextStep = flowData[nextStep as HeaderStep]?.at(
+      0,
+    ) as ReportingPage;
+
+    const nextPage = await pageElementFactory(
+      firstPageOfNextStep,
+      page,
+      reportVersionId,
+      facilityId,
+      context,
+    );
+    return getTasklistElementLink(nextPage.element, "first");
+  }
+  return continueUrl;
+};
+
 /**
  *
  * @param step
@@ -111,69 +207,21 @@ export async function getNavigationInformation(
     );
 
   // find forward and back links
-  // - either from the current page factory itself
-  // - or from the next and previous in the list
-  // - or from the next and previous taskListFactory
-  const availableFlows = Object.keys(flowData);
+  const backUrl = await determineBackUrl(
+    flowData,
+    tasklistPages,
+    pageIndex,
+    step,
+    { page, reportVersionId, facilityId, context },
+  );
 
-  let backUrl = tasklistPages[pageIndex].backUrl;
-
-  if (backUrl === undefined) {
-    if (pageIndex != 0)
-      backUrl = getTasklistElementLink(
-        tasklistPages[pageIndex - 1].element,
-        "last",
-      );
-    else {
-      // last element of previous step
-      const previousStepIndex = availableFlows.indexOf(step) - 1;
-      if (previousStepIndex >= 0) {
-        const previousStep = availableFlows[previousStepIndex];
-        const lastPageOfPreviousStep = flowData[previousStep as HeaderStep]?.at(
-          -1,
-        ) as ReportingPage;
-
-        const previousPage = await pageElementFactory(
-          lastPageOfPreviousStep,
-          page,
-          reportVersionId,
-          facilityId,
-          context,
-        );
-
-        backUrl = getTasklistElementLink(previousPage.element, "last");
-      }
-    }
-  }
-
-  let continueUrl = tasklistPages[pageIndex].continueUrl;
-
-  if (continueUrl === undefined) {
-    if (pageIndex != tasklistPages.length - 1) {
-      continueUrl = getTasklistElementLink(
-        tasklistPages[pageIndex + 1].element,
-        "first",
-      );
-    } else {
-      // first element of next step
-      const nextStepIndex = availableFlows.indexOf(step) + 1;
-      if (nextStepIndex < availableFlows.length) {
-        const nextStep = availableFlows[nextStepIndex];
-        const firstPageOfNextStep = flowData[nextStep as HeaderStep]?.at(
-          0,
-        ) as ReportingPage;
-
-        const nextPage = await pageElementFactory(
-          firstPageOfNextStep,
-          page,
-          reportVersionId,
-          facilityId,
-          context,
-        );
-        continueUrl = getTasklistElementLink(nextPage.element, "first");
-      }
-    }
-  }
+  const continueUrl = await determineContinueUrl(
+    flowData,
+    tasklistPages,
+    pageIndex,
+    step,
+    { page, reportVersionId, facilityId, context },
+  );
 
   const rootElement = headerElementFactory(step, context);
 
