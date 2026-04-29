@@ -41,8 +41,9 @@ function FuelAmountFieldTemplate({
   children,
   uiSchema,
   classNames,
-  formContext,
+  registry,
 }: FieldTemplateProps) {
+  const { formContext } = registry;
   const isHidden = uiSchema?.["ui:widget"] === "hidden";
   if (isHidden) return null;
 
