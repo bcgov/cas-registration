@@ -14,6 +14,17 @@ const baseConfig = {
     serverActions: {
       bodySizeLimit: "25mb",
     },
+    // Next.js 16.2.0 flipped experimental.reactDebugChannel to true by default
+    // (vercel/next.js#90310). It streams REACT_DEBUG_CHUNK messages over the HMR
+    // WebSocket as a blocking prerequisite to hydrateRoot. In our multi-zone dev
+    // setup, pages are served through the dashboard proxy at localhost:3000, but
+    // Next's HTTP rewrites cannot upgrade the HMR WebSocket to the zone's origin
+    // (e.g. localhost:4001), so the debug chunks never arrive and client
+    // components never hydrate — forms submit as native GET, useEffect never
+    // runs, etc. Disabling the channel restores hydration without patching any
+    // Next.js internals. This is a dev-only feature, so there is no production
+    // impact. Revisit once multi-zone WebSocket proxying is addressed upstream.
+    reactDebugChannel: false,
   },
   transpilePackages: ["mui-tel-input"],
   modularizeImports: {
