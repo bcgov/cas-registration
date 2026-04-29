@@ -28,7 +28,6 @@ const GSC_ACTIVITY = {
 
   FUEL_NAME_LABEL: "Fuel Name",
   FUEL_NAME_VALUE: "Diesel",
-  FUEL_UNIT_LABEL: "Fuel Unit",
   FUEL_UNIT_VALUE: "kilolitres",
   FUEL_CLASSIFICATION_LABEL: "Fuel Classification",
   FUEL_CLASSIFICATION_VALUE: "Non-biomass",
@@ -204,11 +203,15 @@ export class SFOFacilityReportPOM {
     await productionData.fillProducts(productsToSelect, productsAvailable);
   }
 
+  async verifyAllocationAlerts(): Promise<void> {
+    const allocationOfEmissions = new AllocationOfEmissionsPOM(this.page);
+    await allocationOfEmissions.validateProductAlertVisible();
+  }
+
   async fillAllocationOfEmissions(
     methodology: AllocationMethodology = "OBPS Allocation Calculator",
   ): Promise<void> {
     const allocationOfEmissions = new AllocationOfEmissionsPOM(this.page);
-    await allocationOfEmissions.validateProductAlertVisible();
     await allocationOfEmissions.fill(methodology);
   }
 }
