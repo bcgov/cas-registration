@@ -1,13 +1,13 @@
-from functools import reduce
 from typing import Any, List
+import logging
 
+from reporting.service.reporting_flow_service import resolve_flow
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
 )
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 from . import validators
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -29,16 +29,6 @@ def collect_validation_plugins() -> List[Any]:
 
 
 class ReportValidationService:
-    """
-    A service to validate reports before submission
-
-    Strategy:
-    - validators are collected at startup
-    - filtered by TAGS (broad filtering)
-    - optionally filtered by `applies()` (flow / section applicability)
-    - then executed
-    """
-
     validation_plugins = collect_validation_plugins()
 
     @staticmethod
@@ -46,30 +36,21 @@ class ReportValidationService:
         version_id: int,
         tag: ValidationTags | None = None,
     ) -> dict[str, ReportValidationError]:
+        report_version = ReportVersion.objects.select_related(
+            "report_operation",
+        ).get(id=version_id)
 
-        report_version = ReportVersion.objects.get(id=version_id)
-
-        results: List[dict[str, ReportValidationError]] = []
+        flow = resolve_flow(report_version)
+        errors: dict[str, ReportValidationError] = {}
 
         for validation_plugin in ReportValidationService.validation_plugins:
-
-            # Tag filtering
             if tag is not None and tag not in getattr(validation_plugin, "TAGS", []):
                 continue
 
-            # Applicability filtering
             applies = getattr(validation_plugin, "applies", None)
-            if callable(applies):
-                try:
-                    if not applies(report_version):
-                        continue
-                except Exception as e:
-                    logger.error(f'Validator applies() failed: {validation_plugin} - {str(e)}')
-                    continue
+            if callable(applies) and not applies(flow):
+                continue
 
-            # Execute validator
-            result = validation_plugin.validate(report_version)
-            results.append(result)
+            errors.update(validation_plugin.validate(report_version))
 
-        # Aggregate the results in one dictionary, by key
-        return reduce(lambda acc, curr: {**acc, **curr}, results, {})
+        return errors

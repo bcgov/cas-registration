@@ -11,6 +11,7 @@ from reporting.service.report_validation.report_validation_tags import Validatio
 from reporting.service.report_validation.validators.required_fields.utils import (
     applies_to_section,
 )
+from reporting.service.reporting_flow_service import ReportingFlow
 
 TAGS = [ValidationTags.REPORT_VALIDATION]
 
@@ -18,8 +19,8 @@ SECTION = "activity_data_coverage"
 SECTION_TITLE = "Activities"
 
 
-def applies(report_version: ReportVersion) -> bool:
-    return applies_to_section(report_version, SECTION)
+def applies(flow: ReportingFlow) -> bool:
+    return applies_to_section(flow, SECTION)
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:

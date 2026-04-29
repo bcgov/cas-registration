@@ -1,5 +1,5 @@
 from uuid import UUID
-from django.db.models import QuerySet
+from django.db.models import Count, Prefetch
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_product import ReportProduct
 from reporting.models.report_version import ReportVersion
@@ -15,7 +15,9 @@ from reporting.service.report_validation.validators.required_fields.utils import
     build_required_fields_error,
     collect_missing_fields_many,
 )
+
 from reporting.service.report_validation.validators.required_fields.utils import applies_to_section
+from reporting.service.reporting_flow_service import ReportingFlow
 
 
 TAGS = [ValidationTags.REPORT_VALIDATION]
@@ -41,8 +43,8 @@ REQUIRED_FIELDS: list[RequiredFieldConfig] = [
 ]
 
 
-def applies(report_version: ReportVersion) -> bool:
-    return applies_to_section(report_version, SECTION)
+def applies(flow: ReportingFlow) -> bool:
+    return applies_to_section(flow, SECTION)
 
 
 def _requires_jan_mar(report_version: ReportVersion) -> bool:
@@ -118,7 +120,7 @@ def _get_product_missing_fields(
 
 def _get_facility_missing_fields(
     *,
-    queryset: QuerySet[ReportProduct],
+    queryset: list[ReportProduct],
     report_version: ReportVersion,
     requires_jan_mar: bool,
 ) -> list[str]:
@@ -138,18 +140,26 @@ def _get_facility_missing_fields(
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     errors: dict[str, ReportValidationError] = {}
-    facility_reports = FacilityReport.objects.filter(report_version=report_version)
     requires_jan_mar = _requires_jan_mar(report_version)
 
-    for facility_report in facility_reports:
-        queryset = ReportProduct.objects.filter(
-            report_version=report_version,
-            facility_report=facility_report,
+    # use Count for existence check
+    # use Prefetch for_related records
+    facility_reports = (
+        FacilityReport.objects.filter(report_version=report_version)
+        .annotate(product_count=Count("report_products"))
+        .prefetch_related(
+            Prefetch(
+                "report_products",
+                queryset=ReportProduct.objects.filter(report_version=report_version),
+                to_attr="prefetched_report_products",
+            )
         )
+    )
 
+    for facility_report in facility_reports:
         error_key = f"error_required_fields_{SECTION}_facility_{facility_report.facility_id}"
 
-        if not queryset.exists():
+        if facility_report.product_count == 0:
             errors[error_key] = _build_facility_error(
                 report_version=report_version,
                 facility_report=facility_report,
@@ -158,7 +168,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             continue
 
         missing_field_labels = _get_facility_missing_fields(
-            queryset=queryset,
+            queryset=facility_report.prefetched_report_products,
             report_version=report_version,
             requires_jan_mar=requires_jan_mar,
         )

@@ -1,5 +1,5 @@
 from uuid import UUID
-
+from django.db.models import Count, Prefetch
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_version import ReportVersion
@@ -14,7 +14,9 @@ from reporting.service.report_validation.validators.required_fields.utils import
     build_required_fields_error,
     collect_missing_fields,
 )
+
 from reporting.service.report_validation.validators.required_fields.utils import applies_to_section
+from reporting.service.reporting_flow_service import ReportingFlow
 
 
 TAGS = [ValidationTags.REPORT_VALIDATION]
@@ -29,8 +31,8 @@ REQUIRED_FIELDS: list[RequiredFieldConfig] = [
 ]
 
 
-def applies(report_version: ReportVersion) -> bool:
-    return applies_to_section(report_version, SECTION)
+def applies(flow: ReportingFlow) -> bool:
+    return applies_to_section(flow, SECTION)
 
 
 def _build_error(
@@ -80,17 +82,27 @@ def _get_allocation_missing_fields(
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     errors: dict[str, ReportValidationError] = {}
-    facility_reports = FacilityReport.objects.filter(report_version=report_version)
+
+    # use Count for existence check
+    # use Prefetch for_related records
+    facility_reports = (
+        FacilityReport.objects.filter(report_version=report_version)
+        .annotate(allocation_count=Count("reportemissionallocation_records"))
+        .prefetch_related(
+            Prefetch(
+                "reportemissionallocation_records",
+                queryset=ReportEmissionAllocation.objects.filter(
+                    report_version=report_version,
+                ),
+                to_attr="emission_allocation_records",
+            )
+        )
+    )
 
     for facility_report in facility_reports:
         error_key = f"error_required_fields_{SECTION}_facility_{facility_report.facility_id}"
 
-        try:
-            allocation_record = ReportEmissionAllocation.objects.get(
-                report_version=report_version,
-                facility_report=facility_report,
-            )
-        except ReportEmissionAllocation.DoesNotExist:
+        if facility_report.allocation_count == 0:
             errors[error_key] = _build_facility_error(
                 report_version=report_version,
                 facility_report=facility_report,
@@ -98,6 +110,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             )
             continue
 
+        allocation_record = facility_report.emission_allocation_records[0]
         missing_field_labels = _get_allocation_missing_fields(allocation_record)
 
         if missing_field_labels:

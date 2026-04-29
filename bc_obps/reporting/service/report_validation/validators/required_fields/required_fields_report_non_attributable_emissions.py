@@ -1,4 +1,5 @@
 from uuid import UUID
+from django.db.models import Prefetch
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_non_attributable_emissions import (
     ReportNonAttributableEmissions,
@@ -14,7 +15,9 @@ from reporting.service.report_validation.report_validation_tags import Validatio
 from reporting.service.report_validation.validators.required_fields.types import RequiredFieldConfig
 from reporting.service.report_validation.validators.required_fields.utils import collect_missing_fields_many
 
+
 from reporting.service.report_validation.validators.required_fields.utils import applies_to_section
+from reporting.service.reporting_flow_service import ReportingFlow
 
 
 TAGS = [ValidationTags.REPORT_VALIDATION]
@@ -44,8 +47,8 @@ REQUIRED_FIELDS: list[RequiredFieldConfig] = [
 ]
 
 
-def applies(report_version: ReportVersion) -> bool:
-    return applies_to_section(report_version, SECTION)
+def applies(flow: ReportingFlow) -> bool:
+    return applies_to_section(flow, SECTION)
 
 
 def _build_error(
@@ -73,20 +76,28 @@ def _build_error(
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     errors: dict[str, ReportValidationError] = {}
 
-    facility_reports = FacilityReport.objects.filter(report_version=report_version)
+    # use Prefetch for_related records
+    facility_reports = FacilityReport.objects.filter(
+        report_version=report_version,
+    ).prefetch_related(
+        Prefetch(
+            "reportnonattributableemissions_records",
+            queryset=ReportNonAttributableEmissions.objects.filter(
+                report_version=report_version,
+            ),
+            to_attr="non_attributable_emission_records",
+        )
+    )
 
     for facility_report in facility_reports:
-        queryset = ReportNonAttributableEmissions.objects.filter(
-            report_version=report_version,
-            facility_report=facility_report,
-        )
+        records = facility_report.non_attributable_emission_records
 
-        # only validate required fields when a ReportNonAttributableEmissions record exists
-        if not queryset.exists():
+        # only validate required fields when a record exists
+        if not records:
             continue
 
         missing_field_labels = collect_missing_fields_many(
-            queryset,
+            records,
             REQUIRED_FIELDS,
         )
 

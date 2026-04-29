@@ -51,8 +51,8 @@ LFO_COMPLETION_REQUIRED_FLOWS = {
 }
 
 
-def applies(report_version: ReportVersion) -> bool:
-    return applies_to_section(report_version, SECTION)
+def applies(flow: ReportingFlow) -> bool:
+    return applies_to_section(flow, SECTION)
 
 
 def _build_error(
@@ -77,14 +77,16 @@ def _build_error(
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     errors: dict[str, ReportValidationError] = {}
-    facility_reports = FacilityReport.objects.filter(report_version=report_version)
 
-    if not facility_reports.exists():
-        errors[f"error_required_fields_{SECTION}"] = _build_error(
-            report_version_id=report_version.id,
-            missing_field_labels=[item["label"] for item in REQUIRED_FIELDS],
-        )
-        return errors
+    facility_reports = list(FacilityReport.objects.filter(report_version=report_version))
+
+    if not facility_reports:
+        return {
+            f"error_required_fields_{SECTION}": _build_error(
+                report_version_id=report_version.id,
+                missing_field_labels=[item["label"] for item in REQUIRED_FIELDS],
+            )
+        }
 
     missing_field_labels = collect_missing_fields_many(
         facility_reports,
@@ -98,8 +100,11 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         )
 
     flow = resolve_flow(report_version)
+
     if flow in LFO_COMPLETION_REQUIRED_FLOWS:
-        if facility_reports.filter(is_completed=False).exists():
+        has_incomplete_facility = any(not facility_report.is_completed for facility_report in facility_reports)
+
+        if has_incomplete_facility:
             errors[f"error_required_fields_{REVIEW_FACILITIES_SECTION}"] = _build_error(
                 report_version_id=report_version.id,
                 missing_field_labels=["All facilities must be marked complete"],

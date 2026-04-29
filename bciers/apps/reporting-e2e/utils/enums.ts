@@ -26,6 +26,7 @@ export enum ReportRoutes {
   PRODUCTION_DATA = "production-data",
   ALLOCATION_OF_EMISSIONS = "allocation-of-emissions",
   REVIEW_CHANGES = "review-changes",
+  VALIDATION = "report-validation",
   FINAL_REVIEW = "final-review",
   ATTACHMENTS = "attachments",
 }

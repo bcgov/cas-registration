@@ -1,7 +1,6 @@
 from uuid import UUID
-
+from django.db.models import Count
 from reporting.models.facility_report import FacilityReport
-from reporting.models.report_activity import ReportActivity
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
@@ -10,7 +9,9 @@ from reporting.service.report_validation.report_validation_tags import Validatio
 from reporting.service.report_validation.validators.required_fields.utils import (
     build_required_fields_error,
 )
+
 from reporting.service.report_validation.validators.required_fields.utils import applies_to_section
+from reporting.service.reporting_flow_service import ReportingFlow
 
 
 TAGS = [ValidationTags.REPORT_VALIDATION]
@@ -18,8 +19,8 @@ SECTION = "activity_data"
 SECTION_TITLE = "Activity data"
 
 
-def applies(report_version: ReportVersion) -> bool:
-    return applies_to_section(report_version, SECTION)
+def applies(flow: ReportingFlow) -> bool:
+    return applies_to_section(flow, SECTION)
 
 
 def _build_error(
@@ -56,21 +57,20 @@ def _build_facility_error(
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     errors: dict[str, ReportValidationError] = {}
 
-    facility_reports = FacilityReport.objects.filter(report_version=report_version)
+    # use Count for existence check
+    facility_reports = (
+        FacilityReport.objects.filter(report_version=report_version)
+        .annotate(activity_count=Count("reportactivity_records"))
+        .filter(activity_count=0)
+    )
 
     for facility_report in facility_reports:
-        queryset = ReportActivity.objects.filter(
-            report_version=report_version,
-            facility_report=facility_report,
-        )
-
         error_key = f"error_required_fields_{SECTION}_facility_{facility_report.facility_id}"
 
-        if not queryset.exists():
-            errors[error_key] = _build_facility_error(
-                report_version=report_version,
-                facility_report=facility_report,
-                missing_field_labels=["Activity data"],
-            )
+        errors[error_key] = _build_facility_error(
+            report_version=report_version,
+            facility_report=facility_report,
+            missing_field_labels=["Activity data"],
+        )
 
     return errors

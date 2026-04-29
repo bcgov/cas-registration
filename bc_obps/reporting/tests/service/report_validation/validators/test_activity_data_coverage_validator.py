@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import pytest
 from model_bakery import baker
 
@@ -12,6 +10,8 @@ from reporting.service.report_validation.validators.activity_data_coverage_valid
     applies,
     validate,
 )
+from reporting.service.reporting_flow_service import ReportingFlow
+
 
 pytestmark = pytest.mark.django_db
 
@@ -38,19 +38,11 @@ class TestActivityDataCoverageValidator:
 
         self.error_key = f"{SECTION}_facility_{self.facility_report.facility_id}"
 
-    def test_applies_returns_true_when_section_is_applicable(self):
-        with patch(APPLIES_TO_SECTION_PATH, return_value=True) as mock_applies:
-            result = applies(self.report_version)
+    def test_applies_returns_true_for_applicable_flow(self):
+        assert applies(ReportingFlow.SFO) is True
 
-        assert result is True
-        mock_applies.assert_called_once_with(self.report_version, SECTION)
-
-    def test_applies_returns_false_when_section_is_not_applicable(self):
-        with patch(APPLIES_TO_SECTION_PATH, return_value=False) as mock_applies:
-            result = applies(self.report_version)
-
-        assert result is False
-        mock_applies.assert_called_once_with(self.report_version, SECTION)
+    def test_applies_returns_false_for_non_applicable_flow(self):
+        assert applies(ReportingFlow.EIO) is False
 
     def test_validate_returns_no_error_when_no_activity_data_exists(self):
         errors = validate(self.report_version)

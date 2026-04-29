@@ -1,3 +1,8 @@
+import {
+  facilityRoutes,
+  reportRoutes,
+  resolveValidationHref,
+} from "@reporting/src/app/utils/routes";
 import type { ReportValidationMessageKey, ValidationUIConfig } from "./types";
 
 // Frontend mapping of backend validation keys defining how each validation error is displayed in the UI
@@ -45,62 +50,8 @@ export const validationUIConfig: Partial<
     label: (error) => String(error.context?.section_title ?? "review section"),
     priority: 1,
     renderMode: "inline_link",
-    getHref: (ctx) => {
-      if (!ctx?.report_version_id || !ctx?.section) return undefined;
+    getHref: resolveValidationHref,
 
-      const reportVersionId = String(ctx.report_version_id);
-
-      const facilityId =
-        typeof ctx.facility_id === "string" ? ctx.facility_id : undefined;
-
-      const section = String(ctx.section);
-
-      // report-level pages
-      const reportLevelRoutes: Record<string, string> = {
-        review_operation_information: `/reports/${reportVersionId}/review-operation-information`,
-        person_responsible: `/reports/${reportVersionId}/person-responsible`,
-        additional_reporting_data: `/reports/${reportVersionId}/additional-reporting-data`,
-        electricity_import_data: `/reports/${reportVersionId}/electricity-import-data`,
-        new_entrant_information: `/reports/${reportVersionId}/new-entrant-information`,
-      };
-
-      // all facilities pages
-      const facilityCollectionRoutes: Record<string, string> = {
-        review_facilities: `/reports/${reportVersionId}/facilities/review-facilities`,
-        review_facility_report_information: `/reports/${reportVersionId}/facilities/report-information`,
-      };
-
-      // facility-specific pages
-      const facilitySectionRoutes: Record<
-        string,
-        (facilityId: string) => string
-      > = {
-        review_facility_information: (id) =>
-          `/reports/${reportVersionId}/facilities/${id}/review-facility-information`,
-        activity_data: (id) =>
-          `/reports/${reportVersionId}/facilities/${id}/activities`,
-        non_attributable_emissions: (id) =>
-          `/reports/${reportVersionId}/facilities/${id}/non-attributable`,
-        production_data: (id) =>
-          `/reports/${reportVersionId}/facilities/${id}/production-data`,
-        allocation_of_emissions: (id) =>
-          `/reports/${reportVersionId}/facilities/${id}/allocation-of-emissions`,
-      };
-
-      if (section in reportLevelRoutes) {
-        return reportLevelRoutes[section];
-      }
-
-      if (section in facilityCollectionRoutes) {
-        return facilityCollectionRoutes[section];
-      }
-
-      if (facilityId && section in facilitySectionRoutes) {
-        return facilitySectionRoutes[section](facilityId);
-      }
-
-      return undefined;
-    },
     getMessage: (error) => {
       const sectionTitle = error.context?.section_title ?? "this section";
       const facilityName = error.context?.facility_name;
@@ -122,7 +73,7 @@ export const validationUIConfig: Partial<
     renderMode: "inline_link",
     getHref: (ctx) =>
       ctx?.report_version_id
-        ? `/reports/${ctx.report_version_id}/review-operation-information`
+        ? reportRoutes.reviewOperationInformation(ctx.report_version_id)
         : undefined,
   }),
 
@@ -133,7 +84,10 @@ export const validationUIConfig: Partial<
 
     getHref: (ctx) =>
       ctx?.report_version_id && ctx?.facility_id
-        ? `/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/activities`
+        ? facilityRoutes.activities(
+            ctx.report_version_id,
+            String(ctx.facility_id),
+          )
         : undefined,
 
     formatMessage: ({ error }) => {
@@ -152,7 +106,11 @@ export const validationUIConfig: Partial<
 
     getHref: (ctx) =>
       ctx?.report_version_id && ctx?.facility_id && ctx?.activity_id
-        ? `/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/activities/${ctx.activity_id}`
+        ? facilityRoutes.activity(
+            ctx.report_version_id,
+            String(ctx.facility_id),
+            String(ctx.activity_id),
+          )
         : undefined,
 
     formatMessage: ({ error }) => {
@@ -173,7 +131,11 @@ export const validationUIConfig: Partial<
 
     getHref: (ctx) =>
       ctx?.report_version_id && ctx?.facility_id && ctx?.activity_id
-        ? `/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/activities/${ctx.activity_id}`
+        ? facilityRoutes.activity(
+            ctx.report_version_id,
+            String(ctx.facility_id),
+            String(ctx.activity_id),
+          )
         : undefined,
 
     formatMessage: ({ label, error }) => {
@@ -194,7 +156,11 @@ If the value is correct, you may save & continue.`;
 
     getHref: (ctx) =>
       ctx?.report_version_id && ctx?.facility_id && ctx?.activity_id
-        ? `/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/activities/${ctx.activity_id}`
+        ? facilityRoutes.activity(
+            ctx.report_version_id,
+            String(ctx.facility_id),
+            String(ctx.activity_id),
+          )
         : undefined,
 
     formatMessage: ({ error }) => {
@@ -214,7 +180,10 @@ If the value is correct, you may save & continue.`;
     renderMode: "inline_link",
     getHref: (ctx) =>
       ctx?.report_version_id && ctx?.facility_id
-        ? `/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/allocation-of-emissions`
+        ? facilityRoutes.allocationOfEmissions(
+            ctx.report_version_id,
+            String(ctx.facility_id),
+          )
         : undefined,
   }),
 
@@ -224,7 +193,7 @@ If the value is correct, you may save & continue.`;
     renderMode: "inline_link",
     getHref: (ctx) =>
       ctx?.report_version_id
-        ? `/reports/${ctx.report_version_id}/verification`
+        ? reportRoutes.verification(ctx.report_version_id)
         : undefined,
   }),
 
@@ -234,7 +203,7 @@ If the value is correct, you may save & continue.`;
     renderMode: "inline_link",
     getHref: (ctx) =>
       ctx?.report_version_id
-        ? `/reports/${ctx.report_version_id}/attachments`
+        ? reportRoutes.attachments(ctx.report_version_id)
         : undefined,
   }),
 
@@ -250,7 +219,7 @@ If the value is correct, you may save & continue.`;
       renderMode: "inline_link",
       getHref: (ctx) =>
         ctx?.report_version_id
-          ? `/reports/${ctx.report_version_id}/attachments`
+          ? reportRoutes.attachments(ctx.report_version_id)
           : undefined,
     }),
 
@@ -261,7 +230,7 @@ If the value is correct, you may save & continue.`;
       renderMode: "inline_link",
       getHref: (ctx) =>
         ctx?.report_version_id
-          ? `/reports/${ctx.report_version_id}/attachments`
+          ? reportRoutes.attachments(ctx.report_version_id)
           : undefined,
     }),
 
@@ -272,7 +241,7 @@ If the value is correct, you may save & continue.`;
       renderMode: "inline_link",
       getHref: (ctx) =>
         ctx?.report_version_id
-          ? `/reports/${ctx.report_version_id}/attachments`
+          ? reportRoutes.attachments(ctx.report_version_id)
           : undefined,
     }),
 
@@ -282,7 +251,7 @@ If the value is correct, you may save & continue.`;
     renderMode: "inline_link",
     getHref: (ctx) =>
       ctx?.report_version_id
-        ? `/reports/${ctx.report_version_id}/review-changes`
+        ? reportRoutes.reviewChanges(ctx.report_version_id)
         : undefined,
   }),
 

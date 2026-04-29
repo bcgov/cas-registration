@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import pytest
 from model_bakery import baker
 
@@ -15,6 +13,8 @@ from reporting.service.report_validation.validators.required_fields.required_fie
     applies,
     validate,
 )
+from reporting.service.reporting_flow_service import ReportingFlow
+
 
 pytestmark = pytest.mark.django_db
 
@@ -29,19 +29,8 @@ class TestRequiredFieldsReportOperationInformationValidator:
         self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
         self.error_key = f"error_required_fields_{SECTION}"
 
-    def test_applies_returns_true_when_flow_is_applicable(self):
-        with patch(APPLIES_TO_SECTION_PATH, return_value=True) as mock_applies:
-            result = applies(self.report_version)
-
-        assert result is True
-        mock_applies.assert_called_once_with(self.report_version, SECTION)
-
-    def test_applies_returns_false_when_flow_is_not_applicable(self):
-        with patch(APPLIES_TO_SECTION_PATH, return_value=False) as mock_applies:
-            result = applies(self.report_version)
-
-        assert result is False
-        mock_applies.assert_called_once_with(self.report_version, SECTION)
+    def test_applies_returns_true_for_applicable_flow(self):
+        assert applies(ReportingFlow.SFO) is True
 
     def test_validate_returns_error_when_report_operation_does_not_exist(self):
         result = validate(self.report_version)

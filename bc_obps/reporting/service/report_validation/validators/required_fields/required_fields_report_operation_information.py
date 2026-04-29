@@ -18,7 +18,9 @@ from reporting.service.report_validation.validators.required_fields.types import
 from reporting.service.report_validation.validators.required_fields.utils import (
     collect_missing_fields,
 )
+
 from reporting.service.report_validation.validators.required_fields.utils import applies_to_section
+from reporting.service.reporting_flow_service import ReportingFlow
 
 TAGS = [ValidationTags.REPORT_VALIDATION]
 SECTION = "review_operation_information"
@@ -47,8 +49,8 @@ REQUIRED_FIELDS: list[RequiredFieldConfig] = [
 ]
 
 
-def applies(report_version: ReportVersion) -> bool:
-    return applies_to_section(report_version, SECTION)
+def applies(flow: ReportingFlow) -> bool:
+    return applies_to_section(flow, SECTION)
 
 
 def _build_error(

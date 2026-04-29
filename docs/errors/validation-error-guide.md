@@ -100,8 +100,8 @@ Used for:
 SECTION = "activity_data_coverage"
 SECTION_TITLE = "Activity data"
 
-def applies(report_version: ReportVersion) -> bool:
-    return applies_to_section(report_version, SECTION)
+def applies(flow: ReportingFlow) -> bool:
+    return applies_to_section(flow, SECTION)
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     errors = {}
@@ -286,12 +286,12 @@ activity_data_coverage: createValidationUIConfig({
 
 ```txt
 [ ] Validator created
-[ ] SECTION + TITLE defined
-[ ] Error key added
+[ ] SECTION key defined
 [ ] Context populated
-[ ] SECTION_APPLICABLE_FLOWS updated
-[ ] Validator registered
-[ ] Frontend config added
-[ ] Tests added
+[ ] SECTION key added to SECTION_APPLICABLE_FLOWS
+[ ] Validator registered in `bc_obps/reporting/service/report_validation/validators/__init__.py`
+[ ] SECTION key added to `bciers/apps/reporting/src/app/components/shared/validation/types.ts`
+[ ] SECTION key added to `bciers/apps/reporting/src/app/components/shared/validation/config.ts`
+[ ] Tests added\updated
 [ ] Everything wired end-to-end
 ```

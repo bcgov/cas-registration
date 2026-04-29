@@ -1,7 +1,6 @@
 from typing import Any, Iterable
 from uuid import UUID
 
-from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
@@ -12,14 +11,13 @@ from reporting.service.report_validation.validators.required_fields.types import
     RequiredFieldConfig,
 )
 
-from reporting.service.reporting_flow_service import resolve_flow
+from reporting.service.reporting_flow_service import ReportingFlow
 from reporting.service.reporting_flow_applicability import (
     SECTION_APPLICABLE_FLOWS,
 )
 
 
-def applies_to_section(report_version: ReportVersion, section: str) -> bool:
-    flow = resolve_flow(report_version)
+def applies_to_section(flow: ReportingFlow, section: str) -> bool:
     return flow in SECTION_APPLICABLE_FLOWS.get(section, set())
 
 
