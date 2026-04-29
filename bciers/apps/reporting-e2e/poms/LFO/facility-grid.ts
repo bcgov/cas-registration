@@ -61,6 +61,6 @@ export class FacilityGridPOM {
     const url = new URL(page.url());
     const parts = url.pathname.split("/").filter(Boolean);
 
-    return parts.at(-2)!;
+    return parts.at(-2) ?? "";
   }
 }
