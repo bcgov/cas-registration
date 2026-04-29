@@ -43,6 +43,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     const report = new CurrentReportPOM(page);
 
     // ── 3. Review Operation Information
+    await verifyFormTitle(page, "Review Operation Information");
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Review Operation Information",
       variant: "filled",
@@ -75,6 +76,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     // LFO Specific flow items
     // ── 6. Facility Grid
     const facilityGrid = new FacilityGridPOM(page, versionId);
+    await facilityGrid.waitForReady();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Facility Grid",
       variant: "not started",
@@ -228,7 +230,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
       variant: "default",
     });
 
-    // ── 22. Return to grid and verify report status ──
+    // ── 22. Return to the grid and verify the report status ──
     await page.getByRole("link", { name: "Return to report table" }).click();
     await grid.verifyReportStatus(OPERATION_NAMES.BEES_LFO, "Submitted");
     await takeStabilizedScreenshot(happoScreenshot, page, {
