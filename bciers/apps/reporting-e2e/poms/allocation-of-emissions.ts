@@ -20,6 +20,11 @@ const ALLOCATION_OF_EMISSIONS = {
     "Allocate the facility's total emissions, by emissions excluded by fuel type:",
 
   GSC_EMISSION_VALUE: 11000,
+
+  // RJSF field ID for "Cement equivalent" in the "Stationary fuel combustion emissions" row.
+  // _4_ = index of Stationary fuel combustion in the emission categories array; _0_ = first product.
+  GSC_CEMENT_EQUIVALENT_INPUT:
+    "#root_basic_emission_allocation_data_4_products_0_allocated_quantity",
 } as const;
 
 export type AllocationMethodology =
@@ -64,10 +69,7 @@ export class AllocationOfEmissionsPOM {
     );
 
     await fillInputValueByLocator(
-      this.page.locator(
-        // The "Cement equivalent" input for Stationary fuel combustion emissions
-        "#root_basic_emission_allocation_data_4_products_0_allocated_quantity",
-      ),
+      this.page.locator(ALLOCATION_OF_EMISSIONS.GSC_CEMENT_EQUIVALENT_INPUT),
       ALLOCATION_OF_EMISSIONS.GSC_EMISSION_VALUE,
     );
   }
