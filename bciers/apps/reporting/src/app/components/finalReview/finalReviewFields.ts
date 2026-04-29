@@ -327,11 +327,12 @@ export const complianceSummaryFields = (products: any[] = []) => {
         {
           label: "Annual production",
           key: `products.${index}.annual_production`,
-          unit: "production unit",
+          unit: product.unit,
         },
         {
           label: "Production data for Apr 1 - Dec 31 2024",
           key: `products.${index}.apr_dec_production`,
+          unit: product.unit,
           reporting_years: [2024],
         },
         ...(product.jan_mar_production !== null &&
@@ -340,7 +341,7 @@ export const complianceSummaryFields = (products: any[] = []) => {
               {
                 label: "Production data for Jan 1 - Mar 31 2025",
                 key: `products.${index}.jan_mar_production`,
-                unit: "production unit",
+                unit: product.unit,
                 reporting_years: [2025],
               },
             ]
@@ -348,7 +349,7 @@ export const complianceSummaryFields = (products: any[] = []) => {
         {
           label: "Production-weighted average emission intensity",
           key: `products.${index}.emission_intensity`,
-          unit: "tCO2e/production unit",
+          unit: `tCO2e/${product.unit}`,
         },
         {
           label: "Allocated industrial process emissions",

@@ -38,6 +38,7 @@ from reporting.service.report_operation_opt_out_service import (
 @dataclass
 class ReportProductComplianceData:
     name: str
+    unit: str
     product_id: int
     annual_production: Decimal
     jan_mar_production: Optional[Decimal]
@@ -48,8 +49,10 @@ class ReportProductComplianceData:
     reduction_factor_override: Decimal | None
     tightening_rate_override: Decimal | None
 
-    def as_record_defaults(self) -> dict[str, Decimal | None]:
+    def as_record_defaults(self) -> dict[str, Decimal | str | None]:
         return {
+            "name": self.name,
+            "unit": self.unit,
             "annual_production": ComplianceParameters.round(self.annual_production),
             "jan_mar_production": (
                 ComplianceParameters.round(self.jan_mar_production) if self.jan_mar_production is not None else None
@@ -290,6 +293,7 @@ class ComplianceService:
             compliance_product_list.append(
                 ReportProductComplianceData(
                     name=rp.product.name,
+                    unit=rp.product.unit,
                     product_id=rp.product_id,
                     annual_production=production_totals["annual_amount"],
                     jan_mar_production=production_totals["jan_mar"] if include_jan_mar else None,

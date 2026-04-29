@@ -1,5 +1,6 @@
 from django.db import transaction
 
+from reporting.models.report_product import ReportProduct
 from registration.models import Operation
 from registration.models.contact import Contact
 from reporting.models.report import Report
@@ -176,13 +177,16 @@ class ReportVersionService:
             "report_electricity_import_data",
             "report_new_entrant",
             "report_compliance_summary",
-            "report_products",
             "report_operation_representatives",
             Prefetch(
                 "report_non_attributable_emissions",
                 queryset=ReportNonAttributableEmissions.objects.select_related("emission_category").prefetch_related(
                     "gas_type"
                 ),
+            ),
+            Prefetch(
+                "report_products",
+                queryset=ReportProduct.objects.select_related("product"),
             ),
             "report_operation__activities",
             "report_operation__regulated_products",

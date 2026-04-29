@@ -44,11 +44,16 @@ class EmissionCategorySchema(ModelSchema):
 
 
 class ReportProductSchema(ModelSchema):
-    product: str
+    name: str
+    unit: str
 
     @staticmethod
-    def resolve_product(obj: ReportProduct) -> Optional[str]:
+    def resolve_name(obj: ReportProduct) -> Optional[str]:
         return obj.product.name if obj.product.name else None
+
+    @staticmethod
+    def resolve_unit(obj: ReportProduct) -> Optional[str]:
+        return obj.product.unit if obj.product.unit else None
 
     class Meta:
         model = ReportProduct
