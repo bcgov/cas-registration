@@ -4,8 +4,8 @@ runs:
   using: composite
   steps:
     - name: asdf setup
-      uses: asdf-vm/actions/setup@v3
-    - uses: actions/cache@v4
+      uses: asdf-vm/actions/setup@v4
+    - uses: actions/cache@v5
       id: asdf-cache-bciers
       with:
         path: |

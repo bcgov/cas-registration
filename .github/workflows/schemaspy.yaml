@@ -44,7 +44,7 @@ jobs:
           echo "DJANGO_SECRET=$DJANGO_SECRET" >> $GITHUB_OUTPUT
       - name: Set up python
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{steps.vars.outputs.PYTHON_VERSION}}
       - name: Install Poetry
