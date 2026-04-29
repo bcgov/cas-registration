@@ -14,8 +14,7 @@ export class FacilityGridPOM {
   }
 
   // Page methods
-  async route(): Promise<void> {
-    await this.page.goto(this.url);
+  async waitForReady(): Promise<void> {
     await waitForGridReady(this.page, { timeout: 30_000 });
   }
 
@@ -33,13 +32,7 @@ export class FacilityGridPOM {
     await expect(continueButton).toBeVisible();
     await expect(continueButton).toBeEnabled();
 
-    await Promise.all([
-      continueButton.click(),
-      // this.page.waitForURL(
-      //   ("**review-facility-information"),
-      //   { waitUntil: "domcontentloaded", timeout: 60_000 },
-      // ),
-    ]);
+    await continueButton.click();
 
     await expect(async () => {
       await expect(
@@ -68,6 +61,6 @@ export class FacilityGridPOM {
     const url = new URL(page.url());
     const parts = url.pathname.split("/").filter(Boolean);
 
-    return parts[parts.length - 2];
+    return parts.at(-2)!;
   }
 }
