@@ -72,22 +72,24 @@ def generate_useful_error(error: Union[ValidationError, NinjaValidationError]) -
     if isinstance(error, NinjaValidationError):
         # Just return the first error message if it is a NinjaValidationError (Like Unprocessable Entity)
         errors_list = error.__dict__['errors']
-        if errors_list and isinstance(errors_list, list):
-            first_error = errors_list[0]
-            if 'loc' in first_error and 'msg' in first_error:
-                # Extract field name from loc tuple and capitalize it
-                field_path = first_error['loc']
-                field_name = field_path[-1]  # Last item in loc tuple is the field name
-                formatted_key = ' '.join(word.capitalize() for word in field_name.split('_'))
-                return f"{formatted_key}: {first_error['msg']}"
-        return None
-    else:
+        if not errors_list or not isinstance(errors_list, list):
+            return None
+        first_error = errors_list[0]
+        if 'loc' not in first_error or 'msg' not in first_error:
+            return None
+        # Extract field name from loc tuple and capitalize it
+        field_name = first_error['loc'][-1]  # Last item in loc tuple is the field name
+        formatted_key = ' '.join(word.capitalize() for word in field_name.split('_'))
+        return f"{formatted_key}: {first_error['msg']}"
+    if hasattr(error, 'message_dict'):
         for key, value in error.message_dict.items():
             if key == '__all__':  # ignore adding formatted key for general error message like constraints
                 return value[0]  # Return the general error message directly
             formatted_key = ' '.join(word.capitalize() for word in key.split('_'))
             return f"{formatted_key}: {value[0]}"
         return None
+    messages = error.messages
+    return messages[0] if messages else None
 
 
 # File helpers

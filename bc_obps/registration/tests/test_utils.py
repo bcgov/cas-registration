@@ -123,6 +123,16 @@ class TestGenerateUsefulError:
         expected_error = "Field1: Error message 1 for field1"
         assert useful_error == expected_error
 
+    def test_generate_useful_error_plain_string(self):
+        error = ValidationError("Something went wrong.")
+        useful_error = generate_useful_error(error)
+        assert useful_error == "Something went wrong."
+
+    def test_generate_useful_error_empty_messages(self):
+        error = ValidationError([])
+        useful_error = generate_useful_error(error)
+        assert useful_error is None
+
 
 class TestCheckIfRoleAuthorized(TestCase):
     def setup_method(self, *args, **kwargs):
