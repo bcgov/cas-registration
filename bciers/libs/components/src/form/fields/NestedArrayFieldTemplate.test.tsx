@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import BasicFieldTemplate from "@bciers/components/form/fields/BasicFieldTemplate";
-import NestedArrayFieldTemplate from "./NestedArrayFieldTemplate";
+import { NestedArrayFieldTemplate } from "./NestedArrayFieldTemplate";
 
 const schema: RJSFSchema = {
   type: "object",

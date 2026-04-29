@@ -12,10 +12,11 @@ function InlineFieldTemplate({
   children,
   uiSchema,
   classNames,
-  formContext,
   formData,
   readonly,
+  registry,
 }: FieldTemplateProps) {
+  const { formContext } = registry;
   const isHidden = uiSchema?.["ui:widget"] === "hidden";
   if (isHidden) return null;
 
