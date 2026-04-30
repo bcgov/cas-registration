@@ -1,5 +1,6 @@
-/* eslint-disable */
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const jwt = require("jsonwebtoken");
+// eslint-disable-next-line import/no-extraneous-dependencies, @typescript-eslint/no-require-imports
 const fetch = require("node-fetch");
 
 function makeRequest(requestAttributes, { apiKey, apiSecret }) {

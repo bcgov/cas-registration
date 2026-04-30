@@ -1,4 +1,3 @@
-/* eslint-disable */
 import http from "k6/http";
 import { Rate } from "k6/metrics";
 import { check, fail } from "k6";
