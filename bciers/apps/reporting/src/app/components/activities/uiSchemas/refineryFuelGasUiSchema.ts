@@ -1,5 +1,8 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import { NestedArrayFieldTemplate } from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import {
+  NestedArrayFieldTemplate,
+  NestedArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 import FuelAmountFieldTemplate from "@bciers/components/form/fields/FuelAmountFieldTemplate";
@@ -21,6 +24,7 @@ const uiSchema = {
       fuels: {
         "ui:title": "Fuel Data",
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+        "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
         "ui:FieldTemplate": FieldTemplate,
         "ui:options": {
           arrayAddLabel: "Add Fuel",
@@ -48,6 +52,7 @@ const uiSchema = {
           },
           emissions: {
             "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+            "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
             "ui:FieldTemplate": FieldTemplate,
             "ui:options": {
               arrayAddLabel: "Add Emission",

@@ -7,7 +7,10 @@ import {
   sourceTypeCheckboxUiSchema,
 } from "./common";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
-import { NestedArrayFieldTemplate } from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import {
+  NestedArrayFieldTemplate,
+  NestedArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import { InlineFieldTemplate } from "@bciers/components/form/fields";
 
 const uiSchema = {
@@ -49,6 +52,7 @@ const uiSchema = {
       "ui:FieldTemplate": SourceTypeBoxTemplate,
       units: {
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+        "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
         "ui:FieldTemplate": FieldTemplate,
         "ui:title": "Source sub-type data",
         "ui:options": {
@@ -81,6 +85,7 @@ const uiSchema = {
       "ui:FieldTemplate": SourceTypeBoxTemplate,
       units: {
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+        "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
         "ui:FieldTemplate": FieldTemplate,
         "ui:title": "Source sub-type data",
         "ui:options": {
