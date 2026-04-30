@@ -17,10 +17,16 @@ import path from "node:path";
 export async function analyzeAccessibility(
   page: Page,
   description: string = "",
+  disableRules?: string[],
 ) {
-  const accessibilityScanResults = await new AxeBuilder({
+  const builder = new AxeBuilder({
     page,
-  }).analyze();
+  });
+
+  if (disableRules && disableRules.length > 0)
+    builder.disableRules(disableRules);
+
+  const accessibilityScanResults = await builder.analyze();
 
   if (accessibilityScanResults.violations.length > 0) {
     // eslint-disable-next-line no-console
@@ -447,6 +453,15 @@ export async function assertSuccessfulSnackbar(
     .getByText(message);
   await snackbarLocator.waitFor();
   await expect(snackbarLocator).toBeVisible();
+}
+
+export async function waitForSnackbarToHide(
+  page: Page,
+  message: string | RegExp,
+) {
+  const snackbar = page.locator(".MuiSnackbarContent-root").getByText(message);
+
+  await snackbar.waitFor({ state: "detached" });
 }
 
 export async function clickWithRetry(

@@ -63,8 +63,7 @@ test.describe("Test add/edit contact", () => {
       component: "Contacts grid",
       variant: "filled",
     });
-    // TODO: investigate accessibility failing
-    // await analyzeAccessibility(page);
+    await analyzeAccessibility(page, "Contacts grid", ["empty-table-header"]);
 
     await viewDetails.click();
     // Check for presence of heading
