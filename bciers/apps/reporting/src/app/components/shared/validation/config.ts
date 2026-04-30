@@ -1,3 +1,8 @@
+import {
+  facilityRoutes,
+  reportRoutes,
+  resolveValidationHref,
+} from "@reporting/src/app/utils/routes";
 import type { ReportValidationMessageKey, ValidationUIConfig } from "./types";
 
 // Frontend mapping of backend validation keys defining how each validation error is displayed in the UI
@@ -41,131 +46,213 @@ function createValidationUIConfig(
 export const validationUIConfig: Partial<
   Record<ReportValidationMessageKey, ValidationUIConfig>
 > = {
-  missing_report_verification: createValidationUIConfig({
-    label: "Verification page",
+  error_required_fields: createValidationUIConfig({
+    label: (error) => String(error.context?.section_title ?? "review section"),
+    priority: 1,
     renderMode: "inline_link",
-    getHref: (ctx) =>
-      ctx?.reportVersionId
-        ? `/reports/${ctx.reportVersionId}/verification`
-        : undefined,
-    getMessage: () =>
-      "Verification information must be completed on the Verification page.",
-  }),
+    getHref: resolveValidationHref,
 
-  verification_statement: createValidationUIConfig({
-    label: "Attachments page",
-    renderMode: "inline_link",
-    getHref: (ctx) =>
-      ctx?.reportVersionId
-        ? `/reports/${ctx.reportVersionId}/attachments`
-        : undefined,
-    getMessage: () =>
-      "A verification statement must be uploaded with this report on the Attachments page.",
-  }),
-
-  missing_supplementary_report_version_change: createValidationUIConfig({
-    label: "Review Changes page",
-    renderMode: "inline_link",
-    getHref: (ctx) =>
-      ctx?.reportVersionId
-        ? `/reports/${ctx.reportVersionId}/review-changes`
-        : undefined,
-    getMessage: () =>
-      "A reason for the changes in this supplementary report must be added on the Review Changes page.",
-  }),
-
-  missing_required_attachment_confirmation: createValidationUIConfig({
-    label: "Attachments page",
-    renderMode: "inline_link",
-    getHref: (ctx) =>
-      ctx?.reportVersionId
-        ? `/reports/${ctx.reportVersionId}/attachments`
-        : undefined,
-    getMessage: () =>
-      "You must confirm that all required supplementary attachments have been uploaded on the Attachments page.",
-  }),
-
-  missing_existing_attachment_confirmation: createValidationUIConfig({
-    label: "Attachments page",
-    renderMode: "inline_link",
-    getHref: (ctx) =>
-      ctx?.reportVersionId
-        ? `/reports/${ctx.reportVersionId}/attachments`
-        : undefined,
-    getMessage: () =>
-      "You must confirm that all existing attachments are still relevant to the supplementary submission on the Attachments page.",
-  }),
-
-  missing_supplementary_report_attachment_confirmation:
-    createValidationUIConfig({
-      label: "Attachments page",
-      renderMode: "inline_link",
-      getHref: (ctx) =>
-        ctx?.reportVersionId
-          ? `/reports/${ctx.reportVersionId}/attachments`
-          : undefined,
-      getMessage: () =>
-        "You must confirm that all required supplementary attachments have been uploaded and existing attachments are still relevant to the supplementary submission on the Attachments page.",
-    }),
-
-  error_operation_information: createValidationUIConfig({
-    label: "review operation information",
-    renderMode: "inline_link",
-    getHref: (ctx) =>
-      ctx?.reportVersionId
-        ? `/reports/${ctx.reportVersionId}/review-operation-information`
-        : undefined,
-    getMessage: () =>
-      "Required fields are empty on review operation information.",
-  }),
-
-  error_activity_value: createValidationUIConfig({
-    label: (error) => String(error.context?.activityName ?? "activity name"),
-    renderMode: "inline_link",
-    getHref: (ctx) =>
-      ctx?.reportVersionId && ctx?.facilityId && ctx?.activityId !== undefined
-        ? `/reporting/reports/${ctx.reportVersionId}/facilities/${ctx.facilityId}/activities?activity_id=${ctx.activityId}`
-        : undefined,
     getMessage: (error) => {
+      const sectionTitle = error.context?.section_title ?? "this section";
+      const facilityName = error.context?.facility_name;
+      const missingFields = error.context?.missing_fields;
+
+      const location = facilityName
+        ? `${sectionTitle} for ${facilityName}`
+        : sectionTitle;
+
+      return Array.isArray(missingFields) && missingFields.length > 0
+        ? `Required fields are empty on ${location}: ${missingFields.join(", ")}.`
+        : `Required fields are empty on ${location}.`;
+    },
+  }),
+
+  operation_boro_id: createValidationUIConfig({
+    label: "Review Operation Information",
+    priority: 2,
+    renderMode: "inline_link",
+    getHref: (ctx) =>
+      ctx?.report_version_id
+        ? reportRoutes.reviewOperationInformation(ctx.report_version_id)
+        : undefined,
+  }),
+
+  activity_data_coverage: createValidationUIConfig({
+    label: (error) => String(error.context?.section_title ?? "Activities"),
+    priority: 2,
+    renderMode: "inline_link",
+
+    getHref: (ctx) =>
+      ctx?.report_version_id && ctx?.facility_id
+        ? facilityRoutes.activities(
+            ctx.report_version_id,
+            String(ctx.facility_id),
+          )
+        : undefined,
+
+    formatMessage: ({ error }) => {
       const ctx = error.context;
 
-      return `Unusual value detected for ${
-        ctx?.activityName ?? "[activity name]"
-      }. Expected ${ctx?.fuelType ?? "[fuel type]"} ${
-        ctx?.fieldName ?? "[field]"
-      } value to be between ${
-        ctx?.expectedRange ?? "[range]"
-      } but input was ${ctx?.userInput ?? "[user input]"}. Please ensure you have selected the correct fuel name and the value is accurate. If the value is accurate, you may save & continue.`;
+      return `Missing activity data for ${String(
+        ctx?.facility_name ?? "facility",
+      )}. Not all required activities have been reported in Activities.`;
+    },
+  }),
+
+  report_activity_json_validation: createValidationUIConfig({
+    label: (error) => String(error.context?.activity_name ?? "Activity data"),
+    priority: 3,
+    renderMode: "inline_link",
+
+    getHref: (ctx) =>
+      ctx?.report_version_id && ctx?.facility_id && ctx?.activity_id
+        ? facilityRoutes.activity(
+            ctx.report_version_id,
+            String(ctx.facility_id),
+            String(ctx.activity_id),
+          )
+        : undefined,
+
+    formatMessage: ({ error }) => {
+      const ctx = error.context;
+
+      return `Validation error detected for ${String(
+        ctx?.facility_name ?? "facility",
+      )} ${String(
+        ctx?.activity_name ?? "activity",
+      )}. Please review the activity data and correct any invalid or unexpected values.`;
+    },
+  }),
+
+  report_data_out_of_bounds_by_fuel_type: createValidationUIConfig({
+    label: (error) => String(error.context?.activity_name ?? "activity data"),
+    priority: 3,
+    renderMode: "inline_link",
+
+    getHref: (ctx) =>
+      ctx?.report_version_id && ctx?.facility_id && ctx?.activity_id
+        ? facilityRoutes.activity(
+            ctx.report_version_id,
+            String(ctx.facility_id),
+            String(ctx.activity_id),
+          )
+        : undefined,
+
+    formatMessage: ({ label, error }) => {
+      const ctx = error.context;
+
+      return `Unusual value detected for fuel type for ${String(ctx?.facility_name ?? "facility")} in ${label}.
+Expected ${String(ctx?.fuel_type_name ?? "fuel")} value to be within the allowed range,
+but the input appears outside expected bounds.
+Please ensure you have selected the correct fuel type and entered an accurate value.
+If the value is correct, you may save & continue.`;
+    },
+  }),
+
+  report_data_out_of_bounds_by_reporting_field: createValidationUIConfig({
+    priority: 3,
+    label: (error) => String(error.context?.activity_name ?? "activity"),
+    renderMode: "inline_link",
+
+    getHref: (ctx) =>
+      ctx?.report_version_id && ctx?.facility_id && ctx?.activity_id
+        ? facilityRoutes.activity(
+            ctx.report_version_id,
+            String(ctx.facility_id),
+            String(ctx.activity_id),
+          )
+        : undefined,
+
+    formatMessage: ({ error }) => {
+      const ctx = error.context;
+
+      return `Unusual value detected for reporting field for ${ctx?.facility_name ?? "facility"} ${ctx?.activity_name ?? "activity"}.
+Expected ${ctx?.reporting_field ?? "field"} value for ${ctx?.gas_type_name ?? "gas"} to be within the allowed range,
+but the input appears outside expected bounds.
+Please ensure the value entered is accurate.
+If the value is correct, you may save & continue.`;
     },
   }),
 
   allocation_mismatch: createValidationUIConfig({
     label: () => "Allocation of Emissions page",
+    priority: 3,
     renderMode: "inline_link",
     getHref: (ctx) =>
-      ctx?.reportVersionId && ctx?.facilityId
-        ? `/reporting/reports/${ctx.reportVersionId}/facilities/${ctx.facilityId}/allocation-of-emissions`
+      ctx?.report_version_id && ctx?.facility_id
+        ? facilityRoutes.allocationOfEmissions(
+            ctx.report_version_id,
+            String(ctx.facility_id),
+          )
         : undefined,
-    getMessage: (error) => {
-      const ctx = error.context;
-
-      return `Emissions reported for ${
-        ctx?.facilityName ?? "[facility name]"
-      } in '${
-        ctx?.emissionCategoryName ?? "[emissions category]"
-      }' category do not match the emissions allocated on the Allocation of Emissions page.`;
-    },
   }),
 
-  error_lime_kiln: createValidationUIConfig({
-    label: "Pulp and Paper Production",
+  missing_report_verification: createValidationUIConfig({
+    label: "Verification page",
+    priority: 4,
     renderMode: "inline_link",
     getHref: (ctx) =>
-      ctx?.reportVersionId && ctx?.facilityId
-        ? `/reports/${ctx.reportVersionId}/facilities/${ctx.facilityId}/production-data`
+      ctx?.report_version_id
+        ? reportRoutes.verification(ctx.report_version_id)
         : undefined,
-    getMessage: () =>
-      'Error in Pulp and Paper Production. To proceed, select "Yes" to the question "Does this operation utilize a lime recovery kiln?"',
+  }),
+
+  verification_statement: createValidationUIConfig({
+    label: "Attachments page",
+    priority: 4,
+    renderMode: "inline_link",
+    getHref: (ctx) =>
+      ctx?.report_version_id
+        ? reportRoutes.attachments(ctx.report_version_id)
+        : undefined,
+  }),
+
+  attachment_not_scanned: createValidationUIConfig({
+    label: "Attachments page",
+    renderMode: "message_only",
+  }),
+
+  missing_supplementary_report_required_attachment_confirmation:
+    createValidationUIConfig({
+      label: "Attachments page",
+      priority: 4,
+      renderMode: "inline_link",
+      getHref: (ctx) =>
+        ctx?.report_version_id
+          ? reportRoutes.attachments(ctx.report_version_id)
+          : undefined,
+    }),
+
+  missing_supplementary_report_existing_attachment_confirmation:
+    createValidationUIConfig({
+      label: "Attachments page",
+      priority: 4,
+      renderMode: "inline_link",
+      getHref: (ctx) =>
+        ctx?.report_version_id
+          ? reportRoutes.attachments(ctx.report_version_id)
+          : undefined,
+    }),
+
+  missing_supplementary_report_attachments_confirmation:
+    createValidationUIConfig({
+      label: "Attachments page",
+      priority: 4,
+      renderMode: "inline_link",
+      getHref: (ctx) =>
+        ctx?.report_version_id
+          ? reportRoutes.attachments(ctx.report_version_id)
+          : undefined,
+    }),
+
+  missing_supplementary_report_version_change: createValidationUIConfig({
+    label: "Review Changes page",
+    priority: 3,
+    renderMode: "inline_link",
+    getHref: (ctx) =>
+      ctx?.report_version_id
+        ? reportRoutes.reviewChanges(ctx.report_version_id)
+        : undefined,
   }),
 
   generic_error: createValidationUIConfig({

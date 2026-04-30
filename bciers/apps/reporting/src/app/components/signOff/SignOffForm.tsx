@@ -10,9 +10,9 @@ import { useRouter } from "next/navigation";
 import postSubmitReport from "@bciers/actions/api/postSubmitReport";
 import { RJSFSchema } from "@rjsf/utils";
 import { signOffUiSchema } from "@reporting/src/data/jsonSchema/signOff/signOff";
-import { ReportValidationErrors } from "../shared/validation/types";
-import ReportValidationSummary from "../shared/validation/ReportValidationSummary";
-import { createGenericReportValidationError } from "../shared/validation/utils";
+import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
+import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
+import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
 
 interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;

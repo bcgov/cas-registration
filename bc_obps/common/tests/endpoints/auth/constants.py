@@ -105,6 +105,11 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_report_validation_data",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
             "endpoint_name": "get_report_non_attributable_by_version_id",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },

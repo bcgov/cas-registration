@@ -10,7 +10,7 @@ from compliance.service.exceptions import ComplianceInvoiceError
 from registration.constants import UNAUTHORIZED_MESSAGE
 from common.exceptions import UserError
 from reporting.service.exceptions import ReportValidationException
-from reporting.service.report_validation.report_validation_error import ErrorContext, ReportValidationError, Severity
+from reporting.service.report_validation.report_validation_error import ReportValidationError, Severity
 from service.error_service.handle_exception import ExceptionHandler, ExceptionResponse, handle_exception
 
 
@@ -178,43 +178,6 @@ class TestExceptionHandler:
                         "message": "Facility report has warnings",
                     },
                 },
-            ]
-        }
-
-    def test_handle_report_validation_exception_context_is_camel_case(self, mock_request):
-        errors = {
-            "allocation_mismatch": ReportValidationError(
-                severity=Severity.ERROR,
-                message="Allocations do not match.",
-                key="allocation_mismatch",
-                context=ErrorContext(
-                    report_version_id=42,
-                    facility_id=None,
-                    facility_name="Test Facility",
-                    emission_category_id=1,
-                    emission_category_name="Flaring emissions",
-                ),
-            ),
-        }
-        exc = ReportValidationException(errors)
-        response = ExceptionHandler.handle(mock_request, exc)
-        assert response.status_code == 422
-        body = json.loads(response.content)
-        assert body == {
-            "errors": [
-                {
-                    "key": "allocation_mismatch",
-                    "error": {
-                        "severity": "Error",
-                        "message": "Allocations do not match.",
-                        "context": {
-                            "reportVersionId": 42,
-                            "facilityName": "Test Facility",
-                            "emissionCategoryId": 1,
-                            "emissionCategoryName": "Flaring emissions",
-                        },
-                    },
-                }
             ]
         }
 

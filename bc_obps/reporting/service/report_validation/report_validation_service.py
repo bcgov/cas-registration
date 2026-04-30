@@ -1,12 +1,15 @@
-from functools import reduce
 from typing import Any, List
+import logging
 
+from reporting.service.reporting_flow_service import resolve_flow
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
 )
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 from . import validators
+
+logger = logging.getLogger(__name__)
 
 
 def collect_validation_plugins() -> List[Any]:
@@ -26,27 +29,28 @@ def collect_validation_plugins() -> List[Any]:
 
 
 class ReportValidationService:
-    """
-    A service to validate reports before submission
-
-    Strategy: independent, plug-in validators are collected at start-up time, then run in a sequence.
-    Errors are collected then returned in a dictionary.
-    """
-
     validation_plugins = collect_validation_plugins()
 
     @staticmethod
-    def validate_report_version(version_id: int, tag: ValidationTags | None = None) -> dict[str, ReportValidationError]:
+    def validate_report_version(
+        version_id: int,
+        tag: ValidationTags | None = None,
+    ) -> dict[str, ReportValidationError]:
+        report_version = ReportVersion.objects.select_related(
+            "report_operation",
+        ).get(id=version_id)
 
-        report_version = ReportVersion.objects.get(id=version_id)
+        flow = resolve_flow(report_version)
+        errors: dict[str, ReportValidationError] = {}
 
-        results: List[dict[str, ReportValidationError]] = [
-            validation_plugin.validate(report_version)
-            for validation_plugin in ReportValidationService.validation_plugins
-            if tag in validation_plugin.TAGS or tag is None
-        ]
+        for validation_plugin in ReportValidationService.validation_plugins:
+            if tag is not None and tag not in getattr(validation_plugin, "TAGS", []):
+                continue
 
-        # Aggregate the results in one dictionary, by key
-        error_dictionary: dict[str, ReportValidationError] = reduce(lambda acc, curr: {**acc, **curr}, results, {})
+            applies = getattr(validation_plugin, "applies", None)
+            if callable(applies) and not applies(flow):
+                continue
 
-        return error_dictionary
+            errors.update(validation_plugin.validate(report_version))
+
+        return errors

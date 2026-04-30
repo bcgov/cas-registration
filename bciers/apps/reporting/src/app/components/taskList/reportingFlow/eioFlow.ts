@@ -8,6 +8,7 @@ export const eioFlow: ReportingFlowDescription = {
   [HeaderStep.ReportInformation]: [ReportingPage.ElectricityImportData],
   [HeaderStep.SignOffSubmit]: [
     ReportingPage.ChangeReview,
+    ReportingPage.Validation,
     ReportingPage.FinalReview,
     ReportingPage.Verification,
     ReportingPage.Attachments,

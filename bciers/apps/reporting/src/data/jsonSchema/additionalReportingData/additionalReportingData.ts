@@ -34,6 +34,7 @@ export const additionalReportingDataSchema: RJSFSchema = {
                 capture_type: {
                   type: "array",
                   title: "Capture type",
+                  minItems: 1,
                   items: {
                     type: "string",
                     enum: [
@@ -45,6 +46,17 @@ export const additionalReportingDataSchema: RJSFSchema = {
                 },
               },
               allOf: [
+                // require capture_type after the "true" branch is selected
+                {
+                  if: {
+                    properties: {
+                      capture_emissions: { const: true },
+                    },
+                  },
+                  then: {
+                    required: ["capture_type"],
+                  },
+                },
                 {
                   if: {
                     properties: {

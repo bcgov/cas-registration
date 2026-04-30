@@ -14,7 +14,7 @@ from reporting.service.report_validation.report_validation_error import (
 
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
-TAGS = [ValidationTags.FINAL_REVIEW]
+TAGS = [ValidationTags.REPORT_VALIDATION]
 
 
 def validate_fuel_amount(
@@ -89,48 +89,34 @@ def validate_methodology_reporting_fields(
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    """
-    Validates reported activity data to be within ranges defined by fuel type.
-    This validation will validate that report_fuel records and any child report_methodology records are within expected ranges.
-
-    This validation returns WARNING level severity errors.
-
-    Args:
-        report_version (ReportVersion): The report version to validate.
-
-    Returns:
-        dict[str, ReportValidationError]: A dictionary of validation errors
-    """
     errors: dict[str, ReportValidationError] = {}
 
     report_fuel_records = ReportFuel.objects.filter(report_version=report_version)
 
-    # For each report_fuel record for the report_version
     for fr in report_fuel_records:
-        # Determine if validation ranges exist for the fuel type
         if ExpectedValueRangeFuelAmount.objects.filter(fuel_type=fr.fuel_type).exists():
             activity_name = fr.report_source_type.report_activity.activity.name
             source_type_name = fr.report_source_type.source_type.name
             fuel_type_name = fr.fuel_type.name
-            fuel_amount_errors = validate_fuel_amount(
-                fuel_record=fr,
-                activity_name=activity_name,
-                source_type_name=source_type_name,
-                fuel_type_name=fuel_type_name,
-            )
-            # For each report_methodology record related to the report_fuel record
-            for mr in ReportMethodology.objects.filter(report_emission__report_fuel_id=fr.id):
-                methodology_field_errors = validate_methodology_reporting_fields(
+
+            errors.update(
+                validate_fuel_amount(
                     fuel_record=fr,
-                    methodology_record=mr,
                     activity_name=activity_name,
                     source_type_name=source_type_name,
                     fuel_type_name=fuel_type_name,
                 )
+            )
 
-    errors = {
-        **(fuel_amount_errors if fuel_amount_errors is not None else {}),
-        **(methodology_field_errors if methodology_field_errors is not None else {}),
-    }
+            for mr in ReportMethodology.objects.filter(report_emission__report_fuel_id=fr.id):
+                errors.update(
+                    validate_methodology_reporting_fields(
+                        fuel_record=fr,
+                        methodology_record=mr,
+                        activity_name=activity_name,
+                        source_type_name=source_type_name,
+                        fuel_type_name=fuel_type_name,
+                    )
+                )
 
     return errors

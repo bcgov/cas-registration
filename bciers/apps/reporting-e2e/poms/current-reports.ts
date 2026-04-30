@@ -85,6 +85,11 @@ export class CurrentReportsPOM {
   }
 
   // Final Review page URL for this version_id report
+  getReportValidationUrl(reportId: string | number): string {
+    return `${this.url}/${reportId}/${ReportRoutes.VALIDATION}`;
+  }
+
+  // Final Review page URL for this version_id report
   getFinalReviewsUrl(reportId: string | number): string {
     return `${this.url}/${reportId}/${ReportRoutes.FINAL_REVIEW}`;
   }
@@ -502,10 +507,10 @@ export class CurrentReportsPOM {
     await this.fillReviewChanges(reviewChangesReason);
 
     await this.clickSaveAndContinue(
-      new RegExp(this.getFinalReviewsUrl(reportId)),
+      new RegExp(this.getReportValidationUrl(reportId)),
     );
     await expect(this.page).toHaveURL(
-      new RegExp(`${this.getFinalReviewsUrl(reportId)}\\/?$`, "i"),
+      new RegExp(`${this.getReportValidationUrl(reportId)}\\/?$`, "i"),
     );
 
     await this.gotoAtachments(reportId);

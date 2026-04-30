@@ -20,6 +20,7 @@ export const lfoReportingOnlyFlow: ReportingFlowDescription = {
   ],
   [HeaderStep.SignOffSubmit]: [
     ReportingPage.ChangeReview,
+    ReportingPage.Validation,
     ReportingPage.FinalReview,
     ReportingPage.Verification,
     ReportingPage.Attachments,

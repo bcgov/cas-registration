@@ -41,10 +41,10 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
         mock_initial.assert_called_once_with(version.id)
         mock_get.assert_called_once_with(report_version_id=version.id)
         assert result == {
-            "missing_supplementary_report_attachment_confirmation": ReportValidationError(
+            "missing_supplementary_report_attachments_confirmation": ReportValidationError(
                 Severity.ERROR,
-                "No attachment confirmation found for this supplementary report version.",
-                key=ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_ATTACHMENT_CONFIRMATION,
+                "You must confirm that all required supplementary attachments have been uploaded and existing attachments are still relevant to the supplementary submission on the Attachments page.",
+                key=ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_ATTACHMENTS_CONFIRMATION,
                 context=ErrorContext(report_version_id=version.id),
             )
         }
@@ -55,16 +55,16 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
             (
                 False,
                 True,
-                "missing_required_attachment_confirmation",
-                ReportValidationErrorKey.MISSING_REQUIRED_ATTACHMENT_CONFIRMATION,
-                "Must confirm that all required supplementary attachments have been uploaded.",
+                "missing_supplementary_report_required_attachment_confirmation",
+                ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_REQUIRED_ATTACHMENT_CONFIRMATION,
+                "You must confirm that all required supplementary attachments have been uploaded on the Attachments page.",
             ),
             (
                 True,
                 False,
-                "missing_existing_attachment_confirmation",
-                ReportValidationErrorKey.MISSING_EXISTING_ATTACHMENT_CONFIRMATION,
-                "Must confirm that all existing attachments are still relevant to the supplementary submission.",
+                "missing_supplementary_report_existing_attachment_confirmation",
+                ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_EXISTING_ATTACHMENT_CONFIRMATION,
+                "You must confirm that all existing attachments are still relevant to the supplementary submission on the Attachments page.",
             ),
         ],
     )

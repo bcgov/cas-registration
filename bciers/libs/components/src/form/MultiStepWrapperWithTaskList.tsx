@@ -17,7 +17,7 @@ interface Props {
   initialStep: number;
   steps: string[];
   taskListElements: TaskListElement[];
-  onSubmit: () => void;
+  onSubmit?: () => void;
   children?: React.ReactNode;
   cancelUrl?: string;
   backUrl?: string;
