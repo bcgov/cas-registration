@@ -201,7 +201,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
       variant: "default",
     });
 
-    // ── 18. Return to grid and verify report status ──
+    // ── 18. Return to the grid and verify the report status ──
     await page.getByRole("link", { name: "Return to report table" }).click();
     await grid.verifyReportStatus(OPERATION_NAMES.BUGLE_SFO, "Submitted");
     await takeStabilizedScreenshot(happoScreenshot, page, {
