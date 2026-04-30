@@ -37,6 +37,8 @@ class ContactModelTest(BaseTestCase):
             ("operator", "operator", None, None),
             # operation model has contacts (m2m)
             ("operations_contacts", "operation", None, None),
+            # relation from ReportPersonResponsible.contact FK
+            ("report_person_responsibles", "report person responsible", None, None),
         ]
 
 

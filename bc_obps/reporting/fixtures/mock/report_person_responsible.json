@@ -3,6 +3,7 @@
     "model": "reporting.reportpersonresponsible",
     "pk": 1,
     "fields": {
+      "contact_id": 4,
       "first_name": "Bob",
       "last_name": "Brown",
       "position_title": "Manager",
@@ -20,6 +21,7 @@
     "model": "reporting.reportpersonresponsible",
     "pk": 2,
     "fields": {
+      "contact_id": 3,
       "first_name": "Bill",
       "last_name": "Blue",
       "position_title": "Manager",
@@ -37,6 +39,7 @@
     "model": "reporting.reportpersonresponsible",
     "pk": 3,
     "fields": {
+      "contact_id": 3,
       "first_name": "Bill",
       "last_name": "Blue",
       "position_title": "Manager",
