@@ -56,9 +56,7 @@ const PersonResponsibleForm = ({
     contactToSubmit: personResponsible,
     schema: initialSchema,
     formData: {
-      person_responsible: personResponsible
-        ? `${personResponsible.first_name} ${personResponsible.last_name}`
-        : "",
+      person_responsible: initialContactId ? String(initialContactId) : "",
     },
     hasError: false,
   });
@@ -102,9 +100,7 @@ const PersonResponsibleForm = ({
       newComponentState.hasError = Boolean(addressError);
       newComponentState.schema = updatedSchema;
       newComponentState.formData = {
-        person_responsible: `${newContact.first_name || ""} ${
-          newContact.last_name || ""
-        }`.trim(),
+        person_responsible: String(newContactId),
       };
     } else {
       newComponentState.formData = {
@@ -117,24 +113,23 @@ const PersonResponsibleForm = ({
 
   const handleChange = async (data: object) => {
     const changeEvent = data as IChangeEvent<PersonResponsibleFormData>;
-    const selectedFullName = changeEvent.formData?.person_responsible;
+    const selectedContactId = changeEvent.formData?.person_responsible;
 
     // We ignore changes where the name didn't change
     // And we already have the data to submit
-    if (selectedFullName === componentState.formData.person_responsible) return;
+    if (selectedContactId === componentState.formData.person_responsible)
+      return;
 
     const selectedContact = componentState.availableContacts?.items.find(
-      (contact) =>
-        `${contact.first_name} ${contact.last_name}` === selectedFullName,
+      (contact) => String(contact.id) === String(selectedContactId),
     );
 
     if (selectedContact) {
       const newContactFormData: Contact = await getContact(
-        `${selectedContact.id}`,
+        String(selectedContact.id),
       );
-      const newSelectedContactId = selectedContact.id;
 
-      updateContactShown(newSelectedContactId, newContactFormData);
+      updateContactShown(selectedContact.id, newContactFormData);
     } else {
       updateContactShown(undefined, undefined);
     }
@@ -151,6 +146,7 @@ const PersonResponsibleForm = ({
     const payload = {
       report_version: versionId,
       ...componentState.contactToSubmit,
+      contact_id: componentState.selectedContactId,
     };
 
     const response = await actionHandler(endpoint, method, pathToRevalidate, {
@@ -173,15 +169,24 @@ const PersonResponsibleForm = ({
     if (componentState.selectedContactId) {
       // Fetch the updated contact info based on the current selected contact
       const updatedContact: Contact = await getContact(
-        `${componentState.selectedContactId}`,
+        String(componentState.selectedContactId),
       );
+
       // Update state with the updated contact information
+      const updatedSchema = createPersonResponsibleSchema(
+        personResponsibleSchema,
+        updatedContacts.items,
+        componentState.selectedContactId,
+        updatedContact,
+      );
+
       setComponentState({
         ...componentState,
+        availableContacts: updatedContacts,
         contactToSubmit: updatedContact,
+        schema: updatedSchema,
         formData: {
-          person_responsible:
-            `${updatedContact.first_name} ${updatedContact.last_name}`.trim(),
+          person_responsible: String(componentState.selectedContactId),
         },
       });
     } else {
@@ -213,6 +218,12 @@ const PersonResponsibleForm = ({
         schema={componentState.schema}
         uiSchema={{
           ...personResponsibleUiSchema,
+          person_responsible: {
+            ...personResponsibleUiSchema.person_responsible,
+            "ui:enumNames": componentState.availableContacts?.items.map(
+              (contact) => `${contact.first_name} ${contact.last_name}`,
+            ),
+          },
           sync_button: {
             ...personResponsibleUiSchema.sync_button,
             "ui:options": {

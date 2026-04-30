@@ -14,7 +14,7 @@ import { getNavigationInformation } from "@reporting/src/app/components/taskList
 export default async function PersonResponsiblePage({
   version_id,
 }: HasReportVersion) {
-  // 🚀 Fetch async data for person responsible form
+  // Fetch async data for person responsible form
   const facilityReport = await getFacilityReport(version_id);
   const facilityId = facilityReport.facility_id;
 
@@ -29,13 +29,11 @@ export default async function PersonResponsiblePage({
   const personResponsibleData = await getReportingPersonResponsible(version_id);
 
   // Determine selected contact if personResponsible exists
-  const selectedContact = contactData?.items.find(
-    (contact: { first_name: string; last_name: string }) =>
-      personResponsibleData?.first_name === contact.first_name &&
-      personResponsibleData?.last_name === contact.last_name,
-  );
-
-  const selectedContactId = selectedContact?.id;
+  const selectedContactId =
+    personResponsibleData?.contact_id ??
+    contactData?.items.find(
+      (c: any) => c.email === personResponsibleData?.email,
+    )?.id;
 
   // Move schema creation to the server
   const schema = createPersonResponsibleSchema(
