@@ -74,9 +74,7 @@ class TestRequiredFieldsReportAdditionalDataValidator:
         assert error.context.report_version_id == self.report_version.id
         assert error.context.section == SECTION
         assert error.context.section_title == SECTION_TITLE
-        assert error.context.missing_fields == [
-            "At least one emissions capture type must be provided"
-        ]
+        assert error.context.missing_fields == ["At least one emissions capture type must be provided"]
 
     def test_validate_returns_empty_dict_when_capture_emissions_is_false(self):
         baker.make_recipe(
