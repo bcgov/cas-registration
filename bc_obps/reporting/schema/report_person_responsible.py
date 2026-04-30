@@ -1,3 +1,4 @@
+from typing import Optional
 from ninja import ModelSchema
 from pydantic import alias_generators, ConfigDict
 from reporting.models import ReportPersonResponsible
@@ -14,9 +15,15 @@ class ReportPersonResponsibleOut(ModelSchema):
 
     model_config = ConfigDict(populate_by_name=True)
 
+    contact_id: Optional[int] = None
+
     @staticmethod
     def resolve_phone_number(obj: ReportPersonResponsible) -> str:
         return str(obj.phone_number)
+
+    @staticmethod
+    def resolve_contact_id(obj: ReportPersonResponsible) -> Optional[int]:
+        return obj.contact_id
 
     class Meta:
         model = ReportPersonResponsible
@@ -41,6 +48,17 @@ class ReportPersonResponsibleIn(ModelSchema):
     """
 
     report_version: int
+    contact_id: int | None = None
+    street_address: str
+    municipality: str
+    province: str
+    postal_code: str
+    first_name: str
+    phone_number: str
+    last_name: str
+    email: str
+    position_title: str
+    business_role: str
 
     class Meta:
         alias_generator = to_snake

@@ -14,6 +14,7 @@ class ReportPersonResponsibleTest(BaseTestCase):
             ("id", "ID", None, None),
             *TIMESTAMP_COMMON_FIELDS,
             ("report_version", "report version", None, None),
+            ("contact", "contact", None, None),
             ("first_name", "first name", None, None),
             ("last_name", "last name", None, None),
             ("position_title", "position title", None, None),
