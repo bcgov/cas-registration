@@ -151,6 +151,7 @@ describe("complianceSummaryFields", () => {
       {
         name: "Product A",
         jan_mar_production: 123,
+        unit: "production unit",
       },
     ]);
 
@@ -167,6 +168,7 @@ describe("complianceSummaryFields", () => {
       {
         name: "Product A",
         jan_mar_production: null,
+        unit: "production unit",
       },
     ]);
 
