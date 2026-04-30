@@ -13,7 +13,7 @@ class ReportVerificationBase(ModelSchema):
     accredited_by: Optional[str] = None
     scope_of_verification: Optional[str] = None
     threats_to_independence: Optional[bool] = None
-    verification_conclusion: str
+    verification_conclusion: Optional[str] = None
 
     class Meta:
         model = ReportVerification
