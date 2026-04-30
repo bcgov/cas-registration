@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { SERVER_HOST } from "../../setup/constants.js";
 import { getUserParams, makeRequest } from "../../setup/helpers.js";
 import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
