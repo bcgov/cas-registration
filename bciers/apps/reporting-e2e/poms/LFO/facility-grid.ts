@@ -49,6 +49,7 @@ export class FacilityGridPOM {
       .first()
       .getByRole("checkbox", { name: "Report Status" })
       .setChecked(true);
+    await this.page.waitForTimeout(300);
   }
 
   async clickContinue(waitForUrl?: RegExp): Promise<void> {
