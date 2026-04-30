@@ -293,7 +293,7 @@
       "regulated_products": [5],
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0012",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "OBPS Regulated Operation",
       "contacts": [3]
     }
