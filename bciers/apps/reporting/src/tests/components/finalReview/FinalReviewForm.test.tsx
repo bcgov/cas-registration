@@ -33,6 +33,74 @@ vi.mock(
   }),
 );
 
+const mockData = {
+  report_operation: {
+    activities: "Test Activities",
+    regulated_products: "Test Products",
+    representatives: "Test Reps",
+    operator_legal_name: "Test Legal Name",
+    operator_trade_name: "Test Trade Name",
+    operation_name: "Test Operation",
+    operation_type: "SFO",
+    operation_bcghgid: "123456",
+    bc_obps_regulated_operation_id: "REG123",
+    registration_purpose: "REPORTING_OPERATION",
+  },
+  report_person_responsible: {
+    first_name: "John",
+    last_name: "Doe",
+    position_title: "Manager",
+    business_role: "Owner",
+    email: "john@example.com",
+    phone_number: "555-1234",
+    street_address: "123 Main St",
+    municipality: "Vancouver",
+    province: "BC",
+    postal_code: "V6B 1A1",
+  },
+  facility_reports: [
+    {
+      facility: "facility-1",
+      facility_name: "Test Facility",
+      activity_data: [],
+      emission_summary: {},
+      reportnonattributableemissions_records: [],
+    },
+  ],
+  report_additional_data: {
+    capture_emissions: false,
+    emissions_on_site_use: "100",
+    emissions_on_site_sequestration: "50",
+    emissions_off_site_transfer: "25",
+    electricity_generated: 1000,
+  },
+  report_compliance_summary: {
+    emissions_attributable_for_reporting: "1000",
+    reporting_only_emissions: "500",
+    emissions_attributable_for_compliance: "800",
+    emissions_limit: "1200",
+    excess_emissions: "0",
+    credited_emissions: "200",
+    regulatory_values: {
+      initial_compliance_period: 2021,
+      compliance_period: 2024,
+    },
+    products: [
+      {
+        name: "Cement equivalent",
+        unit: "Tonnes",
+        annual_production: 45.0,
+        apr_dec_production: 2.0,
+        emission_intensity: 0.6262,
+        allocated_industrial_process_emissions: 0.0,
+        allocated_compliance_emissions: 0.0,
+        reduction_factor: 0.65,
+        tightening_rate: 0.01,
+      },
+    ],
+  },
+};
+
 describe("The FinalReviewForm component", () => {
   const mockNavigationInformation = {
     headerStepIndex: 4,
@@ -87,73 +155,6 @@ describe("The FinalReviewForm component", () => {
   });
 
   it("renders all components when data is provided", async () => {
-    const mockData = {
-      report_operation: {
-        activities: "Test Activities",
-        regulated_products: "Test Products",
-        representatives: "Test Reps",
-        operator_legal_name: "Test Legal Name",
-        operator_trade_name: "Test Trade Name",
-        operation_name: "Test Operation",
-        operation_type: "SFO",
-        operation_bcghgid: "123456",
-        bc_obps_regulated_operation_id: "REG123",
-        registration_purpose: "REPORTING_OPERATION",
-      },
-      report_person_responsible: {
-        first_name: "John",
-        last_name: "Doe",
-        position_title: "Manager",
-        business_role: "Owner",
-        email: "john@example.com",
-        phone_number: "555-1234",
-        street_address: "123 Main St",
-        municipality: "Vancouver",
-        province: "BC",
-        postal_code: "V6B 1A1",
-      },
-      facility_reports: [
-        {
-          facility: "facility-1",
-          facility_name: "Test Facility",
-          activity_data: [],
-          emission_summary: {},
-          reportnonattributableemissions_records: [],
-        },
-      ],
-      report_additional_data: {
-        capture_emissions: false,
-        emissions_on_site_use: "100",
-        emissions_on_site_sequestration: "50",
-        emissions_off_site_transfer: "25",
-        electricity_generated: 1000,
-      },
-      report_compliance_summary: {
-        emissions_attributable_for_reporting: "1000",
-        reporting_only_emissions: "500",
-        emissions_attributable_for_compliance: "800",
-        emissions_limit: "1200",
-        excess_emissions: "0",
-        credited_emissions: "200",
-        regulatory_values: {
-          initial_compliance_period: 2021,
-          compliance_period: 2024,
-        },
-        products: [
-          {
-            name: "Cement equivalent",
-            annual_production: 45.0,
-            apr_dec_production: 0.0,
-            emission_intensity: 0.6262,
-            allocated_industrial_process_emissions: 0.0,
-            allocated_compliance_emissions: 0.0,
-            reduction_factor: 0.65,
-            tightening_rate: 0.01,
-          },
-        ],
-      },
-    };
-
     (getFinalReviewData as any).mockResolvedValue(mockData);
 
     render(
@@ -165,19 +166,61 @@ describe("The FinalReviewForm component", () => {
     );
 
     await waitFor(async () => {
-      expect(screen.getByTestId("facility-review")).toBeInTheDocument();
-      expect(screen.getByTestId("multi-step-header")).toBeInTheDocument();
-      expect(screen.getByTestId("reporting-task-list")).toBeInTheDocument();
-      expect(screen.getByTestId("reporting-step-buttons")).toBeInTheDocument();
+      expect(screen.getByTestId("facility-review")).toBeVisible();
+      expect(screen.getByTestId("multi-step-header")).toBeVisible();
+      expect(screen.getByTestId("reporting-task-list")).toBeVisible();
+      expect(screen.getByTestId("reporting-step-buttons")).toBeVisible();
     });
 
     const user = userEvent.setup();
     const printButton = screen.getByRole("button", {
       name: /save as pdf|print/i,
     });
-    expect(printButton).toBeInTheDocument();
+    expect(printButton).toBeVisible();
 
     await user.click(printButton);
     expect(window.print).toHaveBeenCalled();
+  });
+
+  it("should display production units in Compliance Summary section", async () => {
+    (getFinalReviewData as any).mockResolvedValue(mockData);
+
+    render(
+      <FinalReviewForm
+        navigationInformation={mockNavigationInformation}
+        version_id={1}
+        flow={ReportingFlow.SFO}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("facility-review")).toBeVisible();
+    });
+
+    // Annual production
+    const annualProdLabel = screen.getByText(/annual production/i);
+    // get the div for the entire row (the parent of the label's div)
+    const annualRowContainer = annualProdLabel.closest("div")?.parentElement;
+    expect(annualRowContainer).toBeTruthy();
+    const input = annualRowContainer!.querySelector(
+      'input[type="text"]',
+    ) as HTMLInputElement;
+    expect(input).toBeTruthy();
+    expect(input.value).toBe("45");
+    expect(annualRowContainer).toHaveTextContent(/tonnes/i);
+
+    // Apr-Dec production
+    const aprDecLabel = screen.getByText(
+      /production data for apr 1 - dec 31 2024/i,
+    );
+    // get the div for the entire row (the parent of the label's div)
+    const aprDecContainer = aprDecLabel.closest("div")?.parentElement;
+    expect(aprDecContainer).toBeTruthy();
+    const aprDecInput = aprDecContainer!.querySelector(
+      'input[type="text"]',
+    ) as HTMLInputElement;
+    expect(aprDecInput).toBeTruthy();
+    expect(aprDecInput.value).toBe("2");
+    expect(aprDecContainer).toHaveTextContent(/tonnes/i);
   });
 });
