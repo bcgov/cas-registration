@@ -39,8 +39,7 @@ export interface AccessRequestDataGridRow {
   status: string | Status;
 }
 
-export interface AccessRequestGridRenderCellParams
-  extends GridRenderCellParams {
+export interface AccessRequestGridRenderCellParams extends GridRenderCellParams {
   row: AccessRequestDataGridRow;
 }
 

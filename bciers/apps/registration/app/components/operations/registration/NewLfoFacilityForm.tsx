@@ -17,8 +17,10 @@ import {
   facilitiesLfoUiSchema,
 } from "@/administration/app/data/jsonSchema/facilitiesLfo";
 
-interface NewLfoFacilityFormProps
-  extends Omit<FormPropsWithTheme<any>, "schema" | "uiSchema"> {
+interface NewLfoFacilityFormProps extends Omit<
+  FormPropsWithTheme<any>,
+  "schema" | "uiSchema"
+> {
   operationId: UUID;
   step: number;
   formData: FacilityInformationFormData;

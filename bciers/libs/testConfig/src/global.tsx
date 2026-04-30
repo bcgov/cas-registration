@@ -39,8 +39,7 @@ import createFetchMock from "vitest-fetch-mock";
 
 declare module "vitest" {
   interface Assertion<T = any>
-    extends jest.Matchers<void, T>,
-      TestingLibraryMatchers<T, void> {}
+    extends jest.Matchers<void, T>, TestingLibraryMatchers<T, void> {}
 }
 
 // Extend the global expect object with the custom matchers from jest-dom

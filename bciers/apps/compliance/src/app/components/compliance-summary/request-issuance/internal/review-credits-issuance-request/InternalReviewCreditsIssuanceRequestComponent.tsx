@@ -39,7 +39,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
   // Consider the suggestion final only if a prior submission exists
   const hasPriorAnalystSubmission = Boolean(
     initialFormData?.analyst_submitted_date ||
-      initialFormData?.analyst_submitted_by,
+    initialFormData?.analyst_submitted_by,
   );
   const isFinalAnalystSuggestion =
     hasPriorAnalystSubmission &&
