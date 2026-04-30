@@ -145,10 +145,21 @@ test.describe("SFO: create and submit a new report for the current reporting yea
       variant: "default",
     });
     await report.continue(
+      new RegExp(`${versionId}/${ReportRoutes.VALIDATION}`),
+    );
+
+    // ── 12. Report Validation (read-only) ──
+    await verifyFormTitle(page, "Report validation");
+    await report.verifyReportValidation();
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "SFO Report - Report Validation",
+      variant: "default",
+    });
+    await report.continue(
       new RegExp(`${versionId}/${ReportRoutes.FINAL_REVIEW}`),
     );
 
-    // ── 12. Final Review (read-only) ──
+    // ── 13. Final Review (read-only) ──
     await report.verifyFinalReview();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "SFO Report - Final Review",
@@ -158,7 +169,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
       new RegExp(`${versionId}/${ReportRoutes.VERIFICATION}`),
     );
 
-    // ── 13. Verification ──
+    // ── 14. Verification ──
     await verifyFormTitle(page, "Verification");
     await report.fillVerification();
     await takeStabilizedScreenshot(happoScreenshot, page, {
@@ -169,7 +180,7 @@ test.describe("SFO: create and submit a new report for the current reporting yea
       new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
     );
 
-    // ── 14. Attachments — upload verification statement PDF ──
+    // ── 15. Attachments — upload verification statement PDF ──
     await report.uploadVerificationStatement();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "SFO Report - Attachments",
@@ -180,17 +191,17 @@ test.describe("SFO: create and submit a new report for the current reporting yea
       false,
     );
 
-    // ── 15. Sign-off and submit (submission stubbed to avoid external calls) ──
+    // ── 16. Sign-off and submit (submission stubbed to avoid external calls) ──
     await grid.submitReportById(request, versionId, false, false, true);
 
-    // ── 16. Submission page — verify success content ──
+    // ── 17. Submission page — verify success content ──
     await grid.verifySubmissionPage();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "SFO Report - Submission",
       variant: "default",
     });
 
-    // ── 17. Return to grid and verify report status ──
+    // ── 18. Return to grid and verify report status ──
     await page.getByRole("link", { name: "Return to report table" }).click();
     await grid.verifyReportStatus(OPERATION_NAMES.BUGLE_SFO, "Submitted");
     await takeStabilizedScreenshot(happoScreenshot, page, {

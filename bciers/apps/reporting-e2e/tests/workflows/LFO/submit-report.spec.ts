@@ -185,10 +185,21 @@ test.describe("LFO: create and submit a new report for the current reporting yea
       variant: "default",
     });
     await report.continue(
+      new RegExp(`${versionId}/${ReportRoutes.VALIDATION}`),
+    );
+
+    // ── 17. Report Validation (read-only) ──
+    await verifyFormTitle(page, "Report validation");
+    await report.verifyReportValidation();
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "LFO Report - Report Validation",
+      variant: "default",
+    });
+    await report.continue(
       new RegExp(`${versionId}/${ReportRoutes.FINAL_REVIEW}`),
     );
 
-    // ── 17. Final Review (read-only) ──
+    // ── 18. Final Review (read-only) ──
     await report.verifyFinalReview();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Final Review",
@@ -198,7 +209,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
       new RegExp(`${versionId}/${ReportRoutes.VERIFICATION}`),
     );
 
-    // ── 18. Verification ──
+    // ── 19. Verification ──
     await verifyFormTitle(page, "Verification");
     await report.fillVerification();
     await takeStabilizedScreenshot(happoScreenshot, page, {
@@ -209,7 +220,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
       new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
     );
 
-    // ── 19. Attachments — upload verification statement PDF ──
+    // ── 20. Attachments — upload verification statement PDF ──
     await report.uploadVerificationStatement();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Attachments",
@@ -220,17 +231,17 @@ test.describe("LFO: create and submit a new report for the current reporting yea
       false,
     );
 
-    // ── 20. Sign-off and submit ──
+    // ── 21. Sign-off and submit ──
     await grid.submitReportById(request, versionId, false, false, true);
 
-    // ── 21. Submission page — verify success content ──
+    // ── 22. Submission page — verify success content ──
     await grid.verifySubmissionPage();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Submission",
       variant: "default",
     });
 
-    // ── 22. Return to the grid and verify the report status ──
+    // ── 23. Return to the grid and verify the report status ──
     await page.getByRole("link", { name: "Return to report table" }).click();
     await grid.verifyReportStatus(OPERATION_NAMES.BEES_LFO, "Submitted");
     await takeStabilizedScreenshot(happoScreenshot, page, {

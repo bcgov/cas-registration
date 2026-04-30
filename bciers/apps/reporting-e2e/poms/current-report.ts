@@ -8,6 +8,7 @@ import { ReportOperationPOM } from "@/reporting-e2e/poms/report-operation";
 import { AdditionalReportingDataPOM } from "@/reporting-e2e/poms/additional-reporting-data";
 import { VerificationPOM } from "@/reporting-e2e/poms/verification";
 import { AttachmentsPOM } from "@/reporting-e2e/poms/attachments";
+import { ReportValidationPOM } from "@/reporting-e2e/poms/report-validation";
 
 export class CurrentReportPOM {
   readonly page: Page;
@@ -70,6 +71,11 @@ export class CurrentReportPOM {
   async fillAdditionalData(): Promise<void> {
     const additionalReportingData = new AdditionalReportingDataPOM(this.page);
     await additionalReportingData.fill();
+  }
+
+  async verifyReportValidation(): Promise<void> {
+    const validation = new ReportValidationPOM(this.page);
+    await validation.verifyNoIssues();
   }
 
   async verifyComplianceSummary(): Promise<void> {

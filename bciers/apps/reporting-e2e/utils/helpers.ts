@@ -5,6 +5,8 @@ export async function verifyFormTitle(
   title: string,
 ): Promise<void> {
   await expect(
-    page.locator('[data-testid="field-template-label"][for="root"]'),
+    page.locator(
+      '[data-testid="field-template-label"][for="root"], .form-heading',
+    ),
   ).toHaveText(title);
 }
