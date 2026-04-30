@@ -4,6 +4,43 @@
  */
 
 /**
+ * Chronological order of month and quarter keys as they appear in the
+ * Cement Production (Calcination Emissions) methodology. Used both by
+ * cementProductionUISchema (ui:order) and the Final Review / Submitted
+ * renderers to display periods in calendar order.
+ */
+export const MONTH_QUARTER_ORDER: string[] = [
+  "january",
+  "february",
+  "march",
+  "april",
+  "may",
+  "june",
+  "july",
+  "august",
+  "september",
+  "october",
+  "november",
+  "december",
+  "quarter1",
+  "quarter2",
+  "quarter3",
+  "quarter4",
+];
+
+export const sortMethodologyEntries = (
+  entries: [string, unknown][],
+): [string, unknown][] =>
+  [...entries].sort(([a], [b]) => {
+    const aIdx = MONTH_QUARTER_ORDER.indexOf(a);
+    const bIdx = MONTH_QUARTER_ORDER.indexOf(b);
+    if (aIdx === -1 && bIdx === -1) return 0; // both non-period: preserve order
+    if (aIdx === -1) return -1; // a is non-period: float to front
+    if (bIdx === -1) return 1; // b is non-period: float to front
+    return aIdx - bIdx; // both periods: sort chronologically
+  });
+
+/**
  * Explicit plural → singular label map for common array keys.
  */
 export const SINGULAR_LABEL_MAP: Record<string, string> = {
