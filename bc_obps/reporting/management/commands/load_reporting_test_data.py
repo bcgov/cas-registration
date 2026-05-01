@@ -2,7 +2,10 @@ import json
 from uuid import UUID
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from reporting.management.commands.utils import submit_report_from_fixture
+from reporting.management.commands.utils import (
+    load_extra_report_fixtures,
+    submit_report_from_fixture,
+)
 from reporting.models.report_version import ReportVersion
 from service.report_service import ReportService
 
@@ -33,6 +36,8 @@ class Command(BaseCommand):
                     operation_id=report['fields']['operation_id'],
                     reporting_year=report['fields']['reporting_year_id'],
                 )
+
+            load_extra_report_fixtures(self.fixture_base_dir, self.stdout, self.style)
 
             # submit report from operation / year combination
             report_versions_to_submit = [(UUID("ebc45617-ae4c-4c76-ab36-5a59c3aef407"), 2023)]  # SFO Operation 1

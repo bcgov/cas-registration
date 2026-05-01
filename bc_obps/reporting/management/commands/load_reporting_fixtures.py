@@ -2,7 +2,10 @@ import json
 from uuid import UUID
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from reporting.management.commands.utils import submit_report_from_fixture
+from reporting.management.commands.utils import (
+    load_extra_report_fixtures,
+    submit_report_from_fixture,
+)
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
 from service.report_service import ReportService
@@ -38,27 +41,6 @@ class Command(BaseCommand):
         workflow = options.get('workflow')
         self.load_reports(workflow)
 
-        # Load any additional fixtures you need *after* reports exist
-        extra = [
-            f'{self.fixture_base_dir}/report_person_responsible.json',
-            f'{self.fixture_base_dir}/report_raw_activity_data.json',
-            f'{self.fixture_base_dir}/report_activity.json',
-            f'{self.fixture_base_dir}/report_source_type.json',
-            f'{self.fixture_base_dir}/report_unit.json',
-            f'{self.fixture_base_dir}/report_fuel.json',
-            f'{self.fixture_base_dir}/report_emission.json',
-            f'{self.fixture_base_dir}/report_methodology.json',
-            f'{self.fixture_base_dir}/report_product.json',
-            f'{self.fixture_base_dir}/report_emission_allocation.json',
-            f'{self.fixture_base_dir}/report_product_emission_allocation.json',
-            f'{self.fixture_base_dir}/report_additional_data.json',
-            f'{self.fixture_base_dir}/report_verification.json',
-            f'{self.fixture_base_dir}/report_attachment.json',
-        ]
-        for fixture in extra:
-            self.stdout.write(self.style.SUCCESS(f"Loading additional report fixture: {fixture}"))
-            call_command('loaddata', fixture)
-
     def load_reports(self, workflow):
         reports_fixture = f'{self.fixture_base_dir}/report.json'
         with open(reports_fixture) as f:
@@ -77,6 +59,9 @@ class Command(BaseCommand):
                 ro.operator_legal_name = _strip_admin_suffix(ro.operator_legal_name)
                 ro.operation_name = _strip_admin_suffix(ro.operation_name)
                 ro.save()
+
+            # Load any additional fixtures you need *after* reports exist
+            load_extra_report_fixtures(self.fixture_base_dir, self.stdout, self.style)
 
             # submit reports
             operation_ids_to_submit = [
