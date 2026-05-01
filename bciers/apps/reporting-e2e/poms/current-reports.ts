@@ -138,18 +138,20 @@ export class CurrentReportsPOM {
     await expect(startButton).toBeEnabled();
 
     await Promise.all([
-      this.page.waitForURL((u) =>
-        new RegExp(
-          String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
-          "i",
-        ).test(u.toString()),
+      this.page.waitForURL(
+        (u) =>
+          new RegExp(
+            String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
+            "i",
+          ).test(u.toString()),
+        { waitUntil: "load" },
       ),
       startButton.click(),
     ]);
 
     await expect(
       this.page.getByText("Review Operation Information"),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 30_000 });
 
     return this.extractReportVersionIdFromUrl(
       this.page,

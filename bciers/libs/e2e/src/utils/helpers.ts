@@ -70,7 +70,7 @@ export async function clickButton(
     await Promise.all([
       page.waitForURL((u) => waitForUrl.test(u.toString()), {
         timeout: 30_000,
-        waitUntil: "domcontentloaded",
+        waitUntil: "load",
       }),
       button.click(),
     ]);
