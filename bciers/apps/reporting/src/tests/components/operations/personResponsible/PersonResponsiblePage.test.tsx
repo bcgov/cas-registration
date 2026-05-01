@@ -1,11 +1,11 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import PersonResponsiblePage from "@reporting/src/app/components/operations/personResponsible/PersonResponsiblePage"; // Adjust import path if needed
+import PersonResponsiblePage from "@reporting/src/app/components/operations/personResponsible/PersonResponsiblePage";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { getContacts } from "@bciers/actions/api";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
-import { dummyNavigationInformation } from "../../taskList/utils";
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
 
 // Mock functions
@@ -98,7 +98,7 @@ describe("PersonResponsiblePage component", () => {
     expect(mockCreatePersonResponsibleSchema).toHaveBeenCalledTimes(1);
 
     await waitFor(() => {
-      expect(screen.getByText(/Person Responsible/)).toBeInTheDocument();
+      expect(screen.getByText(/Person Responsible/)).toBeVisible();
     });
   });
 });

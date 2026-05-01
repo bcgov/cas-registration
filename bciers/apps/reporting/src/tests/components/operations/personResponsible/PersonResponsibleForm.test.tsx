@@ -1,10 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import PersonResponsibleForm from "@reporting/src/app/components/operations/personResponsible/PersonResponsibleForm";
 import {
   Contact,
@@ -14,7 +8,8 @@ import { personResponsibleSchema } from "@reporting/src/data/jsonSchema/personRe
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import { getContacts, getContact } from "@bciers/actions/api";
-import { dummyNavigationInformation } from "../../taskList/utils";
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
+
 // Mocks for external dependencies
 vi.mock("@bciers/actions/api", () => ({
   getContacts: vi.fn(),
@@ -95,28 +90,14 @@ describe("PersonResponsibleForm component", () => {
 
     // Check form displays
     await waitFor(() => {
-      expect(screen.getByText(/Person Responsible/)).toBeInTheDocument();
+      expect(screen.getByText(/Person Responsible/)).toBeVisible();
     });
 
     // Check person responsible field is pre-filled
-    expect(await screen.findByDisplayValue("John Doe")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("John Doe")).toBeVisible();
 
-    expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /continue/i }),
-    ).toBeInTheDocument();
-  });
-
-  it("submits the form successfully", async () => {
-    actionHandler.mockResolvedValueOnce({});
-
-    render(<PersonResponsibleForm {...defaultProps} />);
-
-    await act(async () => {
-      fireEvent.click(screen.getByText("Save & Continue"));
-    });
-
-    expect(actionHandler).toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: /back/i })).toBeVisible();
+    expect(screen.getByRole("button", { name: /continue/i })).toBeVisible();
   });
 
   it("handles sync of contacts correctly", async () => {
@@ -155,7 +136,6 @@ describe("PersonResponsibleForm component", () => {
       postal_code: "V1V 1V1",
     });
 
-    // Trigger sync (assuming sync button is present)
     const syncButton = screen.getByRole("button", { name: /sync/i });
     fireEvent.click(syncButton);
 
@@ -165,12 +145,29 @@ describe("PersonResponsibleForm component", () => {
       expect(mockGetContact).toHaveBeenCalledWith("1");
     });
 
-    expect(await screen.findByDisplayValue("Johnny")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Updated")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Updated Manager")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("456 New St")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("New City")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("BC")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("V1V 1V1")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("Johnny")).toBeVisible();
+    expect(screen.getByDisplayValue("Updated")).toBeVisible();
+    expect(screen.getByDisplayValue("Updated Manager")).toBeVisible();
+    expect(screen.getByDisplayValue("456 New St")).toBeVisible();
+    expect(screen.getByDisplayValue("New City")).toBeVisible();
+    expect(screen.getByDisplayValue("BC")).toBeVisible();
+    expect(screen.getByDisplayValue("V1V 1V1")).toBeVisible();
+  });
+
+  it("submits the form successfully", async () => {
+    actionHandler.mockResolvedValueOnce({});
+
+    render(<PersonResponsibleForm {...defaultProps} />);
+
+    fireEvent.click(screen.getByText("Save & Continue"));
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalled();
+    });
+
+    const [, , , options] = actionHandler.mock.calls[0];
+    expect(JSON.parse(options.body)).toMatchObject({
+      contact_id: 1,
+    });
   });
 });

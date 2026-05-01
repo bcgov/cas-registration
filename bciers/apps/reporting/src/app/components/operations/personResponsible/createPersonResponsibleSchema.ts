@@ -22,8 +22,8 @@ export const createPersonResponsibleSchema = (
 ): RJSFSchema => {
   const localSchema = JSON.parse(JSON.stringify(schema));
 
-  localSchema.properties.person_responsible.enum = contactOptions.map((c) =>
-    String(c.id),
+  localSchema.properties.person_responsible.enum = contactOptions.map(
+    (c) => c.id,
   );
 
   if (contactId && contactData) {
