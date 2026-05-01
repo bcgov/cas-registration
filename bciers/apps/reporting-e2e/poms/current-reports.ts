@@ -33,6 +33,7 @@ import {
   fillInputValueByLocator,
   waitForGridReady,
 } from "@bciers/e2e/utils/helpers";
+import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 
 export class CurrentReportsPOM {
   readonly page: Page;
@@ -150,9 +151,7 @@ export class CurrentReportsPOM {
       this.page.waitForLoadState("load"),
     ]);
 
-    await expect(
-      this.page.getByText("Review Operation Information"),
-    ).toBeVisible({ timeout: 30_000 });
+    await verifyFormTitle(this.page, "Review Operation Information");
 
     return this.extractReportVersionIdFromUrl(
       this.page,
