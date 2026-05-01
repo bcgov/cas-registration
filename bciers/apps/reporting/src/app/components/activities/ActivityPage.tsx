@@ -97,9 +97,6 @@ export default async function ActivityPage({
     "",
   );
 
-  console.log("ACITIVYT DATA: ", activityData);
-  console.log("FORM DATA: ", formData);
-
   return (
     <ActivityForm
       key={currentActivity.id}

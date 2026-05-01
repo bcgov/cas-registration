@@ -119,11 +119,11 @@ const DynamicLabelProductAllocation: React.FC<FieldTemplateProps> = ({
   id,
   classNames,
   children,
-  formContext,
+  registry,
 }) => {
   const productName = getAssociatedProductName(
     id,
-    formContext.facility_emission_data,
+    registry.formContext.facility_emission_data,
   );
   return (
     <div className={`mb-4 md:mb-2  ${classNames}`}>
@@ -144,11 +144,11 @@ const DynamicLabelTotalProductAllocation: React.FC<FieldTemplateProps> = ({
   id,
   classNames,
   children,
-  formContext,
+  registry,
 }) => {
   const productName = getAssociatedProductName(
     id,
-    formContext.total_emission_allocations,
+    registry.formContext.total_emission_allocations,
   );
   return (
     <div className={`mb-4 md:mb-2  ${classNames}`}>
