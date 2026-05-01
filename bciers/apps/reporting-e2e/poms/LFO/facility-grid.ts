@@ -2,6 +2,7 @@ import { Page, expect } from "@playwright/test";
 import { AppRoutes, ReportRoutes } from "../../utils/enums";
 import { clickButton, waitForGridReady } from "@bciers/e2e/utils/helpers";
 import { FORM_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
+import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 
 export class FacilityGridPOM {
   readonly page: Page;
@@ -34,11 +35,7 @@ export class FacilityGridPOM {
 
     await continueLink.click();
 
-    await expect(async () => {
-      await expect(
-        this.page.getByText("Review Facility Information"),
-      ).toBeVisible();
-    }).toPass({ timeout: 30_000 });
+    await verifyFormTitle(this.page, "Review Facility Information");
     return this.extractFacilityIdFromUrl(this.page);
   }
 
