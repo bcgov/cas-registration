@@ -33,7 +33,7 @@ const ReadOnlyFileWidget: React.FC<WidgetProps> = ({
           registry={registry}
         />
       ) : (
-        <>No attachment was uploaded</>
+        <>No attachment was uploaded.</>
       )}
     </div>
   );

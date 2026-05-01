@@ -66,7 +66,7 @@ describe("RJSF FileWidget", () => {
     expect(
       screen.getByRole("button", { name: "Upload attachment" }),
     ).toBeVisible();
-    expect(screen.getByText("No attachment was uploaded")).toBeVisible();
+    expect(screen.getByText("No attachment was uploaded.")).toBeVisible();
     expect(screen.queryByRole("input")).not.toBeInTheDocument();
   });
 
@@ -146,7 +146,7 @@ describe("RJSF FileWidget", () => {
       "test.pdf",
     );
     expect(
-      screen.queryByText("No attachment was uploaded"),
+      screen.queryByText("No attachment was uploaded."),
     ).not.toBeInTheDocument();
   });
 
@@ -156,7 +156,7 @@ describe("RJSF FileWidget", () => {
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(input, mockFileUnaccepted);
 
-    expect(screen.getByText("No attachment was uploaded")).toBeVisible();
+    expect(screen.getByText("No attachment was uploaded.")).toBeVisible();
   });
 
   it("should change the upload button text when a file is uploaded", async () => {
@@ -224,7 +224,7 @@ describe("RJSF FileWidget", () => {
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(input, createMock21MBFile());
 
-    expect(screen.getByText("No attachment was uploaded")).toBeVisible();
+    expect(screen.getByText("No attachment was uploaded.")).toBeVisible();
   });
 
   it("should display the alert when a file larger than 20MB is uploaded", async () => {

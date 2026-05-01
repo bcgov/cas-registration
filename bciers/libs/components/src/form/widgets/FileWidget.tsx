@@ -291,7 +291,7 @@ const FileWidget = ({
         />
       ) : (
         <span className="text-base md:text-lg flex-shrink-0">
-          No attachment was uploaded
+          No attachment was uploaded.
         </span>
       )}
     </div>
