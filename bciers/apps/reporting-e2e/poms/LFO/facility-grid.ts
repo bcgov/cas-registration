@@ -43,13 +43,20 @@ export class FacilityGridPOM {
   }
 
   async markFacilityComplete(facilityName: string) {
-    await this.page
+    const row = this.page
       .getByRole("row")
       .filter({ hasText: facilityName })
-      .first()
-      .getByRole("checkbox", { name: "Report Status" })
-      .setChecked(true);
+      .first();
+
+    await row.getByRole("checkbox", { name: "Report Status" }).click();
+
+    // Wait for the debounce (500ms) to complete before proceeding.
+    // eslint-disable-next-line playwright/no-wait-for-timeout
     await this.page.waitForTimeout(500);
+
+    await expect(
+      row.getByRole("link", { name: /view details/i }),
+    ).toBeVisible();
   }
 
   async clickContinue(waitForUrl?: RegExp): Promise<void> {

@@ -14,7 +14,6 @@ import { FacilityGridPOM } from "@/reporting-e2e/poms/LFO/facility-grid";
 import { OperationEmissionSummaryPOM } from "@/reporting-e2e/poms/LFO/operation-emissions-summary";
 import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
-import { expect } from "@playwright/test";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
@@ -54,6 +53,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     );
 
     // ── 4. Person Responsible — select "Bill Blue" (contact linked to the op)
+    await verifyFormTitle(page, "Person Responsible for Submitting Report");
     await report.fillPersonResponsible("Bill Blue");
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Person Responsible",
@@ -87,6 +87,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
 
     // ── 7. Review Facility Information
     const facilityReport = new LFOFacilityReportPOM(page, facilityId);
+    await verifyFormTitle(page, "Review Facility Information");
     await facilityReport.fillReviewFacilityInformation();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Review Facility",
@@ -97,6 +98,10 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     );
 
     // ── 8. Activities — GSC with 1 unit, 1 fuel (Diesel), 1 emission (CO2) ──
+    await verifyFormTitle(
+      page,
+      "General stationary combustion excluding line tracing (at SFO)",
+    );
     await facilityReport.fillGscActivity();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Activities",
@@ -107,6 +112,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     );
 
     // ── 9. Non-Attributable Emissions (no entries needed) ──
+    await verifyFormTitle(page, "Non-Attributable Emissions");
     await facilityReport.fillNonAttributable();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Non-Attributable Emissions",
@@ -127,6 +133,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     );
 
     // ── 11. Production Data — select Cement equivalent, fill annual production ──
+    await verifyFormTitle(page, "Production Data");
     await facilityReport.fillProductionData(
       ["Compression, positive displacement - consumed energy"],
       ["Compression, positive displacement - consumed energy"],
@@ -140,6 +147,7 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     );
 
     // ── 12. Allocation of Emissions (no entries needed for minimal test) ──
+    await verifyFormTitle(page, "Allocation of Emissions");
     await facilityReport.fillAllocationOfEmissions();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Allocation of Emissions",
@@ -158,9 +166,12 @@ test.describe("LFO: create and submit a new report for the current reporting yea
       component: "LFO Report - Facility Grid",
       variant: "completed",
     });
-    await facilityGrid.clickContinue();
+    await facilityGrid.clickContinue(
+      new RegExp(`${versionId}/${ReportRoutes.ADDITIONAL_REPORTING_DATA}`),
+    );
 
     // ── 14. Additional Reporting Data — no captured emissions ──
+    await verifyFormTitle(page, "Additional Reporting Data");
     await report.fillAdditionalData();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Additional Reporting Data",
@@ -206,12 +217,10 @@ test.describe("LFO: create and submit a new report for the current reporting yea
       component: "LFO Report - Final Review",
       variant: "default",
     });
-    await page.getByRole("button", { name: "Continue" }).click();
-    await expect(page.getByText("Verification body name")).toBeVisible();
 
-    // await report.continue(
-    //   new RegExp(`${versionId}/${ReportRoutes.VERIFICATION}`),
-    // );
+    await report.continue(
+      new RegExp(`${versionId}/${ReportRoutes.VERIFICATION}`),
+    );
 
     // ── 19. Verification ──
     await verifyFormTitle(page, "Verification");
