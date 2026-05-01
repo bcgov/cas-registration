@@ -17,6 +17,39 @@ import * as Sentry from "@sentry/nextjs";
 import { captureException } from "@bciers/sentryConfig/sentry";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
+// Helper function to parse action handler errors
+const parseHandlerError = (res: any, status: number) => {
+  // Handle API errors, if any
+  if ("message" in res) return { error: res.message };
+
+  // Handle structured validation errors (e.g. { errors: [...] })
+  if ("errors" in res) return { validation: res };
+
+  // Handle HTTP errors, e.g., response.status is not in the 200-299 range
+  return { error: `HTTP error! Status: ${status}` };
+};
+
+// Helper function to format caught errors
+/* eslint-disable no-console */
+const formatError = (error: any, endpoint: string) => {
+  if (error instanceof Error) {
+    console.error("An error occurred while fetching %s:", endpoint, error);
+    if (error.message === ENDPOINT_NOT_ALLOWED_ERROR) {
+      return {
+        error: `Your session has timed out. Please log in again at https://industrialemissions.gov.bc.ca/onboarding to continue.`,
+      };
+    }
+    return {
+      error: `An error occurred while fetching ${endpoint}: ${error.message}`,
+    };
+  }
+  console.error(`An unknown error occurred while fetching ${endpoint}`);
+  return {
+    error: `An unknown error occurred while fetching ${endpoint}`,
+  };
+};
+/* eslint-enable no-console */
+
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
 export async function getToken() {
   try {
@@ -85,14 +118,9 @@ export async function actionHandler(
         // Passing mock time cookie through if present
         // Except in production
         const clientCookies = await cookies();
-        if (
-          process.env.ENVIRONMENT !== "prod" &&
-          clientCookies.has("mock-time")
-        ) {
-          requestHeaders.append(
-            "Cookie",
-            `mock-time=${(await cookies()).get("mock-time")?.value}`,
-          );
+        const mockTime = clientCookies.get("mock-time")?.value;
+        if (process.env.ENVIRONMENT !== "prod" && mockTime) {
+          requestHeaders.append("Cookie", `mock-time=${mockTime}`);
         }
 
         const defaultOptions: RequestInit = {
@@ -115,15 +143,7 @@ export async function actionHandler(
           // if we have an error message, we want to capture it in Sentry otherwise we want to capture the status code
           const error = res.message || `HTTP error! Status: ${response.status}`;
           captureException(new Error(error), userGuid);
-
-          // Handle API errors, if any
-          if ("message" in res) return { error: res.message };
-
-          // Handle structured validation errors (e.g. { errors: [...] })
-          if ("errors" in res) return { validation: res };
-
-          // Handle HTTP errors, e.g., response.status is not in the 200-299 range
-          return { error: `HTTP error! Status: ${response.status}` };
+          return parseHandlerError(res, response.status);
         }
 
         const data = await response.json();
@@ -138,28 +158,7 @@ export async function actionHandler(
         const token = await getToken();
         const userGuid = token?.user_guid || "";
         captureException(error as Error, userGuid);
-        if (error instanceof Error) {
-          // eslint-disable-next-line no-console
-          console.error(
-            "An error occurred while fetching %s:",
-            endpoint,
-            error,
-          );
-          if (error.message === ENDPOINT_NOT_ALLOWED_ERROR) {
-            return {
-              error: `Your session has timed out. Please log in again at https://industrialemissions.gov.bc.ca/onboarding to continue.`,
-            };
-          }
-          return {
-            error: `An error occurred while fetching ${endpoint}: ${error.message}`,
-          };
-        } else {
-          // eslint-disable-next-line no-console
-          console.error(`An unknown error occurred while fetching ${endpoint}`);
-          return {
-            error: `An unknown error occurred while fetching ${endpoint}`,
-          };
-        }
+        return formatError(error, endpoint);
       }
     },
   );
