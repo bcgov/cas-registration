@@ -33,6 +33,12 @@ export enum ReportingPage {
   Validation = "Validation",
 }
 
+export enum ReportingOrigin {
+  FinalReview = "final-review",
+  Submitted = "submitted",
+  AnnualReport = "annual-report",
+}
+
 export enum ReportingFlow {
   SFO = "SFO",
   LFO = "LFO",
