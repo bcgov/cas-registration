@@ -1,8 +1,8 @@
-from typing import Optional
-
+from dataclasses import asdict
+from typing import Optional, Dict, Any
 from reporting.models import ReportPersonResponsible
 from reporting.models.report_version import ReportVersion
-from reporting.schema.report_person_responsible import ReportPersonResponsibleIn
+from reporting.dataclass import ReportPersonResponsibleData
 
 
 class ReportContactService:
@@ -11,15 +11,24 @@ class ReportContactService:
         return ReportPersonResponsible.objects.filter(report_version__id=report_version_id).first()
 
     @classmethod
-    def save_report_contact(cls, version_id: int, data: ReportPersonResponsibleIn) -> ReportPersonResponsible:
+    def save_report_contact(
+        cls,
+        version_id: int,
+        payload: Dict[str, Any],
+    ) -> ReportPersonResponsible:
+
         report_version: Optional[ReportVersion] = ReportVersion.objects.filter(id=version_id).first()
 
         if report_version is None:
             raise ValueError("ReportVersion with this ID does not exist.")
 
-        report_person_responsible, created = ReportPersonResponsible.objects.update_or_create(
+        data = ReportPersonResponsibleData(**payload)
+
+        defaults = {key: value for key, value in asdict(data).items() if key != "report_version"}
+
+        report_person_responsible, _created = ReportPersonResponsible.objects.update_or_create(
             report_version=report_version,
-            defaults=data.model_dump(exclude={'report_version'}),
+            defaults=defaults,
         )
 
         return report_person_responsible

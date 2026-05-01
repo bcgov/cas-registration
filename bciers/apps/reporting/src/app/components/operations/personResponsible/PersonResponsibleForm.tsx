@@ -19,7 +19,7 @@ import { AddressErrorWidget } from "@reporting/src/data/jsonSchema/personRespons
 import SnackBar from "@bciers/components/form/components/SnackBar";
 
 interface PersonResponsibleFormData {
-  person_responsible: string;
+  person_responsible: number | undefined;
 }
 
 interface Props {
@@ -56,7 +56,7 @@ const PersonResponsibleForm = ({
     contactToSubmit: personResponsible,
     schema: initialSchema,
     formData: {
-      person_responsible: initialContactId ? String(initialContactId) : "",
+      person_responsible: initialContactId || undefined,
     },
     hasError: false,
   });
@@ -100,11 +100,11 @@ const PersonResponsibleForm = ({
       newComponentState.hasError = Boolean(addressError);
       newComponentState.schema = updatedSchema;
       newComponentState.formData = {
-        person_responsible: String(newContactId),
+        person_responsible: newContactId,
       };
     } else {
       newComponentState.formData = {
-        person_responsible: "",
+        person_responsible: undefined,
       };
     }
 
@@ -121,7 +121,7 @@ const PersonResponsibleForm = ({
       return;
 
     const selectedContact = componentState.availableContacts?.items.find(
-      (contact) => String(contact.id) === String(selectedContactId),
+      (contact) => contact.id === selectedContactId,
     );
 
     if (selectedContact) {
@@ -144,7 +144,6 @@ const PersonResponsibleForm = ({
     const pathToRevalidate = `reporting/reports/${versionId}/person-responsible`;
     const method = "POST";
     const payload = {
-      report_version: versionId,
       ...componentState.contactToSubmit,
       contact_id: componentState.selectedContactId,
     };
@@ -186,7 +185,7 @@ const PersonResponsibleForm = ({
         contactToSubmit: updatedContact,
         schema: updatedSchema,
         formData: {
-          person_responsible: String(componentState.selectedContactId),
+          person_responsible: componentState.selectedContactId,
         },
       });
     } else {
@@ -201,7 +200,7 @@ const PersonResponsibleForm = ({
           updatedContacts.items,
         ),
         formData: {
-          person_responsible: "",
+          person_responsible: undefined,
         },
       });
     }

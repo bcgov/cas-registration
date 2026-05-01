@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0171_add_units_to_lng_product'),
-        ('reporting', '0184_alter_reportingyear_options'),
+        ('reporting', '0185_configuration_immutable_slug_and_more'),
     ]
 
     operations = [
