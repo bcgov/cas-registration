@@ -9,10 +9,11 @@ import { Box, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacilityFinalReviewData";
+import { ReportingOrigin } from "@reporting/src/app/components/taskList/types";
 import { ReportDownloadPdfButton } from "./templates/ReportDownloadPdfButton";
 
 export interface OriginSearchParams {
-  origin?: "final-review" | "submitted" | "annual-report";
+  origin?: ReportingOrigin;
 }
 export default function FacilityReportFinalReview({
   version_id,

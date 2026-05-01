@@ -25,13 +25,16 @@ import {
 import { FacilityReportSection } from "@reporting/src/app/components/shared/FacilityReportSection";
 import FinalReviewFacilityGrid from "@reporting/src/app/components/finalReview/FinalReviewFacilityGrid";
 import { SectionReview } from "@reporting/src/app/components/finalReview/templates/SectionReview";
-import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
+import {
+  ReportingFlow,
+  ReportingOrigin,
+} from "@reporting/src/app/components/taskList/types";
 import { flowHelpers } from "@reporting/src/app/components/taskList/flowHelpers";
 
 interface Props {
   data: ReportData | null;
   version_id: number;
-  origin?: "final-review" | "submitted" | "annual-report";
+  origin?: ReportingOrigin;
   flow: ReportingFlow;
 }
 
