@@ -138,16 +138,18 @@ export class CurrentReportsPOM {
     await expect(startButton).toBeEnabled();
 
     await Promise.all([
-      this.page.waitForURL(
-        (u) =>
-          new RegExp(
-            String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
-            "i",
-          ).test(u.toString()),
-        { waitUntil: "domcontentloaded" },
+      this.page.waitForURL((u) =>
+        new RegExp(
+          String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
+          "i",
+        ).test(u.toString()),
       ),
       startButton.click(),
     ]);
+
+    await expect(
+      this.page.getByText("Review Operation Information"),
+    ).toBeVisible();
 
     return this.extractReportVersionIdFromUrl(
       this.page,
