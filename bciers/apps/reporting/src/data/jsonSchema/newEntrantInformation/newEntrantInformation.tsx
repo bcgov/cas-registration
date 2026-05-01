@@ -2,7 +2,6 @@ import type { ReactNode, FC } from "react";
 import { UiSchema, WidgetProps } from "@rjsf/utils";
 import { Typography } from "@mui/material";
 import {
-  ArrayFieldTemplate,
   FieldTemplate,
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
@@ -11,6 +10,10 @@ import { DateWidget } from "@bciers/components/form/widgets";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import ObjectFieldTemplate from "@rjsf/core/lib/components/templates/ObjectFieldTemplate";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
+import {
+  ArrayFieldTemplate,
+  ArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 interface FieldTemplateProps {
   id: string;
@@ -123,6 +126,7 @@ export const newEntrantUiSchema: UiSchema = {
   products: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:options": {
       addable: false,
       removable: false,
@@ -148,6 +152,7 @@ export const newEntrantUiSchema: UiSchema = {
   emissions: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:options": {
       addable: false,
       removable: false,
@@ -170,6 +175,7 @@ export const newEntrantUiSchema: UiSchema = {
       emissionData: {
         "ui:FieldTemplate": FieldTemplate,
         "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+        "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
         "ui:options": {
           addable: false,
           removable: false,

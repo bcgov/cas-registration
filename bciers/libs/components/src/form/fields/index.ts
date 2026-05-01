@@ -1,5 +1,4 @@
 export { default as FuelAmountFieldTemplate } from "./FuelAmountFieldTemplate";
-export { default as ArrayFieldTemplate } from "./ArrayFieldTemplate";
 export { default as InlineArrayFieldTemplate } from "./InlineArrayFieldTemplate";
 export { default as PlacesAssignedFieldTemplate } from "./PlacesAssignedFieldTemplate";
 export { default as FieldHelpTemplate } from "./FieldHelpTemplate";

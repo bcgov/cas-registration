@@ -1,11 +1,14 @@
 import {
-  ArrayFieldTemplate,
   FieldTemplate,
   InlineFieldTemplate,
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
+import {
+  ArrayFieldTemplate,
+  ArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 export const buildProductionDataSchema2025 = (
   compliance_period_start: string,
@@ -147,6 +150,7 @@ export const productionDataUiSchema2025 = (isOptedOut: boolean): UiSchema => ({
   production_data: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:options": {
       addable: false,
       removable: false,
