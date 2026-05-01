@@ -130,7 +130,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
     } catch {
       setIsRedirecting(false);
     }
-  }, [navigationInformation.continueUrl, router]);
+  }, [navigationInformation.continueUrl, router, saveChain]);
 
   // Grid Configurations
   const SearchCell = useMemo(
