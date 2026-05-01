@@ -28,11 +28,11 @@ export class FacilityGridPOM {
 
     await expect(row).toBeVisible();
 
-    const continueButton = row.getByRole("button", { name: "Continue" });
-    await expect(continueButton).toBeVisible();
-    await expect(continueButton).toBeEnabled();
+    const continueLink = row.getByRole("link", { name: "Continue" });
+    await expect(continueLink).toBeVisible();
+    await expect(continueLink).toBeEnabled();
 
-    await continueButton.click();
+    await continueLink.click();
 
     await expect(async () => {
       await expect(
