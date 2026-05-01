@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const PlacesAssignedFieldTemplate = ({
   items,
-  formContext,
+  registry,
 }: ArrayFieldTemplateProps) => {
   if (items.length < 1) {
     return <div className="w-full px-[14px] py-4 items-center">None</div>;
@@ -27,7 +27,7 @@ const PlacesAssignedFieldTemplate = ({
           </div>
         );
       })}
-      {!formContext.userRole.includes("cas") && (
+      {!registry.formContext.userRole.includes("cas") && (
         <div className="w-full px-[14px] py-4 items-center">
           <b>Note:</b> You cannot delete this contact unless you replace them
           with other contact(s) in the place(s) above.

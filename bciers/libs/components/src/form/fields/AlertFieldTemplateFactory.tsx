@@ -12,9 +12,9 @@ function AlertFieldTemplate({
   iconColor,
   children,
   label,
-  formContext,
+  registry,
 }: AlertFieldTemplateProps) {
-  if (!formContext[label]) return null;
+  if (!registry.formContext[label]) return null;
 
   return (
     <AlertNote id={id} alertType={alertType} icon={icon} iconColor={iconColor}>
@@ -38,7 +38,7 @@ function AlertFieldTemplateFactory<T>(
       icon={alertIcon}
       iconColor={alertIconColor}
     >
-      <AlertContent {...props.formContext[props.label]} />
+      <AlertContent {...props.registry.formContext[props.label]} />
     </AlertFieldTemplate>
   );
 }
