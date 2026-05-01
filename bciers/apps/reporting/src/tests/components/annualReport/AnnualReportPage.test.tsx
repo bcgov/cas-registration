@@ -3,7 +3,10 @@ import AnnualReportPage from "@reporting/src/app/components/annualReport/AnnualR
 import { getFlowWithNewCases } from "@reporting/src/app/components/taskList/reportingFlows";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
 import getAttachments from "@reporting/src/app/utils/getAttachments";
-import { ReportingFlow, ReportingOrigin } from "@reporting/src/app/components/taskList/types";
+import {
+  ReportingFlow,
+  ReportingOrigin,
+} from "@reporting/src/app/components/taskList/types";
 
 vi.mock("@reporting/src/app/components/taskList/reportingFlows", () => ({
   getFlowWithNewCases: vi.fn(),
@@ -33,7 +36,9 @@ describe("AnnualReportPage", () => {
     (getFlowWithNewCases as ReturnType<typeof vi.fn>).mockResolvedValue(
       ReportingFlow.SFO,
     );
-    (getFinalReviewData as ReturnType<typeof vi.fn>).mockResolvedValue(mockData);
+    (getFinalReviewData as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockData,
+    );
   });
 
   it("calls the correct APIs with the version_id", async () => {

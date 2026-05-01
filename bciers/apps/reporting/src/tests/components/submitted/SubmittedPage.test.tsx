@@ -3,7 +3,10 @@ import SubmittedPage from "@reporting/src/app/components/submitted/SubmittedPage
 import { getFlowWithNewCases } from "@reporting/src/app/components/taskList/reportingFlows";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
 import getAttachments from "@reporting/src/app/utils/getAttachments";
-import { ReportingFlow, ReportingOrigin } from "@reporting/src/app/components/taskList/types";
+import {
+  ReportingFlow,
+  ReportingOrigin,
+} from "@reporting/src/app/components/taskList/types";
 
 vi.mock("@reporting/src/app/components/taskList/reportingFlows", () => ({
   getFlowWithNewCases: vi.fn(),
@@ -28,7 +31,11 @@ vi.mock("@reporting/src/app/components/submitted/ReportForm", () => ({
 
 const mockData = { report_operation: { operation_name: "Test Op" } };
 const mockAttachments = [
-  { id: 1, attachment_type: "verification_statement", attachment_name: "v.pdf" },
+  {
+    id: 1,
+    attachment_type: "verification_statement",
+    attachment_name: "v.pdf",
+  },
 ];
 
 describe("SubmittedPage", () => {
@@ -37,7 +44,9 @@ describe("SubmittedPage", () => {
     (getFlowWithNewCases as ReturnType<typeof vi.fn>).mockResolvedValue(
       ReportingFlow.SFO,
     );
-    (getFinalReviewData as ReturnType<typeof vi.fn>).mockResolvedValue(mockData);
+    (getFinalReviewData as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockData,
+    );
     (getAttachments as ReturnType<typeof vi.fn>).mockResolvedValue({
       attachments: mockAttachments,
     });

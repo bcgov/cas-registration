@@ -14,7 +14,10 @@ const SubmittedAttachmentsSection: React.FC<Props> = ({
   version_id,
 }) => {
   const attachmentsByType = Object.fromEntries(
-    attachments.map((a): [string, UploadedAttachment] => [a.attachment_type, a]),
+    attachments.map((a): [string, UploadedAttachment] => [
+      a.attachment_type,
+      a,
+    ]),
   );
 
   return (
