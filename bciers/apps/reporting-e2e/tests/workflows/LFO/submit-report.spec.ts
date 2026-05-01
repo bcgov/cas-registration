@@ -14,6 +14,7 @@ import { FacilityGridPOM } from "@/reporting-e2e/poms/LFO/facility-grid";
 import { OperationEmissionSummaryPOM } from "@/reporting-e2e/poms/LFO/operation-emissions-summary";
 import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { expect } from "@playwright/test";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
@@ -205,9 +206,12 @@ test.describe("LFO: create and submit a new report for the current reporting yea
       component: "LFO Report - Final Review",
       variant: "default",
     });
-    await report.continue(
-      new RegExp(`${versionId}/${ReportRoutes.VERIFICATION}`),
-    );
+    await page.getByRole("button", { name: "Continue" }).click();
+    await expect(page.getByText("Verification body name")).toBeVisible();
+
+    // await report.continue(
+    //   new RegExp(`${versionId}/${ReportRoutes.VERIFICATION}`),
+    // );
 
     // ── 19. Verification ──
     await verifyFormTitle(page, "Verification");

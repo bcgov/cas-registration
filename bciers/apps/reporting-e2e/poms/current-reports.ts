@@ -144,9 +144,10 @@ export class CurrentReportsPOM {
             String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
             "i",
           ).test(u.toString()),
-        { waitUntil: "load" },
+        { waitUntil: "domcontentloaded" },
       ),
       startButton.click(),
+      this.page.waitForLoadState("load"),
     ]);
 
     await expect(
