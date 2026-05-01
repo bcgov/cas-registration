@@ -36,7 +36,7 @@ export class FacilityGridPOM {
 
     await expect(async () => {
       await expect(
-        this.page.getByText("Review Facility Information"),
+        this.page.getByText("Review Facility Information").first(),
       ).toBeVisible();
     }).toPass({ timeout: 30_000 });
     return this.extractFacilityIdFromUrl(this.page);
