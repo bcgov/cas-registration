@@ -1,5 +1,4 @@
 import {
-  ArrayFieldTemplate,
   FieldTemplate,
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
@@ -12,6 +11,10 @@ import {
   FieldTemplateProps,
 } from "@rjsf/utils";
 import MissingProductAlertFieldTemplate from "./MissingProductAlertFieldTemplate";
+import {
+  ArrayFieldTemplate,
+  ArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 /**
  * Widget to display the title of an emission allocation category
@@ -333,6 +336,7 @@ export const emissionAllocationUiSchema: UiSchema = {
   basic_emission_allocation_data: {
     "ui:classNames": "mt-0 mb-2 p-0",
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       addable: false,
@@ -378,6 +382,7 @@ export const emissionAllocationUiSchema: UiSchema = {
   },
   fuel_excluded_emission_allocation_data: {
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       addable: false,

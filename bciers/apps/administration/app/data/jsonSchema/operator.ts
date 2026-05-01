@@ -2,7 +2,10 @@ import provinceOptions from "@bciers/data/provinces.json";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
+import {
+  ArrayFieldTemplate,
+  ArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/ArrayFieldTemplate";
 import { getBusinessStructures } from "@bciers/actions/api";
 
 const createSection1Schema = async () => {
@@ -279,6 +282,7 @@ export const operatorUiSchema = {
     partner_operators_array: {
       "ui:FieldTemplate": FieldTemplate,
       "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+      "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
       "ui:options": {
         label: false,
         arrayAddLabel: "Add another partner company",

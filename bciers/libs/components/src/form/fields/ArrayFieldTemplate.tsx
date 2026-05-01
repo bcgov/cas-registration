@@ -1,5 +1,6 @@
 import Button from "@mui/material/Button";
 import {
+  ArrayFieldItemTemplateProps,
   ArrayFieldTemplateProps,
   FieldTemplateProps,
   getUiOptions,
@@ -24,80 +25,80 @@ const MinusSVG = () => (
   </svg>
 );
 
-const ArrayFieldTemplate = ({
-  canAdd,
-  disabled,
-  items,
-  onAddClick,
-  uiSchema,
-  registry,
-}: ArrayFieldTemplateProps) => {
-  const {
-    removable = true,
-    arrayAddLabel = "Add",
-    canDeleteFirst = false,
-  } = getUiOptions(uiSchema, registry.globalUiOptions);
+export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
+  const { buttonsProps, itemKey, uiSchema, registry, children, index } = props;
+  const { canDeleteFirst = false } = getUiOptions(
+    uiSchema,
+    registry.globalUiOptions,
+  );
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
   const customItemName = uiSchema?.["ui:options"]?.customItemName as boolean;
-  const note = uiSchema?.["ui:options"]?.note as string;
+  const formData = (children as any).props.formData;
 
   return (
-    <div className="flex min-w-full flex-col">
-      {items?.map((item, i: number) => {
-        // Type assertion for accessing formData
-        const formData = (item.children.props as any)?.formData;
-        return (
-          <div key={item.key} className="min-w-full">
-            {customItemName && formData?.name && (
-              <div className="py-2 w-full font-bold text-bc-bg-blue mb-4">
-                <span>{formData.name}</span>
-              </div>
+    <div key={itemKey} className="flex min-w-full flex-col rjsf-array-item">
+      {customItemName && formData?.name && (
+        <div className="py-2 w-full font-bold text-bc-bg-blue mb-4">
+          <span>{formData.name}</span>
+        </div>
+      )}
+      {(customTitleName || (buttonsProps.hasRemove && index !== 0)) &&
+        !customItemName && (
+          <div className="text-bc-bg-blue text-lg flex align-center my-10">
+            {customTitleName && (
+              <span>
+                {customTitleName} {index + 1}
+              </span>
             )}
-            {(customTitleName || (removable && i !== 0)) && !customItemName && (
-              <div className="text-bc-bg-blue text-lg flex align-center my-10">
-                {customTitleName && (
-                  <span>
-                    {customTitleName} {i + 1}
-                  </span>
-                )}
-                {((removable && i !== 0) || canDeleteFirst) && (
-                  <button
-                    onClick={item.onDropIndexClick(item.index)}
-                    className="border-none bg-transparent p-0 ml-6"
-                    title="Remove item"
-                    aria-label="Remove item"
-                  >
-                    <MinusSVG />
-                  </button>
-                )}
-              </div>
+            {((buttonsProps.hasRemove && index !== 0) || canDeleteFirst) && (
+              <button
+                onClick={buttonsProps.onRemoveItem}
+                className="border-none bg-transparent p-0 ml-6"
+                title="Remove item"
+                aria-label="Remove item"
+              >
+                <MinusSVG />
+              </button>
             )}
-            {{
-              ...item.children,
-              props: {
-                ...(item.children as any).props,
-                uiSchema: {
-                  ...(item.children as any).props.uiSchema,
-                  "ui:FieldTemplate": BasicFieldTemplate,
-                  "ui:options": {
-                    label: false,
-                    inline: true,
-                  },
-                },
-              },
-            }}
           </div>
-        );
-      })}
-      {canAdd && !disabled && (
+        )}
+      {{
+        ...children,
+        props: {
+          ...(children as any).props,
+          uiSchema: {
+            ...(children as any).props.uiSchema,
+            "ui:FieldTemplate": BasicFieldTemplate,
+            "ui:options": {
+              label: false,
+            },
+          },
+        },
+      }}
+    </div>
+  );
+}
+
+export function ArrayFieldTemplate(props: ArrayFieldTemplateProps) {
+  const { items, canAdd, onAddClick, disabled, readonly, uiSchema, registry } =
+    props;
+  const note = uiSchema?.["ui:options"]?.note as string;
+
+  const arrayAddLabel =
+    (uiSchema?.["ui:options"]?.arrayAddLabel as string) || "Add";
+  return (
+    <div className="array">
+      {items}
+      {canAdd && !disabled && !readonly && (
         <Button
           disabled={disabled}
           variant="outlined"
           className="w-fit my-8 normal-case"
           onClick={onAddClick}
+          sx={{ p: 1, pt: 0, pb: 0 }}
         >
-          {arrayAddLabel as any}
+          {arrayAddLabel}
         </Button>
       )}
       {note && (
@@ -107,6 +108,4 @@ const ArrayFieldTemplate = ({
       )}
     </div>
   );
-};
-
-export default ArrayFieldTemplate;
+}

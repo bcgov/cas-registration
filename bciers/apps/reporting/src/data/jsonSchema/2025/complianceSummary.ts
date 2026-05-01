@@ -1,6 +1,9 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
+import {
+  ArrayFieldTemplate,
+  ArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 export const complianceSummarySchema2025 = (
   displayJanMarProduction: boolean,
@@ -130,6 +133,7 @@ export const complianceSummaryUiSchema2025 = {
   },
   products: {
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:FieldTemplate": FieldTemplate,
     "ui:disabled": true,
     "ui:options": {
