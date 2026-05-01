@@ -9,6 +9,7 @@ import {
   SignOffCheckboxLabel,
 } from "@/reporting-e2e/utils/enums";
 import {
+  ACTION_BUTTON_TEXT,
   DIALOG_BUTTON_TEXT,
   DIALOG_TITLES,
   FORM_BUTTON_TEXT,
@@ -25,12 +26,14 @@ import {
 
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
 import {
+  assertFieldVisibility,
   checkCheckboxByLabel,
   clickButton,
   fillInputValueByLabel,
   fillInputValueByLocator,
   waitForGridReady,
 } from "@bciers/e2e/utils/helpers";
+import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 
 export class CurrentReportsPOM {
   readonly page: Page;
@@ -113,6 +116,49 @@ export class CurrentReportsPOM {
   // navigation
   // -----------------
 
+  /**
+   * Finds the operation row in the current reports grid and clicks "Start"
+   * to create a new report for the current reporting year.
+   *
+   * Waits for navigation to the review-operation-information page and returns
+   * the new report version ID extracted from the URL.
+   */
+  async startNewReportForOperation(operationName: string): Promise<number> {
+    await waitForGridReady(this.page);
+
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .first();
+    await expect(row).toBeVisible();
+
+    const startButton = row.getByRole("button", {
+      name: new RegExp(ACTION_BUTTON_TEXT.START, "i"),
+    });
+    await expect(startButton).toBeVisible();
+    await expect(startButton).toBeEnabled();
+
+    await Promise.all([
+      this.page.waitForURL(
+        (u) =>
+          new RegExp(
+            String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
+            "i",
+          ).test(u.toString()),
+        { waitUntil: "domcontentloaded" },
+      ),
+      startButton.click(),
+      this.page.waitForLoadState("load"),
+    ]);
+
+    await verifyFormTitle(this.page, "Review Operation Information");
+
+    return this.extractReportVersionIdFromUrl(
+      this.page,
+      ReportRoutes.REVIEW_OPERATION_INFORMATION,
+    );
+  }
+
   // Navigate to the production data route for this report id and facility id
   async gotoProductionData(reportId: string | number, facilityId: string) {
     await this.page.goto(this.getProductionDataUrl(reportId, facilityId));
@@ -131,6 +177,35 @@ export class CurrentReportsPOM {
   // Navigate to the sign-off route for this report id
   async gotoSignOff(reportId: string | number) {
     await this.page.goto(this.getSignOffUrl(reportId));
+  }
+
+  async verifySubmissionPage(): Promise<void> {
+    await assertFieldVisibility(
+      this.page,
+      [
+        SUBMISSION_SUCCESS_TEXT,
+        "You successfully submitted your report.",
+        "Submission time:",
+        "Return to report table",
+      ],
+      true,
+    );
+  }
+
+  async verifyReportStatus(
+    operationName: string,
+    expectedStatus: string,
+  ): Promise<void> {
+    await waitForGridReady(this.page);
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .first();
+    await expect(row).toBeVisible();
+    await expect(row.getByText(expectedStatus)).toBeVisible();
+    await expect(
+      row.getByRole("button", { name: ACTION_BUTTON_TEXT.VIEW_DETAILS }),
+    ).toBeVisible();
   }
 
   // -----------------
@@ -166,6 +241,27 @@ export class CurrentReportsPOM {
     }
 
     return id;
+  }
+
+  /**
+   * Searches for an operation name in the grid, making sure it appears
+   * on the list of available rows if there are more than one page.
+   */
+
+  async searchByOperationName(operationName: string) {
+    const operationSearchField = this.page
+      .getByRole("columnheader", { name: "Operation search field" })
+      .getByPlaceholder("Search");
+    operationSearchField.fill(operationName);
+
+    await expect(operationSearchField).toHaveValue(operationName);
+
+    const row = await this.page
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .all();
+
+    expect(row.length).toBeGreaterThanOrEqual(1);
   }
 
   /**
@@ -423,7 +519,7 @@ export class CurrentReportsPOM {
     // Click Confirm and wait for the review-operation-information URL
     await clickButton(this.page, DIALOG_BUTTON_TEXT.CONFIRM, {
       waitForUrl: new RegExp(
-        `${REPORTING_REPORTS_BASE_PATH}/\\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
+        String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
         "i",
       ),
     });

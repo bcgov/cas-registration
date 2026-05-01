@@ -51,17 +51,19 @@ def _build_error(
 def _get_missing_additional_reporting_fields(
     report_additional_data: ReportAdditionalData,
 ) -> list[str]:
-    missing_fields: list[str] = []
+    if not report_additional_data.capture_emissions:
+        return []
 
-    if report_additional_data.capture_emissions:
-        if report_additional_data.emissions_on_site_use is None:
-            missing_fields.append("Emissions (t) captured for on-site use")
-        if report_additional_data.emissions_on_site_sequestration is None:
-            missing_fields.append("Emissions (t) captured for on-site sequestration")
-        if report_additional_data.emissions_off_site_transfer is None:
-            missing_fields.append("Emissions (t) captured for off-site transfer")
+    capture_fields = [
+        report_additional_data.emissions_on_site_use,
+        report_additional_data.emissions_on_site_sequestration,
+        report_additional_data.emissions_off_site_transfer,
+    ]
 
-    return missing_fields
+    if all(field is None for field in capture_fields):
+        return ["At least one emissions capture type must be provided"]
+
+    return []
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:

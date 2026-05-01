@@ -83,6 +83,7 @@ export async function fillComboxboxWidget(
   page: Page,
   labelText: string | RegExp,
   value: string,
+  exact: boolean = false,
 ) {
   const input = page.getByRole("combobox", {
     name: labelText,
@@ -90,7 +91,7 @@ export async function fillComboxboxWidget(
   await expect(input).toBeVisible();
   await expect(input).toBeEnabled();
   await input.fill(value);
-  const option = page.getByRole("option", { name: value });
+  const option = page.getByRole("option", { name: value, exact });
   await expect(option).toBeVisible();
   await option.click();
 }
@@ -172,14 +173,7 @@ export async function checkAllRadioButtons(page: Page) {
   }
 }
 
-export async function checkCheckboxByLabel(
-  page: Page,
-  label: string | RegExp,
-): Promise<void> {
-  const name = label instanceof RegExp ? label : new RegExp(label, "i");
-
-  const checkbox = page.getByRole("checkbox", { name });
-
+async function checkCheckBox(checkbox: Locator): Promise<void> {
   await expect(checkbox).toBeVisible({ timeout: 30_000 });
   await expect(checkbox).toBeEnabled({ timeout: 30_000 });
 
@@ -188,6 +182,23 @@ export async function checkCheckboxByLabel(
   }
 
   await expect(checkbox).toBeChecked();
+}
+
+export async function checkCheckboxById(page: Page, id: string): Promise<void> {
+  const checkbox = page.locator(`#${id}`);
+
+  await checkCheckBox(checkbox);
+}
+
+export async function checkCheckboxByLabel(
+  page: Page,
+  label: string | RegExp,
+): Promise<void> {
+  const name = label instanceof RegExp ? label : new RegExp(label, "i");
+
+  const checkbox = page.getByRole("checkbox", { name });
+
+  await checkCheckBox(checkbox);
 }
 
 // 🛠️ Function: checks expected alert message

@@ -15,6 +15,8 @@ export enum FacilityIDs {
   OBLIGATION_NOT_MET = "9f7b0848-021e-4d08-9852-10524c4e5457",
   EARNED_CREDITS = "1",
   NO_OBLIGATION = "2",
+  BUGLE_SFO = "f486f2fb-62ed-438d-bb3e-0819b51e3aff",
+  BEES_LFO = "d477f3d9-2917-4f36-b5ae-166d47dc8172",
 }
 
 // Report workflow routes
@@ -22,12 +24,23 @@ export enum ReportRoutes {
   SIGN_OFF = "sign-off",
   SUBMISSION = "submission",
   REVIEW_OPERATION_INFORMATION = "review-operation-information",
+  REVIEW_FACILITY_INFORMATION = "review-facility-information",
+  PERSON_RESPONSIBLE = "person-responsible",
+  FACILITY_REPORT_GRID = "facilities/report-information",
+  REVIEW_FACILITIES = "facilities/review-facilities",
+  FACILITY_REPORT_COMPLETED = "end-of-facility-report",
   FACILITIES = "facilities",
+  ACTIVITIES = "activities",
+  NON_ATTRIBUTABLE = "non-attributable",
+  EMISSION_SUMMARY = "emission-summary",
   PRODUCTION_DATA = "production-data",
   ALLOCATION_OF_EMISSIONS = "allocation-of-emissions",
+  ADDITIONAL_REPORTING_DATA = "additional-reporting-data",
   REVIEW_CHANGES = "review-changes",
   VALIDATION = "report-validation",
+  COMPLIANCE_SUMMARY = "compliance-summary",
   FINAL_REVIEW = "final-review",
+  VERIFICATION = "verification",
   ATTACHMENTS = "attachments",
 }
 
@@ -66,6 +79,8 @@ export const OPERATION_NAMES = {
   OBLIGATION_NOT_MET: "Compliance SFO - Obligation not met",
   EARNED_CREDITS: "Compliance SFO - Earned credits",
   NO_OBLIGATION: "Compliance SFO - No obligation",
+  BUGLE_SFO: "Bugle SFO - Registered",
+  BEES_LFO: "Bees LFO - Registered - name from admin",
 } as const;
 
 export const REPORT_ID_TO_OPERATION_NAME: Record<ReportIDs, string> = {

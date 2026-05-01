@@ -55,10 +55,11 @@
       "submission_date": "2023-12-16T15:27:00.000Z",
       "type": "Single Facility Operation",
       "naics_code": 21,
+      "bcghg_id": "23219990028",
       "regulated_products": [2, 6, 7, 8],
       "status": "Registered",
       "bc_obps_regulated_operation": "23-0001",
-      "activities": [1, 2],
+      "activities": [1],
       "registration_purpose": "OBPS Regulated Operation",
       "contacts": [3, 4]
     }
@@ -292,7 +293,7 @@
       "regulated_products": [5],
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0012",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "OBPS Regulated Operation",
       "contacts": [3]
     }

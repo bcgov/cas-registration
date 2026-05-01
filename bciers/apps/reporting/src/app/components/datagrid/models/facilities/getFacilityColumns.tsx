@@ -2,7 +2,6 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import getCheckboxColumnCell from "@bciers/components/datagrid/cells/CheckboxColumnCell";
 
 const ActionCell = ({
@@ -11,24 +10,12 @@ const ActionCell = ({
 }: GridRenderCellParams & { version_id: number }) => {
   const isCompleted = row?.is_completed;
   const id = row.facility;
-  const router = useRouter();
 
-  const handleRedirect = () => {
-    const url = `/reports/${version_id}/facilities/${id}/review-facility-information`;
-    router.push(url);
-  };
-
-  if (isCompleted) {
-    return (
-      <Button color="primary" onClick={handleRedirect}>
-        View Details
-      </Button>
-    );
-  }
+  const href = `/reporting/reports/${version_id}/facilities/${id}/review-facility-information`;
 
   return (
-    <Button color="primary" onClick={handleRedirect}>
-      Continue
+    <Button color="primary" href={href}>
+      {isCompleted ? "View Details" : "Continue"}
     </Button>
   );
 };

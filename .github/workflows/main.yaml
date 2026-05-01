@@ -131,6 +131,16 @@ jobs:
       nx_app_port: 7000
       nx_project: compliance
     secrets: inherit
+  test-reporting-e2e:
+    needs:
+      [build-backend, build-dashboard-e2e, build-reporting, check-nx-affected]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      docker_compose_file: "docker-compose-bciers-apps.yaml"
+      image_url: "ghcr.io/bcgov/cas-rep-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
+      nx_project: reporting
+    secrets: inherit
   trivy:
     uses: ./.github/workflows/trivy.yaml
   codeql:
