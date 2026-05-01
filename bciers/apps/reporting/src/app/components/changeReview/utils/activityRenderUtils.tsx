@@ -5,6 +5,7 @@ import { numberStyles } from "@reporting/src/app/components/finalReview/formCust
 import {
   formatKey,
   singularizeLabel,
+  sortMethodologyEntries,
 } from "@reporting/src/app/components/shared/activityRenderUtils";
 import {
   dataCardStyle,
@@ -151,7 +152,9 @@ export const renderObject = (
         const mObj = value as Record<string, unknown>;
         const methodName =
           typeof mObj.methodology === "string" ? mObj.methodology : undefined;
-        const rest = Object.entries(mObj).filter(([k]) => k !== "methodology");
+        const rest = sortMethodologyEntries(
+          Object.entries(mObj).filter(([k]) => k !== "methodology"),
+        );
 
         return (
           <div key={`${key}-${idx}`} style={{ marginBottom: 4 }}>

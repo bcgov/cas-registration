@@ -7,6 +7,7 @@ import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTempl
 import GridItemFieldTemplate from "@bciers/components/form/fields/GridItemFieldTemplate";
 import CollapsibleDefinitionFieldTemplate from "@bciers/components/form/fields/CollapsibleDefinitionFieldTemplate";
 import MethodologyFieldTemplate from "@bciers/components/form/fields/MethodologyFieldTemplate";
+import { MONTH_QUARTER_ORDER } from "@reporting/src/app/components/shared/activityRenderUtils";
 
 const gridSchema = {
   "ui:FieldTemplate": GridItemFieldTemplate,
@@ -67,22 +68,7 @@ const uiSchema = {
               "description",
               "amountOfRawMaterialConsumedT",
               "rawMaterialOrganicCarbonContentWeightFraction",
-              "january",
-              "february",
-              "march",
-              "april",
-              "may",
-              "june",
-              "july",
-              "august",
-              "september",
-              "october",
-              "november",
-              "december",
-              "quarter1",
-              "quarter2",
-              "quarter3",
-              "quarter4",
+              ...MONTH_QUARTER_ORDER,
             ],
             methodology: {
               "ui:FieldTemplate": MethodologyFieldTemplate,
