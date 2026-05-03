@@ -1,6 +1,6 @@
 # Dependencies built by Nx build
 # Production image, copy all the files and run next
-FROM docker.io/node:24.11.1-alpine AS runner
+FROM docker.io/node:24.15.0-alpine AS runner
 
 # Apply patch to Apline's packages to address security issues that trivy found without caching (openssl and zlib)
 RUN apk update && apk upgrade --no-cache
