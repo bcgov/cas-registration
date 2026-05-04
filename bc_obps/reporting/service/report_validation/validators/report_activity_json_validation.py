@@ -6,6 +6,7 @@ from reporting.models.report_version import ReportVersion
 from reporting.models.source_type import SourceType
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 from service.form_builder_service import FormBuilderService
@@ -40,11 +41,6 @@ def enable_jsonschema_draft_2020_validation(schema: Any) -> None:
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    logger.warning(
-        "Report activity json validation has been suspended until the jsonschema draft2020 can be fully implemented."
-    )
-    return {}
-
     errors = {}
 
     for facility_report in report_version.facility_reports.all():
@@ -76,6 +72,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                     ReportValidationError(
                         severity=Severity.ERROR,
                         message=f"Validation error: {e.message} at: {' > '.join(str(elt) for elt in e.path)}",
+                        key=ReportValidationErrorKey.ACTIVITY_JSON_SCHEMA_VALIDATION_ERROR,
                     )
                 )
 
