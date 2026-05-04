@@ -1,26 +1,42 @@
 from uuid import UUID
 from reporting.models.report_version import ReportVersion
-from reporting.service.report_sign_off_service import ReportSignOffAcknowledgements, ReportSignOffData
-from reporting.service.report_submission_service import ReportSubmissionService
-from reporting.management.commands.utils import (
-    create_report_verification_statement_attachment,
-    create_report_person_responsible,
-    create_report_verification,
+from reporting.service.report_sign_off_service import (
+    ReportSignOffAcknowledgements,
+    ReportSignOffData,
 )
+from reporting.service.report_submission_service import ReportSubmissionService
+
+from .report_verification import create_report_verification
+from .report_attachments import create_report_verification_statement_attachment
+from .report_contact import create_report_person_responsible
+from .report_activity_data import prepare_activity_data_for_submission
 
 
-def submit_report_from_fixture(report_version: ReportVersion, submitting_user: UUID):
-    # set up required data for submission
-    create_report_person_responsible(report_version)
+def prepare_and_submit_report(report_version: ReportVersion, submitting_user: UUID):
+    """
+    Orchestrates all required setup before submitting a report.
+    """
+
     # TODO
-    # report_activity_data	Activities
     # report_production_data	Production values
     # report_emission_allocation	Allocation data
     # etc.
+    prepare_activity_data_for_submission(report_version)
+    create_report_person_responsible(report_version)
+
     create_report_verification(report_version)
     create_report_verification_statement_attachment(report_version, submitting_user)
 
-    # submit!
+    # submit
+    _submit(report_version, submitting_user)
+
+
+def submit_report_from_fixture(report_version: ReportVersion, submitting_user: UUID):
+
+    prepare_and_submit_report(report_version, submitting_user)
+
+
+def _submit(report_version: ReportVersion, submitting_user: UUID):
     ReportSubmissionService.submit_report(
         report_version.id,
         submitting_user,
@@ -35,6 +51,6 @@ def submit_report_from_fixture(report_version: ReportVersion, submitting_user: U
                 acknowledgement_of_corrections=True,
                 acknowledgement_of_errors=True,
             ),
-            signature='me',
+            signature="me",
         ),
     )
