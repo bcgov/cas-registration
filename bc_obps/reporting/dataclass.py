@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class ReportPersonResponsibleData:
+    contact_id: int
     first_name: str
     last_name: str
     email: str
