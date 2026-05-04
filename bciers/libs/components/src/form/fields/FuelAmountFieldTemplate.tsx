@@ -3,6 +3,18 @@
 import { FieldTemplateProps } from "@rjsf/utils";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 
+function parseCurrentFuelItem(parentPath: string, current: any) {
+  for (const segment of parentPath.split("_")) {
+    if (current === undefined || current === null) break;
+    const index = Number(segment);
+    current =
+      !isNaN(index) && String(index) === segment
+        ? current[index]
+        : current[segment];
+  }
+  return current;
+}
+
 /**
  * Generic FieldTemplate for fuel amount fields (e.g. `annualFuelAmount`,
  * `q1FuelAmount`, `q2FuelAmount`, etc.)
@@ -62,14 +74,7 @@ function FuelAmountFieldTemplate({
 
     let current: any = activityFormData;
     if (parentPath) {
-      for (const segment of parentPath.split("_")) {
-        if (current === undefined || current === null) break;
-        const index = Number(segment);
-        current =
-          !isNaN(index) && String(index) === segment
-            ? current[index]
-            : current[segment];
-      }
+      current = parseCurrentFuelItem(parentPath, current);
     }
 
     // `current` is the fuel item object
