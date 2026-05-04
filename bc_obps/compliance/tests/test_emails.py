@@ -1,6 +1,7 @@
 from decimal import Decimal
 from unittest.mock import patch
 import uuid
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from common.models import EmailNotification
 from registration.models.app_role import AppRole
 from registration.models.user import User
@@ -24,6 +25,7 @@ from compliance.emails import (
     send_notice_of_penalty_accrual_email,
     send_notice_of_penalty_paid_email,
 )
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 
 pytestmark = pytest.mark.django_db
 email_service = EmailService()
@@ -198,42 +200,28 @@ class TestComplianceEmailHelpers:
 class TestSendNotifications:
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
     def test_send_earned_credits_email(self, mock_send_email_to_operators_approved_users_or_raise):
+        # Create a report with earned credits
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
+        test_data.compliance_earned_credit.earned_credits_amount = 100
+        test_data.compliance_earned_credit.save()
+
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator',
-        )
-
-        # Create a report with earned credits
-        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
-        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
-        report_compliance_summary = baker.make_recipe(
-            'compliance.tests.utils.report_compliance_summary', report_version=report_version
-        )
-
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
-        )
-        earned_credit = baker.make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
-            compliance_report_version=compliance_report_version,
-            earned_credits_amount=100,
+            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
         )
 
         template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
         expected_context = {
-            "operator_legal_name": report_operation.operator_legal_name,
-            "operation_name": report_operation.operation_name,
-            "compliance_year": report.reporting_year.reporting_year,
+            "operator_legal_name": test_data.report_operation.operator_legal_name,
+            "operation_name": test_data.report_operation.operation_name,
+            "compliance_year": test_data.report.reporting_year.reporting_year,
             "earned_credit_amount": 100,
         }
 
         # Call the function with the earned credit ID
-        send_notice_of_earned_credits_generated_email(earned_credit.id)
+        send_notice_of_earned_credits_generated_email(test_data.compliance_earned_credit.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
@@ -244,48 +232,34 @@ class TestSendNotifications:
     def test_send_earned_credits_email_does_not_send_when_amount_less_than_one(
         self, mock_send_email_to_operators_approved_users_or_raise
     ):
-        approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator',
+        # Create a report with earned credits
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
         )
-
-        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
-        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
-        )
-        earned_credit = baker.make_recipe(
+        test_data.compliance_earned_credit.delete()
+        test_data.compliance_earned_credit = baker.make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
-            compliance_report_version=compliance_report_version,
+            compliance_report_version=test_data.compliance_report_version,
             earned_credits_amount=Decimal('0.5'),  # Amount greater than 0 but less than 1
         )
+        test_data.compliance_earned_credit.save()
 
         # Call the function with the earned credit ID
-        send_notice_of_earned_credits_generated_email(earned_credit.id)
+        send_notice_of_earned_credits_generated_email(test_data.compliance_earned_credit.id)
 
         # Verify that the email function was not called
         mock_send_email_to_operators_approved_users_or_raise.assert_not_called()
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
     def test_send_no_obligation_no_credits_email(self, mock_send_email_to_operators_approved_users_or_raise):
+        # Create a report with no obligation and no earned credits
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        )
+
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator',
-        )
-
-        # Create a report with no obligation or earned credits
-        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
-        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
-        report_compliance_summary = baker.make_recipe(
-            'compliance.tests.utils.report_compliance_summary', report_version=report_version
-        )
-
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
+            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
         )
 
         template_instance = EmailNotificationTemplateService.get_template_by_name(
@@ -293,13 +267,13 @@ class TestSendNotifications:
         )
 
         expected_context = {
-            "operator_legal_name": report_operation.operator_legal_name,
-            "operation_name": report_operation.operation_name,
-            "compliance_year": report.reporting_year.reporting_year,
+            "operator_legal_name": test_data.report_operation.operator_legal_name,
+            "operation_name": test_data.report_operation.operation_name,
+            "compliance_year": test_data.report.reporting_year.reporting_year,
         }
 
         # Call the function with the report
-        send_notice_of_no_obligation_no_credits_generated_email(compliance_report_version.id)
+        send_notice_of_no_obligation_no_credits_generated_email(test_data.compliance_report_version.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
@@ -308,41 +282,28 @@ class TestSendNotifications:
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
     def test_obligation_email(self, mock_send_email_to_operators_approved_users_or_raise):
+        # Create a report with no obligation or earned credits
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        )
+
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator',
-        )
-
-        # Create a report with no obligation or earned credits
-        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
-        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
-        report_compliance_summary = baker.make_recipe(
-            'compliance.tests.utils.report_compliance_summary', report_version=report_version
-        )
-
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
+            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
         )
 
         template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Generated')
 
-        compliance_period = compliance_report.compliance_period
-
         expected_context = {
-            "operator_legal_name": report_operation.operator_legal_name,
-            "operation_name": report_operation.operation_name,
-            "compliance_year": report.reporting_year.reporting_year,
-            "invoice_generation_date": compliance_period.invoice_generation_date.strftime("%B %d, %Y"),
-            "compliance_deadline": compliance_period.compliance_deadline.strftime("%B %d, %Y"),
+            "operator_legal_name": test_data.report_operation.operator_legal_name,
+            "operation_name": test_data.report_operation.operation_name,
+            "compliance_year": test_data.report.reporting_year.reporting_year,
+            "invoice_generation_date": test_data.compliance_period.invoice_generation_date.strftime("%B %d, %Y"),
+            "compliance_deadline": test_data.compliance_period.compliance_deadline.strftime("%B %d, %Y"),
         }
 
         # Call the function with the report id
-        send_notice_of_obligation_generated_email(compliance_report_version.id)
+        send_notice_of_obligation_generated_email(test_data.compliance_report_version.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
@@ -357,34 +318,20 @@ class TestSendNotifications:
     ):
         settings.ENVIRONMENT = 'prod'
         # Create a report with earned credits
-        report = baker.make_recipe('reporting.tests.utils.report')
-        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
-        report_compliance_summary = baker.make_recipe(
-            'compliance.tests.utils.report_compliance_summary', report_version=report_version
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
         )
-
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
-        )
-        earned_credit = baker.make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
-            compliance_report_version=compliance_report_version,
-            earned_credits_amount=100,
-        )
+        test_data.compliance_earned_credit.earned_credits_amount = 100
+        test_data.compliance_earned_credit.save()
 
         template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Credits Requested')
         expected_context = {
-            "operator_legal_name": report_operation.operator_legal_name,
-            "operation_name": report_operation.operation_name,
+            "operator_legal_name": test_data.report_operation.operator_legal_name,
+            "operation_name": test_data.report_operation.operation_name,
         }
 
         # Call the function with the earned credit id
-        send_notice_of_credits_requested_generated_email(earned_credit.id)
+        send_notice_of_credits_requested_generated_email(test_data.compliance_earned_credit.id)
         mock_send_email_or_raise.assert_called_once_with(
             template_instance, expected_context, ['GHGRegulator@gov.bc.ca'], cc_ghg_regulator=False
         )
@@ -396,49 +343,33 @@ class TestSendNotifications:
     def test_obligation_due_email(
         self, mock_calculate_outstanding_balance_tco2e, mock_send_email_to_operators_approved_users_or_raise
     ):
+        # Create a report with invoice
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+        )
+        test_data.invoice.invoice_fee_balance = Decimal('5.6')
+        test_data.invoice.save()
+
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator',
-        )
-
-        # Create mock data
-        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
-        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
-        report_compliance_summary = baker.make_recipe(
-            'compliance.tests.utils.report_compliance_summary', report_version=report_version
-        )
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
-        )
-        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', invoice_fee_balance=Decimal('5.60'))
-        obligation = baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version,
-            elicensing_invoice=invoice,
+            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
         )
 
         template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Compliance Obligation Due')
         mock_calculate_outstanding_balance_tco2e.return_value = Decimal(1000.1234)
 
-        report_version = obligation.compliance_report_version
-        report = report_version.compliance_report.report
-        report_operation = report_version.report_compliance_summary.report_version.report_operation
-        reporting_year = report.reporting_year.reporting_year
         expected_context = {
-            "operator_legal_name": report_operation.operator_legal_name,
-            "operation_name": report_operation.operation_name,
-            "compliance_period": reporting_year,
-            "year_due": reporting_year + 1,
+            "operator_legal_name": test_data.report_operation.operator_legal_name,
+            "operation_name": test_data.report_operation.operation_name,
+            "compliance_period": test_data.reporting_year.reporting_year,
+            "year_due": test_data.reporting_year.reporting_year + 1,
             "tonnes_of_co2": '1,000.1234',
             "outstanding_balance": '$5.60',
         }
 
         # Call the function with the obligcation id
-        send_notice_of_obligation_due_email(obligation.id)
+        send_notice_of_obligation_due_email(test_data.compliance_obligation.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
@@ -452,29 +383,17 @@ class TestSendNotifications:
     def test_obligation_reminder_email(
         self, mock_calculate_outstanding_balance_tco2e, mock_send_email_to_operators_approved_users_or_raise
     ):
+        # Create a report with invoice
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+        )
+        test_data.invoice.invoice_fee_balance = Decimal('5.6')
+        test_data.invoice.save()
+
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator',
-        )
-
-        # Create mock data
-        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
-        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
-        report_compliance_summary = baker.make_recipe(
-            'compliance.tests.utils.report_compliance_summary', report_version=report_version
-        )
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
-        )
-        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', invoice_fee_balance=Decimal('5.60'))
-        obligation = baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version,
-            elicensing_invoice=invoice,
+            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
         )
 
         template_instance = EmailNotificationTemplateService.get_template_by_name(
@@ -482,21 +401,17 @@ class TestSendNotifications:
         )
         mock_calculate_outstanding_balance_tco2e.return_value = Decimal(1000.1234)
 
-        report_version = obligation.compliance_report_version
-        report = report_version.compliance_report.report
-        report_operation = report_version.report_compliance_summary.report_version.report_operation
-        reporting_year = report.reporting_year.reporting_year
         expected_context = {
-            "operator_legal_name": report_operation.operator_legal_name,
-            "operation_name": report_operation.operation_name,
-            "compliance_period": reporting_year,
-            "year_due": reporting_year + 1,
+            "operator_legal_name": test_data.report_operation.operator_legal_name,
+            "operation_name": test_data.report_operation.operation_name,
+            "compliance_period": test_data.compliance_period.reporting_year.reporting_year,
+            "year_due": test_data.reporting_year.reporting_year + 1,
             "tonnes_of_co2": '1,000.1234',
             "outstanding_balance": '$5.60',
         }
 
         # Call the function with the obligcation id
-        send_reminder_of_obligation_due_email(obligation.id)
+        send_reminder_of_obligation_due_email(test_data.compliance_obligation.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
@@ -508,50 +423,33 @@ class TestSendNotifications:
     def test_obligation_met_email(
         self, mock_prepare_obligation_context, mock_send_email_to_operators_approved_users_or_raise
     ):
+        # Create a report with invoice
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+        )
+        test_data.invoice.invoice_fee_balance = 0
+        test_data.invoice.save()
+
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator',
-        )
-
-        # Create mock data
-        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
-        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
-        report_compliance_summary = baker.make_recipe(
-            'compliance.tests.utils.report_compliance_summary', report_version=report_version
-        )
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
-        )
-        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', invoice_fee_balance=Decimal('0'))
-        obligation = baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version,
-            elicensing_invoice=invoice,
+            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
         )
 
         template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Met')
-
-        report_version = obligation.compliance_report_version
-        report = report_version.compliance_report.report
-        report_operation = report_version.report_compliance_summary.report_version.report_operation
-        reporting_year = report.reporting_year.reporting_year
         expected_context = {
-            "operator_legal_name": report_operation.operator_legal_name,
-            "operation_name": report_operation.operation_name,
-            "compliance_period": reporting_year,
+            "operator_legal_name": test_data.report_operation.operator_legal_name,
+            "operation_name": test_data.report_operation.operation_name,
+            "compliance_period": test_data.compliance_period,
             # the following properties aren't used in the email, but we're reusing the helper function that includes them
-            "year_due": reporting_year + 1,
+            "year_due": test_data.reporting_year.reporting_year + 1,
             "tonnes_of_co2": '1,000.1234',
             "outstanding_balance": '$0.00',
         }
         mock_prepare_obligation_context.return_value = expected_context
 
         # Call the function with the obligcation id
-        send_notice_of_obligation_met_email(obligation.id)
+        send_notice_of_obligation_met_email(test_data.compliance_obligation.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
@@ -560,38 +458,15 @@ class TestSendNotifications:
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
     def test_obligation_met_penalty_due_email(self, mock_send_email_to_operators_approved_users_or_raise):
+        # Create a report with invoice
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+        )
 
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator',
-        )
-
-        # Create mock data
-        report = baker.make_recipe("reporting.tests.utils.report", operator=approved_user_operator.operator)
-        compliance_report = baker.make_recipe("compliance.tests.utils.compliance_report", report=report)
-
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report=report)
-        report_operation = baker.make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
-        report_compliance_summary = baker.make_recipe(
-            "compliance.tests.utils.report_compliance_summary", report_version=report_version
-        )
-
-        crv = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
-        )
-
-        # Obligation + its (paid) obligation invoice
-        obligation_invoice = baker.make_recipe(
-            "compliance.tests.utils.elicensing_invoice",
-            outstanding_balance=Decimal("0.00"),
-            is_void=False,
-        )
-        obligation = baker.make_recipe(
-            "compliance.tests.utils.compliance_obligation",
-            compliance_report_version=crv,
-            elicensing_invoice=obligation_invoice,
+            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
         )
 
         # Penalty invoices: 2 outstanding (count), 1 void (exclude), 1 zero (exclude)
@@ -619,17 +494,17 @@ class TestSendNotifications:
         # Create penalty records linked to the obligation + their invoices
         baker.make_recipe(
             "compliance.tests.utils.compliance_penalty",
-            compliance_obligation=obligation,
+            compliance_obligation=test_data.compliance_obligation,
             elicensing_invoice=penalty_invoice_1,
         )
         baker.make_recipe(
             "compliance.tests.utils.compliance_penalty",
-            compliance_obligation=obligation,
+            compliance_obligation=test_data.compliance_obligation,
             elicensing_invoice=penalty_invoice_2,
         )
         baker.make_recipe(
             "compliance.tests.utils.compliance_penalty",
-            compliance_obligation=obligation,
+            compliance_obligation=test_data.compliance_obligation,
             elicensing_invoice=penalty_invoice_zero,
         )
 
@@ -640,15 +515,17 @@ class TestSendNotifications:
 
         expected_penalty_amount = Decimal("100.00") + Decimal("250.25")  # void + zero excluded by query
         expected_context = {
-            "operator_legal_name": report_operation.operator_legal_name,
-            "operation_name": report_operation.operation_name,
-            "compliance_year": report.reporting_year.reporting_year,
-            "compliance_deadline": compliance_report.compliance_period.compliance_deadline.strftime("%B %d, %Y"),
+            "operator_legal_name": test_data.report_operation.operator_legal_name,
+            "operation_name": test_data.report_operation.operation_name,
+            "compliance_year": test_data.report.reporting_year.reporting_year,
+            "compliance_deadline": test_data.compliance_report.compliance_period.compliance_deadline.strftime(
+                "%B %d, %Y"
+            ),
             "penalty_amount": f"${expected_penalty_amount:,.2f}",
         }
 
         # Act
-        send_notice_of_obligation_met_penalty_due_email(obligation.id)
+        send_notice_of_obligation_met_penalty_due_email(test_data.compliance_obligation.id)
 
         # Assert
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
@@ -662,36 +539,15 @@ class TestSendNotifications:
     def test_penalty_paid_email(
         self, mock_prepare_obligation_context, mock_send_email_to_operators_approved_users_or_raise
     ):
+        # Create a report with invoice
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+        )
+
+        # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator',
-        )
-
-        # Create mock data
-        report = baker.make_recipe("reporting.tests.utils.report", operator=approved_user_operator.operator)
-        compliance_report = baker.make_recipe("compliance.tests.utils.compliance_report", report=report)
-
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report=report)
-        report_operation = baker.make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
-        report_compliance_summary = baker.make_recipe(
-            "compliance.tests.utils.report_compliance_summary", report_version=report_version
-        )
-
-        crv = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
-        )
-
-        # Obligation + its paid invoice
-        obligation_invoice = baker.make_recipe(
-            "compliance.tests.utils.elicensing_invoice",
-            outstanding_balance=Decimal("0.00"),
-            is_void=False,
-        )
-        obligation = baker.make_recipe(
-            "compliance.tests.utils.compliance_obligation",
-            compliance_report_version=crv,
-            elicensing_invoice=obligation_invoice,
+            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
         )
 
         # Penalty invoice - paid
@@ -702,7 +558,7 @@ class TestSendNotifications:
         )
         baker.make_recipe(
             "compliance.tests.utils.compliance_penalty",
-            compliance_obligation=obligation,
+            compliance_obligation=test_data.compliance_obligation,
             elicensing_invoice=penalty_invoice,
             status="PAID",
         )
@@ -710,13 +566,13 @@ class TestSendNotifications:
         # Template + context
         template_instance = EmailNotificationTemplateService.get_template_by_name("Notice of Penalty Paid")
         expected_context = {
-            "operator_legal_name": report_operation.operator_legal_name,
-            "operation_name": report_operation.operation_name,
+            "operator_legal_name": test_data.report_operation.operator_legal_name,
+            "operation_name": test_data.report_operation.operation_name,
         }
         mock_prepare_obligation_context.return_value = expected_context
 
         # Act
-        send_notice_of_penalty_paid_email(obligation.id)
+        send_notice_of_penalty_paid_email(test_data.compliance_obligation.id)
 
         # Assert
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
@@ -732,43 +588,26 @@ def test_penalty_accrual_email(
     mock_prepare_obligation_context,
     mock_send_email_to_operators_approved_users_or_raise,
 ):
+    # Create a report with invoice
+    test_data = ComplianceTestHelper.build_test_data(
+        crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        create_invoice_data=True,
+    )
+
     # admin user
     approved_user_operator = baker.make_recipe(
-        'registration.tests.utils.approved_user_operator',
-    )
-
-    # Build report hierarchy
-    report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
-    compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-
-    report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-    report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
-    report_compliance_summary = baker.make_recipe(
-        'compliance.tests.utils.report_compliance_summary', report_version=report_version
-    )
-
-    compliance_report_version = baker.make_recipe(
-        'compliance.tests.utils.compliance_report_version',
-        compliance_report=compliance_report,
-        report_compliance_summary=report_compliance_summary,
-    )
-    invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', outstanding_balance=Decimal('123.45'))
-    obligation = baker.make_recipe(
-        'compliance.tests.utils.compliance_obligation',
-        compliance_report_version=compliance_report_version,
-        elicensing_invoice=invoice,
+        'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
     )
 
     # Expected template and context
     template_instance = EmailNotificationTemplateService.get_template_by_name(
         'Compliance Obligation Due Date Passed - Penalty now Accruing'
     )
-    reporting_year = report.reporting_year.reporting_year
     expected_context = {
-        "operator_legal_name": report_operation.operator_legal_name,
-        "operation_name": report_operation.operation_name,
-        "compliance_period": reporting_year,
-        "year_due": reporting_year + 1,
+        "operator_legal_name": test_data.report_operation.operator_legal_name,
+        "operation_name": test_data.report_operation.operation_name,
+        "compliance_period": test_data.compliance_period,
+        "year_due": test_data.reporting_year.reporting_year + 1,
         # values below aren’t used directly in this assertion path; they come from the helper:
         "tonnes_of_co2": '1,000.1234',
         "outstanding_balance": '$123.45',
@@ -776,10 +615,10 @@ def test_penalty_accrual_email(
     mock_prepare_obligation_context.return_value = expected_context
 
     # Act
-    send_notice_of_penalty_accrual_email(obligation.id)
+    send_notice_of_penalty_accrual_email(test_data.compliance_obligation.id)
 
     # Assert
-    mock_prepare_obligation_context.assert_called_once_with(obligation)
+    mock_prepare_obligation_context.assert_called_once_with(test_data.compliance_obligation)
     mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
         approved_user_operator.operator,
         template_instance,
@@ -791,52 +630,34 @@ def test_penalty_accrual_email(
     def test_supplementary_report_creates_obligation_email(
         self, mock_prepare_obligation_context, mock_send_email_to_operators_approved_users_or_raise
     ):
-        # admin user
-        approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator',
+        # Create a report with invoice
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
         )
 
-        # Create mock data
-        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
-        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
-        report_compliance_summary = baker.make_recipe(
-            'compliance.tests.utils.report_compliance_summary', report_version=report_version
-        )
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
-        )
-        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice')
-        obligation = baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version,
-            elicensing_invoice=invoice,
+        # admin user
+        approved_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
         )
 
         template_instance = EmailNotificationTemplateService.get_template_by_name(
             'Supplementary Report Submitted after Deadline'
         )
 
-        report_version = obligation.compliance_report_version
-        report = report_version.compliance_report.report
-        report_operation = report_version.report_compliance_summary.report_version.report_operation
-        reporting_year = report.reporting_year.reporting_year
         expected_context = {
-            "operator_legal_name": report_operation.operator_legal_name,
-            "operation_name": report_operation.operation_name,
-            "compliance_period": reporting_year,
+            "operator_legal_name": test_data.report_operation.operator_legal_name,
+            "operation_name": test_data.report_operation.operation_name,
+            "compliance_period": test_data.compliance_period,
             # the following properties aren't used in the email, but we're reusing the helper function that includes them
-            "year_due": reporting_year + 1,
+            "year_due": test_data.reporting_year.reporting_year + 1,
             "tonnes_of_co2": '1,000.1234',
             "outstanding_balance": '$0.00',
         }
         mock_prepare_obligation_context.return_value = expected_context
 
         # Call the function with the obligcation id
-        send_supplementary_report_submitted_after_deadline(obligation.id)
+        send_supplementary_report_submitted_after_deadline(test_data.compliance_obligation.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
