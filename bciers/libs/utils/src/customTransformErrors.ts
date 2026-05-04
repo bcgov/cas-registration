@@ -12,6 +12,109 @@ const getFieldNameIfExists = (text: string | undefined) => {
   }
 };
 
+// Returns the error if it is transformed, otherwise returns null if no condition is met
+const transformPropertyError = (
+  error: RJSFValidationError,
+): RJSFValidationError | null => {
+  if (
+    // we use some because fields can be nested in sections
+    ["activities", "regulated_products"].some((field) => {
+      // @ts-expect-error - we already checked for error.property's existence above
+      return error?.name === "required" && error.property.includes(field);
+    })
+  ) {
+    error.message = "Select at least one option";
+    return error;
+  }
+  if (
+    ["registration_purpose"].some((field) => {
+      // @ts-expect-error - we already checked for error.property's existence above
+      return error.property.includes(field);
+    })
+  ) {
+    error.message = "Select a Registration Purpose";
+    return error;
+  }
+  if (
+    ["person_responsible"].some((field) => {
+      // @ts-expect-error - we already checked for error.property's existence above
+      return error.property.includes(field);
+    })
+  ) {
+    error.message = "Select a Person Responsible";
+    return error;
+  }
+  if (
+    [
+      "cra_business_number",
+      "po_cra_business_number",
+      "partner_cra_business_number",
+    ].some((field) => {
+      // @ts-expect-error - we already checked for error.property's existence above
+      return error.property.includes(field);
+    })
+  ) {
+    error.message = CRA_BUSINESS_NUMBER_VALIDATION_ERROR;
+    return error;
+  }
+  if (
+    ["latitude_of_largest_emissions"].some((field) => {
+      // @ts-expect-error - we already checked for error.property's existence above
+      return error.property.includes(field);
+    })
+  ) {
+    error.message = LATITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR;
+    return error;
+  }
+  if (
+    ["longitude_of_largest_emissions"].some((field) => {
+      // @ts-expect-error - we already checked for error.property's existence above
+      return error.property.includes(field);
+    })
+  ) {
+    error.message = LONGITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR;
+    return error;
+  }
+  return null;
+};
+
+// Gas type and methodology enum errors for emissions are filtered out above
+// So this only applies to other enum fields
+const transformEnumError = (error: RJSFValidationError) => {
+  if (error?.property?.includes("gasType")) {
+    error.message = "Select a gas type";
+  } else {
+    // for enum errors, the field name is in the error.stack, not the error.message
+    const fieldName = getFieldNameIfExists(error?.stack);
+    error.message = fieldName ? `Select a ${fieldName}` : `Select an option`;
+  }
+  return error;
+};
+
+const transformRequiredError = (error: RJSFValidationError) => {
+  if (
+    error?.message?.includes("Does this mill utilize a lime recovery kiln?")
+  ) {
+    error.message = "This field is required";
+    return error;
+  }
+
+  const fieldName = getFieldNameIfExists(error?.message);
+  const selectOptionFields = ["Fuel Name", "Gas Type", "Methodology"];
+
+  const isSelectOptionField = selectOptionFields.some((match) =>
+    fieldName?.includes(match),
+  );
+
+  if (isSelectOptionField && fieldName) {
+    error.message = `Select a ${fieldName}`;
+  } else {
+    error.message = fieldName ? `${fieldName} is required` : "Required field";
+  }
+
+  return error;
+};
+
 export const CRA_BUSINESS_NUMBER_VALIDATION_ERROR =
   "CRA Business Number should be 9 digits";
 const LATITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR =
@@ -76,81 +179,15 @@ const customTransformErrors = (
       if (error.message === "must be equal to constant") {
         error.message = undefined; // this is to handle the registration purpose dependencies. Since the schema uses oneOf, validation expects the complete oneOf formData, which we don't always have yet when a user clicks submit on an incomplete form
       }
-      if (
-        // we use some because fields can be nested in sections
-        ["activities", "regulated_products"].some((field) => {
-          // @ts-expect-error - we already checked for error.property's existence above
-          return error?.name === "required" && error.property.includes(field);
-        })
-      ) {
-        error.message = `Select at least one option`;
-        return error;
-      }
-      if (
-        ["registration_purpose"].some((field) => {
-          // @ts-expect-error - we already checked for error.property's existence above
-          return error.property.includes(field);
-        })
-      ) {
-        error.message = "Select a Registration Purpose";
-        return error;
-      }
-      if (
-        ["person_responsible"].some((field) => {
-          // @ts-expect-error - we already checked for error.property's existence above
-          return error.property.includes(field);
-        })
-      ) {
-        error.message = "Select a Person Responsible";
-        return error;
-      }
-      if (
-        [
-          "cra_business_number",
-          "po_cra_business_number",
-          "partner_cra_business_number",
-        ].some((field) => {
-          // @ts-expect-error - we already checked for error.property's existence above
-          return error.property.includes(field);
-        })
-      ) {
-        error.message = CRA_BUSINESS_NUMBER_VALIDATION_ERROR;
-        return error;
-      }
-      if (
-        ["latitude_of_largest_emissions"].some((field) => {
-          // @ts-expect-error - we already checked for error.property's existence above
-          return error.property.includes(field);
-        })
-      ) {
-        error.message = LATITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR;
-        return error;
-      }
-      if (
-        ["longitude_of_largest_emissions"].some((field) => {
-          // @ts-expect-error - we already checked for error.property's existence above
-          return error.property.includes(field);
-        })
-      ) {
-        error.message = LONGITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR;
-        return error;
+      const propertyError = transformPropertyError(error);
+      // return early if the error was handled by transformPropertyError
+      if (propertyError) {
+        return propertyError;
       }
     }
     // custom messages for general errors
     if (error?.name === "enum") {
-      // Gas type and methodology enum errors for emissions are filtered out above
-      // So this only applies to other enum fields
-      if (error?.property?.includes("gasType")) {
-        error.message = "Select a gas type";
-      } else {
-        // for enum errors, the field name is in the error.stack, not the error.message
-        const fieldName = getFieldNameIfExists(error?.stack);
-        error.message = fieldName
-          ? `Select a ${fieldName}`
-          : `Select an option`;
-      }
-
-      return error;
+      return transformEnumError(error);
     }
     if (error?.name === "minItems") {
       error.message = `Select at least one option`;
@@ -191,29 +228,7 @@ const customTransformErrors = (
       return error;
     }
     if (error?.name === "required") {
-      if (
-        error?.message?.includes("Does this mill utilize a lime recovery kiln?")
-      ) {
-        error.message = "This field is required";
-        return error;
-      }
-
-      const fieldName = getFieldNameIfExists(error?.message);
-      const selectOptionFields = ["Fuel Name", "Gas Type", "Methodology"];
-
-      const isSelectOptionField = selectOptionFields.some((match) =>
-        fieldName?.includes(match),
-      );
-
-      if (isSelectOptionField && fieldName) {
-        error.message = `Select a ${fieldName}`;
-      } else {
-        error.message = fieldName
-          ? `${fieldName} is required`
-          : "Required field";
-      }
-
-      return error;
+      return transformRequiredError(error);
     }
     return error;
   });
