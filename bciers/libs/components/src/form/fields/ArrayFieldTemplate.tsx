@@ -64,7 +64,7 @@ export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
           </div>
         )}
       {{
-        ...children,
+        ...(children as any),
         props: {
           ...(children as any).props,
           uiSchema: {
