@@ -1,4 +1,5 @@
 from typing import Any, ClassVar
+from uuid import UUID
 
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
@@ -51,6 +52,8 @@ class BaseRequiredFieldsValidator:
         *,
         report_version_id: int,
         missing_field_labels: list[str],
+        facility_id: UUID | None = None,
+        facility_name: str | None = None,
     ) -> ReportValidationError:
         return ReportValidationError(
             severity=Severity.ERROR,
@@ -58,6 +61,8 @@ class BaseRequiredFieldsValidator:
             key=ReportValidationErrorKey.ERROR_REQUIRED_FIELDS,
             context=ErrorContext(
                 report_version_id=report_version_id,
+                facility_id=facility_id,
+                facility_name=facility_name,
                 missing_fields=missing_field_labels,
                 section=cls.SECTION,
                 section_title=cls.SECTION_TITLE,
