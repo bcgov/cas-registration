@@ -232,7 +232,7 @@ export const facilitiesLfoUiSchema = {
       "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
       "ui:options": {
         arrayAddLabel: "Add Well Authorization Number",
-        inlineRemoveButton: true
+        inlineRemoveButton: true,
       },
     },
     bcghg_id: {
