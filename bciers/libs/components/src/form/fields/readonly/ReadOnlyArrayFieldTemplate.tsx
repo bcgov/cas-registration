@@ -23,7 +23,7 @@ const ReadOnlyArrayFieldTemplate = ({
               )}
             </div>
             {{
-              ...item.children,
+              ...(item.children as any),
               props: {
                 ...(item.children as any).props,
                 uiSchema: {

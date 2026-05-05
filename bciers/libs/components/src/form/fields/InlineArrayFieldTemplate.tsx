@@ -51,7 +51,7 @@ const InlineArrayFieldTemplate = ({
 
             <div className="min-w-full flex my-4">
               {{
-                ...item.children,
+                ...(item.children as any),
                 props: {
                   ...(item.children as any).props,
                   uiSchema: {
