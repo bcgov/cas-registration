@@ -58,7 +58,7 @@ export function NestedArrayFieldItemTemplate(
             </button>
           )}
           {{
-            ...children,
+            ...(children as any),
             props: {
               ...(children as any).props,
               uiSchema: {
