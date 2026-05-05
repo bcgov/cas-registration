@@ -26,6 +26,6 @@ export interface FacilitiesSearchParams {
   page?: number;
   sort_field?: string;
   sort_order?: string;
-  paginate_results?: boolean;
+  paginate_result?: boolean;
   end_date?: boolean;
 }

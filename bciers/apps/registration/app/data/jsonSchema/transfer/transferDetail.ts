@@ -48,7 +48,7 @@ export const operationEntitySchema = async (
 ): Promise<RJSFSchema> => {
   // Fetch the operations data based on the operator id
   const operationsByOperator = await fetchOperationsPageData({
-    paginate_results: false,
+    paginate_result: false,
     operator_id: fromOperatorId,
     end_date: true, // this indicates that the end_date is not null,
     status: "Active", // only fetch active facilities
@@ -105,7 +105,7 @@ export const facilityEntitySchema = async (
   fromOperationId: string,
 ): Promise<RJSFSchema> => {
   const facilitiesByOperation = await fetchFacilitiesPageData(fromOperationId, {
-    paginate_results: false,
+    paginate_result: false,
     end_date: true, // this indicates that the end_date is not null,
     status: "Active", // only fetch active facilities
   });
