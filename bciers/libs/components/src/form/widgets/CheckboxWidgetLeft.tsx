@@ -1,4 +1,4 @@
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 import Checkbox from "@mui/material/Checkbox";
 
 const CheckboxWidgetLeft: React.FC<WidgetProps> = ({

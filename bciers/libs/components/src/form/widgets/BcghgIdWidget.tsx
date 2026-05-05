@@ -1,6 +1,6 @@
 "use client";
 
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 import { Button, TextField } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
