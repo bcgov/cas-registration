@@ -3,6 +3,42 @@
 import { FieldTemplateProps } from "@rjsf/utils";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 
+type UnitOption =
+  | string
+  | { source: "product" | "form"; field: string }
+  | Array<string | { source: "product" | "form"; field: string }>;
+
+const resolveUnit = (
+  unitOption: UnitOption | undefined,
+  id: string,
+  formContext: any,
+): string | undefined => {
+  if (!unitOption) return;
+
+  // normalize to array if it isn't already
+  const parts = Array.isArray(unitOption) ? unitOption : [unitOption];
+
+  return parts
+    .map((part) => {
+      if (typeof part === "string") {
+        return part;
+      }
+      if (part.source === "product") {
+        // regex search for correct product in array of products
+        const match = id.match(/products_(\d+)_/);
+        const index = match ? Number(match[1]) : null;
+        if (index !== null) {
+          return formContext?.getProductByIndex?.(index)?.[part.field];
+        }
+      }
+      if (part.source === "form") {
+        return formContext?.[part.field];
+      }
+      return "";
+    })
+    .join("");
+};
+
 function InlineFieldTemplate({
   id,
   label,
@@ -13,6 +49,7 @@ function InlineFieldTemplate({
   children,
   uiSchema,
   classNames,
+  registry,
 }: FieldTemplateProps) {
   const isHidden = uiSchema?.["ui:widget"] === "hidden";
   if (isHidden) return null;
@@ -24,6 +61,9 @@ function InlineFieldTemplate({
   const options = uiSchema?.["ui:options"] || {};
   const isLabel = options?.label !== false;
   const labelClassNames = (options?.labelClassNames as string) ?? "lg:w-3/12";
+  const unitOption = options.unit ?? options.displayUnit;
+
+  const resolvedUnit = resolveUnit(unitOption, id, registry?.formContext);
 
   let cellWidth = "lg:w-4/12";
   if (options?.inline) cellWidth = "lg:w-full";
@@ -51,11 +91,11 @@ function InlineFieldTemplate({
         <div className={`relative flex items-center w-full ${cellWidth}`}>
           {children}
         </div>
-        {options.displayUnit && (
+        {resolvedUnit && (
           <div
             className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
           >
-            <p>{options.displayUnit as any}</p>
+            <p>{resolvedUnit}</p>
           </div>
         )}
         {isErrors && (

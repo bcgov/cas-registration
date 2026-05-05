@@ -29,6 +29,8 @@ const ComplianceSummaryForm: React.FC<Props> = ({
     displayJanMarProduction,
   );
 
+  console.log(summaryFormData);
+
   const complianceSummaryUiSchema = createComplianceSummaryUiSchema(
     summaryFormData.reporting_year,
   );
@@ -49,6 +51,10 @@ const ComplianceSummaryForm: React.FC<Props> = ({
             schema={complianceSummarySchema}
             uiSchema={complianceSummaryUiSchema}
             formData={summaryFormData}
+            formContext={{
+              ...summaryFormData,
+              getProductByIndex: (i: number) => summaryFormData.products[i],
+            }}
           >
             <ReportingStepButtons
               backUrl={navigationInformation.backUrl}
