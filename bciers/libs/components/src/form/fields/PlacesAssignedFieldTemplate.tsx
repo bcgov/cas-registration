@@ -11,7 +11,7 @@ const PlacesAssignedFieldTemplate = ({
   return (
     <div className="flex min-w-full flex-col">
       {items?.map((item) => {
-        const formData = (item.children.props as any)?.formData;
+        const formData = ((item as any).children.props as any)?.formData;
         const { role_name, operation_name, operation_id } = formData || {};
         if (!role_name || !operation_name || !operation_id) {
           throw new Error(`Invalid places assigned data`);
