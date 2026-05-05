@@ -17,8 +17,7 @@ export interface InternalAccessRequestDataGridRow {
   archived_at?: string;
 }
 
-export interface InternalAccessRequestGridRenderCellParams
-  extends GridRenderCellParams {
+export interface InternalAccessRequestGridRenderCellParams extends GridRenderCellParams {
   row: InternalAccessRequestDataGridRow;
 }
 

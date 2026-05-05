@@ -37,9 +37,8 @@ describe("FacilitiesPage", () => {
   it('renders "No facilities data in database." when fetchFacilitiesPageData returns falsy', async () => {
     vi.mocked(fetchFacilitiesPageData).mockResolvedValueOnce(undefined as any);
 
-    const { default: FacilitiesPage } = await import(
-      "apps/administration/app/components/facilities/FacilitiesPage"
-    );
+    const { default: FacilitiesPage } =
+      await import("apps/administration/app/components/facilities/FacilitiesPage");
 
     render(
       await FacilitiesPage({
@@ -58,9 +57,8 @@ describe("FacilitiesPage", () => {
       row_count: 2,
     } as any);
 
-    const { default: FacilitiesPage } = await import(
-      "apps/administration/app/components/facilities/FacilitiesPage"
-    );
+    const { default: FacilitiesPage } =
+      await import("apps/administration/app/components/facilities/FacilitiesPage");
 
     render(
       await FacilitiesPage({
@@ -82,9 +80,8 @@ describe("FacilitiesPage", () => {
       row_count: 0,
     } as any);
 
-    const { default: FacilitiesPage } = await import(
-      "apps/administration/app/components/facilities/FacilitiesPage"
-    );
+    const { default: FacilitiesPage } =
+      await import("apps/administration/app/components/facilities/FacilitiesPage");
 
     await expect(async () => {
       render(

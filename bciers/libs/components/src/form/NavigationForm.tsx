@@ -10,8 +10,10 @@ import { useRouter } from "next/navigation";
 import { Dict } from "@bciers/types/dictionary";
 import useKey from "@bciers/utils/src/useKey";
 
-export interface NavigationFormProps
-  extends Omit<FormPropsWithTheme<unknown>, "onSubmit"> {
+export interface NavigationFormProps extends Omit<
+  FormPropsWithTheme<unknown>,
+  "onSubmit"
+> {
   schema: RJSFSchema;
   uiSchema?: UiSchema;
   formData: object;

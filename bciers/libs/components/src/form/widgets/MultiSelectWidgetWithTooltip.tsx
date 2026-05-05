@@ -181,9 +181,14 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
         getTagProps: AutocompleteRenderGetTagProps,
       ) => {
         return renderOptions.map((option: OptionWithTooltip, index: number) => {
-          const { key, ...tagProps } = getTagProps({ index });
+          const { key: _key, ...tagProps } = getTagProps({ index });
           const chip = (
-            <Chip key={key} label={option.label} {...tagProps} sx={chipStyle} />
+            <Chip
+              key={option.id}
+              label={option.label}
+              {...tagProps}
+              sx={chipStyle}
+            />
           );
           if (option.tooltip) {
             return (

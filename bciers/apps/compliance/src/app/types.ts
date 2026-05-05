@@ -11,8 +11,7 @@ export interface DataGridSearchParams {
   sortOrder?: "asc" | "desc";
 }
 
-export interface ComplianceReportVersionGridSearchParams
-  extends DataGridSearchParams {
+export interface ComplianceReportVersionGridSearchParams extends DataGridSearchParams {
   operator_name?: string;
   operation_name?: string;
   status?: string;
@@ -41,8 +40,7 @@ export interface RequestIssuanceOfEarnedCreditsFormData {
   issuance_status?: IssuanceStatus;
 }
 
-export interface ApplyComplianceUnitsFormData
-  extends BccrComplianceAccountResponse {
+export interface ApplyComplianceUnitsFormData extends BccrComplianceAccountResponse {
   bccr_holding_account_id?: string;
   total_quantity_to_be_applied: number;
   total_equivalent_emission_reduced: number;

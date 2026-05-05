@@ -20,8 +20,10 @@ import { UUID } from "crypto";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import useKey from "@bciers/utils/src/useKey";
 
-interface NewOperationRepresentativeFormProps
-  extends Omit<FormPropsWithTheme<any>, "schema" | "uiSchema"> {
+interface NewOperationRepresentativeFormProps extends Omit<
+  FormPropsWithTheme<any>,
+  "schema" | "uiSchema"
+> {
   step: number;
   operation: UUID;
   existingOperationRepresentatives: OperationRepresentative[];
