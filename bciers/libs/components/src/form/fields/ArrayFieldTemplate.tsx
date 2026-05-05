@@ -1,3 +1,5 @@
+"use client";
+
 import Button from "@mui/material/Button";
 import {
   ArrayFieldItemTemplateProps,
@@ -26,7 +28,7 @@ const MinusSVG = () => (
 );
 
 export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
-  const { buttonsProps, itemKey, uiSchema, registry, children, index } = props;
+  const { buttonsProps, itemKey, uiSchema, parentUiSchema, registry, children, index } = props;
   const { canDeleteFirst = false } = getUiOptions(
     uiSchema,
     registry.globalUiOptions,
@@ -34,7 +36,12 @@ export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
   const customItemName = uiSchema?.["ui:options"]?.customItemName as boolean;
+  const isInline = parentUiSchema?.["ui:options"]?.inlineRemoveButton as boolean;
   const formData = (children as any).props.formData;
+  const defaultRemoveButtonClassNames = "border-none bg-transparent p-0 ml-6"
+  const inlineRemoveButotnClassNames = "border-none bg-transparent py-12 absolute -right-12"
+  const removeButtonClassNames = isInline ? inlineRemoveButotnClassNames : defaultRemoveButtonClassNames
+
 
   return (
     <div key={itemKey} className="flex min-w-full flex-col rjsf-array-item">
@@ -54,7 +61,7 @@ export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
             {((buttonsProps.hasRemove && index !== 0) || canDeleteFirst) && (
               <button
                 onClick={buttonsProps.onRemoveItem}
-                className="border-none bg-transparent p-0 ml-6"
+                className={removeButtonClassNames}
                 title="Remove item"
                 aria-label="Remove item"
               >
