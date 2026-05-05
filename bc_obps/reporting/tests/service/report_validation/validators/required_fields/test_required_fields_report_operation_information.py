@@ -1,5 +1,6 @@
 import pytest
 from model_bakery import baker
+from unittest.mock import patch
 
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -8,8 +9,7 @@ from reporting.service.report_validation.report_validation_error import (
     Severity,
 )
 from reporting.service.report_validation.validators.required_fields.required_fields_report_operation_information import (
-    SECTION,
-    SECTION_TITLE,
+    RequiredFieldsReportOperationInformationValidator,
     applies,
     validate,
 )
@@ -21,7 +21,10 @@ pytestmark = pytest.mark.django_db
 BASE_PATH = (
     "reporting.service.report_validation.validators.required_fields.required_fields_report_operation_information"
 )
-APPLIES_TO_SECTION_PATH = f"{BASE_PATH}.applies_to_section"
+RESOLVE_FLOW_PATH = f"{BASE_PATH}.resolve_flow"
+
+SECTION = RequiredFieldsReportOperationInformationValidator.SECTION
+SECTION_TITLE = RequiredFieldsReportOperationInformationValidator.SECTION_TITLE
 
 
 class TestRequiredFieldsReportOperationInformationValidator:
@@ -33,7 +36,8 @@ class TestRequiredFieldsReportOperationInformationValidator:
         assert applies(ReportingFlow.SFO) is True
 
     def test_validate_returns_error_when_report_operation_does_not_exist(self):
-        result = validate(self.report_version)
+        with patch(RESOLVE_FLOW_PATH, return_value=ReportingFlow.SFO):
+            result = validate(self.report_version)
 
         assert self.error_key in result
 
@@ -55,6 +59,20 @@ class TestRequiredFieldsReportOperationInformationValidator:
             "Operation representative name",
         ]
 
+    def test_validate_returns_error_when_report_operation_does_not_exist_for_eio(self):
+        with patch(RESOLVE_FLOW_PATH, return_value=ReportingFlow.EIO):
+            result = validate(self.report_version)
+
+        assert self.error_key in result
+
+        error = result[self.error_key]
+
+        assert error.context.missing_fields == [
+            "Operation name",
+            "Operator legal name",
+            "Operation representative name",
+        ]
+
     def test_validate_returns_empty_dict_when_required_fields_are_present(self):
         report_operation = baker.make_recipe(
             "reporting.tests.utils.report_operation",
@@ -73,6 +91,7 @@ class TestRequiredFieldsReportOperationInformationValidator:
             selected_for_report=True,
         )
 
-        result = validate(self.report_version)
+        with patch(RESOLVE_FLOW_PATH, return_value=ReportingFlow.SFO):
+            result = validate(self.report_version)
 
         assert result == {}
