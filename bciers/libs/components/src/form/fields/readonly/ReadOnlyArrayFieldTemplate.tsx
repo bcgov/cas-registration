@@ -23,11 +23,11 @@ const ReadOnlyArrayFieldTemplate = ({
               )}
             </div>
             {{
-              ...(item.children as any),
+              ...((item as any).children as any),
               props: {
-                ...(item.children as any).props,
+                ...((item as any).children as any).props,
                 uiSchema: {
-                  ...(item.children as any).props.uiSchema,
+                  ...((item as any).children as any).props.uiSchema,
                   "ui:FieldTemplate": BasicFieldTemplate,
                   "ui:options": {
                     label: false,
