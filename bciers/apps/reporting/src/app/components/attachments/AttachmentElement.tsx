@@ -14,8 +14,6 @@ interface Props {
   error?: string;
   required?: boolean;
   isUploading?: boolean;
-  readOnly?: boolean;
-  className?: string;
 }
 
 export type AttachmentElementOptions = {
@@ -32,8 +30,6 @@ const AttachmentElement: React.FC<Props> = ({
   error,
   required,
   isUploading,
-  readOnly = false,
-  className = "py-4 pl-8 flex items-center",
 }) => {
   const hiddenFileInput = useRef<HTMLInputElement>(null);
 
@@ -61,34 +57,30 @@ const AttachmentElement: React.FC<Props> = ({
   };
 
   return (
-    <div className={className}>
+    <div className="py-4 pl-8 flex items-center">
       <p className="mr-8 my-2 w-64">
         <b>
           {title}
           {required && "*"}
         </b>
       </p>
-      {!readOnly && (
-        <>
-          <button
-            type="button"
-            onClick={handleClick}
-            className={`p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline`}
-          >
-            {fileName ? "Reupload attachment" : "Upload attachment"}
-          </button>
-          <input
-            ref={hiddenFileInput}
-            onChange={handleChange}
-            style={{ display: "none" }}
-            type="file"
-            className="hidden"
-            value=""
-            accept={accept}
-            data-testid="attachment-file-picker"
-          />
-        </>
-      )}
+      <button
+        type="button"
+        onClick={handleClick}
+        className={`p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline`}
+      >
+        {fileName ? "Reupload attachment" : "Upload attachment"}
+      </button>
+      <input
+        ref={hiddenFileInput}
+        onChange={handleChange}
+        style={{ display: "none" }}
+        type="file"
+        className="hidden"
+        value=""
+        accept={accept}
+        data-testid="attachment-file-picker"
+      />
       {fileName ? (
         <span className="ml-4">
           {fileId && (

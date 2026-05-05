@@ -1,6 +1,6 @@
 "use client";
 
-import AttachmentElement from "@reporting/src/app/components/attachments/AttachmentElement";
+import ReadOnlyAttachmentElement from "@reporting/src/app/components/attachments/ReadOnlyAttachmentElement";
 import { UploadedAttachment } from "@reporting/src/app/components/attachments/types";
 import { ATTACHMENT_TYPE_LABELS } from "@reporting/src/app/components/attachments/constants";
 
@@ -28,15 +28,12 @@ const SubmittedAttachmentsSection: React.FC<Props> = ({
       {Object.entries(ATTACHMENT_TYPE_LABELS).map(([type, label]) => {
         const attachment = attachmentsByType[type];
         return (
-          <AttachmentElement
+          <ReadOnlyAttachmentElement
             key={type}
             versionId={version_id}
             title={label}
             fileId={attachment?.id}
             fileName={attachment?.attachment_name}
-            onFileChange={() => {}}
-            readOnly
-            className="py-4 flex items-center"
           />
         );
       })}
