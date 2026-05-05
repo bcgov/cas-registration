@@ -28,7 +28,15 @@ const MinusSVG = () => (
 );
 
 export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
-  const { buttonsProps, itemKey, uiSchema, parentUiSchema, registry, children, index } = props;
+  const {
+    buttonsProps,
+    itemKey,
+    uiSchema,
+    parentUiSchema,
+    registry,
+    children,
+    index,
+  } = props;
   const { canDeleteFirst = false } = getUiOptions(
     uiSchema,
     registry.globalUiOptions,
@@ -36,12 +44,15 @@ export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
   const customItemName = uiSchema?.["ui:options"]?.customItemName as boolean;
-  const isInline = parentUiSchema?.["ui:options"]?.inlineRemoveButton as boolean;
+  const isInline = parentUiSchema?.["ui:options"]
+    ?.inlineRemoveButton as boolean;
   const formData = (children as any).props.formData;
-  const defaultRemoveButtonClassNames = "border-none bg-transparent p-0 ml-6"
-  const inlineRemoveButotnClassNames = "border-none bg-transparent py-12 absolute -right-12"
-  const removeButtonClassNames = isInline ? inlineRemoveButotnClassNames : defaultRemoveButtonClassNames
-
+  const defaultRemoveButtonClassNames = "border-none bg-transparent p-0 ml-6";
+  const inlineRemoveButotnClassNames =
+    "border-none bg-transparent py-12 absolute -right-12";
+  const removeButtonClassNames = isInline
+    ? inlineRemoveButotnClassNames
+    : defaultRemoveButtonClassNames;
 
   return (
     <div key={itemKey} className="flex min-w-full flex-col rjsf-array-item">
@@ -88,8 +99,7 @@ export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
 }
 
 export function ArrayFieldTemplate(props: ArrayFieldTemplateProps) {
-  const { items, canAdd, onAddClick, disabled, readonly, uiSchema, registry } =
-    props;
+  const { items, canAdd, onAddClick, disabled, readonly, uiSchema } = props;
   const note = uiSchema?.["ui:options"]?.note as string;
 
   const arrayAddLabel =

@@ -359,6 +359,8 @@ export const emissionAllocationUiSchema: UiSchema = {
           removable: false,
         },
         "ui:FieldTemplate": FieldTemplate,
+        "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+        "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
         items: {
           report_product_id: {
             "ui:widget": "hidden",
@@ -405,6 +407,8 @@ export const emissionAllocationUiSchema: UiSchema = {
           removable: false,
         },
         "ui:FieldTemplate": FieldTemplate,
+        "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+        "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
         items: {
           report_product_id: {
             "ui:widget": "hidden",
@@ -434,6 +438,8 @@ export const emissionAllocationUiSchema: UiSchema = {
         removable: false,
       },
       "ui:FieldTemplate": FieldTemplate,
+      "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+      "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
       items: {
         report_product_id: {
           "ui:widget": "hidden",
