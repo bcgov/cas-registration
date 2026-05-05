@@ -51,11 +51,11 @@ const InlineArrayFieldTemplate = ({
 
             <div className="min-w-full flex my-4">
               {{
-                ...(item.children as any),
+                ...((item as any).children as any),
                 props: {
-                  ...(item.children as any).props,
+                  ...((item as any).children as any).props,
                   uiSchema: {
-                    ...(item.children as any).props.uiSchema,
+                    ...((item as any).children as any).props.uiSchema,
                     "ui:FieldTemplate": BasicFieldTemplate,
                     "ui:options": {
                       label: false,
