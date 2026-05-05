@@ -1,6 +1,6 @@
 "use client";
 
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 import { useEffect, useState } from "react";
 import {
   extractFileInfo,

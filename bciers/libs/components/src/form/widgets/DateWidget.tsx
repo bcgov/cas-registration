@@ -3,7 +3,7 @@ import utc from "dayjs/plugin/utc";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 import {
   DARK_GREY_BG_COLOR,
   BC_GOV_SEMANTICS_RED,

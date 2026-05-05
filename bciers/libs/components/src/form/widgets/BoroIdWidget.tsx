@@ -1,6 +1,6 @@
 "use client";
 
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 import { Button } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
@@ -20,7 +20,7 @@ const BoroIdWidget: React.FC<WidgetProps> = ({ id, value, registry }) => {
   const [boroId, setBoroId] = useState(value);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [error, setError] = useState(undefined);
-  const {formContext} = registry;
+  const { formContext } = registry;
 
   if (!formContext.isRegulatedOperation) {
     return (

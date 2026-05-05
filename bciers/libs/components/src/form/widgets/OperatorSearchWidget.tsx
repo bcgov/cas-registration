@@ -5,7 +5,7 @@ import type { SyntheticEvent } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 import debounce from "lodash.debounce";
 import { actionHandler } from "@bciers/actions";
-import type { WidgetProps } from "@rjsf/utils/lib/types";
+import type { WidgetProps } from "@rjsf/utils";
 import {
   DARK_GREY_BG_COLOR,
   BC_GOV_SEMANTICS_RED,

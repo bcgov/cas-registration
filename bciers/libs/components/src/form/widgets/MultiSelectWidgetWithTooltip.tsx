@@ -10,7 +10,7 @@ import {
   Tooltip,
   Zoom,
 } from "@mui/material";
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 import {
   DARK_GREY_BG_COLOR,
   BC_GOV_SEMANTICS_RED,
