@@ -28,17 +28,19 @@ export const MONTH_QUARTER_ORDER: string[] = [
   "quarter4",
 ];
 
+export const compareMethodologyKeys = (a: string, b: string): number => {
+  const aIdx = MONTH_QUARTER_ORDER.indexOf(a);
+  const bIdx = MONTH_QUARTER_ORDER.indexOf(b);
+  if (aIdx === -1 && bIdx === -1) return 0;
+  if (aIdx === -1) return -1;
+  if (bIdx === -1) return 1;
+  return aIdx - bIdx;
+};
+
 export const sortMethodologyEntries = (
   entries: [string, unknown][],
 ): [string, unknown][] =>
-  [...entries].sort(([a], [b]) => {
-    const aIdx = MONTH_QUARTER_ORDER.indexOf(a);
-    const bIdx = MONTH_QUARTER_ORDER.indexOf(b);
-    if (aIdx === -1 && bIdx === -1) return 0; // both non-period: preserve order
-    if (aIdx === -1) return -1; // a is non-period: float to front
-    if (bIdx === -1) return 1; // b is non-period: float to front
-    return aIdx - bIdx; // both periods: sort chronologically
-  });
+  [...entries].sort(([a], [b]) => compareMethodologyKeys(a, b));
 
 /**
  * Explicit plural → singular label map for common array keys.
