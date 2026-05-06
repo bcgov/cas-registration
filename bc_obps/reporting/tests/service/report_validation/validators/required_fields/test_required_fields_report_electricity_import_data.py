@@ -8,15 +8,16 @@ from reporting.service.report_validation.report_validation_error import (
     Severity,
 )
 from reporting.service.report_validation.validators.required_fields.required_fields_report_electricity_import_data import (
-    SECTION,
-    SECTION_TITLE,
+    RequiredFieldsElectricityImportDataValidator,
     applies,
     validate,
 )
-
 from reporting.service.reporting_flow_service import ReportingFlow
 
 pytestmark = pytest.mark.django_db
+
+SECTION = RequiredFieldsElectricityImportDataValidator.SECTION
+SECTION_TITLE = RequiredFieldsElectricityImportDataValidator.SECTION_TITLE
 
 BASE_PATH = (
     "reporting.service.report_validation.validators.required_fields.required_fields_report_electricity_import_data"

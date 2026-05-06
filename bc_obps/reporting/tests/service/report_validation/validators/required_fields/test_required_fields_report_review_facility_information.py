@@ -13,8 +13,7 @@ from reporting.service.reporting_flow_service import ReportingFlow
 from reporting.service.report_validation.validators.required_fields.required_fields_report_review_facility_information import (
     REVIEW_FACILITIES_SECTION,
     REVIEW_FACILITIES_SECTION_TITLE,
-    SECTION,
-    SECTION_TITLE,
+    RequiredFieldsReviewFacilityInformationValidator,
     applies,
     validate,
 )
@@ -22,12 +21,14 @@ from reporting.service.report_validation.validators.required_fields.required_fie
 
 pytestmark = pytest.mark.django_db
 
+SECTION = RequiredFieldsReviewFacilityInformationValidator.SECTION
+SECTION_TITLE = RequiredFieldsReviewFacilityInformationValidator.SECTION_TITLE
+
 BASE_PATH = (
     "reporting.service.report_validation.validators.required_fields."
     "required_fields_report_review_facility_information"
 )
 
-APPLIES_TO_SECTION_PATH = f"{BASE_PATH}.applies_to_section"
 RESOLVE_FLOW_PATH = f"{BASE_PATH}.resolve_flow"
 
 
@@ -99,9 +100,7 @@ class TestRequiredFieldsReportReviewFacilityInformationValidator:
             ]
         )
 
-    def test_validate_returns_review_facilities_error_when_lfo_facility_is_not_completed(
-        self,
-    ):
+    def test_validate_returns_review_facilities_error_when_lfo_facility_is_not_completed(self):
         facility_report = baker.make_recipe(
             "reporting.tests.utils.facility_report",
             report_version=self.report_version,
@@ -129,9 +128,7 @@ class TestRequiredFieldsReportReviewFacilityInformationValidator:
         assert error.context.section_title == REVIEW_FACILITIES_SECTION_TITLE
         assert error.context.missing_fields == ["All facilities must be marked complete"]
 
-    def test_validate_returns_both_errors_when_required_fields_are_missing_and_lfo_facility_is_not_completed(
-        self,
-    ):
+    def test_validate_returns_both_errors_when_required_fields_are_missing_and_lfo_facility_is_not_completed(self):
         facility_report = baker.make_recipe(
             "reporting.tests.utils.facility_report",
             report_version=self.report_version,

@@ -1,12 +1,5 @@
 from typing import Any, Iterable
-from uuid import UUID
 
-from reporting.service.report_validation.report_validation_error import (
-    ErrorContext,
-    ReportValidationError,
-    ReportValidationErrorKey,
-    Severity,
-)
 from reporting.service.report_validation.validators.required_fields.types import (
     RequiredFieldConfig,
 )
@@ -66,27 +59,3 @@ def collect_missing_fields_many(
                 missing.add(item["label"])
 
     return sorted(missing)
-
-
-def build_required_fields_error(
-    *,
-    report_version_id: int,
-    section: str,
-    section_title: str,
-    missing_field_labels: list[str],
-    facility_id: UUID | None = None,
-    facility_name: str | None = None,
-) -> ReportValidationError:
-    return ReportValidationError(
-        severity=Severity.ERROR,
-        message="Required fields are empty.",
-        key=ReportValidationErrorKey.ERROR_REQUIRED_FIELDS,
-        context=ErrorContext(
-            report_version_id=report_version_id,
-            facility_id=facility_id,
-            facility_name=facility_name,
-            missing_fields=missing_field_labels,
-            section=section,
-            section_title=section_title,
-        ),
-    )

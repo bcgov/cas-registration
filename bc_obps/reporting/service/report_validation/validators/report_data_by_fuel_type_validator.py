@@ -28,9 +28,9 @@ def validate_fuel_amount(
     fuel_record: ReportFuel, activity_name: str, source_type_name: str, fuel_type_name: str
 ) -> dict[str, ReportValidationError]:
     fuel_amount = fuel_record.json_data['annualFuelAmount']
-    reporting_field_display_name = (
-        ReportingField.objects.filter(slug="annualFuelAmount").values_list("field_display_title", flat=True).first()
-        or "Annual Fuel Amount"
+    reporting_field_display_name = get_reporting_field_display_name(
+        "annualFuelAmount",
+        "Annual Fuel Amount",
     )
     validation_record = ExpectedValueRangeFuelAmount.objects.get(fuel_type=fuel_record.fuel_type)
     fuel_amount_errors: dict[str, ReportValidationError] = {}

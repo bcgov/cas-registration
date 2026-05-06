@@ -8,8 +8,7 @@ from reporting.service.report_validation.report_validation_error import (
     Severity,
 )
 from reporting.service.report_validation.validators.required_fields.required_fields_report_person_responsible import (
-    SECTION,
-    SECTION_TITLE,
+    RequiredFieldsPersonResponsibleValidator,
     applies,
     validate,
 )
@@ -17,6 +16,9 @@ from reporting.service.reporting_flow_service import ReportingFlow
 
 
 pytestmark = pytest.mark.django_db
+
+SECTION = RequiredFieldsPersonResponsibleValidator.SECTION
+SECTION_TITLE = RequiredFieldsPersonResponsibleValidator.SECTION_TITLE
 
 BASE_PATH = "reporting.service.report_validation.validators.required_fields.required_fields_report_person_responsible"
 APPLIES_TO_SECTION_PATH = f"{BASE_PATH}.applies_to_section"

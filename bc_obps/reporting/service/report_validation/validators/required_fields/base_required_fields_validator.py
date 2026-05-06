@@ -1,6 +1,8 @@
 from typing import Any, ClassVar
 from uuid import UUID
+
 from django.core.exceptions import ObjectDoesNotExist
+
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -30,8 +32,7 @@ class BaseRequiredFieldsValidator:
     @classmethod
     def get_required_fields(
         cls,
-        report_version: ReportVersion,
-        flow: ReportingFlow,
+        flow: ReportingFlow | None = None,
     ) -> list[RequiredFieldConfig]:
         return cls.REQUIRED_FIELDS
 
@@ -73,9 +74,11 @@ class BaseRequiredFieldsValidator:
     def validate(
         cls,
         report_version: ReportVersion,
-        flow: ReportingFlow,
+        flow: ReportingFlow | None = None,
     ) -> dict[str, ReportValidationError]:
-        required_fields = cls.get_required_fields(report_version, flow)
+        required_fields = cls.get_required_fields(
+            flow,
+        )
 
         try:
             obj = cls.get_object_to_validate(report_version)
@@ -88,7 +91,10 @@ class BaseRequiredFieldsValidator:
                 )
             }
 
-        missing_field_labels = collect_missing_fields(obj, required_fields)
+        missing_field_labels = collect_missing_fields(
+            obj,
+            required_fields,
+        )
         missing_field_labels += cls.get_custom_missing_fields(report_version)
 
         if not missing_field_labels:

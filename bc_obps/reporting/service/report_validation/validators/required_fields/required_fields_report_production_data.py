@@ -47,8 +47,6 @@ class RequiredFieldsProductionDataValidator(BaseRequiredFieldsValidator):
             and operation.opted_in_operation is not None
             and operation.opted_in_operation.final_reporting_year_id == 2025
         )
-
-        print(f"[JAN-MAR CHECK] result={result}")
         return result
 
     @classmethod
@@ -89,13 +87,6 @@ class RequiredFieldsProductionDataValidator(BaseRequiredFieldsValidator):
         )
 
         for report_product in queryset:
-            print(
-                f"[PRODUCT] id={report_product.id}, "
-                f"annual={report_product.annual_production}, "
-                f"apr_dec={report_product.production_data_apr_dec}, "
-                f"jan_mar={getattr(report_product, 'production_data_jan_mar', None)}"
-            )
-
             missing_field_labels.extend(
                 cls.get_product_missing_fields(
                     report_product=report_product,
