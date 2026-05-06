@@ -1,6 +1,6 @@
 "use client";
 
-import { FieldTemplateProps } from "@rjsf/utils";
+import { FieldTemplateProps, Registry } from "@rjsf/utils";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 
 type UnitOption =
@@ -11,12 +11,14 @@ type UnitOption =
 const resolveUnit = (
   unitOption: UnitOption | undefined,
   id: string,
-  formContext: any,
+  registry?: Registry,
+  options?: any,
 ): string | undefined => {
   if (!unitOption) return;
 
   // normalize to array if it isn't already
   const parts = Array.isArray(unitOption) ? unitOption : [unitOption];
+  const arrayPath = options?.arrayPath;
 
   return parts
     .map((part) => {
@@ -24,15 +26,17 @@ const resolveUnit = (
         return part;
       }
       if (part.source === "product") {
-        // regex search for correct product in array of products
-        const match = id.match(/products_(\d+)_/);
+        // regex search - generic index extraction
+        const match = id.match(/_(\d+)_/);
         const index = match ? Number(match[1]) : null;
+
         if (index !== null) {
-          return formContext?.getProductByIndex?.(index)?.[part.field];
+          const item = registry?.formContext?.getArrayItem?.(arrayPath, index);
+          return item?.[part.field];
         }
       }
       if (part.source === "form") {
-        return formContext?.[part.field];
+        return registry?.formContext?.[part.field];
       }
       return "";
     })
@@ -63,7 +67,7 @@ function InlineFieldTemplate({
   const labelClassNames = (options?.labelClassNames as string) ?? "lg:w-3/12";
   const unitOption = options.unit ?? options.displayUnit;
 
-  const resolvedUnit = resolveUnit(unitOption, id, registry?.formContext);
+  const resolvedUnit = resolveUnit(unitOption, id, registry, options);
 
   let cellWidth = "lg:w-4/12";
   if (options?.inline) cellWidth = "lg:w-full";

@@ -143,16 +143,19 @@ export const complianceSummaryUiSchema2024 = {
       annual_production: {
         "ui:options": {
           unit: { source: "product", field: "unit" },
+          arrayPath: "products",
         },
       },
       apr_dec_production: {
         "ui:options": {
           unit: { source: "product", field: "unit" },
+          arrayPath: "products",
         },
       },
       emission_intensity: {
         "ui:options": {
           unit: ["tCO2e/", { source: "product", field: "unit" }],
+          arrayPath: "products",
         },
       },
       allocated_industrial_process_emissions: {

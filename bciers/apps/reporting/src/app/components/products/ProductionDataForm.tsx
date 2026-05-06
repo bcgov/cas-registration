@@ -10,6 +10,7 @@ import {
   FieldTemplate,
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
+import { createFormContext } from "../shared/formContextHelpers";
 
 interface Props {
   report_version_id: number;
@@ -92,11 +93,14 @@ const ProductionDataForm: React.FC<Props> = ({
     product_selection: string[];
     production_data: ProductData[];
   }) => {
-    const updatedSelection = newFormData.product_selection.map(
-      (product_name) =>
-        newFormData.production_data.find(
-          (item) => item.product_name === product_name,
-        ) ?? allowedProducts.find((p) => p.product_name === product_name),
+    // const updatedSelection = newFormData.product_selection.map(
+    //   (product_name) =>
+    //     newFormData.production_data.find(
+    //       (item) => item.product_name === product_name,
+    //     ) ?? allowedProducts.find((p) => p.product_name === product_name),
+    // );
+    const updatedSelection = newFormData.production_data.filter((item) =>
+      newFormData.product_selection.includes(item.product_name),
     );
 
     setFormData({
@@ -151,6 +155,7 @@ const ProductionDataForm: React.FC<Props> = ({
       schema={schema}
       uiSchema={buildProductionDataUiSchema(reportingYear, isOptedOut)}
       formData={formData}
+      formContext={createFormContext(formData)}
       baseUrl={"#"}
       cancelUrl={"#"}
       backUrl={navigationInformation.backUrl}

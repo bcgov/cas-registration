@@ -1,9 +1,9 @@
 import {
   ArrayFieldTemplate,
   FieldTemplate,
+  InlineFieldTemplate,
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
-import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
 
@@ -161,7 +161,6 @@ export const productionDataUiSchema2025 = (isOptedOut: boolean): UiSchema => ({
       "ui:order": [
         "product_id",
         "product_name",
-        "unit",
         "annual_production",
         ...(isOptedOut ? ["production_data_jan_mar"] : []),
         "production_methodology",
@@ -179,8 +178,17 @@ export const productionDataUiSchema2025 = (isOptedOut: boolean): UiSchema => ({
           label: false,
         },
       },
-      unit: {
-        "ui:widget": ReadOnlyWidget,
+      annual_production: {
+        "ui:FieldTemplate": InlineFieldTemplate,
+        "ui:options": {
+          unit: { source: "product", field: "unit" },
+        },
+      },
+      production_data_jan_mar: {
+        "ui:FieldTemplate": InlineFieldTemplate,
+        "ui:options": {
+          unit: { source: "product", field: "unit" },
+        },
       },
     },
   },
