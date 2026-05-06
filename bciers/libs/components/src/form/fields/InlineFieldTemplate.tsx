@@ -65,7 +65,9 @@ function InlineFieldTemplate({
   const options = uiSchema?.["ui:options"] || {};
   const isLabel = options?.label !== false;
   const labelClassNames = (options?.labelClassNames as string) ?? "lg:w-3/12";
-  const unitOption = (options.unit ?? options.displayUnit) as UnitOption | undefined;
+  const unitOption = (options.unit ?? options.displayUnit) as
+    | UnitOption
+    | undefined;
 
   const resolvedUnit = resolveUnit(unitOption, id, registry, options);
 
