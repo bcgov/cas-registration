@@ -7,6 +7,7 @@ from django.contrib.postgres.fields import (
     RangeOperators,
 )
 from reporting.models.rls_configs.configuration import Rls as ConfigurationRls
+from common.models.triggers import immutable_slug_trigger
 
 
 class TsTzRange(models.Func):
@@ -30,5 +31,6 @@ class Configuration(BaseModel):
                 expressions=[(TsTzRange("valid_from", "valid_to", RangeBoundary()), RangeOperators.OVERLAPS)],
             ),
         ]
+        triggers = [immutable_slug_trigger()]
 
     Rls = ConfigurationRls

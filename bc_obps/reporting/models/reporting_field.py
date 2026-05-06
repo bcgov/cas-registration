@@ -1,6 +1,7 @@
 from common.models import BaseModel
 from django.db import models
 from reporting.models.rls_configs.reporting_field import Rls as ReportingFieldRls
+from common.models.triggers import immutable_slug_trigger
 
 
 class ReportingField(BaseModel):
@@ -36,5 +37,6 @@ class ReportingField(BaseModel):
                 name='unique_reporting_field',
             )
         ]
+        triggers = [immutable_slug_trigger()]
 
     Rls = ReportingFieldRls
