@@ -1,7 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
-import PlacesAssignedFieldTemplate from "./PlacesAssignedFieldTemplate";
+import {
+  PlacesAssignedFieldTemplate,
+  PlacesAssignedFieldItemTemplate,
+} from "./PlacesAssignedFieldTemplate";
 
 const mockSchema: RJSFSchema = {
   type: "object",
@@ -25,6 +28,7 @@ const mockSchema: RJSFSchema = {
 const mockUiSchema = {
   places_assigned: {
     "ui:ArrayFieldTemplate": PlacesAssignedFieldTemplate,
+    "ui:ArrayFieldItemTemplate": PlacesAssignedFieldItemTemplate,
     "ui:classNames": "[&>div:last-child]:w-2/3",
     items: {
       "ui:widget": "ReadOnlyWidget",
