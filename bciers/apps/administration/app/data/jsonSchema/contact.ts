@@ -1,7 +1,10 @@
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@bciers/data/provinces.json";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
-import { PlacesAssignedFieldTemplate } from "@bciers/components/form/fields";
+import {
+  PlacesAssignedFieldTemplate,
+  PlacesAssignedFieldItemTemplate,
+} from "@bciers/components/form/fields/PlacesAssignedFieldTemplate";
 
 const section1: RJSFSchema = {
   type: "object",
@@ -109,6 +112,7 @@ export const contactsUiSchema = {
     "ui:order": ["selected_user", "first_name", "last_name", "places_assigned"],
     places_assigned: {
       "ui:ArrayFieldTemplate": PlacesAssignedFieldTemplate,
+      "ui:ArrayFieldItemTemplate": PlacesAssignedFieldItemTemplate,
       "ui:classNames": "[&>div:last-child]:w-2/3",
       items: {
         "ui:widget": "ReadOnlyWidget",
