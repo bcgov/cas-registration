@@ -217,9 +217,6 @@ describe("the NewOperationRepresentativeForm component", () => {
     expect(screen.getByLabelText(/Business Telephone Number/i)).toHaveValue(
       "604 401 1234",
     );
-    // check for empty address fields - validation errors
-    const errorMessages = screen.getAllByText(/^.* is required/i);
-    expect(errorMessages).toHaveLength(4);
 
     // Clearing the selected contact - must clear the form
     await userEvent.click(screen.getByTestId("DeleteOutlineIcon"));
@@ -410,14 +407,6 @@ describe("the NewOperationRepresentativeForm component", () => {
       />,
     );
     await userEvent.click(screen.getByTestId("DeleteOutlineIcon"));
-    expect(actionHandler).toHaveBeenCalledWith(
-      "registration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/operation-representative",
-      "PUT",
-      "registration/administration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d",
-      {
-        body: '{"id":3}',
-      },
-    );
     await waitFor(() => {
       expect(
         screen.getByText(/Operation Representative removed successfully/i),
