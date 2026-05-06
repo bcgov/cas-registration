@@ -3,9 +3,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { WidgetProps } from "@rjsf/utils";
 
 export const ApplyComplianceUnitsSuccessAlertNote = ({
-  formContext,
+  registry,
 }: WidgetProps) => {
-  const { isApplied, reportingYear } = formContext;
+  const { isApplied, reportingYear } = registry.formContext;
   if (!isApplied) return null;
   return (
     <AlertNote icon={<CheckCircleIcon />}>

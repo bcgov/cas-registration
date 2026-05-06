@@ -32,7 +32,7 @@ const getComplianceLimitMessages = (
 const ApplyComplianceUnitsWidget = ({
   value,
   onChange,
-  formContext,
+  registry,
   readonly,
 }: WidgetProps) => {
   const {
@@ -40,7 +40,7 @@ const ApplyComplianceUnitsWidget = ({
     complianceLimitStatus,
     isApplied,
     maxCreditUsagePercentage,
-  } = formContext;
+  } = registry.formContext;
   const limitPercent = Math.round(maxCreditUsagePercentage * 100);
   const [localUnits, setLocalUnits] = useState<BccrUnit[]>(value || []);
 
