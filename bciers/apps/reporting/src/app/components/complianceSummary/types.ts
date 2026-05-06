@@ -3,6 +3,7 @@ export type ComplianceSummaryFormProduct = {
   annual_production: string;
   jan_mar_production?: string;
   apr_dec_production?: string;
+  unit: string;
   emission_intensity: string;
   allocated_industrial_process_emissions: string;
   allocated_compliance_emissions: string;

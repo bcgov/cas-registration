@@ -32,7 +32,6 @@ const ProductionDataForm: React.FC<Props> = ({
   facilityType,
   reportingYear,
   schema,
-  allowedProducts,
   initialData,
   navigationInformation,
   isPulpAndPaper,

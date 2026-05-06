@@ -4,7 +4,6 @@ import {
   InlineFieldTemplate,
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
-import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
 
