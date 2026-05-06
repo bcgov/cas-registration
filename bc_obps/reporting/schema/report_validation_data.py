@@ -22,6 +22,9 @@ class ErrorContextSchema(Schema):
     section_title: str | None = None
     missing_fields: list[str] | None = None
 
+    expected_range: str | None = None
+    user_input: str | None = None
+
 
 class ReportValidationErrorDetailSchema(Schema):
     severity: str

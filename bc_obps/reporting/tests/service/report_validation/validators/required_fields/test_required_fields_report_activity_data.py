@@ -6,14 +6,16 @@ from reporting.service.report_validation.report_validation_error import (
     Severity,
 )
 from reporting.service.report_validation.validators.required_fields.required_fields_report_activity_data import (
-    SECTION,
+    RequiredFieldsActivityDataValidator,
     applies,
     validate,
 )
-
 from reporting.service.reporting_flow_service import ReportingFlow
 
 pytestmark = pytest.mark.django_db
+
+SECTION = RequiredFieldsActivityDataValidator.SECTION
+SECTION_TITLE = RequiredFieldsActivityDataValidator.SECTION_TITLE
 
 BASE_PATH = "reporting.service.report_validation.validators.required_fields.required_fields_report_activity_data"
 APPLIES_TO_SECTION_PATH = f"{BASE_PATH}.applies_to_section"
@@ -48,7 +50,7 @@ class TestRequiredFieldsActivityDataValidator:
         assert error.context.facility_id == self.facility_report.facility_id
         assert error.context.facility_name == self.facility_report.facility_name
         assert error.context.section == SECTION
-        assert error.context.section_title == "Activity data"
+        assert error.context.section_title == SECTION_TITLE
         assert error.context.missing_fields == ["Activity data"]
 
     def test_validate_returns_no_error_when_facility_has_activity_data(self):

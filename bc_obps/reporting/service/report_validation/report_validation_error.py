@@ -52,6 +52,8 @@ class ErrorContext(BaseModel):
     section: Optional[str] = None
     section_title: Optional[str] = None
     missing_fields: list[str] | None = None
+    expected_range: Optional[str] = None
+    user_input: Optional[str] = None
 
 
 @dataclass

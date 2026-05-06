@@ -8,8 +8,7 @@ from reporting.service.report_validation.report_validation_error import (
     Severity,
 )
 from reporting.service.report_validation.validators.required_fields.required_fields_report_additional_data import (
-    SECTION,
-    SECTION_TITLE,
+    RequiredFieldsAdditionalReportingDataValidator,
     applies,
     validate,
 )
@@ -17,6 +16,9 @@ from reporting.service.reporting_flow_service import ReportingFlow
 
 
 pytestmark = pytest.mark.django_db
+
+SECTION = RequiredFieldsAdditionalReportingDataValidator.SECTION
+SECTION_TITLE = RequiredFieldsAdditionalReportingDataValidator.SECTION_TITLE
 
 BASE_PATH = "reporting.service.report_validation.validators.required_fields.required_fields_report_additional_data"
 APPLIES_TO_SECTION_PATH = f"{BASE_PATH}.applies_to_section"
@@ -90,9 +92,7 @@ class TestRequiredFieldsReportAdditionalDataValidator:
 
         assert result == {}
 
-    def test_validate_returns_empty_dict_when_capture_emissions_fields_are_present(
-        self,
-    ):
+    def test_validate_returns_empty_dict_when_capture_emissions_fields_are_present(self):
         baker.make_recipe(
             "reporting.tests.utils.report_additional_data",
             report_version=self.report_version,
