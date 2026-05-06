@@ -9,7 +9,6 @@ import ReadOnlyMultiSelectWidget from "@bciers/components/form/widgets/readOnly/
 import { getDefaultRegistry } from "@rjsf/core";
 import { InlineFieldTemplate } from "../fields";
 import TitleFieldTemplate from "@bciers/components/form/fields/TitleFieldTemplate";
-import ReadOnlyArrayFieldTemplate from "../fields/readonly/ReadOnlyArrayFieldTemplate";
 import ReadOnlyRadioWidget from "../widgets/readOnly/ReadOnlyRadioWidget";
 import {
   BcghgIdWidget,
@@ -18,6 +17,10 @@ import {
   OperationRepresentativeWidget,
 } from "../widgets";
 import ApplyComplianceUnitsWidget from "@/compliance/src/app/widgets/ApplyComplianceUnitsWidget";
+import {
+  ArrayFieldTemplate,
+  ArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 const { templates: defaultTemplates } = getDefaultRegistry();
 
@@ -51,7 +54,8 @@ const readOnlyTheme = {
     ...defaultTemplates,
     FieldTemplate: InlineFieldTemplate,
     TitleFieldTemplate,
-    ArrayFieldTemplate: ReadOnlyArrayFieldTemplate,
+    ArrayFieldTemplate: ArrayFieldTemplate,
+    ArrayFieldItemTemplate: ArrayFieldItemTemplate,
   },
 };
 
