@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0172_V5_9_0'),
+        ('registration', '0173_alter_regulatedproduct_options'),
     ]
 
     operations = [
