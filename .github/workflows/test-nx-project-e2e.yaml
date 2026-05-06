@@ -6,6 +6,11 @@ name: Test BCIERS Nx App containers
 on:
   workflow_call:
     inputs:
+      all_happo_browsers:
+        description: "Run Happo with all browsers (chrome, firefox, safari, edge) instead of only chrome and edge"
+        required: false
+        type: boolean
+        default: false
       docker_compose_file:
         description: "Optional input to specify another docker-compose file. The default is docker-compose-nx-app.yaml"
         required: false
@@ -153,6 +158,7 @@ jobs:
           E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
           E2E_NEW_USER_STORAGE_STATE: ${{ secrets.E2E_NEW_USER_STORAGE_STATE}}
+          HAPPO_ALL_BROWSERS: ${{ inputs.all_happo_browsers && 'true' || 'false' }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
         run: DEBUG=pw:api yarn nx run "$NX_PROJECT":${{ github.event_name == 'schedule' && 'e2e' || 'e2e:ci' }} -- --project=chromium
