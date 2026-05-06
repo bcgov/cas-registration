@@ -41,6 +41,9 @@ export class CurrentReportsPOM {
   readonly url: string =
     process.env.E2E_BASEURL + AppRoutes.GRID_REPORTING_CURRENT_REPORTS;
 
+  readonly pastReportsUrl: string =
+    process.env.E2E_BASEURL + AppRoutes.GRID_REPORTING_PAST_REPORTS;
+
   readonly saveAndContinueButton: Locator;
 
   readonly submitButton: Locator;
@@ -57,6 +60,11 @@ export class CurrentReportsPOM {
 
   async route() {
     await this.page.goto(this.url);
+    await waitForGridReady(this.page, { timeout: 30_000 });
+  }
+
+  async routeToPastReports() {
+    await this.page.goto(this.pastReportsUrl);
     await waitForGridReady(this.page, { timeout: 30_000 });
   }
 
@@ -159,6 +167,95 @@ export class CurrentReportsPOM {
     );
   }
 
+  /**
+   * Finds the operation row in the reports grid and clicks "View Details"
+   * to view a submitted report.
+   *
+   * Waits for navigation to the submitted report details page and returns
+   * the report version ID extracted from the URL.
+   */
+  async viewDetailsForReport(
+    operationName: string,
+    isExternalUser: boolean = true,
+    reportingYear?: string,
+  ): Promise<number> {
+    await waitForGridReady(this.page);
+
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .filter({ hasText: reportingYear ?? "" }) // if reportingYear is provided, filter by it as well
+      .first();
+
+    await expect(row).toBeVisible();
+    // External users see "View Details" button, internal users see "View Report" button
+    const viewReportDetailsButton = row.getByRole("button", {
+      name: new RegExp(
+        isExternalUser
+          ? ACTION_BUTTON_TEXT.VIEW_DETAILS
+          : ACTION_BUTTON_TEXT.VIEW_REPORT + "$",
+        "i",
+      ),
+    });
+    await expect(viewReportDetailsButton).toBeVisible();
+    await expect(viewReportDetailsButton).toBeEnabled();
+
+    await viewReportDetailsButton.click({ delay: 1000 });
+    await viewReportDetailsButton.click();
+    const viewReportRoute = isExternalUser
+      ? ReportRoutes.SUBMITTED_REPORT
+      : ReportRoutes.ANNUAL_REPORT;
+    await expect(this.page).toHaveURL(
+      new RegExp(
+        String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${viewReportRoute}$`,
+        "i",
+      ),
+      { timeout: 30_000 },
+    );
+
+    return this.extractReportVersionIdFromUrl(this.page, viewReportRoute);
+  }
+
+  /***
+   * Finds the operation row in the reports grid, clicks the "Report history" action,
+   * and waits for navigation to the report history page.
+   */
+  async reportHistoryForOperation(
+    operationName: string,
+    reportingYear?: string,
+  ): Promise<void> {
+    await waitForGridReady(this.page);
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .filter({ hasText: reportingYear ?? "" }) // if reportingYear is provided, filter by it as well
+      .first();
+
+    await expect(row).toBeVisible();
+
+    const moreActionsButton = row.locator("#basic-button");
+    await expect(moreActionsButton).toBeVisible();
+
+    await moreActionsButton.click();
+    const reportHistoryButton = this.page.getByRole("menuitem", {
+      name: new RegExp(ACTION_BUTTON_TEXT.REPORT_HISTORY, "i"),
+    });
+    await expect(reportHistoryButton).toBeVisible();
+    await expect(reportHistoryButton).toBeEnabled();
+
+    await Promise.all([
+      this.page.waitForURL(
+        (u) =>
+          new RegExp(
+            String.raw`${AppRoutes.REPORT_HISTORY_GRID}/\d+$`,
+            "i",
+          ).test(u.toString()),
+        { waitUntil: "domcontentloaded" },
+      ),
+      reportHistoryButton.click(),
+    ]);
+  }
+
   // Navigate to the production data route for this report id and facility id
   async gotoProductionData(reportId: string | number, facilityId: string) {
     await this.page.goto(this.getProductionDataUrl(reportId, facilityId));
@@ -190,6 +287,34 @@ export class CurrentReportsPOM {
       ],
       true,
     );
+  }
+
+  async verifySubmittedReportView(operationName: string): Promise<void> {
+    await assertFieldVisibility(
+      this.page,
+      [operationName, "Review Operation Information", "Back To All Reports"],
+      true,
+    );
+
+    await expect(
+      this.page.getByRole("button", {
+        name: /Save as PDF/i,
+      }),
+    ).toBeVisible();
+  }
+
+  async verifySaveAsPDF(): Promise<void> {
+    const saveAsPDFButton = this.page.getByRole("button", {
+      name: /Save as PDF/i,
+    });
+    await expect(saveAsPDFButton).toBeVisible();
+    await expect(saveAsPDFButton).toBeEnabled();
+
+    await this.page.evaluate(
+      "(() => {window.waitForPrintDialog = new Promise(f => window.print = f);})()",
+    );
+    await saveAsPDFButton.click();
+    await this.page.waitForFunction("window.waitForPrintDialog");
   }
 
   async verifyReportStatus(
