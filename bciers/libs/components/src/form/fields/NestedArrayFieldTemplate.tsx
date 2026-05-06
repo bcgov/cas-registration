@@ -15,12 +15,14 @@ function BasicFieldTemplate({ children }: FieldTemplateProps) {
 export function NestedArrayFieldItemTemplate(
   props: ArrayFieldItemTemplateProps,
 ) {
-  const { children, buttonsProps, itemKey, uiSchema, readonly, index } = props;
-  const customTitleName = uiSchema?.["ui:options"]?.title as string;
-  const bgColor = (uiSchema?.["ui:options"]?.bgColor as string) || "#f2f2f2";
-  const showSeparator = uiSchema?.["ui:options"]?.showSeparator ?? false;
-  const padding = uiSchema?.["ui:options"]?.padding;
-  const verticalBorder = uiSchema?.["ui:options"]?.verticalBorder;
+  const { children, buttonsProps, itemKey, parentUiSchema, readonly, index } =
+    props;
+  const customTitleName = parentUiSchema?.["ui:options"]?.title as string;
+  const bgColor =
+    (parentUiSchema?.["ui:options"]?.bgColor as string) || "#f2f2f2";
+  const showSeparator = parentUiSchema?.["ui:options"]?.showSeparator ?? false;
+  const padding = parentUiSchema?.["ui:options"]?.padding;
+  const verticalBorder = parentUiSchema?.["ui:options"]?.verticalBorder;
   return (
     <div className="rjsf-array-item" data-rjsf-itemkey={itemKey}>
       <div
