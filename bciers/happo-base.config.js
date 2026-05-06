@@ -7,7 +7,11 @@ const CHUNKS = 4;
 
 const allBrowsers = process.env.HAPPO_ALL_BROWSERS === "true";
 
-const targetConfig = { viewport: VIEWPORT, maxHeight: MAXHEIGHT, chunks: CHUNKS };
+const targetConfig = {
+  viewport: VIEWPORT,
+  maxHeight: MAXHEIGHT,
+  chunks: CHUNKS,
+};
 
 const baseConfig = {
   integration: {
