@@ -31,6 +31,7 @@ const ProductionDataForm: React.FC<Props> = ({
   facility_id,
   facilityType,
   reportingYear,
+  allowedProducts,
   schema,
   initialData,
   navigationInformation,
@@ -92,14 +93,11 @@ const ProductionDataForm: React.FC<Props> = ({
     product_selection: string[];
     production_data: ProductData[];
   }) => {
-    // const updatedSelection = newFormData.product_selection.map(
-    //   (product_name) =>
-    //     newFormData.production_data.find(
-    //       (item) => item.product_name === product_name,
-    //     ) ?? allowedProducts.find((p) => p.product_name === product_name),
-    // );
-    const updatedSelection = newFormData.production_data.filter((item) =>
-      newFormData.product_selection.includes(item.product_name),
+    const updatedSelection = newFormData.product_selection.map(
+      (product_name) =>
+        newFormData.production_data.find(
+          (item) => item.product_name === product_name,
+        ) ?? allowedProducts.find((p) => p.product_name === product_name),
     );
 
     setFormData({

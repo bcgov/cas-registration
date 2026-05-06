@@ -58,11 +58,6 @@ export const buildProductionDataSchema2025 = (
             type: "string",
             default: "custom value",
           },
-          unit: {
-            title: "Unit",
-            type: "string",
-            readOnly: true,
-          },
           annual_production: {
             title: "Annual Production",
             type: "number",
@@ -182,12 +177,42 @@ export const productionDataUiSchema2025 = (isOptedOut: boolean): UiSchema => ({
         "ui:FieldTemplate": InlineFieldTemplate,
         "ui:options": {
           unit: { source: "product", field: "unit" },
+          arrayPath: "production_data",
         },
       },
       production_data_jan_mar: {
         "ui:FieldTemplate": InlineFieldTemplate,
         "ui:options": {
           unit: { source: "product", field: "unit" },
+          arrayPath: "production_data",
+        },
+      },
+      storage_quantity_start_of_period: {
+        "ui:FieldTemplate": InlineFieldTemplate,
+        "ui:options": {
+          unit: { source: "product", field: "unit" },
+          arrayPath: "production_data",
+        },
+      },
+      storage_quantity_end_of_period: {
+        "ui:FieldTemplate": InlineFieldTemplate,
+        "ui:options": {
+          unit: { source: "product", field: "unit" },
+          arrayPath: "production_data",
+        },
+      },
+      quantity_sold_during_period: {
+        "ui:FieldTemplate": InlineFieldTemplate,
+        "ui:options": {
+          unit: { source: "product", field: "unit" },
+          arrayPath: "production_data",
+        },
+      },
+      quantity_throughput_during_period: {
+        "ui:FieldTemplate": InlineFieldTemplate,
+        "ui:options": {
+          unit: { source: "product", field: "unit" },
+          arrayPath: "production_data",
         },
       },
     },
