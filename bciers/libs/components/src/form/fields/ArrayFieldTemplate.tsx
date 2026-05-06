@@ -36,6 +36,7 @@ export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
     registry,
     children,
     index,
+    disabled,
   } = props;
   const { canDeleteFirst = false } = getUiOptions(
     uiSchema,
@@ -69,7 +70,8 @@ export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
                 {customTitleName} {index + 1}
               </span>
             )}
-            {((buttonsProps.hasRemove && index !== 0) || canDeleteFirst) && (
+            {((!disabled && buttonsProps.hasRemove && index !== 0) ||
+              canDeleteFirst) && (
               <button
                 onClick={buttonsProps.onRemoveItem}
                 className={removeButtonClassNames}
