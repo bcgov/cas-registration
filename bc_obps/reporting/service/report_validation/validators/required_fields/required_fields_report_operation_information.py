@@ -1,11 +1,12 @@
 from typing import ClassVar
-from reporting.service.report_validation.report_validation_error import ReportValidationError
-from reporting.service.report_validation.report_validation_tags import ValidationTags
+
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_operation_representative import (
     ReportOperationRepresentative,
 )
 from reporting.models.report_version import ReportVersion
+from reporting.service.report_validation.report_validation_error import ReportValidationError
+from reporting.service.report_validation.report_validation_tags import ValidationTags
 from reporting.service.report_validation.validators.required_fields.base_required_fields_validator import (
     BaseRequiredFieldsValidator,
 )
@@ -22,6 +23,7 @@ OPERATION_REPRESENTATIVE_LABEL = "Operation representative name"
 class RequiredFieldsReportOperationInformationValidator(BaseRequiredFieldsValidator):
     SECTION: ClassVar[str] = "review_operation_information"
     SECTION_TITLE: ClassVar[str] = "Review operation information"
+
     REQUIRED_FIELDS: ClassVar[list[RequiredFieldConfig]] = [
         {"field": "operation_name", "label": "Operation name", "field_type": "scalar"},
         {"field": "operator_legal_name", "label": "Operator legal name", "field_type": "scalar"},
@@ -33,7 +35,7 @@ class RequiredFieldsReportOperationInformationValidator(BaseRequiredFieldsValida
     def get_required_fields(
         cls,
         report_version: ReportVersion,
-        flow: ReportingFlow,
+        flow: ReportingFlow | None = None,
     ) -> list[RequiredFieldConfig]:
         if flow == ReportingFlow.EIO:
             return [

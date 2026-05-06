@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import pytest
 from model_bakery import baker
 
@@ -10,18 +8,16 @@ from reporting.service.report_validation.report_validation_error import (
     Severity,
 )
 from reporting.service.report_validation.validators.required_fields.required_fields_report_non_attributable_emissions import (
-    SECTION,
-    SECTION_TITLE,
+    RequiredFieldsNonAttributableEmissionsValidator,
     applies,
     validate,
 )
+from reporting.service.reporting_flow_service import ReportingFlow
 
 pytestmark = pytest.mark.django_db
 
-BASE_PATH = (
-    "reporting.service.report_validation.validators.required_fields.required_fields_report_non_attributable_emissions"
-)
-APPLIES_TO_SECTION_PATH = f"{BASE_PATH}.applies_to_section"
+SECTION = RequiredFieldsNonAttributableEmissionsValidator.SECTION
+SECTION_TITLE = RequiredFieldsNonAttributableEmissionsValidator.SECTION_TITLE
 
 
 class TestRequiredFieldsReportNonAttributableEmissionsValidator:
@@ -35,18 +31,10 @@ class TestRequiredFieldsReportNonAttributableEmissionsValidator:
         self.error_key = f"error_required_fields_{SECTION}_facility_{self.facility_report.facility_id}"
 
     def test_applies_returns_true_when_flow_is_applicable(self):
-        with patch(APPLIES_TO_SECTION_PATH, return_value=True) as mock_applies:
-            result = applies(self.report_version)
-
-        assert result is True
-        mock_applies.assert_called_once_with(self.report_version, SECTION)
+        assert applies(ReportingFlow.SFO) is True
 
     def test_applies_returns_false_when_flow_is_not_applicable(self):
-        with patch(APPLIES_TO_SECTION_PATH, return_value=False) as mock_applies:
-            result = applies(self.report_version)
-
-        assert result is False
-        mock_applies.assert_called_once_with(self.report_version, SECTION)
+        assert applies(ReportingFlow.EIO) is False
 
     def test_validate_returns_empty_dict_when_facility_has_no_non_attributable_emissions(self):
         result = validate(self.report_version)

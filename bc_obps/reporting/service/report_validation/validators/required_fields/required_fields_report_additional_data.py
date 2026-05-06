@@ -1,94 +1,92 @@
+from typing import ClassVar
+
+from django.core.exceptions import ObjectDoesNotExist
+
 from reporting.models.report_additional_data import ReportAdditionalData
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
-    ErrorContext,
     ReportValidationError,
-    ReportValidationErrorKey,
-    Severity,
 )
 from reporting.service.report_validation.report_validation_tags import (
     ValidationTags,
 )
+from reporting.service.report_validation.validators.required_fields.base_required_fields_validator import (
+    BaseRequiredFieldsValidator,
+)
 from reporting.service.report_validation.validators.required_fields.types import (
     RequiredFieldConfig,
 )
-from reporting.service.report_validation.validators.required_fields.utils import (
-    collect_missing_fields,
-)
-
-from reporting.service.report_validation.validators.required_fields.utils import applies_to_section
 from reporting.service.reporting_flow_service import ReportingFlow
 
 TAGS = [ValidationTags.REPORT_VALIDATION]
 
-SECTION = "additional_reporting_data"
-SECTION_TITLE = "Additional reporting data"
-REQUIRED_FIELDS: list[RequiredFieldConfig] = []
 
+class RequiredFieldsAdditionalReportingDataValidator(BaseRequiredFieldsValidator):
+    SECTION: ClassVar[str] = "additional_reporting_data"
+    SECTION_TITLE: ClassVar[str] = "Additional reporting data"
 
-def applies(flow: ReportingFlow) -> bool:
-    return applies_to_section(flow, SECTION)
+    REQUIRED_FIELDS: ClassVar[list[RequiredFieldConfig]] = []
 
+    @classmethod
+    def get_object_to_validate(
+        cls,
+        report_version: ReportVersion,
+    ) -> ReportAdditionalData:
+        return report_version.report_additional_data
 
-def _build_error(
-    *,
-    report_version_id: int,
-    missing_field_labels: list[str],
-) -> ReportValidationError:
-    return ReportValidationError(
-        severity=Severity.ERROR,
-        message="Required fields are empty.",
-        key=ReportValidationErrorKey.ERROR_REQUIRED_FIELDS,
-        context=ErrorContext(
-            report_version_id=report_version_id,
-            missing_fields=missing_field_labels,
-            section=SECTION,
-            section_title=SECTION_TITLE,
-        ),
-    )
+    @classmethod
+    def get_custom_missing_fields(
+        cls,
+        report_version: ReportVersion,
+    ) -> list[str]:
+        report_additional_data = report_version.report_additional_data
 
+        if not report_additional_data.capture_emissions:
+            return []
 
-def _get_missing_additional_reporting_fields(
-    report_additional_data: ReportAdditionalData,
-) -> list[str]:
-    if not report_additional_data.capture_emissions:
+        capture_fields = [
+            report_additional_data.emissions_on_site_use,
+            report_additional_data.emissions_on_site_sequestration,
+            report_additional_data.emissions_off_site_transfer,
+        ]
+
+        if all(field is None for field in capture_fields):
+            return ["At least one emissions capture type must be provided"]
+
         return []
 
-    capture_fields = [
-        report_additional_data.emissions_on_site_use,
-        report_additional_data.emissions_on_site_sequestration,
-        report_additional_data.emissions_off_site_transfer,
-    ]
+    @classmethod
+    def validate(
+        cls,
+        report_version: ReportVersion,
+        flow: ReportingFlow | None = None,
+    ) -> dict[str, ReportValidationError]:
+        try:
+            cls.get_object_to_validate(report_version)
+        except ObjectDoesNotExist:
+            return {
+                f"error_required_fields_{cls.SECTION}": cls.build_error(
+                    report_version_id=report_version.id,
+                    missing_field_labels=[cls.SECTION_TITLE],
+                )
+            }
 
-    if all(field is None for field in capture_fields):
-        return ["At least one emissions capture type must be provided"]
+        missing_field_labels = cls.get_custom_missing_fields(report_version)
 
-    return []
+        if not missing_field_labels:
+            return {}
 
-
-def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    try:
-        report_additional_data: ReportAdditionalData = report_version.report_additional_data
-    except ReportAdditionalData.DoesNotExist:
         return {
-            f"error_required_fields_{SECTION}": _build_error(
+            f"error_required_fields_{cls.SECTION}": cls.build_error(
                 report_version_id=report_version.id,
-                missing_field_labels=[SECTION_TITLE],
+                missing_field_labels=missing_field_labels,
             )
         }
 
-    missing_field_labels = collect_missing_fields(
-        report_additional_data,
-        REQUIRED_FIELDS,
-    )
-    missing_field_labels.extend(_get_missing_additional_reporting_fields(report_additional_data))
 
-    if not missing_field_labels:
-        return {}
+def applies(flow: ReportingFlow) -> bool:
+    return RequiredFieldsAdditionalReportingDataValidator.applies(flow)
 
-    return {
-        f"error_required_fields_{SECTION}": _build_error(
-            report_version_id=report_version.id,
-            missing_field_labels=missing_field_labels,
-        )
-    }
+
+def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
+    return RequiredFieldsAdditionalReportingDataValidator.validate(report_version)

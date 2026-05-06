@@ -9,8 +9,7 @@ from reporting.service.report_validation.report_validation_error import (
     Severity,
 )
 from reporting.service.report_validation.validators.required_fields.required_fields_report_emission_allocation import (
-    SECTION,
-    SECTION_TITLE,
+    RequiredFieldsAllocationOfEmissionsValidator,
     applies,
     validate,
 )
@@ -18,6 +17,9 @@ from reporting.service.reporting_flow_service import ReportingFlow
 
 
 pytestmark = pytest.mark.django_db
+
+SECTION = RequiredFieldsAllocationOfEmissionsValidator.SECTION
+SECTION_TITLE = RequiredFieldsAllocationOfEmissionsValidator.SECTION_TITLE
 
 BASE_PATH = "reporting.service.report_validation.validators.required_fields.required_fields_report_emission_allocation"
 APPLIES_TO_SECTION_PATH = f"{BASE_PATH}.applies_to_section"
