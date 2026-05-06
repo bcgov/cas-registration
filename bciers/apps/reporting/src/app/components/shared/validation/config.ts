@@ -142,7 +142,7 @@ export const validationUIConfig: Partial<
       const ctx = error.context;
 
       return `Unusual value detected for ${String(ctx?.facility_name ?? "facility")} ${label}.
-Expected ${String(ctx?.fuel_type_name ?? "fuel")} ${label} value to be between ${String(ctx?.expected_range ?? "the allowed range")} but input was ${String(ctx?.user_input ?? "the provided value")}.
+Expected ${String(ctx?.fuel_type_name ?? "fuel")} ${String(ctx?.reporting_field ?? "field")} value to be between ${String(ctx?.expected_range ?? "the allowed range")} but input was ${String(ctx?.user_input ?? "the provided value")}.
 Please ensure you have selected the correct fuel name and the value is accurate.
 If the value is accurate, you may save & continue.`;
     },
@@ -162,12 +162,12 @@ If the value is accurate, you may save & continue.`;
           )
         : undefined,
 
-    formatMessage: ({ error }) => {
+    formatMessage: ({ label, error }) => {
       const ctx = error.context;
 
-      return `Unusual value detected for ${String(ctx?.facility_name ?? "facility")} ${String(ctx?.activity_name ?? "activity")}.
+      return `Unusual value detected for ${String(ctx?.facility_name ?? "facility")} ${label}.
 Expected ${String(ctx?.gas_type_name ?? "gas")} ${String(ctx?.reporting_field ?? "field")} value to be between ${String(ctx?.expected_range ?? "the allowed range")} but input was ${String(ctx?.user_input ?? "the provided value")}.
-Please ensure you have selected the correct value and the entry is accurate.
+Please ensure the value entered is accurate.
 If the value is accurate, you may save & continue.`;
     },
   }),

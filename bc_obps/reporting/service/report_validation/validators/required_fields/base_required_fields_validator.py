@@ -1,6 +1,6 @@
 from typing import Any, ClassVar
 from uuid import UUID
-
+from django.core.exceptions import ObjectDoesNotExist
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -79,7 +79,7 @@ class BaseRequiredFieldsValidator:
 
         try:
             obj = cls.get_object_to_validate(report_version)
-        except Exception:
+        except ObjectDoesNotExist:
             return {
                 f"error_required_fields_{cls.SECTION}": cls.build_error(
                     report_version_id=report_version.id,
