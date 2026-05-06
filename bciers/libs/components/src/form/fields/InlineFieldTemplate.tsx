@@ -5,27 +5,54 @@ import AlertIcon from "@bciers/components/icons/AlertIcon";
 
 type UnitOption =
   | string
-  | { source: "product" | "form"; field: string }
-  | Array<string | { source: "product" | "form"; field: string }>;
+  | { field: string; source?: "product" | "form" }
+  | Array<string | { field: string; source?: "product" | "form" }>;
 
+/**
+ * Resolves the display unit text for a field from a configured `unit` option.
+ *
+ * Supported token shapes:
+ * - `"tCO2e"` (static text)
+ * - `{ field: "unit" }` (dynamic value)
+ * - `["tCO2e/", { field: "unit" }]` (composed string)
+ *
+ * Resolution order for dynamic tokens:
+ * - If `options.arrayPath` is provided, extract the row index from the RJSF `id`
+ *   and read from `formContext.getArrayItem(arrayPath, index)[field]`.
+ * - Otherwise read from `formContext[field]`.
+ *
+ * Returns `undefined` when no unit option is configured.
+ *
+ * Example usage:
+ *    annual_production: {
+        "ui:FieldTemplate": InlineFieldTemplate,
+        "ui:options": {
+          unit: { source: "product", field: "unit" },
+          arrayPath: "production_data",
+        },
+      }
+    ^ this will examine the "production_data" array in the RJSF form data, and for the
+    "product" object being rendered, will display the value in the "unit" attribute.
+ */
 const resolveUnit = (
   unitOption: UnitOption | undefined,
   id: string,
   registry?: Registry,
-  options?: any,
+  options?: Record<string, unknown>,
 ): string | undefined => {
   if (!unitOption) return;
 
   // normalize to array if it isn't already
   const parts = Array.isArray(unitOption) ? unitOption : [unitOption];
-  const arrayPath = options?.arrayPath;
+  const arrayPath =
+    typeof options?.arrayPath === "string" ? options.arrayPath : undefined;
 
   return parts
     .map((part) => {
       if (typeof part === "string") {
         return part;
       }
-      if (part.source === "product") {
+      if (arrayPath) {
         // regex search - generic index extraction
         const match = id.match(/_(\d+)_/);
         const index = match ? Number(match[1]) : null;
@@ -35,10 +62,7 @@ const resolveUnit = (
           return item?.[part.field];
         }
       }
-      if (part.source === "form") {
-        return registry?.formContext?.[part.field];
-      }
-      return "";
+      return registry?.formContext?.[part.field];
     })
     .join("");
 };
