@@ -6,6 +6,7 @@ import AttachmentElement, {
 } from "./AttachmentElement";
 import React, { useState } from "react";
 import { SupplementaryConfirmation, UploadedAttachment } from "./types";
+import { ATTACHMENT_TYPE_LABELS } from "./constants";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../taskList/types";
@@ -209,20 +210,23 @@ const AttachmentsForm: React.FC<Props> = ({
         report:
       </p>
       {buildAttachmentElement(
-        "Verification Statement",
+        ATTACHMENT_TYPE_LABELS.verification_statement,
         "verification_statement",
         {
           required: isVerificationStatementMandatory,
           error: validationErrors.verification_statement,
         },
       )}
-      {buildAttachmentElement("WCI.352 and WCI.362", "wci_352_362")}
       {buildAttachmentElement(
-        "Additional reportable information",
+        ATTACHMENT_TYPE_LABELS.wci_352_362,
+        "wci_352_362",
+      )}
+      {buildAttachmentElement(
+        ATTACHMENT_TYPE_LABELS.additional_reportable_information,
         "additional_reportable_information",
       )}
       {buildAttachmentElement(
-        "Confidentiality request, if you are requesting confidentiality of this report under the B.C. Reg. 249/2015 Reporting Regulation",
+        ATTACHMENT_TYPE_LABELS.confidentiality_request,
         "confidentiality_request",
       )}
       <p>

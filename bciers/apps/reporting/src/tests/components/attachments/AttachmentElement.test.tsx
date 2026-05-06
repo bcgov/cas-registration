@@ -23,11 +23,11 @@ describe("The AttachmentElement component", () => {
         versionId={12399}
       />,
     );
-    expect(screen.getByText("Test Title")).toBeInTheDocument();
+    expect(screen.getByText("Test Title")).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Upload attachment" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText("No attachment was uploaded")).toBeInTheDocument();
+    ).toBeVisible();
+    expect(screen.getByText("No attachment was uploaded.")).toBeVisible();
   });
 
   it("Displays the file information when file info is passed in", () => {
@@ -40,13 +40,13 @@ describe("The AttachmentElement component", () => {
         versionId={12399}
       />,
     );
-    expect(screen.getByText("Test Title")).toBeInTheDocument();
+    expect(screen.getByText("Test Title")).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Reupload attachment" }),
-    ).toBeInTheDocument();
+    ).toBeVisible();
     expect(
       screen.getByRole("button", { name: "test file name" }),
-    ).toBeInTheDocument();
+    ).toBeVisible();
     expect(screen.queryByText("will upload on save")).not.toBeInTheDocument();
   });
 
@@ -83,14 +83,14 @@ describe("The AttachmentElement component", () => {
         versionId={12399}
       />,
     );
-    expect(screen.getByText("Test Title")).toBeInTheDocument();
+    expect(screen.getByText("Test Title")).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Reupload attachment" }),
-    ).toBeInTheDocument();
+    ).toBeVisible();
     expect(
       screen.queryByRole("link", { name: "test file name" }),
     ).not.toBeInTheDocument();
-    expect(screen.getByText("test file name")).toBeInTheDocument();
+    expect(screen.getByText("test file name")).toBeVisible();
     expect(screen.getByText(/will upload on save/g)).toBeVisible();
   });
 
@@ -104,6 +104,6 @@ describe("The AttachmentElement component", () => {
         versionId={12399}
       />,
     );
-    expect(screen.getByText("This is an error")).toBeInTheDocument();
+    expect(screen.getByText("This is an error")).toBeVisible();
   });
 });

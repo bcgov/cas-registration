@@ -6,6 +6,7 @@ import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/R
 import {
   NavigationInformation,
   ReportingFlow,
+  ReportingOrigin,
 } from "@reporting/src/app/components/taskList/types";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
 import Loading from "@bciers/components/loading/SkeletonForm";
@@ -65,7 +66,7 @@ export const FinalReviewForm: React.FC<Props> = ({
               <FinalReviewReportSections
                 version_id={version_id}
                 data={data}
-                origin="final-review"
+                origin={ReportingOrigin.FinalReview}
                 flow={flow}
               />
               <ReportingStepButtons

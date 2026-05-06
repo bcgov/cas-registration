@@ -71,7 +71,6 @@ const AttachmentElement: React.FC<Props> = ({
       >
         {fileName ? "Reupload attachment" : "Upload attachment"}
       </button>
-
       <input
         ref={hiddenFileInput}
         onChange={handleChange}
@@ -83,38 +82,36 @@ const AttachmentElement: React.FC<Props> = ({
         data-testid="attachment-file-picker"
       />
       {fileName ? (
-        <ul className="m-0 py-0 flex flex-col justify-start">
-          <li>
-            {fileId && (
-              <button className="file-download" onClick={handleDownload}>
-                {fileName}
-              </button>
-            )}
-            {!fileId && (
-              <>
-                {fileName}
-                <span className="ml-3">
-                  -{" "}
-                  {isUploading ? (
-                    <>
-                      uploading
-                      <CircularProgress
-                        data-testid="progressbar"
-                        role="progressbar"
-                        size={18}
-                        className="ml-3"
-                      />
-                    </>
-                  ) : (
-                    "will upload on save"
-                  )}
-                </span>
-              </>
-            )}
-          </li>
-        </ul>
+        <span className="ml-4">
+          {fileId && (
+            <button className="button-link" onClick={handleDownload}>
+              {fileName}
+            </button>
+          )}
+          {!fileId && (
+            <>
+              {fileName}
+              <span className="ml-3">
+                -{" "}
+                {isUploading ? (
+                  <>
+                    uploading
+                    <CircularProgress
+                      data-testid="progressbar"
+                      role="progressbar"
+                      size={18}
+                      className="ml-3"
+                    />
+                  </>
+                ) : (
+                  "will upload on save"
+                )}
+              </span>
+            </>
+          )}
+        </span>
       ) : (
-        <span className="ml-4 text-lg">No attachment was uploaded</span>
+        <span className="ml-4 text-lg">No attachment was uploaded.</span>
       )}
       {error !== undefined && (
         <div

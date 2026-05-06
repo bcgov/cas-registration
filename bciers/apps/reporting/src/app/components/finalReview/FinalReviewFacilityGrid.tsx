@@ -9,6 +9,7 @@ import {
 import createColumnGroup from "@bciers/components/datagrid/createColumnGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import { fetchFacilitiesPageData } from "@reporting/src/app/components/reportInformation/facilities/fetchFacilitiesPageData";
+import { ReportingOrigin } from "@reporting/src/app/components/taskList/types";
 
 interface Facility {
   facility: string;
@@ -18,7 +19,7 @@ interface Facility {
 interface FinalReviewFacilityGridProps {
   data: Facility[];
   version_id: number;
-  origin?: "final-review" | "submitted" | "annual-report";
+  origin?: ReportingOrigin;
 }
 const PAGE_SIZE = 10;
 

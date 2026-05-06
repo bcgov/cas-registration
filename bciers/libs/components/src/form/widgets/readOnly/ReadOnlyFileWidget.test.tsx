@@ -71,6 +71,6 @@ describe("RJSF ReadOnlyFileWidget", () => {
     const readOnlyFileWidget = container.querySelector("#root_fileTestField");
 
     expect(readOnlyFileWidget).toBeVisible();
-    expect(readOnlyFileWidget).toHaveTextContent("No attachment was uploaded");
+    expect(readOnlyFileWidget).toHaveTextContent("No attachment was uploaded.");
   });
 });
