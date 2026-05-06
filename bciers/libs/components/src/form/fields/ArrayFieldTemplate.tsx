@@ -43,8 +43,9 @@ export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
     registry.globalUiOptions,
   );
 
-  const customTitleName = uiSchema?.["ui:options"]?.title as string;
-  const customItemName = uiSchema?.["ui:options"]?.customItemName as boolean;
+  const customTitleName = parentUiSchema?.["ui:options"]?.title as string;
+  const customItemName = parentUiSchema?.["ui:options"]
+    ?.customItemName as boolean;
   const isInline = parentUiSchema?.["ui:options"]
     ?.inlineRemoveButton as boolean;
   const formData = (children as any).props.formData;

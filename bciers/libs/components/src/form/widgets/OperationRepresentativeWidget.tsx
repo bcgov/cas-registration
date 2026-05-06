@@ -30,10 +30,11 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
   id,
   value,
   schema,
-  formContext,
+  registry,
 }) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [error, setError] = useState(undefined);
+  const { formContext } = registry;
 
   if (error) {
     return (
