@@ -90,7 +90,7 @@ const mockData = {
         name: "Cement equivalent",
         unit: "Tonnes",
         annual_production: 45.0,
-        apr_dec_production: 2.0,
+        apr_dec_production: 2.1,
         emission_intensity: 0.6262,
         allocated_industrial_process_emissions: 0.0,
         allocated_compliance_emissions: 0.0,
@@ -220,7 +220,7 @@ describe("The FinalReviewForm component", () => {
       'input[type="text"]',
     ) as HTMLInputElement;
     expect(aprDecInput).toBeTruthy();
-    expect(aprDecInput.value).toBe("2");
+    expect(aprDecInput.value).toBe("2.1");
     expect(aprDecContainer).toHaveTextContent(/tonnes/i);
   });
 });

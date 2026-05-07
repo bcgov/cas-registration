@@ -54,7 +54,7 @@ const resolveUnit = (
       }
       if (arrayPath) {
         // regex search - generic index extraction
-        const match = id.match(/_(\d+)_/);
+        const match = /_(\d+)_/.exec(id);
         const index = match ? Number(match[1]) : null;
 
         if (index !== null) {

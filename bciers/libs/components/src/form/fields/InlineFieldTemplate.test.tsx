@@ -4,6 +4,13 @@ import FormBase from "../FormBase";
 import InlineFieldTemplate from "./InlineFieldTemplate";
 
 describe("InlineFieldTemplate", () => {
+  const createGetArrayItem =
+    (data: Record<string, unknown>) => (path: string, index: number) => {
+      const arr = data[path];
+      if (!Array.isArray(arr)) return undefined;
+      return arr[index];
+    };
+
   it("renders a static unit from displayUnit", () => {
     const schema: RJSFSchema = {
       type: "object",
@@ -45,12 +52,6 @@ describe("InlineFieldTemplate", () => {
       ],
     };
 
-    const getArrayItem = (path: string, index: number) => {
-      const arr = (data as Record<string, unknown[]>)[path];
-      if (!Array.isArray(arr)) return undefined;
-      return arr[index];
-    };
-
     const schema: RJSFSchema = {
       type: "object",
       properties: {
@@ -88,7 +89,7 @@ describe("InlineFieldTemplate", () => {
         schema={schema}
         uiSchema={uiSchema}
         formData={data}
-        formContext={{ getArrayItem }}
+        formContext={{ getArrayItem: createGetArrayItem(data) }}
       />,
     );
 
@@ -103,12 +104,6 @@ describe("InlineFieldTemplate", () => {
           unit: "tonnes of tests",
         },
       ],
-    };
-
-    const getArrayItem = (path: string, index: number) => {
-      const arr = (data as Record<string, unknown[]>)[path];
-      if (!Array.isArray(arr)) return undefined;
-      return arr[index];
     };
 
     const schema: RJSFSchema = {
@@ -148,7 +143,7 @@ describe("InlineFieldTemplate", () => {
         schema={schema}
         uiSchema={uiSchema}
         formData={data}
-        formContext={{ getArrayItem }}
+        formContext={{ getArrayItem: createGetArrayItem(data) }}
       />,
     );
 
