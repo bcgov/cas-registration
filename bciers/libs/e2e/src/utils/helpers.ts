@@ -614,7 +614,7 @@ export async function assertFieldVisibility(
   visible: boolean,
 ) {
   for (const field of fields) {
-    await expect(page.getByText(field)).toBeVisible({
+    await expect(page.getByText(field).first()).toBeVisible({
       visible: visible,
     });
   }
