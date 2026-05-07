@@ -12,8 +12,8 @@ sed -i '' "s/^appVersion:.*/appVersion: \"${VERSION}\"/" $MIGRATION_TEST_CHART
 
 # Bump chart version in test chart
 CURRENT_TEST_CHART_VERSION=$(grep -Po '(?<=^version: )[^ "]+' $MIGRATION_TEST_CHART)
-MAJOR_MINOR_TEST_CHART_VERSION=${echo "$CURRENT_TEST_CHART_VERSION" | grep -Po '.*(?=\.\d+)'}
-PATCH_TEST_CHART_VERSION=${echo "$CURRENT_TEST_CHART_VERSION" | grep -Po '\d+$'}
+MAJOR_MINOR_TEST_CHART_VERSION=$(echo "$CURRENT_TEST_CHART_VERSION" | grep -Po '.*(?=\.\d+)')
+PATCH_TEST_CHART_VERSION=$(echo "$CURRENT_TEST_CHART_VERSION" | grep -Po '\d+$')
 NEW_TEST_CHART_VERSION="${MAJOR_MINOR_TEST_CHART_VERSION}.$((PATCH_TEST_CHART_VERSION + 1))"
 
 sed -i '' "s/^version:.*/version: ${NEW_TEST_CHART_VERSION}/" $MIGRATION_TEST_CHART
