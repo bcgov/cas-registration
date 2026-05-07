@@ -3,14 +3,18 @@ import { AlertIcon } from "@bciers/components/icons";
 import { AnalystSuggestion } from "@bciers/utils/src/enums";
 
 type Props = {
-  formContext: {
-    analystSuggestion: AnalystSuggestion;
-    supplementaryDeclined?: boolean;
+  registry: {
+    formContext: {
+      analystSuggestion: AnalystSuggestion;
+      supplementaryDeclined?: boolean;
+    };
   };
 };
 
 export const InternalIssuanceStatusDeclinedNote = ({
-  formContext: { analystSuggestion, supplementaryDeclined },
+  registry: {
+    formContext: { analystSuggestion, supplementaryDeclined },
+  },
 }: Props) => {
   return (
     <AlertNote icon={<AlertIcon width="20" height="20" />}>
