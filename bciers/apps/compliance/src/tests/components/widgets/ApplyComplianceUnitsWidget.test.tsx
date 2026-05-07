@@ -37,11 +37,13 @@ const mockUnits: BccrUnit[] = [
 
 const defaultProps = {
   value: mockUnits,
-  formContext: {
-    chargeRate: 40,
-    complianceLimitStatus: "BELOW" as ComplianceLimitStatus,
-    isSubmitted: false,
-    maxCreditUsagePercentage: 0.5,
+  registry: {
+    formContext: {
+      chargeRate: 40,
+      complianceLimitStatus: "BELOW" as ComplianceLimitStatus,
+      isSubmitted: false,
+      maxCreditUsagePercentage: 0.5,
+    },
   },
 } as unknown as WidgetProps;
 
@@ -111,10 +113,12 @@ describe("ApplyComplianceUnitsWidget", () => {
   it("shows compliance limit message when status is EXCEEDS and not submitted", () => {
     const props = {
       ...defaultProps,
-      formContext: {
-        ...defaultProps.formContext,
-        complianceLimitStatus: "EXCEEDS" as ComplianceLimitStatus,
-        isSubmitted: false,
+      registry: {
+        formContext: {
+          ...defaultProps.registry.formContext,
+          complianceLimitStatus: "EXCEEDS" as ComplianceLimitStatus,
+          isSubmitted: false,
+        },
       },
     };
 
@@ -130,10 +134,12 @@ describe("ApplyComplianceUnitsWidget", () => {
   it("shows compliance limit message when status is EQUALS and not submitted", () => {
     const props = {
       ...defaultProps,
-      formContext: {
-        ...defaultProps.formContext,
-        complianceLimitStatus: "EQUALS" as ComplianceLimitStatus,
-        isSubmitted: false,
+      registry: {
+        formContext: {
+          ...defaultProps.registry.formContext,
+          complianceLimitStatus: "EQUALS" as ComplianceLimitStatus,
+          isSubmitted: false,
+        },
       },
     };
 
@@ -194,9 +200,11 @@ describe("ApplyComplianceUnitsWidget", () => {
           quantity_to_be_applied: 50,
         },
       ],
-      formContext: {
-        ...defaultProps.formContext,
-        chargeRate: 50,
+      registry: {
+        formContext: {
+          ...defaultProps.registry.formContext,
+          chargeRate: 50,
+        },
       },
     };
 

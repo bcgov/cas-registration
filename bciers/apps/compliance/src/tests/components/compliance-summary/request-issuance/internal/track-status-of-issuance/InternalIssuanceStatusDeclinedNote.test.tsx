@@ -15,8 +15,10 @@ describe("InternalIssuanceStatusDeclinedNote", () => {
   it("displays the correct text content when the issuance is declined because an analyst requests a supplmentary report", () => {
     render(
       <InternalIssuanceStatusDeclinedNote
-        formContext={{
-          analystSuggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+        registry={{
+          formContext: {
+            analystSuggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+          },
         }}
       />,
     );
@@ -35,7 +37,11 @@ describe("InternalIssuanceStatusDeclinedNote", () => {
   it("displays the correct text content when the issuance is declined by the director", () => {
     render(
       <InternalIssuanceStatusDeclinedNote
-        formContext={{ analystSuggestion: AnalystSuggestion.READY_TO_APPROVE }}
+        registry={{
+          formContext: {
+            analystSuggestion: AnalystSuggestion.READY_TO_APPROVE,
+          },
+        }}
       />,
     );
 
@@ -54,9 +60,11 @@ describe("InternalIssuanceStatusDeclinedNote", () => {
   it("displays the correct text content when the issuance is declined because an industry user submits a supplementary report", () => {
     render(
       <InternalIssuanceStatusDeclinedNote
-        formContext={{
-          analystSuggestion: AnalystSuggestion.READY_TO_APPROVE,
-          supplementaryDeclined: true,
+        registry={{
+          formContext: {
+            analystSuggestion: AnalystSuggestion.READY_TO_APPROVE,
+            supplementaryDeclined: true,
+          },
         }}
       />,
     );
@@ -74,7 +82,11 @@ describe("InternalIssuanceStatusDeclinedNote", () => {
   it("displays the AlertIcon with correct props", () => {
     render(
       <InternalIssuanceStatusDeclinedNote
-        formContext={{ analystSuggestion: AnalystSuggestion.READY_TO_APPROVE }}
+        registry={{
+          formContext: {
+            analystSuggestion: AnalystSuggestion.READY_TO_APPROVE,
+          },
+        }}
       />,
     );
 

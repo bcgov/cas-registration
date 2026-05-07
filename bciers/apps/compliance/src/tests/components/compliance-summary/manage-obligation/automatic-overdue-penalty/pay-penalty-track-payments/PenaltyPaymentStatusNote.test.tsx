@@ -41,8 +41,9 @@ describe("PenaltyPaymentStatusNote", () => {
 
   it("displays success message with check icon when penalty is paid", () => {
     const formContext = createFormContext("0", "Paid");
+    const registry = { formContext };
 
-    render(<PenaltyPaymentStatusNote formContext={formContext} />);
+    render(<PenaltyPaymentStatusNote registry={registry} />);
 
     const alertNote = screen.getByTestId("alert-note");
     expect(alertNote).toBeVisible();
@@ -59,7 +60,9 @@ describe("PenaltyPaymentStatusNote", () => {
   it("displays payment instructions when outstanding penalty remains", () => {
     const formContext = createFormContext("500", PenaltyStatus.NOT_PAID);
 
-    render(<PenaltyPaymentStatusNote formContext={formContext} />);
+    const registry = { formContext };
+
+    render(<PenaltyPaymentStatusNote registry={registry} />);
 
     const alertNote = screen.getByTestId("alert-note");
     expect(alertNote).toBeVisible();
@@ -72,8 +75,9 @@ describe("PenaltyPaymentStatusNote", () => {
 
   it("displays payment instructions when outstanding amount is a decimal", () => {
     const formContext = createFormContext("0.5", PenaltyStatus.NOT_PAID);
+    const registry = { formContext };
 
-    render(<PenaltyPaymentStatusNote formContext={formContext} />);
+    render(<PenaltyPaymentStatusNote registry={registry} />);
 
     const alertNote = screen.getByTestId("alert-note");
     expect(alertNote).toBeVisible();
