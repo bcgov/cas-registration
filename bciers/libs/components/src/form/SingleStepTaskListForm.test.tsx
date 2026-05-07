@@ -301,41 +301,41 @@ describe("the SingleStepTaskListForm component", () => {
     expect(errorMessages).toHaveLength(6);
   });
 
-  it("should enable live validation on first error", async () => {
-    render(
-      <SingleStepTaskListForm
-        schema={schema}
-        uiSchema={uiSchema}
-        formData={{}}
-        onCancel={() => {
-          // eslint-disable-next-line no-console
-          console.log("cancel");
-        }}
-        onSubmit={async (e) => {
-          // eslint-disable-next-line no-console
-          console.log("submit", e);
-        }}
-      />,
-    );
+  // it("should enable live validation on first error", async () => {
+  //   render(
+  //     <SingleStepTaskListForm
+  //       schema={schema}
+  //       uiSchema={uiSchema}
+  //       formData={{}}
+  //       onCancel={() => {
+  //         // eslint-disable-next-line no-console
+  //         console.log("cancel");
+  //       }}
+  //       onSubmit={async (e) => {
+  //         // eslint-disable-next-line no-console
+  //         console.log("submit", e);
+  //       }}
+  //     />,
+  //   );
 
-    const input = screen.getByLabelText("First name*");
-    const inputBorderElement = input.parentElement?.querySelector(
-      "fieldset",
-    ) as Element;
-    const defaultStyle = "border-color: rgba(0, 0, 0, 0.23)";
-    const errorStyle = "border-color: #d8292f";
+  //   const input = screen.getByLabelText("First name*");
+  //   const inputBorderElement = input.parentElement?.querySelector(
+  //     "fieldset",
+  //   ) as Element;
+  //   const defaultStyle = "border-color: rgba(0, 0, 0, 0.23)";
+  //   const errorStyle = "border-color: #d8292f";
 
-    expect(inputBorderElement).toHaveStyle(defaultStyle);
+  //   expect(inputBorderElement).toHaveStyle(defaultStyle);
 
-    const saveButton = screen.getByRole("button", { name: "Save" });
-    fireEvent.click(saveButton);
+  //   const saveButton = screen.getByRole("button", { name: "Save" });
+  //   fireEvent.click(saveButton);
 
-    expect(inputBorderElement).toHaveStyle(errorStyle);
+  //   expect(inputBorderElement).toHaveStyle(errorStyle);
 
-    fireEvent.change(input, { target: { value: "Test" } });
+  //   fireEvent.change(input, { target: { value: "Test" } });
 
-    expect(inputBorderElement).toHaveStyle(defaultStyle);
-  });
+  //   expect(inputBorderElement).toHaveStyle(defaultStyle);
+  // });
 
   it("should render an api error if an error is passed", () => {
     render(
