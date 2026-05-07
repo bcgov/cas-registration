@@ -1,14 +1,11 @@
 from typing import ClassVar
-
 from django.db.models import Count, Prefetch
-
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
 )
-from reporting.service.report_validation.report_validation_tags import ValidationTags
 from reporting.service.report_validation.validators.required_fields.base_required_fields_validator import (
     BaseRequiredFieldsValidator,
 )
@@ -19,8 +16,6 @@ from reporting.service.report_validation.validators.required_fields.utils import
     collect_missing_fields,
 )
 from reporting.service.reporting_flow_service import ReportingFlow
-
-TAGS = [ValidationTags.REPORT_VALIDATION]
 
 
 class RequiredFieldsAllocationOfEmissionsValidator(BaseRequiredFieldsValidator):
@@ -96,11 +91,3 @@ class RequiredFieldsAllocationOfEmissionsValidator(BaseRequiredFieldsValidator):
                 )
 
         return errors
-
-
-def applies(flow: ReportingFlow) -> bool:
-    return RequiredFieldsAllocationOfEmissionsValidator.applies(flow)
-
-
-def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    return RequiredFieldsAllocationOfEmissionsValidator.validate(report_version)

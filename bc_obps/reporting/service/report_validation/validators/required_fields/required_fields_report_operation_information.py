@@ -1,23 +1,20 @@
 from typing import ClassVar
-
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_operation_representative import (
     ReportOperationRepresentative,
 )
 from reporting.models.report_version import ReportVersion
-from reporting.service.report_validation.report_validation_error import ReportValidationError
-from reporting.service.report_validation.report_validation_tags import ValidationTags
 from reporting.service.report_validation.validators.required_fields.base_required_fields_validator import (
     BaseRequiredFieldsValidator,
 )
 from reporting.service.report_validation.validators.required_fields.types import (
     RequiredFieldConfig,
 )
-from reporting.service.reporting_flow_service import ReportingFlow, resolve_flow
-
-TAGS = [ValidationTags.REPORT_VALIDATION]
+from reporting.service.reporting_flow_service import ReportingFlow
 
 OPERATION_REPRESENTATIVE_LABEL = "Operation representative name"
+
+EIO_EXCLUDED_FIELDS = frozenset({"activities", "regulated_products"})
 
 
 class RequiredFieldsReportOperationInformationValidator(BaseRequiredFieldsValidator):
@@ -38,9 +35,7 @@ class RequiredFieldsReportOperationInformationValidator(BaseRequiredFieldsValida
         flow: ReportingFlow | None = None,
     ) -> list[RequiredFieldConfig]:
         if flow == ReportingFlow.EIO:
-            return [
-                field for field in cls.REQUIRED_FIELDS if field["field"] not in {"activities", "regulated_products"}
-            ]
+            return [field for field in cls.REQUIRED_FIELDS if field["field"] not in EIO_EXCLUDED_FIELDS]
 
         return cls.REQUIRED_FIELDS
 
@@ -59,15 +54,3 @@ class RequiredFieldsReportOperationInformationValidator(BaseRequiredFieldsValida
             return []
 
         return [OPERATION_REPRESENTATIVE_LABEL]
-
-
-def applies(flow: ReportingFlow) -> bool:
-    return RequiredFieldsReportOperationInformationValidator.applies(flow)
-
-
-def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    flow = resolve_flow(report_version)
-    return RequiredFieldsReportOperationInformationValidator.validate(
-        report_version,
-        flow,
-    )

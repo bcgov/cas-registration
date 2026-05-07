@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any
+from typing import Any, ClassVar
 import jsonschema
 from reporting.models.report_version import ReportVersion
 from reporting.models.source_type import SourceType
@@ -11,10 +11,10 @@ from reporting.service.report_validation.report_validation_error import (
 )
 from service.form_builder_service import FormBuilderService
 from reporting.service.report_validation.report_validation_tags import ValidationTags
+from reporting.service.report_validation.validators.base import ReportValidator
+from reporting.service.reporting_flow_service import ReportingFlow
 
 logger = logging.getLogger(__name__)
-
-TAGS = [ValidationTags.ON_SUBMIT]
 
 
 def enable_jsonschema_draft_2020_validation(schema: Any) -> None:
@@ -40,40 +40,48 @@ def enable_jsonschema_draft_2020_validation(schema: Any) -> None:
             schema["dependentSchemas"] = schema.pop("dependencies")
 
 
-def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    errors = {}
+class ReportActivityJsonValidator(ReportValidator):
+    TAGS: ClassVar[list[ValidationTags]] = [ValidationTags.ON_SUBMIT]
 
-    for facility_report in report_version.facility_reports.all():
-        for report_raw_activity in facility_report.reportrawactivitydata_records.all():
-            data = report_raw_activity.json_data
+    @classmethod
+    def validate(
+        cls,
+        report_version: ReportVersion,
+        flow: ReportingFlow | None = None,
+    ) -> dict[str, ReportValidationError]:
+        errors: dict[str, ReportValidationError] = {}
 
-            source_type_json_keys = [source_type for source_type in data["sourceTypes"]]
-            source_type_ids = list(
-                SourceType.objects.filter(json_key__in=source_type_json_keys).values_list("id", flat=True)
-            )
+        for facility_report in report_version.facility_reports.all():
+            for report_raw_activity in facility_report.reportrawactivitydata_records.all():
+                data = report_raw_activity.json_data
 
-            activity_schema = json.loads(
-                FormBuilderService.build_form_schema(
-                    report_raw_activity.activity_id,
-                    report_version.id,
-                    source_type_ids,
-                    str(facility_report.facility_id),
+                source_type_json_keys = [source_type for source_type in data["sourceTypes"]]
+                source_type_ids = list(
+                    SourceType.objects.filter(json_key__in=source_type_json_keys).values_list("id", flat=True)
                 )
-            )["schema"]
 
-            enable_jsonschema_draft_2020_validation(activity_schema)
-
-            validator = jsonschema.Draft202012Validator(activity_schema)
-
-            try:
-                validator.validate(data)
-            except jsonschema.ValidationError as e:
-                errors[f"facility_{facility_report.facility_id}_{report_raw_activity.activity.slug}"] = (
-                    ReportValidationError(
-                        severity=Severity.ERROR,
-                        message=f"Validation error: {e.message} at: {' > '.join(str(elt) for elt in e.path)}",
-                        key=ReportValidationErrorKey.ACTIVITY_JSON_SCHEMA_VALIDATION_ERROR,
+                activity_schema = json.loads(
+                    FormBuilderService.build_form_schema(
+                        report_raw_activity.activity_id,
+                        report_version.id,
+                        source_type_ids,
+                        str(facility_report.facility_id),
                     )
-                )
+                )["schema"]
 
-    return errors
+                enable_jsonschema_draft_2020_validation(activity_schema)
+
+                validator = jsonschema.Draft202012Validator(activity_schema)
+
+                try:
+                    validator.validate(data)
+                except jsonschema.ValidationError as e:
+                    errors[f"facility_{facility_report.facility_id}_{report_raw_activity.activity.slug}"] = (
+                        ReportValidationError(
+                            severity=Severity.ERROR,
+                            message=f"Validation error: {e.message} at: {' > '.join(str(elt) for elt in e.path)}",
+                            key=ReportValidationErrorKey.ACTIVITY_JSON_SCHEMA_VALIDATION_ERROR,
+                        )
+                    )
+
+        return errors

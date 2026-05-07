@@ -1,8 +1,6 @@
 from typing import ClassVar
-
 from django.db.models import Count, Prefetch
 from reporting.service.report_product_service import ReportProductService
-
 from registration.models.operation import Operation
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_product import ReportProduct
@@ -10,7 +8,6 @@ from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
 )
-from reporting.service.report_validation.report_validation_tags import ValidationTags
 from reporting.service.report_validation.validators.required_fields.base_required_fields_validator import (
     BaseRequiredFieldsValidator,
 )
@@ -21,9 +18,6 @@ from reporting.service.report_validation.validators.required_fields.utils import
     collect_missing_fields_many,
 )
 from reporting.service.reporting_flow_service import ReportingFlow
-
-TAGS = [ValidationTags.REPORT_VALIDATION]
-OPTED_IN_OPERATION = Operation.Purposes.OPTED_IN_OPERATION
 
 
 class RequiredFieldsProductionDataValidator(BaseRequiredFieldsValidator):
@@ -41,13 +35,12 @@ class RequiredFieldsProductionDataValidator(BaseRequiredFieldsValidator):
         report = report_version.report
         operation = report.operation
 
-        result = (
+        return (
             report.reporting_year_id == 2025
-            and operation.registration_purpose == OPTED_IN_OPERATION
+            and operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
             and operation.opted_in_operation is not None
             and operation.opted_in_operation.final_reporting_year_id == 2025
         )
-        return result
 
     @classmethod
     def get_product_missing_fields(
@@ -103,7 +96,6 @@ class RequiredFieldsProductionDataValidator(BaseRequiredFieldsValidator):
         report_version: ReportVersion,
         flow: ReportingFlow | None = None,
     ) -> dict[str, ReportValidationError]:
-
         errors: dict[str, ReportValidationError] = {}
         allowed_products = ReportProductService.get_allowed_products(report_version.id)
 
@@ -146,8 +138,6 @@ class RequiredFieldsProductionDataValidator(BaseRequiredFieldsValidator):
                 )
                 continue
 
-            # Validate actual products
-
             missing_field_labels = cls.get_facility_missing_fields(
                 queryset=facility_report.prefetched_report_products,
                 report_version=report_version,
@@ -163,11 +153,3 @@ class RequiredFieldsProductionDataValidator(BaseRequiredFieldsValidator):
                 )
 
         return errors
-
-
-def applies(flow: ReportingFlow) -> bool:
-    return RequiredFieldsProductionDataValidator.applies(flow)
-
-
-def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    return RequiredFieldsProductionDataValidator.validate(report_version)

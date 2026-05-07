@@ -1,36 +1,24 @@
-from typing import Any, List
 import logging
-
-from reporting.service.reporting_flow_service import resolve_flow
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
 )
 from reporting.service.report_validation.report_validation_tags import ValidationTags
-from . import validators
+from reporting.service.report_validation.validators.base import (
+    VALIDATOR_REGISTRY,
+    ReportValidator,
+)
+from reporting.service.reporting_flow_service import resolve_flow
+
+# Importing the validators package loads every validator module. Each module
+# defines a ReportValidator subclass; ReportValidator.__init_subclass__ then
+# registers it into VALIDATOR_REGISTRY.
+from . import validators  # noqa: F401
 
 logger = logging.getLogger(__name__)
 
 
-def collect_validation_plugins() -> List[Any]:
-    validation_plugins = [validators.__dict__.get(plugin_name) for plugin_name in validators.__all__]
-
-    for plugin in validation_plugins:
-        if not plugin:
-            raise AttributeError("Invalid plugin registration - None plugin found.")
-        if not hasattr(plugin, "validate"):
-            raise AttributeError(
-                f"Plugin {plugin.__name__} needs to expose a `validate(report_version: ReportVersion) -> ReportValidationResult` function"
-            )
-        if not callable(plugin.validate):
-            raise AttributeError(f"{plugin.__name__}'s `validate` attribute must be callable")
-
-    return validation_plugins
-
-
 class ReportValidationService:
-    validation_plugins = collect_validation_plugins()
-
     @staticmethod
     def validate_report_version(
         version_id: int,
@@ -43,14 +31,14 @@ class ReportValidationService:
         flow = resolve_flow(report_version)
         errors: dict[str, ReportValidationError] = {}
 
-        for validation_plugin in ReportValidationService.validation_plugins:
-            if tag is not None and tag not in getattr(validation_plugin, "TAGS", []):
+        for validator_cls in VALIDATOR_REGISTRY:
+            if tag is not None and tag not in validator_cls.TAGS:
                 continue
-
-            applies = getattr(validation_plugin, "applies", None)
-            if callable(applies) and not applies(flow):
+            if not validator_cls.applies(flow):
                 continue
-
-            errors.update(validation_plugin.validate(report_version))
+            errors.update(validator_cls.validate(report_version, flow))
 
         return errors
+
+
+__all__ = ["ReportValidationService", "VALIDATOR_REGISTRY", "ReportValidator"]

@@ -1,8 +1,6 @@
 from typing import Any, ClassVar
 from uuid import UUID
-
 from django.core.exceptions import ObjectDoesNotExist
-
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -10,6 +8,7 @@ from reporting.service.report_validation.report_validation_error import (
     ReportValidationErrorKey,
     Severity,
 )
+from reporting.service.report_validation.validators.base import ReportValidator
 from reporting.service.report_validation.validators.required_fields.types import (
     RequiredFieldConfig,
 )
@@ -20,10 +19,35 @@ from reporting.service.report_validation.validators.required_fields.utils import
 from reporting.service.reporting_flow_service import ReportingFlow
 
 
-class BaseRequiredFieldsValidator:
+class BaseRequiredFieldsValidator(ReportValidator, abstract=True):
+    """
+    Abstract base for required-fields validators.
+
+    Concrete subclasses declare SECTION / SECTION_TITLE / REQUIRED_FIELDS and
+    override the hooks they need.
+    The default validate() implementation handles the standard "fetch object, collect
+    missing fields, build one error" flow.
+
+    Concrete subclasses are auto-registered (via ReportValidator.__init_subclass__)
+    and additionally must declare non-empty SECTION and SECTION_TITLE values —
+    enforced here at import time.
+    """
+
     SECTION: ClassVar[str]
     SECTION_TITLE: ClassVar[str]
     REQUIRED_FIELDS: ClassVar[list[RequiredFieldConfig]]
+
+    def __init_subclass__(cls, abstract: bool = False, **kwargs: Any) -> None:
+        super().__init_subclass__(abstract=abstract, **kwargs)
+
+        if abstract:
+            return
+
+        for required_attr in ("SECTION", "SECTION_TITLE"):
+            if not getattr(cls, required_attr, None):
+                raise TypeError(
+                    f"{cls.__qualname__}: {required_attr} must be defined on " "required-fields validators."
+                )
 
     @classmethod
     def applies(cls, flow: ReportingFlow) -> bool:

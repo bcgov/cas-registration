@@ -1,12 +1,8 @@
 from typing import ClassVar
-
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
-)
-from reporting.service.report_validation.report_validation_tags import (
-    ValidationTags,
 )
 from reporting.service.report_validation.validators.required_fields.base_required_fields_validator import (
     BaseRequiredFieldsValidator,
@@ -17,9 +13,7 @@ from reporting.service.report_validation.validators.required_fields.types import
 from reporting.service.report_validation.validators.required_fields.utils import (
     collect_missing_fields_many,
 )
-from reporting.service.reporting_flow_service import ReportingFlow, resolve_flow
-
-TAGS = [ValidationTags.REPORT_VALIDATION]
+from reporting.service.reporting_flow_service import ReportingFlow
 
 REVIEW_FACILITIES_SECTION = "review_facility_report_information"
 REVIEW_FACILITIES_SECTION_TITLE = "Report Information"
@@ -106,9 +100,7 @@ class RequiredFieldsReviewFacilityInformationValidator(BaseRequiredFieldsValidat
                 missing_field_labels=sorted(set(missing_field_labels)),
             )
 
-        resolved_flow = flow or resolve_flow(report_version)
-
-        if resolved_flow in LFO_COMPLETION_REQUIRED_FLOWS:
+        if flow in LFO_COMPLETION_REQUIRED_FLOWS:
             has_incomplete_facility = any(not facility_report.is_completed for facility_report in facility_reports)
 
             if has_incomplete_facility:
@@ -120,11 +112,3 @@ class RequiredFieldsReviewFacilityInformationValidator(BaseRequiredFieldsValidat
                 )
 
         return errors
-
-
-def applies(flow: ReportingFlow) -> bool:
-    return RequiredFieldsReviewFacilityInformationValidator.applies(flow)
-
-
-def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    return RequiredFieldsReviewFacilityInformationValidator.validate(report_version)

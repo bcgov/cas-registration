@@ -7,9 +7,6 @@ from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
 )
-from reporting.service.report_validation.report_validation_tags import (
-    ValidationTags,
-)
 from reporting.service.report_validation.validators.required_fields.base_required_fields_validator import (
     BaseRequiredFieldsValidator,
 )
@@ -17,8 +14,6 @@ from reporting.service.report_validation.validators.required_fields.types import
     RequiredFieldConfig,
 )
 from reporting.service.reporting_flow_service import ReportingFlow
-
-TAGS = [ValidationTags.REPORT_VALIDATION]
 
 
 class RequiredFieldsAdditionalReportingDataValidator(BaseRequiredFieldsValidator):
@@ -82,11 +77,3 @@ class RequiredFieldsAdditionalReportingDataValidator(BaseRequiredFieldsValidator
                 missing_field_labels=missing_field_labels,
             )
         }
-
-
-def applies(flow: ReportingFlow) -> bool:
-    return RequiredFieldsAdditionalReportingDataValidator.applies(flow)
-
-
-def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    return RequiredFieldsAdditionalReportingDataValidator.validate(report_version)
