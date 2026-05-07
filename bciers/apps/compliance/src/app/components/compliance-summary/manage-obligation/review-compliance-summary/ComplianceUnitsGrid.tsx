@@ -11,16 +11,19 @@ import { ComplianceAppliedUnitsSummary } from "@/compliance/src/app/types";
 
 export const ComplianceUnitsGrid = ({
   value,
-  formContext,
+  registry,
 }: {
   value: ComplianceAppliedUnitsSummary;
-  formContext: { reportingYear: number; maxCreditUsagePercentage: number };
+  registry: {
+    formContext: { reportingYear: number; maxCreditUsagePercentage: number };
+  };
 }) => {
   // Destructure to camelCase variable names
   const {
     compliance_report_version_id: complianceReportVersionId,
     applied_compliance_units: appliedComplianceUnits,
   } = value;
+  const { formContext } = registry;
   const { can_apply_compliance_units: canApplyUnits } = appliedComplianceUnits;
   const limitPercent = Math.round(formContext.maxCreditUsagePercentage * 100);
 

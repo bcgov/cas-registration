@@ -6,12 +6,15 @@ import { PayPenaltyTrackPaymentsFormData } from "@/compliance/src/app/types";
 import { PenaltyStatus } from "@bciers/utils/src/enums";
 
 interface PenaltyPaymentStatusNoteProps {
-  formContext: PayPenaltyTrackPaymentsFormData;
+  registry: {
+    formContext: PayPenaltyTrackPaymentsFormData;
+  };
 }
 
 export const PenaltyPaymentStatusNote = ({
-  formContext,
+  registry,
 }: PenaltyPaymentStatusNoteProps) => {
+  const { formContext } = registry;
   const isPaid =
     Number(formContext.outstanding_amount) === 0 &&
     formContext.penalty_status.toUpperCase() === PenaltyStatus.PAID;

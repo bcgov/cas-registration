@@ -6,13 +6,17 @@ import {
 } from "@bciers/utils/src/urls";
 
 type Props = {
-  formContext: {
-    isPenalty?: boolean;
+  registry: {
+    formContext: {
+      isPenalty?: boolean;
+    };
   };
 };
 
 export const PaymentInstructionsDetails = ({
-  formContext: { isPenalty },
+  registry: {
+    formContext: { isPenalty },
+  },
 }: Props) => {
   return (
     <div className="w-full mb-8">
