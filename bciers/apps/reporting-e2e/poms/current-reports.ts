@@ -121,7 +121,7 @@ export class CurrentReportsPOM {
   }
 
   // -----------------
-  // navigation
+  // report grid actions
   // -----------------
 
   /**
@@ -169,16 +169,15 @@ export class CurrentReportsPOM {
 
   /**
    * Finds the operation row in the reports grid and clicks "View Details"
-   * to view a submitted report.
+   * or "View Report" to view a submitted report.
    *
-   * Waits for navigation to the submitted report details page and returns
-   * the report version ID extracted from the URL.
+   * Waits for navigation to the submitted report details page.
    */
-  async viewDetailsForReport(
+  async viewDetailsFromReportGrid(
     operationName: string,
     isExternalUser: boolean = true,
     reportingYear?: string,
-  ): Promise<number> {
+  ): Promise<void> {
     await waitForGridReady(this.page);
 
     const row = this.page
@@ -188,32 +187,20 @@ export class CurrentReportsPOM {
       .first();
 
     await expect(row).toBeVisible();
-    // External users see "View Details" button, internal users see "View Report" button
-    const viewReportDetailsButton = row.getByRole("button", {
-      name: new RegExp(
-        isExternalUser
-          ? ACTION_BUTTON_TEXT.VIEW_DETAILS
-          : ACTION_BUTTON_TEXT.VIEW_REPORT + "$",
-        "i",
-      ),
-    });
-    await expect(viewReportDetailsButton).toBeVisible();
-    await expect(viewReportDetailsButton).toBeEnabled();
+    this.clickViewReportDetails(row, isExternalUser);
+  }
 
-    await viewReportDetailsButton.click({ delay: 1000 });
-    await viewReportDetailsButton.click();
-    const viewReportRoute = isExternalUser
-      ? ReportRoutes.SUBMITTED_REPORT
-      : ReportRoutes.ANNUAL_REPORT;
-    await expect(this.page).toHaveURL(
-      new RegExp(
-        String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${viewReportRoute}$`,
-        "i",
-      ),
-      { timeout: 30_000 },
-    );
+  async viewDetailsFromReportHistory(
+    versionName: string = "Version 1",
+  ): Promise<void> {
+    await waitForGridReady(this.page);
 
-    return this.extractReportVersionIdFromUrl(this.page, viewReportRoute);
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: versionName })
+      .first();
+    await expect(row).toBeVisible();
+    this.clickViewReportDetails(row);
   }
 
   /***
@@ -256,26 +243,6 @@ export class CurrentReportsPOM {
     ]);
   }
 
-  // Navigate to the production data route for this report id and facility id
-  async gotoProductionData(reportId: string | number, facilityId: string) {
-    await this.page.goto(this.getProductionDataUrl(reportId, facilityId));
-  }
-
-  // Navigate to the review changes page
-  async gotoReviewChanges(reportId: string | number): Promise<void> {
-    await this.page.goto(this.getReviewChangesUrl(reportId));
-  }
-
-  // Navigate to the attachments page
-  async gotoAtachments(reportId: string | number): Promise<void> {
-    await this.page.goto(this.getAttachmentsUrl(reportId));
-  }
-
-  // Navigate to the sign-off route for this report id
-  async gotoSignOff(reportId: string | number) {
-    await this.page.goto(this.getSignOffUrl(reportId));
-  }
-
   async verifySubmissionPage(): Promise<void> {
     await assertFieldVisibility(
       this.page,
@@ -289,18 +256,74 @@ export class CurrentReportsPOM {
     );
   }
 
-  async verifySubmittedReportView(operationName: string): Promise<void> {
+  async verifySubmittedReportView(
+    operationName: string,
+    isLFO: boolean = false,
+    isExternalUser: boolean = true,
+  ): Promise<void> {
+    const fields = [
+      operationName,
+      "Review Operation Information",
+      "Person Responsible for Submitting Report",
+      "Report Information",
+      "Back To All Reports",
+    ];
+    const lfoSpecificFields = [
+      "Operation Emission Summary",
+      "Compliance Summary",
+    ];
+    const sfoSpecificFields = [
+      "Non-Attributable Emissions",
+      "Emissions Summary (in tCO2e)",
+    ];
+    const externalUserOnlyFields = ["Attachments"];
     await assertFieldVisibility(
       this.page,
-      [operationName, "Review Operation Information", "Back To All Reports"],
+      fields
+        .concat(isLFO ? lfoSpecificFields : sfoSpecificFields)
+        .concat(isExternalUser ? externalUserOnlyFields : []),
       true,
     );
 
-    await expect(
-      this.page.getByRole("button", {
-        name: /Save as PDF/i,
-      }),
-    ).toBeVisible();
+    await this.verifySaveAsPDF();
+  }
+
+  async verifyFacilityAnnualReportView(facilityName: string): Promise<void> {
+    await assertFieldVisibility(
+      this.page,
+      [
+        facilityName,
+        "Report Information",
+        "Facility Information",
+        "Non-Attributable Emissions",
+        "Emissions Summary",
+        "Allocation of Emissions",
+      ],
+      true,
+    );
+
+    await this.verifySaveAsPDF();
+  }
+
+  async viewDetailsFromFacilityGrid(
+    facilityName: string,
+    facilityId: string,
+  ): Promise<void> {
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: facilityName })
+      .first();
+    this.clickViewReportDetails(row);
+    await expect(this.page).toHaveURL(
+      new RegExp(
+        String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/annual-report/facility/${facilityId}`,
+        "i",
+      ),
+      { timeout: 30_000 },
+    );
+    await expect(this.page).toHaveURL(
+      this.getProductionDataUrl("*", facilityId),
+    );
   }
 
   async verifySaveAsPDF(): Promise<void> {
@@ -334,6 +357,30 @@ export class CurrentReportsPOM {
   }
 
   // -----------------
+  // navigation
+  // -----------------
+
+  // Navigate to the production data route for this report id and facility id
+  async gotoProductionData(reportId: string | number, facilityId: string) {
+    await this.page.goto(this.getProductionDataUrl(reportId, facilityId));
+  }
+
+  // Navigate to the review changes page
+  async gotoReviewChanges(reportId: string | number): Promise<void> {
+    await this.page.goto(this.getReviewChangesUrl(reportId));
+  }
+
+  // Navigate to the attachments page
+  async gotoAttachments(reportId: string | number): Promise<void> {
+    await this.page.goto(this.getAttachmentsUrl(reportId));
+  }
+
+  // Navigate to the sign-off route for this report id
+  async gotoSignOff(reportId: string | number) {
+    await this.page.goto(this.getSignOffUrl(reportId));
+  }
+
+  // -----------------
   // helpers
   // -----------------
   private async clickSaveAndContinue(
@@ -346,6 +393,35 @@ export class CurrentReportsPOM {
       inForm: opts?.inForm,
       waitForUrl,
     });
+  }
+
+  private async clickViewReportDetails(
+    row: Locator,
+    isExternalUser: boolean = true,
+  ): Promise<void> {
+    const viewReportDetailsButton = row.getByRole("button", {
+      name: new RegExp(
+        isExternalUser
+          ? ACTION_BUTTON_TEXT.VIEW_DETAILS
+          : ACTION_BUTTON_TEXT.VIEW_REPORT + "$",
+        "i",
+      ),
+    });
+    await expect(viewReportDetailsButton).toBeVisible();
+    await expect(viewReportDetailsButton).toBeEnabled();
+    await viewReportDetailsButton.click({ delay: 1000 });
+    await viewReportDetailsButton.click();
+
+    const viewReportRoute = isExternalUser
+      ? ReportRoutes.SUBMITTED_REPORT
+      : ReportRoutes.ANNUAL_REPORT;
+    await expect(this.page).toHaveURL(
+      new RegExp(
+        String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${viewReportRoute}$`,
+        "i",
+      ),
+      { timeout: 30_000 },
+    );
   }
 
   private extractReportVersionIdFromUrl(
@@ -734,7 +810,7 @@ export class CurrentReportsPOM {
       new RegExp(`${this.getReportValidationUrl(reportId)}\\/?$`, "i"),
     );
 
-    await this.gotoAtachments(reportId);
+    await this.gotoAttachments(reportId);
     await this.fillAttachments();
     await this.clickSaveAndContinue(new RegExp(this.getSignOffUrl(reportId)));
 
