@@ -26,7 +26,7 @@ from reporting.service.reporting_flow_service import (
     resolve_flow,
 )
 
-TAGS = [ValidationTags.REPORT_VALIDATION]
+TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 REVIEW_FACILITIES_SECTION = "review_facility_report_information"
 REVIEW_FACILITIES_SECTION_TITLE = "Report Information"

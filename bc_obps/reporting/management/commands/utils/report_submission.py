@@ -8,8 +8,12 @@ from reporting.service.report_submission_service import ReportSubmissionService
 
 from .report_verification import create_report_verification
 from .report_attachments import create_report_verification_statement_attachment
-from .report_contact import create_report_person_responsible
+from .report_person_responsible import create_report_person_responsible
 from .report_activity_data import prepare_activity_data_for_submission
+from .report_additional_data import create_report_additional_data
+from .report_emission_allocation import prepare_emission_allocation_for_submission
+from .report_facility_report import mark_facility_reports_complete
+from .report_production_data import prepare_production_data_for_submission
 
 
 def prepare_and_submit_report(report_version: ReportVersion, submitting_user: UUID):
@@ -17,13 +21,12 @@ def prepare_and_submit_report(report_version: ReportVersion, submitting_user: UU
     Orchestrates all required setup before submitting a report.
     """
 
-    # TODO
-    # report_production_data	Production values
-    # report_emission_allocation	Allocation data
-    # etc.
     prepare_activity_data_for_submission(report_version)
     create_report_person_responsible(report_version)
-
+    create_report_additional_data(report_version)
+    prepare_production_data_for_submission(report_version)
+    prepare_emission_allocation_for_submission(report_version)
+    mark_facility_reports_complete(report_version)
     create_report_verification(report_version)
     create_report_verification_statement_attachment(report_version, submitting_user)
 

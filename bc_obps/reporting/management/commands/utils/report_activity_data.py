@@ -8,41 +8,42 @@ from reporting.models.report_version import ReportVersion
 
 
 @transaction.atomic()
-def prepare_activity_data_for_submission(report_version: ReportVersion) -> None:
+def prepare_activity_data_for_submission(
+    report_version: ReportVersion,
+) -> None:
     facility_reports = FacilityReport.objects.filter(report_version=report_version)
 
     for facility_report in facility_reports:
-        create_report_activity_for_facility_report(facility_report)
+        create_report_activities_for_facility_report(facility_report)
 
 
-def create_report_activity_for_facility_report(facility_report: FacilityReport) -> None:
-    activity = get_default_activity(facility_report)
-    activity_base_schema = get_default_activity_base_schema(activity)
+def create_report_activities_for_facility_report(
+    facility_report: FacilityReport,
+) -> None:
+    activities = facility_report.report_version.report_operation.activities.all()
 
-    ReportActivity.objects.get_or_create(
-        report_version=facility_report.report_version,
-        facility_report=facility_report,
-        activity=activity,
-        defaults={
-            "activity_base_schema": activity_base_schema,
-            "json_data": build_minimal_json_data(activity_base_schema.json_schema),
-        },
-    )
+    if not activities.exists():
+        raise RuntimeError(
+            "No activities found for " f"report_operation={facility_report.report_version.report_operation.id}"
+        )
 
+    for activity in activities:
+        activity_base_schema = get_default_activity_base_schema(activity)
 
-def get_default_activity(facility_report: FacilityReport) -> Activity:
-    if facility_report.activities.exists():
-        return facility_report.activities.first()
-
-    report_operation = facility_report.report_version.report_operation
-
-    if report_operation.activities.exists():
-        return report_operation.activities.first()
-
-    raise RuntimeError(f"No activity found for facility_report={facility_report.id}")
+        ReportActivity.objects.get_or_create(
+            report_version=facility_report.report_version,
+            facility_report=facility_report,
+            activity=activity,
+            defaults={
+                "activity_base_schema": activity_base_schema,
+                "json_data": build_minimal_json_data(activity_base_schema.json_schema),
+            },
+        )
 
 
-def get_default_activity_base_schema(activity: Activity) -> ActivityJsonSchema:
+def get_default_activity_base_schema(
+    activity: Activity,
+) -> ActivityJsonSchema:
     activity_base_schema = ActivityJsonSchema.objects.filter(
         activity=activity,
     ).first()

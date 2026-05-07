@@ -14,7 +14,7 @@ from reporting.service.report_validation.report_validation_tags import Validatio
 
 logger = logging.getLogger(__name__)
 
-TAGS = [ValidationTags.ON_SUBMIT]
+TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 
 def enable_jsonschema_draft_2020_validation(schema: Any) -> None:
