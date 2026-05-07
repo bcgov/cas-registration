@@ -10,11 +10,13 @@ const TEST_COMPLIANCE_REPORT_VERSION_ID = 123;
 
 const defaultProps = {
   onChange: mockOnChange,
-  formContext: {
-    onValidAccountResolved: mockOnValidAccountResolved,
-    validateBccrAccount: mockValidateBccrAccount,
-    onError: mockOnError,
-    complianceReportVersionId: TEST_COMPLIANCE_REPORT_VERSION_ID,
+  registry: {
+    formContext: {
+      onValidAccountResolved: mockOnValidAccountResolved,
+      validateBccrAccount: mockValidateBccrAccount,
+      onError: mockOnError,
+      complianceReportVersionId: TEST_COMPLIANCE_REPORT_VERSION_ID,
+    },
   },
 } as unknown as WidgetProps;
 
