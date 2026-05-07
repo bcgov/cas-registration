@@ -13,7 +13,7 @@ from reporting.service.report_validation.validators.required_fields.utils import
 )
 from reporting.service.reporting_flow_service import ReportingFlow
 
-TAGS = [ValidationTags.REPORT_VALIDATION]
+TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 SECTION = "activity_data_coverage"
 SECTION_TITLE = "Activities"
