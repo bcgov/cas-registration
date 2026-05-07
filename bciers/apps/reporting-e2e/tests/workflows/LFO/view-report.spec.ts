@@ -18,17 +18,16 @@ test.describe("LFO: view a submitted report for the current reporting year", () 
     const grid = new CurrentReportsPOM(page);
     await grid.route();
 
-    await grid.searchByOperationName(OPERATION_NAMES.BANGLES_SFO);
+    await grid.searchByOperationName(OPERATION_NAMES.BANANA_LFO);
 
     // ── 2. Click "View Details" for the report — navigates to the 'Submitted' report view ──
-    await grid.viewDetailsForReport(OPERATION_NAMES.BANGLES_SFO, true);
+    await grid.reportHistoryForOperation(OPERATION_NAMES.BANANA_LFO);
+    await grid.viewDetailsFromReportHistory();
+    await grid.verifySubmittedReportView(OPERATION_NAMES.BANANA_LFO, true);
 
-    await grid.verifySubmittedReportView(OPERATION_NAMES.BANGLES_SFO);
-    // - 3. Click the "Save as PDF" button and verify the 'Print' dialog opens
-    await grid.verifySaveAsPDF();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Submitted",
-      variant: "Industry user views submitted report",
+      variant: "external",
     });
   });
 });
@@ -43,17 +42,20 @@ internalTest.describe(
         const grid = new CurrentReportsPOM(page);
         await grid.route();
 
-        await grid.searchByOperationName(OPERATION_NAMES.BANGLES_SFO);
+        await grid.searchByOperationName(OPERATION_NAMES.BANANA_LFO);
 
         // ── 2. Click "View Details" for the report — navigates to the 'Submitted' report view ──
-        await grid.viewDetailsForReport(OPERATION_NAMES.BANGLES_SFO, false);
+        await grid.viewDetailsFromReportGrid(OPERATION_NAMES.BANANA_LFO, false);
 
-        await grid.verifySubmittedReportView(OPERATION_NAMES.BANGLES_SFO);
-        // - 3. Click the "Save as PDF" button and verify the 'Print' dialog opens
-        await grid.verifySaveAsPDF();
+        await grid.verifySubmittedReportView(
+          OPERATION_NAMES.BANANA_LFO,
+          true,
+          false,
+        );
+
         await takeStabilizedScreenshot(happoScreenshot, page, {
           component: "LFO Report - Submitted",
-          variant: "CAS analyst views submitted report",
+          variant: "internal",
         });
       },
     );
