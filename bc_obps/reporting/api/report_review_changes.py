@@ -10,6 +10,16 @@ from .permissions import approved_industry_user_report_version_composite_auth
 from service.report_version_service import ReportVersionService
 from reporting.service.review_changes_service.report_review_changes_service import ReportReviewChangesService
 
+EXCLUDE_REPORT_PRODUCT_ID = {
+    "facility_reports": {
+        "__all__": {
+            "report_emission_allocation": {
+                "report_product_emission_allocations": {"__all__": {"products": {"__all__": {"report_product_id"}}}},
+            }
+        }
+    }
+}
+
 
 @router.get(
     "/report-version/{version_id}/diff-data",
@@ -38,8 +48,8 @@ def get_report_version_diff_data(request: HttpRequest, version_id: int) -> tuple
     previous_version = ReportVersionService.fetch_full_report_version(
         previous_version_id, prefetch_full_facility_report=True
     )
-    current_data = ReviewChangesVersionSchema.from_orm(current_version).dict()
-    previous_data = ReviewChangesVersionSchema.from_orm(previous_version).dict()
+    current_data = ReviewChangesVersionSchema.from_orm(current_version).dict(exclude=EXCLUDE_REPORT_PRODUCT_ID)
+    previous_data = ReviewChangesVersionSchema.from_orm(previous_version).dict(exclude=EXCLUDE_REPORT_PRODUCT_ID)
 
     changed = ReportReviewChangesService.get_report_version_diff_changes(previous_data, current_data)
 
