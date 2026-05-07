@@ -198,6 +198,7 @@ const productionDataUiSchemaDefault = (): UiSchema => ({
         "ui:FieldTemplate": InlineFieldTemplate,
         "ui:options": {
           unit: { source: "product", field: "unit" },
+          arrayPath: "production_data",
         },
       },
     },
