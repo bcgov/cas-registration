@@ -1,5 +1,18 @@
 # Changelog
 
+# [5.10.0](https://github.com/bcgov/cas-registration/compare/v5.9.0...v5.10.0) (2026-05-07)
+
+### Bug Fixes
+
+- **deps:** update node dependencies ([3e7f8d6](https://github.com/bcgov/cas-registration/commit/3e7f8d60f9a4c8b3910ccd72c77f180ee4b465ae))
+- fix error message handling for validation errors ([7b6ee4d](https://github.com/bcgov/cas-registration/commit/7b6ee4d232e0a7dfc7607cb10336604047902978))
+- remove unevaluated methodology fields in activity raw fixture + re-enable report_validation for e2e tests ([813336f](https://github.com/bcgov/cas-registration/commit/813336f457034dac17193be2d9c20d8be6e0facb))
+
+### Features
+
+- add `SubmittedAttachmentsSection` for displaying attachments in submitted reports ([1034ffb](https://github.com/bcgov/cas-registration/commit/1034ffba8a6c534adfb307d2967ca0aec565646d))
+- add reporting pages to cas-view-only role ([54d9a8a](https://github.com/bcgov/cas-registration/commit/54d9a8af9fda0f6e53f8a60e1515b5dcb2f8a949))
+
 # [5.9.0](https://github.com/bcgov/cas-registration/compare/v5.8.0...v5.9.0) (2026-04-28)
 
 ### Bug Fixes
