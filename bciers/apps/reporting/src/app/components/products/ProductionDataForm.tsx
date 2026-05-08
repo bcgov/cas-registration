@@ -1,11 +1,15 @@
 "use client";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { useState } from "react";
-import { RJSFSchema } from "@rjsf/utils";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { buildProductionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { ProductData } from "@reporting/src/app/components/products/types";
 import { postProductionData } from "@reporting/src/app/utils/productDataForm/postProductionData";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import {
+  FieldTemplate,
+  TitleOnlyFieldTemplate,
+} from "@bciers/components/form/fields";
 
 interface Props {
   report_version_id: number;
@@ -39,8 +43,50 @@ const ProductionDataForm: React.FC<Props> = ({
     production_data: initialData,
   };
 
+  const noRegulatedProductSchema: RJSFSchema = {
+    type: "object",
+    title: "Production Data",
+    properties: {
+      product_selection_title: {
+        title: "No Regulated Products to select",
+        type: "string",
+      },
+    },
+  };
+
+  const noRegulatedProductUiSchema: UiSchema = {
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:classNames": "form-heading-label",
+    product_selection_title: {
+      "ui:FieldTemplate": TitleOnlyFieldTemplate,
+      "ui:classNames": "mt-2 mb-5 emission-array-header",
+    },
+  };
+
   const [formData, setFormData] = useState<any>(initialFormData);
   const [errors, setErrors] = useState<string[]>();
+
+  // Short circuit to allow LFO facilities to continue past this form without a regulated product selected
+  if (
+    ["Small Aggregate", "Medium Facility", "Large Facility"].includes(
+      facilityType,
+    ) &&
+    formData.product_selection.length < 1
+  ) {
+    return (
+      <MultiStepFormWithTaskList
+        taskListElements={navigationInformation.taskList}
+        schema={noRegulatedProductSchema}
+        uiSchema={noRegulatedProductUiSchema}
+        formData={formData}
+        backUrl={navigationInformation.backUrl}
+        continueUrl={navigationInformation.continueUrl}
+        steps={navigationInformation.headerSteps}
+        initialStep={navigationInformation.headerStepIndex}
+        saveButtonDisabled={true}
+      />
+    );
+  }
 
   const onChange = (newFormData: {
     product_selection: string[];
@@ -74,7 +120,9 @@ const ProductionDataForm: React.FC<Props> = ({
       }
     }
     if (
-      !["Small Aggregate", "Medium Facility"].includes(facilityType) &&
+      !["Small Aggregate", "Medium Facility", "Large Facility"].includes(
+        facilityType,
+      ) &&
       formData.product_selection.length < 1
     ) {
       setErrors(["A product must be selected."]);
