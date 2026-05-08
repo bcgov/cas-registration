@@ -189,18 +189,35 @@ export class CurrentReportsPOM {
     await expect(row).toBeVisible();
     this.clickViewReportDetails(row, isExternalUser);
   }
-
+  /**
+   * Clicks the "View Details" button for a specific report version in the report history page, based on the version number.
+   */
   async viewDetailsFromReportHistory(
-    versionName: string = "Version 1",
+    version: string | number = "1",
   ): Promise<void> {
     await waitForGridReady(this.page);
-
+    const versionName = `Version ${version}`;
     const row = this.page
       .getByRole("row")
       .filter({ hasText: versionName })
       .first();
     await expect(row).toBeVisible();
     this.clickViewReportDetails(row);
+  }
+
+  /**
+   * Clicks the "View Details" button for a specific facility report
+   * in the facility grid on the Submitted report view.
+   */
+  async viewDetailsFromFacilityGrid(
+    facilityName: string,
+    facilityId: string,
+  ): Promise<void> {
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: facilityName })
+      .first();
+    this.clickViewFacilityReportDetails(row, facilityId);
   }
 
   /***
@@ -288,13 +305,12 @@ export class CurrentReportsPOM {
     await this.verifySaveAsPDF();
   }
 
-  async verifyFacilityAnnualReportView(facilityName: string): Promise<void> {
+  async verifyFacilitySubmittedReportView(facilityName: string): Promise<void> {
     await assertFieldVisibility(
       this.page,
       [
         facilityName,
         "Report Information",
-        "Facility Information",
         "Non-Attributable Emissions",
         "Emissions Summary",
         "Allocation of Emissions",
@@ -303,27 +319,6 @@ export class CurrentReportsPOM {
     );
 
     await this.verifySaveAsPDF();
-  }
-
-  async viewDetailsFromFacilityGrid(
-    facilityName: string,
-    facilityId: string,
-  ): Promise<void> {
-    const row = this.page
-      .getByRole("row")
-      .filter({ hasText: facilityName })
-      .first();
-    this.clickViewReportDetails(row);
-    await expect(this.page).toHaveURL(
-      new RegExp(
-        String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/annual-report/facility/${facilityId}`,
-        "i",
-      ),
-      { timeout: 30_000 },
-    );
-    await expect(this.page).toHaveURL(
-      this.getProductionDataUrl("*", facilityId),
-    );
   }
 
   async verifySaveAsPDF(): Promise<void> {
@@ -418,6 +413,26 @@ export class CurrentReportsPOM {
     await expect(this.page).toHaveURL(
       new RegExp(
         String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${viewReportRoute}$`,
+        "i",
+      ),
+      { timeout: 30_000 },
+    );
+  }
+
+  private async clickViewFacilityReportDetails(
+    row: Locator,
+    facilityId: string,
+  ): Promise<void> {
+    const viewFacilityReportDetailsButton = row.getByTestId(
+      `view-details-${facilityId}`,
+    );
+    await expect(viewFacilityReportDetailsButton).toBeVisible();
+    await expect(viewFacilityReportDetailsButton).toBeEnabled();
+    await viewFacilityReportDetailsButton.click({ delay: 1000 });
+
+    await expect(this.page).toHaveURL(
+      new RegExp(
+        String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/annual-report/facility/${facilityId}`,
         "i",
       ),
       { timeout: 30_000 },
