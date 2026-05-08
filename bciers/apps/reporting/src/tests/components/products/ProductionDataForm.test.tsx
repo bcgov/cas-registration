@@ -58,7 +58,7 @@ describe("The ProductionDataForm component", () => {
     expect(mockPostProductionData).toHaveBeenCalledOnce();
   });
 
-  it("Allows an LFO facility to just continue when no regulated products are selected", async () => {
+  it("Allows an LFO facility to just continue when no regulated products are available to be selected", async () => {
     const mockPush = vi.fn();
     mockRouter.mockReturnValue({ push: mockPush });
 
