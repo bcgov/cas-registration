@@ -221,8 +221,8 @@ ENABLE_SENTRY, ENABLE_BETTERSTACK = configure_error_tracking(ENVIRONMENT)
 # DJANGO-NINJA SETTINGS
 NINJA_PAGINATION_PER_PAGE = 20
 
-# Bypass CSRF protection in development(for admin login page only)
-if not DEBUG and ENVIRONMENT == "dev":
+# Bypass CSRF protection in non-production environments(for admin login page only)
+if not DEBUG and NON_PROD_ENVIRONMENT:
     CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('BACKEND_HOST')}"]
 
 
