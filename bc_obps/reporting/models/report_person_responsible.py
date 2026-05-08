@@ -17,7 +17,7 @@ class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
 
     contact = models.ForeignKey(
         "registration.Contact",
-        on_delete=models.PROTECT,
+        on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
         related_name="report_person_responsibles",

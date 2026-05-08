@@ -55,6 +55,7 @@ const mockContacts: MockContacts = {
 
 const mockPersonResponsible: MockContact = {
   id: 1,
+  contact_id: 1,
   first_name: "John",
   last_name: "Doe",
   email: "john.doe@example.com",
@@ -168,6 +169,58 @@ describe("PersonResponsibleForm component", () => {
     const [, , , options] = actionHandler.mock.calls[0];
     expect(JSON.parse(options.body)).toMatchObject({
       contact_id: 1,
+    });
+  });
+
+  it("preserves snapshot data when syncing a missing contact", async () => {
+    render(<PersonResponsibleForm {...defaultProps} />);
+
+    mockGetContacts.mockResolvedValueOnce(mockContacts);
+    mockGetContact.mockResolvedValueOnce({
+      error: "Unauthorized.",
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /sync/i }));
+
+    await waitFor(() => {
+      expect(mockGetContacts).toHaveBeenCalledTimes(1);
+      expect(mockGetContact).toHaveBeenCalledWith("1");
+    });
+
+    expect(await screen.findByDisplayValue("John")).toBeVisible();
+    expect(screen.getByDisplayValue("Doe")).toBeVisible();
+
+    expect(await screen.findByText(/contact was deleted/i)).toBeVisible();
+  });
+
+  it("removes deleted snapshot contact from dropdown after user clears selection", async () => {
+    render(<PersonResponsibleForm {...defaultProps} />);
+
+    // Confirm snapshot contact is initially selected
+    expect(await screen.findByDisplayValue("John Doe")).toBeVisible();
+
+    // Clear the selected contact
+    const combobox = screen.getByRole("combobox");
+
+    fireEvent.change(combobox, {
+      target: { value: "" },
+    });
+
+    fireEvent.blur(combobox);
+
+    await waitFor(() => {
+      expect(screen.queryByDisplayValue("John Doe")).not.toBeInTheDocument();
+    });
+
+    // Open autocomplete dropdown
+    fireEvent.mouseDown(combobox);
+
+    await waitFor(() => {
+      // Deleted snapshot contact should no longer appear
+      expect(screen.queryByText("John Doe")).not.toBeInTheDocument();
+
+      // Existing contacts should still appear
+      expect(screen.getByText("Jane Smith")).toBeVisible();
     });
   });
 });
