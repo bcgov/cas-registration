@@ -19,19 +19,19 @@ $function$
     execute format('create user mapping for current_user server import_server options (user %s, password %s)', quote_literal($4), quote_literal($5));
 
     -- Create report foreign table
-    execute format('
+    execute format($$
       create foreign table swrs_report (
         id                        integer,
         swrs_report_id            integer,
         swrs_facility_id          integer,
         swrs_organisation_id      integer,
         reporting_period_duration integer
-      ) server import_server options (schema_name %L, table_name %L)',
+      ) server import_server options (schema_name %L, table_name %L)$$,
       swrs_schema_name, 'report'
     );
 
     -- Create operator foreign table
-    execute format('
+    execute format($$
       create foreign table swrs_operator (
         id                        integer,
         report_id                 integer,
@@ -39,11 +39,11 @@ $function$
         business_legal_name       varchar(1000),
         english_trade_name        varchar(1000),
         cra_business_number       varchar(1000)
-      ) server import_server options (schema_name %L, table_name %L)',
+      ) server import_server options (schema_name %L, table_name %L)$$,
       swrs_schema_name, 'organisation'
     );
 
-    execute format('
+    execute format($$
       create foreign table swrs_address (
         id                                                  integer,
         report_id                                           integer,
@@ -81,11 +81,11 @@ $function$
         mailing_address_postal_code_zip_code                varchar(1000),
         mailing_address_country                             varchar(1000),
         mailing_address_additional_information              varchar(10000)
-      ) server import_server options (schema_name %L, table_name %L)',
+      ) server import_server options (schema_name %L, table_name %L)$$,
       swrs_schema_name, 'address'
     );
 
-    execute format('
+    execute format($$
       create foreign table swrs_facility (
         id                        integer,
         report_id                 integer,
@@ -94,19 +94,19 @@ $function$
         facility_name             varchar(1000),
         facility_type             varchar(1000),
         facility_bc_ghg_id        varchar(1000)
-      ) server import_server options (schema_name %L, table_name %L)',
+      ) server import_server options (schema_name %L, table_name %L)$$,
       swrs_schema_name, 'facility'
     );
 
-    execute format('
+    execute format($$
       create foreign table ciip_organisation (
         id integer,
         swrs_organisation_id integer
-      ) server import_server options (schema_name %L, table_name %L)',
+      ) server import_server options (schema_name %L, table_name %L)$$,
       ggircs_schema_name, 'organisation'
     );
 
-    execute format('
+    execute format($$
       create foreign table ciip_facility (
         id integer,
         organisation_id integer,
@@ -117,34 +117,34 @@ $function$
         facility_name varchar(1000),
         facility_type varchar(1000),
         bcghgid varchar(1000)
-      ) server import_server options (schema_name %L, table_name %L)',
+      ) server import_server options (schema_name %L, table_name %L)$$,
       ggircs_schema_name, 'facility'
     );
 
-    execute format('
+    execute format($$
       create foreign table ciip_application (
         id integer,
         swrs_report_id integer,
         facility_id integer
-      ) server import_server options (schema_name %L, table_name %L)',
+      ) server import_server options (schema_name %L, table_name %L)$$,
       ggircs_schema_name, 'application'
     );
 
-    execute format('
+    execute format($$
       create foreign table ciip_application_revision (
         application_id integer,
         version_number integer
-      ) server import_server options (schema_name %L, table_name %L)',
+      ) server import_server options (schema_name %L, table_name %L)$$,
       ggircs_schema_name, 'application_revision'
     );
 
-    execute format('
+    execute format($$
       create foreign table ciip_admin (
         application_id integer,
         version_number integer,
         operator_name varchar(1000),
         bc_corporate_registry_number varchar(1000)
-      ) server import_server options (schema_name %L, table_name %L)',
+      ) server import_server options (schema_name %L, table_name %L)$$,
       ggircs_schema_name, 'ciip_admin'
     );
 
