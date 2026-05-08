@@ -2,7 +2,7 @@ from typing import Literal, Optional, Tuple
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from service.report_person_responsible import ReportContactService
+from reporting.service.report_person_responsible import ReportContactService, ReportPersonResponsibleData
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from ..models import ReportPersonResponsible
@@ -37,5 +37,8 @@ def get_report_person_responsible_by_version_id(
 def save_report_contact(
     request: HttpRequest, version_id: int, payload: ReportPersonResponsibleIn
 ) -> tuple[Literal[201], ReportPersonResponsible]:
-    report_contact = ReportContactService.save_report_contact(version_id, payload)
+    report_contact = ReportContactService.save_report_contact(
+        version_id,
+        ReportPersonResponsibleData(**payload.model_dump()),
+    )
     return 201, report_contact

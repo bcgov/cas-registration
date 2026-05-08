@@ -26,7 +26,7 @@ export const personResponsibleSchema: RJSFSchema = {
         "Assign someone responsible for this report for the purpose of contacting",
     },
     person_responsible: {
-      type: "string",
+      type: "number",
       title: "Select contact if they are already a BCIERS user ",
     },
     sync_button: {

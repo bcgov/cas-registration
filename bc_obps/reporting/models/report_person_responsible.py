@@ -14,6 +14,16 @@ class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
         related_name="report_person_responsible",
         db_comment="The report version this person responsible applies to",
     )
+
+    contact = models.ForeignKey(
+        "registration.Contact",
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        related_name="report_person_responsibles",
+        db_comment="The source contact selected for this person responsible.",
+    )
+
     street_address = models.CharField(
         max_length=255,
         db_comment="The street address of the contact.",

@@ -10,14 +10,19 @@ import {
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import {
+  Contact,
+  ContactRow,
+} from "@reporting/src/app/components/operations/types";
 
 export default async function PersonResponsiblePage({
   version_id,
 }: HasReportVersion) {
-  // 🚀 Fetch async data for person responsible form
+  // Fetch facility report information required for navigation
   const facilityReport = await getFacilityReport(version_id);
   const facilityId = facilityReport.facility_id;
 
+  // Fetch task list/navigation information
   const navInfo = await getNavigationInformation(
     HeaderStep.OperationInformation,
     ReportingPage.PersonResponsible,
@@ -25,23 +30,50 @@ export default async function PersonResponsiblePage({
     facilityId,
   );
 
+  // Fetch currently available Registration contacts
   const contactData = await getContacts();
-  const personResponsibleData = await getReportingPersonResponsible(version_id);
 
-  // Determine selected contact if personResponsible exists
-  const selectedContact = contactData?.items.find(
-    (contact: { first_name: string; last_name: string }) =>
-      personResponsibleData?.first_name === contact.first_name &&
-      personResponsibleData?.last_name === contact.last_name,
-  );
+  // Fetch the saved report snapshot data for person responsible
+  const personResponsibleData: Contact | undefined =
+    await getReportingPersonResponsible(version_id);
 
-  const selectedContactId = selectedContact?.id;
+  // Current selectable contacts returned from Registration
+  const contacts: ContactRow[] = contactData?.items ?? [];
 
-  // Move schema creation to the server
+  // Saved reference to the originally selected contact
+  const savedContactId = personResponsibleData?.contact_id;
+
+  // Determine whether the saved contact still exists
+  const selectedContactExists =
+    savedContactId !== undefined &&
+    contacts.some((contact) => contact.id === savedContactId);
+
+  // If the original contact no longer exists, create a temporary
+  // snapshot-based dropdown option so the form can still display
+  const snapshotContactOption: ContactRow | undefined =
+    personResponsibleData &&
+    personResponsibleData.contact_id !== null &&
+    personResponsibleData.contact_id !== undefined &&
+    !selectedContactExists
+      ? {
+          id: personResponsibleData.contact_id,
+          first_name: personResponsibleData.first_name ?? "",
+          last_name: personResponsibleData.last_name ?? "",
+          email: personResponsibleData.email ?? "",
+        }
+      : undefined;
+
+  // Merge the snapshot contact into the available contact options
+  // so the previously selected value still appears in the dropdown
+  const contactsWithSnapshot: ContactRow[] = snapshotContactOption
+    ? [...contacts, snapshotContactOption]
+    : contacts;
+
+  // Create the schema server-side using the merged contact list
   const schema = createPersonResponsibleSchema(
     personResponsibleSchema,
-    contactData?.items ?? [],
-    selectedContactId,
+    contactsWithSnapshot,
+    savedContactId,
     personResponsibleData,
   );
 
@@ -49,10 +81,13 @@ export default async function PersonResponsiblePage({
     <PersonResponsibleForm
       versionId={version_id}
       navigationInformation={navInfo}
-      contacts={contactData}
+      contacts={{
+        items: contactsWithSnapshot,
+        count: contactsWithSnapshot.length,
+      }}
       personResponsible={personResponsibleData}
       schema={schema}
-      initialContactId={selectedContactId}
+      initialContactId={savedContactId}
     />
   );
 }

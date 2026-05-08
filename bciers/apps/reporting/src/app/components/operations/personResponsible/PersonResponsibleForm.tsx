@@ -19,14 +19,14 @@ import { AddressErrorWidget } from "@reporting/src/data/jsonSchema/personRespons
 import SnackBar from "@bciers/components/form/components/SnackBar";
 
 interface PersonResponsibleFormData {
-  person_responsible: string;
+  person_responsible: number | undefined;
 }
 
 interface Props {
   versionId: number;
   navigationInformation: NavigationInformation;
   contacts: { items: ContactRow[]; count: number } | null;
-  initialContactId: number;
+  initialContactId: number | undefined;
   personResponsible?: Contact | undefined;
   schema: RJSFSchema;
 }
@@ -49,6 +49,7 @@ const PersonResponsibleForm = ({
   initialContactId,
 }: Props) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const [componentState, setComponentState] = useState<ComponentState>({
     availableContacts: initialContacts,
@@ -56,9 +57,7 @@ const PersonResponsibleForm = ({
     contactToSubmit: personResponsible,
     schema: initialSchema,
     formData: {
-      person_responsible: personResponsible
-        ? `${personResponsible.first_name} ${personResponsible.last_name}`
-        : "",
+      person_responsible: initialContactId || undefined,
     },
     hasError: false,
   });
@@ -73,12 +72,7 @@ const PersonResponsibleForm = ({
     )
       return;
 
-    const newComponentState = {
-      ...componentState,
-      selectedContactId: newContactId,
-      contactToSubmit: newContact,
-      hasError: false,
-    };
+    const contactOptions = componentState.availableContacts?.items || [];
 
     if (newContactId !== undefined && newContact) {
       // Check if any address field is missing or empty
@@ -87,54 +81,74 @@ const PersonResponsibleForm = ({
         !newContact.municipality?.toString().trim() ||
         !newContact.province?.toString().trim() ||
         !newContact.postal_code?.toString().trim();
+
       const addressError = missingAddressInfo
         ? `Missing address information.  <a href="/administration/contacts/${newContact.id}?contacts_title=${newContact.first_name} ${newContact.last_name}/" target="_blank" rel="noopener noreferrer">Add contact's address information.</a>`
         : "";
 
-      const updatedSchema = createPersonResponsibleSchema(
-        personResponsibleSchema,
-        componentState?.availableContacts?.items || [],
-        newContactId,
-        newContact,
-        addressError,
-      );
+      setComponentState({
+        ...componentState,
+        selectedContactId: newContactId,
+        contactToSubmit: newContact,
+        hasError: Boolean(addressError),
+        schema: createPersonResponsibleSchema(
+          personResponsibleSchema,
+          contactOptions,
+          newContactId,
+          newContact,
+          addressError,
+        ),
+        formData: {
+          person_responsible: newContactId,
+        },
+      });
 
-      newComponentState.hasError = Boolean(addressError);
-      newComponentState.schema = updatedSchema;
-      newComponentState.formData = {
-        person_responsible: `${newContact.first_name || ""} ${
-          newContact.last_name || ""
-        }`.trim(),
-      };
-    } else {
-      newComponentState.formData = {
-        person_responsible: "",
-      };
+      return;
     }
 
-    setComponentState(newComponentState);
+    // Selection was cleared: remove selected contact AND clear contact details
+    const updatedContactOptions = contactOptions.filter(
+      (contact) => contact.id !== componentState.selectedContactId,
+    );
+
+    setComponentState({
+      ...componentState,
+      availableContacts: {
+        items: updatedContactOptions,
+        count: updatedContactOptions.length,
+      },
+      selectedContactId: undefined,
+      contactToSubmit: undefined,
+      hasError: false,
+      schema: createPersonResponsibleSchema(
+        personResponsibleSchema,
+        updatedContactOptions,
+      ),
+      formData: {
+        person_responsible: undefined,
+      },
+    });
   };
 
   const handleChange = async (data: object) => {
     const changeEvent = data as IChangeEvent<PersonResponsibleFormData>;
-    const selectedFullName = changeEvent.formData?.person_responsible;
+    const selectedContactId = changeEvent.formData?.person_responsible;
 
     // We ignore changes where the name didn't change
     // And we already have the data to submit
-    if (selectedFullName === componentState.formData.person_responsible) return;
+    if (selectedContactId === componentState.formData.person_responsible)
+      return;
 
     const selectedContact = componentState.availableContacts?.items.find(
-      (contact) =>
-        `${contact.first_name} ${contact.last_name}` === selectedFullName,
+      (contact) => contact.id === selectedContactId,
     );
 
     if (selectedContact) {
       const newContactFormData: Contact = await getContact(
-        `${selectedContact.id}`,
+        String(selectedContact.id),
       );
-      const newSelectedContactId = selectedContact.id;
 
-      updateContactShown(newSelectedContactId, newContactFormData);
+      updateContactShown(selectedContact.id, newContactFormData);
     } else {
       updateContactShown(undefined, undefined);
     }
@@ -149,8 +163,8 @@ const PersonResponsibleForm = ({
     const pathToRevalidate = `reporting/reports/${versionId}/person-responsible`;
     const method = "POST";
     const payload = {
-      report_version: versionId,
       ...componentState.contactToSubmit,
+      contact_id: componentState.selectedContactId,
     };
 
     const response = await actionHandler(endpoint, method, pathToRevalidate, {
@@ -167,41 +181,47 @@ const PersonResponsibleForm = ({
 
   const handleSync = async () => {
     const updatedContacts = await getContacts();
-    setIsSnackbarOpen(true);
-
     // If contact is selected, update form fields
     if (componentState.selectedContactId) {
+      setIsSnackbarOpen(true);
       // Fetch the updated contact info based on the current selected contact
-      const updatedContact: Contact = await getContact(
-        `${componentState.selectedContactId}`,
+      const updatedContactResponse = await getContact(
+        String(componentState.selectedContactId),
       );
+
+      // If the contact no longer exists,
+      // preserve the existing snapshot data
+      if (!updatedContactResponse || "error" in updatedContactResponse) {
+        setSnackbarMessage(
+          "This contact was deleted but the existing information entered has been saved,",
+        );
+
+        return;
+      }
+
+      const updatedContact: Contact = updatedContactResponse;
+
       // Update state with the updated contact information
+      const updatedSchema = createPersonResponsibleSchema(
+        personResponsibleSchema,
+        updatedContacts.items,
+        componentState.selectedContactId,
+        updatedContact,
+      );
+
       setComponentState({
         ...componentState,
+        availableContacts: updatedContacts,
         contactToSubmit: updatedContact,
+        schema: updatedSchema,
         formData: {
-          person_responsible:
-            `${updatedContact.first_name} ${updatedContact.last_name}`.trim(),
+          person_responsible: componentState.selectedContactId,
         },
       });
-    } else {
-      // If no contact is selected, reset form fields
-      setComponentState({
-        availableContacts: updatedContacts.items,
-        selectedContactId: undefined,
-        contactToSubmit: undefined,
-        hasError: false,
-        schema: createPersonResponsibleSchema(
-          personResponsibleSchema,
-          updatedContacts.items,
-        ),
-        formData: {
-          person_responsible: "",
-        },
-      });
+
+      setSnackbarMessage("Changes synced successfully.");
     }
   };
-
   return (
     <>
       <MultiStepFormWithTaskList
@@ -213,6 +233,12 @@ const PersonResponsibleForm = ({
         schema={componentState.schema}
         uiSchema={{
           ...personResponsibleUiSchema,
+          person_responsible: {
+            ...personResponsibleUiSchema.person_responsible,
+            "ui:enumNames": componentState.availableContacts?.items.map(
+              (contact) => `${contact.first_name} ${contact.last_name}`,
+            ),
+          },
           sync_button: {
             ...personResponsibleUiSchema.sync_button,
             "ui:options": {
@@ -237,8 +263,14 @@ const PersonResponsibleForm = ({
       />
       <SnackBar
         isSnackbarOpen={isSnackbarOpen}
-        message="Changes synced successfully"
-        setIsSnackbarOpen={setIsSnackbarOpen}
+        message={snackbarMessage}
+        setIsSnackbarOpen={(open) => {
+          setIsSnackbarOpen(open);
+
+          if (!open) {
+            setSnackbarMessage("");
+          }
+        }}
       />
     </>
   );

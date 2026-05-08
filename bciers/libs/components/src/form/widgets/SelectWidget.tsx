@@ -21,6 +21,12 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
   } = props;
   const placeholder = uiSchema?.["ui:placeholder"];
   const options = schema.enum as Array<string>;
+  const enumNames = (uiSchema?.["ui:enumNames"] as Array<string>) || [];
+
+  const getOptionLabel = (option: string) => {
+    const optionIndex = options.indexOf(option);
+    return enumNames[optionIndex] ?? option;
+  };
 
   const handleChange = (e: React.SyntheticEvent, option: string | null) => {
     onChange(option || "");
@@ -46,14 +52,14 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
       value={value || null}
       sx={styles}
       onChange={handleChange}
-      getOptionLabel={(option: string) => option}
+      getOptionLabel={getOptionLabel}
       renderInput={(params) => (
         <TextField {...params} data-testid={id} placeholder={placeholder} />
       )}
       renderOption={(renderProps, option: string) => {
         return (
           <li {...renderProps} key={option}>
-            {option}
+            {getOptionLabel(option)}
           </li>
         );
       }}
