@@ -180,7 +180,7 @@ describe("The TransferForm component", () => {
     expect(fetchOperationsPageData).toHaveBeenCalledTimes(1);
     expect(fetchOperationsPageData).toHaveBeenCalledWith({
       operator_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-      paginate_results: false,
+      paginate_result: false,
       sort_field: "operation__name",
       sort_order: "asc",
       end_date: true,
@@ -190,7 +190,7 @@ describe("The TransferForm component", () => {
     expect(fetchOperationsPageData).toHaveBeenCalledTimes(2);
     expect(fetchOperationsPageData).toHaveBeenCalledWith({
       operator_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea064",
-      paginate_results: false,
+      paginate_result: false,
       sort_field: "operation__name",
       sort_order: "asc",
       end_date: true,
@@ -220,7 +220,7 @@ describe("The TransferForm component", () => {
       expect(fetchFacilitiesPageData).toHaveBeenCalledWith(
         "8be4c7aa-6ab3-4aad-9206-0ef914fea065",
         {
-          paginate_results: false,
+          paginate_result: false,
           end_date: true,
           status: "Active",
         },

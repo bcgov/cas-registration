@@ -19,7 +19,6 @@ from registration.constants import DEFAULT_API_NAMESPACE
 from registration.models import Document
 from registration.models.operation import Operation
 
-
 logger = logging.getLogger(__name__)
 
 TModel = TypeVar('TModel', bound=models.Model)
@@ -153,7 +152,7 @@ class CustomPagination(PageNumberPagination):
         request: HttpRequest,
         **params: Any,
     ) -> Any:
-        paginate_result = params.get('paginate_result')
+        paginate_result = params.get('paginate_result', True)
         page_size = self.page_size if paginate_result else queryset.count()
         offset = (pagination.page - 1) * page_size
         return {

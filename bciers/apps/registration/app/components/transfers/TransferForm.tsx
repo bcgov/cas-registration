@@ -103,7 +103,7 @@ export default function TransferForm({
 
     const response: { rows: OperationRow[]; row_count: number } =
       await fetchOperationsPageData({
-        paginate_results: false,
+        paginate_result: false,
         operator_id: operatorId,
         sort_field: "operation__name",
         sort_order: "asc",
@@ -161,7 +161,7 @@ export default function TransferForm({
 
     const response: { rows: FacilityRow[]; row_count: number } =
       await fetchFacilitiesPageData(operationId, {
-        paginate_results: false,
+        paginate_result: false,
         end_date: true,
         status: "Active",
       });
