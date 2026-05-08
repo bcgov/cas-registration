@@ -12,6 +12,8 @@ backend:
 
   environment: test
 
+  deployRoute: true
+
   resources:
     limits:
       memory: 1024Mi
