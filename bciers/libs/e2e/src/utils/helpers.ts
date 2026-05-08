@@ -553,9 +553,8 @@ export async function selectItemFromAutocomplete(
   await option.click();
 }
 
-export function urlIsCorrect(page: Page, expectedPath: string) {
-  const currentUrl = page.url();
-  expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
+export async function urlIsCorrect(page: Page, expectedPath: string) {
+  await expect(page).toHaveURL(expectedPath, { ignoreCase: true });
 }
 
 // 🛠️ Function: checks if the breadcrumb contains the specified text using getByText

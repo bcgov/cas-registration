@@ -4,6 +4,7 @@ import { DashboardPOM } from "@/dashboard-e2e/poms/dashboard";
 import {
   analyzeAccessibility,
   takeStabilizedScreenshot,
+  urlIsCorrect,
 } from "@bciers/e2e/utils/helpers";
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { linkIsVisible } from "@bciers/e2e/utils/helpers";
@@ -44,6 +45,7 @@ userRoles.forEach((role) => {
       // 🛸 Navigate to dashboard page
       const dashboardPage = new DashboardPOM(page);
       await dashboardPage.route();
+      await urlIsCorrect(page, dashboardPage.url);
       let component = "";
 
       component = `Main Dashboard for ${role.toUpperCase()}`;

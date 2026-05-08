@@ -729,7 +729,7 @@ describe("FacilityForm component", () => {
       await fillMandatoryFields(facilitiesLfoSchema);
       await checkMandatoryFieldValues(facilitiesLfoSchema);
       await fillOptionalFields(facilitiesLfoSchema);
-      await checkOptionalFieldValues();
+      checkOptionalFieldValues();
 
       // submit valid form data, assert response
       await assertFormPost(lfoResponsePost);

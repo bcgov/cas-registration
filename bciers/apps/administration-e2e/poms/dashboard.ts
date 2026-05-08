@@ -3,7 +3,7 @@
  * Page objects model (POM) simplify test authoring by creating a higher-level API
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
-import { Locator, Page, expect } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 // ☰ Enums
 import { AppRoute, DashboardTileText } from "@/administration-e2e/utils/enums";
 
@@ -39,13 +39,5 @@ export class DashboardPOM {
 
   async clickSelectOperatorTile() {
     await this.selectOperatorTile.click();
-  }
-
-  // ###  Assertions ###
-
-  async urlIsCorrect() {
-    const path = this.url;
-    const currentUrl = this.page.url();
-    expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
 }

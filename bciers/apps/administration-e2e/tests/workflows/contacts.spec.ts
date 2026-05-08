@@ -7,6 +7,7 @@ import {
   clickButton,
   stabilizeGrid,
   assertSuccessfulSnackbar,
+  urlIsCorrect,
 } from "@bciers/e2e/utils/helpers";
 import { FrontendMessages } from "@bciers/utils/src/enums";
 import { ContactsPOM } from "@/administration-e2e/poms/contacts";
@@ -20,6 +21,7 @@ test.describe("Test add/edit contact", () => {
     // 🛸 Navigate to contacts page
     const contactsPage = new ContactsPOM(page);
     await contactsPage.route();
+    await urlIsCorrect(page, contactsPage.url);
 
     // Add a new contact
     await contactsPage.clickAddButton();

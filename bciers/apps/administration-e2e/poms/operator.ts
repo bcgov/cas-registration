@@ -6,6 +6,7 @@
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import {
+  AppRoute,
   OperatorButtonText,
   OperatorE2EValue,
   OperatorFormField,
@@ -23,6 +24,8 @@ import {
  */
 export class OperatorPOM {
   readonly page: Page;
+
+  readonly url: string = process.env.E2E_BASEURL + AppRoute.OPERATOR_SELECT;
 
   // Button Locators
 
@@ -474,10 +477,5 @@ export class OperatorPOM {
 
   async msgSelectOpertorIsVisible() {
     await expect(this.messageSelectOperator).toBeVisible();
-  }
-
-  async urlIsCorrect(expectedPath: string) {
-    const currentUrl = this.page.url();
-    expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
   }
 }
