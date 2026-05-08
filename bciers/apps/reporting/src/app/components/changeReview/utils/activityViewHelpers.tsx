@@ -1,4 +1,5 @@
 import {
+  compareMethodologyKeys,
   formatKey,
   singularizeLabel,
 } from "@reporting/src/app/components/shared/activityRenderUtils";
@@ -329,6 +330,14 @@ export const renderDiffTree = (items: SegmentedChange[]): React.ReactNode => {
         children: [{ segs: childSegs, change: item.change }],
       });
     }
+  }
+
+  // Sort methodology period (months/quarters) chronologically
+  const methodologyGroup = grouped.get("methodology");
+  if (methodologyGroup) {
+    methodologyGroup.children.sort((a, b) =>
+      compareMethodologyKeys(a.segs[0] ?? "", b.segs[0] ?? ""),
+    );
   }
 
   return (
