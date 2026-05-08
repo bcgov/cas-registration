@@ -19,6 +19,7 @@ export enum FacilityIDs {
   NO_OBLIGATION = "2",
   BUGLE_SFO = "f486f2fb-62ed-438d-bb3e-0819b51e3aff",
   BEES_LFO = "d477f3d9-2917-4f36-b5ae-166d47dc8172",
+  BANANA_LFO_1 = "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
 }
 
 // Report workflow routes
@@ -83,7 +84,7 @@ export const OPERATION_NAMES = {
   OBLIGATION_NOT_MET: "Compliance SFO - Obligation not met",
   EARNED_CREDITS: "Compliance SFO - Earned credits",
   NO_OBLIGATION: "Compliance SFO - No obligation",
-  BANANA_LFO: "Banana LFO - Registered - name from admin",
+  BANANA_LFO: "Banana LFO - Registered",
   BANGLES_SFO: "Bangles SFO - Registered - has Multiple Operators",
   BUGLE_SFO: "Bugle SFO - Registered",
   BEES_LFO: "Bees LFO - Registered - name from admin",
