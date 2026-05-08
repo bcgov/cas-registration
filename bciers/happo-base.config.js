@@ -11,6 +11,7 @@ const targetConfig = {
   viewport: VIEWPORT,
   maxHeight: MAXHEIGHT,
   chunks: CHUNKS,
+  hideBehavior: "ignore",
 };
 
 const baseConfig = {
