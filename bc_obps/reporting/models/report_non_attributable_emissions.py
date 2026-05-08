@@ -1,5 +1,4 @@
 from django.db import models
-
 from registration.models import TimeStampedModel
 from reporting.models import ReportVersion, FacilityReport
 from reporting.models.emission_category import EmissionCategory

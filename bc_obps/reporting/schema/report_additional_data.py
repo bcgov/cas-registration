@@ -1,18 +1,12 @@
 from typing import Optional
-
 from ninja import ModelSchema
 from pydantic import alias_generators
-
 from reporting.models import ReportAdditionalData
-
-
-def to_snake(string: str) -> str:
-    return alias_generators.to_snake(string)
 
 
 class ReportAdditionalDataOut(ModelSchema):
     class Meta:
-        alias_generator = to_snake
+        alias_generator = alias_generators.to_snake
         model = ReportAdditionalData
         fields = [
             'capture_emissions',
@@ -36,7 +30,7 @@ class ReportAdditionalDataIn(ModelSchema):
     electricity_generated: Optional[int] = None
 
     class Meta:
-        alias_generator = to_snake
+        alias_generator = alias_generators.to_snake
         model = ReportAdditionalData
         fields = [
             'capture_emissions',
