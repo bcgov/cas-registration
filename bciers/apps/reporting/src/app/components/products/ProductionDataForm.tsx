@@ -66,12 +66,12 @@ const ProductionDataForm: React.FC<Props> = ({
   const [formData, setFormData] = useState<any>(initialFormData);
   const [errors, setErrors] = useState<string[]>();
 
-  // Short circuit to allow LFO facilities to continue past this form without a regulated product selected
+  // Short circuit to allow LFO facilities to continue past this form without a regulated product to select
   if (
     ["Small Aggregate", "Medium Facility", "Large Facility"].includes(
       facilityType,
     ) &&
-    formData.product_selection.length < 1
+    allowedProducts.length < 1
   ) {
     return (
       <MultiStepFormWithTaskList
