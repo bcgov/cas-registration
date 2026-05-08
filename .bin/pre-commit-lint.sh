@@ -12,4 +12,4 @@ fi
 
 # Use stream output style to avoid TTY requirements entirely.
 # See: https://github.com/nrwl/nx/issues/31484
-NODE_OPTIONS="--max-old-space-size=5120" yarn nx affected --base=origin/develop --target=lint --parallel --output-style=stream
+NODE_OPTIONS="--max-old-space-size=5120" yarn nx affected --base=origin/develop --target=lint --parallel --output-style=stream --quiet
