@@ -61,10 +61,17 @@ const mockTaskListElements = [
   { type: "Page", title: "Person Responsible", isActive: true },
 ];
 const mockContactData = {
-  items: [{ id: 1, first_name: "John", last_name: "Doe" }],
+  items: [
+    { id: 1, first_name: "John", last_name: "Doe", email: "john@example.com" },
+  ],
   count: 1,
 };
-const mockPersonResponsibleData = { first_name: "John", last_name: "Doe" };
+const mockPersonResponsibleData = {
+  contact_id: 1,
+  first_name: "John",
+  last_name: "Doe",
+  email: "john@example.com",
+};
 const mockSchema = { type: "object", properties: {} };
 
 // Default props
@@ -95,10 +102,148 @@ describe("PersonResponsiblePage component", () => {
       mockVersionId,
     );
     expect(mockGetContacts).toHaveBeenCalledTimes(1);
-    expect(mockCreatePersonResponsibleSchema).toHaveBeenCalledTimes(1);
+
+    expect(mockCreatePersonResponsibleSchema).toHaveBeenCalledWith(
+      expect.any(Object),
+      mockContactData.items,
+      1,
+      mockPersonResponsibleData,
+    );
 
     await waitFor(() => {
       expect(screen.getByText(/Person Responsible/)).toBeVisible();
     });
+  });
+
+  it("preserves deleted snapshot contact in dropdown when person_responsible still references it", async () => {
+    mockGetContacts.mockResolvedValueOnce({
+      items: [
+        {
+          id: 2,
+          first_name: "Jane",
+          last_name: "Smith",
+          email: "jane@example.com",
+        },
+      ],
+      count: 1,
+    });
+
+    mockGetReportingPersonResponsible.mockResolvedValueOnce({
+      contact_id: 1,
+      first_name: "John",
+      last_name: "Doe",
+      email: "john@example.com",
+    });
+
+    render(await PersonResponsiblePage({ version_id: mockVersionId }));
+
+    expect(mockCreatePersonResponsibleSchema).toHaveBeenCalledWith(
+      expect.any(Object),
+      [
+        {
+          id: 2,
+          first_name: "Jane",
+          last_name: "Smith",
+          email: "jane@example.com",
+        },
+        {
+          id: 1,
+          first_name: "John",
+          last_name: "Doe",
+          email: "john@example.com",
+        },
+      ],
+      1,
+      {
+        contact_id: 1,
+        first_name: "John",
+        last_name: "Doe",
+        email: "john@example.com",
+      },
+    );
+  });
+
+  it("does not preserve deleted snapshot contact to dropdown after user clears person_responsible selection", async () => {
+    mockGetContacts.mockResolvedValueOnce({
+      items: [
+        {
+          id: 2,
+          first_name: "Jane",
+          last_name: "Smith",
+          email: "jane@example.com",
+        },
+      ],
+      count: 1,
+    });
+
+    mockGetReportingPersonResponsible.mockResolvedValueOnce({
+      contact_id: null,
+      first_name: "John",
+      last_name: "Doe",
+      email: "john@example.com",
+    });
+
+    render(await PersonResponsiblePage({ version_id: mockVersionId }));
+
+    expect(mockCreatePersonResponsibleSchema).toHaveBeenCalledWith(
+      expect.any(Object),
+      [
+        {
+          id: 2,
+          first_name: "Jane",
+          last_name: "Smith",
+          email: "jane@example.com",
+        },
+      ],
+      null,
+      {
+        contact_id: null,
+        first_name: "John",
+        last_name: "Doe",
+        email: "john@example.com",
+      },
+    );
+  });
+
+  it("does not add snapshot contact to dropdown options when saved contact already exists", async () => {
+    mockGetContacts.mockResolvedValueOnce({
+      items: [
+        {
+          id: 1,
+          first_name: "John",
+          last_name: "Doe",
+          email: "john@example.com",
+        },
+      ],
+      count: 1,
+    });
+
+    mockGetReportingPersonResponsible.mockResolvedValueOnce({
+      contact_id: 1,
+      first_name: "John",
+      last_name: "Doe",
+      email: "john@example.com",
+    });
+
+    render(await PersonResponsiblePage({ version_id: mockVersionId }));
+
+    expect(mockCreatePersonResponsibleSchema).toHaveBeenCalledWith(
+      expect.any(Object),
+      [
+        {
+          id: 1,
+          first_name: "John",
+          last_name: "Doe",
+          email: "john@example.com",
+        },
+      ],
+      1,
+      {
+        contact_id: 1,
+        first_name: "John",
+        last_name: "Doe",
+        email: "john@example.com",
+      },
+    );
   });
 });
