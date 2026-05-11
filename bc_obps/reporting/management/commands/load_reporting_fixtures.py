@@ -69,27 +69,41 @@ class Command(BaseCommand):
         reports_fixture = f'{self.fixture_base_dir}/report.json'
         with open(reports_fixture) as f:
             reports = json.load(f)
-            current_year_minus_one = date.today().year - 1
+            current_reporting_year = date.today().year - 1
             reports_to_create = []
 
             for report in reports:
                 reports_to_create.append(report)
+                # Create a duplicate report in the current reporting year for each 2024 report
                 if str(report['fields']['reporting_year_id']) == '2023':
+                    duplicate_exists_in_db = Report.objects.filter(
+                        operation_id=report['fields']['operation_id'],
+                        reporting_year_id=current_reporting_year,
+                    ).exists()
+                    if duplicate_exists_in_db:
+                        continue
+
                     duplicated_report = {
                         **report,
                         'fields': {
                             **report['fields'],
-                            'reporting_year_id': current_year_minus_one,
+                            'reporting_year_id': current_reporting_year,
                         },
                     }
                     reports_to_create.append(duplicated_report)
 
             reporting_year_ids = {int(report['fields']['reporting_year_id']) for report in reports_to_create}
             for reporting_year_id in reporting_year_ids:
-                self.ensure_reporting_year_exists(reporting_year_id)
+                self.ensure_temporal_objects_exist(reporting_year_id)
 
             report_version_ids = []
             for report in reports_to_create:
+                duplicate_exists_in_db = Report.objects.filter(
+                    operation_id=report['fields']['operation_id'],
+                    reporting_year_id=current_reporting_year,
+                ).exists()
+                if duplicate_exists_in_db:
+                    continue
                 report_version_id = ReportService.create_report(
                     operation_id=report['fields']['operation_id'],
                     reporting_year=report['fields']['reporting_year_id'],
@@ -120,8 +134,6 @@ class Command(BaseCommand):
         if created:
             self.stdout.write(self.style.WARNING(f"Created missing reporting year: {reporting_year_id}"))
 
-        self.ensure_compliance_period_exists(reporting_year_id)
-
     def ensure_compliance_period_exists(self, reporting_year_id: int):
         _, created = CompliancePeriod.objects.get_or_create(
             reporting_year_id=reporting_year_id,
@@ -136,6 +148,10 @@ class Command(BaseCommand):
 
         if created:
             self.stdout.write(self.style.WARNING(f"Created missing compliance period: {reporting_year_id}"))
+
+    def ensure_temporal_objects_exist(self, reporting_year_id: int):
+        self.ensure_reporting_year_exists(reporting_year_id)
+        self.ensure_compliance_period_exists(reporting_year_id)
 
     def submit_reports(self):
         operation_ids_to_submit = [
