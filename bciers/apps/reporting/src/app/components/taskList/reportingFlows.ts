@@ -45,7 +45,10 @@ const reportingFlowLookup: Record<string, Record<string, ReportingFlow>> = {
   },
 };
 
-const newCasesPurposes = [POTENTIAL_REPORTING_OPERATION, OPTED_IN_OPERATION];
+const newCasesPurposes = new Set([
+  POTENTIAL_REPORTING_OPERATION,
+  OPTED_IN_OPERATION,
+]);
 
 /**
  * Resolves the appropriate ReportingFlow based on operation type and registration purpose.
@@ -65,7 +68,7 @@ function resolveFlow(
   if (registrationPurpose === ELECTRICITY_IMPORT_OPERATION)
     return ReportingFlow.EIO;
 
-  const isNewCasePurpose = newCasesPurposes.includes(registrationPurpose);
+  const isNewCasePurpose = newCasesPurposes.has(registrationPurpose);
   const operationFlow = reportingFlowLookup[operationType];
 
   if (operationFlow) {
