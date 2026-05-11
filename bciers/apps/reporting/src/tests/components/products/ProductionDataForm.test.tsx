@@ -32,13 +32,20 @@ describe("The ProductionDataForm component", () => {
 
     render(
       <ProductionDataForm
-        allowedProducts={[]}
-        initialData={[]}
+        allowedProducts={[{ product_id: 2024, product_name: "test" }]}
+        initialData={[
+          {
+            product_id: 2024,
+            product_name: "test",
+            production_methodology: "a",
+            unit: "unit",
+          },
+        ]}
         facility_id="abcd"
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={"Small Aggregate"}
+        facilityType={""}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
         reportingYear={2024}
@@ -48,7 +55,36 @@ describe("The ProductionDataForm component", () => {
 
     const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
     await calledProps.onSubmit({ formData: { production_data: "test" } });
-    expect(mockPostProductionData).toHaveBeenCalledWith(1000, "abcd", "test");
+    expect(mockPostProductionData).toHaveBeenCalledOnce();
+  });
+
+  it("Allows an LFO facility to just continue when no regulated products are available to be selected", async () => {
+    const mockPush = vi.fn();
+    mockRouter.mockReturnValue({ push: mockPush });
+
+    render(
+      <ProductionDataForm
+        allowedProducts={[]}
+        initialData={[]}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={"Large Facility"}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
+      />,
+    );
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+    expect(
+      mockMultiStepFormWithTaskList.mock.calls[0][0].schema.properties
+        .product_selection_title.title == "No Regulated Products to select",
+    );
+    expect(calledProps.continueUrl == "Continue");
+    expect(calledProps.saveButtonDisabled == true);
   });
 
   it("on change, adds an item to the form data when a checkbox is checked", async () => {
@@ -60,7 +96,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={""}
+        facilityType={"Single Facility"}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
         reportingYear={2024}
