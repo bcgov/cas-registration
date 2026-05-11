@@ -38,6 +38,7 @@ test.describe("LFO: view a submitted report for the current reporting year", () 
     await grid.viewDetailsFromFacilityGrid(
       "Facility 1",
       FacilityIDs.BANANA_LFO_1,
+      isExternalUser,
     );
     await grid.verifyFacilitySubmittedReportView("Facility 1");
     await takeStabilizedScreenshot(happoScreenshot, page, {
@@ -81,6 +82,7 @@ test.describe("LFO: view a submitted report for the current reporting year", () 
           await grid.viewDetailsFromFacilityGrid(
             "Facility 1",
             FacilityIDs.BANANA_LFO_1,
+            isExternalUser,
           );
           await grid.verifyFacilitySubmittedReportView("Facility 1");
           await takeStabilizedScreenshot(happoScreenshot, page, {
