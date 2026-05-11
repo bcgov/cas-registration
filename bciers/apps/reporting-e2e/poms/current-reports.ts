@@ -4,6 +4,7 @@ import {
   AttachmentCheckboxLabel,
   FacilityIDs,
   OPERATION_NAMES,
+  REPORT_STATUS,
   ReportIDs,
   ReportRoutes,
   SignOffCheckboxLabel,
@@ -187,7 +188,7 @@ export class CurrentReportsPOM {
       .first();
 
     await expect(row).toBeVisible();
-    this.clickViewReportDetails(row, isExternalUser);
+    await this.clickViewReportDetails(row, isExternalUser);
   }
   /**
    * Clicks the "View Details" button for a specific report version in the report history page, based on the version number.
@@ -202,7 +203,7 @@ export class CurrentReportsPOM {
       .filter({ hasText: versionName })
       .first();
     await expect(row).toBeVisible();
-    this.clickViewReportDetails(row);
+    await this.clickViewReportDetails(row);
   }
 
   /**
@@ -212,12 +213,14 @@ export class CurrentReportsPOM {
   async viewDetailsFromFacilityGrid(
     facilityName: string,
     facilityId: string,
+    isExternalUser: boolean = true,
   ): Promise<void> {
     const row = this.page
       .getByRole("row")
       .filter({ hasText: facilityName })
       .first();
-    this.clickViewFacilityReportDetails(row, facilityId);
+    await expect(row).toBeVisible();
+    await this.clickViewFacilityReportDetails(row, facilityId, isExternalUser);
   }
 
   /***
@@ -337,7 +340,7 @@ export class CurrentReportsPOM {
 
   async verifyReportStatus(
     operationName: string,
-    expectedStatus: string,
+    expectedStatus: REPORT_STATUS,
   ): Promise<void> {
     await waitForGridReady(this.page);
     const row = this.page
@@ -346,9 +349,11 @@ export class CurrentReportsPOM {
       .first();
     await expect(row).toBeVisible();
     await expect(row.getByText(expectedStatus)).toBeVisible();
-    await expect(
-      row.getByRole("button", { name: ACTION_BUTTON_TEXT.VIEW_DETAILS }),
-    ).toBeVisible();
+    if (expectedStatus === REPORT_STATUS.SUBMITTED) {
+      await expect(
+        row.getByRole("button", { name: ACTION_BUTTON_TEXT.VIEW_DETAILS }),
+      ).toBeVisible();
+    }
   }
 
   // -----------------
@@ -397,46 +402,56 @@ export class CurrentReportsPOM {
     const viewReportDetailsButton = row.getByRole("button", {
       name: new RegExp(
         isExternalUser
-          ? ACTION_BUTTON_TEXT.VIEW_DETAILS
+          ? ACTION_BUTTON_TEXT.VIEW_DETAILS + "$"
           : ACTION_BUTTON_TEXT.VIEW_REPORT + "$",
         "i",
       ),
     });
     await expect(viewReportDetailsButton).toBeVisible();
     await expect(viewReportDetailsButton).toBeEnabled();
-    await viewReportDetailsButton.click({ delay: 1000 });
-    await viewReportDetailsButton.click();
 
     const viewReportRoute = isExternalUser
       ? ReportRoutes.SUBMITTED_REPORT
       : ReportRoutes.ANNUAL_REPORT;
-    await expect(this.page).toHaveURL(
-      new RegExp(
-        String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${viewReportRoute}$`,
-        "i",
-      ),
-      { timeout: 30_000 },
+
+    const routeRegex = new RegExp(
+      String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${viewReportRoute}`,
+      "i",
     );
+
+    await expect(async () => {
+      await viewReportDetailsButton.click({ trial: true });
+    }).toPass({ timeout: 1000 });
+
+    await viewReportDetailsButton.click();
+    await expect(this.page).toHaveURL(routeRegex, { timeout: 15_000 });
   }
 
   private async clickViewFacilityReportDetails(
     row: Locator,
     facilityId: string,
+    isExternalUser: boolean = true,
   ): Promise<void> {
-    const viewFacilityReportDetailsButton = row.getByTestId(
-      `view-details-${facilityId}`,
-    );
+    const viewFacilityReportDetailsButton = row.getByRole("button", {
+      name: new RegExp(ACTION_BUTTON_TEXT.VIEW_DETAILS, "i"),
+    });
     await expect(viewFacilityReportDetailsButton).toBeVisible();
     await expect(viewFacilityReportDetailsButton).toBeEnabled();
-    await viewFacilityReportDetailsButton.click({ delay: 1000 });
-
-    await expect(this.page).toHaveURL(
-      new RegExp(
-        String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/annual-report/facility/${facilityId}`,
-        "i",
-      ),
-      { timeout: 30_000 },
+    const viewReportRoute = isExternalUser
+      ? ReportRoutes.SUBMITTED_REPORT
+      : ReportRoutes.ANNUAL_REPORT;
+    const viewFacilityReportRoute = facilityId ? `facility/${facilityId}` : "";
+    const routeRegex = new RegExp(
+      String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${viewReportRoute}/${viewFacilityReportRoute}`,
+      "i",
     );
+
+    await expect(async () => {
+      await viewFacilityReportDetailsButton.click({ trial: true });
+    }).toPass({ timeout: 1000 });
+    await this.page.waitForTimeout(1000); // TODO: figure out why this won't work without the wait
+    await viewFacilityReportDetailsButton.click();
+    await expect(this.page).toHaveURL(routeRegex, { timeout: 15_000 });
   }
 
   private extractReportVersionIdFromUrl(
@@ -468,16 +483,25 @@ export class CurrentReportsPOM {
     const operationSearchField = this.page
       .getByRole("columnheader", { name: "Operation search field" })
       .getByPlaceholder("Search");
-    operationSearchField.fill(operationName);
+    await operationSearchField.fill(operationName);
 
     await expect(operationSearchField).toHaveValue(operationName);
 
-    const row = await this.page
+    await this.page.waitForURL(
+      (u) =>
+        u.searchParams.get("operation_name") === operationName &&
+        /\/current-reports\/?$/i.test(u.pathname),
+      { timeout: 10_000 },
+    );
+
+    await waitForGridReady(this.page);
+
+    const row = this.page
       .getByRole("row")
       .filter({ hasText: operationName })
-      .all();
+      .first();
 
-    expect(row.length).toBeGreaterThanOrEqual(1);
+    await expect(row).toBeVisible({ timeout: 30_000 });
   }
 
   /**
