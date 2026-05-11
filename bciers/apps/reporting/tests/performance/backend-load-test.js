@@ -1,4 +1,3 @@
-/* eslint-disable */
 import exec from "k6/execution";
 import { facilities, facility, report } from "./scenarios/backend/index.js";
 

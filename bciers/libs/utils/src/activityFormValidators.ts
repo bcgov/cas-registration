@@ -86,24 +86,30 @@ export const validateEmissionsMethodology = (
     );
   };
 
+  const validateEmissionsForUnit = (unit: any, unitErrors: any): void => {
+    if (!unit || !unitErrors) return;
+
+    // Units -> Fuels -> Emissions
+    validateEmissionsForItems(
+      unit.fuels,
+      (fuel: any) => fuel.emissions,
+      (fuelIdx) => (idx) => unitErrors.fuels?.[fuelIdx]?.emissions?.[idx],
+    );
+
+    // Units -> Emissions
+    validateEmissionsArray(
+      unit.emissions,
+      (idx) => unitErrors.emissions?.[idx],
+    );
+  };
+
   Object.entries(sourceTypes).forEach(([sourceKey, sourceType]) => {
     const sourceErrors = (errors as any)?.sourceTypes?.[sourceKey];
     if (!sourceType || !sourceErrors) return;
 
     // Validate emissions at different levels
     sourceType.units?.forEach((unit: any, unitIdx: number) => {
-      // Units -> Fuels -> Emissions
-      validateEmissionsForItems(
-        unit.fuels,
-        (fuel: any) => fuel.emissions,
-        (fuelIdx) => (idx) =>
-          sourceErrors.units?.[unitIdx]?.fuels?.[fuelIdx]?.emissions?.[idx],
-      );
-      // Units -> Emissions
-      validateEmissionsArray(
-        unit.emissions,
-        (idx) => sourceErrors.units?.[unitIdx]?.emissions?.[idx],
-      );
+      validateEmissionsForUnit(unit, sourceErrors.units?.[unitIdx]);
     });
 
     // Fuels -> Emissions
