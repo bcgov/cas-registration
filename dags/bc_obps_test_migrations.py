@@ -25,6 +25,8 @@ BACKEND_CHART_SHORTNAME = os.getenv("BACKEND_CHART_SHORTNAME", "be-migration-tes
 BACKEND_CHART = "cas-registration/cas-obps-backend-migration-test"
 BACKEND_CHART_TAG = os.getenv("BACKEND_CHART_TAG")
 
+# Jinja (runtime) template constant
+DESTINATION_NAMESPACE_TEMPLATE = "{{ params.destination_namespace }}"
 
 default_args = {**default_dag_args, "start_date": TWO_DAYS_AGO}
 
@@ -66,7 +68,7 @@ def test_migrations(
     postgres_helm_install = KubernetesJobOperator(
         task_id="install-cas-obps-postgres-migration-test-chart",
         name="install-cas-obps-postgres-migration-test-chart",
-        namespace="{{ params.destination_namespace }}",
+        namespace=DESTINATION_NAMESPACE_TEMPLATE,
         service_account_name=SERVICE_ACCOUNT_NAME,
         image=K8S_IMAGE,
         env_vars={"HOME": "/tmp"},  # nosec B108
@@ -105,7 +107,7 @@ def test_migrations(
     backend_helm_install = KubernetesJobOperator(
         task_id="install-cas-obps-backend-migration-test-chart",
         name="install-cas-obps-backend-migration-test-chart",
-        namespace="{{ params.destination_namespace }}",
+        namespace=DESTINATION_NAMESPACE_TEMPLATE,
         service_account_name=SERVICE_ACCOUNT_NAME,
         image=K8S_IMAGE,
         env_vars={"HOME": "/tmp"},  # nosec B108
@@ -141,7 +143,7 @@ def test_migrations(
     uninstall_postgres_helm_charts = KubernetesJobOperator(
         task_id="uninstall-postgres-helm-charts",
         name="uninstall-postgres-helm-charts",
-        namespace="{{ params.destination_namespace }}",
+        namespace=DESTINATION_NAMESPACE_TEMPLATE,
         service_account_name=SERVICE_ACCOUNT_NAME,
         image=K8S_IMAGE,
         cmds=["bash", "-c"],
@@ -156,7 +158,7 @@ def test_migrations(
     uninstall_backend_helm_charts = KubernetesJobOperator(
         task_id="uninstall-backend-helm-charts",
         name="uninstall-backend-helm-charts",
-        namespace="{{ params.destination_namespace }}",
+        namespace=DESTINATION_NAMESPACE_TEMPLATE,
         service_account_name=SERVICE_ACCOUNT_NAME,
         image=K8S_IMAGE,
         cmds=["bash", "-c"],
