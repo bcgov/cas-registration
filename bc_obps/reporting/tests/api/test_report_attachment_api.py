@@ -1,3 +1,4 @@
+import pytest
 from unittest.mock import ANY, call, patch, MagicMock
 from django.core.files.base import ContentFile
 from model_bakery.baker import make_recipe
@@ -12,6 +13,7 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
     def setup_method(self):
         self.report_version = make_recipe("reporting.tests.utils.report_version")
         self.endpoint_under_test = f"/api/reporting/report-version/{self.report_version.id}/attachments"
+        self.file_url_endpoint = f"{self.endpoint_under_test}/1234"
 
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
@@ -93,10 +95,12 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
     @patch(
         "reporting.service.report_attachment_service.ReportAttachmentService.get_attachment_confirmation", autospec=True
     )
-    def test_get_attachments_returns_expected_schema(
+    @pytest.mark.parametrize("role", ["industry_user", "cas_admin"])
+    def test_get_attachments_returns_expected_schema_for_authorized_roles(
         self,
         mock_get_confirmation: MagicMock,
         mock_get_attachments: MagicMock,
+        role: str,
     ):
         # Arrange: fake attachment and confirmation
         fake_attachment = ReportAttachment(
@@ -114,12 +118,11 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
             confirm_supplementary_required_attachments_uploaded=True,
         )
 
-        TestUtils.save_app_role(self, "industry_user")
-
         # Act
-        response = TestUtils.client.get(
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            role,
             self.endpoint_under_test,
-            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
         # Assert
@@ -137,8 +140,35 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
                 "confirm_supplementary_required_attachments_uploaded": True,
             },
         }
+
         mock_get_attachments.assert_called_once_with(self.report_version.id)
         mock_get_confirmation.assert_called_once_with(self.report_version.id)
+
+    @patch(
+        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachment",
+        autospec=True,
+    )
+    @pytest.mark.parametrize("role", ["industry_user", "cas_admin"])
+    def test_get_file_url(
+        self,
+        mock_get_attachment: MagicMock,
+        role: str,
+    ):
+        mock_attachment = MagicMock()
+        mock_attachment.get_file_url.return_value = "this is a very fake url"
+
+        mock_get_attachment.return_value = mock_attachment
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            role,
+            self.file_url_endpoint,
+        )
+
+        mock_get_attachment.assert_called_with(self.report_version.id, 1234)
+
+        assert response.status_code == 200
+        assert response.json() == "this is a very fake url"
 
     @patch(
         "reporting.service.report_attachment_service.ReportAttachmentService.save_attachment_confirmation",
@@ -171,25 +201,6 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         assert response.status_code == 500
         mock_set_attachment.assert_not_called()
         mock_get_attachments.assert_not_called()
-
-    @patch(
-        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachment",
-        autospec=True,
-    )
-    def test_get_file_url(self, mock_get_attachment: MagicMock):
-        mock_attachment = MagicMock()
-        mock_attachment.get_file_url.return_value = "this is a very fake url"
-
-        mock_get_attachment.return_value = mock_attachment
-
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            f"/api/reporting/report-version/{self.report_version.id}/attachments/1234",
-        )
-
-        mock_get_attachment.assert_called_with(self.report_version.id, 1234)
-        assert response.json() == "this is a very fake url"
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_report_attachments")

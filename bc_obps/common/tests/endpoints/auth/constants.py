@@ -149,11 +149,6 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_report_attachments",
-            "kwargs": {"version_id": MOCK_INT},
-        },
-        {
-            "method": "get",
             "endpoint_name": "get_emission_allocations",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
@@ -548,11 +543,6 @@ ENDPOINTS = {
             "kwargs": {"version_id": MOCK_INT},
         },
         {
-            "method": "get",
-            "endpoint_name": "get_report_attachment_url",
-            "kwargs": {"version_id": MOCK_INT, "file_id": MOCK_INT},
-        },
-        {
             "method": "delete",
             "endpoint_name": "delete_report_version",
             "kwargs": {"version_id": MOCK_INT},
@@ -620,6 +610,16 @@ ENDPOINTS = {
             "method": "get",
             "endpoint_name": "generate_compliance_report_version_late_submission_penalty_invoice",
             "kwargs": {"compliance_report_version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_attachments",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_attachment_url",
+            "kwargs": {"version_id": MOCK_INT, "file_id": MOCK_INT},
         },
     ],
     "authorized_irc_user_and_industry_admin_user": [],
