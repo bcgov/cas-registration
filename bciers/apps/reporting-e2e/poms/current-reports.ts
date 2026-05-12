@@ -42,9 +42,6 @@ export class CurrentReportsPOM {
   readonly url: string =
     process.env.E2E_BASEURL + AppRoutes.GRID_REPORTING_CURRENT_REPORTS;
 
-  readonly pastReportsUrl: string =
-    process.env.E2E_BASEURL + AppRoutes.GRID_REPORTING_PAST_REPORTS;
-
   readonly saveAndContinueButton: Locator;
 
   readonly submitButton: Locator;
@@ -61,11 +58,6 @@ export class CurrentReportsPOM {
 
   async route() {
     await this.page.goto(this.url);
-    await waitForGridReady(this.page, { timeout: 30_000 });
-  }
-
-  async routeToPastReports() {
-    await this.page.goto(this.pastReportsUrl);
     await waitForGridReady(this.page, { timeout: 30_000 });
   }
 
