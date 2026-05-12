@@ -67,7 +67,7 @@ def save_report_attachments(
     response={200: AttachmentsWithConfirmationOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="Returns both the attachments and (if any) the supplementary report confirmation.",
-    auth=approved_industry_user_report_version_composite_auth,
+    auth=approved_authorized_roles_report_version_composite_auth,
 )
 def get_report_attachments(
     request: HttpRequest,
