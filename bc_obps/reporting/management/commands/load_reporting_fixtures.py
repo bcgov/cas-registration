@@ -117,6 +117,25 @@ class Command(BaseCommand):
                 ro.operation_name = _strip_admin_suffix(ro.operation_name)
                 ro.save()
 
+    def submit_reports(self):
+        operation_ids_to_submit = [
+            UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
+            UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
+        ]
+
+        for operation_id in operation_ids_to_submit:
+            # multiple report versions to submit if there are multiple years
+            report_versions = ReportVersion.objects.filter(
+                report__operation_id=operation_id,
+            )
+
+            for report_version in report_versions:
+                submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
+
+        # create supplementary report
+        for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
+            ReportVersionService.create_report_version(report)
+
     def ensure_reporting_year_exists(self, reporting_year_id: int):
         _, created = ReportingYear.objects.get_or_create(
             reporting_year=reporting_year_id,
@@ -152,22 +171,3 @@ class Command(BaseCommand):
     def ensure_temporal_objects_exist(self, reporting_year_id: int):
         self.ensure_reporting_year_exists(reporting_year_id)
         self.ensure_compliance_period_exists(reporting_year_id)
-
-    def submit_reports(self):
-        operation_ids_to_submit = [
-            UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
-            UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
-        ]
-
-        for operation_id in operation_ids_to_submit:
-            # multiple report versions to submit if there are multiple years
-            report_versions = ReportVersion.objects.filter(
-                report__operation_id=operation_id,
-            )
-
-            for report_version in report_versions:
-                submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
-
-        # create supplementary report
-        for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
-            ReportVersionService.create_report_version(report)
