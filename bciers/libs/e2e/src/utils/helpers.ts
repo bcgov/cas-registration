@@ -429,6 +429,23 @@ export async function takeStabilizedScreenshot(
   if (!happoScreenshot) {
     return;
   }
+
+  // Disable all transitions/animations and force grayscale antialiasing to avoid
+  // flaky screenshot diffs
+  await page.addStyleTag({
+    content: `
+      *, *::before, *::after {
+        transition-duration: 0s !important;
+        animation-duration: 0s !important;
+        transition-delay: 0s !important;
+        animation-delay: 0s !important;
+      }
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+    `,
+  });
   const { component, variant, targets } = happoArgs;
   const pageContent = page.locator("html");
   await waitForElementToStabilize(page, "html"); // <-- match the screenshot target
