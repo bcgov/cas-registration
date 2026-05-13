@@ -30,8 +30,6 @@ const ComplianceSummaryForm: React.FC<Props> = ({
     displayJanMarProduction,
   );
 
-  console.log(summaryFormData);
-
   const complianceSummaryUiSchema = createComplianceSummaryUiSchema(
     summaryFormData.reporting_year,
   );
