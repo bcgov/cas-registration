@@ -28,7 +28,6 @@ class RequiredFieldsReportOperationInformationValidator(BaseRequiredFieldsValida
         {"field": "operation_name", "label": "Operation name", "field_type": "scalar"},
         {"field": "operator_legal_name", "label": "Operator legal name", "field_type": "scalar"},
         {"field": "activities", "label": "Activities", "field_type": "m2m"},
-        {"field": "regulated_products", "label": "Regulated products", "field_type": "m2m"},
     ]
 
     @classmethod
@@ -37,9 +36,7 @@ class RequiredFieldsReportOperationInformationValidator(BaseRequiredFieldsValida
         flow: ReportingFlow | None = None,
     ) -> list[RequiredFieldConfig]:
         if flow == ReportingFlow.EIO:
-            return [
-                field for field in cls.REQUIRED_FIELDS if field["field"] not in {"activities", "regulated_products"}
-            ]
+            return [field for field in cls.REQUIRED_FIELDS if field["field"] not in {"activities"}]
 
         return cls.REQUIRED_FIELDS
 
