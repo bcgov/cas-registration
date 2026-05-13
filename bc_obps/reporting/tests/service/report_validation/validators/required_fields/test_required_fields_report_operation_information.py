@@ -95,3 +95,25 @@ class TestRequiredFieldsReportOperationInformationValidator:
             result = validate(self.report_version)
 
         assert result == {}
+
+    def test_validate_passes_when_reporting_only_operation_has_no_products(self):
+        report_operation = baker.make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=self.report_version,
+        )
+
+        activity = baker.make_recipe("reporting.tests.utils.activity")
+
+        report_operation.activities.add(activity)
+
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation_representative",
+            report_version=self.report_version,
+            selected_for_report=True,
+        )
+
+        with patch(RESOLVE_FLOW_PATH, return_value=ReportingFlow.REPORTING_ONLY_SFO):
+            result = validate(self.report_version)
+
+        assert len(report_operation.regulated_products.all()) == 0
+        assert result == {}
