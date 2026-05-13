@@ -41,6 +41,20 @@ describe("FuelAmountFieldTemplate", () => {
     expect(screen.getByTestId("field-input")).toBeVisible();
   });
 
+  it("renders an asterisk after the label when required is true", () => {
+    renderWidget({ required: true });
+
+    const label = screen.getByText("Annual Fuel Amount", { exact: false });
+    expect(label.textContent).toBe("Annual Fuel Amount*");
+  });
+
+  it("does not render an asterisk after the label when required is false", () => {
+    renderWidget({ required: false });
+
+    const label = screen.getByText("Annual Fuel Amount", { exact: false });
+    expect(label.textContent).toBe("Annual Fuel Amount");
+  });
+
   it("returns null when ui:widget is set to hidden", () => {
     const { container } = renderWidget({
       uiSchema: { "ui:widget": "hidden" },
