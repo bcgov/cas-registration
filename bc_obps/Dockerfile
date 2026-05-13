@@ -29,8 +29,6 @@ FROM base AS builder
 
 # Refresh package lists from repositories
 RUN apt-get update && \
-# Upgrade the installed system packages from apt-get update, making sure security is up to date
-    apt-get upgrade -y && \
 # Install minimal build tools required for asdf (git), curl for Poetry plugin, build-essential for compiling Python, and additional libs for Python
     apt-get install -y --no-install-recommends build-essential curl git libc6-dev libffi-dev libssl-dev zlib1g-dev && \
 # Remove apt cache to reduce image size
@@ -84,8 +82,6 @@ FROM base AS runner
 
 # Refresh package lists from repositories
 RUN apt-get update && \
-    # Upgrade the installed system packages from apt-get update, making sure security is up to date
-    apt-get upgrade -y && \
     # Install essential runner packages and WeasyPrint dependencies
     apt-get install -y --no-install-recommends \
     curl \
