@@ -18,9 +18,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR ${HOME}
 
-# Recreate bc_obps user with bash shell
-RUN useradd -ms /bin/bash -d ${HOME} --uid ${USER_ID} -g root bc_obps && \
-    chown -R bc_obps:0 ${HOME} && \
+# Grant the numbered user complete access to the workspace root directory
+RUN chown -R ${USER_ID}:0 ${HOME} && \
     chmod -R g+rwX ${HOME}
 
 ####################
@@ -39,8 +38,8 @@ RUN apt-get update && \
 # Delete package lists to further slim the image
     rm -rf /var/lib/apt/lists/*
 
-# Copy version config and Poetry files with ownership set to bc_obps
-COPY --chown=bc_obps:0 .tool-versions pyproject.toml poetry.lock ${HOME}/
+# Copy version config and Poetry files with ownership set to numbered user
+COPY --chown=${USER_ID}:0 .tool-versions pyproject.toml poetry.lock ${HOME}/
 
 USER ${USER_ID}
 
@@ -75,8 +74,8 @@ RUN export POETRY_VERSION=$(grep '^poetry ' ${HOME}/.tool-versions | awk '{print
     # Install dependencies without dev group, non-interactively
     poetry install --without dev --no-root --no-interaction --no-ansi --compile
 
-# Copy all remaining files, owned by bc_obps
-COPY --chown=bc_obps:0 . ${HOME}/
+# Copy all remaining files, owned by numbered user
+COPY --chown=${USER_ID}:0 . ${HOME}/
 
 ####################
 # Runner Stage
@@ -103,7 +102,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy application from the builder stage
-COPY --from=builder --chown=bc_obps:0 ${HOME}/ ${HOME}/
+COPY --from=builder --chown=${USER_ID}:0 ${HOME}/ ${HOME}/
 
 # Remove asdf and Poetry files
 RUN rm .tool-versions pyproject.toml poetry.lock
