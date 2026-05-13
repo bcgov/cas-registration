@@ -75,6 +75,7 @@ export const generateUpdatedSchema = (
               type: "array",
               items: {
                 type: "object",
+                required: ["activity", "source_type", "emission_category"],
                 properties: {
                   activity: { type: "string", title: "Activity Name" },
                   source_type: { type: "string", title: "Source Type" },

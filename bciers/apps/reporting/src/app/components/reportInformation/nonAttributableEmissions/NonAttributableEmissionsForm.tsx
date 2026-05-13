@@ -9,22 +9,46 @@ import {
 import { actionHandler } from "@bciers/actions";
 import { NavigationInformation } from "../../taskList/types";
 
-interface ActivityData {
+export interface GasType {
+  id: number;
+  chemical_formula: string;
+}
+
+export interface EmissionCategory {
+  id: number;
+  category_name: string;
+}
+
+export interface NonAttributableEmissionRecord {
   id: number;
   activity: string;
   source_type: string;
-  emission_category: number;
-  gas_type: number[];
+  emission_category: string;
+  gas_type: string[];
 }
 
-interface NonAttributableEmissionsProps {
+interface ActivityFormItem {
+  id?: number;
+  activity?: string;
+  source_type?: string;
+  emission_category?: string;
+  gas_type: string[];
+}
+
+interface NonAttributableFormData {
+  emissions_exceeded: boolean;
+  activities: ActivityFormItem[];
+}
+
+interface NonAttributableEmissionsFormProps {
   versionId: number;
   facilityId: string;
-  emissionFormData: ActivityData[]; // Define emissionFormData as an array of ActivityData
-  gasTypes: { id: number; chemical_formula: string }[];
-  emissionCategories: { id: number; category_name: string }[];
-  gasTypeMap: Record<number, string>;
-  emissionCategoryMap: Record<number, string>;
+  emissionFormData: {
+    emissions_exceeded: boolean;
+    activities: NonAttributableEmissionRecord[];
+  };
+  gasTypes: GasType[];
+  emissionCategories: EmissionCategory[];
   navigationInformation: NavigationInformation;
 }
 
@@ -34,38 +58,18 @@ export default function NonAttributableEmissionsForm({
   emissionFormData,
   gasTypes,
   emissionCategories,
-  gasTypeMap,
-  emissionCategoryMap,
   navigationInformation,
-}: NonAttributableEmissionsProps & {
-  gasTypeMap: Record<number, string>;
-  emissionCategoryMap: Record<number, string>;
-}) {
+}: NonAttributableEmissionsFormProps) {
   const [errors, setErrors] = useState<string[]>();
-  const [formData, setFormData] = useState(
-    emissionFormData.length
-      ? {
-          activities: emissionFormData.map((item) => ({
-            id: item.id,
-            activity: item.activity,
-            source_type: item.source_type,
-            emission_category: emissionCategoryMap[item.emission_category],
-            gas_type: item.gas_type.map((id) => gasTypeMap[id]),
-          })),
-          emissions_exceeded: true,
-        }
-      : {
-          activities: [
-            {
-              activity: "",
-              source_type: "",
-              gas_type: [],
-              emission_category: "",
-            },
-          ],
-          emissions_exceeded: false,
-        },
-  );
+  const [formData, setFormData] = useState<NonAttributableFormData>({
+    emissions_exceeded: emissionFormData.emissions_exceeded,
+    // Seed one empty row so the form renders a first entry when the user switches to "Yes",
+    // since RJSF does not auto-populate array rows inside a conditional schema branch.
+    activities:
+      emissionFormData.activities.length > 0
+        ? emissionFormData.activities
+        : [{ gas_type: [] }],
+  });
 
   const schema = generateUpdatedSchema(gasTypes, emissionCategories);
 
@@ -94,7 +98,9 @@ export default function NonAttributableEmissionsForm({
       uiSchema={nonAttributableEmissionUiSchema}
       formData={formData}
       cancelUrl="#"
-      onChange={(data: any) => setFormData((data as any).formData)}
+      onChange={(data) =>
+        setFormData((data as { formData: NonAttributableFormData }).formData)
+      }
       onSubmit={handleSubmit}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
