@@ -1,4 +1,3 @@
-from unittest.mock import patch, MagicMock
 from model_bakery.baker import make
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -14,10 +13,7 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
 
         return super().setup_method()
 
-    @patch(
-        "reporting.service.report_non_attributable_service.ReportNonAttributableService.get_report_non_attributable_by_version_id"
-    )
-    def test_get_returns_the_right_data(self, mock_get_emissions: MagicMock):
+    def test_get_returns_the_right_data(self):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
         )
@@ -34,11 +30,6 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
         )
         record.save()
         record.gas_type.set([gas_type])
-
-        mock_qs = MagicMock()
-        mock_qs.exists.return_value = True
-        mock_qs.__iter__ = MagicMock(return_value=iter([record]))
-        mock_get_emissions.return_value = mock_qs
 
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
 

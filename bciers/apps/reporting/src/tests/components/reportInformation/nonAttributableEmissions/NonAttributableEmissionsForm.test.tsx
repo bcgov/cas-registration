@@ -86,9 +86,17 @@ describe("NonAttributableEmissionsForm Component", () => {
 
     fireEvent.click(screen.getByLabelText("Yes"));
 
-    expect(await screen.findByText("Activity Name")).toBeVisible();
-    expect(await screen.findByText("Source Type")).toBeVisible();
-    expect(await screen.findByText("Emission Category")).toBeVisible();
+    expect(screen.getByText(/activity name\*/i)).toBeVisible();
+    expect(screen.getByText(/source type\*/i)).toBeVisible();
+    expect(screen.getByText(/emission category\*/i)).toBeVisible();
+    expect(screen.getByText(/gas type/i)).toBeVisible();
+    // MUI's CheckboxGroupWidget is always visually hidden via CSS so we check the if the checkbox is in the document
+    // and then check the label by text
+    expect(
+      screen.getByRole("checkbox", { name: /co2 co2/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("CO2")).toBeVisible();
+    expect(screen.getByRole("button", { name: /add activity/i })).toBeVisible();
   });
 
   it("renders existing emission data when provided", async () => {
