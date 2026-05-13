@@ -10,6 +10,7 @@ from . import (
     report_emission_allocation_validator,
     supplementary_report_attachments_confirmation,
     supplementary_report_version_change,
+    report_regulated_product_presence,
 )
 
 from .required_fields import (
@@ -37,6 +38,7 @@ __all__ = [
     "report_activity_json_validation",
     "report_emission_allocation_validator",
     "report_data_by_fuel_type_validator",
+    "report_regulated_product_presence",
     "required_fields_report_operation_information",
     "required_fields_report_person_responsible",
     "required_fields_report_activity_data",

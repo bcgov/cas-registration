@@ -193,7 +193,7 @@ const PersonResponsibleForm = ({
       // preserve the existing snapshot data
       if (!updatedContactResponse || "error" in updatedContactResponse) {
         setSnackbarMessage(
-          "This contact was deleted but the existing information entered has been saved,",
+          "This contact was deleted but the existing information entered has been saved.",
         );
 
         return;

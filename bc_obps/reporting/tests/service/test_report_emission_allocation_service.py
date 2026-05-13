@@ -412,7 +412,7 @@ class TestReportEmissionAllocationService(TestCase):
         assert not retrieved_emission_allocations_data.has_missing_products
 
     # Only regulated products are checked for missing products
-    def test_has_missing_products_missing_regulated_products(self):
+    def test_has_missing_products_missing_regulated_product(self):
 
         product = make_recipe("registration.tests.utils.regulated_product", is_regulated=True)
         self.test_infrastructure.report_version.report_operation.regulated_products.add(product)
