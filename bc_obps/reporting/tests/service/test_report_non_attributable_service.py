@@ -51,8 +51,15 @@ class TestReportNonAttributableService:
             self.report_version_id, self.facility_id
         )
 
-        assert len(result) == len(self.test_data)
-        assert all(isinstance(emission, ReportNonAttributableEmissions) for emission in result)
+        assert result.count() == len(self.test_data)
+        assert all(isinstance(e, ReportNonAttributableEmissions) for e in result)
+
+    def test_get_returns_empty_queryset_when_no_records(self):
+        result = ReportNonAttributableService.get_report_non_attributable_by_version_id(
+            self.report_version_id, self.facility_id
+        )
+
+        assert result.count() == 0
 
     def test_save_report_non_attributable_emissions(self):
         new_data = [

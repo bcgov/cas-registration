@@ -25,34 +25,60 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
         emission_category = make(EmissionCategory)
         gas_type = make(GasType)
 
-        mock_emissions = [
-            ReportNonAttributableEmissions(
-                facility_report=self.facility_report,
-                emission_category=emission_category,
-                activity="Activity Type",
-                source_type="Source Type",
-                report_version=self.facility_report.report_version,
-            )
-        ]
+        record = ReportNonAttributableEmissions(
+            facility_report=self.facility_report,
+            emission_category=emission_category,
+            activity="Activity Type",
+            source_type="Source Type",
+            report_version=self.facility_report.report_version,
+        )
+        record.save()
+        record.gas_type.set([gas_type])
 
-        mock_emissions[0].save()
-
-        mock_emissions[0].gas_type.set([gas_type])
-
-        mock_get_emissions.return_value = mock_emissions
+        mock_qs = MagicMock()
+        mock_qs.exists.return_value = True
+        mock_qs.__iter__ = MagicMock(return_value=iter([record]))
+        mock_get_emissions.return_value = mock_qs
 
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
 
         assert response.status_code == 200
-        assert response.json() == [
-            {
-                "id": mock_emissions[0].id,
-                "activity": mock_emissions[0].activity,
-                "source_type": mock_emissions[0].source_type,
-                "emission_category": mock_emissions[0].emission_category.id,
-                "gas_type": [gas.id for gas in mock_emissions[0].gas_type.all()],
-            }
-        ]
+        assert response.json() == {
+            "emissions_exceeded": True,
+            "activities": [
+                {
+                    "id": record.id,
+                    "activity": record.activity,
+                    "source_type": record.source_type,
+                    "emission_category": emission_category.category_name,
+                    "gas_type": [gas_type.chemical_formula],
+                }
+            ],
+        }
+
+    def test_post_with_emissions_not_exceeded_ignores_activities(self):
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.facility_report.report_version.report.operator
+        )
+        payload = {
+            "emissions_exceeded": False,
+            "activities": [{"gas_type": []}],  # incomplete item — should be cleared by schema
+        }
+        response = TestUtils.mock_post_with_auth_role(
+            self, "industry_user", "application/json", payload, self.endpoint_under_test
+        )
+        assert response.status_code == 201
+        assert response.json() == []
+
+    def test_post_with_emissions_exceeded_and_no_activities_returns_400(self):
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.facility_report.report_version.report.operator
+        )
+        payload = {"emissions_exceeded": True, "activities": []}
+        response = TestUtils.mock_post_with_auth_role(
+            self, "industry_user", "application/json", payload, self.endpoint_under_test
+        )
+        assert response.status_code == 400
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_report_non_attributable_by_version_id", facility_id="uuid")

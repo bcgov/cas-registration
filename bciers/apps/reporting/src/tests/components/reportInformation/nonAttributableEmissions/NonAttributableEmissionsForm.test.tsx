@@ -20,6 +20,19 @@ describe("NonAttributableEmissionsForm Component", () => {
   const facilityId = "some-uuid" as UUID;
   const gasTypes = [{ id: 1, chemical_formula: "CO2" }];
   const emissionCategories = [{ id: 1, category_name: "Direct" }];
+  const emptyFormData = { emissions_exceeded: false, activities: [] };
+  const existingFormData = {
+    emissions_exceeded: true,
+    activities: [
+      {
+        id: 1,
+        activity: "Test Activity",
+        source_type: "Test Source",
+        emission_category: "Direct",
+        gas_type: ["CO2"],
+      },
+    ],
+  };
   const mockPush = vi.fn();
 
   beforeEach(() => {
@@ -40,96 +53,102 @@ describe("NonAttributableEmissionsForm Component", () => {
     vi.clearAllMocks();
   });
 
-  it("updates form data when the 'emissions exceeded' radio button is clicked", async () => {
+  it("renders the initial question field", async () => {
     render(
       <NonAttributableEmissionsForm
         versionId={versionId}
         facilityId={facilityId}
-        emissionFormData={[]}
+        emissionFormData={emptyFormData}
         gasTypes={gasTypes}
         emissionCategories={emissionCategories}
-        gasTypeMap={{ 1: "CO2" }}
-        emissionCategoryMap={{ 1: "Direct" }}
         navigationInformation={dummyNavigationInformation}
       />,
     );
 
-    const yesRadioButton = screen.getByLabelText("Yes");
-    fireEvent.click(yesRadioButton);
-    expect(yesRadioButton).toBeChecked();
-
-    const activityNameField = await screen.findByText("Activity Name"); // Ensure the correct text matches
-    expect(activityNameField).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "Did your non-attributable emissions exceed 100 tCO2e?",
+      ),
+    ).toBeVisible();
   });
 
-  it("renders the form with the correct initial fields", async () => {
+  it("shows activity fields when 'Yes' is selected", async () => {
     render(
       <NonAttributableEmissionsForm
         versionId={versionId}
         facilityId={facilityId}
-        emissionFormData={[]}
+        emissionFormData={emptyFormData}
         gasTypes={gasTypes}
         emissionCategories={emissionCategories}
-        gasTypeMap={{ 1: "CO2" }}
-        emissionCategoryMap={{ 1: "Direct" }}
         navigationInformation={dummyNavigationInformation}
       />,
     );
 
-    const emissionExceededText = await screen.findByText(
-      "Did your non-attributable emissions exceed 100 tCO2e?",
-    );
-    expect(emissionExceededText).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText("Yes"));
+
+    expect(await screen.findByText("Activity Name")).toBeVisible();
+    expect(await screen.findByText("Source Type")).toBeVisible();
+    expect(await screen.findByText("Emission Category")).toBeVisible();
   });
 
-  it("submits form data and redirects to summary page on successful submission", async () => {
+  it("renders existing emission data when provided", async () => {
     render(
       <NonAttributableEmissionsForm
         versionId={versionId}
         facilityId={facilityId}
-        emissionFormData={[]}
+        emissionFormData={existingFormData}
         gasTypes={gasTypes}
         emissionCategories={emissionCategories}
-        gasTypeMap={{ 1: "CO2" }}
-        emissionCategoryMap={{ 1: "Direct" }}
         navigationInformation={dummyNavigationInformation}
       />,
     );
 
-    const submitButton = await screen.findByRole("button", {
-      name: /Save & Continue/i,
-    });
-    expect(submitButton).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("Test Activity")).toBeVisible();
+    expect(await screen.findByDisplayValue("Test Source")).toBeVisible();
+  });
 
-    fireEvent.click(submitButton);
+  it("submits form data and navigates on successful submission", async () => {
+    render(
+      <NonAttributableEmissionsForm
+        versionId={versionId}
+        facilityId={facilityId}
+        emissionFormData={emptyFormData}
+        gasTypes={gasTypes}
+        emissionCategories={emissionCategories}
+        navigationInformation={dummyNavigationInformation}
+      />,
+    );
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: /Save & Continue/i }),
+    );
 
     await waitFor(() => expect(actionHandler).toHaveBeenCalled());
-    expect(mockPush).toHaveBeenCalledWith(`continue`);
+    expect(mockPush).toHaveBeenCalledWith("continue");
   });
 
-  it("handles submission failure gracefully", async () => {
+  it("displays error message on submission failure", async () => {
     (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      success: false,
+      error: "Something went wrong",
     });
 
     render(
       <NonAttributableEmissionsForm
         versionId={versionId}
         facilityId={facilityId}
-        emissionFormData={[]}
+        emissionFormData={emptyFormData}
         gasTypes={gasTypes}
         emissionCategories={emissionCategories}
-        gasTypeMap={{ 1: "CO2" }}
-        emissionCategoryMap={{ 1: "Direct" }}
         navigationInformation={dummyNavigationInformation}
       />,
     );
 
-    const submitButton = await screen.findByRole("button", {
-      name: /Save & Continue/i,
-    });
-    fireEvent.click(submitButton);
+    fireEvent.click(
+      await screen.findByRole("button", { name: /Save & Continue/i }),
+    );
 
-    await waitFor(() => expect(actionHandler).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(screen.getByText("Something went wrong")).toBeVisible(),
+    );
   });
 });
