@@ -122,6 +122,7 @@ class TestReportService(TestCase):
                     report_version.report_operation.operation_type,
                     report_version.report_operation.operation_bcghgid,
                     report_version.report_operation.bc_obps_regulated_operation_id,
+                    report_version.report_operation.naics_code,
                     report_version.report_operation.activities.count(),
                 ),
                 (
@@ -131,6 +132,7 @@ class TestReportService(TestCase):
                     operation.type,
                     operation.bcghg_id,
                     operation.bc_obps_regulated_operation.id,
+                    operation.naics_code,
                     2,
                 ),
             )
@@ -243,6 +245,7 @@ class TestReportService(TestCase):
                     report_version.report_operation.operation_type,
                     report_version.report_operation.operation_bcghgid,
                     report_version.report_operation.bc_obps_regulated_operation_id,
+                    report_version.report_operation.naics_code,
                     report_version.report_operation.activities.count(),
                 ),
                 (
@@ -252,6 +255,7 @@ class TestReportService(TestCase):
                     operation.type,
                     operation.bcghg_id,
                     operation.bc_obps_regulated_operation.id,
+                    operation.naics_code,
                     2,
                 ),
             )

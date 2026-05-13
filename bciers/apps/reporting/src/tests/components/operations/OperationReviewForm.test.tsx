@@ -51,6 +51,7 @@ const formData = {
   operation_name: "Banana LFO - Registered",
   operation_type: "Linear Facility Operation",
   registration_purpose: "Test Purpose",
+  naics_code: "486210 - Pipeline Transportation of Natural Gas",
   operation_bcghgid: "23219990004",
   bc_obps_regulated_operation_id: "24-0015",
   activities: [1],
@@ -131,18 +132,23 @@ describe("OperationReviewForm Component", () => {
     renderForm();
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Review Operation Information"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Review Operation Information")).toBeVisible();
       expect(
         screen.getByText(
           "Please ensure this information was accurate for Dec 31st, 2024",
         ),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
 
-    expect(screen.getByText(/Back to All Reports/i)).toBeInTheDocument();
-    expect(screen.getByText(/Save & Continue/i)).toBeInTheDocument();
+    expect(screen.getByText(/Back to All Reports/i)).toBeVisible();
+    expect(screen.getByText(/Save & Continue/i)).toBeVisible();
+
+    // NAICS code field renders as disabled with the correct value
+    expect(screen.getByText("NAICS code")).toBeVisible();
+    const naicsInput = screen.getByDisplayValue(
+      "486210 - Pipeline Transportation of Natural Gas",
+    );
+    expect(naicsInput).toBeDisabled();
   });
 
   it(
