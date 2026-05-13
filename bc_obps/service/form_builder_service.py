@@ -211,8 +211,13 @@ def handle_source_type_schema(
             "properties"
         ]["fuelName"]["enum"] = fuel_list
 
-        # Make fuelType required on the fuel item
-        st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["required"] = ["fuelType"]
+        # search for required fields on fuel item (specified in the json schema)
+        fuel_items = st_schema["properties"]["fuels"]["items"]
+        existing_required = set(fuel_items.get("required", []))
+        # add fuelType and annualFuelAmount as required fields on the fuel item if not already specified in the json schema - they are universally required
+        existing_required.update(["fuelType", "annualFuelAmount"])
+        fuel_items["required"] = list(existing_required)
+        st_schema["properties"]["fuels"]["items"]["required"] = fuel_items["required"]
 
         # Require the fuelName inside the fuelType object
         st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["fuelType"][
@@ -245,8 +250,13 @@ def handle_source_type_schema(
             "enum"
         ] = fuel_list
 
-        # Make fuelType required on the fuel item
-        st_schema["properties"]["fuels"]["items"]["required"] = ["fuelType"]
+        # search for required fields on fuel item (specified in the json schema)
+        fuel_items = st_schema["properties"]["fuels"]["items"]
+        existing_required = set(fuel_items.get("required", []))
+        # add fuelType and annualFuelAmount as required fields on the fuel item if not already specified in the json schema - they are universally required
+        existing_required.update(["fuelType", "annualFuelAmount"])
+        fuel_items["required"] = list(existing_required)
+        st_schema["properties"]["fuels"]["items"]["required"] = fuel_items["required"]
 
         # Require the fuelName inside the fuelType object
         st_schema["properties"]["fuels"]["items"]["properties"]["fuelType"]["required"] = ["fuelName"]
