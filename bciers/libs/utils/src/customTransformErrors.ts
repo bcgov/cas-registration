@@ -17,10 +17,14 @@ const transformPropertyError = (
   error: RJSFValidationError,
 ): RJSFValidationError | null => {
   if (
-    // we use some because fields can be nested in sections
+    // Match the array field itself (e.g. `.activities`), not sub-fields within it
+    // (e.g. `.activities.0.activity`), to avoid misclassifying required field errors
     ["activities", "regulated_products"].some((field) => {
-      // @ts-expect-error - we already checked for error.property's existence above
-      return error?.name === "required" && error.property.includes(field);
+      return (
+        error?.name === "required" &&
+        // @ts-expect-error - we already checked for error.property's existence above
+        new RegExp(`(^|\\.)${field}$`).test(error.property)
+      );
     })
   ) {
     error.message = "Select at least one option";
