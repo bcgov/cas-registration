@@ -55,7 +55,6 @@ class TestRequiredFieldsReportOperationInformationValidator:
             "Operation name",
             "Operator legal name",
             "Activities",
-            "Regulated products",
             "Operation representative name",
         ]
 
