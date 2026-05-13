@@ -29,6 +29,7 @@ class ReportValidationErrorKey(StrEnum):
     ACTIVITY_DATA_COVERAGE = "activity_data_coverage"
     ERROR_REQUIRED_FIELDS = "error_required_fields"
     ACTIVITY_JSON_SCHEMA_VALIDATION_ERROR = "activity_json_schema_validation_error"
+    MISSING_REGULATED_PRODUCT = "missing_regulated_product"
 
 
 class ErrorContext(BaseModel):
