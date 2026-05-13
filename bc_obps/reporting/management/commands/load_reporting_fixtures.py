@@ -74,14 +74,8 @@ class Command(BaseCommand):
 
             for report in reports:
                 reports_to_create.append(report)
-                # Create a duplicate report in the current reporting year for each 2024 report
+                # Create a duplicate report in the current reporting year for each 2023 report fixture, to ensure we have data for the current year when running the e2e tests
                 if str(report['fields']['reporting_year_id']) == '2023':
-                    duplicate_exists_in_db = Report.objects.filter(
-                        operation_id=report['fields']['operation_id'],
-                        reporting_year_id=current_reporting_year,
-                    ).exists()
-                    if duplicate_exists_in_db:
-                        continue
 
                     duplicated_report = {
                         **report,
@@ -98,11 +92,11 @@ class Command(BaseCommand):
 
             report_version_ids = []
             for report in reports_to_create:
-                duplicate_exists_in_db = Report.objects.filter(
+                already_exists_in_db = Report.objects.filter(
                     operation_id=report['fields']['operation_id'],
                     reporting_year_id=current_reporting_year,
                 ).exists()
-                if duplicate_exists_in_db:
+                if already_exists_in_db:
                     continue
                 report_version_id = ReportService.create_report(
                     operation_id=report['fields']['operation_id'],
