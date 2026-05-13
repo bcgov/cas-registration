@@ -20,11 +20,12 @@ describe("validationUIConfig", () => {
     "missing_supplementary_report_existing_attachment_confirmation",
     "missing_supplementary_report_attachments_confirmation",
     "missing_supplementary_report_version_change",
+    "missing_regulated_product",
     "generic_error",
   ];
 
   it("has the expected number of configs", () => {
-    expect(Object.keys(validationUIConfig)).toHaveLength(15);
+    expect(Object.keys(validationUIConfig)).toHaveLength(16);
   });
 
   it("has a config for every validation key", () => {
