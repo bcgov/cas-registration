@@ -12,6 +12,7 @@ import ReportingStepButtons from "@bciers/components/form/components/ReportingSt
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { ComplianceSummaryFormPayload } from "@reporting/src/app/components/complianceSummary/types";
 import { hasJanMarProduction } from "@reporting/src/app/utils/hasJanMarProduction";
+import { createFormContext } from "../shared/formContextHelpers";
 
 interface Props {
   summaryFormData: ComplianceSummaryFormPayload;
@@ -49,6 +50,7 @@ const ComplianceSummaryForm: React.FC<Props> = ({
             schema={complianceSummarySchema}
             uiSchema={complianceSummaryUiSchema}
             formData={summaryFormData}
+            formContext={createFormContext(summaryFormData)}
           >
             <ReportingStepButtons
               backUrl={navigationInformation.backUrl}

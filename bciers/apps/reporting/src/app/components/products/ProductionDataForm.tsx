@@ -10,6 +10,7 @@ import {
   FieldTemplate,
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
+import { createFormContext } from "../shared/formContextHelpers";
 
 interface Props {
   report_version_id: number;
@@ -30,8 +31,8 @@ const ProductionDataForm: React.FC<Props> = ({
   facility_id,
   facilityType,
   reportingYear,
-  schema,
   allowedProducts,
+  schema,
   initialData,
   navigationInformation,
   isPulpAndPaper,
@@ -151,6 +152,7 @@ const ProductionDataForm: React.FC<Props> = ({
       schema={schema}
       uiSchema={buildProductionDataUiSchema(reportingYear, isOptedOut)}
       formData={formData}
+      formContext={createFormContext(formData)}
       baseUrl={"#"}
       cancelUrl={"#"}
       backUrl={navigationInformation.backUrl}

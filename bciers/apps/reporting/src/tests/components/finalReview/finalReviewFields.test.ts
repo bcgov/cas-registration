@@ -5,7 +5,6 @@ import {
 
 describe("productionDataFields", () => {
   const alwaysPresentKeys = [
-    "unit",
     "annual_production",
     "production_methodology",
     "storage_quantity_start_of_period",
@@ -151,6 +150,7 @@ describe("complianceSummaryFields", () => {
       {
         name: "Product A",
         jan_mar_production: 123,
+        unit: "production unit",
       },
     ]);
 
@@ -167,6 +167,7 @@ describe("complianceSummaryFields", () => {
       {
         name: "Product A",
         jan_mar_production: null,
+        unit: "production unit",
       },
     ]);
 

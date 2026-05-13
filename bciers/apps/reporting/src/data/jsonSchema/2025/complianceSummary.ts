@@ -150,17 +150,20 @@ export const complianceSummaryUiSchema2025 = {
       },
       annual_production: {
         "ui:options": {
-          displayUnit: "production unit",
+          unit: { source: "product", field: "unit" },
+          arrayPath: "products",
         },
       },
       jan_mar_production: {
         "ui:options": {
-          displayUnit: "production unit",
+          unit: { source: "product", field: "unit" },
+          arrayPath: "products",
         },
       },
       emission_intensity: {
         "ui:options": {
-          displayUnit: "tCO2e/production unit",
+          unit: ["tCO2e/", { source: "product", field: "unit" }],
+          arrayPath: "products",
         },
       },
       allocated_industrial_process_emissions: {

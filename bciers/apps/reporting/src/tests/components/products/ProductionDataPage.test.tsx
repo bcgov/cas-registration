@@ -108,10 +108,10 @@ describe("The Production Data component", () => {
     expect(screen.getAllByText(/production data/i)).toHaveLength(1);
     expect(
       screen.getByText("Select the products that apply to this facility:"),
-    ).toBeInTheDocument();
+    ).toBeVisible();
     expect(screen.getAllByRole("checkbox")).toHaveLength(2);
-    expect(screen.getByText(/testProduct/)).toBeInTheDocument();
-    expect(screen.getByText(/otherProduct/)).toBeInTheDocument();
+    expect(screen.getByText(/testProduct/)).toBeVisible();
+    expect(screen.getByText(/otherProduct/)).toBeVisible();
   });
   it("renders the form with the right form elements except apr-dec production", async () => {
     getProductionDataMock.mockReturnValue({
@@ -132,15 +132,15 @@ describe("The Production Data component", () => {
     });
 
     render(await ProductionDataPage(props));
-    expect(screen.getByText("testProduct")).toBeInTheDocument();
-    expect(screen.getByText("Unit")).toBeInTheDocument();
-    expect(screen.getByText("tonnes of tests")).toBeInTheDocument();
+    expect(screen.getByText("testProduct")).toBeVisible();
     expect(
       screen.queryByLabelText("Production data for Apr 1 - Dec 31, 2024*"),
     ).not.toBeInTheDocument();
     expect(
       screen.getByLabelText("Production Quantification Methodology*"),
     ).toHaveRole("combobox");
+    expect(screen.getByLabelText("annual_production")).toHaveRole("textbox");
+    expect(screen.getByText("tonnes of tests")).toBeVisible();
     expect(
       screen.getByLabelText(
         "Quantity in storage at the beginning of the compliance period [Jan 1], if applicable",

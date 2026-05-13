@@ -1,9 +1,9 @@
 import {
   ArrayFieldTemplate,
   FieldTemplate,
+  InlineFieldTemplate,
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
-import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
 
@@ -61,11 +61,6 @@ export const buildProductionDataSchema2024 = (
             title: "Name",
             type: "string",
             default: "custom value",
-          },
-          unit: {
-            title: "Unit",
-            type: "string",
-            readOnly: true,
           },
           annual_production: {
             title: "Annual Production",
@@ -149,7 +144,6 @@ export const productionDataUiSchema2024 = (): UiSchema => {
         "ui:order": [
           "product_id",
           "product_name",
-          "unit",
           "annual_production",
           "production_data_apr_dec",
           "production_methodology",
@@ -167,8 +161,47 @@ export const productionDataUiSchema2024 = (): UiSchema => {
             label: false,
           },
         },
-        unit: {
-          "ui:widget": ReadOnlyWidget,
+        annual_production: {
+          "ui:FieldTemplate": InlineFieldTemplate,
+          "ui:options": {
+            unit: { source: "product", field: "unit" },
+            arrayPath: "production_data",
+          },
+        },
+        production_data_apr_dec: {
+          "ui:FieldTemplate": InlineFieldTemplate,
+          "ui:options": {
+            unit: { source: "product", field: "unit" },
+            arrayPath: "production_data",
+          },
+        },
+        storage_quantity_start_of_period: {
+          "ui:FieldTemplate": InlineFieldTemplate,
+          "ui:options": {
+            unit: { source: "product", field: "unit" },
+            arrayPath: "production_data",
+          },
+        },
+        storage_quantity_end_of_period: {
+          "ui:FieldTemplate": InlineFieldTemplate,
+          "ui:options": {
+            unit: { source: "product", field: "unit" },
+            arrayPath: "production_data",
+          },
+        },
+        quantity_sold_during_period: {
+          "ui:FieldTemplate": InlineFieldTemplate,
+          "ui:options": {
+            unit: { source: "product", field: "unit" },
+            arrayPath: "production_data",
+          },
+        },
+        quantity_throughput_during_period: {
+          "ui:FieldTemplate": InlineFieldTemplate,
+          "ui:options": {
+            unit: { source: "product", field: "unit" },
+            arrayPath: "production_data",
+          },
         },
       },
     },

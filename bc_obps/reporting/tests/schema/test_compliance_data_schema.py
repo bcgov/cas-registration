@@ -26,6 +26,7 @@ class TestComplianceDataSchema(SimpleTestCase):
             products=[
                 ReportProductComplianceData(
                     name="product 1",
+                    unit="production unit",
                     product_id=999,
                     annual_production=Decimal("1"),
                     jan_mar_production=Decimal("0.2"),
@@ -38,6 +39,7 @@ class TestComplianceDataSchema(SimpleTestCase):
                 ),
                 ReportProductComplianceData(
                     name="product 2",
+                    unit="production unit",
                     product_id=992,
                     annual_production=Decimal("5"),
                     jan_mar_production=Decimal("1"),
@@ -74,9 +76,11 @@ class TestComplianceDataSchema(SimpleTestCase):
             "allocated_compliance_emissions": 567.89,
             "reduction_factor": 2.34,  # Defaulting to industry values
             "tightening_rate": 5.55,  # Defaulting to industry values
+            "unit": "production unit",
         }
         assert dict(schema_under_test.products[1]) == {
             "name": "product 2",
+            "unit": "production unit",
             "annual_production": 5.0,
             "jan_mar_production": 1.0,
             "apr_dec_production": 4.0,

@@ -12,6 +12,7 @@ class RegulatoryValuesSchema(Schema):
 
 class ReportProductComplianceSchema(Schema):
     name: str
+    unit: str
     annual_production: float
     jan_mar_production: Optional[float] = None
     apr_dec_production: float

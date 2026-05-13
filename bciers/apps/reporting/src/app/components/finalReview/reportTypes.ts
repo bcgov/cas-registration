@@ -62,6 +62,7 @@ export interface ComplianceProduct {
   emission_intensity: number;
   allocated_industrial_process_emissions: number;
   allocated_compliance_emissions: number;
+  unit: string;
 }
 export interface ReportProduct {
   product: string;

@@ -52,11 +52,15 @@ export class ProductionDataPOM {
       await checkCheckboxByLabel(this.page, product);
     }
 
-    // Verify unit text for each selected product (ReadOnlyWidget renders a div, not an input)
-    for (const product of productsToSelect) {
+    // Verify unit text for each selected product (InlineFieldTemplate renders unit as <p>)
+    // Use nth(i) to target the unit in the specific product row
+    const unitTexts = this.page.locator("p");
+    for (const [i, product] of productsToSelect.entries()) {
       const unit = PRODUCT_UNITS[product];
       if (unit) {
-        await expect(this.page.getByText(unit, { exact: true })).toBeVisible();
+        // Find the nth occurrence of the unit text within the product data section
+        const unitElement = unitTexts.filter({ hasText: unit }).nth(i);
+        await expect(unitElement).toBeVisible();
       }
     }
 

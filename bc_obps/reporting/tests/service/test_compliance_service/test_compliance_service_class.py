@@ -297,6 +297,7 @@ class TestComplianceSummaryServiceClass(TestCase):
                     'product_id': 3,
                     'reduction_factor_override': None,
                     'tightening_rate_override': None,
+                    'unit': 'Tonne pure hydrogen peroxide',
                 },
                 {
                     'allocated_compliance_emissions': Decimal('8000.0280'),
@@ -309,6 +310,7 @@ class TestComplianceSummaryServiceClass(TestCase):
                     'product_id': 16,
                     'reduction_factor_override': None,
                     'tightening_rate_override': None,
+                    'unit': 'Tonne saleable dry chemical pulp',
                 },
                 {
                     'allocated_compliance_emissions': Decimal('16000.9708'),
@@ -321,6 +323,7 @@ class TestComplianceSummaryServiceClass(TestCase):
                     'product_id': 41,
                     'reduction_factor_override': Decimal('0.9000'),
                     'tightening_rate_override': Decimal('0.0100'),
+                    'unit': 'Tonnes dry recovered lime (calcium oxide)',
                 },
             ],
             'reporting_only_emissions': Decimal('10500.0500'),
