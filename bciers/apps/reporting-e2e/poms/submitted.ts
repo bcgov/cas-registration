@@ -103,15 +103,11 @@ export class SubmittedPOM {
       await viewFacilityReportDetailsButton.click({ trial: true });
     }).toPass({ timeout: 1000 });
     await this.page.waitForTimeout(1000); // TODO: figure out why this won't work without the wait
-    await viewFacilityReportDetailsButton.click();
-    await expect(this.page).toHaveURL(routeRegex, { timeout: 15_000 });
-    // await Promise.all([
-    //   this.page.waitForURL(
-    //     (u) =>
-    //       routeRegex.test(u.toString()),
-    //     { waitUntil: "domcontentloaded" },
-    //   ),
-    //   viewFacilityReportDetailsButton.click(),
-    // ]);
+    await Promise.all([
+      this.page.waitForURL((u) => routeRegex.test(u.toString()), {
+        waitUntil: "domcontentloaded",
+      }),
+      viewFacilityReportDetailsButton.click(),
+    ]);
   }
 }
