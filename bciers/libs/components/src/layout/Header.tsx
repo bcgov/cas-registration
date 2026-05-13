@@ -23,6 +23,7 @@ export default function Header() {
                 alt="Logo for Province of British Columbia CleanBC"
                 width="200"
                 height="43"
+                preload
               />
             </Link>
             <h1 className="text-white font-bold cursor-default ml-6 flex-grow text-xs p-1 sm:text-xl md:text-[28px] md:p-0">
