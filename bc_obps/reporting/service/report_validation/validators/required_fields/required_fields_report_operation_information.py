@@ -40,6 +40,8 @@ class RequiredFieldsReportOperationInformationValidator(BaseRequiredFieldsValida
             return [
                 field for field in cls.REQUIRED_FIELDS if field["field"] not in {"activities", "regulated_products"}
             ]
+        elif flow in {ReportingFlow.REPORTING_ONLY_SFO, ReportingFlow.REPORTING_ONLY_LFO}:
+            return [field for field in cls.REQUIRED_FIELDS if field["field"] != "regulated_products"]
 
         return cls.REQUIRED_FIELDS
 
