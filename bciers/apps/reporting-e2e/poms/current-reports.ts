@@ -182,6 +182,7 @@ export class CurrentReportsPOM {
     await expect(row).toBeVisible();
     await this.clickViewReportDetails(row, isExternalUser);
   }
+
   /**
    * Clicks the "View Details" button for a specific report version in the report history page, based on the version number.
    */
@@ -196,23 +197,6 @@ export class CurrentReportsPOM {
       .first();
     await expect(row).toBeVisible();
     await this.clickViewReportDetails(row);
-  }
-
-  /**
-   * Clicks the "View Details" button for a specific facility report
-   * in the facility grid on the Submitted report view.
-   */
-  async viewDetailsFromFacilityGrid(
-    facilityName: string,
-    facilityId: string,
-    isExternalUser: boolean = true,
-  ): Promise<void> {
-    const row = this.page
-      .getByRole("row")
-      .filter({ hasText: facilityName })
-      .first();
-    await expect(row).toBeVisible();
-    await this.clickViewFacilityReportDetails(row, facilityId, isExternalUser);
   }
 
   /***
@@ -266,68 +250,6 @@ export class CurrentReportsPOM {
       ],
       true,
     );
-  }
-
-  async verifySubmittedReportView(
-    operationName: string,
-    isLFO: boolean = false,
-    isExternalUser: boolean = true,
-  ): Promise<void> {
-    const fields = [
-      operationName,
-      "Review Operation Information",
-      "Person Responsible for Submitting Report",
-      "Report Information",
-      "Back To All Reports",
-    ];
-    const lfoSpecificFields = [
-      "Operation Emission Summary",
-      "Compliance Summary",
-    ];
-    const sfoSpecificFields = [
-      "Non-Attributable Emissions",
-      "Emissions Summary (in tCO2e)",
-    ];
-    const externalUserOnlyFields = ["Attachments"];
-    await assertFieldVisibility(
-      this.page,
-      fields
-        .concat(isLFO ? lfoSpecificFields : sfoSpecificFields)
-        .concat(isExternalUser ? externalUserOnlyFields : []),
-      true,
-    );
-
-    await this.verifySaveAsPDF();
-  }
-
-  async verifyFacilitySubmittedReportView(facilityName: string): Promise<void> {
-    await assertFieldVisibility(
-      this.page,
-      [
-        facilityName,
-        "Report Information",
-        "Non-Attributable Emissions",
-        "Emissions Summary",
-        "Allocation of Emissions",
-      ],
-      true,
-    );
-
-    await this.verifySaveAsPDF();
-  }
-
-  async verifySaveAsPDF(): Promise<void> {
-    const saveAsPDFButton = this.page.getByRole("button", {
-      name: /Save as PDF/i,
-    });
-    await expect(saveAsPDFButton).toBeVisible();
-    await expect(saveAsPDFButton).toBeEnabled();
-
-    await this.page.evaluate(
-      "(() => {window.waitForPrintDialog = new Promise(f => window.print = f);})()",
-    );
-    await saveAsPDFButton.click();
-    await this.page.waitForFunction("window.waitForPrintDialog");
   }
 
   async verifyReportStatus(
@@ -416,33 +338,6 @@ export class CurrentReportsPOM {
     }).toPass({ timeout: 1000 });
 
     await viewReportDetailsButton.click();
-    await expect(this.page).toHaveURL(routeRegex, { timeout: 15_000 });
-  }
-
-  private async clickViewFacilityReportDetails(
-    row: Locator,
-    facilityId: string,
-    isExternalUser: boolean = true,
-  ): Promise<void> {
-    const viewFacilityReportDetailsButton = row.getByRole("button", {
-      name: new RegExp(ACTION_BUTTON_TEXT.VIEW_DETAILS, "i"),
-    });
-    await expect(viewFacilityReportDetailsButton).toBeVisible();
-    await expect(viewFacilityReportDetailsButton).toBeEnabled();
-    const viewReportRoute = isExternalUser
-      ? ReportRoutes.SUBMITTED_REPORT
-      : ReportRoutes.ANNUAL_REPORT;
-    const viewFacilityReportRoute = facilityId ? `facility/${facilityId}` : "";
-    const routeRegex = new RegExp(
-      String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${viewReportRoute}/${viewFacilityReportRoute}`,
-      "i",
-    );
-
-    await expect(async () => {
-      await viewFacilityReportDetailsButton.click({ trial: true });
-    }).toPass({ timeout: 1000 });
-    await this.page.waitForTimeout(1000); // TODO: figure out why this won't work without the wait
-    await viewFacilityReportDetailsButton.click();
     await expect(this.page).toHaveURL(routeRegex, { timeout: 15_000 });
   }
 

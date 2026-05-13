@@ -3,6 +3,8 @@ import { UserRole } from "@bciers/e2e/utils/enums";
 import { OPERATION_NAMES } from "@/reporting-e2e/utils/enums";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { SubmittedPOM } from "@/reporting-e2e/poms/submitted";
+import { AnnualReportPOM } from "@/reporting-e2e/poms/annual-report";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 const internalTest = setupBeforeAllTest(UserRole.CAS_ANALYST);
@@ -27,11 +29,11 @@ test.describe("SFO: view a submitted report for the current reporting year", () 
       OPERATION_NAMES.BANGLES_SFO,
       isExternalUser,
     );
+    const submittedReport = new SubmittedPOM(page);
 
-    await grid.verifySubmittedReportView(
+    await submittedReport.verifySubmittedReportView(
       OPERATION_NAMES.BANGLES_SFO,
       isLFO,
-      isExternalUser,
     );
 
     await takeStabilizedScreenshot(happoScreenshot, page, {
@@ -60,11 +62,11 @@ internalTest.describe(
           OPERATION_NAMES.BANGLES_SFO,
           isExternalUser,
         );
+        const submittedReport = new AnnualReportPOM(page);
 
-        await grid.verifySubmittedReportView(
+        await submittedReport.verifySubmittedReportView(
           OPERATION_NAMES.BANGLES_SFO,
           isLFO,
-          isExternalUser,
         );
         await takeStabilizedScreenshot(happoScreenshot, page, {
           component: "SFO Report - Submitted",
