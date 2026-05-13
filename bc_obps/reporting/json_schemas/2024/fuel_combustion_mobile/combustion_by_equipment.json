@@ -8,6 +8,12 @@
       "type": "array",
       "items": {
         "type": "object",
+        "required": [
+          "q1FuelAmount",
+          "q2FuelAmount",
+          "q3FuelAmount",
+          "q4FuelAmount"
+        ],
         "properties": {
           "fuelType": {
             "type": "object",
