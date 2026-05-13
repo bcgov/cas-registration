@@ -55,6 +55,14 @@ class ReportOperation(TimeStampedModel):
     operation_opted_out_final_reporting_year = models.IntegerField(
         db_comment="The last year an operation will report for, if it has opted out of BCIERS", blank=True, null=True
     )
+    naics_code = models.ForeignKey(
+        "registration.NaicsCode",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        db_comment="The NAICS code of the operation at the time the report was created.",
+        related_name="+",
+    )
 
     # We don't create a backwards relation since this is a registration model
     activities = models.ManyToManyField(Activity, related_name="+")

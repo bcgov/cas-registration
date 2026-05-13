@@ -62,6 +62,7 @@ class ReportOperationService:
             operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
         )
         report_operation.registration_purpose = operation.registration_purpose if operation.registration_purpose else ""
+        report_operation.naics_code = operation.naics_code
         report_operation.operator_legal_name = operator.legal_name
         report_operation.operator_trade_name = operator.trade_name
 
@@ -88,13 +89,18 @@ class ReportOperationService:
 
     @classmethod
     def get_report_operation_by_version_id(cls, report_version_id: int) -> dict:
-        report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
+        report_operation = ReportOperation.objects.select_related("naics_code").get(
+            report_version__id=report_version_id
+        )
         report_operation_representatives = ReportOperationRepresentative.objects.filter(
             report_version__id=report_version_id
         )
         report_version = ReportVersion.objects.get(id=report_version_id)
 
         report_operation_data = model_to_dict(report_operation)
+
+        naics = report_operation.naics_code
+        report_operation_data["naics_code"] = f"{naics.naics_code} - {naics.naics_description}" if naics else None
 
         return {
             **report_operation_data,

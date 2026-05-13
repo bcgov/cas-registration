@@ -51,6 +51,7 @@ class ReportOperationSchemaOut(ReportOperationOut):
     operation_report_type: str
     operation_report_status: str
     operation_id: UUID
+    naics_code: Optional[str] = None
 
 
 class FacilityReportSchema(Schema):

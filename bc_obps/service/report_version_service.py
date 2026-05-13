@@ -49,6 +49,7 @@ class ReportVersionService:
             report_version=report_version,
             registration_purpose=operation.registration_purpose or 'OBPS Regulated Operation',
             operation_opted_out_final_reporting_year=operation_opted_out_final_reporting_year,
+            naics_code=operation.naics_code,
         )
         # Special handling for report where the operation has been transferred
         if use_transferred_operation_handling:

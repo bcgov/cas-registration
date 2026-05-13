@@ -27,6 +27,7 @@ const FIELD_KEYS = {
   operationName: "operation_name",
   operationType: "operation_type",
   registrationPurpose: "registration_purpose",
+  naicsCode: "naics_code",
   boroId: "bc_obps_regulated_operation_id",
 
   // Person responsible
@@ -131,6 +132,7 @@ export const operationFields = (isEIO: boolean) => [
   { label: "Operation Name", key: FIELD_KEYS.operationName },
   { label: "Operation Type", key: FIELD_KEYS.operationType },
   { label: "Registration purpose", key: FIELD_KEYS.registrationPurpose },
+  { label: "NAICS code", key: FIELD_KEYS.naicsCode },
   { label: "BCGHG ID", key: "operation_bcghgid" },
   ...(isEIO
     ? []

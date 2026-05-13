@@ -94,6 +94,10 @@ export const buildOperationReviewSchema = (
         type: "string",
         title: "Registration Purpose",
       },
+      naics_code: {
+        type: ["string", "null"],
+        title: "NAICS code",
+      },
       operation_bcghgid: { type: ["string", "null"], title: "BCGHG ID" },
       ...(showBoroId && {
         bc_obps_regulated_operation_id: {
@@ -200,6 +204,7 @@ export const buildOperationReviewUiSchema = (
     "operation_name",
     "operation_type",
     "registration_purpose",
+    "naics_code",
     "operation_bcghgid",
     "bc_obps_regulated_operation_id",
     "activities",
@@ -244,6 +249,11 @@ export const buildOperationReviewUiSchema = (
   },
   registration_purpose: {
     "ui:placeholder": "Registration Purpose",
+    "ui:disabled": true,
+  },
+  naics_code: {
+    "ui:options": commonUiOptions,
+    "ui:placeholder": "NAICS code",
     "ui:disabled": true,
   },
   operation_bcghgid: {

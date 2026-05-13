@@ -77,6 +77,7 @@ export interface ReportOperationSchemaOut {
   operation_report_type: string;
   operation_report_status: string;
   operation_id: string; // UUID
+  naics_code?: string | null;
 }
 
 export interface Activity {
