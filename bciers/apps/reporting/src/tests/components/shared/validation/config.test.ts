@@ -8,7 +8,6 @@ describe("validationUIConfig", () => {
   const expectedKeys: ReportValidationMessageKey[] = [
     "error_required_fields",
     "operation_boro_id",
-    "activity_data_coverage",
     "report_activity_json_validation",
     "report_data_out_of_bounds_by_fuel_type",
     "report_data_out_of_bounds_by_reporting_field",

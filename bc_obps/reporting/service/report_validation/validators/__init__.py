@@ -2,7 +2,6 @@
 # from . import example_validator
 
 from . import (
-    activity_data_coverage_validator,
     mandatory_verification_statement,
     operation_boroid_presence,
     report_attachments_are_scanned,
@@ -30,7 +29,6 @@ from .required_fields import (
 __all__ = [
     # Example:
     # "example_validator",
-    "activity_data_coverage_validator",
     "operation_boroid_presence",
     "mandatory_verification_statement",
     "report_attachments_are_scanned",
