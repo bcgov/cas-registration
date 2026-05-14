@@ -6,9 +6,7 @@ from django.db import migrations, models
 
 def populate_naics_code(apps, schema_editor):
     ReportOperation = apps.get_model("reporting", "ReportOperation")
-    for report_op in ReportOperation.objects.select_related(
-        "report_version__report__operation"
-    ).all():
+    for report_op in ReportOperation.objects.select_related("report_version__report__operation").all():
         operation = report_op.report_version.report.operation
         if operation.naics_code_id:
             report_op.naics_code_id = operation.naics_code_id
