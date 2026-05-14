@@ -9,7 +9,6 @@ const CheckboxGroupWidget: React.FC<WidgetProps> = ({
   id,
   onChange,
   value = [],
-  required,
   options,
   uiSchema,
   readonly,
@@ -46,7 +45,6 @@ const CheckboxGroupWidget: React.FC<WidgetProps> = ({
                 onChange={handleCheckboxChange(option.value)}
                 disabled={disabled}
                 id={`${id}_${index}`}
-                required={required}
                 aria-label={option.label || option.value}
                 readOnly={readonly}
               />
