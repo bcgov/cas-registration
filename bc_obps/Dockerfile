@@ -29,8 +29,8 @@ FROM base AS builder
 
 # Refresh package lists from repositories
 RUN apt-get update && \
-# Install minimal build tools required for asdf (git), curl for Poetry plugin, build-essential for compiling Python, and additional libs for Python
-    apt-get install -y --no-install-recommends build-essential curl git libc6-dev libffi-dev libssl-dev zlib1g-dev && \
+# Install minimal tools and dependencies
+    apt-get install -y --no-install-recommends build-essential curl && \
 # Remove apt cache to reduce image size
     apt-get clean && \
 # Delete package lists to further slim the image
