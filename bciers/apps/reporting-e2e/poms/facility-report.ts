@@ -34,7 +34,7 @@ const GSC_ACTIVITY = {
   FUEL_DESCRIPTION_LABEL: "Fuel Description",
   FUEL_DESCRIPTION_VALUE: "Diesel fuel for stationary combustion",
   ANNUAL_FUEL_AMOUNT_INPUT_NAME: "annualFuelAmount",
-  ANNUAL_FUEL_AMOUNT_FIELD_LABEL: /^Annual Fuel Amount \(kilolitres\)$/,
+  ANNUAL_FUEL_AMOUNT_FIELD_LABEL: "Annual Fuel Amount",
   ANNUAL_FUEL_AMOUNT_VALUE: 12000,
 
   GAS_TYPE_LABEL: "Gas Type",
