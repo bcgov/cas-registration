@@ -59,7 +59,7 @@ describe("FuelAmountFieldTemplate", () => {
     expect(screen.getByTestId("field-input")).toBeVisible();
   });
 
-  it("dynamically appends fuel unit to label when fuelType.fuelUnit exists in form context", () => {
+  it("displays fuel unit next to input when fuelType.fuelUnit exists in form context", () => {
     renderWidget({
       id: "root_fuels_0_annualFuelAmount",
       formContext: {
@@ -75,7 +75,8 @@ describe("FuelAmountFieldTemplate", () => {
       },
     });
 
-    expect(screen.getByText("Annual Fuel Amount (snacks)")).toBeVisible();
+    expect(screen.getByText("Annual Fuel Amount")).toBeVisible();
+    expect(screen.getByText("snacks")).toBeVisible();
   });
 
   it("handles nested path segments correctly to resolve fuel unit", () => {
@@ -97,7 +98,8 @@ describe("FuelAmountFieldTemplate", () => {
       },
     });
 
-    expect(screen.getByText("Annual Fuel Amount (litres)")).toBeVisible();
+    expect(screen.getByText("Annual Fuel Amount")).toBeVisible();
+    expect(screen.getByText("litres")).toBeVisible();
   });
 
   it("renders error state with alert icon and error message when rawErrors are present", () => {

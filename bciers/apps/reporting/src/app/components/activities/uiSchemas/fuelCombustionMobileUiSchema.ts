@@ -77,6 +77,7 @@ const uiSchema = {
           },
           annualFuelAmount: {
             "ui:FieldTemplate": FuelAmountFieldTemplate,
+            "ui:widget": "ReadOnlyWidget",
           },
           emissions: {
             "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
