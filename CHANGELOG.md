@@ -1,5 +1,19 @@
 # Changelog
 
+# [5.11.0](https://github.com/bcgov/cas-registration/compare/v5.10.0...v5.11.0) (2026-05-14)
+
+### Bug Fixes
+
+- correct paginate_results typo ([766b27e](https://github.com/bcgov/cas-registration/commit/766b27e51fc4eba693d656b560f9c7b4d015091c))
+- remove validator blocking expected LFO facility behaviour ([5ff5eb4](https://github.com/bcgov/cas-registration/commit/5ff5eb43b1d7652725426ba95ac63fa298526cb3))
+- short circuit the ProductionDataForm to allow LFO facilities to bypass without a regulated product ([f1d38a0](https://github.com/bcgov/cas-registration/commit/f1d38a059572c55c2f6b5b68345047fa42ad73d7))
+- validator should not consider regulated_products required for reporting-only operations ([2a318e0](https://github.com/bcgov/cas-registration/commit/2a318e019c1ea367512e4f5a8e1de7b5d27bc434))
+
+### Features
+
+- added in-line units for product-related data in ProductionData, ComplianceSummary, and FinalReview pages ([b1aa9a2](https://github.com/bcgov/cas-registration/commit/b1aa9a2e6a632a371b331b3c10f435cc5bf3c3a6))
+- replaced generic 'production unit' str with actual unit for each product in FinalReview page ([9ee4f0a](https://github.com/bcgov/cas-registration/commit/9ee4f0a0b0ea2fd951b55cf82b7afec0784bfd32))
+
 # [5.10.0](https://github.com/bcgov/cas-registration/compare/v5.9.0...v5.10.0) (2026-05-07)
 
 ### Bug Fixes
