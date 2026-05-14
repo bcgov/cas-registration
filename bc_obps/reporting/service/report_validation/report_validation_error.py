@@ -26,7 +26,6 @@ class ReportValidationErrorKey(StrEnum):
     MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE = "missing_supplementary_report_version_change"
     REPORT_DATA_OUT_OF_BOUNDS_BY_FUEL_TYPE = "report_data_out_of_bounds_by_fuel_type"
     REPORT_DATA_OUT_OF_BOUNDS_BY_REPORTING_FIELD = "report_data_out_of_bounds_by_reporting_field"
-    ACTIVITY_DATA_COVERAGE = "activity_data_coverage"
     ERROR_REQUIRED_FIELDS = "error_required_fields"
     ACTIVITY_JSON_SCHEMA_VALIDATION_ERROR = "activity_json_schema_validation_error"
 

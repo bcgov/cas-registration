@@ -28,14 +28,6 @@ SECTION_APPLICABLE_FLOWS: dict[str, set[ReportingFlow]] = {
         ReportingFlow.REPORTING_ONLY_SFO,
         ReportingFlow.REPORTING_ONLY_LFO,
     },
-    "activity_data_coverage": {
-        ReportingFlow.SFO,
-        ReportingFlow.LFO,
-        ReportingFlow.NEW_ENTRANT_SFO,
-        ReportingFlow.NEW_ENTRANT_LFO,
-        ReportingFlow.REPORTING_ONLY_SFO,
-        ReportingFlow.REPORTING_ONLY_LFO,
-    },
     "review_facilities": {
         ReportingFlow.LFO,
         ReportingFlow.NEW_ENTRANT_LFO,

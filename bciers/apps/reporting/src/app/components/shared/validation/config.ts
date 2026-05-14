@@ -77,28 +77,6 @@ export const validationUIConfig: Partial<
         : undefined,
   }),
 
-  activity_data_coverage: createValidationUIConfig({
-    label: (error) => String(error.context?.section_title ?? "Activities"),
-    priority: 2,
-    renderMode: "inline_link",
-
-    getHref: (ctx) =>
-      ctx?.report_version_id && ctx?.facility_id
-        ? facilityRoutes.activities(
-            ctx.report_version_id,
-            String(ctx.facility_id),
-          )
-        : undefined,
-
-    formatMessage: ({ error }) => {
-      const ctx = error.context;
-
-      return `Missing activity data for ${String(
-        ctx?.facility_name ?? "facility",
-      )}. Not all required activities have been reported in Activities.`;
-    },
-  }),
-
   report_activity_json_validation: createValidationUIConfig({
     label: (error) => String(error.context?.activity_name ?? "Activity data"),
     priority: 3,

@@ -66,7 +66,6 @@ Example:
 ```python
 class ReportValidationErrorKey(StrEnum):
     ERROR_REQUIRED_FIELDS = "error_required_fields"
-    ACTIVITY_DATA_COVERAGE = "activity_data_coverage"
 ```
 
 ---

@@ -8,7 +8,6 @@ describe("validationUIConfig", () => {
   const expectedKeys: ReportValidationMessageKey[] = [
     "error_required_fields",
     "operation_boro_id",
-    "activity_data_coverage",
     "report_activity_json_validation",
     "report_data_out_of_bounds_by_fuel_type",
     "report_data_out_of_bounds_by_reporting_field",
@@ -24,7 +23,7 @@ describe("validationUIConfig", () => {
   ];
 
   it("has the expected number of configs", () => {
-    expect(Object.keys(validationUIConfig)).toHaveLength(15);
+    expect(Object.keys(validationUIConfig)).toHaveLength(14);
   });
 
   it("has a config for every validation key", () => {
