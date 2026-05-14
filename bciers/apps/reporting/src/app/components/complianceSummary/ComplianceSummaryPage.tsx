@@ -1,3 +1,4 @@
+import { extractFetchError } from "@bciers/utils/src/extractFetchError";
 import ComplianceSummaryForm from "@reporting/src/app/components/complianceSummary/ComplianceSummaryForm";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getComplianceData } from "@reporting/src/app/utils/complianceSummaryForm/getComplianceData";
@@ -11,10 +12,6 @@ import { ComplianceSummaryFormPayload } from "@reporting/src/app/components/comp
 export default async function ComplianceSummaryPage({
   version_id,
 }: HasReportVersion) {
-  const response = await getComplianceData(version_id);
-
-  const { payload, report_data } = response;
-
   const navInfo = await getNavigationInformation(
     HeaderStep.ComplianceSummary,
     ReportingPage.ComplianceSummary,
@@ -22,15 +19,23 @@ export default async function ComplianceSummaryPage({
     "",
   );
 
-  const summaryFormData: ComplianceSummaryFormPayload = {
-    ...payload,
-    reporting_year: report_data.reporting_year,
-  };
+  let summaryFormData: ComplianceSummaryFormPayload | undefined;
+  let error: string | undefined;
+  try {
+    const { payload, report_data } = await getComplianceData(version_id);
+    summaryFormData = {
+      ...payload,
+      reporting_year: report_data.reporting_year,
+    };
+  } catch (e) {
+    error = extractFetchError(e);
+  }
 
   return (
     <ComplianceSummaryForm
       summaryFormData={summaryFormData}
       navigationInformation={navInfo}
+      error={error}
     />
   );
 }

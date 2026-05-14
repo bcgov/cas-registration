@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from decimal import Decimal
 import logging
+from common.exceptions import UserError
 from registration.models.activity import Activity
 from reporting.models.report_activity import ReportActivity
 from reporting.models.report_product import ReportProduct
@@ -19,8 +20,8 @@ class BiogenicEmissionsSplit:
     lime_recovered_by_kiln_ratio: Decimal
 
     def __post_init__(self) -> None:
-        if not self.chemical_pulp_ratio + self.lime_recovered_by_kiln_ratio == Decimal('1'):
-            raise ValueError("The biogenic emissions split reported must total to 1.")
+        if self.chemical_pulp_ratio + self.lime_recovered_by_kiln_ratio != Decimal('1'):
+            raise UserError("The biogenic emissions split reported must total to 1.")
 
 
 def retrieve_pulp_and_paper_biogenic_emissions_split_default(report_version: ReportVersion) -> BiogenicEmissionsSplit:
@@ -36,7 +37,7 @@ def retrieve_pulp_and_paper_biogenic_emissions_split_default(report_version: Rep
 
     try:
         if not report_activity.json_data["biogenicIndustrialProcessEmissions"]["doesUtilizeLimeRecoveryKiln"]:
-            raise ValueError(
+            raise UserError(
                 """Under NAICS code 322112 and with either 'chemical pulp' or 'lime recovered by kiln' products,
                 biogenic industrial process emission details must be reported."""
             )

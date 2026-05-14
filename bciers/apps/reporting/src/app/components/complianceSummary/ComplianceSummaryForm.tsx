@@ -11,27 +11,31 @@ import {
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { ComplianceSummaryFormPayload } from "@reporting/src/app/components/complianceSummary/types";
+import FormFetchError from "@bciers/components/form/components/FormFetchError";
 import { hasJanMarProduction } from "@reporting/src/app/utils/hasJanMarProduction";
 import { createFormContext } from "../shared/formContextHelpers";
 
 interface Props {
-  summaryFormData: ComplianceSummaryFormPayload;
+  summaryFormData?: ComplianceSummaryFormPayload;
   navigationInformation: NavigationInformation;
+  error?: string;
 }
 
 const ComplianceSummaryForm: React.FC<Props> = ({
   summaryFormData,
   navigationInformation,
+  error,
 }) => {
-  // Generate schemas based on reporting year and prescence of jan_mar_production data
-  const displayJanMarProduction = hasJanMarProduction(summaryFormData);
+  const displayJanMarProduction = summaryFormData
+    ? hasJanMarProduction(summaryFormData)
+    : false;
   const complianceSummarySchema = createComplianceSummarySchema(
-    summaryFormData.reporting_year,
+    summaryFormData?.reporting_year,
     displayJanMarProduction,
   );
 
   const complianceSummaryUiSchema = createComplianceSummaryUiSchema(
-    summaryFormData.reporting_year,
+    summaryFormData?.reporting_year,
   );
 
   return (
@@ -45,19 +49,20 @@ const ComplianceSummaryForm: React.FC<Props> = ({
       <div className="w-full flex">
         <ReportingTaskList elements={navigationInformation.taskList} />
         <div className="w-full md:max-w-[60%]">
-          <FormBase
-            data-testid="compliance-summary-form"
-            schema={complianceSummarySchema}
-            uiSchema={complianceSummaryUiSchema}
-            formData={summaryFormData}
-            formContext={createFormContext(summaryFormData)}
-          >
-            <ReportingStepButtons
-              backUrl={navigationInformation.backUrl}
-              continueUrl={navigationInformation.continueUrl}
-              saveButtonDisabled={true}
+          <FormFetchError error={error}>
+            <FormBase
+              data-testid="compliance-summary-form"
+              schema={complianceSummarySchema}
+              uiSchema={complianceSummaryUiSchema}
+              formData={summaryFormData}
+              formContext={createFormContext(summaryFormData)}
             />
-          </FormBase>
+          </FormFetchError>
+          <ReportingStepButtons
+            backUrl={navigationInformation.backUrl}
+            continueUrl={navigationInformation.continueUrl}
+            saveButtonDisabled={true}
+          />
         </div>
       </div>
     </Box>

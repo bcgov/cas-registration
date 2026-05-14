@@ -10,13 +10,12 @@ export async function getComplianceData(
 ): Promise<ComplianceSummaryFormResponse> {
   const endpoint = `reporting/v2/report-version/${reportVersionId}/forms/compliance-summary-data`;
 
-  const response = await actionHandler(endpoint, "GET");
+  const response: ComplianceSummaryFormResponse | { error: string } =
+    await actionHandler(endpoint, "GET");
 
-  if ((response as any).error) {
-    throw new Error(
-      `Failed to fetch the compliance data for report version ${reportVersionId}.`,
-    );
+  if ("error" in response) {
+    throw new Error(response.error);
   }
 
-  return response as ComplianceSummaryFormResponse;
+  return response;
 }

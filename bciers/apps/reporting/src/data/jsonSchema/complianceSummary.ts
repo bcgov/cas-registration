@@ -182,7 +182,7 @@ export const createComplianceSummarySchema = (
   }
 };
 
-export const createComplianceSummaryUiSchema = (reportingYear: number) => {
+export const createComplianceSummaryUiSchema = (reportingYear?: number) => {
   if (reportingYear === 2024) {
     return complianceSummaryUiSchema2024;
   } else if (reportingYear === 2025) {
