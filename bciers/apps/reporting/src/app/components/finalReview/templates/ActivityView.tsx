@@ -21,6 +21,7 @@ export default function ActivityView({
   isDeleted = false,
   changeType,
   sourceTypeChange,
+  reporting_fields_display_titles,
 }: ActivitiesViewProps) {
   const activityIsAdded = isAdded || changeType === "added";
   const activityIsDeleted = isDeleted || changeType === "removed";
@@ -76,8 +77,18 @@ export default function ActivityView({
               // All other source types: arrays pass key as labelPrefix for "N+1" headings,
               // objects render recursively with no prefix.
               const content = Array.isArray(sourceTypeValue)
-                ? renderObject(sourceTypeValue, sourceTypeName, stIsDeleted)
-                : renderObject(sourceTypeValue, "", stIsDeleted);
+                ? renderObject(
+                    sourceTypeValue,
+                    sourceTypeName,
+                    stIsDeleted,
+                    reporting_fields_display_titles || {},
+                  )
+                : renderObject(
+                    sourceTypeValue,
+                    "",
+                    stIsDeleted,
+                    reporting_fields_display_titles || {},
+                  );
 
               return (
                 <SourceTypeBoxTemplate

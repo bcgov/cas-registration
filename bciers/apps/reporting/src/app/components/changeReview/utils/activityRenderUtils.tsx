@@ -79,6 +79,7 @@ export const renderObject = (
   obj: unknown,
   labelPrefix = "",
   isDeleted = false,
+  reportingFieldDisplayTitleBySlug: Record<string, string>,
 ): React.ReactNode => {
   const deletedStyles = getDeletedStyles(isDeleted);
 
@@ -110,7 +111,12 @@ export const renderObject = (
           <div key={`${labelPrefix}-${index}`} style={{ marginBottom: 12 }}>
             {renderHeading(`Source sub-type ${index + 1}:`, deletedStyles)}
             <div style={{ marginLeft: 10 }}>
-              {renderObject(orderedItem, labelPrefix, isDeleted)}
+              {renderObject(
+                orderedItem,
+                labelPrefix,
+                isDeleted,
+                reportingFieldDisplayTitleBySlug,
+              )}
             </div>
           </div>
         );
@@ -135,7 +141,12 @@ export const renderObject = (
         <div key={`${labelPrefix}-${index}`} style={containerStyle}>
           {title && renderHeading(title, deletedStyles)}
           <div style={{ marginLeft: 10 }}>
-            {renderObject(item, labelPrefix, isDeleted)}
+            {renderObject(
+              item,
+              labelPrefix,
+              isDeleted,
+              reportingFieldDisplayTitleBySlug,
+            )}
           </div>
         </div>
       );
@@ -173,7 +184,12 @@ export const renderObject = (
                   >
                     {renderHeading(`${formatKey(pKey)}:`, deletedStyles)}
                     <div style={{ marginLeft: 16 }}>
-                      {renderObject(pVal, pKey, isDeleted)}
+                      {renderObject(
+                        pVal,
+                        pKey,
+                        isDeleted,
+                        reportingFieldDisplayTitleBySlug,
+                      )}
                     </div>
                   </div>
                 );
@@ -189,7 +205,11 @@ export const renderObject = (
                     gap: "4px",
                   }}
                 >
-                  <strong style={deletedStyles}>{formatKey(pKey)}:</strong>
+                  <strong style={deletedStyles}>
+                    {reportingFieldDisplayTitleBySlug?.[pKey] ??
+                      formatKey(pKey)}
+                    :
+                  </strong>
                   <span style={deletedStyles}>{String(pVal)}</span>
                 </div>
               );
@@ -202,7 +222,12 @@ export const renderObject = (
       if (key === "fuelType" && isObjOrArr && !Array.isArray(value)) {
         return (
           <React.Fragment key={`${key}-${idx}`}>
-            {renderObject(value, "", isDeleted)}
+            {renderObject(
+              value,
+              "",
+              isDeleted,
+              reportingFieldDisplayTitleBySlug,
+            )}
           </React.Fragment>
         );
       }
@@ -225,7 +250,12 @@ export const renderObject = (
           )}
           {isObjOrArr ? (
             <span style={deletedStyles}>
-              {renderObject(value, key, isDeleted)}
+              {renderObject(
+                value,
+                key,
+                isDeleted,
+                reportingFieldDisplayTitleBySlug,
+              )}
             </span>
           ) : typeof value === "number" ? (
             <NumberField.Root

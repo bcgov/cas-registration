@@ -80,6 +80,9 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
         <ActivityView
           activity_data={facilityData.activity_data || []}
           isDeleted={isRemoved}
+          reporting_fields_display_titles={
+            facilityData.reporting_fields_display_titles || []
+          }
         />
 
         {/* Non-Attributable Emissions */}
