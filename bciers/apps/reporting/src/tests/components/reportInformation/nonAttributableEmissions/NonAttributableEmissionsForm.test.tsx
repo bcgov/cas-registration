@@ -89,7 +89,7 @@ describe("NonAttributableEmissionsForm Component", () => {
     expect(screen.getByText(/activity name\*/i)).toBeVisible();
     expect(screen.getByText(/source type\*/i)).toBeVisible();
     expect(screen.getByText(/emission category\*/i)).toBeVisible();
-    expect(screen.getByText(/gas type/i)).toBeVisible();
+    expect(screen.getByText(/gas type\*/i)).toBeVisible();
     // MUI's CheckboxGroupWidget is always visually hidden via CSS so we check the if the checkbox is in the document
     // and then check the label by text
     expect(
@@ -113,6 +113,25 @@ describe("NonAttributableEmissionsForm Component", () => {
 
     expect(await screen.findByDisplayValue("Test Activity")).toBeVisible();
     expect(await screen.findByDisplayValue("Test Source")).toBeVisible();
+    expect(screen.getByRole("checkbox", { name: /co2/i })).toBeChecked();
+  });
+
+  it("shows validation error when saving without selecting a gas type", async () => {
+    render(
+      <NonAttributableEmissionsForm
+        versionId={versionId}
+        facilityId={facilityId}
+        emissionFormData={emptyFormData}
+        gasTypes={gasTypes}
+        emissionCategories={emissionCategories}
+        navigationInformation={dummyNavigationInformation}
+      />,
+    );
+
+    fireEvent.click(screen.getByLabelText("Yes"));
+    fireEvent.click(screen.getByRole("button", { name: /Save & Continue/i }));
+
+    expect(await screen.findByText("Select at least one option")).toBeVisible();
   });
 
   it("submits form data and navigates on successful submission", async () => {

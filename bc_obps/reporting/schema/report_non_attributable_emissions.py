@@ -39,7 +39,7 @@ class ReportNonAttributableIn(ModelSchema):
 
     id: Optional[int] = Field(None)
     emission_category: str
-    gas_type: List[str]
+    gas_type: List[str] = Field(min_length=1)
 
     class Meta:
         alias_generator = alias_generators.to_snake

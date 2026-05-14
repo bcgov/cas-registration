@@ -75,13 +75,19 @@ export const generateUpdatedSchema = (
               type: "array",
               items: {
                 type: "object",
-                required: ["activity", "source_type", "emission_category"],
+                required: [
+                  "activity",
+                  "source_type",
+                  "emission_category",
+                  "gas_type",
+                ],
                 properties: {
                   activity: { type: "string", title: "Activity Name" },
                   source_type: { type: "string", title: "Source Type" },
                   gas_type: {
                     type: "array",
                     title: "Gas Type",
+                    minItems: 1,
                     items: {
                       type: "string",
                       enum: gasTypes.map((gas) => gas.chemical_formula),
