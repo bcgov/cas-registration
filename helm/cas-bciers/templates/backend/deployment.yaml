@@ -96,3 +96,21 @@ spec:
             - key: credentials.json
               path: attachment-credentials.json
       restartPolicy: Always
+      affinity:
+        {
+          podAntiAffinity: {
+            preferredDuringSchedulingIgnoredDuringExecution: [
+              {
+                podAffinityTerm: {
+                  labelSelector: {
+                    matchLabels: {
+                      app.kubernetes.io/instance: cas-bciers,
+                      component: backend
+                    }
+                  },
+                },
+                weight: 1
+              }
+            ]
+          }
+        }

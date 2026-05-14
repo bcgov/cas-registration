@@ -56,3 +56,21 @@ spec:
       restartPolicy: Always
       volumes:
         {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
+      affinity:
+        {
+          podAntiAffinity: {
+            preferredDuringSchedulingIgnoredDuringExecution: [
+              {
+                podAffinityTerm: {
+                  labelSelector: {
+                    matchLabels: {
+                      app.kubernetes.io/instance: cas-bciers,
+                      component: reporting-frontend
+                    }
+                  },
+                },
+                weight: 1
+              }
+            ]
+          }
+        }
