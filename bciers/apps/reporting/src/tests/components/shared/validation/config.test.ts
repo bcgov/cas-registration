@@ -23,7 +23,7 @@ describe("validationUIConfig", () => {
   ];
 
   it("has the expected number of configs", () => {
-    expect(Object.keys(validationUIConfig)).toHaveLength(15);
+    expect(Object.keys(validationUIConfig)).toHaveLength(14);
   });
 
   it("has a config for every validation key", () => {
