@@ -86,13 +86,13 @@ class TestReportDataByFueltypeValidator(TestCase):
     @patch(GET_REPORTING_FIELD_DISPLAY_NAME_PATH)
     def test_errors_when_fuel_amount_above_expected_bound(self, mock_reporting_field_display_name):
         mock_reporting_field_display_name.return_value = "Annual Fuel Amount"
-        ReportFuel.objects.update(json_data={"annualFuelAmount": 15000})
+        ReportFuel.objects.update(json_data={"annualFuelAmount": 250000})
         report_fuel = ReportFuel.objects.first()
         result = validate(self.test_infrastructure.report_version)
         assert result == {
             f"report_fuel_fuel_amount_value_outside_expected_bounds_{report_fuel.id}": ReportValidationError(
                 Severity.WARNING,
-                f"Fuel Amount value ({report_fuel.json_data['annualFuelAmount']}) is outside of the expected range (0.00 - 5000.00) for Activity: {report_fuel.report_source_type.report_activity.activity.name}, Source Type: {report_fuel.report_source_type.source_type.name}, Fuel Type: Diesel",
+                f"Fuel Amount value ({report_fuel.json_data['annualFuelAmount']}) is outside of the expected range (0.00 - 200000.00) for Activity: {report_fuel.report_source_type.report_activity.activity.name}, Source Type: {report_fuel.report_source_type.source_type.name}, Fuel Type: Diesel",
                 key=ReportValidationErrorKey.REPORT_DATA_OUT_OF_BOUNDS_BY_FUEL_TYPE,
                 context=ErrorContext(
                     report_version_id=report_fuel.report_version.id,
@@ -104,7 +104,7 @@ class TestReportDataByFueltypeValidator(TestCase):
                     source_type_name=report_fuel.report_source_type.source_type.name,
                     fuel_type_name=report_fuel.fuel_type.name,
                     reporting_field="Annual Fuel Amount",
-                    expected_range="0.00 - 5000.00",
+                    expected_range="0.00 - 200000.00",
                     user_input=str(report_fuel.json_data["annualFuelAmount"]),
                 ),
             )
@@ -119,7 +119,7 @@ class TestReportDataByFueltypeValidator(TestCase):
         assert result == {
             f"report_fuel_fuel_amount_value_outside_expected_bounds_{report_fuel.id}": ReportValidationError(
                 Severity.WARNING,
-                f"Fuel Amount value ({report_fuel.json_data['annualFuelAmount']}) is outside of the expected range (0.00 - 5000.00) for Activity: {report_fuel.report_source_type.report_activity.activity.name}, Source Type: {report_fuel.report_source_type.source_type.name}, Fuel Type: Diesel",
+                f"Fuel Amount value ({report_fuel.json_data['annualFuelAmount']}) is outside of the expected range (0.00 - 200000.00) for Activity: {report_fuel.report_source_type.report_activity.activity.name}, Source Type: {report_fuel.report_source_type.source_type.name}, Fuel Type: Diesel",
                 key=ReportValidationErrorKey.REPORT_DATA_OUT_OF_BOUNDS_BY_FUEL_TYPE,
                 context=ErrorContext(
                     report_version_id=report_fuel.report_version.id,
@@ -131,7 +131,7 @@ class TestReportDataByFueltypeValidator(TestCase):
                     source_type_name=report_fuel.report_source_type.source_type.name,
                     fuel_type_name=report_fuel.fuel_type.name,
                     reporting_field="Annual Fuel Amount",
-                    expected_range="0.00 - 5000.00",
+                    expected_range="0.00 - 200000.00",
                     user_input=str(report_fuel.json_data["annualFuelAmount"]),
                 ),
             )
