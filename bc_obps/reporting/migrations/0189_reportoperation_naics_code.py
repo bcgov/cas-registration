@@ -16,8 +16,7 @@ def populate_naics_code(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0175_V5_10_0'),
-        ('reporting', '0187_reportpersonresponsible_contact'),
+        ('reporting', '0188_V5_11_0'),
     ]
 
     operations = [
