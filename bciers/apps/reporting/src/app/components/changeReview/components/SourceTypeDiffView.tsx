@@ -15,6 +15,7 @@ interface SharedSourceTypeDiffViewProps {
   classNames: string;
   label: string;
   readonly: boolean;
+  reportingFieldDisplayTitleBySlug: Record<string, string>;
 }
 
 interface WholeSourceTypeDiffViewProps {
@@ -25,6 +26,7 @@ interface WholeSourceTypeDiffViewProps {
 interface SourceTypeDiffViewProps {
   sourceTypeGroup: SourceTypeGroup;
   sourceTypeName: string;
+  reportingFieldDisplayTitleBySlug: Record<string, string>;
 }
 
 export const WholeSourceTypeDiffView: React.FC<
@@ -41,7 +43,12 @@ export const WholeSourceTypeDiffView: React.FC<
       isDeleted={change.change_type === "removed"}
       description={
         <div style={dataCardStyle}>
-          {renderObject(value, "", change.change_type === "removed")}
+          {renderObject(
+            value,
+            "",
+            change.change_type === "removed",
+            props.reportingFieldDisplayTitleBySlug,
+          )}
         </div>
       }
     />
@@ -62,7 +69,14 @@ export const PartialSourceTypeDiffView: React.FC<
   return (
     <SourceTypeBoxTemplate
       {...props}
-      description={<Box ml={1}>{renderDiffTree(segmentedChanges)}</Box>}
+      description={
+        <Box ml={1}>
+          {renderDiffTree(
+            segmentedChanges,
+            props.reportingFieldDisplayTitleBySlug,
+          )}
+        </Box>
+      }
     />
   );
 };
@@ -75,6 +89,7 @@ export const SourceTypeDiffView: React.FC<SourceTypeDiffViewProps> = (
     classNames: "source-type-box",
     label: sourceTypeName,
     readonly: false,
+    reportingFieldDisplayTitleBySlug: props.reportingFieldDisplayTitleBySlug,
   };
 
   if (sourceTypeGroup.whole)

@@ -21,7 +21,7 @@ export default function ActivityView({
   isDeleted = false,
   changeType,
   sourceTypeChange,
-  reporting_fields_display_titles,
+  reportingFieldDisplayTitleBySlug,
 }: ActivitiesViewProps) {
   const activityIsAdded = isAdded || changeType === "added";
   const activityIsDeleted = isDeleted || changeType === "removed";
@@ -81,13 +81,13 @@ export default function ActivityView({
                     sourceTypeValue,
                     sourceTypeName,
                     stIsDeleted,
-                    reporting_fields_display_titles || {},
+                    reportingFieldDisplayTitleBySlug || {},
                   )
                 : renderObject(
                     sourceTypeValue,
                     "",
                     stIsDeleted,
-                    reporting_fields_display_titles || {},
+                    reportingFieldDisplayTitleBySlug || {},
                   );
 
               return (

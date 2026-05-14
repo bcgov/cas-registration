@@ -9,6 +9,8 @@ export interface SimpleActivityDiffProps {
   changes: ChangeItem[];
   /** When true, facility name headers are omitted (useful when the facility is already shown in a parent). */
   hideFacilityHeaders?: boolean;
+  /** Mapping of reporting field slugs to their display titles */
+  reportingFieldDisplayTitleBySlug: Record<string, string>;
 }
 
 /**
@@ -22,6 +24,7 @@ export interface SimpleActivityDiffProps {
 export const SimpleActivityDiff: React.FC<SimpleActivityDiffProps> = ({
   changes,
   hideFacilityHeaders = false,
+  reportingFieldDisplayTitleBySlug,
 }) => {
   const grouped = groupActivityChanges(changes);
 
@@ -40,6 +43,9 @@ export const SimpleActivityDiff: React.FC<SimpleActivityDiffProps> = ({
               key={activityName}
               activityName={activityName}
               activityGroup={activityGroup}
+              reportingFieldDisplayTitleBySlug={
+                reportingFieldDisplayTitleBySlug
+              }
             />
           ))}
         </Box>

@@ -36,14 +36,20 @@ export default function ChangeReviewForm({
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const [changesData, setChangesData] = useState<
-    { changed: ChangeItem[] } | undefined
+    | {
+        changed: ChangeItem[];
+        reporting_fields_display_titles: Record<string, string>;
+      }
+    | undefined
   >();
   useEffect(() => {
     if (!displayChanges) return;
 
     const fetchChanges = async () => {
-      const fetchedDiffData: { changed: ChangeItem[] } =
-        await getChangeReviewData(versionId);
+      const fetchedDiffData: {
+        changed: ChangeItem[];
+        reporting_fields_display_titles: Record<string, string>;
+      } = await getChangeReviewData(versionId);
 
       setChangesData(fetchedDiffData);
     };
@@ -96,6 +102,9 @@ export default function ChangeReviewForm({
           <ReviewChanges
             changes={changesData.changed}
             registrationPurpose={registrationPurpose}
+            reportingFieldDisplayTitleBySlug={
+              changesData.reporting_fields_display_titles
+            }
           />
         )}
         {displayChanges && !changesData && <Loading />}

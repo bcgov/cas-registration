@@ -216,7 +216,7 @@ export interface ReportData {
 
 export interface ActivitiesViewProps {
   activity_data: ActivityItem[] | Record<string, any>;
-  reporting_fields_display_titles?: Record<string, string>;
+  reportingFieldDisplayTitleBySlug?: Record<string, string>;
   isAdded?: boolean;
   isDeleted?: boolean;
   changeType?: ChangeType;
