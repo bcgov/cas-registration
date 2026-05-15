@@ -110,6 +110,11 @@ class ReportService:
         report_operation.operation_bcghgid = data.operation_bcghgid
         report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
 
+        # Capture previous operation activities so we can compute which activities
+        # are newly added by this save and propagate only those to existing facility
+        # reports as defaults (preserving any user-made facility-level selections).
+        previous_operation_activity_ids = set(report_operation.activities.values_list('id', flat=True))
+
         # Fetch and set ManyToMany fields
         activities = Activity.objects.filter(id__in=data.activities)
         report_operation.activities.set(activities)
@@ -117,16 +122,32 @@ class ReportService:
         report_operation.regulated_products.set(regulated_products)
         report_operation.save()
 
+        newly_added_operation_activity_ids = list(set(data.activities) - previous_operation_activity_ids)
+
         if report_operation.operation_type == 'Linear Facilities Operation':
             facility_reports: QuerySet[FacilityReport] = FacilityReport.objects.filter(
                 report_version__id=report_version_id
             )
             for f in facility_reports:
-                # For LFOs, only set activities if the facility doesn't have any yet (initial setup)
-                # This prevents overwriting user-selected activities at the facility level
-                if not f.activities.exists():
+                if f.is_completed:
+                    # Once a facility report is marked complete, do not propagate
+                    # operation-level activity changes to it. The user must reopen
+                    # the facility report to make further changes.
+                    pass
+                elif not f.activities.exists():
+                    # Initial setup: seed all operation activities as facility defaults.
                     FacilityReportService.add_activities_to_facility_report(
                         facility_report=f, activities=data.activities
+                    )
+                elif newly_added_operation_activity_ids:
+                    # In-progress facility: only add the newly-selected operation
+                    # activities so they appear pre-selected in the operation list on
+                    # the facility page. Activities removed from the operation are NOT
+                    # removed from the facility report; they will appear in the "other
+                    # activities" list with their current selection state preserved,
+                    # so the user can keep or uncheck them.
+                    FacilityReportService.add_activities_to_facility_report(
+                        facility_report=f, activities=newly_added_operation_activity_ids
                     )
                 # Always update regulated products
                 FacilityReportService.prune_report_product_data_for_facility_report(

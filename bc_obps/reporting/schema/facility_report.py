@@ -3,6 +3,7 @@ from uuid import UUID
 from ninja import Field, FilterSchema, ModelSchema
 from pydantic import alias_generators
 from reporting.models import FacilityReport
+from reporting.schema.report_operation import ActivitySchema
 
 
 class FacilityReportOut(ModelSchema):
@@ -21,6 +22,8 @@ class FacilityReportOut(ModelSchema):
 
     operation_id: Optional[UUID] = None
     is_sync_allowed: bool = True
+    report_operation_activities: List[ActivitySchema] = []
+    other_activities: List[ActivitySchema] = []
 
 
 class FacilityReportIn(ModelSchema):

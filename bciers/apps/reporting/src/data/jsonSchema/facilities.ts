@@ -12,7 +12,8 @@ export interface ActivityData {
 }
 
 export const buildFacilitySchema = (
-  activities: ActivityData[],
+  reportOperationActivities: ActivityData[],
+  otherActivities: ActivityData[],
   isSyncAllowed: boolean = true,
 ) =>
   ({
@@ -36,13 +37,29 @@ export const buildFacilitySchema = (
         title: "Activities",
         type: "string",
       },
-
-      activities: {
+      activity_selection_description: {
+        title:
+          "Select ONLY the activities that apply to this facility. Deselect any activities that are not applicable to this facility.",
+        type: "string",
+      },
+      report_operation_activities: {
         type: "array",
-        title: "Activities",
         items: {
           type: "string",
-          enum: activities.map((activitiy) => activitiy.name),
+          enum: reportOperationActivities.map((activity) => activity.name),
+        },
+        uniqueItems: true,
+      },
+      other_activities_title: {
+        title: "Other activities",
+        type: "string",
+      },
+      other_activities: {
+        type: "array",
+        title: "Other activities",
+        items: {
+          type: "string",
+          enum: otherActivities.map((activity) => activity.name),
         },
         uniqueItems: true,
       },
@@ -85,7 +102,22 @@ export const buildFacilityReviewUiSchema = (
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:classNames": "mt-2 mb-5 emission-array-header",
   },
-  activities: {
+  activity_selection_description: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+  },
+  report_operation_activities: {
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:widget": CheckboxGroupWidget,
+    "ui:options": {
+      label: false,
+      columns: 1,
+    },
+  },
+  other_activities_title: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:classNames": "mt-4 mb-2 emission-array-header",
+  },
+  other_activities: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": CheckboxGroupWidget,
     "ui:options": {

@@ -33,6 +33,31 @@ class TestFacilityReportService(TestCase):
             report_version_id=facility_report.report_version_id, facility_id=facility_report.facility_id
         )
 
+    @staticmethod
+    def test_returns_facility_report_with_split_activity_lists():
+        """The facility report response splits activities into those selected on the
+        related ReportOperation and the remaining "other" activities."""
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
+        a1 = activity_baker()
+        a2 = activity_baker()
+        a3 = activity_baker()
+        report_operation = baker.make_recipe(
+            'reporting.tests.utils.report_operation',
+            report_version=facility_report.report_version,
+        )
+        report_operation.activities.add(a1, a2)
+
+        result = FacilityReportService.get_facility_report_by_version_and_id(
+            report_version_id=facility_report.report_version_id,
+            facility_id=facility_report.facility_id,
+        )
+
+        operation_activity_ids = {a['id'] for a in result.report_operation_activities}
+        other_activity_ids = {a['id'] for a in result.other_activities}
+        assert {a1.id, a2.id}.issubset(operation_activity_ids)
+        assert a3.id in other_activity_ids
+        assert operation_activity_ids.isdisjoint(other_activity_ids)
+
     def test_get_activities_throws_if_facility_report_does_not_exist(self):
         with self.assertRaises(ObjectDoesNotExist) as exception_context:
             FacilityReportService.get_activity_ids_for_facility(

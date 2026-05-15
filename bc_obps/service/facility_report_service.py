@@ -5,6 +5,7 @@ from ninja import Query
 from registration.models import Activity, Facility
 from reporting.models import ReportActivity, ReportProductEmissionAllocation, ReportProduct
 from reporting.models.facility_report import FacilityReport
+from reporting.models.report_operation import ReportOperation
 from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.schema.facility_report import FacilityReportListInSchema, FacilityReportFilterSchema
 from django.db.models import QuerySet
@@ -36,6 +37,23 @@ class FacilityReportService:
         )
 
         facility_report.is_sync_allowed = SyncValidationService.is_facility_sync_allowed(report_version_id, facility_id)  # type: ignore[attr-defined]
+
+        # Partition all activities into those selected on the related ReportOperation
+        # and the remaining ("other") activities, so the facility review UI can render
+        # them as two separate checklists.
+        report_operation = ReportOperation.objects.filter(report_version_id=report_version_id).first()
+        operation_activity_ids = (
+            list(report_operation.activities.values_list('id', flat=True)) if report_operation else []
+        )
+        all_activities = list(
+            Activity.objects.all().order_by('weight', 'name').values('id', 'name', 'applicable_to', 'regulated_name')
+        )
+        facility_report.report_operation_activities = [  # type: ignore[attr-defined]
+            a for a in all_activities if a['id'] in operation_activity_ids
+        ]
+        facility_report.other_activities = [  # type: ignore[attr-defined]
+            a for a in all_activities if a['id'] not in operation_activity_ids
+        ]
         return facility_report
 
     @classmethod
