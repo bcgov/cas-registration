@@ -1,3 +1,4 @@
+{{- if .Values.enable_pdb }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
@@ -8,3 +9,4 @@ spec:
     matchLabels:
       app.kubernetes.io/instance: cas-bciers
       component: dashboard-frontend
+{{- end }}

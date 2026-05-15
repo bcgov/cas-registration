@@ -3,6 +3,8 @@
 # Declare variables to be passed into your templates.
 environment: ~
 
+enable_pdb: false
+
 backend:
   replicaCount: 1
 
