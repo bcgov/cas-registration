@@ -30,9 +30,8 @@ export interface FieldSchemaWithTooltip {
 
 export const mapOptionsWithTooltips = (
   fieldSchema: FieldSchemaWithTooltip,
-  enumNames: string[],
+  enumNames?: string[],
 ): OptionWithTooltip[] => {
-  console.log(enumNames);
   const enumValues = fieldSchema?.enum;
   if (enumValues) {
     const enumTooltips = fieldSchema?.enumTooltips;
@@ -60,7 +59,10 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
   const fieldSchema = schema.items as FieldSchemaWithTooltip;
   console.log(fieldSchema);
 
-  const options = mapOptionsWithTooltips(fieldSchema, uiSchema["ui:enumNames"]);
+  const options = mapOptionsWithTooltips(
+    fieldSchema,
+    uiSchema?.["ui:enumNames"] as string[],
+  );
 
   // // Track the currently highlighted option for keyboard accessibility
   const [highlightedOption, setHighlightedOption] =

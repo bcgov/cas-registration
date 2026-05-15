@@ -145,6 +145,9 @@ export default function OperationReviewForm({
   const uiSchema = buildOperationReviewUiSchema(
     formData.operation_id,
     formData.operation_name,
+    allActivities,
+    allRegulatedProducts,
+    allRepresentatives,
   );
 
   const confirmReportTypeChange = async () => {
