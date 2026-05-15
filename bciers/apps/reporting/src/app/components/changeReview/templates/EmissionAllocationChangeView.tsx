@@ -124,39 +124,99 @@ export const EmissionAllocationChangeView: React.FC<
     return changes;
   }
 
+  type ChangeMeta = {
+    categoryName: string;
+    displayLabel: string;
+  };
+
+  // Helper to extract category name and display label from flat field path format
+  const parseChangeMeta = (change: ChangeItem): ChangeMeta | null => {
+    const categoryMatch = change.field.match(
+      /\['report_product_emission_allocations']\['([^']+)']/,
+    );
+
+    if (!categoryMatch) return null;
+
+    // Determine display label and add change if valid
+    const categoryName = categoryMatch[1];
+
+    if (change.field.includes("emission_total")) {
+      return {
+        categoryName,
+        displayLabel: "Total Emissions",
+      };
+    }
+
+    if (change.field.includes("['products']['")) {
+      const productMatch = change.field.match(/\['products']\['([^']+)']/);
+      return {
+        categoryName,
+        displayLabel: productMatch?.[1] || "",
+      };
+    }
+
+    return null;
+  };
+
+  // Helper to handle legacy format for backward compatibility
+  const parseLegacyChangeMeta = (change: ChangeItem): ChangeMeta | null => {
+    const categoryMatch = change.field.match(/emission_category:(.*?)]/);
+
+    if (!categoryMatch) return null;
+
+    const categoryName = categoryMatch[1];
+
+    // Handle legacy format logic
+    const productMatch = change.field.match(/product:(.*?)]/);
+    let displayLabel = "";
+
+    if (change.field.includes("emission_total")) {
+      displayLabel = "Total Emissions";
+    } else if (productMatch) {
+      displayLabel = productMatch[1];
+    }
+
+    // Only add changes with non-zero values
+    if (
+      Number(change.newValue || 0) !== 0 ||
+      Number(change.oldValue || 0) !== 0
+    ) {
+      return {
+        categoryName,
+        displayLabel,
+      };
+    }
+
+    return null;
+  };
+
+  const upsertChange = (
+    categorizedChanges: Record<string, ProcessedChange>,
+    change: ChangeItem | DisplayChangeItem,
+    categoryName: string,
+    fallbackLabel: string = "",
+  ) => {
+    categorizedChanges[categoryName] ??= { categoryName, changes: [] };
+
+    categorizedChanges[categoryName].changes.push({
+      displayLabel: fallbackLabel,
+      ...change,
+    } as DisplayChangeItem);
+  };
+
   const processChanges = () => {
     const categorizedChanges: Record<string, ProcessedChange> = {};
     data.forEach((change) => {
       if (change.field.includes("report_product_emission_allocations")) {
-        // Extract category name from flat field path format
-        const categoryMatch = change.field.match(
-          /\['report_product_emission_allocations']\['([^']+)']/,
-        );
+        const changeMeta = parseChangeMeta(change);
 
-        if (categoryMatch) {
-          const categoryName = categoryMatch[1];
-
-          if (!categorizedChanges[categoryName]) {
-            categorizedChanges[categoryName] = { categoryName, changes: [] };
-          }
-
-          // Determine display label and add change if valid
-          let displayLabel = "";
-          if (change.field.includes("['emission_total']")) {
-            displayLabel = "Total Emissions";
-          } else if (change.field.includes("['products']['")) {
-            const productMatch = change.field.match(
-              /\['products']\['([^']+)']/,
-            );
-            displayLabel = productMatch?.[1] || "";
-          }
-
-          if (displayLabel) {
-            categorizedChanges[categoryName].changes.push({
-              ...change,
-              displayLabel,
-            } as DisplayChangeItem);
-          }
+        if (changeMeta) {
+          upsertChange(
+            categorizedChanges,
+            change,
+            changeMeta.categoryName,
+            changeMeta.displayLabel,
+          );
         } else {
           // Fallback to original nested object processing
           const changes = processCategoryChange(change);
@@ -165,46 +225,20 @@ export const EmissionAllocationChangeView: React.FC<
             (change.oldValue as EmissionCategoryData)?.emission_category_name ||
             "Unknown Category";
 
-          if (categoryName) {
-            if (!categorizedChanges[categoryName]) {
-              categorizedChanges[categoryName] = { categoryName, changes: [] };
-            }
-            categorizedChanges[categoryName].changes.push(...changes);
+          for (const change of changes) {
+            upsertChange(categorizedChanges, change, categoryName);
           }
         }
-      }
-      // Handle legacy format for backward compatibility
-      else if (change.field.includes("emission_category:")) {
-        const categoryMatch = change.field.match(/emission_category:(.*?)]/);
-        if (categoryMatch) {
-          const categoryName = categoryMatch[1];
-          if (!categorizedChanges[categoryName]) {
-            categorizedChanges[categoryName] = {
-              categoryName,
-              changes: [],
-            };
-          }
-
-          // Handle legacy format logic...
-          const productMatch = change.field.match(/product:(.*?)]/);
-          let displayLabel = "";
-
-          if (change.field.includes("emission_total")) {
-            displayLabel = "Total Emissions";
-          } else if (productMatch) {
-            displayLabel = productMatch[1];
-          }
-
-          // Only add changes with non-zero values
-          if (
-            Number(change.newValue || 0) !== 0 ||
-            Number(change.oldValue || 0) !== 0
-          ) {
-            categorizedChanges[categoryName].changes.push({
-              ...change,
-              displayLabel,
-            } as DisplayChangeItem);
-          }
+      } else if (change.field.includes("emission_category:")) {
+        // Handle legacy format for backward compatibility
+        const legacyChangeMeta = parseLegacyChangeMeta(change);
+        if (legacyChangeMeta) {
+          upsertChange(
+            categorizedChanges,
+            change,
+            legacyChangeMeta.categoryName,
+            legacyChangeMeta.displayLabel,
+          );
         }
       }
     });
