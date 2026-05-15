@@ -18,7 +18,8 @@ interface Props {
   version_id: number;
   operationId: string;
   facility_id: string;
-  activitiesData: ActivityData[];
+  reportOperationActivities: ActivityData[];
+  otherActivities: ActivityData[];
   navigationInformation: NavigationInformation;
   formsData: FacilityReviewFormData;
   schema: RJSFSchema;
@@ -30,7 +31,8 @@ export interface FacilityReviewFormData {
   facility_name: string;
   facility_type: string;
   facility_bcghgid: string | null;
-  activities: string[];
+  report_operation_activities: string[];
+  other_activities: string[];
   facility: string;
 }
 
@@ -38,7 +40,8 @@ export const FacilityReview: React.FC<Props> = ({
   version_id,
   operationId,
   facility_id,
-  activitiesData,
+  reportOperationActivities,
+  otherActivities,
   navigationInformation,
   formsData,
   schema,
@@ -52,30 +55,26 @@ export const FacilityReview: React.FC<Props> = ({
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
     const pathToRevalidate = `reporting/reports/${version_id}/facilities/${facility_id}/review-facility-information`;
-
-    if (formData.activities.length === 0) {
+    const selectedActivityNames = [
+      ...(formData.report_operation_activities ?? []),
+      ...(formData.other_activities ?? []),
+    ];
+    if (selectedActivityNames.length === 0) {
       setErrors([
-        createGenericReportValidationError(
-          "You must select at least one activity.",
-        ),
-      ]);
+        createGenericReportValidationError("You must select at least one activity."),]);
       return false;
     }
 
-    const activityNameToIdMap = new Map(
-      activitiesData.map((activity: ActivityData) => [
-        activity.name,
-        activity.id,
-      ]),
+    const activityNameToIdMap = new Map<string, number>(
+      [...reportOperationActivities, ...otherActivities].map(
+        (activity: ActivityData) => [activity.name, activity.id],
+      ),
     );
     const updatedFormData = {
       ...formData,
-      activities: formData.activities
-        .map((activityName: string) => {
-          return activityNameToIdMap.get(activityName);
-        })
-        .filter((id: number | undefined) => id !== undefined) // Filter out undefined IDs
-        .map(Number), // Ensure all IDs are numbers
+      activities: selectedActivityNames
+        .map((activityName: string) => activityNameToIdMap.get(activityName))
+        .filter((id): id is number => id !== undefined),
     };
 
     const response = await actionHandler(endpoint, method, pathToRevalidate, {

@@ -43,6 +43,11 @@ const mockActivitiesData: {
   id: number;
   applicable_to: string;
 }[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
+const mockOtherActivities: {
+  name: string;
+  id: number;
+  applicable_to: string;
+}[] = [{ name: "Activity 2", id: 2, applicable_to: "abc" }];
 const mockSchema = { testSchema: true };
 
 const mockFormData: FacilityReviewFormData = {
@@ -50,7 +55,8 @@ const mockFormData: FacilityReviewFormData = {
   facility_name: "Test Facility",
   facility_type: "Test Type",
   facility_bcghgid: null,
-  activities: ["Activity 1"],
+  report_operation_activities: ["Activity 1"],
+  other_activities: [],
   facility: "abcd",
 };
 
@@ -60,7 +66,8 @@ const renderFacilityReview = (
   <FacilityReview
     version_id={1000}
     facility_id="abcd"
-    activitiesData={mockActivitiesData}
+    reportOperationActivities={mockActivitiesData}
+    otherActivities={mockOtherActivities}
     navigationInformation={dummyNavigationInformation}
     formsData={formData}
     schema={mockSchema}
@@ -73,7 +80,8 @@ const mockFormDataWithoutActivities: FacilityReviewFormData = {
   facility_name: "Test Facility",
   facility_type: "Test Type",
   facility_bcghgid: null,
-  activities: [],
+  report_operation_activities: [],
+  other_activities: [],
   facility: "abcd",
 };
 const renderFacilityReviewWithoutActivities = (
@@ -82,7 +90,8 @@ const renderFacilityReviewWithoutActivities = (
   <FacilityReview
     version_id={1000}
     facility_id="abcd"
-    activitiesData={mockActivitiesData}
+    reportOperationActivities={mockActivitiesData}
+    otherActivities={mockOtherActivities}
     navigationInformation={dummyNavigationInformation}
     formsData={formData}
     schema={mockSchema}
@@ -108,7 +117,7 @@ describe("The FacilityReview component", () => {
       "POST",
       "reporting/reports/1000/facilities/abcd/review-facility-information",
       {
-        body: '{"operation_id":"1234","facility_name":"Test Facility","facility_type":"Test Type","facility_bcghgid":null,"activities":[1],"facility":"abcd"}',
+        body: '{"operation_id":"1234","facility_name":"Test Facility","facility_type":"Test Type","facility_bcghgid":null,"report_operation_activities":["Activity 1"],"other_activities":[],"facility":"abcd","activities":[1]}',
       },
     );
   });
@@ -126,7 +135,8 @@ describe("The FacilityReview component", () => {
           facility_name: "Test Facility",
           facility_type: "Test Type",
           facility_bcghgid: null,
-          activities: ["Activity 1"],
+          report_operation_activities: ["Activity 1"],
+          other_activities: ["Activity 2"],
           facility: "abcd",
         },
       }),
@@ -140,7 +150,8 @@ describe("The FacilityReview component", () => {
       facility_name: "Test Facility",
       facility_type: "Test Type",
       facility_bcghgid: null,
-      activities: ["Activity 1"],
+      report_operation_activities: ["Activity 1"],
+      other_activities: ["Activity 2"],
       facility: "abcd",
     });
   });
@@ -177,7 +188,8 @@ describe("The FacilityReview component", () => {
       <FacilityReview
         version_id={1000}
         facility_id="abcd"
-        activitiesData={mockActivitiesData}
+        reportOperationActivities={mockActivitiesData}
+        otherActivities={mockOtherActivities}
         navigationInformation={dummyNavigationInformation}
         formsData={mockFormData}
         schema={mockSchema}
@@ -201,7 +213,8 @@ describe("The FacilityReview component", () => {
       <FacilityReview
         version_id={1000}
         facility_id="abcd"
-        activitiesData={mockActivitiesData}
+        reportOperationActivities={mockActivitiesData}
+        otherActivities={mockOtherActivities}
         navigationInformation={dummyNavigationInformation}
         formsData={mockFormData}
         schema={mockSchema}
@@ -219,7 +232,11 @@ describe("The FacilityReview component", () => {
   });
 
   it("schema includes info_note and sync_button when isSyncAllowed is true", () => {
-    const schemaWithSync = buildFacilitySchema(mockActivitiesData, true);
+    const schemaWithSync = buildFacilitySchema(
+      mockActivitiesData,
+      mockOtherActivities,
+      true,
+    );
 
     // Verify info_note and sync_button are in the schema properties
     expect(schemaWithSync.properties?.info_note).toBeDefined();
@@ -227,7 +244,11 @@ describe("The FacilityReview component", () => {
   });
 
   it("schema excludes info_note and sync_button when isSyncAllowed is false", () => {
-    const schemaWithoutSync = buildFacilitySchema(mockActivitiesData, false);
+    const schemaWithoutSync = buildFacilitySchema(
+      mockActivitiesData,
+      mockOtherActivities,
+      false,
+    );
 
     // Verify info_note and sync_button are NOT in the schema properties
     expect(schemaWithoutSync.properties?.info_note).toBeUndefined();
