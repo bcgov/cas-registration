@@ -68,6 +68,7 @@ spec:
                       component: reporting-frontend
                     }
                   },
+                  topologyKey: kubernetes.io/hostname
                 },
                 weight: 1
               }

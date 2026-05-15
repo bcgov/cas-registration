@@ -68,6 +68,7 @@ spec:
                       component: registration-frontend
                     }
                   },
+                  topologyKey: kubernetes.io/hostname
                 },
                 weight: 1
               }

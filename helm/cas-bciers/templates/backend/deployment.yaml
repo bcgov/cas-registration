@@ -108,6 +108,7 @@ spec:
                       component: backend
                     }
                   },
+                  topologyKey: kubernetes.io/hostname
                 },
                 weight: 1
               }
