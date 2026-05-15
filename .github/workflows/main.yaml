@@ -82,6 +82,7 @@ jobs:
       ]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
+      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       image_url: "ghcr.io/bcgov/cas-admin-frontend"
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
       nx_app_port: 4001
@@ -97,6 +98,7 @@ jobs:
       ]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
+      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       image_url: "ghcr.io/bcgov/cas-reg-frontend"
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
       nx_app_port: 4000
@@ -115,6 +117,7 @@ jobs:
       ]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
+      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       docker_compose_file: "docker-compose-bciers-apps.yaml"
       image_url: "ghcr.io/bcgov/cas-dash-frontend"
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
@@ -125,6 +128,7 @@ jobs:
       [build-backend, build-dashboard-e2e, build-compliance, check-nx-affected]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
+      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       docker_compose_file: "docker-compose-bciers-apps.yaml"
       image_url: "ghcr.io/bcgov/cas-compliance-frontend"
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
@@ -136,6 +140,7 @@ jobs:
       [build-backend, build-dashboard-e2e, build-reporting, check-nx-affected]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
+      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       docker_compose_file: "docker-compose-bciers-apps.yaml"
       image_url: "ghcr.io/bcgov/cas-rep-frontend"
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}

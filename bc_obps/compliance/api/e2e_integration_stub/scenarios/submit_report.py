@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Any, Optional, cast
 from django.http import HttpRequest
 from compliance.models import (
@@ -8,6 +9,8 @@ from compliance.models import (
 from ..schemas import ScenarioPayload
 from ..utils import extract_user_guid
 from .base import ScenarioHandler
+
+FIXED_SNAPSHOT_TIMESTAMP = datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
 
 
 class SubmitReportScenario(ScenarioHandler):
@@ -62,6 +65,16 @@ class SubmitReportScenario(ScenarioHandler):
             user_guid=user_guid,
             sign_off_data=signoff,
         )
+
+        # Pin updated_at to a fixed value so screenshot diffs are deterministic
+        from common.lib import pgtrigger
+        from reporting.models.report_version import ReportVersion
+
+        with pgtrigger.ignore(
+            "reporting.ReportVersion:immutable_report_version",
+            "reporting.ReportVersion:set_updated_audit_columns",
+        ):
+            ReportVersion.objects.filter(id=report_version.id).update(updated_at=FIXED_SNAPSHOT_TIMESTAMP)
 
         compliance_report = ComplianceReport.objects.filter(report_id=report_version.report_id).first()
         if compliance_report is None:
