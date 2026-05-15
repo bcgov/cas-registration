@@ -68,6 +68,7 @@ spec:
                       component: compliance-frontend
                     }
                   },
+                  topologyKey: kubernetes.io/hostname
                 },
                 weight: 1
               }
