@@ -459,6 +459,44 @@ describe("customTransformErrors", () => {
     expect(transformedErrors[0].message).toBe(customFormatsErrorMessages.phone);
   });
 
+  // activities array field vs sub-field required error distinction
+  it("returns 'Select at least one option' for a required error on the activities array itself", () => {
+    const activitiesArrayError = [
+      {
+        name: "required",
+        property: ".activities",
+        message: "must have required property 'activities'",
+        params: { missingProperty: "activities" },
+        stack: "must have required property 'activities'",
+        schemaPath: "#/required",
+      },
+    ];
+    const transformedErrors = customTransformErrors(
+      activitiesArrayError,
+      customFormatsErrorMessages,
+    );
+    expect(transformedErrors[0].message).toBe("Select at least one option");
+  });
+
+  it("returns a field-level required message for a sub-field inside activities, not 'Select at least one option'", () => {
+    const activitySubFieldError = [
+      {
+        name: "required",
+        property: ".activities.0.activity",
+        message: "must have required property 'Activity Name'",
+        params: { missingProperty: "activity" },
+        stack: "must have required property 'Activity Name'",
+        schemaPath: "#/properties/activities/items/required",
+      },
+    ];
+    const transformedErrors = customTransformErrors(
+      activitySubFieldError,
+      customFormatsErrorMessages,
+    );
+    expect(transformedErrors[0].message).toBe("Activity Name is required");
+    expect(transformedErrors[0].message).not.toBe("Select at least one option");
+  });
+
   // Emissions, methodology and gas type filtering tests
   describe("emissions methodology and gas type filtering", () => {
     it("filters out oneOf errors at the emission level", () => {

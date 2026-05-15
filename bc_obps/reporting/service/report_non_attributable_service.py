@@ -1,8 +1,7 @@
 from typing import List
 from uuid import UUID
-
+from django.db.models import QuerySet
 from reporting.models import ReportNonAttributableEmissions, EmissionCategory, ReportVersion, FacilityReport, GasType
-
 from reporting.schema.report_non_attributable_emissions import ReportNonAttributableIn
 
 
@@ -10,9 +9,11 @@ class ReportNonAttributableService:
     @classmethod
     def get_report_non_attributable_by_version_id(
         cls, report_version_id: int, facility_id: UUID
-    ) -> List[ReportNonAttributableEmissions]:
-        facility_report = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
-        return list(ReportNonAttributableEmissions.objects.filter(facility_report=facility_report))
+    ) -> QuerySet[ReportNonAttributableEmissions]:
+        return ReportNonAttributableEmissions.objects.filter(
+            facility_report__facility_id=facility_id,
+            facility_report__report_version_id=report_version_id,
+        )
 
     @classmethod
     def save_report_non_attributable_emissions(
@@ -37,13 +38,13 @@ class ReportNonAttributableService:
             emission_category = EmissionCategory.objects.get(category_name=emission_category_name)
 
             # Using the object attributes instead of .get()
-            report_non_attributable, created = ReportNonAttributableEmissions.objects.update_or_create(
+            report_non_attributable, _ = ReportNonAttributableEmissions.objects.update_or_create(
                 id=activity_data.id,
                 defaults={
                     "report_version": report_version,
                     "facility_report": facility_report,
-                    "activity": activity_data.activity,
-                    "source_type": activity_data.source_type,
+                    "activity": activity_data.activity,  # type: ignore[attr-defined] # mypy not aware of model schema field
+                    "source_type": activity_data.source_type,  # type: ignore[attr-defined] # mypy not aware of model schema field
                     "emission_category": emission_category,
                 },
             )

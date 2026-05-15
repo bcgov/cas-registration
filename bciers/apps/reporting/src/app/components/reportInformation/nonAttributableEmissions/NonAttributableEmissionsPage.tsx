@@ -12,18 +12,19 @@ export default async function NonAttributableEmissionsPage({
   version_id,
   facility_id,
 }: HasFacilityId) {
-  const gasTypes = await getBasicGasTypes();
-  const emissionCategories = await getAllEmissionCategories();
-  const emissionFormData = await getNonAttributableEmissionsData(
-    version_id,
-    facility_id,
-  );
-
-  const tasklistData = await getReportInformationTasklist(
-    version_id,
-    facility_id,
-  );
-  const orderedActivities = await getOrderedActivities(version_id, facility_id);
+  const [
+    gasTypes,
+    emissionCategories,
+    emissionFormData,
+    tasklistData,
+    orderedActivities,
+  ] = await Promise.all([
+    getBasicGasTypes(),
+    getAllEmissionCategories(),
+    getNonAttributableEmissionsData(version_id, facility_id),
+    getReportInformationTasklist(version_id, facility_id),
+    getOrderedActivities(version_id, facility_id),
+  ]);
 
   const navigationInformation = await getNavigationInformation(
     HeaderStep.ReportInformation,
@@ -36,28 +37,6 @@ export default async function NonAttributableEmissionsPage({
     },
   );
 
-  const gasTypeMap = gasTypes.reduce(
-    (
-      acc: { [x: string]: any },
-      gas: { id: string | number; chemical_formula: any },
-    ) => {
-      acc[gas.id] = gas.chemical_formula;
-      return acc;
-    },
-    {} as Record<number, string>,
-  );
-
-  const emissionCategoryMap = emissionCategories.reduce(
-    (
-      acc: { [x: string]: any },
-      category: { id: string | number; category_name: any },
-    ) => {
-      acc[category.id] = category.category_name;
-      return acc;
-    },
-    {} as Record<number, string>,
-  );
-
   return (
     <NonAttributableEmissionsForm
       versionId={version_id}
@@ -65,8 +44,6 @@ export default async function NonAttributableEmissionsPage({
       emissionFormData={emissionFormData}
       gasTypes={gasTypes}
       emissionCategories={emissionCategories}
-      gasTypeMap={gasTypeMap}
-      emissionCategoryMap={emissionCategoryMap}
       navigationInformation={navigationInformation}
     />
   );

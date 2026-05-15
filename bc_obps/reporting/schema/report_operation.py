@@ -1,20 +1,10 @@
 from uuid import UUID
-
 from ninja import ModelSchema, Schema
-
 from registration.schema import RegulatedProductSchema
 from reporting.models import ReportOperationRepresentative
 from reporting.models.report_operation import ReportOperation
 from pydantic import alias_generators
 from typing import List, Optional
-
-
-def to_camel(string: str) -> str:
-    return alias_generators.to_camel(string)
-
-
-def to_snake(string: str) -> str:
-    return alias_generators.to_snake(string)
 
 
 class ReportOperationOut(ModelSchema):
@@ -23,7 +13,7 @@ class ReportOperationOut(ModelSchema):
     """
 
     class Meta:
-        alias_generator = to_snake
+        alias_generator = alias_generators.to_snake
         model = ReportOperation
         fields = [
             'operator_legal_name',

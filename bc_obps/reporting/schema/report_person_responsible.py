@@ -4,10 +4,6 @@ from pydantic import alias_generators, ConfigDict
 from reporting.models import ReportPersonResponsible
 
 
-def to_snake(string: str) -> str:
-    return alias_generators.to_snake(string)
-
-
 class ReportPersonResponsibleOut(ModelSchema):
     """
     Schema for the get report operation endpoint response output
@@ -46,7 +42,7 @@ class ReportPersonResponsibleIn(ModelSchema):
     contact_id: Optional[int] = None
 
     class Meta:
-        alias_generator = to_snake
+        alias_generator = alias_generators.to_snake
         model = ReportPersonResponsible
         fields = [
             'street_address',

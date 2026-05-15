@@ -1,18 +1,8 @@
 from typing import Annotated, List, Optional
 from uuid import UUID
-
 from ninja import Field, FilterSchema, ModelSchema
 from pydantic import alias_generators
-
 from reporting.models import FacilityReport
-
-
-def to_camel(string: str) -> str:
-    return alias_generators.to_camel(string)
-
-
-def to_snake(string: str) -> str:
-    return alias_generators.to_snake(string)
 
 
 class FacilityReportOut(ModelSchema):
@@ -25,7 +15,7 @@ class FacilityReportOut(ModelSchema):
         return str(obj.facility)
 
     class Meta:
-        alias_generator = to_snake
+        alias_generator = alias_generators.to_snake
         model = FacilityReport
         fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'facility']
 
@@ -44,14 +34,14 @@ class FacilityReportIn(ModelSchema):
     activities: List[int]
 
     class Meta:
-        alias_generator = to_snake
+        alias_generator = alias_generators.to_snake
         model = FacilityReport
         fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities']
 
 
 class FacilityReportListSchema(ModelSchema):
     class Meta:
-        alias_generator = to_snake
+        alias_generator = alias_generators.to_snake
         model = FacilityReport
         fields = ['id', 'facility_name', 'facility', 'facility_bcghgid', 'is_completed']
 
@@ -61,7 +51,7 @@ class FacilityReportListInSchema(ModelSchema):
     is_completed: bool
 
     class Meta:
-        alias_generator = to_snake
+        alias_generator = alias_generators.to_snake
         model = FacilityReport
         fields = ['is_completed']
 
