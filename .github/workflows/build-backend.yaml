@@ -45,9 +45,16 @@ jobs:
           key: ${{ runner.os }}-buildx-bc_obps-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-bc_obps
+      - name: Get Python version from .tool-versions
+        id: python_version
+        run: |
+          PYTHON_VERSION=$(grep '^python ' ./bc_obps/.tool-versions | awk '{print $2}')
+          echo "value=${PYTHON_VERSION}" >> $GITHUB_OUTPUT
+        shell: bash
       - name: Build image
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         with:
+          build-args: PYTHON_VERSION=${{ steps.python_version.outputs.value }}
           context: bc_obps
           builder: ${{ steps.buildx.outputs.name }}
           push: true

@@ -1,7 +1,10 @@
+# In CI, the Python version is specified in the build args, see .github/workflows/build-backend.yaml
+ARG PYTHON_VERSION
+
 ####################
 # Base Stage
 ####################
-FROM dhi.io/python:3.12.13-debian13-dev AS base
+FROM dhi.io/python:${PYTHON_VERSION}-debian13-dev AS base
 
 # Prevent Python from writing .pyc files to disk
 ENV PYTHONDONTWRITEBYTECODE=1 \
