@@ -2,7 +2,7 @@
 
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
 import { actionHandler } from "@bciers/actions";
-import { RJSFSchema } from "@rjsf/utils";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import { getOperationRegistration } from "@bciers/actions/api";
@@ -10,7 +10,6 @@ import {
   createNestedFormData,
   createUnnestedFormData,
 } from "@bciers/components/form/formDataUtils";
-import { registrationOperationInformationUiSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   RegistrationPurposeHelpText,
@@ -24,6 +23,7 @@ import { Dict } from "@bciers/types/dictionary";
 interface OperationInformationFormProps {
   rawFormData: Dict;
   schema: RJSFSchema;
+  uiSchema: UiSchema;
   step: number;
   steps: string[];
 }
@@ -31,6 +31,7 @@ interface OperationInformationFormProps {
 const OperationInformationForm = ({
   rawFormData,
   schema: initialSchema,
+  uiSchema,
   step,
   steps,
 }: OperationInformationFormProps) => {
@@ -56,12 +57,12 @@ const OperationInformationForm = ({
   const continueRegistration =
     searchParams.get("continueRegistration") === "true";
   const [currentUiSchema, setCurrentUiSchema] = useState({
-    ...registrationOperationInformationUiSchema,
+    ...uiSchema,
     section1: {
-      ...registrationOperationInformationUiSchema.section1,
+      ...uiSchema.section1,
 
       operation: {
-        ...registrationOperationInformationUiSchema.section1.operation,
+        ...uiSchema.section1.operation,
         // Operation field is read-only if the user is continuing a registration from the Admin
         ...(continueRegistration && {
           "ui:widget": "ReadOnlyComboBoxWidget",

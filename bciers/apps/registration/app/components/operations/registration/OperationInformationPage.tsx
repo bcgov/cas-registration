@@ -1,4 +1,7 @@
-import { createRegistrationOperationInformationSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
+import {
+  createRegistrationOperationInformationSchema,
+  createRegistrationOperationInformationUiSchema,
+} from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
 import { getOperationRegistration } from "@bciers/actions/api";
 import OperationInformationForm from "apps/registration/app/components/operations/registration/OperationInformationForm";
 import { UUID } from "crypto";
@@ -26,6 +29,7 @@ const OperationInformationPage = async ({
     <OperationInformationForm
       rawFormData={formData}
       schema={await createRegistrationOperationInformationSchema()}
+      uiSchema={await createRegistrationOperationInformationUiSchema()}
       step={step}
       steps={steps}
     />

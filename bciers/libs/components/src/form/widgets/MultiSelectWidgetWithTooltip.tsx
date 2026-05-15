@@ -57,7 +57,6 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
 }) => {
   const isValue = value && value.length !== 0 && value?.[0] !== undefined;
   const fieldSchema = schema.items as FieldSchemaWithTooltip;
-  console.log(fieldSchema);
 
   const options = mapOptionsWithTooltips(
     fieldSchema,
