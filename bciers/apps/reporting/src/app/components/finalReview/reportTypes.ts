@@ -15,6 +15,7 @@ export interface ReportOperation {
   operation_bcghgid: string | null;
   bc_obps_regulated_operation_id: string;
   registration_purpose: string;
+  naics_code: string | null;
 }
 
 export interface ReportPersonResponsible {

@@ -88,8 +88,12 @@ class TestReportOperationService:
         self.report_operation.refresh_from_db()
         assert self.report_operation.operation_name == "New Operation Name"
         assert self.report_operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
+        assert self.report_operation.naics_code == self.operation.naics_code
 
     def test_get_report_operation_by_version_id(self):
+        self.report_operation.naics_code = self.operation.naics_code
+        self.report_operation.save()
+
         result = ReportOperationService.get_report_operation_by_version_id(self.report_version.id)
 
         assert result["id"] == self.report_operation.id
@@ -98,3 +102,5 @@ class TestReportOperationService:
         assert result["operation_report_status"] == self.report_version.status
         assert self.representative in result["report_operation_representatives"]
         assert self.representative.id in result["operation_representative_name"]
+        naics = self.operation.naics_code
+        assert result["naics_code"] == f"{naics.naics_code} - {naics.naics_description}"

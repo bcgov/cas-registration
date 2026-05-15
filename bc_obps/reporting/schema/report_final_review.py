@@ -142,6 +142,7 @@ class ReportOperationSchema(ModelSchema):
     regulated_products: str
     representatives: str
     report_type: str
+    naics_code: Optional[str] = None
 
     @staticmethod
     def resolve_representatives(obj: ReportOperation) -> str:
@@ -161,6 +162,11 @@ class ReportOperationSchema(ModelSchema):
     @staticmethod
     def resolve_report_type(obj: ReportOperation) -> str:
         return obj.report_version.report_type if obj.report_version else ""
+
+    @staticmethod
+    def resolve_naics_code(obj: ReportOperation) -> Optional[str]:
+        naics = obj.naics_code
+        return f"{naics.naics_code} - {naics.naics_description}" if naics else None
 
     class Meta:
         model = ReportOperation
