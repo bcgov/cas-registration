@@ -1,10 +1,10 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "cas-bciers.fullname" . }}-compliance-frontend-pdb
+  name: {{ include "cas-bciers.fullname" . }}-dashboard-frontend-pdb
 spec:
   minAvailable: 1
   selector:
     matchLabels:
       app.kubernetes.io/instance: cas-bciers
-      component: compliance-frontend
+      component: dashboard-frontend
