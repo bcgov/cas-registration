@@ -14,7 +14,7 @@ const RegulatedProductMultiSelectWidget = (props: WidgetProps) => {
 
   const fieldSchema = props.schema?.items as FieldSchemaWithTooltip;
   const enumIds = fieldSchema?.enum ?? [];
-  const enumNames = fieldSchema?.enumNames ?? [];
+  const enumNames = (props.uiSchema?.["ui:enumNames"] as string[]) ?? [];
 
   const chemicalPulpProductId = enumIds[enumNames.indexOf(CHEMICAL_PULP_NAME)];
 

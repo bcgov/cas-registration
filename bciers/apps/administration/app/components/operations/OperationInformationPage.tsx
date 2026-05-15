@@ -1,7 +1,10 @@
 import OperationInformationForm from "./OperationInformationForm";
 import NewTabBanner from "@bciers/components/layout/NewTabBanner";
 import { getOperationWithDocuments } from "@bciers/actions/api";
-import { createAdministrationOperationInformationSchema } from "../../data/jsonSchema/operationInformation/administrationOperationInformation";
+import {
+  createAdministrationOperationInformationSchema,
+  createAdministrationOperationInformationUiSchema,
+} from "../../data/jsonSchema/operationInformation/administrationOperationInformation";
 import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
@@ -31,6 +34,8 @@ const OperationInformationPage = async ({
     operation.status,
   );
 
+  const uiSchema = await createAdministrationOperationInformationUiSchema();
+
   return (
     <>
       <NewTabBanner />
@@ -45,6 +50,7 @@ const OperationInformationPage = async ({
         // these schemas are used to support changing the registration purpose
         eioSchema={eioSchema}
         generalSchema={generalSchema}
+        uiSchema={uiSchema}
       />
     </>
   );

@@ -8,19 +8,17 @@ import {
   createMultipleOperatorsInformationSchema,
   multipleOperatorsInformationUiSchema,
 } from "apps/administration/app/data/jsonSchema/operationInformation/multipleOperatorsInformation";
-import {
-  createRegistrationPurposeSchema,
-  registrationPurposeUISchema,
-} from "./registrationPurpose";
+import { createRegistrationPurposeSchemas } from "./registrationPurpose";
 import { Apps } from "@bciers/utils/src/enums";
 
 export const createRegistrationOperationInformationSchema =
   async (): Promise<RJSFSchema> => {
+    const registrationPurposeSchemas = await createRegistrationPurposeSchemas();
     const registrationOperationInformationSchema: RJSFSchema = {
       title: "Operation Information",
       type: "object",
       properties: {
-        section1: await createRegistrationPurposeSchema(),
+        section1: registrationPurposeSchemas.schema,
         section2: await createOperationInformationSchema(
           Apps.REGISTRATION,
           undefined,
@@ -31,10 +29,15 @@ export const createRegistrationOperationInformationSchema =
     return registrationOperationInformationSchema;
   };
 
-export const registrationOperationInformationUiSchema: UiSchema = {
-  "ui:FieldTemplate": FieldTemplate,
-  "ui:classNames": "form-heading-label",
-  section1: registrationPurposeUISchema,
-  section2: operationInformationUISchema,
-  section3: multipleOperatorsInformationUiSchema,
-};
+export const createRegistrationOperationInformationUiSchema =
+  async (): Promise<UiSchema> => {
+    const registrationPurposeSchemas = await createRegistrationPurposeSchemas();
+    const registrationOperationInformationUiSchema: UiSchema = {
+      "ui:FieldTemplate": FieldTemplate,
+      "ui:classNames": "form-heading-label",
+      section1: registrationPurposeSchemas.uiSchema,
+      section2: operationInformationUISchema,
+      section3: multipleOperatorsInformationUiSchema,
+    };
+    return registrationOperationInformationUiSchema;
+  };

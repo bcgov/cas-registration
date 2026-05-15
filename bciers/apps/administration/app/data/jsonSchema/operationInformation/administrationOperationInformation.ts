@@ -8,10 +8,7 @@ import {
   createMultipleOperatorsInformationSchema,
   multipleOperatorsInformationUiSchema,
 } from "./multipleOperatorsInformation";
-import {
-  createAdministrationRegistrationInformationSchema,
-  registrationInformationUiSchema,
-} from "./administrationRegistrationInformation";
+import { createAdministrationRegistrationInformationSchema } from "./administrationRegistrationInformation";
 import { Apps, OperationStatus } from "@bciers/utils/src/enums";
 
 import { optedInOperationDetailsUiSchema } from "./optedInOperation";
@@ -20,6 +17,8 @@ export const createAdministrationOperationInformationSchema = async (
   registrationPurposeValue: RegistrationPurposes | undefined,
   status: OperationStatus,
 ): Promise<RJSFSchema> => {
+  const registrationInformationSchemas =
+    await createAdministrationRegistrationInformationSchema();
   const administrationOperationInformationSchema: RJSFSchema = {
     type: "object",
     properties: {
@@ -29,7 +28,7 @@ export const createAdministrationOperationInformationSchema = async (
       ),
       section2: await createMultipleOperatorsInformationSchema(),
       ...(status === OperationStatus.REGISTERED && {
-        section3: await createAdministrationRegistrationInformationSchema(),
+        section3: registrationInformationSchemas.schema,
       }),
     },
   };
@@ -37,29 +36,35 @@ export const createAdministrationOperationInformationSchema = async (
   return administrationOperationInformationSchema;
 };
 
-export const administrationOperationInformationUiSchema: UiSchema = {
-  "ui:FieldTemplate": SectionFieldTemplate,
-  "ui: options": {
-    label: false,
-  },
-  section1: operationInformationUISchema,
-  section2: multipleOperatorsInformationUiSchema,
-  section3: {
-    ...registrationInformationUiSchema,
-    "ui:order": [
-      "operation_representatives",
-      "registration_purpose",
-      "regulated_operation_preface",
-      "reporting_operation_preface",
-      "opted_in_preface",
-      "new_entrant_preface",
-      "potential_reporting_preface",
-      "activities",
-      "regulated_products",
-      "opted_out_operation",
-      "opted_in_operation",
-      "new_entrant_application",
-    ],
-    ...optedInOperationDetailsUiSchema,
-  },
-};
+export const createAdministrationOperationInformationUiSchema =
+  async (): Promise<UiSchema> => {
+    const registrationInformationSchemas =
+      await createAdministrationRegistrationInformationSchema();
+    const administrationOperationInformationUiSchema: UiSchema = {
+      "ui:FieldTemplate": SectionFieldTemplate,
+      "ui: options": {
+        label: false,
+      },
+      section1: operationInformationUISchema,
+      section2: multipleOperatorsInformationUiSchema,
+      section3: {
+        ...registrationInformationSchemas.uiSchema,
+        "ui:order": [
+          "operation_representatives",
+          "registration_purpose",
+          "regulated_operation_preface",
+          "reporting_operation_preface",
+          "opted_in_preface",
+          "new_entrant_preface",
+          "potential_reporting_preface",
+          "activities",
+          "regulated_products",
+          "opted_out_operation",
+          "opted_in_operation",
+          "new_entrant_application",
+        ],
+        ...optedInOperationDetailsUiSchema,
+      },
+    };
+    return administrationOperationInformationUiSchema;
+  };
