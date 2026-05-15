@@ -29,7 +29,7 @@ def revert_fuel_amount_ranges(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0188_V5_11_0'),
+        ('reporting', '0189_reportoperation_naics_code'),
     ]
 
     operations = [
