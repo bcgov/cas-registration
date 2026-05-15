@@ -23,6 +23,7 @@ from reporting.models import (
     SourceType,
     ReportNewEntrantEmission,
     ReportNewEntrantProduction,
+    ReportingField,
 )
 from reporting.schema.compliance_data import ComplianceDataSchemaOut
 from reporting.schema.emission_category import EmissionSummarySchemaOut
@@ -105,6 +106,47 @@ class ReportEmissionAllocationSchema(ModelSchema):
         fields = ['allocation_methodology', 'allocation_other_methodology_description']
 
 
+def get_reporting_field_display_titles() -> Dict[str, str]:
+    field_titles: Dict[str, str] = {}
+
+    for reporting_field in ReportingField.objects.only(
+        "slug",
+        "field_display_title",
+        "field_name",
+    ):
+        display_title = reporting_field.field_display_title or reporting_field.field_name
+
+        # Main reporting field
+        field_titles[reporting_field.slug] = display_title
+
+        # Generated "...FieldUnits" companion field
+        field_titles[f"{reporting_field.slug}FieldUnits"] = f"{display_title} Units"
+
+    return field_titles
+
+
+def add_methodology_display_titles(
+    value: Any,
+    field_titles: Dict[str, str],
+) -> Any:
+    if isinstance(value, dict):
+        updated = {key: add_methodology_display_titles(child_value, field_titles) for key, child_value in value.items()}
+
+        # Detect methodology blocks
+        if "methodology" in updated and isinstance(updated["methodology"], str):
+            display_titles = {key: field_titles[key] for key in updated.keys() if key in field_titles}
+
+            if display_titles:
+                updated["_field_display_titles"] = display_titles
+
+        return updated
+
+    if isinstance(value, list):
+        return [add_methodology_display_titles(item, field_titles) for item in value]
+
+    return value
+
+
 class ReportRawActivityDataSchema(ModelSchema):
     activity: str
     source_types: dict
@@ -116,6 +158,10 @@ class ReportRawActivityDataSchema(ModelSchema):
     @staticmethod
     def resolve_source_types(obj: ReportRawActivityData) -> dict:
         json_data = obj.json_data
+
+        field_titles = get_reporting_field_display_titles()
+
+        json_data = add_methodology_display_titles(json_data, field_titles)
 
         source_type_section = json_data.get("sourceTypes", {})
         source_type_section_keys = set(source_type_section.keys())
@@ -244,6 +290,10 @@ class FacilityReportSchema(ModelSchema):
     def resolve_activity_data(obj: FacilityReport) -> Dict[str, ReportRawActivityData]:
         activities = obj.reportrawactivitydata_records.all()
         return {activity.activity.name: activity for activity in activities}
+
+    @staticmethod
+    def resolve_field_display_titles(obj: FacilityReport) -> Dict[str, str]:
+        return get_reporting_field_display_titles()
 
     @staticmethod
     def resolve_report_products(obj: FacilityReport) -> Dict[str, ReportProduct]:

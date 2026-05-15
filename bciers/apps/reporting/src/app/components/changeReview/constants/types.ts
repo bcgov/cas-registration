@@ -10,6 +10,7 @@ export type ChangeItemValue =
   | number;
 export interface ChangeItem {
   field: string;
+  field_display_title?: string;
   oldValue: ChangeItemValue;
   newValue: ChangeItemValue;
   change_type: ChangeType;

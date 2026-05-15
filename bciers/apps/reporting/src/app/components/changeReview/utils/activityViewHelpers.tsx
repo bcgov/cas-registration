@@ -306,6 +306,9 @@ export const renderDiffTree = (items: SegmentedChange[]): React.ReactNode => {
   >();
 
   for (const item of items) {
+    if (item.segs.includes("_field_display_titles")) {
+      continue;
+    }
     const [first, second, ...rest] = item.segs;
     if (first === undefined) continue;
 
@@ -365,7 +368,10 @@ export const renderDiffTree = (items: SegmentedChange[]): React.ReactNode => {
           return (
             <ChangeItemDisplay
               key={key}
-              item={{ ...change, displayLabel: label }}
+              item={{
+                ...change,
+                displayLabel: change.field_display_title ?? label,
+              }}
             />
           );
         }
