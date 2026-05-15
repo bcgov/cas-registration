@@ -13,12 +13,11 @@ export default async function FacilityReviewPage({
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
 
   const facilityData = await getFacilityReportDetails(version_id, facility_id);
-  const reportOperationActivities =
-    facilityData.report_operation_activities ?? [];
+  const facilityActivities = facilityData.facility_activities ?? [];
   const otherActivities = facilityData.other_activities ?? [];
 
   const savedActivityIds: number[] = facilityData.activities ?? [];
-  const selectedReportOperationActivityNames = reportOperationActivities
+  const selectedFacilityActivityNames = facilityActivities
     .filter((a: { id: number }) => savedActivityIds.includes(a.id))
     .map((a: { name: string }) => a.name);
   const selectedOtherActivityNames = otherActivities
@@ -38,12 +37,12 @@ export default async function FacilityReviewPage({
 
   const formData = {
     ...facilityData,
-    report_operation_activities: selectedReportOperationActivityNames,
+    facility_activities: selectedFacilityActivityNames,
     other_activities: selectedOtherActivityNames,
   };
   const isSyncAllowed = facilityData.is_sync_allowed ?? true;
   const reviewSchema = buildFacilitySchema(
-    reportOperationActivities,
+    facilityActivities,
     otherActivities,
     isSyncAllowed,
   );
@@ -51,7 +50,7 @@ export default async function FacilityReviewPage({
     <FacilityReviewForm
       version_id={version_id}
       facility_id={facility_id}
-      reportOperationActivities={reportOperationActivities}
+      facilityActivities={facilityActivities}
       otherActivities={otherActivities}
       navigationInformation={navInfo}
       formsData={formData}

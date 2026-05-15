@@ -55,7 +55,7 @@ const mockFormData: FacilityReviewFormData = {
   facility_name: "Test Facility",
   facility_type: "Test Type",
   facility_bcghgid: null,
-  report_operation_activities: ["Activity 1"],
+  facility_activities: ["Activity 1"],
   other_activities: [],
   facility: "abcd",
 };
@@ -66,7 +66,7 @@ const renderFacilityReview = (
   <FacilityReview
     version_id={1000}
     facility_id="abcd"
-    reportOperationActivities={mockActivitiesData}
+    facilityActivities={mockActivitiesData}
     otherActivities={mockOtherActivities}
     navigationInformation={dummyNavigationInformation}
     formsData={formData}
@@ -80,7 +80,7 @@ const mockFormDataWithoutActivities: FacilityReviewFormData = {
   facility_name: "Test Facility",
   facility_type: "Test Type",
   facility_bcghgid: null,
-  report_operation_activities: [],
+  facility_activities: [],
   other_activities: [],
   facility: "abcd",
 };
@@ -90,7 +90,7 @@ const renderFacilityReviewWithoutActivities = (
   <FacilityReview
     version_id={1000}
     facility_id="abcd"
-    reportOperationActivities={mockActivitiesData}
+    facilityActivities={mockActivitiesData}
     otherActivities={mockOtherActivities}
     navigationInformation={dummyNavigationInformation}
     formsData={formData}
@@ -117,7 +117,7 @@ describe("The FacilityReview component", () => {
       "POST",
       "reporting/reports/1000/facilities/abcd/review-facility-information",
       {
-        body: '{"operation_id":"1234","facility_name":"Test Facility","facility_type":"Test Type","facility_bcghgid":null,"report_operation_activities":["Activity 1"],"other_activities":[],"facility":"abcd","activities":[1]}',
+        body: '{"operation_id":"1234","facility_name":"Test Facility","facility_type":"Test Type","facility_bcghgid":null,"facility_activities":["Activity 1"],"other_activities":[],"facility":"abcd","activities":[1]}',
       },
     );
   });
@@ -135,7 +135,7 @@ describe("The FacilityReview component", () => {
           facility_name: "Test Facility",
           facility_type: "Test Type",
           facility_bcghgid: null,
-          report_operation_activities: ["Activity 1"],
+          facility_activities: ["Activity 1"],
           other_activities: ["Activity 2"],
           facility: "abcd",
         },
@@ -150,7 +150,7 @@ describe("The FacilityReview component", () => {
       facility_name: "Test Facility",
       facility_type: "Test Type",
       facility_bcghgid: null,
-      report_operation_activities: ["Activity 1"],
+      facility_activities: ["Activity 1"],
       other_activities: ["Activity 2"],
       facility: "abcd",
     });
