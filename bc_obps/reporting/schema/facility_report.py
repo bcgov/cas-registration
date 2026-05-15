@@ -22,7 +22,7 @@ class FacilityReportOut(ModelSchema):
 
     operation_id: Optional[UUID] = None
     is_sync_allowed: bool = True
-    report_operation_activities: List[ActivitySchema] = []
+    facility_activities: List[ActivitySchema] = []
     other_activities: List[ActivitySchema] = []
 
 

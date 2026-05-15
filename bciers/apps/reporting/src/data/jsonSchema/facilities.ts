@@ -12,7 +12,7 @@ export interface ActivityData {
 }
 
 export const buildFacilitySchema = (
-  reportOperationActivities: ActivityData[],
+  facilityActivities: ActivityData[],
   otherActivities: ActivityData[],
   isSyncAllowed: boolean = true,
 ) =>
@@ -42,11 +42,11 @@ export const buildFacilitySchema = (
           "Select ONLY the activities that apply to this facility. Deselect any activities that are not applicable to this facility.",
         type: "string",
       },
-      report_operation_activities: {
+      facility_activities: {
         type: "array",
         items: {
           type: "string",
-          enum: reportOperationActivities.map((activity) => activity.name),
+          enum: facilityActivities.map((activity) => activity.name),
         },
         uniqueItems: true,
       },
@@ -105,7 +105,7 @@ export const buildFacilityReviewUiSchema = (
   activity_selection_description: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
   },
-  report_operation_activities: {
+  facility_activities: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": CheckboxGroupWidget,
     "ui:options": {

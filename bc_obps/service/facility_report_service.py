@@ -48,7 +48,7 @@ class FacilityReportService:
         all_activities = list(
             Activity.objects.all().order_by('weight', 'name').values('id', 'name', 'applicable_to', 'regulated_name')
         )
-        facility_report.report_operation_activities = [  # type: ignore[attr-defined]
+        facility_report.facility_activities = [  # type: ignore[attr-defined]
             a for a in all_activities if a['id'] in operation_activity_ids
         ]
         facility_report.other_activities = [  # type: ignore[attr-defined]
