@@ -10,11 +10,11 @@ export default async function FacilityReportFinalReview({
   version_id,
   facility_id,
   searchParams,
-}: {
+}: Readonly<{
   version_id: number;
   facility_id: string;
   searchParams?: OriginSearchParams;
-}) {
+}>) {
   const origin = searchParams?.origin;
   const backUrl = `/reporting/reports/${version_id}/${origin}#facility-grid`;
 

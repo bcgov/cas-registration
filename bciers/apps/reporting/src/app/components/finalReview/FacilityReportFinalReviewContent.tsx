@@ -17,16 +17,27 @@ interface Props {
 export default function FacilityReportFinalReviewContent({
   data,
   backUrl,
-}: Props) {
+}: Readonly<Props>) {
   const router = useRouter();
 
   // Controls the PDF filename for both the Save as PDF button and Cmd/Ctrl+P.
   useEffect(() => {
-    if (!data.facility_name) return;
     const originalTitle = document.title;
-    document.title = `CAS OBPS_Reporting_${data.facility_name}`;
-    return () => {
+
+    const handleBeforePrint = () => {
+      document.title = `CAS OBPS_Reporting_${data.facility_name}`;
+    };
+
+    const handleAfterPrint = () => {
       document.title = originalTitle;
+    };
+
+    window.addEventListener("beforeprint", handleBeforePrint);
+    window.addEventListener("afterprint", handleAfterPrint);
+
+    return () => {
+      window.removeEventListener("beforeprint", handleBeforePrint);
+      window.removeEventListener("afterprint", handleAfterPrint);
     };
   }, [data.facility_name]);
 
