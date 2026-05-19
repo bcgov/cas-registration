@@ -31,6 +31,7 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
   value,
   schema,
   registry,
+  uiSchema,
 }) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [error, setError] = useState(undefined);
@@ -45,7 +46,10 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
   }
 
   const fieldSchema = schema.items as FieldSchema;
-  const options = mapOptions(fieldSchema);
+  const options = mapOptions(
+    fieldSchema,
+    uiSchema?.["ui:enumNames"] as string[],
+  );
   const selectedOptions = options.filter((option) => value.includes(option.id));
 
   const displayOptions = selectedOptions.map((option, index) => (

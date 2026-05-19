@@ -12,6 +12,7 @@ import { randomUUID, UUID } from "crypto";
 import {
   facilityEntitySchema,
   operationEntitySchema,
+  editTransferUiSchema,
 } from "@/registration/app/data/jsonSchema/transfer/transferDetail";
 import { TransferEventStatus } from "@/registration/app/components/transfers/enums";
 import { ExistingFacilities } from "@/registration/app/components/transfers/types";
@@ -120,11 +121,16 @@ const renderOperationEntityTransferDetailForm = async (
     formData.operation_name,
     formData.from_operator_id,
   );
+  const uiSchema = await editTransferUiSchema(
+    formData.existing_facilities,
+    formData.from_operation_id,
+  );
   render(
     <TransferDetailForm
       formData={formData}
       transferId={transferId}
       schema={schema}
+      uiSchema={uiSchema}
     />,
   );
 };
@@ -135,11 +141,16 @@ const renderFacilityEntityTransferDetailForm = async () => {
     facilityEntityTransferFormData.existing_facilities,
     facilityEntityTransferFormData.from_operator_id,
   );
+  const uiSchema = await editTransferUiSchema(
+    facilityEntityTransferFormData.existing_facilities,
+    facilityEntityTransferFormData.from_operator_id,
+  );
   render(
     <TransferDetailForm
       formData={facilityEntityTransferFormData}
       transferId={transferId}
       schema={schema}
+      uiSchema={uiSchema}
     />,
   );
 };

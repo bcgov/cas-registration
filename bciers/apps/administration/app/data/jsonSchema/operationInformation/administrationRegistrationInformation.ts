@@ -58,12 +58,12 @@ export const createAdministrationRegistrationInformationSchema =
       minItems: 1,
       items: {
         type: "number",
-        enum: reportingActivities.map(
+        enum: reportingActivities?.map(
           (activity: { id: number; applicable_to: string; name: string }) =>
             activity.id,
         ),
         // @ts-expect-error - enumToolTips is a non-standard field required for the MultiSelectWidget
-        enumTooltips: reportingActivities.map(
+        enumTooltips: reportingActivities?.map(
           (activity: {
             applicable_to: string;
             name: string;
@@ -82,7 +82,7 @@ export const createAdministrationRegistrationInformationSchema =
       type: "array",
       minItems: 1,
       items: {
-        enum: regulatedProducts.map((product) => product.id),
+        enum: regulatedProducts?.map((product) => product.id),
       },
     };
 
@@ -304,7 +304,7 @@ export const createAdministrationRegistrationInformationSchema =
       },
       activities: {
         "ui:widget": "MultiSelectWidgetWithTooltip",
-        "ui:enumNames": reportingActivities.map(
+        "ui:enumNames": reportingActivities?.map(
           (activity: { applicable_to: string; name: string }) => activity.name,
         ),
         "ui:placeholder": "Select Reporting Activity",
@@ -312,7 +312,7 @@ export const createAdministrationRegistrationInformationSchema =
       },
       regulated_products: {
         "ui:widget": "RegulatedProductMultiSelectWidget",
-        "ui:enumNames": regulatedProducts.map((product) => product.name),
+        "ui:enumNames": regulatedProducts?.map((product) => product.name),
         "ui:placeholder": "Select Regulated Product",
       },
       opted_out_operation: {

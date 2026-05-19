@@ -146,10 +146,6 @@ export const createOperationRepresentativeSchema = (
         enum: existingOperationRepresentatives.map(
           (operation_representative) => operation_representative?.id,
         ),
-        // @ts-expect-error - we know that enumNames is a non-standard field
-        enumNames: existingOperationRepresentatives.map(
-          (operation_representative) => operation_representative?.full_name,
-        ),
       },
     };
   } else {
@@ -160,7 +156,7 @@ export const createOperationRepresentativeSchema = (
   return operationRepresentativeSchema;
 };
 
-export const operationRepresentativeUiSchema: UiSchema = {
+export let operationRepresentativeUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
@@ -234,11 +230,12 @@ export const operationRepresentativeUiSchema: UiSchema = {
 };
 
 export const createOperationRepresentativeUiSchema = (
+  existingOperationRepresentatives: OperationRepresentative[],
   existingContact: boolean = false,
 ) => {
   // disable first name, last name and email for updating existing contact
   if (existingContact)
-    return {
+    operationRepresentativeUiSchema = {
       ...operationRepresentativeUiSchema,
       new_operation_representative: {
         ...operationRepresentativeUiSchema.new_operation_representative,
@@ -262,5 +259,19 @@ export const createOperationRepresentativeUiSchema = (
         },
       },
     };
-  else return operationRepresentativeUiSchema;
+  const hasExistingOperationReps =
+    existingOperationRepresentatives &&
+    existingOperationRepresentatives.length !== 0;
+
+  if (hasExistingOperationReps)
+    operationRepresentativeUiSchema = {
+      ...operationRepresentativeUiSchema,
+      operation_representatives: {
+        ...operationRepresentativeUiSchema.operation_representatives,
+        "ui:enumNames": existingOperationRepresentatives.map(
+          (operation_representative) => operation_representative?.full_name,
+        ),
+      },
+    };
+  return operationRepresentativeUiSchema;
 };
