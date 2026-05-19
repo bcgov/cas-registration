@@ -10,7 +10,7 @@ def populate_naics_code(apps, schema_editor):
     ReportOperation = apps.get_model("reporting", "ReportOperation")
     for report_op in ReportOperation.objects.select_related("report_version__report__operation").all():
         operation = report_op.report_version.report.operation
-        if operation.naics_code_id:
+        if operation.naics_code_id and not report_op.naics_code_id:
             with pgtrigger.ignore('reporting.ReportOperation:immutable_report_version'):
                 report_op.naics_code_id = operation.naics_code_id
                 report_op.save(update_fields=["naics_code_id"])
