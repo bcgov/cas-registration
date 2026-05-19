@@ -19,14 +19,14 @@ function parseCurrentFuelItem(parentPath: string, current: any) {
  * Generic FieldTemplate for fuel amount fields (e.g. `annualFuelAmount`,
  * `q1FuelAmount`, `q2FuelAmount`, etc.)
  *
- * Dynamically appends the label with the actual unit of the selected fuel (e.g. "kilolitres").
+ * Dynamically displays the unit of the selected fuel (e.g. "kilolitres") next to the input box.
  *
  * Steps:
  * 1. Strip the last path segment (the field name itself) from the RJSF `id`
  *    to obtain path to the parent fuel item object
  * 2. traverse `formContext.activityFormData` along that path
  * 3. read `fuelType.fuelUnit` from the fuel item
- * 4. substitute in ${fuelUnit} into schema label (no fuelUnit will be placed if a fuel hasn't been selected yet)
+ * 4. render the unit in a separate element beside the input (no unit shown if a fuel hasn't been selected yet)
  *
  * Because the field name is derived from the `id` at runtime, this template
  * works for *any* fuel amount field (whether it's annual, quarterly, monthly) without modification
@@ -64,6 +64,7 @@ function FuelAmountFieldTemplate({
   //
   // Strip "root_" and the last "_<fieldName>" segment to get the path to
   // the parent fuel item, then navigate activityFormData along that path
+  let fuelUnit: string | undefined;
   const activityFormData = formContext?.activityFormData;
   if (activityFormData && id) {
     // Remove the "root_" prefix and drop the last "_<fieldName>" segment
@@ -77,13 +78,10 @@ function FuelAmountFieldTemplate({
       current = parseCurrentFuelItem(parentPath, current);
     }
 
-    // `current` is the fuel item object
-    const fuelUnit = current?.fuelType?.fuelUnit;
-    if (fuelUnit) {
-      // append "(${fuelUnit})" to the label
-      label = label + ` (${fuelUnit})`;
-    }
+    fuelUnit = current?.fuelType?.fuelUnit;
   }
+
+  const displayUnit = fuelUnit || (options.displayUnit as string | undefined);
 
   return (
     <div className="mb-4 md:mb-2">
@@ -101,11 +99,11 @@ function FuelAmountFieldTemplate({
         <div className={`relative flex items-center w-full ${cellWidth}`}>
           {children}
         </div>
-        {options.displayUnit && (
+        {displayUnit && (
           <div
             className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
           >
-            <p>{options.displayUnit as string}</p>
+            <p>{displayUnit}</p>
           </div>
         )}
         {isErrors && (

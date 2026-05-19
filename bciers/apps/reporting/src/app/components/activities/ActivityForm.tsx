@@ -13,6 +13,7 @@ import { findPathsWithNegativeNumbers } from "@bciers/utils/src/findInObject";
 import {
   calculateMobileAnnualAmount,
   calculateBiogenicTotalAllocated,
+  clearMobileFuelAmountsOnFuelClear,
 } from "@bciers/utils/src/customReportingActivityFormCalculations";
 import {
   validateBiogenicTotalAllocated,
@@ -64,6 +65,7 @@ export default function ActivityForm({
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as string[]);
   const [formState, setFormState] = useState(activityFormData);
+  const [formKey, setFormKey] = useState(0);
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
   const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(
     initialSelectedSourceTypeIds,
@@ -127,8 +129,16 @@ export default function ActivityForm({
     }
 
     // Add together quarterly amounts for Fuel Combustion by Mobile Equipment
-    if (newFormData?.sourceTypes?.mobileFuelCombustionPartOfFacility)
+    if (newFormData?.sourceTypes?.mobileFuelCombustionPartOfFacility) {
+      const fuelCleared = clearMobileFuelAmountsOnFuelClear(
+        newFormData,
+        formState,
+      );
       calculateMobileAnnualAmount(newFormData);
+      // Clearing in-place doesn't trigger RJSF's internal field re-render, so
+      // force a remount when values were actually wiped.
+      if (fuelCleared) setFormKey((k) => k + 1);
+    }
 
     // Calculate total allocated for biogenic industrial process emissions
     if (newFormData?.biogenicIndustrialProcessEmissions)
@@ -198,6 +208,7 @@ export default function ActivityForm({
   };
   return (
     <MultiStepFormWithTaskList
+      key={formKey}
       steps={navigationInformation.headerSteps}
       initialStep={navigationInformation.headerStepIndex}
       taskListElements={navigationInformation.taskList}
