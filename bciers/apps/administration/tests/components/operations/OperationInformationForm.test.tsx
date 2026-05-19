@@ -8,7 +8,10 @@ import {
   useSessionRole,
 } from "@bciers/testConfig/mocks";
 
-import { createAdministrationOperationInformationSchema } from "apps/administration/app/data/jsonSchema/operationInformation/administrationOperationInformation";
+import {
+  createAdministrationOperationInformationSchema,
+  createAdministrationOperationInformationUiSchema,
+} from "apps/administration/app/data/jsonSchema/operationInformation/administrationOperationInformation";
 import { FrontEndRoles, OperationStatus } from "@bciers/utils/src/enums";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
@@ -211,10 +214,12 @@ describe("the OperationInformationForm component", () => {
     vi.mocked(getBusinessStructures).mockResolvedValue(businessStructuresMock);
   });
   it("renders the OperationInformationForm component", async () => {
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
         formData={{ type: "Single Facility Operation" }}
         schema={testSchema}
+        uiSchema={uiSchema}
         operationId={operationId}
         eioSchema={testSchema}
         generalSchema={testSchema}
@@ -237,6 +242,7 @@ describe("the OperationInformationForm component", () => {
         formData.registration_purpose,
         OperationStatus.REGISTERED,
       );
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
         formData={formData}
@@ -244,6 +250,7 @@ describe("the OperationInformationForm component", () => {
         operationId={operationId}
         eioSchema={testSchema}
         generalSchema={createdFormSchema}
+        uiSchema={uiSchema}
       />,
     );
     //name
@@ -299,6 +306,7 @@ describe("the OperationInformationForm component", () => {
         RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
         OperationStatus.REGISTERED,
       );
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
         formData={{
@@ -310,6 +318,7 @@ describe("the OperationInformationForm component", () => {
         operationId={operationId}
         eioSchema={createdFormSchema}
         generalSchema={testSchema}
+        uiSchema={uiSchema}
       />,
     );
     //name
@@ -330,6 +339,7 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should enable editing when the Edit button is clicked", async () => {
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
         formData={formData}
@@ -337,6 +347,7 @@ describe("the OperationInformationForm component", () => {
         operationId={operationId}
         eioSchema={testSchema}
         generalSchema={testSchema}
+        uiSchema={uiSchema}
       />,
     );
 
@@ -352,6 +363,7 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should edit and save the form", async () => {
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
         formData={formData}
@@ -359,6 +371,7 @@ describe("the OperationInformationForm component", () => {
         operationId={operationId}
         eioSchema={testSchema}
         generalSchema={testSchema}
+        uiSchema={uiSchema}
       />,
     );
 
@@ -399,6 +412,7 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should edit and save opt-in operation details in the form", async () => {
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
         formData={optInFormData}
@@ -406,6 +420,7 @@ describe("the OperationInformationForm component", () => {
         operationId={operationId}
         eioSchema={testSchema}
         generalSchema={testSchemaWithOpt}
+        uiSchema={uiSchema}
       />,
     );
 
@@ -465,7 +480,7 @@ describe("the OperationInformationForm component", () => {
 
   it("should render the form in read-only mode and not show Edit/Save button if the user is not an industry_user_admin", async () => {
     useSessionRole.mockReturnValue("cas_admin");
-
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
         formData={formData}
@@ -473,6 +488,7 @@ describe("the OperationInformationForm component", () => {
         operationId={operationId}
         eioSchema={testSchema}
         generalSchema={testSchema}
+        uiSchema={uiSchema}
       />,
     );
 
@@ -491,6 +507,7 @@ describe("the OperationInformationForm component", () => {
 
   it("should render the opt-in information if purpose is opt-in", async () => {
     getOperationWithDocuments.mockResolvedValueOnce(optInFormData);
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
 
     render(
       <OperationInformationForm
@@ -499,6 +516,7 @@ describe("the OperationInformationForm component", () => {
         operationId={operationId}
         eioSchema={testSchema}
         generalSchema={testSchemaWithOpt}
+        uiSchema={uiSchema}
       />,
     );
 
@@ -612,6 +630,7 @@ describe("the OperationInformationForm component", () => {
   });
   it("should use formContext to correctly render BORO ID and BCGHG ID widgets", async () => {
     useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
 
     render(
       <OperationInformationForm
@@ -660,6 +679,7 @@ describe("the OperationInformationForm component", () => {
             },
           },
         }}
+        uiSchema={uiSchema}
       />,
     );
 
@@ -674,10 +694,12 @@ describe("the OperationInformationForm component", () => {
   it("should not allow non-directors to issue BORO and BCGHG IDs", async () => {
     for (const appRole of ["cas_admin", "cas_analyst", "cas_view_only"]) {
       useSessionRole.mockReturnValue(appRole);
+      const uiSchema = await createAdministrationOperationInformationUiSchema();
 
       render(
         <OperationInformationForm
           eioSchema={testSchema}
+          uiSchema={uiSchema}
           generalSchema={{
             type: "object",
             properties: {
@@ -736,9 +758,10 @@ describe("the OperationInformationForm component", () => {
       newEntrantFormData.registration_purpose,
       OperationStatus.REGISTERED,
     );
-
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     const { container } = render(
       <OperationInformationForm
+        uiSchema={uiSchema}
         eioSchema={testSchema}
         generalSchema={modifiedSchema}
         formData={newEntrantFormData}
@@ -775,7 +798,7 @@ describe("the OperationInformationForm component", () => {
 
   it("should edit and save the new entrant application form", async () => {
     useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
-
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     const testSchemaWithNewEntrant: RJSFSchema = {
       type: "object",
       properties: {
@@ -828,6 +851,7 @@ describe("the OperationInformationForm component", () => {
         formData={newEntrantFormData}
         schema={testSchemaWithNewEntrant}
         operationId={operationId}
+        uiSchema={uiSchema}
       />,
     );
     await userEvent.click(screen.getByRole("button", { name: "Edit" }));
@@ -879,9 +903,10 @@ describe("the OperationInformationForm component", () => {
         formData.registration_purpose,
         OperationStatus.REGISTERED,
       );
-
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
+        uiSchema={uiSchema}
         eioSchema={testSchema}
         generalSchema={createdFormSchema}
         formData={formData}
@@ -925,7 +950,7 @@ describe("the OperationInformationForm component", () => {
           testFormData.registration_purpose,
           OperationStatus.REGISTERED,
         );
-
+      const uiSchema = await createAdministrationOperationInformationUiSchema();
       render(
         <OperationInformationForm
           eioSchema={testSchema}
@@ -933,6 +958,7 @@ describe("the OperationInformationForm component", () => {
           formData={testFormData}
           schema={createdFormSchema}
           operationId={operationId}
+          uiSchema={uiSchema}
         />,
       );
       await userEvent.click(screen.getByRole("button", { name: "Edit" }));
@@ -989,9 +1015,10 @@ describe("the OperationInformationForm component", () => {
         formData.registration_purpose,
         OperationStatus.REGISTERED,
       );
-
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
+        uiSchema={uiSchema}
         eioSchema={testSchema}
         generalSchema={createdFormSchema}
         formData={{}}
@@ -1025,9 +1052,10 @@ describe("the OperationInformationForm component", () => {
         testFormData.registration_purpose,
         OperationStatus.REGISTERED,
       );
-
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
+        uiSchema={uiSchema}
         eioSchema={testSchema}
         generalSchema={createdFormSchema}
         formData={{
