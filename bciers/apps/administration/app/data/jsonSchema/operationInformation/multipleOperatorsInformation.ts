@@ -3,6 +3,10 @@ import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTem
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { getBusinessStructures } from "@bciers/actions/api";
+import {
+  ArrayFieldItemTemplate,
+  ArrayFieldTemplate,
+} from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 export const createMultipleOperatorsInformationSchema =
   async (): Promise<RJSFSchema> => {
@@ -140,6 +144,8 @@ export const multipleOperatorsInformationUiSchema: UiSchema = {
     "ui:widget": "ToggleWidget",
   },
   multiple_operators_array: {
+    "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       label: false,

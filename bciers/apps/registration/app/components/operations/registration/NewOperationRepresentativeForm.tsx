@@ -151,6 +151,7 @@ const NewOperationRepresentativeForm: FC<
           contacts,
         )}
         uiSchema={createOperationRepresentativeUiSchema(
+          existingOperationRepresentatives,
           Boolean(existingContactId),
         )}
         formContext={{ operationId: operation }}

@@ -70,7 +70,7 @@ export const createRegistrationPurposeSchemas =
         registration_purpose: {
           type: "string",
           title: "The purpose of this registration is to register as a:",
-          anyOf: registrationPurposes.map((purpose: string) => ({
+          anyOf: registrationPurposes?.map((purpose: string) => ({
             const: purpose,
             title: purpose,
           })),
@@ -92,7 +92,7 @@ export const createRegistrationPurposeSchemas =
         },
       },
 
-      allOf: registrationPurposes.map((purpose) => {
+      allOf: registrationPurposes?.map((purpose) => {
         const isRegulatedProducts =
           regulatedOperationPurposes.includes(purpose);
         const isReportingActivities =
@@ -120,7 +120,7 @@ export const createRegistrationPurposeSchemas =
                   minItems: 1,
                   default: [],
                   items: {
-                    enum: regulatedProducts.map((product) => product.id),
+                    enum: regulatedProducts?.map((product) => product.id),
                   },
                 },
               }),
@@ -132,7 +132,7 @@ export const createRegistrationPurposeSchemas =
                   default: [],
                   items: {
                     type: "number",
-                    enum: reportingActivities.map(
+                    enum: reportingActivities?.map(
                       (activity: {
                         id: number;
                         applicable_to: string;
@@ -140,7 +140,7 @@ export const createRegistrationPurposeSchemas =
                         regulated_name: string;
                       }) => activity.id,
                     ),
-                    enumTooltips: reportingActivities.map(
+                    enumTooltips: reportingActivities?.map(
                       (activity: {
                         applicable_to: string;
                         name: string;
@@ -184,12 +184,12 @@ export const createRegistrationPurposeSchemas =
       },
       regulated_products: {
         "ui:widget": "RegulatedProductMultiSelectWidget",
-        "ui:enumNames": regulatedProducts.map((product) => product.name),
+        "ui:enumNames": regulatedProducts?.map((product) => product.name),
         "ui:placeholder": "Select Regulated Product",
       },
       activities: {
         "ui:widget": "MultiSelectWidgetWithTooltip",
-        "ui:enumNames": reportingActivities.map(
+        "ui:enumNames": reportingActivities?.map(
           (activity: {
             applicable_to: string;
             name: string;
