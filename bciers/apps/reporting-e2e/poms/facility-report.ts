@@ -141,10 +141,20 @@ export class SFOFacilityReportPOM {
       GSC_ACTIVITY.FUEL_DESCRIPTION_VALUE,
     );
 
-    // Check fuel unit and Fill annual fuel amount (targeted by name — RJSF deep nesting breaks label association)
+    // Verify annual fuel amount label is visible
     await expect(
-      this.page.getByText(GSC_ACTIVITY.ANNUAL_FUEL_AMOUNT_FIELD_LABEL),
+      this.page.getByText(GSC_ACTIVITY.ANNUAL_FUEL_AMOUNT_FIELD_LABEL, {
+        exact: true,
+      }),
     ).toBeVisible();
+
+    // Verify fuel unit is displayed next to the input
+    await expect(
+      this.page.getByText(GSC_ACTIVITY.FUEL_UNIT_VALUE, {
+        exact: true,
+      }),
+    ).toBeVisible();
+
     await fillInputValueByLocator(
       this.page.getByRole("textbox", {
         name: GSC_ACTIVITY.ANNUAL_FUEL_AMOUNT_INPUT_NAME,
