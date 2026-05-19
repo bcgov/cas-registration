@@ -231,6 +231,16 @@ If the value is accurate, you may save & continue.`;
         : undefined,
   }),
 
+  missing_regulated_product: createValidationUIConfig({
+    label: "Review Operation Information",
+    priority: 2,
+    renderMode: "inline_link",
+    getHref: (ctx) =>
+      ctx?.report_version_id
+        ? reportRoutes.reviewOperationInformation(ctx.report_version_id)
+        : undefined,
+  }),
+
   generic_error: createValidationUIConfig({
     renderMode: "message_only",
     getMessage: (error) =>

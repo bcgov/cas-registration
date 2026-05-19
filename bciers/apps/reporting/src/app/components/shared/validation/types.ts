@@ -16,6 +16,7 @@ export type ReportValidationMessageKey =
   | "missing_supplementary_report_existing_attachment_confirmation"
   | "missing_supplementary_report_attachments_confirmation"
   | "missing_supplementary_report_version_change"
+  | "missing_regulated_product"
   | "generic_error";
 
 // Additional metadata returned from backend used for dynamic content
