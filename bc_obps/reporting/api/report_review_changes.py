@@ -1,5 +1,6 @@
 from django.http import HttpRequest
 
+from reporting.models.reporting_field import ReportingField
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
@@ -43,4 +44,7 @@ def get_report_version_diff_data(request: HttpRequest, version_id: int) -> tuple
 
     changed = ReportReviewChangesService.get_report_version_diff_changes(previous_data, current_data)
 
-    return 200, {"changed": changed}
+    fields = ReportingField.objects.exclude(field_display_title__isnull=True)
+    reporting_fields_display_titles = {field.slug: field.field_display_title for field in fields}
+
+    return 200, {"changed": changed, "reporting_fields_display_titles": reporting_fields_display_titles}

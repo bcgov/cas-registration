@@ -5,6 +5,7 @@ from pydantic import ConfigDict
 from registration.models import Operation
 from reporting.models import (
     ReportVersion,
+    ReportingField,
     FacilityReport,
     ReportComplianceSummary,
     ReportComplianceSummaryProduct,
@@ -239,6 +240,7 @@ class FacilityReportSchema(ModelSchema):
     reportnonattributableemissions_records: List[ReportNonAttributableEmissionSchema] = []
     emission_summary: Optional[EmissionSummarySchemaOut] = None
     report_emission_allocation: Optional[ReportEmissionAllocationSchemaOut] = None
+    reporting_fields_display_titles: Dict[str, str] = {}
 
     @staticmethod
     def resolve_activity_data(obj: FacilityReport) -> Dict[str, ReportRawActivityData]:
@@ -257,6 +259,12 @@ class FacilityReportSchema(ModelSchema):
     @staticmethod
     def resolve_report_emission_allocation(obj: FacilityReport) -> ReportEmissionAllocationData:
         return ReportEmissionAllocationService.get_emission_allocation_data(obj.report_version.pk, obj.facility.pk)
+
+    @staticmethod
+    def resolve_reporting_fields_display_titles(obj: ReportRawActivityData) -> dict:
+        # only the reporting fields that have display titles are included to map on the frontend
+        fields = ReportingField.objects.exclude(field_display_title__isnull=True)
+        return {field.slug: field.field_display_title for field in fields}
 
     class Meta:
         model = FacilityReport

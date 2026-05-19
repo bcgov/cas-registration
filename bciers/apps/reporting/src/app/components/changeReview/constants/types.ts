@@ -24,6 +24,7 @@ export interface ChangeItem {
 export interface ReviewChangesProps {
   changes: ChangeItem[];
   registrationPurpose: string;
+  reportingFieldDisplayTitleBySlug: Record<string, string>;
 }
 
 export interface DisplayChangeItem extends ChangeItem {

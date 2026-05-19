@@ -218,7 +218,8 @@ export const ObjectLeafNode: React.FC<{
   label: string;
   changeType: string;
   value: object;
-}> = ({ label, changeType, value }) => (
+  reportingFieldDisplayTitleBySlug: Record<string, string>;
+}> = ({ label, changeType, value, reportingFieldDisplayTitleBySlug }) => (
   <Box mb={1}>
     <Typography
       sx={{
@@ -235,7 +236,12 @@ export const ObjectLeafNode: React.FC<{
       {changeType === "removed" && <StatusLabel type="removed" />}
     </Typography>
     <Box ml={2} style={dataCardStyle}>
-      {renderActivityObject(value, "", changeType === "removed")}
+      {renderActivityObject(
+        value,
+        "",
+        changeType === "removed",
+        reportingFieldDisplayTitleBySlug,
+      )}
     </Box>
   </Box>
 );
@@ -296,7 +302,10 @@ const buildGroupInfo = (
  * - Numeric second segments are treated as array indices and produce
  *   human-readable labels like "Emission Category 1".
  */
-export const renderDiffTree = (items: SegmentedChange[]): React.ReactNode => {
+export const renderDiffTree = (
+  items: SegmentedChange[],
+  reportingFieldDisplayTitleBySlug: Record<string, string>,
+): React.ReactNode => {
   if (!items.length) return null;
 
   // Group items by their leading path segment so siblings are rendered together
@@ -358,6 +367,9 @@ export const renderDiffTree = (items: SegmentedChange[]): React.ReactNode => {
                 label={label}
                 changeType={change.change_type}
                 value={value}
+                reportingFieldDisplayTitleBySlug={
+                  reportingFieldDisplayTitleBySlug
+                }
               />
             );
 
@@ -365,7 +377,10 @@ export const renderDiffTree = (items: SegmentedChange[]): React.ReactNode => {
           return (
             <ChangeItemDisplay
               key={key}
-              item={{ ...change, displayLabel: label }}
+              item={{
+                ...change,
+                displayLabel: reportingFieldDisplayTitleBySlug?.[key] ?? label,
+              }}
             />
           );
         }
@@ -373,7 +388,7 @@ export const renderDiffTree = (items: SegmentedChange[]): React.ReactNode => {
         // Multiple children or deeper path → recurse into a branch
         return (
           <BranchNode key={key} label={label}>
-            {renderDiffTree(children)}
+            {renderDiffTree(children, reportingFieldDisplayTitleBySlug)}
           </BranchNode>
         );
       })}

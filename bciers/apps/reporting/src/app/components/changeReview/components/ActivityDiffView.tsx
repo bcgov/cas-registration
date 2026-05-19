@@ -8,16 +8,19 @@ import { SourceTypeDiffView } from "./SourceTypeDiffView";
 interface WholeActivityDiffViewProps {
   activityName: string;
   changeItem: ChangeItem;
+  reportingFieldDisplayTitleBySlug: Record<string, string>;
 }
 
 interface ActivityDiffViewProps {
   activityName: string;
   activityGroup: ActivityGroup;
+  reportingFieldDisplayTitleBySlug: Record<string, string>;
 }
 
 export const WholeActivityDiffView: React.FC<WholeActivityDiffViewProps> = ({
   activityName,
   changeItem,
+  reportingFieldDisplayTitleBySlug,
 }) => {
   const value = getChangeValue(changeItem);
   return (
@@ -30,6 +33,7 @@ export const WholeActivityDiffView: React.FC<WholeActivityDiffViewProps> = ({
           },
         ]}
         changeType={changeItem.change_type}
+        reportingFieldDisplayTitleBySlug={reportingFieldDisplayTitleBySlug}
       />
     </Box>
   );
@@ -38,6 +42,7 @@ export const WholeActivityDiffView: React.FC<WholeActivityDiffViewProps> = ({
 export const PartialActivityDiffView: React.FC<ActivityDiffViewProps> = ({
   activityName,
   activityGroup,
+  reportingFieldDisplayTitleBySlug,
 }) => {
   // Only some source types (or their fields) changed
   return (
@@ -59,6 +64,7 @@ export const PartialActivityDiffView: React.FC<ActivityDiffViewProps> = ({
             key={sourceTypeName}
             sourceTypeGroup={stGroup}
             sourceTypeName={sourceTypeName}
+            reportingFieldDisplayTitleBySlug={reportingFieldDisplayTitleBySlug}
           />
         ),
       )}
@@ -69,12 +75,14 @@ export const PartialActivityDiffView: React.FC<ActivityDiffViewProps> = ({
 export const ActivityDiffView: React.FC<ActivityDiffViewProps> = ({
   activityName,
   activityGroup,
+  reportingFieldDisplayTitleBySlug,
 }) => {
   if (activityGroup.whole)
     return (
       <WholeActivityDiffView
         activityName={activityName}
         changeItem={activityGroup.whole}
+        reportingFieldDisplayTitleBySlug={reportingFieldDisplayTitleBySlug}
       />
     );
 
@@ -82,6 +90,7 @@ export const ActivityDiffView: React.FC<ActivityDiffViewProps> = ({
     <PartialActivityDiffView
       activityName={activityName}
       activityGroup={activityGroup}
+      reportingFieldDisplayTitleBySlug={reportingFieldDisplayTitleBySlug}
     />
   );
 };

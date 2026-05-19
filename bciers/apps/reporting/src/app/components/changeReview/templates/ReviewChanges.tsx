@@ -47,6 +47,7 @@ function groupByFacility(changes: any[]): Record<string, any[]> {
 export const ReviewChanges: React.FC<ReviewChangesProps> = ({
   changes,
   registrationPurpose,
+  reportingFieldDisplayTitleBySlug,
 }) => {
   const normalizedChanges = normalizeChangeKeys(filterExcludedFields(changes));
 
@@ -213,6 +214,9 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
                   <SimpleActivityDiff
                     changes={activityChanges}
                     hideFacilityHeaders
+                    reportingFieldDisplayTitleBySlug={
+                      reportingFieldDisplayTitleBySlug
+                    }
                   />
                 </Box>
               )}
