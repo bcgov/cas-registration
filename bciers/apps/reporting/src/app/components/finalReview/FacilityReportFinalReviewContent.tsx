@@ -32,12 +32,12 @@ export default function FacilityReportFinalReviewContent({
       document.title = originalTitle;
     };
 
-    window.addEventListener("beforeprint", handleBeforePrint);
-    window.addEventListener("afterprint", handleAfterPrint);
+    globalThis.addEventListener("beforeprint", handleBeforePrint);
+    globalThis.addEventListener("afterprint", handleAfterPrint);
 
     return () => {
-      window.removeEventListener("beforeprint", handleBeforePrint);
-      window.removeEventListener("afterprint", handleAfterPrint);
+      globalThis.removeEventListener("beforeprint", handleBeforePrint);
+      globalThis.removeEventListener("afterprint", handleAfterPrint);
     };
   }, [data.facility_name]);
 

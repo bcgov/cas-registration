@@ -46,30 +46,22 @@ describe("FacilityReportFinalReviewContent", () => {
     expect(screen.getByText("Test Facility")).toBeVisible();
   });
 
-  it("sets document.title to the facility name on mount and restores it on unmount", () => {
+  it("sets document.title during print and restores it after print", () => {
     const originalTitle = document.title;
 
-    const { unmount } = render(
+    render(
       <FacilityReportFinalReviewContent
         data={{ facility_name: "Test Facility" } as any}
         backUrl={backUrl}
       />,
     );
 
+    expect(document.title).toBe(originalTitle);
+
+    globalThis.dispatchEvent(new Event("beforeprint"));
     expect(document.title).toBe("CAS OBPS_Reporting_Test Facility");
 
-    unmount();
-
-    expect(document.title).toBe(originalTitle);
-  });
-
-  it("does not change document.title when facility_name is absent", () => {
-    const originalTitle = document.title;
-
-    render(
-      <FacilityReportFinalReviewContent data={{} as any} backUrl={backUrl} />,
-    );
-
+    globalThis.dispatchEvent(new Event("afterprint"));
     expect(document.title).toBe(originalTitle);
   });
 
