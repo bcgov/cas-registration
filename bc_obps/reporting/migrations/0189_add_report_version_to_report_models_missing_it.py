@@ -49,6 +49,8 @@ def reverse_populate_report_version_fields(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
+    atomic = False
+
     dependencies = [
         ('reporting', '0188_V5_11_0'),
     ]
