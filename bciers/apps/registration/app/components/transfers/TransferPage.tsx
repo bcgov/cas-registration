@@ -12,6 +12,7 @@ import getTransferEvent from "@/registration/app/components/transfers/getTransfe
 import {
   facilityEntitySchema,
   operationEntitySchema,
+  editTransferUiSchema,
 } from "@/registration/app/data/jsonSchema/transfer/transferDetail";
 
 // 🧩 Main component
@@ -69,6 +70,10 @@ export default async function TransferPage({
                   transferFormData.from_operation_id,
                 )
           }
+          uiSchema={await editTransferUiSchema(
+            transferFormData.existing_facilities,
+            transferFormData.from_operation_id,
+          )}
         />
       ) : (
         <TransferForm

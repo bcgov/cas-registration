@@ -7,6 +7,11 @@ import { fetchOperationsPageData } from "@bciers/actions/api";
 import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
 import { ExistingFacilities } from "@/registration/app/components/transfers/types";
 
+interface FacilityEnums {
+  enum: string[];
+  enumNames: string[];
+}
+
 const sharedSchemaProperties: RJSFSchema = {
   properties: {
     //Not an actual field in the db - this is just to make the form look like the wireframes
@@ -100,10 +105,10 @@ export const operationEntitySchema = async (
   };
 };
 
-export const facilityEntitySchema = async (
+const populateFacilityEnums = async (
   existingFacilities: ExistingFacilities[],
   fromOperationId: string,
-): Promise<RJSFSchema> => {
+): Promise<FacilityEnums> => {
   const facilitiesByOperation = await fetchFacilitiesPageData(fromOperationId, {
     paginate_result: false,
     end_date: true, // this indicates that the end_date is not null,
@@ -156,6 +161,17 @@ export const facilityEntitySchema = async (
       ),
     };
   }
+  return facilityEnum;
+};
+
+export const facilityEntitySchema = async (
+  existingFacilities: ExistingFacilities[],
+  fromOperationId: string,
+): Promise<RJSFSchema> => {
+  const facilityEnum = await populateFacilityEnums(
+    existingFacilities,
+    fromOperationId,
+  );
 
   return {
     type: "object",
@@ -176,7 +192,7 @@ export const facilityEntitySchema = async (
             minItems: 1,
             items: {
               type: "string",
-              ...facilityEnum,
+              enum: facilityEnum.enum,
             },
           },
           to_operation: {
@@ -189,57 +205,70 @@ export const facilityEntitySchema = async (
   };
 };
 
-export const editTransferUISchema: UiSchema = {
-  "ui:FieldTemplate": SectionFieldTemplate,
-  section: {
+export const editTransferUiSchema = async (
+  existingFacilities: ExistingFacilities[],
+  fromOperationId: string,
+): Promise<UiSchema> => {
+  let facilityEnum = { enum: [] as string[], enumNames: [] as string[] };
+  if (fromOperationId)
+    facilityEnum = await populateFacilityEnums(
+      existingFacilities,
+      fromOperationId,
+    );
+
+  return {
     "ui:FieldTemplate": SectionFieldTemplate,
-    "ui:options": {
-      label: false,
-    },
-    "ui:order": [
-      "transfer_header",
-      "from_operator",
-      "to_operator",
-      "transfer_entity",
-      "operation",
-      "from_operation",
-      "facilities",
-      "to_operation",
-      "effective_date",
-    ],
-    transfer_header: {
-      "ui:FieldTemplate": FieldTemplate,
-      "ui:classNames": "form-heading mb-8",
-    },
-    from_operator: {
-      "ui:widget": "ReadOnlyWidget",
-    },
-    to_operator: {
-      "ui:widget": "ReadOnlyWidget",
-    },
-    transfer_entity: {
-      "ui:widget": "ReadOnlyRadioWidget",
-      "ui:classNames": "md:gap-20",
+    section: {
+      "ui:FieldTemplate": SectionFieldTemplate,
       "ui:options": {
-        inline: true,
+        label: false,
+      },
+      "ui:order": [
+        "transfer_header",
+        "from_operator",
+        "to_operator",
+        "transfer_entity",
+        "operation",
+        "from_operation",
+        "facilities",
+        "to_operation",
+        "effective_date",
+      ],
+      transfer_header: {
+        "ui:FieldTemplate": FieldTemplate,
+        "ui:classNames": "form-heading mb-8",
+      },
+      from_operator: {
+        "ui:widget": "ReadOnlyWidget",
+      },
+      to_operator: {
+        "ui:widget": "ReadOnlyWidget",
+      },
+      transfer_entity: {
+        "ui:widget": "ReadOnlyRadioWidget",
+        "ui:classNames": "md:gap-20",
+        "ui:options": {
+          inline: true,
+        },
+      },
+      operation: {
+        "ui:widget": "ComboBox",
+        "ui:placeholder": "Select the operation",
+      },
+      effective_date: {
+        "ui:widget": "DateWidget",
+      },
+      from_operation: {
+        "ui:widget": "ReadOnlyWidget",
+      },
+      facilities: {
+        "ui:widget": "MultiSelectWidgetWithTooltip",
+        "ui:placeholder": "Select facilities",
+        "ui:enumNames": facilityEnum.enumNames,
+      },
+      to_operation: {
+        "ui:widget": "ReadOnlyWidget",
       },
     },
-    operation: {
-      "ui:widget": "ComboBox",
-      "ui:placeholder": "Select the operation",
-    },
-    effective_date: {
-      "ui:widget": "DateWidget",
-    },
-    from_operation: {
-      "ui:widget": "ReadOnlyWidget",
-    },
-    facilities: {
-      "ui:widget": "MultiSelectWidgetWithTooltip",
-      "ui:placeholder": "Select facilities",
-    },
-    to_operation: {
-      "ui:widget": "ReadOnlyWidget",
-    },
-  },
+  };
 };

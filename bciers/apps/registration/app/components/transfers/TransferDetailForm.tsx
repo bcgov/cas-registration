@@ -6,14 +6,13 @@ import SubmitButton from "@bciers/components/button/SubmitButton";
 import { useRouter } from "next/navigation";
 import { IChangeEvent } from "@rjsf/core";
 import { TransferDetailFormData } from "@/registration/app/components/transfers/types";
-import { editTransferUISchema } from "@/registration/app/data/jsonSchema/transfer/transferDetail";
 import { actionHandler } from "@bciers/actions";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { UUID } from "crypto";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
 import { TransferEventStatus } from "@/registration/app/components/transfers/enums";
-import { RJSFSchema } from "@rjsf/utils";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import useKey from "@bciers/utils/src/useKey";
 
@@ -21,12 +20,14 @@ interface TransferDetailFormProps {
   formData: TransferDetailFormData;
   transferId: UUID;
   schema: RJSFSchema;
+  uiSchema: UiSchema;
 }
 
 export default function TransferDetailForm({
   formData,
   transferId,
   schema,
+  uiSchema,
 }: Readonly<TransferDetailFormProps>) {
   // To get the user's role from the session
   const role = useSessionRole();
@@ -139,7 +140,7 @@ export default function TransferDetailForm({
         disabled={disabled}
         error={error}
         schema={schema}
-        uiSchema={editTransferUISchema}
+        uiSchema={uiSchema}
         formData={formData}
         allowEdit={isEditable}
         onSubmit={submitHandler}
