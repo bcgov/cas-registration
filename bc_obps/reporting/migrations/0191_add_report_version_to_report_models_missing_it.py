@@ -52,8 +52,6 @@ def reverse_populate_report_version_fields(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    atomic = False
-
     dependencies = [
         ('reporting', '0190_update_diesel_and_natural_gas_fuel_amount_ranges'),
     ]
