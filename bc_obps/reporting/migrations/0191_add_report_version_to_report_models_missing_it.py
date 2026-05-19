@@ -11,25 +11,28 @@ def populate_missing_report_version_fields(apps, schema_editor):
         ReportNewEntrantEmission = apps.get_model('reporting', 'ReportNewEntrantEmission')
         for record in ReportNewEntrantEmission.objects.all():
             report_version_id = record.report_new_entrant.report_version_id
-            with pgtrigger.ignore('reporting.ReportNewEntrantEmission:immutable_report_version'):
-                record.report_version_id = report_version_id
-                record.save(update_fields=['report_version_id'])
+            if not record.report_version_id:
+                with pgtrigger.ignore('reporting.ReportNewEntrantEmission:immutable_report_version'):
+                    record.report_version_id = report_version_id
+                    record.save(update_fields=['report_version_id'])
 
     def report_new_entrant_production_populate_report_version(apps, schema_editor):
         ReportNewEntrantProduction = apps.get_model('reporting', 'ReportNewEntrantProduction')
         for record in ReportNewEntrantProduction.objects.all():
             report_version_id = record.report_new_entrant.report_version_id
-            with pgtrigger.ignore('reporting.ReportNewEntrantProduction:immutable_report_version'):
-                record.report_version_id = report_version_id
-                record.save(update_fields=['report_version_id'])
+            if not record.report_version_id:
+                with pgtrigger.ignore('reporting.ReportNewEntrantProduction:immutable_report_version'):
+                    record.report_version_id = report_version_id
+                    record.save(update_fields=['report_version_id'])
 
     def report_raw_activity_data_populate_report_version(apps, schema_editor):
         ReportRawActivityData = apps.get_model('reporting', 'ReportRawActivityData')
         for record in ReportRawActivityData.objects.all():
             report_version_id = record.facility_report.report_version_id
-            with pgtrigger.ignore('reporting.ReportRawActivityData:immutable_report_version'):
-                record.report_version_id = report_version_id
-                record.save(update_fields=['report_version_id'])
+            if not record.report_version_id:
+                with pgtrigger.ignore('reporting.ReportRawActivityData:immutable_report_version'):
+                    record.report_version_id = report_version_id
+                    record.save(update_fields=['report_version_id'])
 
     report_new_entrant_emission_populate_report_version(apps, schema_editor)
     report_new_entrant_production_populate_report_version(apps, schema_editor)
