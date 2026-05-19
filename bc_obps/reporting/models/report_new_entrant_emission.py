@@ -1,12 +1,18 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from reporting.models import EmissionCategory
+from reporting.models import EmissionCategory, ReportVersion
 from reporting.models.report_new_entrant import ReportNewEntrant
 from reporting.models.triggers import immutable_report_version_trigger
 from reporting.models.rls_configs.report_new_entrant_emission import Rls as ReportNewEntrantEmissionRls
 
 
 class ReportNewEntrantEmission(TimeStampedModel):
+    report_version = models.ForeignKey(
+        ReportVersion,
+        on_delete=models.CASCADE,
+        related_name="report_new_entrant_emissions",
+        db_comment="The report version this new entrant emission record belongs to",
+    )
     report_new_entrant = models.ForeignKey(
         ReportNewEntrant,
         on_delete=models.CASCADE,

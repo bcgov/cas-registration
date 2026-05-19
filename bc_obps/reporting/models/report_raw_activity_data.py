@@ -5,6 +5,7 @@ Model for storing raw activity data before processing.
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from registration.models.activity import Activity
+from reporting.models.report_version import ReportVersion
 from reporting.models.facility_report import FacilityReport
 from reporting.models.triggers import immutable_report_version_trigger
 from reporting.models.rls_configs.report_raw_activity_data import Rls as ReportRawActivityDataRls
@@ -16,6 +17,12 @@ class ReportRawActivityData(TimeStampedModel):
     This data is associated with a specific facility report and activity.
     """
 
+    report_version = models.ForeignKey(
+        ReportVersion,
+        on_delete=models.CASCADE,
+        related_name="report_raw_activity_data",
+        db_comment="The report version this raw activity data belongs to",
+    )
     facility_report = models.ForeignKey(
         FacilityReport,
         on_delete=models.CASCADE,
