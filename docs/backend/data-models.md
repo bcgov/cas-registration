@@ -60,7 +60,7 @@ The reporting app contains models that manage OBPS reports, versions, and their 
 The reporting models follow a hierarchical structure:
 
 - **Report**: Represents a single report instance for an operation and reporting year. Each operation can have at most one report per year.
-- **ReportVersion**: Represents a version of a report. A report can have multiple versions such as draft versions and multiple submitted versions for supplementary reports.
+- **ReportVersion**: Represents a version of a report. A report can have multiple versions such as multiple submitted versions for supplementary reports and up to one version in draft.
 - **Report Data Models**: Data records belonging to a report version (e.g. `ReportActivity`, `ReportMethodology`, `ReportOperation`).
 
 ### Convention: Foreign Key to ReportVersion
@@ -99,7 +99,7 @@ By including the `report_version` foreign key on every data record, these querie
 
 ### Immutability of Submitted Reports
 
-Submitted report versions are designed to be immutable. This is enforced through PostgreSQL triggers at the database level to ensure data integrity. Models that reference a report version implement triggers to prevent modifications once the report is submitted:
+Submitted report versions are designed to be immutable. This is enforced through PostgreSQL triggers to ensure data integrity. Models that reference a report version implement triggers to prevent modifications once the report is submitted:
 
 ```python
 triggers = [
@@ -108,10 +108,3 @@ triggers = [
 ```
 
 This ensures that once a report version is submitted, its associated data cannot be modified, maintaining an audit trail and compliance with reporting requirements.
-
-### Design Considerations
-
-When adding new models to the reporting app, keep these principles in mind:
-
-- **Include `report_version` FK**: Ensure any data model related to a report version includes a direct foreign key to `ReportVersion`, even if it's also related to another entity.
-- **Consider Metabase queries**: Design your model relationships with analytics in mind. Denormalization is acceptable when it significantly improves query usability and performance for analytical purposes.

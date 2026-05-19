@@ -2,6 +2,9 @@ from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.test import TransactionTestCase
 from model_bakery import baker
+from reporting.models.report_new_entrant_emission import ReportNewEntrantEmission
+from reporting.models.report_new_entrant_production import ReportNewEntrantProduction
+from reporting.models.report_raw_activity_data import ReportRawActivityData
 
 
 class TestPopulateReportVersionMigration(TransactionTestCase):
@@ -34,21 +37,21 @@ class TestPopulateReportVersionMigration(TransactionTestCase):
             emission_category = baker.make_recipe("reporting.tests.utils.emission_category")
             regulated_product = baker.make_recipe("registration.tests.utils.regulated_product")
 
-            ReportNewEntrantEmission = pre_migration_apps.get_model("reporting", "ReportNewEntrantEmission")
-            ReportNewEntrantProduction = pre_migration_apps.get_model("reporting", "ReportNewEntrantProduction")
-            ReportRawActivityData = pre_migration_apps.get_model("reporting", "ReportRawActivityData")
+            ReportNewEntrantEmissionOld = pre_migration_apps.get_model("reporting", "ReportNewEntrantEmission")
+            ReportNewEntrantProductionOld = pre_migration_apps.get_model("reporting", "ReportNewEntrantProduction")
+            ReportRawActivityDataOld = pre_migration_apps.get_model("reporting", "ReportRawActivityData")
 
-            report_new_entrant_emission = ReportNewEntrantEmission.objects.create(
+            report_new_entrant_emission = ReportNewEntrantEmissionOld.objects.create(
                 report_new_entrant_id=report_new_entrant.pk,
                 emission_category_id=emission_category.pk,
                 emission="1.0000",
             )
-            report_new_entrant_production = ReportNewEntrantProduction.objects.create(
+            report_new_entrant_production = ReportNewEntrantProductionOld.objects.create(
                 report_new_entrant_id=report_new_entrant.pk,
                 product_id=regulated_product.pk,
                 production_amount="2.0000",
             )
-            report_raw_activity_data = ReportRawActivityData.objects.create(
+            report_raw_activity_data = ReportRawActivityDataOld.objects.create(
                 facility_report_id=facility_report.pk,
                 activity_id=activity.pk,
                 json_data={"test": "raw activity data"},
@@ -58,22 +61,45 @@ class TestPopulateReportVersionMigration(TransactionTestCase):
             executor.migrate([migration_target])
             post_migration_apps = executor.loader.project_state([migration_target]).apps
 
-            ReportNewEntrantEmission = post_migration_apps.get_model("reporting", "ReportNewEntrantEmission")
-            ReportNewEntrantProduction = post_migration_apps.get_model("reporting", "ReportNewEntrantProduction")
-            ReportRawActivityData = post_migration_apps.get_model("reporting", "ReportRawActivityData")
+            ReportNewEntrantEmissionNew = post_migration_apps.get_model("reporting", "ReportNewEntrantEmission")
+            ReportNewEntrantProductionNew = post_migration_apps.get_model("reporting", "ReportNewEntrantProduction")
+            ReportRawActivityDataNew = post_migration_apps.get_model("reporting", "ReportRawActivityData")
 
             self.assertEqual(
-                ReportNewEntrantEmission.objects.get(pk=report_new_entrant_emission.pk).report_version_id,
+                ReportNewEntrantEmissionNew.objects.get(pk=report_new_entrant_emission.pk).report_version_id,
                 report_new_entrant.report_version_id,
             )
             self.assertEqual(
-                ReportNewEntrantProduction.objects.get(pk=report_new_entrant_production.pk).report_version_id,
+                ReportNewEntrantProductionNew.objects.get(pk=report_new_entrant_production.pk).report_version_id,
                 report_new_entrant.report_version_id,
             )
             self.assertEqual(
-                ReportRawActivityData.objects.get(pk=report_raw_activity_data.pk).report_version_id,
+                ReportRawActivityDataNew.objects.get(pk=report_raw_activity_data.pk).report_version_id,
                 facility_report.report_version_id,
             )
         finally:
             executor = MigrationExecutor(connection)
             executor.migrate(original_targets)
+
+    def test_populates_report_version_from_parent_records_with_real_data(self):
+        # This test is intended to be run against a copy of production data to ensure the migration works with real data volumes and relationships.
+        report_new_entrant_emissions = ReportNewEntrantEmission.objects.all()
+        for emission in report_new_entrant_emissions:
+            self.assertEqual(
+                emission.report_version_id,
+                emission.report_new_entrant.report_version_id,
+            )
+
+        report_new_entrant_productions = ReportNewEntrantProduction.objects.all()
+        for production in report_new_entrant_productions:
+            self.assertEqual(
+                production.report_version_id,
+                production.report_new_entrant.report_version_id,
+            )
+
+        report_raw_activity_data = ReportRawActivityData.objects.all()
+        for activity_data in report_raw_activity_data:
+            self.assertEqual(
+                activity_data.report_version_id,
+                activity_data.facility_report.report_version_id,
+            )
