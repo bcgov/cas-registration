@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
     atomic = False
 
     dependencies = [
-        ('reporting', '0188_V5_11_0'),
+        ('reporting', '0190_update_diesel_and_natural_gas_fuel_amount_ranges'),
     ]
 
     operations = [

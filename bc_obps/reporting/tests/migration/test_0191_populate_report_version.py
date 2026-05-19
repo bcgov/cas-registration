@@ -8,10 +8,10 @@ class TestPopulateReportVersionMigration(TransactionTestCase):
     def test_populates_report_version_from_parent_records_with_mock_data(self):
         executor = MigrationExecutor(connection)
         original_targets = executor.loader.graph.leaf_nodes()
-        previous_target = ("reporting", "0188_V5_11_0")
+        previous_target = ("reporting", "0190_update_diesel_and_natural_gas_fuel_amount_ranges")
         migration_target = (
             "reporting",
-            "0189_add_report_version_to_report_models_missing_it",
+            "0191_add_report_version_to_report_models_missing_it",
         )
 
         try:
