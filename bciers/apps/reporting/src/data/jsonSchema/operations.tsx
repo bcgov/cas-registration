@@ -175,11 +175,11 @@ export const buildOperationReviewSchema = (
   }) as unknown as RJSFSchema;
 
 export const buildOperationReviewUiSchema = (
-  operationId?: string,
-  operationName?: string,
   allActivities: Activity[],
   allRegulatedProducts: RegulatedProduct[],
   allRepresentatives: ReportOperationRepresentative[],
+  operationId?: string,
+  operationName?: string,
 ) => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
