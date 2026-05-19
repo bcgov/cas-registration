@@ -108,3 +108,4 @@ triggers = [
 ```
 
 This ensures that once a report version is submitted, its associated data cannot be modified, maintaining an audit trail and compliance with reporting requirements.
+Any changes to a submitted report must therefore be captured by creating a supplementary report (new report version).
