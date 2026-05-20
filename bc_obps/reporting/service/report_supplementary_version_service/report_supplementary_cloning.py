@@ -118,6 +118,7 @@ def clone_report_version_new_entrant_data(old_report_version: ReportVersion, new
     # Clone the associated ReportNewEntrantEmission data
     emissions_to_create = [
         ReportNewEntrantEmission(
+            report_version=new_report_version,
             report_new_entrant=report_new_entrant_to_clone,
             emission_category=emission.emission_category,
             emission=emission.emission,
@@ -129,6 +130,7 @@ def clone_report_version_new_entrant_data(old_report_version: ReportVersion, new
     # Clone the associated ReportNewEntrantProduction data
     productions_to_create = [
         ReportNewEntrantProduction(
+            report_version=new_report_version,
             report_new_entrant=report_new_entrant_to_clone,
             product=production.product,
             production_amount=production.production_amount,

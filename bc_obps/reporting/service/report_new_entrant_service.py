@@ -85,6 +85,7 @@ class ReportNewEntrantService:
                 report_new_entrant=report_new_entrant,
                 emission_category_id=emission_item.id,
                 emission=emission_item.emission,
+                report_version_id=report_version_id,
             )
             for category in data.emissions
             for emission_item in category.emissionData
@@ -97,6 +98,7 @@ class ReportNewEntrantService:
                 report_new_entrant=report_new_entrant,
                 product_id=product.id,
                 production_amount=product.production_amount,
+                report_version_id=report_version_id,
             )
             for product in data.products
             if product.production_amount is not None

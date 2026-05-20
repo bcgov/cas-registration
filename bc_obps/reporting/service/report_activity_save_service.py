@@ -1,5 +1,6 @@
 import uuid
 from django.db import transaction
+from reporting.models.report_version import ReportVersion
 from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
 from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
@@ -38,6 +39,7 @@ class ReportActivitySaveService:
 
     """
 
+    report_version: ReportVersion
     facility_report: FacilityReport
     activity: Activity
     user_guid: uuid.UUID
@@ -54,7 +56,8 @@ class ReportActivitySaveService:
         self.facility_report = FacilityReport.objects.select_related("report_version", "report_version__report").get(
             report_version_id=report_version_id, facility_id=facility_id
         )
-        self.valid_date = get_report_valid_date_from_version_id(self.facility_report.report_version.id)
+        self.report_version = ReportVersion.objects.get(pk=report_version_id)
+        self.valid_date = get_report_valid_date_from_version_id(self.report_version.id)
 
     @transaction.atomic()
     def save(self, data: dict) -> ReportActivity:
@@ -66,7 +69,7 @@ class ReportActivitySaveService:
         # Only one ReportActivity record per report_version/facility/activity should ever exist
         report_activity, _ = ReportActivity.objects.update_or_create(
             id=data.get("id"),
-            report_version=self.facility_report.report_version,
+            report_version=self.report_version,
             facility_report=self.facility_report,
             activity=self.activity,
             create_defaults={
@@ -310,6 +313,7 @@ class ReportActivitySaveService:
             ReportRawActivityData: The saved raw activity data object
         """
         report_raw_activity, _ = ReportRawActivityData.objects.update_or_create(
+            report_version=self.report_version,
             facility_report=self.facility_report,
             activity=self.activity,
             defaults={"json_data": data},

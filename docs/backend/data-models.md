@@ -50,3 +50,62 @@ We track change history for all our models with the [django-simple-history](http
 ### History Schema
 
 An `erc_history` schema was created alongside the "live" `erc` schema to house all the history tables. Each `erc` model has a corresponding `<table>_history` table in the `erc_history` schema that tracks and timestamps all changes. These changes are a snapshot of the data as it was at the time the change to the data was made. This enables point in time diffing either in the app or in metabase.
+
+## Reporting Models
+
+The reporting app contains models that manage OBPS reports, versions, and their associated data. The design of these models is intended to optimize both the application's functionality and analytical querying capabilities.
+
+### Report Hierarchy
+
+The reporting models follow a hierarchical structure:
+
+- **Report**: Represents a single report instance for an operation and reporting year. Each operation can have at most one report per year.
+- **ReportVersion**: Represents a version of a report. A report can have multiple versions such as multiple submitted versions for supplementary reports and up to one version in draft.
+- **Report Data Models**: Data records belonging to a report version (e.g. `ReportActivity`, `ReportMethodology`, `ReportOperation`).
+
+### Convention: Foreign Key to ReportVersion
+
+A key convention in the Reporting app is that **any model storing data related to a specific report version should include a `report_version` foreign key**. This is a deliberate departure from database normalization in order to simplify querying report data through Metabase.
+
+#### Example
+
+See: `ReportVerificationVisit`. Conceptually, a verification visit belongs to a `ReportVerification`. However, the model includes both:
+
+```python
+report_version = models.ForeignKey(
+    "reporting.ReportVersion",
+    on_delete=models.CASCADE,
+    related_name="report_verification_visits",
+    db_comment="The report version this verification visit belongs to",
+)
+
+report_verification = models.ForeignKey(
+    ReportVerification,
+    on_delete=models.CASCADE,
+    related_name="report_verification_visits",
+    db_comment="The report verification associated with this visit",
+)
+```
+
+#### Rationale
+
+This denormalization serves a purpose: **it enables Metabase users to easily construct queries around report version data without requiring multiple joins**. Metabase users often need to:
+
+- Aggregate data by report version
+- Filter data by report status or submission date
+- Compare data across multiple report versions
+
+By including the `report_version` foreign key on every data record, these queries become simpler and more performant.
+
+### Immutability of Submitted Reports
+
+Submitted report versions are designed to be immutable. This is enforced through PostgreSQL triggers to ensure data integrity. Models that reference a report version implement triggers to prevent modifications once the report is submitted:
+
+```python
+triggers = [
+    immutable_report_version_trigger(),
+]
+```
+
+This ensures that once a report version is submitted, its associated data cannot be modified, maintaining an audit trail and compliance with reporting requirements.
+Any changes to a submitted report must therefore be captured by creating a supplementary report (new report version).

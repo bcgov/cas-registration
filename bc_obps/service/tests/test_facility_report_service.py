@@ -223,12 +223,14 @@ class TestFacilityReportService(TestCase):
         # Create raw activity data for both activities
         baker.make_recipe(
             'reporting.tests.utils.report_raw_activity_data',
+            report_version=facility_report.report_version,
             facility_report=facility_report,
             activity=activity_1,
             json_data={"test": "data1"},
         )
         baker.make_recipe(
             'reporting.tests.utils.report_raw_activity_data',
+            report_version=facility_report.report_version,
             facility_report=facility_report,
             activity=activity_2,
             json_data={"test": "data2"},

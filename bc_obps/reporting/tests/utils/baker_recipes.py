@@ -240,6 +240,7 @@ report_new_entrant = Recipe(
 )
 report_new_entrant_emission = Recipe(
     ReportNewEntrantEmission,
+    report_version=foreign_key(report_version),
     report_new_entrant=foreign_key(report_new_entrant),
     emission_category=foreign_key(emission_category),
     emission="5.0000",
@@ -247,6 +248,7 @@ report_new_entrant_emission = Recipe(
 
 report_new_entrant_production = Recipe(
     ReportNewEntrantProduction,
+    report_version=foreign_key(report_version),
     report_new_entrant=foreign_key(report_new_entrant),
     product=foreign_key(regulated_product),
     production_amount="5.0000",
@@ -298,6 +300,7 @@ report_person_responsible = Recipe(
 
 report_raw_activity_data = Recipe(
     ReportRawActivityData,
+    report_version=foreign_key(report_version),
     facility_report=foreign_key(facility_report),
     activity=foreign_key(activity),
     json_data=json_seq(json_value="generated raw activity data"),

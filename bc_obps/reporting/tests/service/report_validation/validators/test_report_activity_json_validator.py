@@ -102,6 +102,7 @@ class TestReportActivityJsonValidator:
 
         raw_activity_data = make_recipe(
             "reporting.tests.utils.report_raw_activity_data",
+            report_version=1,
             facility_report__facility__id="00000000-0000-0000-0000-000000000012",
             activity__slug="test-activity",
             json_data={
@@ -280,6 +281,7 @@ class TestReportActivityJsonValidator:
 
         raw_activity_data = make_recipe(
             "reporting.tests.utils.report_raw_activity_data",
+            report_version__report__reporting_year=ReportingYear.objects.get(reporting_year=2024),
             facility_report__facility__id="00000000-0000-0000-0000-000000000014",
             facility_report__report_version__report__reporting_year=ReportingYear.objects.get(reporting_year=2024),
             activity=Activity.objects.get(slug="electricity_generation"),

@@ -22,12 +22,14 @@ class TestReportNewEntrantService(TestCase):
             report_new_entrant=self.report_new_entrant,
             emission_category=self.emission_category,
             emission=Decimal('15.0'),
+            report_version=self.report_version,
         )
         self.report_new_entrant_production = make_recipe(
             'reporting.tests.utils.report_new_entrant_production',
             report_new_entrant=self.report_new_entrant,
             product=self.regulated_product,
             production_amount=Decimal('100.0'),
+            report_version=self.report_version,
         )
 
         self.report_operation = make_recipe(
