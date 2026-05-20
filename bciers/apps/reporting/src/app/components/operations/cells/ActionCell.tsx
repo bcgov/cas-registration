@@ -27,12 +27,17 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
   const [hasClicked, setHasClicked] = React.useState<boolean>(false);
 
   // Create a new report
-  const handleStartReport = async (reportingYear: number): Promise<string> => {
+  const handleStartReport = async (
+    reportingYear: number,
+  ): Promise<string | null> => {
     const response = await createReport(operationId, reportingYear);
-    if (response?.error)
+    if (response?.error) {
       setResponseError(
         `We couldn't create a report for operation ID '${operationId}' and reporting year '${reportingYear}': ${response?.error}.`,
       );
+      return null;
+    }
+
     return response;
   };
 
@@ -41,12 +46,13 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
   }
 
   // Create a new report version
-  const handleNewDraftVersion = async (): Promise<string> => {
+  const handleNewDraftVersion = async (): Promise<string | null> => {
     const response = await createReportVersion(operationId, reportId);
     if (response?.error) {
       setResponseError(
         `We couldn't create a draft report version for report ID '${reportId}': ${response?.error}.`,
       );
+      return null;
     }
     return response;
   };
@@ -57,17 +63,15 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
     if (reportId) {
       // create a new report version
       newReportVersionId = await handleNewDraftVersion();
-      setReportVersionId(newReportVersionId);
     } else {
       // create a new report
       const reportingYearObj = await getReportingYear();
       newReportVersionId = await handleStartReport(
         reportingYearObj.reporting_year,
       );
-      setReportVersionId(newReportVersionId);
     }
-    if (newReportVersionId)
-      router.push(`${newReportVersionId}/review-operation-information`);
+    if (newReportVersionId) setReportVersionId(newReportVersionId);
+    router.push(`${newReportVersionId}/review-operation-information`);
   };
 
   // Show "Available Soon" for all actions if reporting is not open or row is restricted
