@@ -39,17 +39,6 @@ def populate_missing_report_version_fields(apps, schema_editor):
     report_raw_activity_data_populate_report_version(apps, schema_editor)
 
 
-def reverse_populate_report_version_fields(apps, schema_editor):
-    """Reverse the population of report_version fields by clearing them."""
-    ReportNewEntrantEmission = apps.get_model('reporting', 'ReportNewEntrantEmission')
-    ReportNewEntrantProduction = apps.get_model('reporting', 'ReportNewEntrantProduction')
-    ReportRawActivityData = apps.get_model('reporting', 'ReportRawActivityData')
-
-    ReportNewEntrantEmission.objects.all().update(report_version_id=None)
-    ReportNewEntrantProduction.objects.all().update(report_version_id=None)
-    ReportRawActivityData.objects.all().update(report_version_id=None)
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -93,7 +82,7 @@ class Migration(migrations.Migration):
                 to='reporting.reportversion',
             ),
         ),
-        migrations.RunPython(populate_missing_report_version_fields, reverse_populate_report_version_fields),
+        migrations.RunPython(populate_missing_report_version_fields),
         migrations.AlterField(
             model_name='reportnewentrantemission',
             name='report_version',
