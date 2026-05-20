@@ -17,6 +17,7 @@ class ReportRawActivityDataModelTest(BaseTestCase):
             ("facility_report", "facility report", None, None),
             ("activity", "activity", None, None),
             ("json_data", "json data", None, None),
+            ("report_version", "report version", None, None),
         ]
 
     def test_immutable_after_report_version_submitted(self):

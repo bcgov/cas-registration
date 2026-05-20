@@ -16,6 +16,7 @@ class ReportNewEntrantProductionModelTest(BaseTestCase):
             ("product", "product", None, None),
             ("report_new_entrant", "report new entrant", None, None),
             ("production_amount", "production amount", None, None),
+            ("report_version", "report version", None, None),
         ]
 
     def test_immutable_after_report_version_submitted(self):

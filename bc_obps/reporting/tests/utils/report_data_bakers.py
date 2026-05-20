@@ -112,6 +112,7 @@ def report_raw_activity_data_baker(**props):
         "facility_report": facility_report,
         "activity": activity,
         "json_data": '{"test": "raw_activity_data"}',
+        "report_version": facility_report.report_version,
     }
 
     return baker.make(ReportRawActivityData, **(default_props | props))
@@ -133,5 +134,6 @@ def report_new_entrant_production_baker(**props):
         "product": product,
         "report_new_entrant": report_new_entrant,
         "production_amount": 500,
+        "report_version": report_new_entrant.report_version,
     }
     return baker.make(ReportNewEntrantProduction, **(default_props | props))
