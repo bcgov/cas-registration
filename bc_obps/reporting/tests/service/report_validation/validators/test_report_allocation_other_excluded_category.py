@@ -1,17 +1,27 @@
-from django.test import TestCase
+from model_bakery.utils import seq
+from reporting.models.emission_category import EmissionCategory
+from reporting.service.report_validation.report_validation_error import (
+    ReportValidationError,
+    ReportValidationErrorKey,
+    Severity,
+)
 from reporting.service.report_validation.validators import report_emission_allocation_other_excluded_category
 from model_bakery.baker import make_recipe
 import pytest
 
 
 @pytest.mark.django_db
-class TestReportAllocationOtherExcludedCategoryValidator(TestCase):
+class TestReportAllocationOtherExcludedCategoryValidator:
 
-    def setUp(self):
+    def setup_method(self):
         self.validator_under_test = report_emission_allocation_other_excluded_category
 
         self.report_version = make_recipe("reporting.tests.utils.report_version")
-        self.facility_report = make_recipe("reporting.tests.utils.facility_report", report_version=self.report_version)
+        self.facility_report = make_recipe(
+            "reporting.tests.utils.facility_report",
+            report_version=self.report_version,
+            facility_name="Test Facility",
+        )
         self.report_emission_allocation = make_recipe(
             "reporting.tests.utils.report_emission_allocation",
             report_version=self.report_version,
@@ -21,50 +31,73 @@ class TestReportAllocationOtherExcludedCategoryValidator(TestCase):
         self.included_cats = make_recipe(
             "reporting.tests.utils.emission_category",
             category_type="basic",
+            category_name=seq("Included Category "),
             _quantity=3,
         )
         self.other_excluded_cats = make_recipe(
             "reporting.tests.utils.emission_category",
             category_type="other_excluded",
+            category_name=seq("Other Excluded Category "),
             _quantity=3,
         )
 
-    def test_report_allocation_other_excluded_category_validator(self):
-        # This test should cover the following scenarios:
-        # 1. A facility report with no "other_excluded" emissions and no allocations (should pass)
-        # 2. A facility report with "other_excluded" emissions but no allocations (should fail)
-        # 3. A facility report with "other_excluded" emissions and sufficient allocations (should pass)
-        # 4. A facility report with "other_excluded" emissions and insufficient allocations (should fail)
+    def assert_error(self, errors: dict[str, ReportValidationError], category: EmissionCategory) -> None:
+        error = errors[f"og_np_nc_allocation_mismatch_{self.facility_report.facility_id}_{category.category_name}"]
+        assert error.key == ReportValidationErrorKey.OG_NP_NC_ALLOCATION_MISMATCH
+        assert error.severity == Severity.WARNING
+        assert (
+            error.message
+            == f"For the emission category '{category.category_name}', emissions allocated to the O&G non-processing, "
+            "non-combustion product exceed the emissions reported under the 'other_excluded' category."
+        )
+        assert error.context.facility_id == self.facility_report.facility_id
+        assert error.context.facility_name == self.facility_report.facility_name
+        assert error.context.report_version_id == self.report_version.id
 
-        # Note: The actual implementation of this test would require setting up the necessary database records
-        # for FacilityReport, EmissionCategory, ReportEmission, and ReportProductEmissionAllocation,
-        # which is beyond the scope of this code snippet.
-        pass
-
-    @pytest.mark.parametrize("is_product_regulated", [True, False])
-    def test_passes_with_no_other_excluded_emissions(self, is_product_regulated):
+    def test_passes_if_product_is_regulated(self):
         """
-        This should pass regardless of whether the product allocated to is regulated or not,
-        an regardless of the allocation quantity (this is not tested by this validator)
+        This should pass regardless of the allocation quantity (this is not tested by this validator)
         """
-        emissions = make_recipe(
+        make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=self.report_version,
             report_source_type__report_activity__facility_report=self.facility_report,
             json_data={"equivalentEmission": "100"},
             emission_categories=[self.included_cats[0]],
         )
-        allocations = make_recipe(
+        make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             report_emission_allocation=self.report_emission_allocation,
             emission_category=self.included_cats[0],
             allocated_quantity="1001",
-            report_product__product__is_regulated=is_product_regulated,
+            report_product__product__is_regulated=True,
         )
         assert self.validator_under_test.validate(self.report_version) == {}
 
-    def test_fails_with_other_excluded_emissions_and_no_allocations(self):
-        emissions = make_recipe(
+    def test_fails_if_no_other_excluded_emissions(self):
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=self.report_version,
+            report_source_type__report_activity__facility_report=self.facility_report,
+            json_data={"equivalentEmission": "100"},
+            emission_categories=[self.included_cats[0]],
+        )
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=self.report_emission_allocation,
+            emission_category=self.included_cats[0],
+            allocated_quantity="1001",
+            report_product__product__is_regulated=False,
+        )
+        errors = self.validator_under_test.validate(self.report_version)
+        assert len(errors.keys()) == 1
+        self.assert_error(errors, self.included_cats[0])
+
+    def test_passes_with_other_excluded_emissions_and_no_allocations(self):
+        """
+        This validator only checks for over-allocation of individual categories
+        """
+        make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=self.report_version,
             report_source_type__report_activity__facility_report=self.facility_report,
@@ -78,73 +111,110 @@ class TestReportAllocationOtherExcludedCategoryValidator(TestCase):
         assert self.validator_under_test.validate(self.report_version) == {}
 
     def test_fails_with_one_category_properly_allocated_and_one_not(self):
-        emissions = [
-            make_recipe(
-                "reporting.tests.utils.report_emission",
-                report_version=self.report_version,
-                report_source_type__report_activity__facility_report=self.facility_report,
-                json_data={"equivalentEmission": "100"},
-                emission_categories=[self.included_cats[0], self.other_excluded_cats[0]],
-            ),
-            make_recipe(
-                "reporting.tests.utils.report_emission",
-                report_version=self.report_version,
-                report_source_type__report_activity__facility_report=self.facility_report,
-                json_data={"equivalentEmission": "100"},
-                emission_categories=[self.included_cats[1], self.other_excluded_cats[0]],
-            ),
-        ]
-        allocations = [
-            make_recipe(
-                "reporting.tests.utils.report_product_emission_allocation",
-                report_emission_allocation=self.report_emission_allocation,
-                emission_category=self.included_cats[0],
-                allocated_quantity="100",
-                report_product__product__is_regulated=False,
-            ),
-            make_recipe(
-                "reporting.tests.utils.report_product_emission_allocation",
-                report_emission_allocation=self.report_emission_allocation,
-                emission_category=self.included_cats[1],
-                allocated_quantity="101",
-                report_product__product__is_regulated=False,
-            ),
-        ]
 
-        assert self.validator_under_test.validate(self.report_version) == {}
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=self.report_version,
+            report_source_type__report_activity__facility_report=self.facility_report,
+            json_data={"equivalentEmission": "100"},
+            emission_categories=[self.included_cats[0], self.other_excluded_cats[0]],
+        )
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=self.report_version,
+            report_source_type__report_activity__facility_report=self.facility_report,
+            json_data={"equivalentEmission": "100"},
+            emission_categories=[self.included_cats[1], self.other_excluded_cats[0]],
+        )
+
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=self.report_emission_allocation,
+            emission_category=self.included_cats[0],
+            allocated_quantity="100",
+            report_product__product__is_regulated=False,
+        )
+
+        # Included Category 1 is over-allocated
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=self.report_emission_allocation,
+            emission_category=self.included_cats[1],
+            allocated_quantity="101",
+            report_product__product__is_regulated=False,
+        )
+
+        errors = self.validator_under_test.validate(self.report_version)
+        assert len(errors.keys()) == 1
+        self.assert_error(errors, self.included_cats[1])
 
     def test_passes_with_other_excluded_emissions_and_sufficient_allocations(self):
-        emissions = [
-            make_recipe(
-                "reporting.tests.utils.report_emission",
-                report_version=self.report_version,
-                report_source_type__report_activity__facility_report=self.facility_report,
-                json_data={"equivalentEmission": "100"},
-                emission_categories=[self.included_cats[0], self.other_excluded_cats[0]],
-            ),
-            make_recipe(
-                "reporting.tests.utils.report_emission",
-                report_version=self.report_version,
-                report_source_type__report_activity__facility_report=self.facility_report,
-                json_data={"equivalentEmission": "100"},
-                emission_categories=[self.included_cats[1], self.other_excluded_cats[0]],
-            ),
-        ]
-        allocations = [
-            make_recipe(
-                "reporting.tests.utils.report_product_emission_allocation",
-                report_emission_allocation=self.report_emission_allocation,
-                emission_category=self.included_cats[0],
-                allocated_quantity="100",
-                report_product__product__is_regulated=False,
-            ),
-            make_recipe(
-                "reporting.tests.utils.report_product_emission_allocation",
-                report_emission_allocation=self.report_emission_allocation,
-                emission_category=self.included_cats[1],
-                allocated_quantity="100",
-                report_product__product__is_regulated=False,
-            ),
-        ]
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=self.report_version,
+            report_source_type__report_activity__facility_report=self.facility_report,
+            json_data={"equivalentEmission": "100"},
+            emission_categories=[self.included_cats[0], self.other_excluded_cats[0]],
+        )
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=self.report_version,
+            report_source_type__report_activity__facility_report=self.facility_report,
+            json_data={"equivalentEmission": "100"},
+            emission_categories=[self.included_cats[1], self.other_excluded_cats[0]],
+        )
+
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=self.report_emission_allocation,
+            emission_category=self.included_cats[0],
+            allocated_quantity="100",
+            report_product__product__is_regulated=False,
+        )
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=self.report_emission_allocation,
+            emission_category=self.included_cats[1],
+            allocated_quantity="100",
+            report_product__product__is_regulated=False,
+        )
 
         assert self.validator_under_test.validate(self.report_version) == {}
+
+    def test_fails_with_multiple_categories_over_allocated(self):
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=self.report_version,
+            report_source_type__report_activity__facility_report=self.facility_report,
+            json_data={"equivalentEmission": "100"},
+            emission_categories=[self.included_cats[0], self.other_excluded_cats[0]],
+        )
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=self.report_version,
+            report_source_type__report_activity__facility_report=self.facility_report,
+            json_data={"equivalentEmission": "100"},
+            emission_categories=[self.included_cats[1], self.other_excluded_cats[0]],
+        )
+
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=self.report_emission_allocation,
+            emission_category=self.included_cats[0],
+            allocated_quantity="200",
+            report_product__product__is_regulated=False,
+        )
+
+        # Included Category 1 is over-allocated
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=self.report_emission_allocation,
+            emission_category=self.included_cats[1],
+            allocated_quantity="3999",
+            report_product__product__is_regulated=False,
+        )
+
+        errors = self.validator_under_test.validate(self.report_version)
+        assert len(errors.keys()) == 2
+        self.assert_error(errors, self.included_cats[0])
+        self.assert_error(errors, self.included_cats[1])

@@ -22,7 +22,7 @@ def validate_facility_report(facility_report: FacilityReport) -> dict[str, Repor
 
     For each basic category:
         A = Total of emissions reported with that basic + any other_excluded category
-        B = Total amount allocated to that basic category and and any non-regulated product∂
+        B = Total amount allocated to that basic category and and any non-regulated product
 
         We validate that A < B (we can't allocate more emissions than available for that basic category)
     """
@@ -32,6 +32,8 @@ def validate_facility_report(facility_report: FacilityReport) -> dict[str, Repor
     # Optimization possible:
     # Rewrite this with a single django query, joining the ReportEmission and ReportProductEmissionAllocation tables,
     # grouping by basic category, and comparing the sums in Python.
+
+    facility_report_errors = {}
 
     for cat in basic_categories:
         other_excluded_emission_total = (
@@ -49,20 +51,20 @@ def validate_facility_report(facility_report: FacilityReport) -> dict[str, Repor
         ).aggregate(Sum("allocated_quantity"))['allocated_quantity__sum'] or Decimal("0")
 
         if other_excluded_emission_total < allocated_to_non_reg_products:
-            return {
-                f"og_np_nc_allocation_mismatch_{facility_report.facility_id}_{cat.category_name}": ReportValidationError(
-                    key=ReportValidationErrorKey.OG_NP_NC_ALLOCATION_MISMATCH,
-                    message=f"For the emission category '{cat.category_name}', emissions allocated to the O&G non-processing, non-combustion product exceed the emissions reported under the 'other_excluded' category.",
-                    severity=Severity.WARNING,
-                    context=ErrorContext(
-                        report_version_id=facility_report.report_version_id,
-                        facility_id=facility_report.facility_id,
-                        facility_name=facility_report.facility_name,
-                    ),
-                )
-            }
+            facility_report_errors[
+                f"og_np_nc_allocation_mismatch_{facility_report.facility_id}_{cat.category_name}"
+            ] = ReportValidationError(
+                key=ReportValidationErrorKey.OG_NP_NC_ALLOCATION_MISMATCH,
+                message=f"For the emission category '{cat.category_name}', emissions allocated to the O&G non-processing, non-combustion product exceed the emissions reported under the 'other_excluded' category.",
+                severity=Severity.WARNING,
+                context=ErrorContext(
+                    report_version_id=facility_report.report_version_id,
+                    facility_id=facility_report.facility_id,
+                    facility_name=facility_report.facility_name,
+                ),
+            )
 
-    return {}
+    return facility_report_errors
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
