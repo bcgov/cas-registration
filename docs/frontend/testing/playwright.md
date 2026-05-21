@@ -375,139 +375,7 @@ yarn compliance:e2e
 
 ### Run with Playwright UI mode
 
-```bash
-cd bciers
-yarn reg:e2e:ui
-```
-
-```bash
-cd bciers
-yarn report:e2e:ui
-```
-
 UI mode is best for writing and debugging tests interactively.
-
-### Run E2E like CI locally
-
-Use `CI=true` to more closely match the CI environment. This is useful when a test passes in UI mode but fails in CI.
-
-```bash
-cd bciers
-BASE_URL=http://localhost:5000 CI=true yarn report:e2e
-```
-
-Run a specific Reporting test like CI:
-
-```bash
-cd bciers
-BASE_URL=http://localhost:5000 CI=true yarn report:e2e -- tests/workflows/LFO/submit-report.spec.ts --project=chromium
-```
-
-Run headed while still using CI-like settings:
-
-```bash
-cd bciers
-BASE_URL=http://localhost:5000 CI=true yarn report:e2e -- tests/workflows/LFO/submit-report.spec.ts --project=chromium --headed
-```
-
-## Running Tests With Trace
-
-Traces are the best way to debug CI-style failures because they show:
-
-- each Playwright action
-- screenshots before and after actions
-- DOM snapshots
-- console logs
-- network requests
-- locator resolution
-- actionability checks
-
-### Run a specific test with trace
-
-```bash
-cd bciers
-BASE_URL=http://localhost:5000 CI=true yarn report:e2e -- tests/workflows/LFO/submit-report.spec.ts --project=chromium --headed --trace on
-```
-
-### Run a specific test with trace only on failure
-
-This is usually the best default when debugging a flaky test:
-
-```bash
-cd bciers
-BASE_URL=http://localhost:5000 CI=true yarn report:e2e -- tests/workflows/LFO/submit-report.spec.ts --project=chromium --headed --trace retain-on-failure
-```
-
-### Run trace on first retry
-
-Useful when the test usually passes but fails occasionally:
-
-```bash
-cd bciers
-BASE_URL=http://localhost:5000 CI=true yarn report:e2e -- tests/workflows/LFO/submit-report.spec.ts --project=chromium --trace on-first-retry
-```
-
-### Find trace files
-
-Trace files may be written under the app-specific e2e output folder, not always root `dist`.
-
-```bash
-cd bciers
-find . -type f -name "trace.zip"
-```
-
-For Reporting specifically:
-
-```bash
-cd bciers
-find apps/reporting-e2e -type f -name "trace.zip"
-```
-
-Example Reporting trace path:
-
-```txt
-apps/reporting-e2e/dist/.playwright/test-output/workflows-LFO-submit-repor-d8122-nd-submits-a-new-LFO-report-chromium/trace.zip
-```
-
-### Open a trace
-
-```bash
-cd bciers
-yarn playwright show-trace apps/reporting-e2e/dist/.playwright/test-output/workflows-LFO-submit-repor-d8122-nd-submits-a-new-LFO-report-chromium/trace.zip
-```
-
-Open a retry trace:
-
-```bash
-cd bciers
-yarn playwright show-trace apps/reporting-e2e/dist/.playwright/test-output/workflows-LFO-submit-repor-d8122-nd-submits-a-new-LFO-report-chromium-retry1/trace.zip
-```
-
-### Common trace troubleshooting checklist
-
-When reviewing a trace, check:
-
-1. Did the click happen?
-2. Was the target element visible and enabled?
-3. Was the element covered by a snackbar, loading overlay, sticky header, or modal?
-4. Did the expected request fire?
-5. Did the request return a success status?
-6. Did the URL change to what the test expected?
-7. Did the UI render the expected next page?
-8. Did the test wait for a URL when no navigation actually happened?
-9. Did HMR or React re-render remove the element during the action?
-10. Did the test timeout because an earlier wait never resolved?
-
-For failures like:
-
-```txt
-Error: page.waitForURL: Test ended.
-waiting for navigation until "domcontentloaded"
-```
-
-Check whether the click actually triggers navigation. If it only saves data or updates state, remove the `waitForURL` and assert a visible UI state instead.
-
-## UI Mode (Local Development)
 
 When running Playwright in UI mode:
 
@@ -544,7 +412,78 @@ HMR logs such as these are expected in UI mode and do not indicate test failure:
 [Fast Refresh] rebuilding
 ```
 
+### Run E2E like CI locally
+
+Use `CI=true` to more closely match the CI environment. This is useful when a test passes in UI mode but fails in CI.
+
+```bash
+cd bciers
+BASE_URL=http://localhost:5000 CI=true yarn report:e2e
+```
+
+Run a specific Reporting test like CI:
+
+```bash
+cd bciers
+BASE_URL=http://localhost:5000 CI=true yarn report:e2e -- tests/workflows/LFO/submit-report.spec.ts --project=chromium
+```
+
+Run headed while still using CI-like settings:
+
+```bash
+cd bciers
+BASE_URL=http://localhost:5000 CI=true yarn report:e2e -- tests/workflows/LFO/submit-report.spec.ts --project=chromium --headed
+```
+
 ## Debugging Playwright
+
+### Common trace troubleshooting checklist
+1. Did the click happen?
+2. Was the target element visible and enabled?
+3. Was the element covered by a snackbar, loading overlay, sticky header, or modal?
+4. Did the expected request fire?
+5. Did the request return a success status?
+6. Did the URL change to what the test expected?
+7. Did the UI render the expected next page?
+8. Did the test wait for a URL when no navigation actually happened?
+9. Did HMR or React re-render remove the element during the action?
+10. Did the test timeout because an earlier wait never resolved?
+
+
+## Running Tests With Trace
+
+Traces are the best way to debug CI-style failures because they show:
+
+- each Playwright action
+- screenshots before and after actions
+- DOM snapshots
+- console logs
+- network requests
+- locator resolution
+- actionability checks
+
+### Run a specific test with trace
+
+```bash
+cd bciers
+BASE_URL=http://localhost:5000 CI=true yarn report:e2e -- tests/workflows/LFO/submit-report.spec.ts --project=chromium --headed --trace on
+```
+
+### Find trace files
+
+Trace files may be written under the app-specific e2e output folder, not always root `dist`.
+
+```bash
+cd bciers
+find . -type f -name "trace.zip"
+```
+
+### Open a trace
+
+```bash
+cd bciers
+yarn playwright show-trace apps/reporting-e2e/dist/.playwright/test-output/workflows-LFO-submit-repor-d8122-nd-submits-a-new-LFO-report-chromium/trace.zip
+```
 
 ### HTML report
 
