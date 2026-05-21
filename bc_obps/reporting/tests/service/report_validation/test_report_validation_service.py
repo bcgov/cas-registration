@@ -45,6 +45,7 @@ class TestReportValidationService:
             "reporting.service.report_validation.validators.supplementary_report_attachments_confirmation",
             "reporting.service.report_validation.validators.report_activity_json_validation",
             "reporting.service.report_validation.validators.report_emission_allocation_validator",
+            "reporting.service.report_validation.validators.report_emission_allocation_other_excluded_category",
             "reporting.service.report_validation.validators.report_data_by_fuel_type_validator",
             "reporting.service.report_validation.validators.report_regulated_product_presence",
             "reporting.service.report_validation.validators.required_fields.required_fields_report_operation_information",
