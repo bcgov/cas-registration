@@ -72,6 +72,7 @@ function renderValidationMessage(
   const label = config?.resolveLabel(error);
   const href = config?.resolveHref(error);
   const message = config?.resolveFormattedMessage(error, key) || key;
+
   switch (config?.renderMode) {
     case "inline_link":
       return renderMessageWithInlineLink(message, label, href);
