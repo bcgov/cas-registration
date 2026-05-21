@@ -6,7 +6,6 @@ from reporting.api_v2.response_builder import ResponseBuilder
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
-from reporting.service.naics_code import NaicsCodeService
 from reporting.service.report_operation_opt_out_service import ReportOperationOptOutService
 
 """
@@ -72,14 +71,10 @@ class FormResponseBuilder(ResponseBuilder):
         """
         Builds general operation data into the response
         """
-        report_operation = ReportOperation.objects.select_related("report_version__report__operation__naics_code").get(
-            report_version_id=self.report_version_id
-        )
-
-        naics_code = NaicsCodeService.get_naics_code_by_version_id(self.report_version_id)
+        report_operation = ReportOperation.objects.get(report_version_id=self.report_version_id)
 
         operation_data = OperationData(
-            naics_code=naics_code,
+            naics_code=report_operation.naics_code.naics_code if report_operation.naics_code else None,
             operation_type=report_operation.operation_type,
             is_operation_opted_out=ReportOperationOptOutService.is_operation_opted_out(report_operation.report_version),
         )

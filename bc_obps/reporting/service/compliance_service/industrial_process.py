@@ -3,6 +3,7 @@ from decimal import Decimal
 import logging
 from registration.models.activity import Activity
 from reporting.models.report_activity import ReportActivity
+from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 from reporting.models.report_version import ReportVersion
 from reporting.service.compliance_service.emission_allocation import (
@@ -79,10 +80,11 @@ def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
     # Handle Pulp & Paper specific edge case:
     # Subtract the sum of emissions that were categorized as industrial_process & (woody_biomass or other_excluded_biomass) from
     # the industrial_process emission total attributed to the product "Pulp and paper: chemical pulp".
-
+    ro = ReportOperation.objects.get(report_version_id=rp.report_version_id)
+    naics_code = ro.naics_code.naics_code if ro.naics_code else None
     if (
-        rp.report_version.report.operation.naics_code
-        and rp.report_version.report.operation.naics_code.naics_code.startswith("322112")
+        naics_code is not None
+        and naics_code.startswith("322112")
         and rp.product.name in ["Pulp and paper: chemical pulp", "Pulp and paper: lime recovered by kiln"]
     ):
         biogenic_emissions_split = retrieve_pulp_and_paper_biogenic_emissions_split(rp.report_version)
