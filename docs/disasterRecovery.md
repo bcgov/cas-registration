@@ -16,13 +16,14 @@ make dr_full \
   RESTORE_TYPE=immediate
 
 # Option 2: Restore to specific point in time
+# Note: make sure to escape the space in the timestamp string
 make dr_full \
   OBPS_NAMESPACE_PREFIX={namespace-prefix} \
   ENVIRONMENT=dev \
   BACKUP_BUCKET={backup-bucket-name} \
   DB_PASSWORD='your-password' \
   RESTORE_TYPE=time \
-  RESTORE_TARGET='2026-01-13 14:30:00'
+  RESTORE_TARGET='2026-01-13\ 14:30:00'
 ```
 
 **Time**: 15-45 minutes depending on backup size and WAL replay.
@@ -123,12 +124,13 @@ make dr_restore \
   RESTORE_TYPE=immediate
 
 # For point-in-time restore
+# Note: make sure to escape the space in the timestamp string
 make dr_restore \
   OBPS_NAMESPACE_PREFIX={namespace-prefix} \
   ENVIRONMENT=dev \
   BACKUP_BUCKET={backup-bucket-name} \
   RESTORE_TYPE=time \
-  RESTORE_TARGET='2026-01-13 14:30:00'
+  RESTORE_TARGET='2026-01-13\ 14:30:00'
 ```
 
 Monitor progress:
