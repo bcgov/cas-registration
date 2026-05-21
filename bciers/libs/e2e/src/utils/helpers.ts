@@ -41,32 +41,43 @@ export async function analyzeAccessibility(
 
 /**
  * Clicks a button by accessible name and optionally waits for navigation.
+ *
+ * Supports scoping the button lookup to a specific root Locator
+ * (useful for grids, tables, dialogs, and repeated button names).
+ *
+ * Uses Playwright web-first assertions to ensure the button is
+ * visible and enabled before clicking.
+ *
+ * For SPA/client-side navigation (e.g. Next.js router.push),
+ * optionally waits for a matching URL after the click.
+ *
  * @param page - Playwright Page instance
  * @param buttonText - Button accessible name or RegExp
+ * @param opts.root - Optional Locator to scope the button search
  * @param opts.inForm - Scope the button search to a <form> (default: false)
- * @param opts.waitForUrl - RegExp to wait for after clicking (optional)
+ * @param opts.waitForUrl - RegExp URL to wait for after clicking (optional)
  */
 export async function clickButton(
   page: Page,
   buttonText: string | RegExp,
   opts?: {
-    inForm?: boolean; // default false
+    root?: Locator;
+    inForm?: boolean;
     waitForUrl?: RegExp;
   },
 ): Promise<void> {
-  const { inForm = false, waitForUrl } = opts ?? {};
+  const { root, inForm = false, waitForUrl } = opts ?? {};
 
   const name =
     buttonText instanceof RegExp ? buttonText : new RegExp(buttonText, "i");
 
-  const root = inForm ? page.locator("form") : page;
-  const button = root.getByRole("button", { name });
+  const searchRoot = root ?? (inForm ? page.locator("form") : page);
+  const button = searchRoot.getByRole("button", { name });
 
   await expect(button).toBeVisible({ timeout: 30_000 });
   await expect(button).toBeEnabled({ timeout: 30_000 });
 
   if (waitForUrl) {
-    // Use a lighter wait for SPA navigation
     await Promise.all([
       page.waitForURL((u) => waitForUrl.test(u.toString()), {
         timeout: 30_000,
