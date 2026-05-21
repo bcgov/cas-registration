@@ -118,7 +118,7 @@ class EmissionCategoryService:
         # Fugitive, fuel_excluded, other_excluded
         records = ReportEmission.objects_with_decimal_emissions.filter(
             report_version_id=version_id,
-            emission_categories__id__in=[2, 10, 11, 12, 13, 14],
+            emission_categories__id__in=[2, 7, 10, 11, 12, 13, 14],
         ).distinct()
 
         total_reporting_only = records.aggregate(emission_sum=Sum('emission'))

@@ -241,20 +241,29 @@ class TestEmissionCategoryService(TestCase):
             json_data={"equivalentEmission": 300.00029},
         )
 
+        report_emission_4 = make(
+            ReportEmission,
+            report_fuel=report_fuel,
+            report_source_type=report_source_type,
+            report_version=test_infrastructure.report_version,
+            json_data={"equivalentEmission": 25},
+        )
+
         report_emission.emission_categories.set([2, 10, 11, 12, 13, 14]),
         report_emission_2.emission_categories.set([2, 10, 11]),
         report_emission_3.emission_categories.set([12, 13, 14])
+        report_emission_4.emission_categories.set([7])
         reporting_only_emisisons = EmissionCategoryService.get_reporting_only_emissions(
             report_activity.facility_report.id
         )
         # Each report_emission record was counted only once despite sharing categories that contribue to the reporting_only emissions total
-        # Should be: (report_emission_1 + report_emission_2 + report_emission_3)
-        assert reporting_only_emisisons == Decimal('600.0006')
+        # Should be: (report_emission_1 + report_emission_2 + report_emission_3 + report_emission_4)
+        assert reporting_only_emisisons == Decimal('625.0006')
         # Test the same thing but with the report version
         reporting_only_emisisons = EmissionCategoryService.get_reporting_only_emissions_by_version(
             test_infrastructure.report_version.id
         )
-        assert reporting_only_emisisons == Decimal('600.0006')
+        assert reporting_only_emisisons == Decimal('625.0006')
 
     def test_aggregates_by_operation(self):
         test_infrastructure = TestInfrastructure.build_from_real_config()
