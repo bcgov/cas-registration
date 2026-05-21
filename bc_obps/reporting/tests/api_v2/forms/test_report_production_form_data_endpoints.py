@@ -15,7 +15,8 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             facility_type="test facility type",
         )
         self.report_operation = make_recipe(
-            "reporting.tests.utils.report_operation", report_version=self.report_version
+            "reporting.tests.utils.report_operation",
+            report_version=self.report_version,
         )
 
         self.endpoint_under_test = f"/api/reporting/v2/report-version/{self.facility_report.report_version_id}/facilities/{self.facility_report.facility_id}/forms/production-data"
@@ -34,7 +35,7 @@ class TestReportProductV2Endpoints(CommonTestSetup):
                 "facility_type": "test facility type",
             },
             "operation_data": {
-                "naics_code": self.report_operation.report_version.report.operation.naics_code.naics_code,
+                "naics_code": self.report_operation.naics_code.naics_code,
                 "operation_type": self.report_operation.operation_type,
                 "is_operation_opted_out": False,
             },
@@ -93,7 +94,7 @@ class TestReportProductV2Endpoints(CommonTestSetup):
                 "facility_type": "test facility type",
             },
             "operation_data": {
-                "naics_code": self.report_operation.report_version.report.operation.naics_code.naics_code,
+                "naics_code": self.report_operation.naics_code.naics_code,
                 "operation_type": self.report_operation.operation_type,
                 "is_operation_opted_out": False,
             },

@@ -50,7 +50,7 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
 
         assert response.json() == {
             "operation_data": {
-                "naics_code": self.report_operation.report_version.report.operation.naics_code.naics_code,
+                "naics_code": self.report_operation.naics_code.naics_code,
                 "operation_type": self.report_operation.operation_type,
                 "is_operation_opted_out": False,
             },
@@ -113,7 +113,7 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
 
         assert response.json() == {
             "operation_data": {
-                "naics_code": self.report_operation.report_version.report.operation.naics_code.naics_code,
+                "naics_code": self.report_operation.naics_code.naics_code,
                 "operation_type": self.report_operation.operation_type,
                 "is_operation_opted_out": False,
             },

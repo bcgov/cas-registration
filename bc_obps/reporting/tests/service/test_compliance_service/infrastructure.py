@@ -79,7 +79,11 @@ class ComplianceTestInfrastructure:
         )
         t.report_version_1 = make_recipe(REPORTING_REPORT_VERSION_RECIPE_NAME, report=t.report_1)
         # Create ReportOperation for the report_version
-        t.report_operation_1 = make_recipe(REPORTING_REPORT_OPERATION_RECIPE_NAME, report_version=t.report_version_1)
+        t.report_operation_1 = make_recipe(
+            REPORTING_REPORT_OPERATION_RECIPE_NAME,
+            report_version=t.report_version_1,
+            naics_code_id=t.operation_1.naics_code_id,
+        )
         t.report_emission_1 = make_recipe(
             REPORTING_REPORT_EMISSION_RECIPE_NAME,
             report_version=t.report_version_1,
@@ -291,7 +295,11 @@ class ComplianceTestInfrastructure:
         )
         t.report_version_1 = make_recipe(REPORTING_REPORT_VERSION_RECIPE_NAME, report=t.report_1)
         # Create ReportOperation for the report_version
-        t.report_operation_1 = make_recipe(REPORTING_REPORT_OPERATION_RECIPE_NAME, report_version=t.report_version_1)
+        t.report_operation_1 = make_recipe(
+            REPORTING_REPORT_OPERATION_RECIPE_NAME,
+            report_version=t.report_version_1,
+            naics_code_id=t.operation_1.naics_code_id,
+        )
         t.report_emission_1 = make_recipe(
             REPORTING_REPORT_EMISSION_RECIPE_NAME,
             report_version=t.report_version_1,
@@ -337,7 +345,11 @@ class ComplianceTestInfrastructure:
         )
         t.report_version_1 = make_recipe(REPORTING_REPORT_VERSION_RECIPE_NAME, report=t.report_1)
         # Create ReportOperation for the report_version
-        t.report_operation_1 = make_recipe(REPORTING_REPORT_OPERATION_RECIPE_NAME, report_version=t.report_version_1)
+        t.report_operation_1 = make_recipe(
+            REPORTING_REPORT_OPERATION_RECIPE_NAME,
+            report_version=t.report_version_1,
+            naics_code_id=t.operation_1.naics_code_id,
+        )
 
         t.report_activity = make_recipe(
             "reporting.tests.utils.report_activity",

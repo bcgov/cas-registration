@@ -52,11 +52,11 @@ class TestFormResponseBuilder(SimpleTestCase):
         mocked_report_version.report.reporting_year_id = 2001
         mocked_report_version.id = 123456789
 
-        mock_naics_code_service.get_naics_code_by_version_id.return_value = "123456"
         mock_report_operation_opt_out.is_operation_opted_out.return_value = False
 
-        mocked_report_operation = mock_report_operation.objects.select_related.return_value.get.return_value
+        mocked_report_operation = mock_report_operation.objects.get.return_value
         mocked_report_operation.operation_type = "test type"
+        mocked_report_operation.naics_code.naics_code = "123456"
 
         builder = FormResponseBuilder(456).operation_data()
 
@@ -99,10 +99,10 @@ class TestFormResponseBuilder(SimpleTestCase):
         mocked_report_version.report.reporting_year_id = 3000
         mocked_report_version.id = 102
 
-        mocked_report_operation = mock_report_operation.objects.select_related.return_value.get.return_value
+        mocked_report_operation = mock_report_operation.objects.get.return_value
         mocked_report_operation.operation_type = "Operation Type"
+        mocked_report_operation.naics_code.naics_code = "222333"
 
-        mock_naics_code_service.get_naics_code_by_version_id.return_value = "222333"
         mock_report_operation_opt_out.is_operation_opted_out.return_value = True
 
         mocked_facility_report = mock_facility_report.objects.get.return_value

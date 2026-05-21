@@ -2,7 +2,6 @@ from model_bakery import baker
 from model_bakery.baker import make_recipe
 from decimal import Decimal
 
-from registration.models import Operation
 from reporting.models import (
     ReportEmissionAllocation,
     ProductEmissionIntensity,
@@ -37,7 +36,8 @@ class TestReportFinalReview(CommonTestSetup):
         )
         self.report_operation.activities.set([self.activity_1, self.activity_2])
         self.report_operation.regulated_products.set([self.regulated_product_1, self.regulated_product_2])
-        Operation.objects.filter(pk=self.report_version.report.operation.id).update(naics_code_id=1)
+        self.report_operation.naics_code_id = 1
+        self.report_operation.save()
         self.report_version.report.reporting_year_id = 2024
         self.report_version.report.save()
         self.report_operation_representative = baker.make_recipe(
