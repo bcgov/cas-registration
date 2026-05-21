@@ -387,36 +387,6 @@ yarn report:e2e:ui
 
 UI mode is best for writing and debugging tests interactively.
 
-### Run a specific test file
-
-When passing Playwright arguments through an Nx/yarn target, put them after `--`.
-
-```bash
-cd bciers
-BASE_URL=http://localhost:5000 yarn report:e2e -- tests/workflows/LFO/view-report.spec.ts --project=chromium --headed
-```
-
-```bash
-cd bciers
-BASE_URL=http://localhost:5000 yarn report:e2e -- tests/workflows/LFO/submit-report.spec.ts --project=chromium --headed
-```
-
-For Compliance:
-
-```bash
-cd bciers
-BASE_URL=http://localhost:5000 yarn compliance:e2e -- tests/workflows/manage-obligation/report-compliance-obligation.spec.ts --project=chromium --headed
-```
-
-### Run a specific test by title
-
-Use `-g` to match the test name.
-
-```bash
-cd bciers
-BASE_URL=http://localhost:5000 yarn report:e2e -- tests/workflows/LFO/submit-report.spec.ts --project=chromium --headed -g "Industry user starts, fills, and submits a new LFO report"
-```
-
 ### Run E2E like CI locally
 
 Use `CI=true` to more closely match the CI environment. This is useful when a test passes in UI mode but fails in CI.
@@ -439,22 +409,6 @@ Run headed while still using CI-like settings:
 cd bciers
 BASE_URL=http://localhost:5000 CI=true yarn report:e2e -- tests/workflows/LFO/submit-report.spec.ts --project=chromium --headed
 ```
-
-Run with one worker to reproduce serial CI behavior or reduce local noise:
-
-```bash
-cd bciers
-BASE_URL=http://localhost:5000 CI=true yarn report:e2e -- tests/workflows/LFO/submit-report.spec.ts --project=chromium --workers=1
-```
-
-Run only Chromium:
-
-```bash
-cd bciers
-BASE_URL=http://localhost:5000 CI=true yarn report:e2e -- --project=chromium
-```
-
-> Important: when using an Nx target like `yarn report:e2e`, Playwright args must come after `--`. Otherwise Nx may interpret `--project=chromium` as an Nx project.
 
 ## Running Tests With Trace
 
