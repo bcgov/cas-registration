@@ -42,19 +42,16 @@ class TestFormResponseBuilder(SimpleTestCase):
         }
 
     @patch("reporting.api_v2.forms.form_response_builder.ReportOperationOptOutService")
-    @patch("reporting.api_v2.forms.form_response_builder.NaicsCodeService")
     @patch("reporting.api_v2.forms.form_response_builder.ReportOperation")
     @patch("reporting.api_v2.forms.form_response_builder.ReportVersion")
-    def test_with_operation_data(
-        self, mock_report_version, mock_report_operation, mock_naics_code_service, mock_report_operation_opt_out
-    ):
+    def test_with_operation_data(self, mock_report_version, mock_report_operation, mock_report_operation_opt_out):
         mocked_report_version = mock_report_version.objects.select_related.return_value.get.return_value
         mocked_report_version.report.reporting_year_id = 2001
         mocked_report_version.id = 123456789
 
         mock_report_operation_opt_out.is_operation_opted_out.return_value = False
 
-        mocked_report_operation = mock_report_operation.objects.get.return_value
+        mocked_report_operation = mock_report_operation.objects.select_related.return_value.get.return_value
         mocked_report_operation.operation_type = "test type"
         mocked_report_operation.naics_code.naics_code = "123456"
 
@@ -83,7 +80,6 @@ class TestFormResponseBuilder(SimpleTestCase):
         }
 
     @patch("reporting.api_v2.forms.form_response_builder.ReportOperationOptOutService")
-    @patch("reporting.api_v2.forms.form_response_builder.NaicsCodeService")
     @patch("reporting.api_v2.forms.form_response_builder.FacilityReport")
     @patch("reporting.api_v2.forms.form_response_builder.ReportOperation")
     @patch("reporting.api_v2.forms.form_response_builder.ReportVersion")
@@ -92,14 +88,13 @@ class TestFormResponseBuilder(SimpleTestCase):
         mock_report_version,
         mock_report_operation,
         mock_facility_report,
-        mock_naics_code_service,
         mock_report_operation_opt_out,
     ):
         mocked_report_version = mock_report_version.objects.select_related.return_value.get.return_value
         mocked_report_version.report.reporting_year_id = 3000
         mocked_report_version.id = 102
 
-        mocked_report_operation = mock_report_operation.objects.get.return_value
+        mocked_report_operation = mock_report_operation.objects.select_related.return_value.get.return_value
         mocked_report_operation.operation_type = "Operation Type"
         mocked_report_operation.naics_code.naics_code = "222333"
 
