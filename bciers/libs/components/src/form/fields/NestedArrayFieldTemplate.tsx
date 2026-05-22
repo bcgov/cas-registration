@@ -15,8 +15,7 @@ function BasicFieldTemplate({ children }: FieldTemplateProps) {
 export function NestedArrayFieldItemTemplate(
   props: ArrayFieldItemTemplateProps,
 ) {
-  const { children, buttonsProps, itemKey, parentUiSchema, readonly, index } =
-    props;
+  const { children, buttonsProps, parentUiSchema, readonly, index } = props;
   const customTitleName = parentUiSchema?.["ui:options"]?.title as string;
   const bgColor =
     (parentUiSchema?.["ui:options"]?.bgColor as string) || "#f2f2f2";
@@ -24,7 +23,7 @@ export function NestedArrayFieldItemTemplate(
   const padding = parentUiSchema?.["ui:options"]?.padding;
   const verticalBorder = parentUiSchema?.["ui:options"]?.verticalBorder;
   return (
-    <div className="rjsf-array-item" data-rjsf-itemkey={itemKey}>
+    <div className="rjsf-array-item">
       <div
         style={{
           display: "block",
