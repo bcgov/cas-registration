@@ -91,7 +91,7 @@ describe("validationUIConfig", () => {
           error: { context: { facility_name: "facility abc" } },
         } as any),
     )
-      .toBe(`Facility facility abc: Please review the test label and ensure that emissions from non-processing
-    and non-compression activities are allocated to the non-processing, non-compression product. If they are allocated, you may save and continue.`);
+      .toBe(`Facility facility abc: Please review the test label and ensure that only excluded emissions are
+        allocated to unregulated products. If they are allocated, you may save and continue.`);
   });
 });

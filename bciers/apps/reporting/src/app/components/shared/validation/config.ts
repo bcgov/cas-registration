@@ -252,8 +252,8 @@ If the value is accurate, you may save & continue.`;
     formatMessage: ({
       label,
       error: { context },
-    }) => `Facility ${context?.facility_name}: Please review the ${label} and ensure that emissions from non-processing
-    and non-compression activities are allocated to the non-processing, non-compression product. If they are allocated, you may save and continue.`,
+    }) => `Facility ${context?.facility_name}: Please review the ${label} and ensure that only
+    excluded emissions are allocated to unregulated products. If they are allocated, you may save and continue.`,
   }),
 
   generic_error: createValidationUIConfig({
