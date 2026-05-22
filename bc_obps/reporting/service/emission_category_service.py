@@ -4,6 +4,9 @@ from decimal import Decimal
 from django.db.models import Sum, OuterRef, Subquery
 from typing import Dict, List
 
+# Fugitive, venting non-useful, fuel_excluded, other_excluded
+REPORTING_ONLY_CATEGORY_IDS = [2, 7, 10, 11, 12, 13, 14]
+
 
 class EmissionCategoryService:
     """
@@ -26,10 +29,10 @@ class EmissionCategoryService:
 
     @staticmethod
     def get_reporting_only_emissions(facility_report_id: int) -> Decimal | int:
-        # Fugitive, fuel_excluded, other_excluded
+
         records = ReportEmission.objects_with_decimal_emissions.filter(
             report_source_type__report_activity__facility_report_id=facility_report_id,
-            emission_categories__id__in=[2, 10, 11, 12, 13, 14],
+            emission_categories__id__in=REPORTING_ONLY_CATEGORY_IDS,
         ).distinct()
 
         total_reporting_only = records.aggregate(emission_sum=Sum('emission'))
@@ -115,10 +118,9 @@ class EmissionCategoryService:
 
     @staticmethod
     def get_reporting_only_emissions_by_version(version_id: int) -> Decimal | int:
-        # Fugitive, fuel_excluded, other_excluded
         records = ReportEmission.objects_with_decimal_emissions.filter(
             report_version_id=version_id,
-            emission_categories__id__in=[2, 10, 11, 12, 13, 14],
+            emission_categories__id__in=REPORTING_ONLY_CATEGORY_IDS,
         ).distinct()
 
         total_reporting_only = records.aggregate(emission_sum=Sum('emission'))
