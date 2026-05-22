@@ -5,7 +5,11 @@ import {
   ACTION_BUTTON_TEXT,
   REPORTING_REPORTS_BASE_PATH,
 } from "@/reporting-e2e/utils/constants";
-import { assertFieldVisibility } from "@bciers/e2e/utils/helpers";
+import {
+  assertFieldVisibility,
+  waitForGridReady,
+  clickButton,
+} from "@bciers/e2e/utils/helpers";
 
 export class SubmittedPOM {
   readonly page: Page;
@@ -84,30 +88,27 @@ export class SubmittedPOM {
     facilityName: string,
     facilityId: string,
   ): Promise<void> {
+    await waitForGridReady(this.page, { timeout: 10_000 });
+
     const row = this.page
       .getByRole("row")
       .filter({ hasText: facilityName })
       .first();
-    //const row = await getGridRowByText(this.page, facilityName);
+
     await expect(row).toBeVisible();
-    const viewFacilityReportDetailsButton = row.getByRole("button", {
-      name: new RegExp(ACTION_BUTTON_TEXT.VIEW_DETAILS, "i"),
-    });
+
+    const viewFacilityReportDetailsButton = row.getByTestId(
+      `view-details-${facilityId}`,
+    );
     await expect(viewFacilityReportDetailsButton).toBeVisible();
     await expect(viewFacilityReportDetailsButton).toBeEnabled();
 
     const viewFacilityReportRoute = `${this.urlRegex.source}/facility/${facilityId}`;
     const routeRegex = new RegExp(String.raw`${viewFacilityReportRoute}`, "i");
 
-    await expect(async () => {
-      await viewFacilityReportDetailsButton.click({ trial: true });
-    }).toPass({ timeout: 1000 });
-    await this.page.waitForTimeout(1000); // TODO: figure out why this won't work without the wait
-    await Promise.all([
-      this.page.waitForURL((u) => routeRegex.test(u.toString()), {
-        waitUntil: "domcontentloaded",
-      }),
-      viewFacilityReportDetailsButton.click(),
-    ]);
+    await clickButton(this.page, ACTION_BUTTON_TEXT.VIEW_DETAILS, {
+      root: row,
+      waitForUrl: routeRegex,
+    });
   }
 }

@@ -313,17 +313,6 @@ export class CurrentReportsPOM {
     row: Locator,
     isExternalUser: boolean = true,
   ): Promise<void> {
-    const viewReportDetailsButton = row.getByRole("button", {
-      name: new RegExp(
-        isExternalUser
-          ? ACTION_BUTTON_TEXT.VIEW_DETAILS + "$"
-          : ACTION_BUTTON_TEXT.VIEW_REPORT + "$",
-        "i",
-      ),
-    });
-    await expect(viewReportDetailsButton).toBeVisible();
-    await expect(viewReportDetailsButton).toBeEnabled();
-
     const viewReportRoute = isExternalUser
       ? ReportRoutes.SUBMITTED_REPORT
       : ReportRoutes.ANNUAL_REPORT;
@@ -332,13 +321,17 @@ export class CurrentReportsPOM {
       String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${viewReportRoute}`,
       "i",
     );
+    const buttonName = new RegExp(
+      isExternalUser
+        ? ACTION_BUTTON_TEXT.VIEW_DETAILS + "$"
+        : ACTION_BUTTON_TEXT.VIEW_REPORT + "$",
+      "i",
+    );
 
-    await expect(async () => {
-      await viewReportDetailsButton.click({ trial: true });
-    }).toPass({ timeout: 1000 });
-
-    await viewReportDetailsButton.click();
-    await expect(this.page).toHaveURL(routeRegex, { timeout: 15_000 });
+    await clickButton(this.page, buttonName, {
+      root: row,
+      waitForUrl: routeRegex,
+    });
   }
 
   private extractReportVersionIdFromUrl(
