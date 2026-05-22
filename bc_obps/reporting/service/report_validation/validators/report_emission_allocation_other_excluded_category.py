@@ -1,5 +1,5 @@
 from decimal import Decimal
-from django.db.models import QuerySet, Sum
+from django.db.models import Q, QuerySet, Sum
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_emission import ReportEmission
@@ -44,18 +44,34 @@ def validate_facility_report(facility_report: FacilityReport) -> dict[str, Repor
             .aggregate(Sum("emission"))['emission__sum']
         ) or Decimal("0")
 
-        allocated_to_non_reg_products = ReportProductEmissionAllocation.objects.filter(
-            report_product__product__is_regulated=False,
+        """
+        FOG product needs to be excluded from this validation,
+        the reporting and allocation rules are different than for the other products and activities.
+        """
+        allocated_to_non_reg_products = ReportProductEmissionAllocation.objects.select_related(
+            "report_product__product",
+            "report_emission_allocation",
+        ).filter(
+            Q(report_product__product__is_regulated=False)
+            & ~Q(report_product__product__name="Fat, oil and grease collection, refining and storage")
+        ).filter(
             emission_category=cat,
             report_emission_allocation__facility_report_id=facility_report.id,
-        ).aggregate(Sum("allocated_quantity"))['allocated_quantity__sum'] or Decimal("0")
+        ).aggregate(
+            Sum("allocated_quantity")
+        )[
+            'allocated_quantity__sum'
+        ] or Decimal(
+            "0"
+        )
 
         if other_excluded_emission_total < allocated_to_non_reg_products:
             facility_report_errors[
                 f"og_np_nc_allocation_mismatch_{facility_report.facility_id}_{cat.category_name}"
             ] = ReportValidationError(
                 key=ReportValidationErrorKey.OG_NP_NC_ALLOCATION_MISMATCH,
-                message=f"For the emission category '{cat.category_name}', emissions allocated to the O&G non-processing, non-combustion product exceed the emissions reported under the 'other_excluded' category.",
+                message=f"For the emission category '{cat.category_name}', emissions allocated to "
+                "unregulated products exceed the emissions reported under the 'other_excluded' category.",
                 severity=Severity.WARNING,
                 context=ErrorContext(
                     report_version_id=facility_report.report_version_id,
@@ -70,7 +86,7 @@ def validate_facility_report(facility_report: FacilityReport) -> dict[str, Repor
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     """
     Validator returning a collection of warnings, for each facility report, if:
-    - the emissions allocated to the O&G non-processing, non-combustion activity aren't equal to the
+    - the emissions allocated to unregulated products exceed the
       emissions reported under the "other_excluded" category.
 
     """

@@ -1,4 +1,5 @@
 from model_bakery.utils import seq
+from registration.models.regulated_product import RegulatedProduct
 from reporting.models.emission_category import EmissionCategory
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
@@ -46,9 +47,8 @@ class TestReportAllocationOtherExcludedCategoryValidator:
         assert error.key == ReportValidationErrorKey.OG_NP_NC_ALLOCATION_MISMATCH
         assert error.severity == Severity.WARNING
         assert (
-            error.message
-            == f"For the emission category '{category.category_name}', emissions allocated to the O&G non-processing, "
-            "non-combustion product exceed the emissions reported under the 'other_excluded' category."
+            error.message == f"For the emission category '{category.category_name}', emissions allocated to "
+            "unregulated products exceed the emissions reported under the 'other_excluded' category."
         )
         assert error.context.facility_id == self.facility_report.facility_id
         assert error.context.facility_name == self.facility_report.facility_name
@@ -218,3 +218,25 @@ class TestReportAllocationOtherExcludedCategoryValidator:
         assert len(errors.keys()) == 2
         self.assert_error(errors, self.included_cats[0])
         self.assert_error(errors, self.included_cats[1])
+
+    def test_ignores_allocations_to_fat_oil_grease_product(self):
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=self.report_version,
+            report_source_type__report_activity__facility_report=self.facility_report,
+            json_data={"equivalentEmission": "555"},
+            emission_categories=[self.included_cats[0], self.other_excluded_cats[0]],
+        )
+
+        # We allocate too much to the FOG product
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=self.report_emission_allocation,
+            emission_category=self.included_cats[0],
+            allocated_quantity="3999",
+            report_product__product=RegulatedProduct.objects.get(
+                name="Fat, oil and grease collection, refining and storage"
+            ),
+        )
+
+        assert self.validator_under_test.validate(self.report_version) == {}
