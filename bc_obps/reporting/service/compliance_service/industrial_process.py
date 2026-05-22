@@ -81,12 +81,12 @@ def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
     # Subtract the sum of emissions that were categorized as industrial_process & (woody_biomass or other_excluded_biomass) from
     # the industrial_process emission total attributed to the product "Pulp and paper: chemical pulp".
     ro = ReportOperation.objects.get(report_version_id=rp.report_version_id)
-    naics_code = ro.naics_code.naics_code if ro.naics_code else None
-    if (
-        naics_code is not None
-        and naics_code.startswith("322112")
-        and rp.product.name in ["Pulp and paper: chemical pulp", "Pulp and paper: lime recovered by kiln"]
-    ):
+    if not ro.naics_code:
+        raise ValueError(f"No NAICS code associated with report version {rp.report_version_id}")
+    if ro.naics_code.naics_code.startswith("322112") and rp.product.name in [
+        "Pulp and paper: chemical pulp",
+        "Pulp and paper: lime recovered by kiln",
+    ]:
         biogenic_emissions_split = retrieve_pulp_and_paper_biogenic_emissions_split(rp.report_version)
         overlapping_industrial_process_emissions = (
             EmissionCategoryService.get_industrial_process_excluded_biomass_overlap_by_report_version(
