@@ -71,7 +71,9 @@ class FormResponseBuilder(ResponseBuilder):
         """
         Builds general operation data into the response
         """
-        report_operation = ReportOperation.objects.get(report_version_id=self.report_version_id)
+        report_operation = ReportOperation.objects.select_related("naics_code").get(
+            report_version_id=self.report_version_id
+        )
 
         operation_data = OperationData(
             naics_code=report_operation.naics_code.naics_code if report_operation.naics_code else None,
