@@ -133,11 +133,21 @@ class TestIndustrialProcess(TestCase):
             emission_category=EmissionCategory.objects.get(category_name='Industrial process emissions'),
             allocated_quantity=Decimal("6000.0006"),
         )
+        make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=product_emission_allocation_no_pnp.report_version,
+            naics_code__naics_code=111110,  # Oil and gas extraction (non-pulp and paper NAICS code)
+        )
 
         # Pulp and paper
         emission_allocation_pnp = make_recipe(
             "reporting.tests.utils.report_emission_allocation",
-            report_version__report__operation__naics_code__naics_code='322112',
+        )
+        # Create report operation with NAICS code 322112 to trigger the chemical pulp specific logic
+        make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=emission_allocation_pnp.report_version,
+            naics_code__naics_code=322112,
         )
         product_emission_allocation_chemical_pulp = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",

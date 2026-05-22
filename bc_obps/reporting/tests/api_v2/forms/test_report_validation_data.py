@@ -28,6 +28,7 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
             "reporting.tests.utils.report_operation",
             report_version=self.report_version,
             operation_type="Single Facility Operation",
+            naics_code__naics_code=111110,
         )
 
         self.endpoint_under_test = f"/api/reporting/v2/report-version/{self.report_version.id}/forms/validation-data"
@@ -50,7 +51,7 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
 
         assert response.json() == {
             "operation_data": {
-                "naics_code": self.report_operation.report_version.report.operation.naics_code.naics_code,
+                "naics_code": self.report_operation.naics_code.naics_code,
                 "operation_type": self.report_operation.operation_type,
                 "is_operation_opted_out": False,
             },
@@ -113,7 +114,7 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
 
         assert response.json() == {
             "operation_data": {
-                "naics_code": self.report_operation.report_version.report.operation.naics_code.naics_code,
+                "naics_code": self.report_operation.naics_code.naics_code,
                 "operation_type": self.report_operation.operation_type,
                 "is_operation_opted_out": False,
             },

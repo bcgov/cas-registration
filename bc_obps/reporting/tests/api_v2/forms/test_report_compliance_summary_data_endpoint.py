@@ -27,14 +27,12 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
             "reporting.tests.utils.naics_code",
             naics_code="12345",
         )
-        operation = self.report_version.report.operation
-        operation.naics_code = self.naics_code
-        operation.save()
 
         self.report_operation = make_recipe(
             "reporting.tests.utils.report_operation",
             report_version=self.report_version,
             operation_type="SFO",
+            naics_code=self.naics_code,
         )
 
         self.endpoint_under_test = (
@@ -101,7 +99,7 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
             "reporting_year": 2222,
         }
 
-        assert body["operation_data"]["naics_code"] == "12345"
+        assert body["operation_data"]["naics_code"] == self.report_operation.naics_code.naics_code
         assert body["operation_data"]["operation_type"] == self.report_operation.operation_type
         assert "is_operation_opted_out" in body["operation_data"]
 
