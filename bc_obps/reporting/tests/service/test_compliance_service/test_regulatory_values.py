@@ -151,8 +151,16 @@ class TestRegulatoryValues(TestCase):
 
         # Compare values from the service and directly from the DB
         regulatory_values_from_service = get_industry_regulatory_values(report_version)
-        oil_gas_regulatory_values = NaicsRegulatoryValue.objects.get(id=OIL_GAS_NAICS_CODE_ID)
-        basic_chem_regulatory_values = NaicsRegulatoryValue.objects.get(id=BASIC_CHEM_NAICS_CODE_ID)
+        oil_gas_regulatory_values = NaicsRegulatoryValue.objects.get(
+            naics_code_id=OIL_GAS_NAICS_CODE_ID,
+            valid_from__lte=report_version.report.reporting_year.reporting_window_start,
+            valid_to__gte=report_version.report.reporting_year.reporting_window_end,
+        )
+        basic_chem_regulatory_values = NaicsRegulatoryValue.objects.get(
+            naics_code_id=BASIC_CHEM_NAICS_CODE_ID,
+            valid_from__lte=report_version.report.reporting_year.reporting_window_start,
+            valid_to__gte=report_version.report.reporting_year.reporting_window_end,
+        )
 
         assert regulatory_values_from_service.reduction_factor == oil_gas_regulatory_values.reduction_factor
         assert regulatory_values_from_service.tightening_rate == oil_gas_regulatory_values.tightening_rate
