@@ -128,6 +128,7 @@ export default function ActivityForm({
       }
       setJsonSchema(safeJsonParse(schemaData).schema);
       setSelectedSourceTypeIds(selectedSourceTypes);
+      setFormKey((k) => k + 1);
     }
 
     // Add together quarterly amounts for Fuel Combustion by Mobile Equipment

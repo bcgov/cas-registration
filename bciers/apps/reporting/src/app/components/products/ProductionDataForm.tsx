@@ -99,7 +99,6 @@ const ProductionDataForm: React.FC<Props> = ({
           (item) => item.product_name === product_name,
         ) ?? allowedProducts.find((p) => p.product_name === product_name),
     );
-
     setFormData({
       product_selection: newFormData.product_selection,
       production_data: updatedSelection,
@@ -146,6 +145,7 @@ const ProductionDataForm: React.FC<Props> = ({
 
   return (
     <MultiStepFormWithTaskList
+      key={formData?.product_selection?.length || 999}
       initialStep={navigationInformation.headerStepIndex}
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
