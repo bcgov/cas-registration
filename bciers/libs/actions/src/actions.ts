@@ -19,13 +19,21 @@ import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
 // Helper function to parse action handler errors
 const parseHandlerError = (res: any, status: number) => {
-  // Handle API errors, if any
-  if ("message" in res) return { error: res.message };
+  // New FormResponseBuilder validation shape
+  if (status === 422 && res?.payload?.errors) {
+    return { validation: res.payload };
+  }
 
-  // Handle structured validation errors (e.g. { errors: [...] })
-  if ("errors" in res) return { validation: res };
+  // Legacy structured validation shape
+  if (status === 422 && res?.errors) {
+    return { validation: res };
+  }
 
-  // Handle HTTP errors, e.g., response.status is not in the 200-299 range
+  // Existing generic API error shape
+  if ("message" in res) {
+    return { error: res.message };
+  }
+
   return { error: `HTTP error! Status: ${status}` };
 };
 
@@ -140,10 +148,17 @@ export async function actionHandler(
         if (!response.ok) {
           const res = await response.json();
 
-          // if we have an error message, we want to capture it in Sentry otherwise we want to capture the status code
-          const error = res.message || `HTTP error! Status: ${response.status}`;
-          captureException(new Error(error), userGuid);
-          return parseHandlerError(res, response.status);
+          const parsedError = parseHandlerError(res, response.status);
+
+          // Only send unexpected errors to Sentry
+          if (!parsedError.validation) {
+            const error =
+              res.message || `HTTP error! Status: ${response.status}`;
+
+            captureException(new Error(error), userGuid);
+          }
+
+          return parsedError;
         }
 
         const data = await response.json();

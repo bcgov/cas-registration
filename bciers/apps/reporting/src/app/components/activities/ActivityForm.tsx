@@ -21,6 +21,8 @@ import {
 } from "@bciers/utils/src/activityFormValidators";
 import { NavigationInformation } from "../taskList/types";
 import { Dict } from "@bciers/types/dictionary";
+import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
+import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -64,6 +66,8 @@ export default function ActivityForm({
 }: Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as string[]);
+  const [validationErrors, setValidationErrors] =
+    useState<ReportValidationErrors>([]);
   const [formState, setFormState] = useState(activityFormData);
   const [formKey, setFormKey] = useState(0);
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
@@ -154,6 +158,7 @@ export default function ActivityForm({
       return true;
     }
     setErrorList([]);
+    setValidationErrors([]);
     const sourceTypeCount = Object.keys(sourceTypeMap).length;
 
     // Ensure we use the filtered formData with omitted extra data
@@ -195,6 +200,11 @@ export default function ActivityForm({
       }),
     });
 
+    if (response.validation) {
+      setValidationErrors(response.validation.errors);
+      return false;
+    }
+
     if (response.error) {
       setErrorList([response.error]);
       return false;
@@ -219,7 +229,13 @@ export default function ActivityForm({
       formData={formState}
       uiSchema={getUiSchema(currentActivity.slug, reportingYear)}
       onChange={debounce(handleFormChange, 200) as (data: object) => void}
-      errors={errorList}
+      errors={[
+        ...errorList,
+        <ReportValidationSummary
+          key="report-validation-summary" // gitleaks:allow
+          errors={validationErrors}
+        />,
+      ]}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
       customValidate={customValidate}

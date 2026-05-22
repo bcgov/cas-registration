@@ -15,6 +15,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
 from ..router import router
+from reporting.api_v2.utils.validation_error_serializer import serialize_report_validation_error
 
 
 @router.get(
@@ -33,30 +34,11 @@ def get_report_validation_data(
     version_id: int,
 ) -> Tuple[Literal[200], dict[str, Any]]:
     errors = ReportValidationService.validate_report_version(
-        version_id=version_id, tag=ValidationTags.REPORT_VALIDATION
+        version_id=version_id,
+        tag=ValidationTags.REPORT_VALIDATION,
     )
-    payload_errors: list[dict[str, Any]] = []
 
-    for key, error in errors.items():
-        error_data: dict[str, Any] = {
-            "severity": error.severity.value,
-            "message": error.message,
-        }
-
-        if error.context:
-            error_data["context"] = error.context.model_dump(
-                exclude_none=True,
-                by_alias=False,
-            )
-
-        payload_errors.append(
-            {
-                "key": getattr(error.key, "value", error.key),
-                "error": error_data,
-            }
-        )
-
-    payload: dict[str, Any] = {"errors": payload_errors}
+    payload: dict[str, Any] = {"errors": [serialize_report_validation_error(error) for error in errors.values()]}
 
     response = FormResponseBuilder(version_id).operation_data().payload(payload).build()
 
