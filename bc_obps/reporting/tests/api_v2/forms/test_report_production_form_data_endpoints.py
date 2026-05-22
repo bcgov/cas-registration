@@ -17,6 +17,7 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         self.report_operation = make_recipe(
             "reporting.tests.utils.report_operation",
             report_version=self.report_version,
+            naics_code__naics_code=111110,
         )
 
         self.endpoint_under_test = f"/api/reporting/v2/report-version/{self.facility_report.report_version_id}/facilities/{self.facility_report.facility_id}/forms/production-data"
