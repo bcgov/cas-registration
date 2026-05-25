@@ -240,6 +240,9 @@ def clone_activity_raw_json_data(old_activity_to_clone: ReportActivity, new_faci
     cloned_raw_data = copy.deepcopy(old_raw_data)
     cloned_raw_data.pk = None  # Reset the primary key so a new record is created.
     cloned_raw_data.facility_report = new_facility_report  # Update the relationship to the new facility report.
+    cloned_raw_data.report_version = (  # Update the relationship to the new report version.
+        new_facility_report.report_version
+    )
     cloned_raw_data.save()
 
 

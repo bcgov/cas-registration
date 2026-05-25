@@ -135,6 +135,7 @@ class ReportSupplementaryCloningTests(TestCase):
         # Create a ReportRawActivityData for self.old_facility_activity
         self.old_facility_activity_raw_data = make_recipe(
             "reporting.tests.utils.report_raw_activity_data",
+            report_version=self.old_report_version,
             facility_report=self.old_facility_activity.facility_report,
             activity=self.old_facility_activity.activity,
             json_data=self.old_facility_activity.json_data,
@@ -476,7 +477,9 @@ class ReportSupplementaryCloningTests(TestCase):
             "The json_data of the cloned ReportActivity should match the original.",
         )
 
-        new_raw_data = ReportRawActivityData.objects.filter(facility_report=new_facility_report).all()
+        new_raw_data = ReportRawActivityData.objects.filter(
+            facility_report=new_facility_report, report_version=self.new_report_version
+        ).all()
         self.assertEqual(new_raw_data.count(), 1, "There should be one cloned ReportRawActivityData.")
         self.assertEqual(
             new_raw_data[0].json_data,
