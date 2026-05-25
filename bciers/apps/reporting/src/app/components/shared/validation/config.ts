@@ -249,11 +249,8 @@ If the value is accurate, you may save & continue.`;
         String(ctx?.report_version_id),
         String(ctx?.facility_id),
       ),
-    formatMessage: ({
-      label,
-      error: { context },
-    }) => `Facility ${context?.facility_name}: Please review the ${label} and ensure that only
-    excluded emissions are allocated to unregulated products. If they are allocated, you may save and continue.`,
+    formatMessage: ({ label, error: { context } }) =>
+      `Facility ${context?.facility_name}: Please review the ${label} and ensure that only excluded emissions are allocated to unregulated products. If they are allocated, you may save and continue.`,
   }),
 
   generic_error: createValidationUIConfig({

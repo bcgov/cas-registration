@@ -78,20 +78,18 @@ describe("validationUIConfig", () => {
     expect(config?.renderMode).toBe("inline_link");
     expect(config?.label).toBe("allocation of emissions");
     expect(
-      config?.getHref &&
-        config.getHref({
-          report_version_id: 123,
-          facility_id: "facility-1",
-        }),
+      config?.getHref?.({
+        report_version_id: 123,
+        facility_id: "facility-1",
+      }),
     ).toBe("/reports/123/facilities/facility-1/allocation-of-emissions");
     expect(
-      config?.formatMessage &&
-        config?.formatMessage({
-          label: "test label",
-          error: { context: { facility_name: "facility abc" } },
-        } as any),
-    )
-      .toBe(`Facility facility abc: Please review the test label and ensure that only excluded emissions are
-        allocated to unregulated products. If they are allocated, you may save and continue.`);
+      config?.formatMessage?.({
+        label: "test label",
+        error: { context: { facility_name: "facility abc" } },
+      } as any),
+    ).toBe(
+      `Facility facility abc: Please review the test label and ensure that only excluded emissions are allocated to unregulated products. If they are allocated, you may save and continue.`,
+    );
   });
 });
