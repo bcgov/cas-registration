@@ -24,7 +24,6 @@ class ReportProductEmissionAllocationData:
     """
 
     report_product_id: int
-    product_id: int
     product_name: str
     allocated_quantity: Decimal | int
 
@@ -116,7 +115,6 @@ class ReportEmissionAllocationService:
                 ).first()
                 product = ReportProductEmissionAllocationData(
                     report_product_id=rp.pk,
-                    product_id=rp.product_id,
                     product_name=rp.product.name,
                     allocated_quantity=product_emission.allocated_quantity if product_emission else 0,
                 )
@@ -277,7 +275,6 @@ class ReportEmissionAllocationService:
             report_product_emission_allocation_totals.append(
                 ReportProductEmissionAllocationData(
                     report_product_id=rp.pk,
-                    product_id=rp.product_id,
                     product_name=rp.product.name,
                     allocated_quantity=allocated_quantity if allocated_quantity else 0,
                 )

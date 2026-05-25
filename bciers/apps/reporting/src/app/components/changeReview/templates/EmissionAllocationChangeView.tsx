@@ -340,6 +340,30 @@ export const EmissionAllocationChangeView: React.FC<
     return result;
   }
 
+  // Helper to determine if change is a false positive due to supplementary report report_product_id
+  function isFalsePositive(change: DisplayChangeItem): boolean {
+    // Check for equal value
+    if (change.oldValue !== change.newValue) return false;
+
+    // Check for equal amount of products
+    const oldProducts = (change as any).old_value?.products || [];
+    const newProducts = (change as any).new_value?.products || [];
+    if (oldProducts.length !== newProducts.length) return false;
+
+    // Check for matching product names and quantities
+    for (let i = 0; i < newProducts.length; i++) {
+      if (
+        newProducts[i]?.product_name !== oldProducts[i]?.product_name ||
+        newProducts[i]?.allocated_quantity !==
+          oldProducts[i]?.allocated_quantity
+      )
+        return false;
+    }
+
+    // If all checks passed, it's a false positive
+    return true;
+  }
+
   const generalFields = data
     .filter(
       (change) =>
@@ -359,7 +383,14 @@ export const EmissionAllocationChangeView: React.FC<
     .filter(isRelevantTotalChange)
     .flatMap(mapTotalChange);
 
-  const categorizedChanges = processChanges();
+  const categorizedChanges = processChanges()
+    .map((categorizedChange) => ({
+      ...categorizedChange,
+      changes: categorizedChange?.changes.filter(
+        (change) => !isFalsePositive(change),
+      ),
+    }))
+    .filter((categorizedChange) => categorizedChange.changes.length > 0);
 
   // Render section for a category
   const CategorySection = ({ category }: { category: ProcessedChange }) => (
