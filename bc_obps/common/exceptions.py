@@ -26,10 +26,10 @@ class UserError(Exception):
         context: Optional metadata related to the error
     """
 
-    severity: Severity
+    severity: Severity = Severity.ERROR
     message: str
-    key: UserErrorKey
-    context: dict[str, Any] | None
+    key: UserErrorKey = UserErrorKey.GENERIC_ERROR
+    context: dict[str, Any] | None = None
 
     def __init__(
         self,
