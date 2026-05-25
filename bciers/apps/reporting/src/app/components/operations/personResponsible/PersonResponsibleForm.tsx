@@ -61,6 +61,7 @@ const PersonResponsibleForm = ({
     },
     hasError: false,
   });
+  const [formKey, setFormKey] = useState(0);
 
   const updateContactShown = (
     newContactId: number | undefined,
@@ -86,6 +87,7 @@ const PersonResponsibleForm = ({
         ? `Missing address information.  <a href="/administration/contacts/${newContact.id}?contacts_title=${newContact.first_name} ${newContact.last_name}/" target="_blank" rel="noopener noreferrer">Add contact's address information.</a>`
         : "";
 
+      setFormKey((k) => k + 1);
       setComponentState({
         ...componentState,
         selectedContactId: newContactId,
@@ -225,6 +227,7 @@ const PersonResponsibleForm = ({
   return (
     <>
       <MultiStepFormWithTaskList
+        key={formKey}
         initialStep={navigationInformation.headerStepIndex}
         steps={navigationInformation.headerSteps}
         backUrl={navigationInformation.backUrl}
