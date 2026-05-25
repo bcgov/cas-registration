@@ -241,6 +241,18 @@ If the value is accurate, you may save & continue.`;
         : undefined,
   }),
 
+  og_np_nc_allocation_mismatch: createValidationUIConfig({
+    label: "allocation of emissions",
+    renderMode: "inline_link",
+    getHref: (ctx) =>
+      facilityRoutes.allocationOfEmissions(
+        String(ctx?.report_version_id),
+        String(ctx?.facility_id),
+      ),
+    formatMessage: ({ label, error: { context } }) =>
+      `Facility ${context?.facility_name}: Please review the ${label} and ensure that only excluded emissions are allocated to unregulated products. If they are allocated, you may save and continue.`,
+  }),
+
   generic_error: createValidationUIConfig({
     renderMode: "message_only",
     getMessage: (error) =>

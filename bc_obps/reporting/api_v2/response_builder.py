@@ -1,4 +1,4 @@
-from typing import Iterable, Self
+from typing import Iterable, Self, override
 
 from django.http import HttpRequest
 from ninja.pagination import PageNumberPagination
@@ -25,11 +25,12 @@ class ResponseBuilder:
         return self.response
 
 
-class PaginatedResponseBuilder:
+class PaginatedResponseBuilder(ResponseBuilder):
     """
     Response builder for when the payload is paginated
     """
 
+    @override
     def __init__(self, request: HttpRequest | None = None, page_size: int = PAGE_SIZE, page: int = 1) -> None:
         self.response: dict = {'payload': {"items": []}}
         self.request = request
@@ -37,6 +38,7 @@ class PaginatedResponseBuilder:
         pagination_page_size = int(request.GET.get("page_size", page_size)) if request else page_size
         self.pagination = PageNumberPagination.Input(page=pagination_page, page_size=pagination_page_size)
 
+    @override
     def payload(self, payload: Iterable) -> Self:
         if self.request is None:
             raise ValueError("Request is required for pagination")
@@ -45,6 +47,7 @@ class PaginatedResponseBuilder:
         )
         return self
 
+    @override
     def build(self) -> dict:
         # Evaluate the queryset on build
         self.response['payload']['items'] = list(self.response['payload']['items'])

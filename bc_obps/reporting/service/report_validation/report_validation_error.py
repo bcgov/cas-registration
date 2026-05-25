@@ -16,6 +16,7 @@ class ReportValidationErrorKey(StrEnum):
     OPERATION_BORO_ID = "operation_boro_id"
     ATTACHMENT_NOT_SCANNED = "attachment_not_scanned"
     ALLOCATION_MISMATCH = "allocation_mismatch"
+    OG_NP_NC_ALLOCATION_MISMATCH = "og_np_nc_allocation_mismatch"
     MISSING_SUPPLEMENTARY_REPORT_REQUIRED_ATTACHMENT_CONFIRMATION = (
         "missing_supplementary_report_required_attachment_confirmation"
     )

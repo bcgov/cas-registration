@@ -20,11 +20,12 @@ describe("validationUIConfig", () => {
     "missing_supplementary_report_attachments_confirmation",
     "missing_supplementary_report_version_change",
     "missing_regulated_product",
+    "og_np_nc_allocation_mismatch",
     "generic_error",
   ];
 
   it("has the expected number of configs", () => {
-    expect(Object.keys(validationUIConfig)).toHaveLength(15);
+    expect(Object.keys(validationUIConfig)).toHaveLength(16);
   });
 
   it("has a config for every validation key", () => {
@@ -70,5 +71,25 @@ describe("validationUIConfig", () => {
         }
       }
     });
+  });
+
+  it("exposes a og_np_nc_allocation_mismatch config", () => {
+    const config = validationUIConfig.og_np_nc_allocation_mismatch;
+    expect(config?.renderMode).toBe("inline_link");
+    expect(config?.label).toBe("allocation of emissions");
+    expect(
+      config?.getHref?.({
+        report_version_id: 123,
+        facility_id: "facility-1",
+      }),
+    ).toBe("/reports/123/facilities/facility-1/allocation-of-emissions");
+    expect(
+      config?.formatMessage?.({
+        label: "test label",
+        error: { context: { facility_name: "facility abc" } },
+      } as any),
+    ).toBe(
+      `Facility facility abc: Please review the test label and ensure that only excluded emissions are allocated to unregulated products. If they are allocated, you may save and continue.`,
+    );
   });
 });
