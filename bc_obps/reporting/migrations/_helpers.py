@@ -1382,7 +1382,7 @@ def load_activity_schemas_from_json(apps, schema_editor):
         schema_path = f'{cwd}/reporting/json_schemas/2024/{schema_slug}/activity.json'
         with open(schema_path) as schema_file:
             schema = json.load(schema_file)
-        ActivitySchema.objects.create_or_update(
+        ActivitySchema.objects.update_or_create(
             activity=Activity.objects.get(name=activity_name),
             json_schema=schema,
             valid_from=config_2025.valid_from,
@@ -1394,7 +1394,7 @@ def load_activity_schemas_from_json(apps, schema_editor):
         schema_path = f'{cwd}/reporting/json_schemas/2025/{schema_slug}/activity.json'
         with open(schema_path) as schema_file:
             schema = json.load(schema_file)
-        ActivitySchema.objects.create_or_update(
+        ActivitySchema.objects.update_or_create(
             activity=Activity.objects.get(name=activity_name),
             json_schema=schema,
             valid_from=config_2025.valid_from,
