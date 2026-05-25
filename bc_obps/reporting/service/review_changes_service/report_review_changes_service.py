@@ -8,7 +8,6 @@ from .diff_helpers import _DIFF_KWARGS, _CHANGE_TYPE_MAP, detect_renames, diff_s
 
 
 NOISY_DIFF_KEYS = {
-    "report_product_id",
     "report_version",
     "is_supplementary_report",
     "is_latest_submitted",
