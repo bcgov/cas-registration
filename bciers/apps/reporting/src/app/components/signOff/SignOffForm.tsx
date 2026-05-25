@@ -50,11 +50,9 @@ export default function SignOffForm({
     setValidationErrors([]);
 
     const response = await postSubmitReport(version_id, formState);
-
-    if (response?.validation || response?.payload?.errors) {
-      setValidationErrors(
-        response.validation?.errors ?? response.payload.errors,
-      );
+    console.log(response);
+    if (response?.validation || response?.errors) {
+      setValidationErrors(response.validation?.errors ?? response.errors);
       return false;
     }
 

@@ -1,8 +1,10 @@
-from typing import Iterable, Self, override
+from typing import  Any, Iterable, Self, override
+from typing import Any, Iterable, Self
 
 from django.http import HttpRequest
 from ninja.pagination import PageNumberPagination
 from reporting.constants import PAGE_SIZE
+from common.exceptions import SerializableError
 
 
 class ResponseBuilder:
@@ -19,6 +21,19 @@ class ResponseBuilder:
 
     def payload(self, payload: dict) -> Self:
         self.response["payload"] = payload
+        return self
+
+    def errors(
+        self,
+        errors: Iterable[dict[str, Any] | SerializableError] | None,
+    ) -> Self:
+        if errors is None:
+            self.response["errors"] = None
+        else:
+            self.response["errors"] = [
+                error.serialize() if isinstance(error, SerializableError) else error for error in errors
+            ]
+
         return self
 
     def build(self) -> dict:

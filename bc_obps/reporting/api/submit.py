@@ -13,9 +13,8 @@ from reporting.models.report_version import ReportVersion
 from registration.models.operation import Operation
 from service.report_version_service import ReportVersionService
 from common.exceptions import Severity, UserError, UserErrorKey
-from reporting.api_v2.forms.form_schema import ReportingFormSchema
-from reporting.schema.report_validation_data import ReportValidationPayloadSchema
-from reporting.api_v2.utils.build_user_error_response import build_user_error_response
+from common.response.user_error_response_builder import UserErrorResponseBuilder
+from common.schema.User_error_schema import UserErrorResponseSchema
 
 
 def _get_required_report_sign_off_acknowledgements(
@@ -64,7 +63,7 @@ def _get_required_report_sign_off_acknowledgements(
     "report-version/{version_id}/submit",
     response={
         200: int,
-        422: ReportingFormSchema[ReportValidationPayloadSchema],
+        422: UserErrorResponseSchema,
         generic_error_codes_4xx: Message,
     },
     tags=EMISSIONS_REPORT_TAGS,
@@ -86,14 +85,20 @@ def submit_report_version(
     )
 
     if not all(required_acknowledgements):
-        return 422, build_user_error_response(
-            version_id=version_id,
-            error=UserError(
-                severity=Severity.ERROR,
-                message="All required acknowledgements must be checked to submit the report.",
-                key=UserErrorKey.GENERIC_ERROR,
-                context={"section": "sign_off"},
-            ),
+        return (
+            422,
+            UserErrorResponseBuilder()
+            .errors(
+                [
+                    UserError(
+                        severity=Severity.ERROR,
+                        message="All required acknowledgements must be checked to submit the report.",
+                        key=UserErrorKey.GENERIC_ERROR,
+                        context={"section": "sign_off"},
+                    )
+                ]
+            )
+            .build(),
         )
 
     data = ReportSignOffData(

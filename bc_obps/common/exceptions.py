@@ -12,8 +12,20 @@ class UserErrorKey(StrEnum):
     GENERIC_ERROR = "generic_error"
 
 
+class SerializableError:
+    """
+    Base interface for frontend-facing errors that can be serialized
+    into API response payloads.
+    """
+
+    key: Any
+
+    def serialize(self) -> dict[str, Any]:
+        raise NotImplementedError
+
+
 @dataclass(init=False)
-class UserError(Exception):
+class UserError(Exception, SerializableError):
     """
     Base class for user-facing errors.
 
@@ -26,8 +38,8 @@ class UserError(Exception):
         context: Optional metadata related to the error
     """
 
-    severity: Severity = Severity.ERROR
     message: str
+    severity: Severity = Severity.ERROR
     key: UserErrorKey = UserErrorKey.GENERIC_ERROR
     context: dict[str, Any] | None = None
 
@@ -43,3 +55,11 @@ class UserError(Exception):
         self.key = key
         self.context = context
         super().__init__(message)
+
+    def serialize(self) -> dict[str, Any]:
+        return {
+            "severity": self.severity.value,
+            "message": self.message,
+            "key": self.key.value,
+            "context": self.context,
+        }

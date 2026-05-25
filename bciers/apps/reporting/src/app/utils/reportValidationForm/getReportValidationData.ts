@@ -1,18 +1,13 @@
 import { actionHandler } from "@bciers/actions";
-import { ReportingFormResponse } from "@reporting/src/app/utils/typesApiV2";
 import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
-
-type ReportValidationPayload = {
+type ReportValidationResponse = {
   errors: ReportValidationErrors;
 };
 
-type ReportValidationFormResponse =
-  ReportingFormResponse<ReportValidationPayload>;
-
 export async function getReportValidationData(
   reportVersionId: number,
-): Promise<ReportValidationFormResponse> {
-  const endpoint = `reporting/v2/report-version/${reportVersionId}/forms/validation-data`;
+): Promise<ReportValidationResponse> {
+  const endpoint = `reporting/v2/report-version/${reportVersionId}/validation/report-validation`;
 
   const response = await actionHandler(endpoint, "GET");
 
@@ -22,5 +17,5 @@ export async function getReportValidationData(
     );
   }
 
-  return response as ReportValidationFormResponse;
+  return response as ReportValidationResponse;
 }

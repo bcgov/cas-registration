@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum, StrEnum
-from typing import Optional
+from typing import Any, Optional
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict
+from common.exceptions import SerializableError
 
 
 class Severity(Enum):
@@ -58,7 +59,7 @@ class ErrorContext(BaseModel):
 
 
 @dataclass
-class ReportValidationError:
+class ReportValidationError(SerializableError):
     """
     Data type for validation error details
 
@@ -72,3 +73,13 @@ class ReportValidationError:
     message: str
     key: ReportValidationErrorKey
     context: Optional[ErrorContext] = None
+
+    def serialize(self) -> dict[str, Any]:
+        return {
+            "key": self.key.value,
+            "error": {
+                "severity": self.severity.value,
+                "message": self.message,
+                "context": self.context.model_dump(exclude_none=True) if self.context else None,
+            },
+        }
