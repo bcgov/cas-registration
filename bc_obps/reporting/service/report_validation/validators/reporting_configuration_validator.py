@@ -1,5 +1,6 @@
+from logging import config
 
-from django.db.models import Exists, OuterRef
+from django.db.models import F, Exists, OuterRef, Subquery
 from reporting.models.configuration_element import ConfigurationElement
 from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_version import ReportVersion
@@ -9,17 +10,7 @@ from reporting.service.report_validation.report_validation_tags import Validatio
 TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 
-def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    """
-    Validator ensuring that all the activity data reported has a matching configuration
-    defined for the reporting year of the report.
-
-    For each ReportMethodlogy record:
-    - Collect ReportMethodology -> ReportEmission (Gas Type) -> ReportSourceType -> ReportActivity -> Report (Reporting Year)
-    - Validate that there is a ConfigurationElement record matching that combination
-    - Validate that the extra reporting fields reported are in that configuration element
-    """
-
+def validate_configuration_elements_present(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     config_element = ConfigurationElement.objects.filter(
         activity_id=OuterRef("report_emission__report_source_type__report_activity__activity_id"),
         source_type_id=OuterRef("report_emission__report_source_type__source_type_id"),
@@ -43,3 +34,22 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         .filter(matching_config_exists=False)
         .values("id")
     )
+
+    return {"a": 123 for m in missing_config}
+
+
+def validate_reporting_fields(report_version: ReportVersion) -> dict[str, ReportValidationError]:
+
+    pass
+
+
+def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
+    """
+    Validator ensuring that all the activity data reported has a matching configuration
+    defined for the reporting year of the report.
+
+    For each ReportMethodlogy record:
+    - Collect ReportMethodology -> ReportEmission (Gas Type) -> ReportSourceType -> ReportActivity -> Report (Reporting Year)
+    - Validate that there is a ConfigurationElement record matching that combination
+    - Validate that the extra reporting fields reported are in that configuration element
+    """
