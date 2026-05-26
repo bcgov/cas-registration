@@ -16,7 +16,6 @@ test.describe("LFO: view a submitted report for the current reporting year", () 
     page,
     happoScreenshot,
   }) => {
-    const isLFO = true;
     // ── 1. Navigate to the past reports grid ──
     const grid = new CurrentReportsPOM(page);
     await grid.route();
@@ -30,7 +29,7 @@ test.describe("LFO: view a submitted report for the current reporting year", () 
     const submittedReport = new SubmittedPOM(page);
     await submittedReport.verifySubmittedReportView(
       OPERATION_NAMES.BANANA_LFO,
-      isLFO,
+      true,
     );
 
     await takeStabilizedScreenshot(happoScreenshot, page, {
@@ -54,8 +53,6 @@ test.describe("LFO: view a submitted report for the current reporting year", () 
       internalTest(
         "CAS analyst views a submitted LFO report",
         async ({ page, happoScreenshot }) => {
-          const isExternalUser = false;
-          const isLFO = true;
           // ── 1. Navigate to the past reports grid ──
           const grid = new CurrentReportsPOM(page);
           await grid.route();
@@ -65,14 +62,14 @@ test.describe("LFO: view a submitted report for the current reporting year", () 
           // ── 2. Click "View Details" for the report — navigates to the 'Submitted' report view ──
           await grid.viewDetailsFromReportGrid(
             OPERATION_NAMES.BANANA_LFO,
-            isExternalUser,
+            false,
           );
 
           const submittedReport = new AnnualReportPOM(page);
 
           await submittedReport.verifySubmittedReportView(
             OPERATION_NAMES.BANANA_LFO,
-            isLFO,
+            true,
           );
 
           await takeStabilizedScreenshot(happoScreenshot, page, {

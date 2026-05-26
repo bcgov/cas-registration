@@ -18,6 +18,8 @@ export async function verifySaveAsPDF(page: Page): Promise<void> {
   await expect(saveAsPDFButton).toBeVisible();
   await expect(saveAsPDFButton).toBeEnabled();
 
+  // This is how Playwright recommends testing print dialogs: https://playwright.dev/docs/dialogs#print-dialogs
+  // which is what the "Save as PDF" button triggers.
   await page.evaluate(
     "(() => {window.waitForPrintDialog = new Promise(f => window.print = f);})()",
   );

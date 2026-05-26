@@ -16,8 +16,6 @@ test.describe("SFO: view a submitted report for the current reporting year", () 
     page,
     happoScreenshot,
   }) => {
-    const isExternalUser = true;
-    const isLFO = false;
     // ── 1. Navigate to the past reports grid ──
     const grid = new CurrentReportsPOM(page);
     await grid.route();
@@ -25,15 +23,12 @@ test.describe("SFO: view a submitted report for the current reporting year", () 
     await grid.searchByOperationName(OPERATION_NAMES.BANGLES_SFO);
 
     // ── 2. Click "View Details" for the report — navigates to the 'Submitted' report view ──
-    await grid.viewDetailsFromReportGrid(
-      OPERATION_NAMES.BANGLES_SFO,
-      isExternalUser,
-    );
+    await grid.viewDetailsFromReportGrid(OPERATION_NAMES.BANGLES_SFO, true);
     const submittedReport = new SubmittedPOM(page);
 
     await submittedReport.verifySubmittedReportView(
       OPERATION_NAMES.BANGLES_SFO,
-      isLFO,
+      false,
     );
 
     await takeStabilizedScreenshot(happoScreenshot, page, {
@@ -49,8 +44,6 @@ internalTest.describe(
     internalTest(
       "CAS analyst views a submitted SFO report",
       async ({ page, happoScreenshot }) => {
-        const isExternalUser = false;
-        const isLFO = false;
         // ── 1. Navigate to the past reports grid ──
         const grid = new CurrentReportsPOM(page);
         await grid.route();
@@ -60,13 +53,13 @@ internalTest.describe(
         // ── 2. Click "View Details" for the report — navigates to the 'Submitted' report view ──
         await grid.viewDetailsFromReportGrid(
           OPERATION_NAMES.BANGLES_SFO,
-          isExternalUser,
+          false,
         );
         const submittedReport = new AnnualReportPOM(page);
 
         await submittedReport.verifySubmittedReportView(
           OPERATION_NAMES.BANGLES_SFO,
-          isLFO,
+          false,
         );
         await takeStabilizedScreenshot(happoScreenshot, page, {
           component: "SFO Report - Submitted",
