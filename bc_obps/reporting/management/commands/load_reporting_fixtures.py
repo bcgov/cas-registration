@@ -1,10 +1,8 @@
 import json
-from datetime import date
 from uuid import UUID
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 from reporting.management.commands.utils import submit_report_from_fixture
-from reporting.management.commands.utils.reporting_year import ensure_temporal_objects_exist
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
 from service.report_service import ReportService
@@ -65,10 +63,8 @@ class Command(BaseCommand):
         reports_fixture = f'{self.fixture_base_dir}/report.json'
         with open(reports_fixture) as f:
             reports = json.load(f)
-            reports_to_create = self.get_reports_to_create(reports)
-
             report_version_ids = []
-            for report in reports_to_create:
+            for report in reports:
                 report_version_id = ReportService.create_report(
                     operation_id=report['fields']['operation_id'],
                     reporting_year=report['fields']['reporting_year_id'],
@@ -81,61 +77,23 @@ class Command(BaseCommand):
                 ro.operator_legal_name = _strip_admin_suffix(ro.operator_legal_name)
                 ro.operation_name = _strip_admin_suffix(ro.operation_name)
                 ro.save()
-            self.submit_reports()
 
-    def get_reports_to_create(self, reports):
-        current_reporting_year = date.today().year - 1
-        reports_to_create = []
-        queued_operation_year_pairs = set()
+            # submit reports
+            operation_ids_to_submit = [
+                UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
+                UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
+            ]
 
-        for report in reports:
-            operation_id = report['fields']['operation_id']
-            reporting_year_id = int(report['fields']['reporting_year_id'])
-            operation_year_pair = (operation_id, reporting_year_id)
+            for operation_id in operation_ids_to_submit:
+                # set up required data for submission
+                # multiple report versions to submit if there are multiple years
+                report_versions = ReportVersion.objects.filter(
+                    report__operation_id=operation_id,
+                )
 
-            # track which operation/reporting year pairs we've already queued to avoid duplicates
-            if operation_year_pair not in queued_operation_year_pairs:
-                reports_to_create.append(report)
-                queued_operation_year_pairs.add(operation_year_pair)
+                for report_version in report_versions:
 
-            # Create a duplicate report in the current reporting year for each 2023 report fixture.
-            # skip if there is already queued a report for this operation and reporting year to avoid creating duplicates
-            if str(report['fields']['reporting_year_id']) == '2023':
-                duplicate_operation_year_pair = (operation_id, current_reporting_year)
-                if duplicate_operation_year_pair in queued_operation_year_pairs:
-                    continue
-
-                duplicated_report = {
-                    **report,
-                    'fields': {
-                        **report['fields'],
-                        'reporting_year_id': current_reporting_year,
-                    },
-                }
-                reports_to_create.append(duplicated_report)
-                queued_operation_year_pairs.add(duplicate_operation_year_pair)
-
-        reporting_year_ids = {int(report['fields']['reporting_year_id']) for report in reports_to_create}
-        for reporting_year_id in reporting_year_ids:
-            ensure_temporal_objects_exist(reporting_year_id)
-
-        return reports_to_create
-
-    def submit_reports(self):
-        operation_ids_to_submit = [
-            UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
-            UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
-        ]
-
-        for operation_id in operation_ids_to_submit:
-            # multiple report versions to submit if there are multiple years
-            report_versions = ReportVersion.objects.filter(
-                report__operation_id=operation_id,
-            )
-
-            for report_version in report_versions:
-                submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
-
-        # create supplementary report
-        for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
-            ReportVersionService.create_report_version(report)
+                    submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
+            # create supplementary report
+            for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
+                ReportVersionService.create_report_version(report)
