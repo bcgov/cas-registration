@@ -25,7 +25,7 @@ export enum TransferE2EValues {
   // Effective dates
   PAST_DATE = "2024-01-01",
   FUTURE_DATE = "2099-12-31",
-  NEW_EFFECTIVE_DATE = "2031-06-15",
+  NEW_EFFECTIVE_DATE = "2099-06-15",
 }
 
 // 📝 Transfer status values
