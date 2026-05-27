@@ -101,7 +101,8 @@
                     "required": ["gasType", "emission"]
                   }
                 }
-              }
+              },
+              "required": ["annualFuelAmount"]
             }
           }
         },
