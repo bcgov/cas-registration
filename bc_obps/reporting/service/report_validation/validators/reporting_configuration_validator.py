@@ -1,6 +1,5 @@
-from logging import config
-
-from django.db.models import F, Exists, OuterRef, Subquery
+from common.exceptions import UserError
+from django.db.models import Exists, OuterRef
 from reporting.models.configuration_element import ConfigurationElement
 from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_version import ReportVersion
@@ -35,7 +34,8 @@ def validate_configuration_elements_present(report_version: ReportVersion) -> di
         .values("id")
     )
 
-    return {"a": 123 for m in missing_config}
+    if missing_config.exists():
+        raise UserError
 
 
 def validate_reporting_fields(report_version: ReportVersion) -> dict[str, ReportValidationError]:
