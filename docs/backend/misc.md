@@ -44,3 +44,15 @@ def my_migration_function(apps, schema_editor):
 ```
 
 Reference: <https://codereview.doctor/features/django/best-practice/avoid-model-imports-in-migrations>
+
+## Poetry
+
+We use Poetry to manage our python packages.
+
+### New package delay
+
+Poetry is configured to disallow adding packages younger than 7 days old, in an effort to prevent supply chain attacks. If a critical pacakage release is required that is younger than seven days an exception rule must be added to allow that package. **This should be removed once the 7 days have elapsed**.
+
+In `/bc_obps/poetry.toml`, under the `[solver]` header, add `min-release-age-exclude = "{package_name}"`. This can also be done from the command line in the `/bc_obps` folder with `poetry config solver.min-release-age-exclude "package_name" --local`. You can then update the package to the critical version required.
+
+See the [Poetry documentation](https://python-poetry.org/docs/configuration#solvermin-release-age-exclude) for more info.
