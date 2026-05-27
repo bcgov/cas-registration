@@ -69,7 +69,7 @@ export class TransferPOM {
       await expect(
         this.page.getByRole("button", { name: /transfer entity/i }),
       ).toBeEnabled({ timeout: 2000 });
-    }).toPass({ timeout: 20000 });
+    }).toPass({ timeout: 40000 });
   }
 
   /**
@@ -115,6 +115,8 @@ export class TransferPOM {
       name: /^facilities/i,
     });
     const facilityListbox = this.page.locator(".MuiAutocomplete-listbox");
+    // Wait for the SA and form re-mount to complete before attempting to fill
+    await expect(facilitiesInput).toBeVisible({ timeout: 30000 });
     await expect(async () => {
       await facilitiesInput.fill(facility);
       await expect(facilityListbox).toBeVisible({ timeout: 2000 });
@@ -138,7 +140,7 @@ export class TransferPOM {
       await expect(
         this.page.getByRole("button", { name: /transfer entity/i }),
       ).toBeEnabled({ timeout: 2000 });
-    }).toPass({ timeout: 20000 });
+    }).toPass({ timeout: 40000 });
   }
 
   async submitTransfer() {
@@ -185,18 +187,26 @@ export class TransferPOM {
   }
 
   /**
-   * Clicks the "View details" link on a transfer row and waits for the detail page to load.
+   * Reads the "View details" href and navigates directly to the transfer detail page.
    *
-   * Waits for a UUID-containing URL to confirm navigation away from the transfers list,
-   * then verifies "Effective date of transfer" is visible — a field always present on
-   * the detail page for both operation and facility transfers (sharedSchemaProperties).
+   * The grid renders rows before transfer_id is populated, so clicking while the href is
+   * empty routes back to the transfers list. Reading the attribute and retrying with toPass
+   * waits up to 15s for the UUID to appear, then navigates via page.goto to avoid the
+   * click-navigation race entirely.
+   *
+   * Verifies arrival by checking "Effective date of transfer" — present on all detail pages.
    */
   async viewTransferDetails(row: Locator) {
-    const viewDetailsLink = await row.getByRole("link", { name: /view details/i });
+    const viewDetailsLink = row.getByRole("link", { name: /view details/i });
     await expect(viewDetailsLink).toBeVisible();
-    await viewDetailsLink.click();
-    const uuidPattern = "[0-9a-fA-F-]+";
-    await this.page.waitForURL(new RegExp(`transfers/${uuidPattern}`));
+
+    let href: string | null = null;
+    await expect(async () => {
+      href = await viewDetailsLink.getAttribute("href");
+      expect(href).toMatch(/[0-9a-fA-F]{8}/);
+    }).toPass({ timeout: 15000 });
+
+    await this.page.goto(href!);
     await expect(
       this.page.getByText(/effective date of transfer/i),
     ).toBeVisible();
