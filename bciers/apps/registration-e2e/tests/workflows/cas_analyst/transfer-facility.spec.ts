@@ -14,7 +14,7 @@ import {
   TransferStatus,
 } from "../../../utils/enums";
 
-const test = setupBeforeEachTest(UserRole.CAS_DIRECTOR);
+const test = setupBeforeEachTest(UserRole.CAS_ANALYST);
 
 // 🏷 Annotate test suite as serial to use 1 worker - prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });

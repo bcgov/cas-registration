@@ -14,7 +14,7 @@ import {
   TransferStatus,
 } from "../../../utils/enums";
 
-const test = setupBeforeEachTest(UserRole.CAS_DIRECTOR);
+const test = setupBeforeEachTest(UserRole.CAS_ANALYST);
 
 test.describe.configure({ mode: "serial" });
 test.describe("CAS Analyst - Transfer Operation", () => {
