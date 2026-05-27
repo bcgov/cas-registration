@@ -3,6 +3,7 @@ import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   FacilityIDs,
   OPERATION_NAMES,
+  REPORT_STATUS,
   ReportRoutes,
 } from "@/reporting-e2e/utils/enums";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
@@ -203,7 +204,10 @@ test.describe("SFO: create and submit a new report for the current reporting yea
 
     // ── 18. Return to the grid and verify the report status ──
     await page.getByRole("link", { name: "Return to report table" }).click();
-    await grid.verifyReportStatus(OPERATION_NAMES.BUGLE_SFO, "Submitted");
+    await grid.verifyReportStatus(
+      OPERATION_NAMES.BUGLE_SFO,
+      REPORT_STATUS.SUBMITTED,
+    );
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "SFO Report - Current Reports Grid",
       variant: "submitted",

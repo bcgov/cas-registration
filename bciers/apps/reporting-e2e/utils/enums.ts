@@ -1,6 +1,8 @@
 // App routes
 export enum AppRoutes {
   GRID_REPORTING_CURRENT_REPORTS = "reporting/reports",
+  GRID_REPORTING_PAST_REPORTS = "reporting/reports/previous-years",
+  REPORT_HISTORY_GRID = "reporting/reports/report-history",
 }
 
 // Report record ids
@@ -17,6 +19,7 @@ export enum FacilityIDs {
   NO_OBLIGATION = "2",
   BUGLE_SFO = "f486f2fb-62ed-438d-bb3e-0819b51e3aff",
   BEES_LFO = "d477f3d9-2917-4f36-b5ae-166d47dc8172",
+  BANANA_LFO_1 = "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
 }
 
 // Report workflow routes
@@ -42,6 +45,8 @@ export enum ReportRoutes {
   FINAL_REVIEW = "final-review",
   VERIFICATION = "verification",
   ATTACHMENTS = "attachments",
+  SUBMITTED_REPORT = "submitted",
+  ANNUAL_REPORT = "annual-report",
 }
 
 // Attachment checkboxes
@@ -79,6 +84,8 @@ export const OPERATION_NAMES = {
   OBLIGATION_NOT_MET: "Compliance SFO - Obligation not met",
   EARNED_CREDITS: "Compliance SFO - Earned credits",
   NO_OBLIGATION: "Compliance SFO - No obligation",
+  BANANA_LFO: "Banana LFO - Registered",
+  BANGLES_SFO: "Bangles SFO - Registered - has Multiple Operators",
   BUGLE_SFO: "Bugle SFO - Registered",
   BEES_LFO: "Bees LFO - Registered - name from admin",
 } as const;
@@ -88,3 +95,10 @@ export const REPORT_ID_TO_OPERATION_NAME: Record<ReportIDs, string> = {
   [ReportIDs.EARNED_CREDITS]: OPERATION_NAMES.EARNED_CREDITS,
   [ReportIDs.NO_OBLIGATION]: OPERATION_NAMES.NO_OBLIGATION,
 };
+
+export enum REPORT_STATUS {
+  DRAFT = "Draft",
+  SUBMITTED = "Submitted",
+  DRAFT_SUPPLEMENTARY = "Draft Supplementary Report",
+  NOT_STARTED = "Not Started",
+}

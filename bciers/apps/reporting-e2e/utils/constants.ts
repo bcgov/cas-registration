@@ -45,4 +45,6 @@ export const ACTION_BUTTON_TEXT = {
   START: "Start",
   CONTINUE: "Continue",
   VIEW_DETAILS: "View Details",
+  VIEW_REPORT: "View Report",
+  REPORT_HISTORY: "Report history",
 } as const;

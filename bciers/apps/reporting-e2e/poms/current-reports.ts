@@ -4,6 +4,7 @@ import {
   AttachmentCheckboxLabel,
   FacilityIDs,
   OPERATION_NAMES,
+  REPORT_STATUS,
   ReportIDs,
   ReportRoutes,
   SignOffCheckboxLabel,
@@ -113,7 +114,7 @@ export class CurrentReportsPOM {
   }
 
   // -----------------
-  // navigation
+  // report grid actions
   // -----------------
 
   /**
@@ -159,24 +160,83 @@ export class CurrentReportsPOM {
     );
   }
 
-  // Navigate to the production data route for this report id and facility id
-  async gotoProductionData(reportId: string | number, facilityId: string) {
-    await this.page.goto(this.getProductionDataUrl(reportId, facilityId));
+  /**
+   * Finds the operation row in the reports grid and clicks "View Details"
+   * or "View Report" to view a submitted report.
+   *
+   * Waits for navigation to the submitted report details page.
+   */
+  async viewDetailsFromReportGrid(
+    operationName: string,
+    isExternalUser: boolean = true,
+    reportingYear?: string,
+  ): Promise<void> {
+    await waitForGridReady(this.page);
+
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .filter({ hasText: reportingYear ?? "" }) // if reportingYear is provided, filter by it as well
+      .first();
+
+    await expect(row).toBeVisible();
+    await this.clickViewReportDetails(row, isExternalUser);
   }
 
-  // Navigate to the review changes page
-  async gotoReviewChanges(reportId: string | number): Promise<void> {
-    await this.page.goto(this.getReviewChangesUrl(reportId));
+  /**
+   * Clicks the "View Details" button for a specific report version in the report history page, based on the version number.
+   */
+  async viewDetailsFromReportHistory(
+    version: string | number = "1",
+  ): Promise<void> {
+    await waitForGridReady(this.page);
+    const versionName = `Version ${version}`;
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: versionName })
+      .first();
+    await expect(row).toBeVisible();
+    await this.clickViewReportDetails(row);
   }
 
-  // Navigate to the attachments page
-  async gotoAtachments(reportId: string | number): Promise<void> {
-    await this.page.goto(this.getAttachmentsUrl(reportId));
-  }
+  /***
+   * Finds the operation row in the reports grid, clicks the "Report history" action,
+   * and waits for navigation to the report history page.
+   */
+  async reportHistoryForOperation(
+    operationName: string,
+    reportingYear?: string,
+  ): Promise<void> {
+    await waitForGridReady(this.page);
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .filter({ hasText: reportingYear ?? "" }) // if reportingYear is provided, filter by it as well
+      .first();
 
-  // Navigate to the sign-off route for this report id
-  async gotoSignOff(reportId: string | number) {
-    await this.page.goto(this.getSignOffUrl(reportId));
+    await expect(row).toBeVisible();
+
+    const moreActionsButton = row.locator("#basic-button");
+    await expect(moreActionsButton).toBeVisible();
+
+    await moreActionsButton.click();
+    const reportHistoryButton = this.page.getByRole("menuitem", {
+      name: new RegExp(ACTION_BUTTON_TEXT.REPORT_HISTORY, "i"),
+    });
+    await expect(reportHistoryButton).toBeVisible();
+    await expect(reportHistoryButton).toBeEnabled();
+
+    await Promise.all([
+      this.page.waitForURL(
+        (u) =>
+          new RegExp(
+            String.raw`${AppRoutes.REPORT_HISTORY_GRID}/\d+$`,
+            "i",
+          ).test(u.toString()),
+        { waitUntil: "domcontentloaded" },
+      ),
+      reportHistoryButton.click(),
+    ]);
   }
 
   async verifySubmissionPage(): Promise<void> {
@@ -194,7 +254,7 @@ export class CurrentReportsPOM {
 
   async verifyReportStatus(
     operationName: string,
-    expectedStatus: string,
+    expectedStatus: REPORT_STATUS,
   ): Promise<void> {
     await waitForGridReady(this.page);
     const row = this.page
@@ -203,9 +263,35 @@ export class CurrentReportsPOM {
       .first();
     await expect(row).toBeVisible();
     await expect(row.getByText(expectedStatus)).toBeVisible();
-    await expect(
-      row.getByRole("button", { name: ACTION_BUTTON_TEXT.VIEW_DETAILS }),
-    ).toBeVisible();
+    if (expectedStatus === REPORT_STATUS.SUBMITTED) {
+      await expect(
+        row.getByRole("button", { name: ACTION_BUTTON_TEXT.VIEW_DETAILS }),
+      ).toBeVisible();
+    }
+  }
+
+  // -----------------
+  // navigation
+  // -----------------
+
+  // Navigate to the production data route for this report id and facility id
+  async gotoProductionData(reportId: string | number, facilityId: string) {
+    await this.page.goto(this.getProductionDataUrl(reportId, facilityId));
+  }
+
+  // Navigate to the review changes page
+  async gotoReviewChanges(reportId: string | number): Promise<void> {
+    await this.page.goto(this.getReviewChangesUrl(reportId));
+  }
+
+  // Navigate to the attachments page
+  async gotoAttachments(reportId: string | number): Promise<void> {
+    await this.page.goto(this.getAttachmentsUrl(reportId));
+  }
+
+  // Navigate to the sign-off route for this report id
+  async gotoSignOff(reportId: string | number) {
+    await this.page.goto(this.getSignOffUrl(reportId));
   }
 
   // -----------------
@@ -220,6 +306,31 @@ export class CurrentReportsPOM {
     await clickButton(this.page, FORM_BUTTON_TEXT.SAVE_AND_CONTINUE, {
       inForm: opts?.inForm,
       waitForUrl,
+    });
+  }
+
+  private async clickViewReportDetails(
+    row: Locator,
+    isExternalUser: boolean = true,
+  ): Promise<void> {
+    const viewReportRoute = isExternalUser
+      ? ReportRoutes.SUBMITTED_REPORT
+      : ReportRoutes.ANNUAL_REPORT;
+
+    const routeRegex = new RegExp(
+      String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${viewReportRoute}`,
+      "i",
+    );
+    const buttonName = new RegExp(
+      isExternalUser
+        ? ACTION_BUTTON_TEXT.VIEW_DETAILS + "$"
+        : ACTION_BUTTON_TEXT.VIEW_REPORT + "$",
+      "i",
+    );
+
+    await clickButton(this.page, buttonName, {
+      root: row,
+      waitForUrl: routeRegex,
     });
   }
 
@@ -252,16 +363,25 @@ export class CurrentReportsPOM {
     const operationSearchField = this.page
       .getByRole("columnheader", { name: "Operation search field" })
       .getByPlaceholder("Search");
-    operationSearchField.fill(operationName);
+    await operationSearchField.fill(operationName);
 
     await expect(operationSearchField).toHaveValue(operationName);
 
-    const row = await this.page
+    await this.page.waitForURL(
+      (u) =>
+        u.searchParams.get("operation_name") === operationName &&
+        /\/current-reports\/?$/i.test(u.pathname),
+      { timeout: 10_000 },
+    );
+
+    await waitForGridReady(this.page);
+
+    const row = this.page
       .getByRole("row")
       .filter({ hasText: operationName })
-      .all();
+      .first();
 
-    expect(row.length).toBeGreaterThanOrEqual(1);
+    await expect(row).toBeVisible({ timeout: 30_000 });
   }
 
   /**
@@ -609,7 +729,7 @@ export class CurrentReportsPOM {
       new RegExp(`${this.getReportValidationUrl(reportId)}\\/?$`, "i"),
     );
 
-    await this.gotoAtachments(reportId);
+    await this.gotoAttachments(reportId);
     await this.fillAttachments();
     await this.clickSaveAndContinue(new RegExp(this.getSignOffUrl(reportId)));
 
