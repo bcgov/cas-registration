@@ -5,7 +5,7 @@ export enum TransferRoute {
 }
 
 // E2E values sourced from bc_obps/registration/fixtures/mock/
-export enum TransferE2EValues { 
+export enum TransferE2EValues {
   // Operators
   FROM_OPERATOR_NAME = "Bravo Technologies - has parTNER operator",
   TO_OPERATOR_NAME = "Alpha Enterprises",
