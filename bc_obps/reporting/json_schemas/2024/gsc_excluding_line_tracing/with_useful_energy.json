@@ -74,10 +74,11 @@
                         "description": "Computed upon saving"
                       }
                     },
-                    "required": ["gasType", "emission", "annualFuelAmount"]
+                    "required": ["gasType", "emission"]
                   }
                 }
-              }
+              },
+              "required": ["annualFuelAmount"]
             }
           }
         },
