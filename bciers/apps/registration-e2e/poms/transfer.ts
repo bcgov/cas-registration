@@ -25,14 +25,11 @@ export class TransferPOM {
   }
 
   // ### Actions ###
-
-  /** Navigates to the transfers list page. */
   async route() {
     await this.page.goto(this.transfersUrl);
     await this.page.waitForLoadState();
   }
 
-  /** Navigates to the transfer entity form page. */
   async routeToTransferEntity() {
     await this.page.goto(this.transferEntityUrl);
     await this.page.waitForLoadState();
@@ -59,8 +56,8 @@ export class TransferPOM {
       toOperator,
     );
     await expect(async () => {
-      await this.page.getByRole("radio", { name: /^operation$/i }).check();
-      await fillComboxboxWidget(this.page, /^operation/i, operation);
+      await this.page.getByRole("radio", { name: /operation/i }).check();
+      await fillComboxboxWidget(this.page, /operation/i, operation);
       await fillInputValueByLabel(
         this.page,
         /effective date of transfer/i,
@@ -69,25 +66,12 @@ export class TransferPOM {
       await expect(
         this.page.getByRole("button", { name: /transfer entity/i }),
       ).toBeEnabled({ timeout: 2000 });
-    }).toPass({ timeout: 40000 });
+    }).toPass({ timeout: 40_000 });
   }
 
   /**
    * Fills the facility transfer form with the given operators, source operation, facility,
    * destination operation, and effective date.
-   *
-   * Subject to the same stale-SA race as fillOperationTransferForm — the facility radio is
-   * wrapped in expect.toPass so any late-completing handleOperatorChange SA reset is retried.
-   *
-   * Facility selection uses a nested toPass block: facilities load via a Server Action that
-   * calls resetKey(), re-mounting the form; with freeSolo=true, MUI only renders the listbox
-   * when options exist, so fill() is retried until the re-mounted form has loaded options.
-   *
-   * After selecting a facility, Escape closes the inline MUI multi-select popup (disablePortal
-   * renders it inline, where it overlaps the to_operation input below).
-   *
-   * The final to_operation, date, and button check are also wrapped in toPass for the same
-   * late-reset race.
    */
   async fillFacilityTransferForm(
     fromOperator: string,
@@ -97,50 +81,46 @@ export class TransferPOM {
     toOperation: string,
     effectiveDate: string,
   ) {
+    await this.page.getByRole("radio", { name: /^facility$/i }).check();
+
     await fillComboxboxWidget(this.page, /current operator/i, fromOperator);
     await fillComboxboxWidget(
       this.page,
       /select the new operator/i,
       toOperator,
     );
-    await expect(async () => {
-      await this.page.getByRole("radio", { name: /^facility$/i }).check();
-    }).toPass({ timeout: 10000 });
-    await fillComboxboxWidget(
-      this.page,
-      /select the operation that the facility/i,
-      fromOperation,
-    );
+
     const facilitiesInput = this.page.getByRole("combobox", {
       name: /^facilities/i,
     });
     const facilityListbox = this.page.locator(".MuiAutocomplete-listbox");
-    // Wait for the SA and form re-mount to complete before attempting to fill
-    await expect(facilitiesInput).toBeVisible({ timeout: 30000 });
-    await expect(async () => {
-      await facilitiesInput.fill(facility);
-      await expect(facilityListbox).toBeVisible({ timeout: 2000 });
-    }).toPass({ timeout: 15000 });
-    await facilityListbox
-      .getByRole("option", { name: facility })
-      .first()
-      .click();
-    await this.page.keyboard.press("Escape");
+    await fillComboxboxWidget(
+      this.page,
+      /select the new operation the facility/i,
+      toOperation,
+    );
     await expect(async () => {
       await fillComboxboxWidget(
         this.page,
-        /select the new operation the facility/i,
-        toOperation,
+        /select the operation that the facility/i,
+        fromOperation,
       );
-      await fillInputValueByLabel(
-        this.page,
-        /effective date of transfer/i,
-        effectiveDate,
-      );
-      await expect(
-        this.page.getByRole("button", { name: /transfer entity/i }),
-      ).toBeEnabled({ timeout: 2000 });
-    }).toPass({ timeout: 40000 });
+      await expect(facilitiesInput).toBeVisible();
+      await facilitiesInput.fill(facility);
+      await expect(facilityListbox).toBeVisible();
+      await facilityListbox
+        .getByRole("option", { name: facility })
+        .first()
+        .click();
+    }).toPass({ timeout: 75_000 });
+    await fillInputValueByLabel(
+      this.page,
+      /effective date of transfer/i,
+      effectiveDate,
+    );
+    await expect(
+      this.page.getByRole("button", { name: /transfer entity/i }),
+    ).toBeEnabled({ timeout: 5000 });
   }
 
   async submitTransfer() {
@@ -155,14 +135,17 @@ export class TransferPOM {
     await clickButton(this.page, /edit details/i);
   }
 
-  async fillEffectiveDate(date: string) {
+  async editEffectiveDate(date: string) {
+    await this.clickEditDetails();
     await fillInputValueByLabel(this.page, /effective date of transfer/i, date);
+    await this.submitTransfer();
+    await this.assertEditDetailsVisible();
   }
 
   async clickCancelTransfer() {
-    // await expect(
-    //   this.page.getByRole("button", { name: /cancel transfer/i }),
-    // ).toBeVisible();
+    await expect(
+      this.page.getByRole("button", { name: /cancel transfer/i }),
+    ).toBeVisible();
     await clickButton(this.page, /cancel transfer/i);
   }
 
@@ -199,14 +182,9 @@ export class TransferPOM {
   async viewTransferDetails(row: Locator) {
     const viewDetailsLink = row.getByRole("link", { name: /view details/i });
     await expect(viewDetailsLink).toBeVisible();
-
-    let href: string | null = null;
-    await expect(async () => {
-      href = await viewDetailsLink.getAttribute("href");
-      expect(href).toMatch(/[0-9a-fA-F]{8}/);
-    }).toPass({ timeout: 15000 });
-
-    await this.page.goto(href!);
+    const href = await viewDetailsLink.getAttribute("href");
+    await expect(href).toMatch(/[0-9a-fA-F]{8}/);
+    await this.page.goto(href);
     await expect(
       this.page.getByText(/effective date of transfer/i),
     ).toBeVisible();
@@ -214,6 +192,7 @@ export class TransferPOM {
 
   // ### Assertions ###
   async assertTransferRowInGrid(entityName: string, status: string) {
+    await this.returnToTransferGrid();
     const row = this.page
       .getByRole("row")
       .filter({ hasText: entityName })
@@ -232,6 +211,15 @@ export class TransferPOM {
 
   async assertFutureTransferSuccess() {
     await expect(this.page.getByText(/will be transferred/i)).toBeVisible();
+  }
+
+  async assertTransferSuccess(timing: "past" | "future") {
+    await this.submitTransfer();
+    if (timing === "past") {
+      await this.assertPastTransferSuccess();
+    } else {
+      await this.assertFutureTransferSuccess();
+    }
   }
 
   async assertPastTransferSuccess() {

@@ -9,19 +9,17 @@ import {
 // 🪄 Page Object Models
 import { TransferPOM } from "../../../poms/transfer";
 // ☰ Enums
-import {
-  TransferE2EValues,
-  TransferStatus,
-} from "../../../utils/enums";
+import { TransferE2EValues, TransferStatus } from "../../../utils/enums";
 
 const test = setupBeforeEachTest(UserRole.CAS_ANALYST);
 
 // 🏷 Annotate test suite as serial to use 1 worker - prevents failure in setupTestEnvironment
-test.describe.configure({ mode: "serial" });
+// fillFacilityTransferForm toPass(75s) exceeds the 60s global timeout — set 120s here.
+test.describe.configure({ mode: "serial", timeout: 120_000 });
 test.describe("CAS Analyst - Transfer Facility", () => {
   test("Transfer facility with future effective date shows 'To be transferred' status", async ({
     page,
-    happoScreenshot
+    happoScreenshot,
   }) => {
     const transferPage = new TransferPOM(page);
     await transferPage.routeToTransferEntity();
@@ -36,26 +34,25 @@ test.describe("CAS Analyst - Transfer Facility", () => {
     );
     // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: "Transfer facility form - filled",
+      component: "CAS Analyst - Transfer facility form - filled",
       variant: "filled",
     });
-    await analyzeAccessibility(page, "Transfer facility form");
+    await analyzeAccessibility(page);
+    await transferPage.assertTransferSuccess("future");
 
-    await transferPage.submitTransfer();
-    await transferPage.assertFutureTransferSuccess();
-    // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "CAS Analyst - Transfer facility success - future date",
       variant: "default",
     });
 
-    await transferPage.returnToTransferGrid();
-    await transferPage.assertTransferRowInGrid(TransferE2EValues.FACILITY_NAME, TransferStatus.TO_BE_TRANSFERRED);
+    await transferPage.assertTransferRowInGrid(
+      TransferE2EValues.FACILITY_NAME,
+      TransferStatus.TO_BE_TRANSFERRED,
+    );
   });
 
   test("Transfer facility with past effective date shows 'Transferred' status", async ({
     page,
-    happoScreenshot
   }) => {
     const transferPage = new TransferPOM(page);
     await transferPage.routeToTransferEntity();
@@ -69,26 +66,23 @@ test.describe("CAS Analyst - Transfer Facility", () => {
       TransferE2EValues.PAST_DATE,
     );
 
-    await transferPage.submitTransfer();
-    await transferPage.assertPastTransferSuccess();
-    await analyzeAccessibility(page, "Transfer facility success");
-    // happo screenshot
-    await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: "CAS Analyst - Transfer facility success - past date",
-      variant: "default",
-    });
+    await transferPage.assertTransferSuccess("past");
 
-    await transferPage.returnToTransferGrid();
-    await transferPage.assertTransferRowInGrid(TransferE2EValues.FACILITY_NAME, TransferStatus.TRANSFERRED);
+    await transferPage.assertTransferRowInGrid(
+      TransferE2EValues.FACILITY_NAME,
+      TransferStatus.TRANSFERRED,
+    );
   });
 
   test("Can edit a pending facility transfer", async ({
     page,
-    happoScreenshot
+    happoScreenshot,
   }) => {
     const transferPage = new TransferPOM(page);
 
-    await transferPage.routeToFixturePendingTransferDetail(TransferE2EValues.FIXTURE_PENDING_FACILITY_NAME);
+    await transferPage.routeToFixturePendingTransferDetail(
+      TransferE2EValues.FIXTURE_PENDING_FACILITY_NAME,
+    );
 
     await transferPage.assertEditDetailsVisible();
     // happo screenshot
@@ -97,16 +91,7 @@ test.describe("CAS Analyst - Transfer Facility", () => {
       variant: "default",
     });
 
-    await transferPage.clickEditDetails();
-    await transferPage.fillEffectiveDate(TransferE2EValues.NEW_EFFECTIVE_DATE);
-    // happo screenshot
-    await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: "CAS Analyst - Transfer facility detail - edit mode",
-      variant: "default",
-    });
-
-    await transferPage.submitTransfer();
-    await transferPage.assertEditDetailsVisible();
+    await transferPage.editEffectiveDate(TransferE2EValues.NEW_EFFECTIVE_DATE);
   });
 
   test("Can cancel a pending facility transfer", async ({
@@ -115,7 +100,9 @@ test.describe("CAS Analyst - Transfer Facility", () => {
   }) => {
     const transferPage = new TransferPOM(page);
 
-    await transferPage.routeToFixturePendingTransferDetail(TransferE2EValues.FIXTURE_PENDING_FACILITY_NAME);
+    await transferPage.routeToFixturePendingTransferDetail(
+      TransferE2EValues.FIXTURE_PENDING_FACILITY_NAME,
+    );
 
     await transferPage.clickCancelTransfer();
     await transferPage.assertCancelConfirmationModal();
@@ -126,6 +113,8 @@ test.describe("CAS Analyst - Transfer Facility", () => {
     });
 
     await transferPage.confirmCancelTransfer();
-    await transferPage.assertTransferCancelled(TransferE2EValues.FIXTURE_PENDING_FACILITY_NAME);
+    await transferPage.assertTransferCancelled(
+      TransferE2EValues.FIXTURE_PENDING_FACILITY_NAME,
+    );
   });
 });

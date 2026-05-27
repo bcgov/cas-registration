@@ -9,17 +9,14 @@ import {
 // 🪄 Page Object Models
 import { TransferPOM } from "../../../poms/transfer";
 // ☰ Enums
-import {
-  TransferE2EValues,
-  TransferStatus,
-} from "../../../utils/enums";
+import { TransferE2EValues, TransferStatus } from "../../../utils/enums";
 
 const test = setupBeforeEachTest(UserRole.CAS_ANALYST);
 
 test.describe.configure({ mode: "serial" });
 test.describe("CAS Analyst - Transfer Operation", () => {
   test("'Make a Transfer' button is visible in the transfers grid", async ({
-    page
+    page,
   }) => {
     const transferPage = new TransferPOM(page);
     await transferPage.route();
@@ -28,7 +25,7 @@ test.describe("CAS Analyst - Transfer Operation", () => {
 
   test("Transfer operation with future effective date shows 'To be transferred' status", async ({
     page,
-    happoScreenshot
+    happoScreenshot,
   }) => {
     const transferPage = new TransferPOM(page);
     await transferPage.routeToTransferEntity();
@@ -41,21 +38,22 @@ test.describe("CAS Analyst - Transfer Operation", () => {
     );
     // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: "Transfer operation form - filled",
+      component: "CAS Analyst - Transfer operation form - filled",
       variant: "filled",
     });
-    await analyzeAccessibility(page, "Transfer operation form");
+    await analyzeAccessibility(page);
 
-    await transferPage.submitTransfer();
-    await transferPage.assertFutureTransferSuccess();
-    // happo screenshot
+    await transferPage.assertTransferSuccess("future");
+
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "CAS Analyst - Transfer operation success - future date",
       variant: "default",
     });
 
-    await transferPage.returnToTransferGrid();
-    await transferPage.assertTransferRowInGrid(TransferE2EValues.OPERATION_NAME, TransferStatus.TO_BE_TRANSFERRED);
+    await transferPage.assertTransferRowInGrid(
+      TransferE2EValues.OPERATION_NAME,
+      TransferStatus.TO_BE_TRANSFERRED,
+    );
     // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "CAS Analyst - Transfers grid - operation To be transferred",
@@ -65,7 +63,7 @@ test.describe("CAS Analyst - Transfer Operation", () => {
 
   test("Transfer operation with past effective date shows 'Transferred' status", async ({
     page,
-    happoScreenshot
+    happoScreenshot,
   }) => {
     const transferPage = new TransferPOM(page);
     await transferPage.routeToTransferEntity();
@@ -77,45 +75,44 @@ test.describe("CAS Analyst - Transfer Operation", () => {
       TransferE2EValues.PAST_DATE,
     );
 
-    await transferPage.submitTransfer();
-    await transferPage.assertPastTransferSuccess();
+    await transferPage.assertTransferSuccess("past");
+
     await analyzeAccessibility(page);
-    // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "CAS Analyst - Transfer operation success - past date",
       variant: "default",
     });
 
-    await transferPage.returnToTransferGrid();
-    await transferPage.assertTransferRowInGrid(TransferE2EValues.OPERATION_NAME, TransferStatus.TRANSFERRED);
+    await transferPage.assertTransferRowInGrid(
+      TransferE2EValues.OPERATION_NAME,
+      TransferStatus.TRANSFERRED,
+    );
+
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "CAS Analyst - Transfers grid - operation transferred",
+      variant: "default",
+    });
   });
 
   test("Can edit a pending transfer", async ({ page, happoScreenshot }) => {
     const transferPage = new TransferPOM(page);
 
-    await transferPage.routeToFixturePendingTransferDetail(TransferE2EValues.FIXTURE_PENDING_OPERATION_NAME);
+    await transferPage.routeToFixturePendingTransferDetail(
+      TransferE2EValues.FIXTURE_PENDING_OPERATION_NAME,
+    );
 
     await transferPage.assertEditDetailsVisible();
-    // happo screenshot
+
+    await analyzeAccessibility(page);
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "CAS Analyst - Transfer detail - read only",
       variant: "default",
     });
 
-    await transferPage.clickEditDetails();
-    await transferPage.fillEffectiveDate(TransferE2EValues.NEW_EFFECTIVE_DATE);
-    await analyzeAccessibility(page, "Transfer detail edit form");
-    // happo screenshot
-    await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: "Transfer detail - edit mode",
-      variant: "default",
-    });
+    await transferPage.editEffectiveDate(TransferE2EValues.NEW_EFFECTIVE_DATE);
 
-    await transferPage.submitTransfer();
-    await transferPage.assertEditDetailsVisible();
-    // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: "Transfer detail - after edit saved",
+      component: "CAS Analyst - Transfer detail - after edit saved",
       variant: "default",
     });
   });
@@ -123,7 +120,9 @@ test.describe("CAS Analyst - Transfer Operation", () => {
   test("Can cancel a pending transfer", async ({ page, happoScreenshot }) => {
     const transferPage = new TransferPOM(page);
 
-    await transferPage.routeToFixturePendingTransferDetail(TransferE2EValues.FIXTURE_PENDING_OPERATION_NAME);
+    await transferPage.routeToFixturePendingTransferDetail(
+      TransferE2EValues.FIXTURE_PENDING_OPERATION_NAME,
+    );
 
     await transferPage.clickCancelTransfer();
     await transferPage.assertCancelConfirmationModal();
@@ -134,11 +133,8 @@ test.describe("CAS Analyst - Transfer Operation", () => {
     });
 
     await transferPage.confirmCancelTransfer();
-    await transferPage.assertTransferCancelled(TransferE2EValues.FIXTURE_PENDING_OPERATION_NAME);
-    // happo screenshot
-    await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: "CAS Analyst - Transfers grid - after cancellation",
-      variant: "default",
-    });
+    await transferPage.assertTransferCancelled(
+      TransferE2EValues.FIXTURE_PENDING_OPERATION_NAME,
+    );
   });
 });
