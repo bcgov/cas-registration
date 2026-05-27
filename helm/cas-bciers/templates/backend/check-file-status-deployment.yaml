@@ -43,7 +43,7 @@ spec:
               readOnly: true
         {{- include "cas-logging-sidecar.containers" (dict
             "containerToSidecar" "check-document-file-status"
-            "logName" "cas-bciers-dev-logs"
+            "logName" (index .Values "cas-logging-sidecar" "logName")
             "host" (index .Values "cas-logging-sidecar" "host")
             "appName" "check-document-file-status") | nindent 8 }}
       volumes:
