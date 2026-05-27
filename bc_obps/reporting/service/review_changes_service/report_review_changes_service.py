@@ -46,9 +46,31 @@ def _get_field_display_title(field_path: str, field_display_titles: Dict[str, st
     return field_display_titles.get(field_name)
 
 
+def _normalize_products(products: List[Any]) -> List[tuple[Any, Any]] | None:
+    """
+    Extracts core business identifiers (product name and allocated quantity) from a list
+    of raw product records and returns a predictably sorted, comparable structure.
+
+    Returns:
+        - A sorted list of (product_name, allocated_quantity) tuples.
+        - None if any individual product item is not a dictionary structure.
+    """
+    normalized_products = []
+    for product in products:
+        if not isinstance(product, dict):
+            return None
+        normalized_products.append(
+            (
+                product.get("product_name"),
+                product.get("allocated_quantity"),
+            )
+        )
+    return sorted(normalized_products, key=lambda x: str(x[0]))
+
+
 def _is_false_positive_product_change(change: Dict[str, Any]) -> bool:
     """
-    Determine if a chsnge item is a false positive that should be ignored.
+    Determine if a change item is a false positive that should be ignored.
     """
     old_value = change.get("old_value")
     new_value = change.get("new_value")
@@ -63,14 +85,15 @@ def _is_false_positive_product_change(change: Dict[str, Any]) -> bool:
         return False
 
     # Check for matching product names and quantities
-    for i in range(len(new_products)):
-        if (new_products[i].get('product_name') != old_products[i].get('product_name')) or (
-            new_products[i].get("allocated_quantity") != old_products[i].get('allocated_quantity')
-        ):
-            return False
+    old_normalized = _normalize_products(old_products)
+    new_normalized = _normalize_products(new_products)
 
-    # if all checks pass, it's a false positive (supp report created report_product_id with no change)
-    return True
+    if old_normalized is None or new_normalized is None:
+        return False
+
+    # if all checks pass and products are the same,
+    # it's a false positive (supp report created report_product_id with no change)
+    return old_normalized == new_normalized
 
 
 def _last_item_report_product_id(change: Dict[str, Any]) -> bool:
