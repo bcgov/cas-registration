@@ -39,7 +39,8 @@
               "Sodium carbonate"
             ]
           }
-        }
+        },
+        "required": ["gasType", "emission"]
       }
     }
   }
