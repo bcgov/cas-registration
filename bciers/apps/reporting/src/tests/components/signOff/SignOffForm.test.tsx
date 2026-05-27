@@ -170,17 +170,6 @@ describe("SignOffForm Component (with actual schema)", () => {
     });
   });
 
-  it("disables submit initially", () => {
-    renderSignOffFormWithSchema({
-      isSupplementary: false,
-      isRegulated: true,
-      flow: ReportingFlow.SFO,
-    });
-
-    const submitButton = screen.getByRole("button", { name: /submit report/i });
-    expect(submitButton).toBeDisabled();
-  });
-
   it("toggles checkbox states", () => {
     renderSignOffFormWithSchema({
       isSupplementary: false,

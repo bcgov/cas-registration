@@ -24,7 +24,7 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
         )
 
         self.endpoint_under_test = (
-            f"/api/reporting/v2/report-version/" f"{self.report_version.id}/validation/report-validation"
+            f"/api/reporting/v2/report-version/{self.report_version.id}/validation/report-validation"
         )
 
         return super().setup_method()

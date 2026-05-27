@@ -1,5 +1,4 @@
-from typing import  Any, Iterable, Self, override
-from typing import Any, Iterable, Self
+from typing import Any, Iterable, Self, override
 
 from django.http import HttpRequest
 from ninja.pagination import PageNumberPagination
