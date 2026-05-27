@@ -230,3 +230,15 @@ module.exports = {
   prefix: 'tw-',   👈 Use your desired prefix
 }
 ```
+
+## Yarn
+
+We use Yarn to manage our npm packages.
+
+### New package delay
+
+Yarn is configured to disallow adding packages younger than 7 days old, in an effort to prevent supply chain attacks. If a critical pacakage release is required that is younger than seven days an exception rule must be added to allow that package. **This should be removed once the 7 days have elapsed**.
+
+In `.yarnrc.yaml` (either in the repository root or in `/bciers`), add `npmPreapprovedPackages: [{package_name}]`. You can then update the package to the critical version required.
+
+See the [Yarn documentation](https://yarnpkg.com/configuration/yarnrc#npmPreapprovedPackages) for more details.
