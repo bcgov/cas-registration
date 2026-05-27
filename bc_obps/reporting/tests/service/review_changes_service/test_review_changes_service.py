@@ -151,3 +151,37 @@ class TestReportReviewChangesService:
         assert results[0]["old_value"] == 500
         assert results[0]["new_value"] == 750
         assert results[0]["field_display_title"] == "Total Emissions Field"
+
+    def test_get_report_version_diff_changes_ignores_report_product_id_only_change(
+        self,
+        mock_get_reporting_field_titles,
+        mock_detect_renames,
+        mock_diff_sections,
+        mock_fix_facility_uuid_in_path,
+    ):
+        prev = {
+            "report_compliance_summary": {
+                "products": [
+                    {
+                        "name": "Product A",
+                        "allocated_quantity": 100,
+                        "report_product_id": 1,
+                    }
+                ]
+            }
+        }
+        curr = {
+            "report_compliance_summary": {
+                "products": [
+                    {
+                        "name": "Product A",
+                        "allocated_quantity": 100,
+                        "report_product_id": 2,
+                    }
+                ]
+            }
+        }
+
+        results = ReportReviewChangesService.get_report_version_diff_changes(prev, curr)
+
+        assert results == []
