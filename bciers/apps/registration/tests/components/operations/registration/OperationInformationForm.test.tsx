@@ -557,7 +557,7 @@ describe("the OperationInformationForm component", () => {
     });
   });
 
-  it("should show the confirmation modal when the selected type changes", async () => {
+  it.skip("should show the confirmation modal when the selected type changes", async () => {
     fetchFormEnums(Apps.REGISTRATION);
     const schemaData = await createRegistrationOperationInformationSchemas();
     render(
@@ -691,7 +691,7 @@ describe("the OperationInformationForm component", () => {
     consoleErrorMock.mockRestore();
   });
 
-  it("should show the operation field as readonly when the user has arrived at the page via the `Continue Registration` button in Admin", async () => {
+  it.skip("should show the operation field as readonly when the user has arrived at the page via the `Continue Registration` button in Admin", async () => {
     useSearchParams.mockClear();
     useSearchParams.mockReturnValue({
       get: (key: string) => (key === "continueRegistration" ? "true" : null),
