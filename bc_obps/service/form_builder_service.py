@@ -211,12 +211,6 @@ def handle_source_type_schema(
             "properties"
         ]["fuelName"]["enum"] = fuel_list
 
-        # Require the fuelName inside the fuelType object
-        st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["fuelType"][
-            "required"
-        ] = ["fuelName"]
-
-        # Ensure emissions require both emission and gasType
         st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["emissions"]["items"][
             "properties"
         ]["gasType"]["enum"] = gas_type_enum
@@ -234,9 +228,6 @@ def handle_source_type_schema(
         st_schema["properties"]["fuels"]["items"]["properties"]["fuelType"]["properties"]["fuelName"][
             "enum"
         ] = fuel_list
-
-        # Require the fuelName inside the fuelType object
-        st_schema["properties"]["fuels"]["items"]["properties"]["fuelType"]["required"] = ["fuelName"]
 
         st_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["properties"]["gasType"][
             "enum"
