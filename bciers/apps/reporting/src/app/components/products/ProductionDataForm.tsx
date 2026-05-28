@@ -11,6 +11,7 @@ import {
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
 import { createFormContext } from "../shared/formContextHelpers";
+import NoRegulatedProductsAlertContent from "@reporting/src/data/jsonSchema/facility/NoRegulatedProductsAlertFieldTemplate";
 
 interface Props {
   report_version_id: number;
@@ -64,29 +65,73 @@ const ProductionDataForm: React.FC<Props> = ({
     },
   };
 
+  const noRegulatedProductSFOSchema: RJSFSchema = {
+    type: "object",
+    title: "Production Data",
+    properties: {
+      no_regulated_products_alert: {
+        type: "object",
+        readOnly: true,
+      },
+    },
+  };
+
+  const noRegulatedProductSFOUiSchema: UiSchema = {
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:classNames": "form-heading-label",
+    no_regulated_products_alert: {
+      "ui:FieldTemplate": NoRegulatedProductsAlertContent,
+    },
+  };
+
   const [formData, setFormData] = useState<any>(initialFormData);
   const [errors, setErrors] = useState<string[]>();
 
-  // Short circuit to allow LFO facilities to continue past this form without a regulated product to select
-  if (
-    ["Small Aggregate", "Medium Facility", "Large Facility"].includes(
-      facilityType,
-    ) &&
-    allowedProducts.length < 1
-  ) {
-    return (
-      <MultiStepFormWithTaskList
-        taskListElements={navigationInformation.taskList}
-        schema={noRegulatedProductSchema}
-        uiSchema={noRegulatedProductUiSchema}
-        formData={formData}
-        backUrl={navigationInformation.backUrl}
-        continueUrl={navigationInformation.continueUrl}
-        steps={navigationInformation.headerSteps}
-        initialStep={navigationInformation.headerStepIndex}
-        saveButtonDisabled={true}
-      />
-    );
+  // No regulated product short circuits
+  if (allowedProducts.length < 1) {
+    // Short circuit to allow LFO facilities to continue past this form without a regulated product to select
+    if (
+      ["Small Aggregate", "Medium Facility", "Large Facility"].includes(
+        facilityType,
+      )
+    ) {
+      return (
+        <MultiStepFormWithTaskList
+          taskListElements={navigationInformation.taskList}
+          schema={noRegulatedProductSchema}
+          uiSchema={noRegulatedProductUiSchema}
+          formData={formData}
+          backUrl={navigationInformation.backUrl}
+          continueUrl={navigationInformation.continueUrl}
+          steps={navigationInformation.headerSteps}
+          initialStep={navigationInformation.headerStepIndex}
+          saveButtonDisabled={true}
+        />
+      );
+    } else {
+      // Short circuit to show error message for SFO facilities that have no regulated products
+      return (
+        <MultiStepFormWithTaskList
+          taskListElements={navigationInformation.taskList}
+          schema={noRegulatedProductSFOSchema}
+          uiSchema={noRegulatedProductSFOUiSchema}
+          formData={formData}
+          backUrl={navigationInformation.backUrl}
+          continueUrl={navigationInformation.continueUrl}
+          steps={navigationInformation.headerSteps}
+          initialStep={navigationInformation.headerStepIndex}
+          errors={["A product must be selected."]}
+          saveButtonDisabled={true}
+          submitButtonDisabled={true}
+          formContext={{
+            no_regulated_products_alert: {
+              report_version_id,
+              facility_id,
+            },
+          }}
+        />
+      );
+    }
   }
 
   const onChange = (newFormData: {
