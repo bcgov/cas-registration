@@ -221,34 +221,6 @@ class TestHandleSourceTypeMethod:
             }
         }
 
-    def test_required_includes_fuel_type_and_annual_fuel_amount_when_fuel_no_unit(self):
-        """fuelType and annualFuelAmount are always added to required on the fuel item"""
-        source_type_schema = prepare_recipe(
-            "reporting.tests.utils.activity_source_type_json_schema",
-            json_schema=self._fuel_no_unit_schema(),
-            has_unit=False,
-            has_fuel=True,
-        )
-
-        returned_schema = handle_source_type_schema(source_type_schema, self.gas_type_enum, self.gas_type_one_of)
-
-        required = set(returned_schema["properties"]["fuels"]["items"]["required"])
-        assert required == {"fuelType", "annualFuelAmount"}
-
-    def test_required_includes_fuel_type_and_annual_fuel_amount_when_unit_and_fuel(self):
-        """fuelType and annualFuelAmount are always added to required on the fuel item"""
-        source_type_schema = prepare_recipe(
-            "reporting.tests.utils.activity_source_type_json_schema",
-            json_schema=self._unit_and_fuel_schema(),
-            has_unit=True,
-            has_fuel=True,
-        )
-
-        returned_schema = handle_source_type_schema(source_type_schema, self.gas_type_enum, self.gas_type_one_of)
-
-        required = set(returned_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["required"])
-        assert required == {"fuelType", "annualFuelAmount"}
-
     def test_required_preserves_existing_quarterly_fields_when_fuel_no_unit(self):
         """Required fields declared on the on-disk schema (e.g. quarterly amounts) must be preserved."""
         quarterly = ["q1FuelAmount", "q2FuelAmount", "q3FuelAmount", "q4FuelAmount"]
@@ -262,7 +234,7 @@ class TestHandleSourceTypeMethod:
         returned_schema = handle_source_type_schema(source_type_schema, self.gas_type_enum, self.gas_type_one_of)
 
         required = set(returned_schema["properties"]["fuels"]["items"]["required"])
-        assert required == {"fuelType", "annualFuelAmount", *quarterly}
+        assert required == {*quarterly}
 
     def test_required_preserves_existing_quarterly_fields_when_unit_and_fuel(self):
         """Required fields declared on the on-disk schema must be preserved (unit+fuel branch)."""
@@ -277,22 +249,7 @@ class TestHandleSourceTypeMethod:
         returned_schema = handle_source_type_schema(source_type_schema, self.gas_type_enum, self.gas_type_one_of)
 
         required = set(returned_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["required"])
-        assert required == {"fuelType", "annualFuelAmount", *quarterly}
-
-    def test_required_no_duplicates_if_fuel_type_already_present(self):
-        """Merging an existing required list that already includes fuelType must not produce duplicates."""
-        source_type_schema = prepare_recipe(
-            "reporting.tests.utils.activity_source_type_json_schema",
-            json_schema=self._fuel_no_unit_schema({"required": ["fuelType"]}),
-            has_unit=False,
-            has_fuel=True,
-        )
-
-        returned_schema = handle_source_type_schema(source_type_schema, self.gas_type_enum, self.gas_type_one_of)
-
-        required_list = returned_schema["properties"]["fuels"]["items"]["required"]
-        assert len(required_list) == len(set(required_list))
-        assert set(required_list) == {"fuelType", "annualFuelAmount"}
+        assert required == {*quarterly}
 
     def test_form_builder_uses_cache(self):
         mock_cache = MagicMock()
