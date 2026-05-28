@@ -18,7 +18,9 @@ export const createAdministrationOperationInformationSchema = async (
   status: OperationStatus,
 ): Promise<RJSFSchema> => {
   const registrationInformationSchemas =
-    await createAdministrationRegistrationInformationSchema();
+    status === OperationStatus.REGISTERED
+      ? await createAdministrationRegistrationInformationSchema()
+      : { schema: {} };
   const administrationOperationInformationSchema: RJSFSchema = {
     type: "object",
     properties: {
@@ -42,7 +44,7 @@ export const createAdministrationOperationInformationUiSchema =
       await createAdministrationRegistrationInformationSchema();
     const administrationOperationInformationUiSchema: UiSchema = {
       "ui:FieldTemplate": SectionFieldTemplate,
-      "ui: options": {
+      "ui:options": {
         label: false,
       },
       section1: operationInformationUISchema,

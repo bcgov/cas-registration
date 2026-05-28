@@ -18,10 +18,7 @@ import {
   RegistrationPurposeHelpText,
 } from "@/registration/app/components/operations/registration/enums";
 import userEvent from "@testing-library/user-event";
-import {
-  createRegistrationOperationInformationSchema,
-  createRegistrationOperationInformationUiSchema,
-} from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
+import { createRegistrationOperationInformationSchemas } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
 import { mockDataUri } from "./NewEntrantOperationForm.test";
 import { fillComboboxWidgetField } from "@bciers/testConfig/helpers/helpers";
 import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
@@ -48,11 +45,12 @@ describe("the OperationInformationForm component", () => {
 
   it("should render the OperationInformationForm component", async () => {
     fetchFormEnums(Apps.REGISTRATION);
+    const schemaData = await createRegistrationOperationInformationSchemas();
     render(
       <OperationInformationForm
         rawFormData={{}}
-        schema={await createRegistrationOperationInformationSchema()}
-        uiSchema={await createRegistrationOperationInformationUiSchema()}
+        schema={schemaData.schema}
+        uiSchema={schemaData.uiSchema}
         step={1}
         steps={allOperationRegistrationSteps}
       />,
@@ -108,11 +106,12 @@ describe("the OperationInformationForm component", () => {
           },
         ],
       }); // mock the GET from selecting an operation
+      const schemaData = await createRegistrationOperationInformationSchemas();
       render(
         <OperationInformationForm
           rawFormData={{}}
-          schema={await createRegistrationOperationInformationSchema()}
-          uiSchema={await createRegistrationOperationInformationUiSchema()}
+          schema={schemaData.schema}
+          uiSchema={schemaData.uiSchema}
           step={1}
           steps={allOperationRegistrationSteps}
         />,
@@ -180,11 +179,12 @@ describe("the OperationInformationForm component", () => {
         name: "Existing Operation edited",
       }); // mock the POST response from the submit handler
 
+      const schemaData = await createRegistrationOperationInformationSchemas();
       render(
         <OperationInformationForm
           rawFormData={{}}
-          schema={await createRegistrationOperationInformationSchema()}
-          uiSchema={await createRegistrationOperationInformationUiSchema()}
+          schema={schemaData.schema}
+          uiSchema={schemaData.uiSchema}
           step={1}
           steps={allOperationRegistrationSteps}
         />,
@@ -270,11 +270,12 @@ describe("the OperationInformationForm component", () => {
         id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
         name: "Picklejuice",
       }); // mock the POST response from the submit handler
+      const schemaData = await createRegistrationOperationInformationSchemas();
       render(
         <OperationInformationForm
           rawFormData={{}}
-          schema={await createRegistrationOperationInformationSchema()}
-          uiSchema={await createRegistrationOperationInformationUiSchema()}
+          schema={schemaData.schema}
+          uiSchema={schemaData.uiSchema}
           step={1}
           steps={allOperationRegistrationSteps}
         />,
@@ -433,11 +434,12 @@ describe("the OperationInformationForm component", () => {
       id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
       name: "EIO Op Name",
     }); // mock the POST response from the submit handler
+    const schemaData = await createRegistrationOperationInformationSchemas();
     render(
       <OperationInformationForm
         rawFormData={{}}
-        schema={await createRegistrationOperationInformationSchema()}
-        uiSchema={await createRegistrationOperationInformationUiSchema()}
+        schema={schemaData.schema}
+        uiSchema={schemaData.uiSchema}
         step={1}
         steps={allOperationRegistrationSteps}
       />,
@@ -482,11 +484,12 @@ describe("the OperationInformationForm component", () => {
 
   it("should show the correct help text when selecting a purpose", async () => {
     fetchFormEnums(Apps.REGISTRATION);
+    const schemaData = await createRegistrationOperationInformationSchemas();
     render(
       <OperationInformationForm
         rawFormData={{}}
-        schema={await createRegistrationOperationInformationSchema()}
-        uiSchema={await createRegistrationOperationInformationUiSchema()}
+        schema={schemaData.schema}
+        uiSchema={schemaData.uiSchema}
         step={1}
         steps={allOperationRegistrationSteps}
       />,
@@ -511,11 +514,12 @@ describe("the OperationInformationForm component", () => {
 
   it("should show the confirmation modal when the selected purpose changes", async () => {
     fetchFormEnums(Apps.REGISTRATION);
+    const schemaData = await createRegistrationOperationInformationSchemas();
     render(
       <OperationInformationForm
         rawFormData={{}}
-        schema={await createRegistrationOperationInformationSchema()}
-        uiSchema={await createRegistrationOperationInformationUiSchema()}
+        schema={schemaData.schema}
+        uiSchema={schemaData.uiSchema}
         step={1}
         steps={allOperationRegistrationSteps}
       />,
@@ -555,11 +559,12 @@ describe("the OperationInformationForm component", () => {
 
   it("should show the confirmation modal when the selected type changes", async () => {
     fetchFormEnums(Apps.REGISTRATION);
+    const schemaData = await createRegistrationOperationInformationSchemas();
     render(
       <OperationInformationForm
-        rawFormData={{ type: "Single Facility Operation" }}
-        schema={await createRegistrationOperationInformationSchema()}
-        uiSchema={await createRegistrationOperationInformationUiSchema()}
+        rawFormData={{}}
+        schema={schemaData.schema}
+        uiSchema={schemaData.uiSchema}
         step={1}
         steps={allOperationRegistrationSteps}
       />,
@@ -599,11 +604,12 @@ describe("the OperationInformationForm component", () => {
 
   it("should trigger validation errors", async () => {
     fetchFormEnums(Apps.REGISTRATION);
+    const schemaData = await createRegistrationOperationInformationSchemas();
     render(
       <OperationInformationForm
         rawFormData={{}}
-        schema={await createRegistrationOperationInformationSchema()}
-        uiSchema={await createRegistrationOperationInformationUiSchema()}
+        schema={schemaData.schema}
+        uiSchema={schemaData.uiSchema}
         step={1}
         steps={allOperationRegistrationSteps}
       />,
@@ -662,11 +668,12 @@ describe("the OperationInformationForm component", () => {
 
     fetchOperationsPageData.mockResolvedValueOnce([]);
 
+    const schemaData = await createRegistrationOperationInformationSchemas();
     render(
       <OperationInformationForm
         rawFormData={{}}
-        schema={await createRegistrationOperationInformationSchema()}
-        uiSchema={await createRegistrationOperationInformationUiSchema()}
+        schema={schemaData.schema}
+        uiSchema={schemaData.uiSchema}
         step={1}
         steps={allOperationRegistrationSteps}
       />,
@@ -690,11 +697,12 @@ describe("the OperationInformationForm component", () => {
       get: (key: string) => (key === "continueRegistration" ? "true" : null),
     });
     fetchFormEnums(Apps.REGISTRATION);
+    const schemaData = await createRegistrationOperationInformationSchemas();
     render(
       <OperationInformationForm
-        rawFormData={{ operation: "uuid1" }}
-        schema={await createRegistrationOperationInformationSchema()}
-        uiSchema={await createRegistrationOperationInformationUiSchema()}
+        rawFormData={{}}
+        schema={schemaData.schema}
+        uiSchema={schemaData.uiSchema}
         step={1}
         steps={allOperationRegistrationSteps}
       />,

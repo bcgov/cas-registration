@@ -78,6 +78,7 @@ export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
                 className={removeButtonClassNames}
                 title="Remove item"
                 aria-label="Remove item"
+                type="button"
               >
                 <MinusSVG />
               </button>

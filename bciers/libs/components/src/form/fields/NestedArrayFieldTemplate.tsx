@@ -54,6 +54,7 @@ export function NestedArrayFieldItemTemplate(
               onClick={buttonsProps.onRemoveItem}
               className="border-none bg-transparent"
               aria-label="Remove item"
+              type="button"
             >
               <DeleteForeverOutlinedIcon />
             </button>
