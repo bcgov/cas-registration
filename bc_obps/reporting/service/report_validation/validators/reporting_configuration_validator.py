@@ -1,19 +1,15 @@
-from django.contrib.postgres.aggregates import ArrayAgg, StringAgg
-from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import F, OuterRef, Value
-from django.db.models.functions import Replace
-from reporting.models import report
+from django.contrib.postgres.aggregates import ArrayAgg
+from django.db.models import OuterRef, QuerySet
 from reporting.models.configuration_element import ConfigurationElement
 from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_version import ReportVersion
-from reporting.models.reporting_field import ReportingField
 from reporting.service.report_validation.report_validation_error import ReportValidationError
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
 TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 
-def annotated_report_methodology(report_version_id: int):
+def annotated_report_methodology(report_version_id: int) -> QuerySet[ReportMethodology]:
     config_element = ConfigurationElement.objects.filter(
         activity_id=OuterRef("report_emission__report_source_type__report_activity__activity_id"),
         source_type_id=OuterRef("report_emission__report_source_type__source_type_id"),
@@ -34,19 +30,23 @@ def annotated_report_methodology(report_version_id: int):
             report_version_id=report_version_id,
         )
         .annotate(
-            matching_config=config_element,
+            matching_config_id=config_element,
         )
     )
 
 
 def validate_configuration_elements_present(report_version: ReportVersion) -> dict[str, ReportValidationError]:
 
-    missing_config = annotated_report_methodology(report_version.id).filter(matching_config__isnull=True).values("id")
+    missing_config = (
+        annotated_report_methodology(report_version.id).filter(matching_config_id__isnull=True).values("id")
+    )
 
     if missing_config.exists():
         raise SystemError(
             f"Missing configuration elements for report methodology IDs: {str.join(" ", [m['id'] for m in missing_config])}"
         )
+
+    return {}
 
 
 def validate_reporting_fields(report_version: ReportVersion) -> dict[str, ReportValidationError]:
@@ -57,18 +57,23 @@ def validate_reporting_fields(report_version: ReportVersion) -> dict[str, Report
     """
     methodology_records = annotated_report_methodology(report_version.id).annotate(
         allowed_slugs=(
-            ConfigurationElement.objects.filter(id=OuterRef("matching_config"))
+            ConfigurationElement.objects.prefetch_related("reporting_fields")
+            .filter(id=OuterRef("matching_config_id"))
             .annotate(slugs=ArrayAgg("reporting_fields__slug"))
             .values("slugs")
         )
     )
 
-    for key in methodology_records.json_data.keys():
-        slug = key.replace("FieldUnits", "")
-        if not methodology_records.matching_config.reporting_fields.filter(slug=slug).exists():
+    for record in methodology_records:
+        reported_slugs = {r.replace("FieldUnits", "") for r in record.json_data.keys()}
+        allowed_slugs = set(record.allowed_slugs)
+
+        if not reported_slugs.issubset(allowed_slugs):
             raise SystemError(
-                f"Missing reporting field with slug '{slug}' in configuration for ReportMethodology ID {rm.id} and report version ID {report_version.id}"
+                f"ReportMethodology ID {record.id} has reporting fields {reported_slugs} which are not in the allowed fields {allowed_slugs} of its matching configuration element."
             )
+
+    return {}
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
@@ -81,3 +86,10 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     - Validate that there is a ConfigurationElement record matching that combination
     - Validate that the extra reporting fields reported are in that configuration element
     """
+
+    validate_configuration_elements_present(report_version)
+    validate_reporting_fields(report_version)
+
+    # This validator only raises system errors
+    #
+    return {}
