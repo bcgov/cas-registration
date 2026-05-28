@@ -45,7 +45,7 @@ const uiSchema = {
       "ui:FieldTemplate": SourceTypeBoxTemplate,
       units: {
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
-
+        "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
         "ui:FieldTemplate": FieldTemplate,
         "ui:title": "Unit Data",
         "ui:options": {
