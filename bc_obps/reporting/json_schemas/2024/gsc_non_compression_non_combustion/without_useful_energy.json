@@ -44,7 +44,8 @@
                       "type": "string",
                       "readOnly": true
                     }
-                  }
+                  },
+                  "required": ["fuelName"]
                 },
                 "annualFuelAmount": {
                   "title": "Annual Fuel Amount",

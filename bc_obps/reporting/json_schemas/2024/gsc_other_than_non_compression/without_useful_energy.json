@@ -44,7 +44,8 @@
                       "type": "string",
                       "readOnly": true
                     }
-                  }
+                  },
+                  "required": ["fuelName"]
                 },
                 "fuelDescription": {
                   "title": "Fuel Description",
@@ -76,9 +77,9 @@
                         "readOnly": true,
                         "description": "Computed upon saving"
                       }
-                    }
-                  },
-                  "required": ["gasType", "emission"]
+                    },
+                    "required": ["gasType", "emission"]
+                  }
                 }
               },
               "required": ["annualFuelAmount"]

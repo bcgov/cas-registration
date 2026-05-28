@@ -63,7 +63,8 @@
                       "type": "string",
                       "readOnly": true
                     }
-                  }
+                  },
+                  "required": ["fuelName"]
                 },
                 "fuelDescription": {
                   "title": "Fuel Description",
