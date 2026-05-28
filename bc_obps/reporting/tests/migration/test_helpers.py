@@ -55,8 +55,8 @@ def test_load_source_type_schemas_from_json(mock_open_fn, mock_json_load, fake_a
     assert mock_open_fn.call_count == expected
     assert mock_json_load.call_count == expected
 
-    # One ActivitySourceTypeJsonSchema.objects.create() per mapping entry.
-    assert fake_model.objects.create.call_count == expected
+    # One ActivitySourceTypeJsonSchema.objects.update_or_create() per mapping entry.
+    assert fake_model.objects.update_or_create.call_count == expected
 
     # Every opened path uses the per-tuple directory_path / schema_dir / file_name.
     opened_paths = [call.args[0] for call in mock_open_fn.call_args_list]
@@ -64,19 +64,17 @@ def test_load_source_type_schemas_from_json(mock_open_fn, mock_json_load, fake_a
         expected_suffix = f"/{directory_path}/{schema_dir}/{file_name}.json"
         assert path.endswith(expected_suffix), f"unexpected schema path: {path}"
 
-    # Spot-check kwargs passed to create() for the first tuple.
-    first_call_kwargs = fake_model.objects.create.call_args_list[0].kwargs
-    activity_name, _, _, _, source_type_name, has_unit, has_fuel = ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING[0]
+    # Spot-check kwargs passed to update_or_create() for the first tuple.
+    first_call_kwargs = fake_model.objects.update_or_create.call_args_list[0].kwargs
+    activity_slug, _, _, _, source_type_json_key, has_unit, has_fuel = ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING[0]
     assert first_call_kwargs["has_unit"] == has_unit
     assert first_call_kwargs["has_fuel"] == has_fuel
-    assert first_call_kwargs["json_schema"] == FAKE_SCHEMA
-    assert first_call_kwargs["valid_from"] == date(2025, 1, 1)
-    assert first_call_kwargs["valid_to"] == date(2099, 12, 31)
+    assert first_call_kwargs["defaults"]["json_schema"] == FAKE_SCHEMA
 
     # Activity / SourceType lookups were performed by name.
     lookup_kwargs = [call.kwargs for call in fake_model.objects.get.call_args_list]
-    assert {"name": activity_name} in lookup_kwargs
-    assert {"name": source_type_name} in lookup_kwargs
+    assert {"slug": activity_slug} in lookup_kwargs
+    assert {"json_key": source_type_json_key} in lookup_kwargs
 
 
 @patch("reporting.migrations._helpers.json.load", return_value=FAKE_SCHEMA)
