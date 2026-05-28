@@ -11,8 +11,13 @@ import {
 import { createRegistrationPurposeSchemas } from "./registrationPurpose";
 import { Apps } from "@bciers/utils/src/enums";
 
-export const createRegistrationOperationInformationSchema =
-  async (): Promise<RJSFSchema> => {
+interface CombinedSchemas {
+  schema: RJSFSchema;
+  uiSchema: UiSchema;
+}
+
+export const createRegistrationOperationInformationSchemas =
+  async (): Promise<CombinedSchemas> => {
     const registrationPurposeSchemas = await createRegistrationPurposeSchemas();
     const registrationOperationInformationSchema: RJSFSchema = {
       title: "Operation Information",
@@ -26,12 +31,6 @@ export const createRegistrationOperationInformationSchema =
         section3: await createMultipleOperatorsInformationSchema(),
       },
     };
-    return registrationOperationInformationSchema;
-  };
-
-export const createRegistrationOperationInformationUiSchema =
-  async (): Promise<UiSchema> => {
-    const registrationPurposeSchemas = await createRegistrationPurposeSchemas();
     const registrationOperationInformationUiSchema: UiSchema = {
       "ui:FieldTemplate": FieldTemplate,
       "ui:classNames": "form-heading-label",
@@ -39,5 +38,8 @@ export const createRegistrationOperationInformationUiSchema =
       section2: operationInformationUISchema,
       section3: multipleOperatorsInformationUiSchema,
     };
-    return registrationOperationInformationUiSchema;
+    return {
+      schema: registrationOperationInformationSchema,
+      uiSchema: registrationOperationInformationUiSchema,
+    };
   };
