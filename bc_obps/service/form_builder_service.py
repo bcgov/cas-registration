@@ -211,13 +211,6 @@ def handle_source_type_schema(
             "properties"
         ]["fuelName"]["enum"] = fuel_list
 
-        # Merge required fields on the fuel item: preserve any required fields declared in the on-disk
-        # json schema (e.g. quarterly fuel amounts) and ensure fuelType + annualFuelAmount are always required.
-        fuel_items = st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]
-        existing_required = set(fuel_items.get("required", []))
-        existing_required.update(["fuelType", "annualFuelAmount"])
-        fuel_items["required"] = list(existing_required)
-
         # Require the fuelName inside the fuelType object
         st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["fuelType"][
             "required"
@@ -228,20 +221,13 @@ def handle_source_type_schema(
             "properties"
         ]["gasType"]["enum"] = gas_type_enum
         st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["emissions"]["items"][
-            "required"
-        ] = ["emission", "gasType"]
-        st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["emissions"]["items"][
             "dependencies"
         ] = gas_type_one_of
     elif source_type_schema.has_unit and not source_type_schema.has_fuel:
         st_schema["properties"]["units"]["items"]["properties"]["emissions"]["items"]["properties"]["gasType"][
             "enum"
         ] = gas_type_enum
-        # Require both emission and gasType when there's no fuel but there are units
-        st_schema["properties"]["units"]["items"]["properties"]["emissions"]["items"]["required"] = [
-            "emission",
-            "gasType",
-        ]
+
         st_schema["properties"]["units"]["items"]["properties"]["emissions"]["items"]["dependencies"] = gas_type_one_of
     elif not source_type_schema.has_unit and source_type_schema.has_fuel:
         fuel_list = list(FuelTypeDataAccessService.get_fuels().values_list("name", flat=True))
@@ -249,29 +235,15 @@ def handle_source_type_schema(
             "enum"
         ] = fuel_list
 
-        # Merge required fields on the fuel item: preserve any required fields declared in the on-disk
-        # json schema (e.g. quarterly fuel amounts) and ensure fuelType + annualFuelAmount are always required.
-        fuel_items = st_schema["properties"]["fuels"]["items"]
-        existing_required = set(fuel_items.get("required", []))
-        existing_required.update(["fuelType", "annualFuelAmount"])
-        fuel_items["required"] = list(existing_required)
-
         # Require the fuelName inside the fuelType object
         st_schema["properties"]["fuels"]["items"]["properties"]["fuelType"]["required"] = ["fuelName"]
 
         st_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["properties"]["gasType"][
             "enum"
         ] = gas_type_enum
-        # Require both emission and gasType on the emissions item
-        st_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["required"] = [
-            "emission",
-            "gasType",
-        ]
         st_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["dependencies"] = gas_type_one_of
     else:
         st_schema["properties"]["emissions"]["items"]["properties"]["gasType"]["enum"] = gas_type_enum
-        # Require both emission and gasType when there are neither units nor fuels
-        st_schema["properties"]["emissions"]["items"]["required"] = ["emission", "gasType"]
         st_schema["properties"]["emissions"]["items"]["dependencies"] = gas_type_one_of
     return st_schema
 
