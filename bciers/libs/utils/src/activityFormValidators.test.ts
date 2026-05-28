@@ -2,6 +2,7 @@ import { describe, expect, it, test } from "vitest";
 import {
   validateEmissionsMethodology,
   validateBiogenicTotalAllocated,
+  validateFuelName,
 } from "./activityFormValidators";
 
 const SOURCE_KEY = "gscUsefulEnergy";
@@ -407,5 +408,87 @@ describe("validateBiogenicTotalAllocated", () => {
       );
       expect(errors.biogenicIndustrialProcessEmissions).toBeUndefined();
     });
+  });
+});
+
+describe("validateFuelName", () => {
+  it("adds 'Select a Fuel Name' when fuelType.fuelName is missing in units -> fuels", () => {
+    const sourceTypes = {
+      [SOURCE_KEY]: {
+        units: [{ fuels: [{}] }],
+      },
+    };
+
+    const errors: any = {
+      sourceTypes: {
+        [SOURCE_KEY]: {
+          __errors: [],
+          units: [
+            {
+              __errors: [],
+              fuels: [{ __errors: [] }],
+            },
+          ],
+        },
+      },
+    };
+
+    validateFuelName(sourceTypes, errors);
+
+    expect(
+      errors.sourceTypes[SOURCE_KEY].units[0].fuels[0].fuelType.fuelName
+        .__errors,
+    ).toEqual(["Select a Fuel Name"]);
+  });
+
+  it("adds 'Select a Fuel Name' when fuelType.fuelName is missing in top-level fuels", () => {
+    const sourceTypes = {
+      [SOURCE_KEY]: {
+        fuels: [{ fuelType: {} }],
+      },
+    };
+
+    const errors: any = {
+      sourceTypes: {
+        [SOURCE_KEY]: {
+          __errors: [],
+          fuels: [{ __errors: [] }],
+        },
+      },
+    };
+
+    validateFuelName(sourceTypes, errors);
+
+    expect(
+      errors.sourceTypes[SOURCE_KEY].fuels[0].fuelType.fuelName.__errors,
+    ).toEqual(["Select a Fuel Name"]);
+  });
+
+  it("does not add fuel name error when fuelType.fuelName is present", () => {
+    const sourceTypes = {
+      [SOURCE_KEY]: {
+        units: [{ fuels: [{ fuelType: { fuelName: "Diesel" } }] }],
+      },
+    };
+
+    const errors: any = {
+      sourceTypes: {
+        [SOURCE_KEY]: {
+          __errors: [],
+          units: [
+            {
+              __errors: [],
+              fuels: [{ __errors: [] }],
+            },
+          ],
+        },
+      },
+    };
+
+    validateFuelName(sourceTypes, errors);
+
+    expect(errors.sourceTypes[SOURCE_KEY].units[0].fuels[0].fuelType).toBe(
+      undefined,
+    );
   });
 });

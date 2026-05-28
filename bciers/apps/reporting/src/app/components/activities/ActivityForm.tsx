@@ -18,6 +18,7 @@ import {
 import {
   validateBiogenicTotalAllocated,
   validateEmissionsMethodology,
+  validateFuelName,
 } from "@bciers/utils/src/activityFormValidators";
 import { NavigationInformation } from "../taskList/types";
 import { Dict } from "@bciers/types/dictionary";
@@ -92,6 +93,7 @@ export default function ActivityForm({
     // Validate methodology when gas type is selected
     if (formData?.sourceTypes) {
       validateEmissionsMethodology(formData.sourceTypes, errors);
+      validateFuelName(formData.sourceTypes, errors);
     }
 
     // Validate biogenic industrial process emissions total allocated

@@ -46,8 +46,10 @@ class TestSaveReportFuel(TestCase):
             test_infrastructure.user.user_guid,
         )
 
-        with pytest.raises(KeyError, match="fuelType"):
+        with pytest.raises(UserError, match="Fuel Name is required"):
             service_under_test.save_fuel(report_source_type, report_unit, {"no_fuel_type": True})
+        with pytest.raises(UserError, match="Fuel Name is required"):
+            service_under_test.save_fuel(report_source_type, report_unit, {"fuelType": {}})
         with pytest.raises(FuelType.DoesNotExist):
             service_under_test.save_fuel(
                 report_source_type,

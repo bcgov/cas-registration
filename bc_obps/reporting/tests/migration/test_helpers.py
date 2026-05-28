@@ -58,20 +58,20 @@ def test_load_source_type_schemas_from_json(mock_open_fn, mock_json_load, fake_a
     # One ActivitySourceTypeJsonSchema.objects.update_or_create() per mapping entry.
     assert fake_model.objects.update_or_create.call_count == expected
 
-    # Every opened path uses the per-tuple directory_path / schema_dir / file_name.
+    # Every opened path uses the per-tuple directory_path / schema_dir / file_name
     opened_paths = [call.args[0] for call in mock_open_fn.call_args_list]
     for (_, directory_path, schema_dir, file_name, *_), path in zip(ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING, opened_paths):
         expected_suffix = f"/{directory_path}/{schema_dir}/{file_name}.json"
         assert path.endswith(expected_suffix), f"unexpected schema path: {path}"
 
-    # Spot-check kwargs passed to update_or_create() for the first tuple.
+    # Spot-check kwargs passed to update_or_create() for the first tuple
     first_call_kwargs = fake_model.objects.update_or_create.call_args_list[0].kwargs
     activity_slug, _, _, _, source_type_json_key, has_unit, has_fuel = ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING[0]
     assert first_call_kwargs["has_unit"] == has_unit
     assert first_call_kwargs["has_fuel"] == has_fuel
     assert first_call_kwargs["defaults"]["json_schema"] == FAKE_SCHEMA
 
-    # Activity / SourceType lookups were performed by name.
+    # Activity / SourceType lookups were performed by name
     lookup_kwargs = [call.kwargs for call in fake_model.objects.get.call_args_list]
     assert {"slug": activity_slug} in lookup_kwargs
     assert {"json_key": source_type_json_key} in lookup_kwargs
@@ -91,10 +91,10 @@ def test_load_activity_schemas_from_json(mock_open_fn, mock_json_load, fake_apps
 
     opened_paths = [call.args[0] for call in mock_open_fn.call_args_list]
 
-    # First N paths correspond to the 2024 mapping.
+    # First paths correspond to the 2024 mapping
     for (_, schema_slug), path in zip(ACTIVITY_SCHEMA_MAPPING, opened_paths):
         assert path.endswith(f"/reporting/json_schemas/2024/{schema_slug}/activity.json")
 
-    # The remaining paths correspond to the 2025 mapping.
+    # remaining paths correspond to the 2025 mapping
     for (_, schema_slug), path in zip(ACTIVITY_SCHEMA_MAPPING_2025, opened_paths[len(ACTIVITY_SCHEMA_MAPPING) :]):
         assert path.endswith(f"/reporting/json_schemas/2025/{schema_slug}/activity.json")
