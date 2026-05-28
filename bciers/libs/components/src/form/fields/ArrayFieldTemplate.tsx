@@ -63,7 +63,9 @@ export function ArrayFieldItemTemplate(props: ArrayFieldItemTemplateProps) {
           <span>{formData.name}</span>
         </div>
       )}
-      {(customTitleName || (buttonsProps.hasRemove && index !== 0)) &&
+      {(customTitleName ||
+        (buttonsProps.hasRemove && index !== 0) ||
+        canDeleteFirst) &&
         !customItemName && (
           <div className="text-bc-bg-blue text-lg flex align-center my-10">
             {customTitleName && (
