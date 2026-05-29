@@ -19,31 +19,22 @@ def annotated_report_methodology(report_version_id: int) -> QuerySet[ReportMetho
         valid_to__valid_to__year__gte=OuterRef("report_version__report__reporting_year_id"),
     ).values("id")[:1]
 
-    return (
-        ReportMethodology.objects.select_related(
-            "report_emission",
-            "report_emission__report_source_type",
-            "report_emission__report_source_type__report_activity",
-            "report_version__report",
-        )
-        .filter(
-            report_version_id=report_version_id,
-        )
-        .annotate(
-            matching_config_id=config_element,
-        )
+    return ReportMethodology.objects.filter(
+        report_version_id=report_version_id,
+    ).annotate(
+        matching_config_id=config_element,
     )
 
 
 def validate_configuration_elements_present(report_version: ReportVersion) -> dict[str, ReportValidationError]:
 
     missing_config = (
-        annotated_report_methodology(report_version.id).filter(matching_config_id__isnull=True).values("id")
+        annotated_report_methodology(report_version.id).filter(matching_config_id__isnull=True).values("id")  # type: ignore
     )
 
     if missing_config.exists():
         raise SystemError(
-            f"Missing configuration elements for report methodology IDs: {str.join(" ", [m['id'] for m in missing_config])}"
+            f"Missing configuration elements for report methodology IDs: {str.join(', ', [str(m['id']) for m in missing_config])}"
         )
 
     return {}
@@ -57,8 +48,7 @@ def validate_reporting_fields(report_version: ReportVersion) -> dict[str, Report
     """
     methodology_records = annotated_report_methodology(report_version.id).annotate(
         allowed_slugs=(
-            ConfigurationElement.objects.prefetch_related("reporting_fields")
-            .filter(id=OuterRef("matching_config_id"))
+            ConfigurationElement.objects.filter(id=OuterRef("matching_config_id"))
             .annotate(slugs=ArrayAgg("reporting_fields__slug"))
             .values("slugs")
         )
@@ -70,7 +60,7 @@ def validate_reporting_fields(report_version: ReportVersion) -> dict[str, Report
 
         if not reported_slugs.issubset(allowed_slugs):
             raise SystemError(
-                f"ReportMethodology ID {record.id} has reporting fields {reported_slugs} which are not in the allowed fields {allowed_slugs} of its matching configuration element."
+                f"ReportMethodology ID {record.id} has reporting fields {reported_slugs - allowed_slugs} which are not in the allowed fields {allowed_slugs} of its matching configuration element."
             )
 
     return {}
@@ -91,5 +81,5 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     validate_reporting_fields(report_version)
 
     # This validator only raises system errors
-    #
+    # Errors found by this validator are not expected to be fixable by users, but rather indicate a bug or malicious manipulation of data inputs.
     return {}
