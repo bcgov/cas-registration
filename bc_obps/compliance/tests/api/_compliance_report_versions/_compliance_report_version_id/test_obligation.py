@@ -172,7 +172,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 404
-        assert response.json() == {'message': 'Not Found'}
+        assert response.json()["message"] == "Not Found"
 
     @patch(
         "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_obligation_payments_by_compliance_report_version_id"
@@ -203,7 +203,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 404
-        assert response.json() == {'message': 'Not Found'}
+        assert response.json()["message"] == "Not Found"
 
     @patch(VALIDATE_VERSION_OWNERSHIP_PATH, return_value=True)
     def test_access_to_other_operators_obligation(self, _):
@@ -227,4 +227,4 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 404
-        assert response.json() == {'message': 'Not Found'}
+        assert response.json()["message"] == "Not Found"

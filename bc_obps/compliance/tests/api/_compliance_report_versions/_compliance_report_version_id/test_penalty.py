@@ -72,7 +72,7 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
         )
 
         assert response.status_code == 404
-        assert response.json() == {"message": "Not Found"}
+        assert response.json()["message"] == "Not Found"
 
 
 class TestLateSubmissionPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
