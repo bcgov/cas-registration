@@ -38,6 +38,7 @@ from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
+from reporting.models.reporting_field import ReportingField
 from reporting.models.reporting_year import ReportingYear
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
@@ -106,6 +107,7 @@ configuration = Recipe(
     valid_from=seq(date(4001, 1, 1), start=date(3001, 1, 1), increment_by=timedelta(days=8)),
     valid_to=seq(date(4001, 1, 7), start=date(3001, 1, 7), increment_by=timedelta(days=8)),
 )
+reporting_field = Recipe(ReportingField)
 
 activity = Recipe(Activity)
 source_type = Recipe(SourceType)
