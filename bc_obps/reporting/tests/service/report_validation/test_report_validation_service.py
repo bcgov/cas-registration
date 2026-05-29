@@ -48,6 +48,7 @@ class TestReportValidationService:
             "reporting.service.report_validation.validators.report_emission_allocation_other_excluded_category",
             "reporting.service.report_validation.validators.report_data_by_fuel_type_validator",
             "reporting.service.report_validation.validators.report_regulated_product_presence",
+            "reporting.service.report_validation.validators.reporting_configuration_validator",
             "reporting.service.report_validation.validators.required_fields.required_fields_report_operation_information",
             "reporting.service.report_validation.validators.required_fields.required_fields_report_person_responsible",
             "reporting.service.report_validation.validators.required_fields.required_fields_report_activity_data",
