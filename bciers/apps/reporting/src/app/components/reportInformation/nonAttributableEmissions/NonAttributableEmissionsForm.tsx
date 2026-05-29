@@ -7,7 +7,10 @@ import {
   nonAttributableEmissionUiSchema,
 } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { actionHandler } from "@bciers/actions";
-import { NavigationInformation } from "../../taskList/types";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
+import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
+import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
 
 export interface GasType {
   id: number;
@@ -60,7 +63,8 @@ export default function NonAttributableEmissionsForm({
   emissionCategories,
   navigationInformation,
 }: NonAttributableEmissionsFormProps) {
-  const [errors, setErrors] = useState<string[]>();
+  const [validationErrors, setValidationErrors] =
+    useState<ReportValidationErrors>();
   const [formData, setFormData] = useState<NonAttributableFormData>({
     emissions_exceeded: emissionFormData.emissions_exceeded,
     // Seed one empty row so the form renders a first entry when the user switches to "Yes",
@@ -80,12 +84,16 @@ export default function NonAttributableEmissionsForm({
       body: JSON.stringify(formData),
     });
 
-    if (response?.error) {
-      setErrors([response.error]);
+    if (response?.validation?.errors) {
+      setValidationErrors(response.validation.errors);
       return false;
     }
 
-    setErrors(undefined);
+    if (response?.error) {
+      setValidationErrors([createGenericReportValidationError(response.error)]);
+      return false;
+    }
+    setValidationErrors(undefined);
     return true;
   };
 
@@ -104,7 +112,7 @@ export default function NonAttributableEmissionsForm({
       onSubmit={handleSubmit}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
-      errors={errors}
+      errors={[<ReportValidationSummary errors={validationErrors} />]}
     />
   );
 }

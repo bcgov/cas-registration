@@ -19,13 +19,18 @@ import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
 // Helper function to parse action handler errors
 const parseHandlerError = (res: any, status: number) => {
+  // Handle structured validation errors
+  if ("errors" in res) {
+    return {
+      error: res.message,
+      validation: res,
+    };
+  }
+
   // Handle API errors, if any
   if ("message" in res) return { error: res.message };
 
-  // Handle structured validation errors (e.g. { errors: [...] })
-  if ("errors" in res) return { validation: res };
-
-  // Handle HTTP errors, e.g., response.status is not in the 200-299 range
+  // Handle HTTP errors
   return { error: `HTTP error! Status: ${status}` };
 };
 
