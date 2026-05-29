@@ -36,7 +36,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 1,
-                                        'product_id': 2,
                                         'product_name': 'Cement equivalent',
                                         'allocated_quantity': 0,
                                     }
@@ -44,7 +43,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 2,
-                                        'product_id': 6,
                                         'product_name': 'Gypsum wallboard',
                                         'allocated_quantity': 0,
                                     }
@@ -62,7 +60,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 1,
-                                        'product_id': 2,
                                         'product_name': 'Cement equivalent',
                                         'allocated_quantity': 0,
                                     }
@@ -70,7 +67,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 2,
-                                        'product_id': 6,
                                         'product_name': 'Gypsum wallboard',
                                         'allocated_quantity': 0,
                                     }
@@ -88,7 +84,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 1,
-                                        'product_id': 2,
                                         'product_name': 'Cement equivalent',
                                         'allocated_quantity': 0,
                                     }
@@ -96,7 +91,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 2,
-                                        'product_id': 6,
                                         'product_name': 'Gypsum wallboard',
                                         'allocated_quantity': 0,
                                     }
@@ -114,7 +108,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 1,
-                                        'product_id': 2,
                                         'product_name': 'Cement equivalent',
                                         'allocated_quantity': 0,
                                     }
@@ -122,7 +115,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 2,
-                                        'product_id': 6,
                                         'product_name': 'Gypsum wallboard',
                                         'allocated_quantity': 0,
                                     }
@@ -140,7 +132,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 1,
-                                        'product_id': 2,
                                         'product_name': 'Cement equivalent',
                                         'allocated_quantity': 100000.0000,
                                     }
@@ -148,7 +139,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 2,
-                                        'product_id': 6,
                                         'product_name': 'Gypsum wallboard',
                                         'allocated_quantity': 400000.0000,
                                     }
@@ -166,7 +156,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 1,
-                                        'product_id': 2,
                                         'product_name': 'Cement equivalent',
                                         'allocated_quantity': 0,
                                     }
@@ -174,7 +163,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 2,
-                                        'product_id': 6,
                                         'product_name': 'Gypsum wallboard',
                                         'allocated_quantity': 0,
                                     }
@@ -192,7 +180,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 1,
-                                        'product_id': 2,
                                         'product_name': 'Cement equivalent',
                                         'allocated_quantity': 0,
                                     }
@@ -200,7 +187,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 2,
-                                        'product_id': 6,
                                         'product_name': 'Gypsum wallboard',
                                         'allocated_quantity': 0,
                                     }
@@ -218,7 +204,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 1,
-                                        'product_id': 2,
                                         'product_name': 'Cement equivalent',
                                         'allocated_quantity': 0,
                                     }
@@ -226,7 +211,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 2,
-                                        'product_id': 6,
                                         'product_name': 'Gypsum wallboard',
                                         'allocated_quantity': 0,
                                     }
@@ -244,7 +228,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 1,
-                                        'product_id': 2,
                                         'product_name': 'Cement equivalent',
                                         'allocated_quantity': 0,
                                     }
@@ -252,7 +235,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 2,
-                                        'product_id': 6,
                                         'product_name': 'Gypsum wallboard',
                                         'allocated_quantity': 0,
                                     }
@@ -270,7 +252,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 1,
-                                        'product_id': 2,
                                         'product_name': 'Cement equivalent',
                                         'allocated_quantity': 0,
                                     }
@@ -278,7 +259,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 2,
-                                        'product_id': 6,
                                         'product_name': 'Gypsum wallboard',
                                         'allocated_quantity': 0,
                                     }
@@ -296,7 +276,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 1,
-                                        'product_id': 2,
                                         'product_name': 'Cement equivalent',
                                         'allocated_quantity': 0,
                                     }
@@ -304,7 +283,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 2,
-                                        'product_id': 6,
                                         'product_name': 'Gypsum wallboard',
                                         'allocated_quantity': 0,
                                     }
@@ -322,7 +300,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 1,
-                                        'product_id': 2,
                                         'product_name': 'Cement equivalent',
                                         'allocated_quantity': 0,
                                     }
@@ -330,7 +307,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                                 ReportProductEmissionAllocationData(
                                     **{
                                         'report_product_id': 2,
-                                        'product_id': 6,
                                         'product_name': 'Gypsum wallboard',
                                         'allocated_quantity': 0,
                                     }
@@ -344,7 +320,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                     ReportProductEmissionAllocationData(
                         **{
                             'report_product_id': 1,
-                            'product_id': 2,
                             'product_name': 'Cement equivalent',
                             'allocated_quantity': 100000.0000,
                         }
@@ -352,7 +327,6 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                     ReportProductEmissionAllocationData(
                         **{
                             'report_product_id': 2,
-                            'product_id': 6,
                             'product_name': 'Gypsum wallboard',
                             'allocated_quantity': 400000.0000,
                         }

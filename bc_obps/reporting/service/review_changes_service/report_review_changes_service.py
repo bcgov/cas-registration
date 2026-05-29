@@ -8,7 +8,6 @@ from .diff_helpers import _DIFF_KWARGS, _CHANGE_TYPE_MAP, detect_renames, diff_s
 
 
 NOISY_DIFF_KEYS = {
-    "report_product_id",
     "report_version",
     "is_supplementary_report",
     "is_latest_submitted",
@@ -47,6 +46,64 @@ def _get_field_display_title(field_path: str, field_display_titles: Dict[str, st
     return field_display_titles.get(field_name)
 
 
+def _normalize_products(products: List[Any]) -> List[tuple[Any, Any]] | None:
+    """
+    Extracts core business identifiers (product name and allocated quantity) from a list
+    of raw product records and returns a predictably sorted, comparable structure.
+
+    Returns:
+        - A sorted list of (product_name, allocated_quantity) tuples.
+        - None if any individual product item is not a dictionary structure.
+    """
+    normalized_products = []
+    for product in products:
+        if not isinstance(product, dict):
+            return None
+        normalized_products.append(
+            (
+                product.get("product_name"),
+                product.get("allocated_quantity"),
+            )
+        )
+    return sorted(normalized_products, key=lambda x: str(x[0]))
+
+
+def _is_false_positive_product_change(change: Dict[str, Any]) -> bool:
+    """
+    Determine if a change item is a false positive that should be ignored.
+    """
+    old_value = change.get("old_value")
+    new_value = change.get("new_value")
+    if not isinstance(old_value, dict) or not isinstance(new_value, dict):
+        return False
+
+    old_products = old_value.get('products', [])
+    new_products = new_value.get('products', [])
+
+    # Check for equal amount of products
+    if len(old_products) != len(new_products):
+        return False
+
+    # Check for matching product names and quantities
+    old_normalized = _normalize_products(old_products)
+    new_normalized = _normalize_products(new_products)
+
+    if old_normalized is None or new_normalized is None:
+        return False
+
+    # if all checks pass and products are the same,
+    # it's a false positive (supp report created report_product_id with no change)
+    return old_normalized == new_normalized
+
+
+def _last_item_report_product_id(change: Dict[str, Any]) -> bool:
+    """
+    Edge case to check if last item is report_product_id, which would show empty diff category
+    """
+    field = change.get("field", "")
+    return isinstance(field, str) and field.endswith("['report_product_id']")
+
+
 class ReportReviewChangesService:
     @classmethod
     def get_report_version_diff_changes(cls, previous: dict, current: dict) -> List[Dict[str, Any]]:
@@ -66,7 +123,15 @@ class ReportReviewChangesService:
         prev_facs: Dict[str, dict] = previous.get('facility_reports') or {}
         curr_facs: Dict[str, dict] = current.get('facility_reports') or {}
         changes.extend(detect_renames(prev_facs, curr_facs))
-        changes.extend(diff_sections(prev_facs, curr_facs, "root['facility_reports']"))
+        changes.extend(
+            change
+            for change in diff_sections(prev_facs, curr_facs, "root['facility_reports']")
+            if not _is_false_positive_product_change(change)
+        )
+
+        # edge case if only item is report_product_id after filtering false positives
+        if len(changes) == 1 and _last_item_report_product_id(changes[0]):
+            changes = []
 
         for change in changes:
             change["field_display_title"] = _get_field_display_title(change["field"], field_display_titles)
