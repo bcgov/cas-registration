@@ -147,6 +147,29 @@ class ExceptionHandler:
         }
 
     @classmethod
+    def handle_mapped_exception(
+        cls,
+        request: HttpRequest,
+        exc: BaseException,
+        response_config: ExceptionResponse,
+    ) -> Response:
+        body = cls.get_response_body(exc, response_config)
+        # Handle Sentry for specific cases
+        if response_config.sentry_tag:
+            event_id = cls.capture_sentry_exception(exc, response_config.sentry_tag, request)
+            if event_id:
+                body["message"] += f" Reference ID: {event_id}"
+                logger.critical(body["message"], exc_info=True)
+
+        if response_config.payload_builder:
+            return Response(body, status=response_config.status)
+
+        return Response(
+            cls.build_error_response_body(body["message"]),
+            status=response_config.status,
+        )
+
+    @classmethod
     def handle(cls, request: HttpRequest, exc: Union[BaseException, type[BaseException]]) -> Response:
         """Handle exceptions and return appropriate API response."""
         cls.debug_log_exception()
@@ -161,22 +184,7 @@ class ExceptionHandler:
         # Check mapped exceptions
         for exc_types, response_config in cls.EXCEPTION_MAP.items():
             if isinstance(exc, exc_types):
-                body = cls.get_response_body(exc, response_config)
-
-                # Handle Sentry for specific cases
-                if response_config.sentry_tag:
-                    event_id = cls.capture_sentry_exception(exc, response_config.sentry_tag, request)
-                    if event_id:
-                        body["message"] += f" Reference ID: {event_id}"
-                        logger.critical(body["message"], exc_info=True)
-
-                if response_config.payload_builder:
-                    return Response(body, status=response_config.status)
-
-                return Response(
-                    cls.build_error_response_body(body["message"]),
-                    status=response_config.status,
-                )
+                return cls.handle_mapped_exception(request, exc, response_config)
 
         # Default: unexpected error
         event_id = cls.capture_sentry_exception(exc, "unexpected_error", request)

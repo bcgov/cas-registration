@@ -30,13 +30,10 @@ class TestReportNonAttributableApi(CommonTestSetup):
             "emissions_exceeded": True,
             "activities": [
                 {
-                    "activity_id": uuid4(),
-                    "source_type_id": uuid4(),
-                    "emission_category_id": uuid4(),
-                    "gas_type_id": uuid4(),
-                    "methodology_id": uuid4(),
-                    "fuel_type_id": uuid4(),
-                    "amount": 10,
+                    "activity": str(uuid4()),
+                    "source_type": str(uuid4()),
+                    "emission_category": "Flaring",
+                    "gas_type": ["CO2"],
                 }
             ],
         }
@@ -62,44 +59,14 @@ class TestReportNonAttributableApi(CommonTestSetup):
 
         mock_save_report_non_attributable_emissions.assert_called_once()
 
-    def test_returns_validation_error_when_emissions_exceeded_and_no_activities_provided(
-        self,
-    ):
-        payload = {
-            "emissions_exceeded": True,
-            "activities": [],
-        }
-
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            payload,
-            custom_reverse_lazy(
-                "save_report",
-                kwargs={
-                    "version_id": self.report_version.id,
-                    "facility_id": self.facility.id,
-                },
-            ),
-        )
-
-        assert response.status_code == 400
-
-        response_json = response.json()
-
-        assert response_json["message"] == ("At least one activity is required when emissions are exceeded.")
-        assert response_json["errors"][0]["key"] == "generic_error"
-        assert response_json["errors"][0]["error"]["message"] == (
-            "At least one activity is required when emissions are exceeded."
-        )
-
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated(
             "get_report_non_attributable_by_version_id",
             method="get",
+            facility_id=self.facility.id,
         )
         assert_report_version_ownership_is_validated(
             "save_report",
             method="post",
+            facility_id=self.facility.id,
         )

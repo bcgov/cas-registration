@@ -136,5 +136,4 @@ class TestLateSubmissionPenaltyByComplianceReportVersionEndpoint(CommonTestSetup
             ),
         )
 
-        assert response.status_code == 404
-        assert response.json() == {"message": "Not Found"}
+        assert_error_response(response, 404, "Not Found")

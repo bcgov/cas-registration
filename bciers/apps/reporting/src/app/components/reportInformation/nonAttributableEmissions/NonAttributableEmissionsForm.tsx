@@ -112,7 +112,12 @@ export default function NonAttributableEmissionsForm({
       onSubmit={handleSubmit}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
-      errors={[<ReportValidationSummary errors={validationErrors} />]}
+      errors={[
+        <ReportValidationSummary
+          key="validation-non-attributale-data"
+          errors={validationErrors}
+        />,
+      ]}
     />
   );
 }

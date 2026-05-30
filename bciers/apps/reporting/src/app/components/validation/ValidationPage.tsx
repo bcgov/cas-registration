@@ -37,7 +37,8 @@ export default async function ValidationPage({
   let validationErrors: ReportValidationErrors = [];
   try {
     const response = await getReportValidationData(version_id);
-    validationErrors = response.payload.errors;
+    console.log(response);
+    validationErrors = response.errors;
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("Failed to load validation data", error);

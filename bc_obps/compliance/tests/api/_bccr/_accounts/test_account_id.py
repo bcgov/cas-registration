@@ -4,6 +4,7 @@ from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryErr
 from registration.utils import custom_reverse_lazy
 from compliance.dataclass import BCCRAccountResponseDetails
 from common.exceptions import UserError
+from common.tests.utils.helpers import assert_error_response
 
 # Constants
 VALID_ACCOUNT_ID = "123456789012345"
@@ -78,10 +79,12 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         # Act
         response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
         # Assert
-        assert response.status_code == 400
-        assert response.json() == {
-            "message": "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help."
-        }
+        message = "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help."
+        assert_error_response(
+            response,
+            status_code=400,
+            message=message,
+        )
 
     @patch(BCCR_SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
@@ -117,8 +120,9 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
 
         # Assert
-        assert response.status_code == 400
-        assert (
-            "Account exists but does not match the required account type. Expected account type ID: 11, found: 14"
-            in response.json().get("message")
+        message = "Account exists but does not match the required account type. Expected account type ID: 11, found: 14"
+        assert_error_response(
+            response,
+            status_code=400,
+            message=message,
         )
