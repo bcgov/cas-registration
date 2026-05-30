@@ -84,3 +84,18 @@ class BaseTestCase(TestCase):
                 self.assertIn('set_updated_audit_columns', triggers)
             else:
                 pass
+
+
+def assert_error_response(
+    response,
+    status_code: int,
+    message: str,
+    error_key: str = "generic_error",
+) -> None:
+    assert response.status_code == status_code
+
+    response_json = response.json()
+
+    assert response_json["message"] == message
+    assert response_json["errors"][0]["key"] == error_key
+    assert response_json["errors"][0]["error"]["message"] == message

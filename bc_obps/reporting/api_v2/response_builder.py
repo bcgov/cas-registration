@@ -1,4 +1,4 @@
-from typing import Iterable, Self, override
+from typing import Any, Iterable, Self, override
 
 from django.http import HttpRequest
 from ninja.pagination import PageNumberPagination
@@ -19,6 +19,14 @@ class ResponseBuilder:
 
     def payload(self, payload: dict) -> Self:
         self.response["payload"] = payload
+        return self
+
+    def errors(self, errors: Iterable[Any] | None) -> Self:
+        if errors is None:
+            self.response["errors"] = None
+        else:
+            self.response["errors"] = [error.serialize() if hasattr(error, "serialize") else error for error in errors]
+
         return self
 
     def build(self) -> dict:

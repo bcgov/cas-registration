@@ -14,6 +14,7 @@ from reporting.models import Report, ReportVersion
 from reporting.tests.utils.bakers import report_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from common.tests.utils.helpers import assert_error_response
 
 
 class TestReportsEndpoint(CommonTestSetup):
@@ -59,8 +60,7 @@ class TestReportsEndpoint(CommonTestSetup):
         request_data = {"operation_id": str(operation.id), "reporting_year": 2111}
         response = self.send_authorized_post_request(request_data, operation)
 
-        assert response.status_code == 404
-        assert response.json()["message"] == "Not Found"
+        assert_error_response(response, 404, "Not Found")
 
     def test_error_if_report_exists(self):
         report = report_baker(reporting_year_id=2024)
