@@ -7,7 +7,7 @@ from reporting.migrations._helpers import load_activity_schemas_from_json, load_
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0191_add_report_version_to_report_models_missing_it'),
+        ('reporting', '0192_V5_12_0'),
     ]
 
     operations = [
