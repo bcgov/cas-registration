@@ -25,6 +25,7 @@ test_data = {
                             "fuelType": {
                                 "fuelName": "C/D Waste - Plastic",
                             },
+                            "annualFuelAmount": 100,
                             "emissions": [
                                 {
                                     "gasType": "CH4",
@@ -53,6 +54,7 @@ test_data = {
                             "fuelType": {
                                 "fuelName": "Diesel",
                             },
+                            "annualFuelAmount": 10500,
                             "emissions": [
                                 {
                                     "gasType": "CO2",
@@ -79,6 +81,7 @@ test_data = {
                             "fuelType": {
                                 "fuelName": "Plastics",
                             },
+                            "annualFuelAmount": 800,
                             "emissions": [
                                 {
                                     "gasType": "CO2",
@@ -111,6 +114,7 @@ test_data = {
                             "fuelType": {
                                 "fuelName": "Kerosene",
                             },
+                            "annualFuelAmount": 4500,
                             "emissions": [
                                 {
                                     "gasType": "CO2",
@@ -136,6 +140,7 @@ test_data = {
                             "fuelType": {
                                 "fuelName": "Wood Waste",
                             },
+                            "annualFuelAmount": 3000,
                             "emissions": [
                                 {
                                     "gasType": "CO2",

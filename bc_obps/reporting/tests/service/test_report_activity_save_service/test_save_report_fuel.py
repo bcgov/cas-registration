@@ -54,19 +54,29 @@ class TestSaveReportFuel(TestCase):
             service_under_test.save_fuel(
                 report_source_type,
                 report_unit,
-                {"fuelType": {"fuelName": "fuelThatDoesntExist"}},
+                {
+                    "fuelType": {"fuelName": "fuelThatDoesntExist"},
+                    "annualFuelAmount": 1,
+                    "emissions": [{"emission": 1}],
+                },
             )
         with pytest.raises(UserError, match="Fuel is expecting emission data"):
             service_under_test.save_fuel(
                 report_source_type,
                 report_unit,
-                {"fuelType": {"fuelName": "Test Fuel Type"}, "no_emission_data": True},
+                {"fuelType": {"fuelName": "Test Fuel Type"}, "no_emission_data": True, "annualFuelAmount": 1},
+            )
+        with pytest.raises(UserError, match="Annual Fuel Amount is required"):
+            service_under_test.save_fuel(
+                report_source_type,
+                report_unit,
+                {"fuelType": {"fuelName": fuel_type.name}, "emissions": [{"emission": 1}]},
             )
 
         with_none_report_unit = service_under_test.save_fuel(
             report_source_type,
             None,
-            {"fuelType": {"fuelName": fuel_type.name}, "emissions": []},
+            {"fuelType": {"fuelName": fuel_type.name}, "emissions": [], "annualFuelAmount": 9800},
         )
 
         assert with_none_report_unit.report_unit is None
@@ -78,10 +88,11 @@ class TestSaveReportFuel(TestCase):
                 "test_fuel_prop": "fuel_value",
                 "fuelType": {"fuelName": fuel_type.name},
                 "emissions": [{"small_emission": 1}, {"large_emission": 2}],
+                "annualFuelAmount": 9800,
             },
         )
 
-        assert return_value.json_data == {"test_fuel_prop": "fuel_value"}
+        assert return_value.json_data == {"test_fuel_prop": "fuel_value", "annualFuelAmount": 9800}
         assert return_value.report_source_type == report_source_type
         assert return_value.report_unit == report_unit
         assert return_value.report_version == test_infrastructure.report_version
@@ -132,6 +143,7 @@ class TestSaveReportFuel(TestCase):
                 "test_fuel_prop": "fuel_value",
                 "fuelType": {"fuelName": fuel_type.name},
                 "emissions": [{"small_emission": 1}, {"large_emission": 2}],
+                "annualFuelAmount": 9800,
             },
         )
 
@@ -145,11 +157,12 @@ class TestSaveReportFuel(TestCase):
                 "test_fuel_prop": "updated!",
                 "fuelType": {"fuelName": new_fuel_type.name},
                 "emissions": [{"small_emission": 1}, {"large_emission": 2}],
+                "annualFuelAmount": 9800,
             },
         )
 
         assert update_return_value.id == report_fuel.id
-        assert update_return_value.json_data == {"test_fuel_prop": "updated!"}
+        assert update_return_value.json_data == {"test_fuel_prop": "updated!", "annualFuelAmount": 9800}
         assert update_return_value.fuel_type == new_fuel_type
 
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
@@ -191,6 +204,7 @@ class TestSaveReportFuel(TestCase):
                 "test_fuel_prop": "fuel_value",
                 "fuelType": {"fuelName": fuel_type.name},
                 "emissions": [{"small_emission": 1}, {"large_emission": 2}],
+                "annualFuelAmount": 9800,
             },
         )
 
@@ -217,6 +231,7 @@ class TestSaveReportFuel(TestCase):
                     {"id": report_emissions[1].id, "small_emission": 1},
                     {"id": report_emissions[3].id, "large_emission": 2},
                 ],
+                "annualFuelAmount": 9800,
             },
         )
 

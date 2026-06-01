@@ -218,10 +218,13 @@ class ReportActivitySaveService:
         if not fuel_name:
             raise UserError("Fuel Name is required")
 
-        fuel_type = FuelType.objects.get(name=fuel_name)
+        if "annualFuelAmount" not in fuel_data:
+            raise UserError("Annual Fuel Amount is required")
 
         if "emissions" not in fuel_data:
             raise UserError("Fuel is expecting emission data")
+
+        fuel_type = FuelType.objects.get(name=fuel_name)
 
         report_fuel, _ = ReportFuel.objects.update_or_create(
             id=report_fuel_id,
