@@ -12,7 +12,8 @@
           "q1FuelAmount",
           "q2FuelAmount",
           "q3FuelAmount",
-          "q4FuelAmount"
+          "q4FuelAmount",
+          "annualFuelAmount"
         ],
         "properties": {
           "fuelType": {

@@ -64,12 +64,13 @@ def test_load_source_type_schemas_from_json(mock_open_fn, mock_json_load, fake_a
         expected_suffix = f"/{directory_path}/{schema_dir}/{file_name}.json"
         assert path.endswith(expected_suffix), f"unexpected schema path: {path}"
 
-    # Spot-check kwargs passed to update_or_create() for the first tuple
-    first_call_kwargs = fake_model.objects.update_or_create.call_args_list[0].kwargs
-    activity_slug, _, _, _, source_type_json_key, has_unit, has_fuel = ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING[0]
-    assert first_call_kwargs["has_unit"] == has_unit
-    assert first_call_kwargs["has_fuel"] == has_fuel
-    assert first_call_kwargs["defaults"]["json_schema"] == FAKE_SCHEMA
+    # Check kwargs passed to update_or_create()
+    for index, call in enumerate(fake_model.objects.update_or_create.call_args_list):
+        kwargs = dict(call.kwargs)
+        activity_slug, _, _, _, source_type_json_key, has_unit, has_fuel = ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING[index]
+        assert kwargs["has_unit"] == has_unit
+        assert kwargs["has_fuel"] == has_fuel
+        assert kwargs["defaults"]["json_schema"] == FAKE_SCHEMA
 
     # Activity / SourceType lookups were performed by name
     lookup_kwargs = [call.kwargs for call in fake_model.objects.get.call_args_list]
