@@ -1,4 +1,3 @@
-// 🧪 Suite to test the CAS Director transfer operation workflow
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
@@ -17,10 +16,17 @@ test.describe.configure({ mode: "serial" });
 test.describe("CAS Director - Transfer Operation", () => {
   test("'Make a Transfer' button is visible in the transfers grid", async ({
     page,
+    happoScreenshot,
   }) => {
     const transferPage = new TransferPOM(page);
     await transferPage.route();
     await transferPage.assertMakeTransferButtonVisible();
+
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "CAS Director - Transfers grid",
+      variant: "default",
+    });
+    await analyzeAccessibility(page);
   });
 
   test("Transfer operation with future effective date shows 'To be transferred' status", async ({
@@ -53,11 +59,6 @@ test.describe("CAS Director - Transfer Operation", () => {
       TransferE2EValues.OPERATION_NAME,
       TransferStatus.TO_BE_TRANSFERRED,
     );
-
-    await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: "CAS Director - Transfers grid - operation To be transferred",
-      variant: "default",
-    });
   });
 
   test("Transfer operation with past effective date shows 'Transferred' status", async ({
@@ -86,11 +87,6 @@ test.describe("CAS Director - Transfer Operation", () => {
       TransferE2EValues.OPERATION_NAME,
       TransferStatus.TRANSFERRED,
     );
-
-    await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: "CAS Director - Transfers grid - operation transferred",
-      variant: "default",
-    });
   });
 
   test("Can edit a pending transfer", async ({ page, happoScreenshot }) => {
@@ -145,10 +141,5 @@ test.describe("CAS Director - Transfer Operation", () => {
     await transferPage.assertTransferCancelled(
       TransferE2EValues.FIXTURE_PENDING_OPERATION_NAME,
     );
-    // happo screenshot
-    await takeStabilizedScreenshot(happoScreenshot, page, {
-      component: "CAS Director - Transfers grid - after cancellation",
-      variant: "default",
-    });
   });
 });
