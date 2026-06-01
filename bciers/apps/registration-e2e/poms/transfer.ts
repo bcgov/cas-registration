@@ -154,10 +154,6 @@ export class TransferPOM {
     await this.page.waitForURL(new RegExp(TransferRoute.TRANSFERS));
   }
 
-  /**
-   * Navigates to the transfers list, finds the first "To be transferred" row matching
-   * entityName, and opens its detail page via viewTransferDetails.
-   */
   async routeToFixturePendingTransferDetail(entityName: string) {
     await this.route();
     const row = this.page
@@ -169,16 +165,6 @@ export class TransferPOM {
     await this.viewTransferDetails(row);
   }
 
-  /**
-   * Reads the "View details" href and navigates directly to the transfer detail page.
-   *
-   * The grid renders rows before transfer_id is populated, so clicking while the href is
-   * empty routes back to the transfers list. Reading the attribute and retrying with toPass
-   * waits up to 15s for the UUID to appear, then navigates via page.goto to avoid the
-   * click-navigation race entirely.
-   *
-   * Verifies arrival by checking "Effective date of transfer" — present on all detail pages.
-   */
   async viewTransferDetails(row: Locator) {
     const viewDetailsLink = row.getByRole("link", { name: /view details/i });
     await expect(viewDetailsLink).toBeVisible();
