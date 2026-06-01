@@ -183,7 +183,7 @@ export class TransferPOM {
     const viewDetailsLink = row.getByRole("link", { name: /view details/i });
     await expect(viewDetailsLink).toBeVisible();
     const href = await viewDetailsLink.getAttribute("href");
-    await expect(href).toMatch(/[0-9a-fA-F]{8}/);
+    expect(href).toMatch(/[0-9a-fA-F]{8}/);
     await this.page.goto(href);
     await expect(
       this.page.getByText(/effective date of transfer/i),

@@ -1,10 +1,7 @@
-// 🧪 Suite to test the CAS Director transfer facility workflow
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
-import {
-  takeStabilizedScreenshot,
-} from "@bciers/e2e/utils/helpers";
+import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 // 🪄 Page Object Models
 import { TransferPOM } from "../../../poms/transfer";
 // ☰ Enums

@@ -1,4 +1,3 @@
-// 🧪 Suite to test the CAS Analyst transfer facility workflow
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
