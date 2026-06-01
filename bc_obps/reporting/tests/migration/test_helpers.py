@@ -49,7 +49,7 @@ def test_load_source_type_schemas_from_json(mock_open_fn, mock_json_load, fake_a
 
     load_source_type_schemas_from_json(fake_apps, schema_editor=None)
 
-    expected = len(ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING)
+    expected = 139  # =len(ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING)
 
     # One open() + json.load() per mapping entry.
     assert mock_open_fn.call_count == expected

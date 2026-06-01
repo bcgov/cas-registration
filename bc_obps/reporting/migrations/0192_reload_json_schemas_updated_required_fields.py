@@ -11,6 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(load_activity_schemas_from_json, migrations.RunPython.noop),
-        migrations.RunPython(load_source_type_schemas_from_json, migrations.RunPython.noop),
+        migrations.RunPython(load_activity_schemas_from_json, migrations.RunPython.noop, elidable=True),
+        migrations.RunPython(load_source_type_schemas_from_json, migrations.RunPython.noop, elidable=True),
     ]
