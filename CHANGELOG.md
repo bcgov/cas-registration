@@ -1,5 +1,21 @@
 # Changelog
 
+# [5.12.0](https://github.com/bcgov/cas-registration/compare/v5.11.0...v5.12.0) (2026-06-01)
+
+### Bug Fixes
+
+- annual fuel amount total displays properly for the first fuel ([96b0427](https://github.com/bcgov/cas-registration/commit/96b04275261db5f238ade7b5000e75dda6f075df))
+- emission summary correctly shows venting-non useful emissions as reporting only ([9fb80e5](https://github.com/bcgov/cas-registration/commit/9fb80e5cd3df5dc2f4ef983ecca375c925dc51dc))
+- exclude report_product_id on review changes page and add product_id to schema to deal with supp report creating false diffs ([8398a4f](https://github.com/bcgov/cas-registration/commit/8398a4f8af4e9f48c8b6b72dff6cbb7dec1ceb4b))
+- highlight required fields on non-attributable emissions form and clean up schema ([7ac5eb5](https://github.com/bcgov/cas-registration/commit/7ac5eb565336d1db220bb70096940d2f04b51fc5))
+- undo pr 4616, remove report_product_id from noisy diff keys, and filter false positives from allocation of emissions categorized changes ([7b94583](https://github.com/bcgov/cas-registration/commit/7b9458363633bdb305d3820becc37a1b574478f2))
+
+### Features
+
+- add NAICS code support to report operation table ([7a01acd](https://github.com/bcgov/cas-registration/commit/7a01acd512dd6d6da1220b9d362f14ec541e38fd))
+- o&g NP NC emission allocation validator ([2e66a41](https://github.com/bcgov/cas-registration/commit/2e66a41adb0067954bbecde0a5acdaa07de56e00))
+- rename facility report download file name ([dfd122f](https://github.com/bcgov/cas-registration/commit/dfd122fd2a3f3ce6c94fd2296afca2b2745c3684))
+
 # [5.11.0](https://github.com/bcgov/cas-registration/compare/v5.10.0...v5.11.0) (2026-05-14)
 
 ### Bug Fixes
