@@ -126,3 +126,46 @@ export const validateEmissionsMethodology = (
     );
   });
 };
+
+export const validateFuelName = (
+  sourceTypes: Record<string, any>,
+  errors: FormValidation,
+): void => {
+  const addFuelNameError = (fuelErrorPath: any): void => {
+    if (!fuelErrorPath) return;
+
+    fuelErrorPath.fuelType ??= {};
+    fuelErrorPath.fuelType.fuelName ??= { __errors: [] };
+    fuelErrorPath.fuelType.fuelName.__errors = ["Select a Fuel Name"];
+  };
+
+  const validateFuelsArray = (
+    fuels: any[] | undefined,
+    getFuelErrorPath: (index: number) => any,
+  ): void => {
+    fuels?.forEach((fuel, fuelIndex) => {
+      const fuelErrorPath = getFuelErrorPath(fuelIndex);
+      if (!fuelErrorPath) return;
+
+      const hasFuelName = !!fuel?.fuelType?.fuelName;
+      if (!hasFuelName) addFuelNameError(fuelErrorPath);
+    });
+  };
+
+  Object.entries(sourceTypes).forEach(([sourceKey, sourceType]) => {
+    const sourceErrors = (errors as any)?.sourceTypes?.[sourceKey];
+    if (!sourceType || !sourceErrors) return;
+
+    sourceType.units?.forEach((unit: any, unitIndex: number) => {
+      validateFuelsArray(
+        unit?.fuels,
+        (fuelIndex) => sourceErrors.units?.[unitIndex]?.fuels?.[fuelIndex],
+      );
+    });
+
+    validateFuelsArray(
+      sourceType.fuels,
+      (fuelIndex) => sourceErrors.fuels?.[fuelIndex],
+    );
+  });
+};

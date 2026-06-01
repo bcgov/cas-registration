@@ -8,6 +8,13 @@
       "type": "array",
       "items": {
         "type": "object",
+        "required": [
+          "q1FuelAmount",
+          "q2FuelAmount",
+          "q3FuelAmount",
+          "q4FuelAmount",
+          "annualFuelAmount"
+        ],
         "properties": {
           "fuelType": {
             "type": "object",
@@ -23,7 +30,8 @@
                 "type": "string",
                 "readOnly": true
               }
-            }
+            },
+            "required": ["fuelName"]
           },
           "fuelDescription": {
             "title": "Fuel Description",
@@ -79,7 +87,8 @@
                   "readOnly": true,
                   "description": "Computed upon saving"
                 }
-              }
+              },
+              "required": ["gasType", "emission"]
             }
           }
         }

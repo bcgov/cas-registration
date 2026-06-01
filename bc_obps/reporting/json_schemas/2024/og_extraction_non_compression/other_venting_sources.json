@@ -30,7 +30,8 @@
             "readOnly": true,
             "description": "Computed upon saving"
           }
-        }
+        },
+        "required": ["gasType", "emission"]
       }
     }
   }

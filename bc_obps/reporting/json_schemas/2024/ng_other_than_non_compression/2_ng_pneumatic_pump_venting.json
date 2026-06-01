@@ -43,7 +43,8 @@
                       "type": "string",
                       "readOnly": true
                     }
-                  }
+                  },
+                  "required": ["fuelName"]
                 },
                 "annualFuelAmount": {
                   "title": "Annual Fuel Amount",
@@ -72,10 +73,12 @@
                         "readOnly": true,
                         "description": "Computed upon saving"
                       }
-                    }
+                    },
+                    "required": ["gasType", "emission"]
                   }
                 }
-              }
+              },
+              "required": ["annualFuelAmount"]
             }
           }
         }

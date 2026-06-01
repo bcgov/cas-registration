@@ -28,7 +28,8 @@
             "title": "Number of times in the reporting year that missing data procedures were followed",
             "type": "number"
           }
-        }
+        },
+        "required": ["gasType", "emission"]
       }
     }
   }

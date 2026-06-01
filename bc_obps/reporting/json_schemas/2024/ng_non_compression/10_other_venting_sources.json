@@ -51,7 +51,8 @@
                   "description": "Computed upon saving"
                 }
               }
-            }
+            },
+            "required": ["gasType", "emission"]
           }
         }
       }

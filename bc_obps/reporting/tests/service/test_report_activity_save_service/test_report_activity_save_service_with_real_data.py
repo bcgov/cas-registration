@@ -125,27 +125,32 @@ class TestReportActivitySaveService(TestCase):
 
         assert len(report_fuels) == 5
 
-        assert report_fuels[0].json_data == {'test_fuel_bool': True, 'test_fuel_number': 12345, 'test_fuel_str': 'test'}
+        assert report_fuels[0].json_data == {
+            'test_fuel_bool': True,
+            'test_fuel_number': 12345,
+            'test_fuel_str': 'test',
+            "annualFuelAmount": 100,
+        }
         assert report_fuels[0].report_version == test_infrastructure.facility_report.report_version
         assert report_fuels[0].report_unit == get_report_unit_by_index(report_activity, 0, 0)
         assert report_fuels[0].fuel_type == FuelType.objects.get(name="C/D Waste - Plastic")
 
-        assert report_fuels[1].json_data == {}
+        assert report_fuels[1].json_data == {'annualFuelAmount': 10500}
         assert report_fuels[1].report_version == test_infrastructure.facility_report.report_version
         assert report_fuels[1].report_unit == get_report_unit_by_index(report_activity, 1, 0)
         assert report_fuels[1].fuel_type == FuelType.objects.get(name="Diesel")
 
-        assert report_fuels[2].json_data == {}
+        assert report_fuels[2].json_data == {'annualFuelAmount': 800}
         assert report_fuels[2].report_version == test_infrastructure.facility_report.report_version
         assert report_fuels[2].report_unit == get_report_unit_by_index(report_activity, 1, 0)
         assert report_fuels[2].fuel_type == FuelType.objects.get(name="Plastics")
 
-        assert report_fuels[3].json_data == {}
+        assert report_fuels[3].json_data == {'annualFuelAmount': 4500}
         assert report_fuels[3].report_version == test_infrastructure.facility_report.report_version
         assert report_fuels[3].report_unit == get_report_unit_by_index(report_activity, 1, 1)
         assert report_fuels[3].fuel_type == FuelType.objects.get(name="Kerosene")
 
-        assert report_fuels[4].json_data == {}
+        assert report_fuels[4].json_data == {'annualFuelAmount': 3000}
         assert report_fuels[4].report_version == test_infrastructure.facility_report.report_version
         assert report_fuels[4].report_unit == get_report_unit_by_index(report_activity, 1, 1)
         assert report_fuels[4].fuel_type == FuelType.objects.get(name="Wood Waste")
