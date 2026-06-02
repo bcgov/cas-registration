@@ -133,7 +133,6 @@ class ComplianceEarnedCreditsService:
 
         analyst_allowed_statuses = [
             ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
-            ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
         ]
         if earned_credit.issuance_status not in analyst_allowed_statuses:
             raise UserError("Credits can only be updated by CAS analysts when the user has requested issuance")

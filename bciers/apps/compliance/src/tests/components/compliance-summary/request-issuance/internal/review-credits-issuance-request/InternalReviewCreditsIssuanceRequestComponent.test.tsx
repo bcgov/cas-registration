@@ -340,6 +340,35 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     });
   });
 
+  it("keeps button enabled and navigates when prior submission has REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID and status is CHANGES_REQUIRED", async () => {
+    const formDataChangesRequired = {
+      ...mockFormData,
+      analyst_suggestion:
+        AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID,
+      issuance_status: IssuanceStatus.CHANGES_REQUIRED,
+      analyst_submitted_date: "2023-01-01",
+      analyst_submitted_by: "Test User",
+    };
+
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={formDataChangesRequired}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+    expect(continueButton).not.toBeDisabled();
+
+    fireEvent.click(continueButton);
+    await waitFor(() => {
+      expect(actionHandler).not.toHaveBeenCalled();
+      expect(mockPush).toHaveBeenCalledWith(
+        `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
+      );
+    });
+  });
+
   it("allows form interaction when analyst_suggestion is default value without prior submission", () => {
     const formDataWithoutPriorSubmission = {
       ...mockFormData,
@@ -359,46 +388,45 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     expect(continueButton).not.toBeDisabled();
   });
 
-  it("navigates without submitting when CAS analyst has prior final suggestion", async () => {
-    const formDataWithPriorSubmission = {
+  it("locks form when analyst submitted REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID and status is CHANGES_REQUIRED", () => {
+    // The analyst has already submitted; industry user has not yet fixed the account.
+    // The form must be read-only so the analyst cannot change their suggestion.
+    const formDataChangesRequired = {
       ...mockFormData,
-      analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
+      analyst_suggestion:
+        AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID,
+      issuance_status: IssuanceStatus.CHANGES_REQUIRED,
       analyst_submitted_date: "2023-01-01",
       analyst_submitted_by: "Test User",
     };
 
     render(
       <InternalReviewCreditsIssuanceRequestComponent
-        initialFormData={formDataWithPriorSubmission}
+        initialFormData={formDataChangesRequired}
         complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
-    const continueButton = screen.getByRole("button", { name: "Continue" });
-    expect(continueButton).not.toBeDisabled();
-
-    fireEvent.click(continueButton);
-
-    await waitFor(() => {
-      expect(actionHandler).not.toHaveBeenCalled();
-      expect(mockPush).toHaveBeenCalledWith(
-        `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
-      );
-    });
+    // No radio buttons or textbox — form is locked
+    expect(screen.queryByRole("radio")).not.toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   });
 
-  it("keeps form editable when prior submission had non-final suggestion", () => {
-    const formDataWithPriorSubmission = {
+  it("keeps form editable when REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID and status is ISSUANCE_REQUESTED (re-review after industry resubmit)", () => {
+    // After industry fixes the BCCR account and resubmits, status returns to ISSUANCE_REQUESTED.
+    // The analyst should be able to submit a new suggestion.
+    const formDataResubmitted = {
       ...mockFormData,
       analyst_suggestion:
         AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID,
+      issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
       analyst_submitted_date: "2023-01-01",
       analyst_submitted_by: "Test User",
     };
 
     render(
       <InternalReviewCreditsIssuanceRequestComponent
-        initialFormData={formDataWithPriorSubmission}
+        initialFormData={formDataResubmitted}
         complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
@@ -406,9 +434,6 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     const readyToApproveOption = screen.getByRole("radio", {
       name: "Ready to approve",
     });
-    expect(readyToApproveOption).not.toBeDisabled();
-
-    fireEvent.click(readyToApproveOption);
     expect(readyToApproveOption).not.toBeDisabled();
 
     const analystComment = screen.getByRole("textbox");

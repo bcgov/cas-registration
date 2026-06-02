@@ -11,7 +11,11 @@ import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import { useRouter } from "next/navigation";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
-import { AnalystSuggestion, FrontEndRoles } from "@bciers/utils/src/enums";
+import {
+  AnalystSuggestion,
+  FrontEndRoles,
+  IssuanceStatus,
+} from "@bciers/utils/src/enums";
 import { actionHandler } from "@bciers/actions";
 import FormAlerts from "@bciers/components/form/FormAlerts";
 import SubmitButton from "@bciers/components/button/SubmitButton";
@@ -46,7 +50,10 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
     (initialFormData?.analyst_suggestion ===
       AnalystSuggestion.READY_TO_APPROVE ||
       initialFormData?.analyst_suggestion ===
-        AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT);
+        AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT ||
+      (initialFormData?.analyst_suggestion ===
+        AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID &&
+        initialFormData?.issuance_status === IssuanceStatus.CHANGES_REQUIRED));
 
   const handleFormChange = (
     e: IChangeEvent<RequestIssuanceComplianceSummaryData>,

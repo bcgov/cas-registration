@@ -328,6 +328,57 @@ class TestComplianceEarnedCreditsService:
                 earned_credit.compliance_report_version_id, payload, self.cas_analyst
             )
 
+    def test_update_earned_credit_cas_analyst_blocked_when_changes_required(self):
+        # After submitting REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID the status becomes CHANGES_REQUIRED.
+        # The analyst must not be able to change their suggestion until industry resubmits.
+        earned_credit = self.earned_credit_base
+        earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED
+        earned_credit.analyst_suggestion = (
+            ComplianceEarnedCredit.AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID
+        )
+        earned_credit.analyst_comment = "Please update the holding account ID"
+        earned_credit.save()
+
+        payload = {
+            "analyst_suggestion": ComplianceEarnedCredit.AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT.value,
+            "analyst_comment": "Attempted change",
+        }
+
+        with pytest.raises(
+            UserError, match="Credits can only be updated by CAS analysts when the user has requested issuance"
+        ):
+            ComplianceEarnedCreditsService.update_earned_credit(
+                earned_credit.compliance_report_version_id, payload, self.cas_analyst
+            )
+
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
+    def test_update_earned_credit_cas_analyst_can_re_review_after_industry_resubmit(self, mock_send_email):
+        # After industry fixes the BCCR account and resubmits, status returns to ISSUANCE_REQUESTED.
+        # The analyst should be able to submit a new suggestion at that point.
+        earned_credit = self.earned_credit_base
+        earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
+        earned_credit.analyst_suggestion = (
+            ComplianceEarnedCredit.AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID
+        )
+        earned_credit.analyst_comment = "Please update the holding account ID"
+        earned_credit.save()
+
+        payload = {
+            "analyst_suggestion": ComplianceEarnedCredit.AnalystSuggestion.READY_TO_APPROVE.value,
+            "analyst_comment": "Account ID updated, looks good now",
+        }
+
+        result = ComplianceEarnedCreditsService.update_earned_credit(
+            earned_credit.compliance_report_version_id, payload, self.cas_analyst
+        )
+
+        earned_credit.refresh_from_db()
+        assert earned_credit.analyst_suggestion == ComplianceEarnedCredit.AnalystSuggestion.READY_TO_APPROVE
+        assert earned_credit.analyst_comment == "Account ID updated, looks good now"
+        assert earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
+        assert result == earned_credit
+        mock_send_email.execute.assert_not_called()
+
     @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
     @patch.object(ComplianceEarnedCreditsService, 'create_bccr_project_for_earned_credit')
     @patch.object(ComplianceEarnedCreditsService, 'issue_bccr_credits_for_earned_credit')
