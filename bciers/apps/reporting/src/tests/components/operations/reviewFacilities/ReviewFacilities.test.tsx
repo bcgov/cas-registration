@@ -175,6 +175,11 @@ describe("LFOFacilitiesForm", () => {
       expect(screen.getAllByText("Facility 1")).toHaveLength(2);
       // Assert that the unselected facility (was not and still is not selected) is not displayed
       expect(screen.getAllByText("Facility 2")).toHaveLength(1);
+      expect(
+        screen.getByText(
+          /any data entered for this facility in this report will be removed\. previously submitted reports will not be affected\./i,
+        ),
+      ).toBeVisible();
 
       const cancelButton = screen.getByRole("button", {
         name: config.buttons.cancel,
