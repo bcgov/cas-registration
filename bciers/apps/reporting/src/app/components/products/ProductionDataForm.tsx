@@ -126,7 +126,6 @@ const ProductionDataForm: React.FC<Props> = ({
           formContext={{
             no_regulated_products_alert: {
               report_version_id,
-              facility_id,
             },
           }}
         />

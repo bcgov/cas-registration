@@ -3,16 +3,10 @@ import Link from "next/link";
 
 interface Props {
   report_version_id: number;
-  facility_id: string;
 }
 
-const LinkToActivitiesPage: React.FC<Props> = ({
-  report_version_id,
-  facility_id,
-}) => (
-  <Link
-    href={`/reports/${report_version_id}/facilities/${facility_id}/activities`}
-  >
+const LinkToActivitiesPage: React.FC<Props> = ({ report_version_id }) => (
+  <Link href={`/reports/${report_version_id}/review-operation-information`}>
     Review Operation Information
   </Link>
 );

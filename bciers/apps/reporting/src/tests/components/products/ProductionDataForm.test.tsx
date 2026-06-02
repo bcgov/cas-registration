@@ -87,6 +87,47 @@ describe("The ProductionDataForm component", () => {
     expect(calledProps.saveButtonDisabled == true);
   });
 
+  it("Blocks an SFO facility and shows an error banner + message when no regulated products are available to be selected", async () => {
+    const mockPush = vi.fn();
+    mockRouter.mockReturnValue({ push: mockPush });
+
+    render(
+      <ProductionDataForm
+        allowedProducts={[]}
+        initialData={[]}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={"Single Facility"}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
+      />,
+    );
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+    // Alert
+    expect(
+      mockMultiStepFormWithTaskList.mock.calls[0][0].schema.properties
+        .no_regulated_products_alert.title == "No Regulated Products to select",
+    );
+    // buttons
+    expect(calledProps.continueUrl == "Continue");
+    expect(calledProps.saveButtonDisabled == true);
+    expect(calledProps.submitButtonDisabled == true);
+    // error banner (mocking so only check if properties are there)
+    expect(
+      calledProps.schema.properties.no_regulated_products_alert.type ==
+        "object",
+    );
+    expect(
+      calledProps.schema.properties.no_regulated_products_alert.readOnly ==
+        true,
+    );
+  });
+
   it("on change, adds an item to the form data when a checkbox is checked", async () => {
     render(
       <ProductionDataForm
