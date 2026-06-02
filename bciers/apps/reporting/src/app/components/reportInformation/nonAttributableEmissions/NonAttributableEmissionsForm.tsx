@@ -10,7 +10,7 @@ import { actionHandler } from "@bciers/actions";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
 import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import { handleFormResponse } from "@reporting/src/app/utils/handleFormResponse";
 
 export interface GasType {
   id: number;
@@ -63,8 +63,7 @@ export default function NonAttributableEmissionsForm({
   emissionCategories,
   navigationInformation,
 }: NonAttributableEmissionsFormProps) {
-  const [validationErrors, setValidationErrors] =
-    useState<ReportValidationErrors>();
+  const [errors, setErrors] = useState<ReportValidationErrors>();
   const [formData, setFormData] = useState<NonAttributableFormData>({
     emissions_exceeded: emissionFormData.emissions_exceeded,
     // Seed one empty row so the form renders a first entry when the user switches to "Yes",
@@ -84,17 +83,7 @@ export default function NonAttributableEmissionsForm({
       body: JSON.stringify(formData),
     });
 
-    if (response?.validation?.errors) {
-      setValidationErrors(response.validation.errors);
-      return false;
-    }
-
-    if (response?.error) {
-      setValidationErrors([createGenericReportValidationError(response.error)]);
-      return false;
-    }
-    setValidationErrors(undefined);
-    return true;
+    return handleFormResponse(response, setErrors);
   };
 
   return (
@@ -112,12 +101,16 @@ export default function NonAttributableEmissionsForm({
       onSubmit={handleSubmit}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
-      errors={[
-        <ReportValidationSummary
-          key="validation-non-attributale-data"
-          errors={validationErrors}
-        />,
-      ]}
+      errors={
+        errors
+          ? [
+              <ReportValidationSummary
+                key="validation-production-data"
+                errors={errors}
+              />,
+            ]
+          : undefined
+      }
     />
   );
 }
