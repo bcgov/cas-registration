@@ -227,12 +227,8 @@ export default function LFOFacilitiesForm({
           ))}
         </ul>
         <p>
-          If any of these facilities have an existing report, saving will delete
-          the facility{"'"}s report and any data previously entered will be
-          lost.
-          <br />
-          Click <b>Cancel</b> to go back without saving the changes, or{" "}
-          <b>Continue</b> to proceed.
+          Any data entered for this facility in this report will be removed.
+          Previously submitted reports will not be affected.
         </p>
       </SimpleModal>
       <MultiStepFormWithTaskList
