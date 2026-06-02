@@ -156,7 +156,7 @@ export const createOperationRepresentativeSchema = (
   return operationRepresentativeSchema;
 };
 
-export let operationRepresentativeUiSchema: UiSchema = {
+let operationRepresentativeUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
@@ -273,5 +273,6 @@ export const createOperationRepresentativeUiSchema = (
         ),
       },
     };
+
   return operationRepresentativeUiSchema;
 };
