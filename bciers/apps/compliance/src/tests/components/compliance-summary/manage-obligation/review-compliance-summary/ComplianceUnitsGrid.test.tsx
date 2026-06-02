@@ -50,7 +50,9 @@ describe("ComplianceUnitsGrid", () => {
   it("renders the grid with compliance units data", () => {
     render(
       <ComplianceUnitsGrid
-        formContext={{ reportingYear: 2025, maxCreditUsagePercentage: 0.5 }}
+        registry={{
+          formContext: { reportingYear: 2025, maxCreditUsagePercentage: 0.5 },
+        }}
         value={mockValue}
       />,
     );
@@ -108,7 +110,9 @@ describe("ComplianceUnitsGrid", () => {
   it("navigates to apply compliance units page when button is clicked", () => {
     render(
       <ComplianceUnitsGrid
-        formContext={{ reportingYear: 2025, maxCreditUsagePercentage: 0.5 }}
+        registry={{
+          formContext: { reportingYear: 2025, maxCreditUsagePercentage: 0.5 },
+        }}
         value={mockValue}
       />,
     );
@@ -126,7 +130,9 @@ describe("ComplianceUnitsGrid", () => {
   it("renders BCCR link with correct attributes", () => {
     render(
       <ComplianceUnitsGrid
-        formContext={{ reportingYear: 2025, maxCreditUsagePercentage: 0.5 }}
+        registry={{
+          formContext: { reportingYear: 2025, maxCreditUsagePercentage: 0.5 },
+        }}
         value={mockValue}
       />,
     );
@@ -154,7 +160,9 @@ describe("ComplianceUnitsGrid", () => {
 
     render(
       <ComplianceUnitsGrid
-        formContext={{ reportingYear: 2025, maxCreditUsagePercentage: 0.5 }}
+        registry={{
+          formContext: { reportingYear: 2025, maxCreditUsagePercentage: 0.5 },
+        }}
         value={mockValueWithoutApply}
       />,
     );
@@ -168,7 +176,9 @@ describe("ComplianceUnitsGrid", () => {
   it("renders the helper text explaining inherited compliance units in the compliance grid", () => {
     render(
       <ComplianceUnitsGrid
-        formContext={{ reportingYear: 2025, maxCreditUsagePercentage: 0.5 }}
+        registry={{
+          formContext: { reportingYear: 2025, maxCreditUsagePercentage: 0.5 },
+        }}
         value={mockValue}
       />,
     );
@@ -182,7 +192,9 @@ describe("ComplianceUnitsGrid", () => {
   it("renders the dynamic credit usage percentage in the alert note", () => {
     render(
       <ComplianceUnitsGrid
-        formContext={{ reportingYear: 2025, maxCreditUsagePercentage: 0.4 }}
+        registry={{
+          formContext: { reportingYear: 2025, maxCreditUsagePercentage: 0.4 },
+        }}
         value={mockValue}
       />,
     );

@@ -36,7 +36,8 @@ const WRONG_ACCOUNT_TYPE_MESSAGE = (
 );
 
 const BccrHoldingAccountWidget = (props: WidgetProps) => {
-  const { id, value, disabled, readonly, onChange, formContext } = props;
+  const { id, value, disabled, readonly, onChange, registry } = props;
+  const { formContext } = registry;
   const {
     onValidAccountResolved,
     validateBccrAccount,

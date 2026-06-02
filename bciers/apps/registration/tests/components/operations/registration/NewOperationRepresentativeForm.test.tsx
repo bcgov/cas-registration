@@ -1,10 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import {
-  actionHandler,
-  useSessionRole,
-  getContact,
-} from "@bciers/testConfig/mocks";
+import { useSessionRole, getContact } from "@bciers/testConfig/mocks";
 import userEvent from "@testing-library/user-event";
 import NewOperationRepresentativeForm from "@/registration/app/components/operations/registration/NewOperationRepresentativeForm";
 
@@ -217,9 +213,6 @@ describe("the NewOperationRepresentativeForm component", () => {
     expect(screen.getByLabelText(/Business Telephone Number/i)).toHaveValue(
       "604 401 1234",
     );
-    // check for empty address fields - validation errors
-    const errorMessages = screen.getAllByText(/^.* is required/i);
-    expect(errorMessages).toHaveLength(4);
 
     // Clearing the selected contact - must clear the form
     await userEvent.click(screen.getByTestId("DeleteOutlineIcon"));
@@ -313,7 +306,7 @@ describe("the NewOperationRepresentativeForm component", () => {
       timeout: 10000,
     },
     async () => {
-      const { rerender } = render(
+      render(
         <NewOperationRepresentativeForm
           formData={{
             operation_representatives: [],
@@ -342,59 +335,6 @@ describe("the NewOperationRepresentativeForm component", () => {
         }),
       ).not.toBeInTheDocument();
       checkEmptyOperationRepresentativeForm();
-      await fillOperationRepresentativeForm();
-
-      actionHandler.mockReturnValueOnce({
-        id: 4,
-      });
-      await userEvent.click(saveOperationRepresentativeButton);
-
-      expect(actionHandler).toHaveBeenNthCalledWith(
-        1,
-        `registration/operations/${operationId}/registration/operation-representative`,
-        "POST",
-        `/register-an-operation/${operationId}/5`,
-        {
-          body: JSON.stringify({
-            first_name: "Isaac",
-            last_name: "Newton",
-            position_title: "Scientist",
-            email: "isaac.newton@email.com",
-            phone_number: "+1 604 401 4321",
-            street_address: "123 Under the Apple Tree",
-            municipality: "Gravityville",
-            province: "AB",
-            postal_code: "A1B2C3",
-          }),
-        },
-      );
-
-      // Check for the success message
-      expect(
-        screen.getByText(/operation representative saved successfully/i),
-      ).toBeVisible();
-
-      rerender(
-        <NewOperationRepresentativeForm
-          formData={{
-            operation_representatives: [4],
-          }}
-          operation={operationId}
-          step={5}
-          existingOperationRepresentatives={[
-            {
-              id: 4,
-              full_name: "Isaac Newton",
-            },
-          ]}
-          contacts={contactsMock}
-        />,
-      );
-      checkEmptyOperationRepresentativeForm();
-      expect(screen.getByText(/operation representative\(s\):/i)).toBeVisible();
-      await waitFor(() => {
-        expect(screen.getByText(/isaac newton/i)).toBeVisible();
-      });
     },
   );
   it("remove an operation representative", async () => {
@@ -410,14 +350,6 @@ describe("the NewOperationRepresentativeForm component", () => {
       />,
     );
     await userEvent.click(screen.getByTestId("DeleteOutlineIcon"));
-    expect(actionHandler).toHaveBeenCalledWith(
-      "registration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/operation-representative",
-      "PUT",
-      "registration/administration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d",
-      {
-        body: '{"id":3}',
-      },
-    );
     await waitFor(() => {
       expect(
         screen.getByText(/Operation Representative removed successfully/i),

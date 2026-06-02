@@ -1,6 +1,6 @@
 "use client";
 
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 import { Button, TextField } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
@@ -54,7 +54,7 @@ function generateBcghgId(
 const BcghgIdWidget: React.FC<WidgetProps> = ({
   id,
   value,
-  formContext,
+  registry,
   name,
 }) => {
   const [bcghgId, setBcghgId] = useState(value);
@@ -62,6 +62,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
   const [error, setError] = useState<string | undefined>(undefined);
   const [editBcghgId, setEditBcghgId] = useState(false);
   const [manualBcghgId, setManualBcghgId] = useState("");
+  const { formContext } = registry;
 
   const entityId = formContext?.operationId || formContext?.facilityId;
   const entityType = formContext?.operationId

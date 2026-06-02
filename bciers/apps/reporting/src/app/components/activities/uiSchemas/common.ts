@@ -3,7 +3,10 @@ import {
   FieldTemplate,
   InlineFieldTemplate,
 } from "@bciers/components/form/fields";
-import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import {
+  NestedArrayFieldTemplate,
+  NestedArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
 import GasTypeCasNumberFieldTemplate from "@bciers/components/form/fields/GasTypeCasNumberFieldTemplate";
@@ -16,15 +19,18 @@ import MethodologyFieldTemplate from "@bciers/components/form/fields/Methodology
 
 export const emissionsFieldsUiSchema = {
   "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+  "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
   "ui:FieldTemplate": FieldTemplate,
   "ui:options": {
     arrayAddLabel: "Add Emission",
-    title: "Emission",
     label: false,
-    verticalBorder: true,
     padding: "p-2",
   },
   items: {
+    "ui:options": {
+      title: "Emission",
+      verticalBorder: true,
+    },
     gasType: {
       "ui:FieldTemplate": GasTypeCasNumberFieldTemplate,
     },
@@ -43,6 +49,7 @@ export const emissionsFieldsUiSchema = {
 export const fuelsFieldsUiSchema = {
   "ui:title": "Fuel Data",
   "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+  "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
   "ui:FieldTemplate": FieldTemplate,
   "ui:options": {
     arrayAddLabel: "Add Fuel",
@@ -50,6 +57,10 @@ export const fuelsFieldsUiSchema = {
     title: "Fuel",
   },
   items: {
+    "ui:options": {
+      label: false,
+      title: "Fuel",
+    },
     "ui:order": [
       "fuelType",
       "fuelDescription",
@@ -91,6 +102,7 @@ export const sourceSubTypeWithFuelUiSchema = {
   "ui:FieldTemplate": SourceTypeBoxTemplate,
   units: {
     "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
     "ui:FieldTemplate": FieldTemplate,
     "ui:title": "Source sub-type data",
     "ui:options": {
@@ -116,6 +128,7 @@ export const sourceSubTypeWithoutFuelUiSchema = {
   "ui:FieldTemplate": SourceTypeBoxTemplate,
   units: {
     "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
     "ui:FieldTemplate": FieldTemplate,
     "ui:title": "Source sub-type data",
     "ui:options": {
@@ -153,6 +166,7 @@ const inlineField = {
 
 const gscUnitUiSchema = {
   "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+  "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
   "ui:FieldTemplate": FieldTemplate,
   "ui:title": "Unit Data",
   "ui:options": {

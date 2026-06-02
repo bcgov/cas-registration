@@ -17,6 +17,7 @@ import { createPersonResponsibleSchema } from "@reporting/src/app/components/ope
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { AddressErrorWidget } from "@reporting/src/data/jsonSchema/personResponsibleWidgets";
 import SnackBar from "@bciers/components/form/components/SnackBar";
+import useKey from "@bciers/utils/src/useKey";
 
 interface PersonResponsibleFormData {
   person_responsible: number | undefined;
@@ -61,6 +62,7 @@ const PersonResponsibleForm = ({
     },
     hasError: false,
   });
+  const [key, resetKey] = useKey();
 
   const updateContactShown = (
     newContactId: number | undefined,
@@ -86,6 +88,7 @@ const PersonResponsibleForm = ({
         ? `Missing address information.  <a href="/administration/contacts/${newContact.id}?contacts_title=${newContact.first_name} ${newContact.last_name}/" target="_blank" rel="noopener noreferrer">Add contact's address information.</a>`
         : "";
 
+      resetKey();
       setComponentState({
         ...componentState,
         selectedContactId: newContactId,
@@ -225,6 +228,7 @@ const PersonResponsibleForm = ({
   return (
     <>
       <MultiStepFormWithTaskList
+        key={key}
         initialStep={navigationInformation.headerStepIndex}
         steps={navigationInformation.headerSteps}
         backUrl={navigationInformation.backUrl}

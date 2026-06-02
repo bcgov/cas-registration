@@ -6,9 +6,8 @@ import useKey from "@bciers/utils/src/useKey";
 
 import { UUID } from "crypto";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
-import { RJSFSchema } from "@rjsf/utils";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { IChangeEvent } from "@rjsf/core";
-import { administrationOperationInformationUiSchema } from "../../data/jsonSchema/operationInformation/administrationOperationInformation";
 import {
   OperationInformationFormData,
   OperationInformationPartialFormData,
@@ -34,12 +33,14 @@ const OperationInformationForm = ({
   schema: initialSchema,
   eioSchema,
   generalSchema,
+  uiSchema,
 }: {
   formData: OperationInformationPartialFormData;
   operationId: UUID;
   schema: RJSFSchema;
   eioSchema: RJSFSchema;
   generalSchema: RJSFSchema;
+  uiSchema: UiSchema;
 }) => {
   const [error, setError] = useState(undefined);
   const [schema, setSchema] = useState(initialSchema);
@@ -197,7 +198,7 @@ const OperationInformationForm = ({
         mode={formMode}
         error={error}
         schema={schema}
-        uiSchema={administrationOperationInformationUiSchema}
+        uiSchema={uiSchema}
         formData={confirmedFormData ?? {}}
         onSubmit={handleSubmit}
         onChange={(e: IChangeEvent) => {

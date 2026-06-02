@@ -226,7 +226,6 @@ class TestReportActivityJsonValidator:
                                             "methodology": {
                                                 "methodology": "Default EF",
                                                 "unitFuelCh4DefaultEf": 888,
-                                                "unitFuelCh4DefaultEfFieldUnits": "g/fuel units",
                                             },
                                         }
                                     ],
@@ -260,7 +259,6 @@ class TestReportActivityJsonValidator:
                                                 "methodology": "Heat Input/Default EF",
                                                 "unitFuelHeatInput": 5555,
                                                 "unitFuelN2OHeatInputDefaultEf": 6666,
-                                                "unitFuelN2OHeatInputDefaultEfFieldUnits": "g/GJ",
                                             },
                                         }
                                     ],

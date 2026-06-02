@@ -22,6 +22,7 @@ import {
 } from "@bciers/utils/src/activityFormValidators";
 import { NavigationInformation } from "../taskList/types";
 import { Dict } from "@bciers/types/dictionary";
+import useKey from "@bciers/utils/src/useKey";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -66,7 +67,7 @@ export default function ActivityForm({
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as string[]);
   const [formState, setFormState] = useState(activityFormData);
-  const [formKey, setFormKey] = useState(0);
+  const [key, resetKey] = useKey();
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
   const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(
     initialSelectedSourceTypeIds,
@@ -128,6 +129,7 @@ export default function ActivityForm({
       }
       setJsonSchema(safeJsonParse(schemaData).schema);
       setSelectedSourceTypeIds(selectedSourceTypes);
+      resetKey();
     }
 
     // Add together quarterly amounts for Fuel Combustion by Mobile Equipment
@@ -139,7 +141,7 @@ export default function ActivityForm({
       calculateMobileAnnualAmount(newFormData);
       // Clearing in-place doesn't trigger RJSF's internal field re-render, so
       // force a remount when values were actually wiped.
-      if (fuelCleared) setFormKey((k) => k + 1);
+      if (fuelCleared) resetKey();
     }
 
     // Calculate total allocated for biogenic industrial process emissions
@@ -210,7 +212,7 @@ export default function ActivityForm({
   };
   return (
     <MultiStepFormWithTaskList
-      key={formKey}
+      key={key}
       steps={navigationInformation.headerSteps}
       initialStep={navigationInformation.headerStepIndex}
       taskListElements={navigationInformation.taskList}

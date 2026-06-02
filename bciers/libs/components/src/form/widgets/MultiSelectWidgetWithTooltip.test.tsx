@@ -22,7 +22,6 @@ export const multiSelectWithTooltipFieldSchema = {
       items: {
         type: "string",
         enum: ["option_1", "option_2", "option_3"],
-        enumNames: ["Option 1", "Option 2", "Option 3"],
         enumTooltips: [
           "Tooltip for Option 1",
           "Tooltip for Option 2",
@@ -36,6 +35,7 @@ export const multiSelectWithTooltipFieldSchema = {
 export const multiSelectWithTooltipFieldUiSchema = {
   multiSelectTestField: {
     "ui:widget": "MultiSelectWidgetWithTooltip",
+    "ui:enumNames": ["Option 1", "Option 2", "Option 3"],
   },
 };
 
@@ -51,7 +51,6 @@ const multiSelectWithoutTooltipFieldSchema = {
       items: {
         type: "string",
         enum: ["option_1", "option_2", "option_3"],
-        enumNames: ["Option 1", "Option 2", "Option 3"],
       },
     },
   },
@@ -178,6 +177,7 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
       multiSelectTestField: {
         "ui:widget": "MultiSelectWidgetWithTooltip",
         "ui:tooltipPrefix": "Regulatory name: ",
+        "ui:enumNames": ["Option 1", "Option 2", "Option 3"],
       },
     };
 
@@ -279,38 +279,6 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
     expect(
       screen.getByPlaceholderText("Select regulated products..."),
     ).toBeVisible();
-  });
-
-  it("should use the enum values as the names if no enumNames are provided", async () => {
-    render(
-      <FormBase
-        schema={{
-          type: "object",
-          required: ["multiSelectTestField"],
-          properties: {
-            multiSelectTestField: {
-              type: "array",
-              title: multiSelectFieldLabel,
-              items: {
-                type: "string",
-                enum: ["option_1", "option_2", "option_3"],
-              },
-            },
-          },
-        }}
-        uiSchema={multiSelectWithTooltipFieldUiSchema}
-      />,
-    );
-    const combobox = screen.getByRole("combobox");
-    await userEvent.click(combobox);
-
-    const option1 = screen.getByText("option_1");
-    const option2 = screen.getByText("option_2");
-    const option3 = screen.getByText("option_3");
-
-    expect(option1).toBeVisible();
-    expect(option2).toBeVisible();
-    expect(option3).toBeVisible();
   });
 
   it("should work without tooltips (graceful degradation)", async () => {

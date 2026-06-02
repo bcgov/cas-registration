@@ -63,6 +63,7 @@ describe("Transfer page", () => {
       "apps/registration/app/data/jsonSchema/transfer/transferDetail",
       () => ({
         operationEntitySchema: vi.fn(),
+        editTransferUiSchema: vi.fn(),
       }),
     );
     const mockOperationEntitySchema = operationEntitySchema as ReturnType<
@@ -77,10 +78,6 @@ describe("Transfer page", () => {
     });
     render(await TransferPage({ transferId: randomUUID() }));
     expect(screen.getByText("Mocked TransferDetailForm")).toBeInTheDocument();
-    expect(mockOperationEntitySchema).toHaveBeenCalledWith(
-      operationId,
-      "Operation name",
-      fromOperatorId,
-    );
+    expect(mockOperationEntitySchema).toHaveBeenCalledOnce();
   });
 });

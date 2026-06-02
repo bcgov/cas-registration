@@ -143,6 +143,9 @@ export default function OperationReviewForm({
   };
 
   const uiSchema = buildOperationReviewUiSchema(
+    allActivities,
+    allRegulatedProducts,
+    allRepresentatives,
     formData.operation_id,
     formData.operation_name,
   );

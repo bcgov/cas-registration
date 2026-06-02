@@ -1,7 +1,4 @@
-import {
-  ArrayFieldTemplate,
-  TitleOnlyFieldTemplate,
-} from "@bciers/components/form/fields";
+import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import provinceOptions from "@bciers/data/provinces.json";
@@ -9,6 +6,10 @@ import { operationRepresentativePreface } from "./operationRepresentativeText";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { ContactRow } from "@/administration/app/components/contacts/types";
 import { OperationRepresentative } from "@/registration/app/components/operations/registration/types";
+import {
+  ArrayFieldTemplate,
+  ArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 // Operation Representative Schema - Very similar to Contact Schema(without the existing_bciers_user field)
 export const newOperationRepresentativeSchema: RJSFSchema = {
@@ -145,10 +146,6 @@ export const createOperationRepresentativeSchema = (
         enum: existingOperationRepresentatives.map(
           (operation_representative) => operation_representative?.id,
         ),
-        // @ts-expect-error - we know that enumNames is a non-standard field
-        enumNames: existingOperationRepresentatives.map(
-          (operation_representative) => operation_representative?.full_name,
-        ),
       },
     };
   } else {
@@ -159,7 +156,7 @@ export const createOperationRepresentativeSchema = (
   return operationRepresentativeSchema;
 };
 
-export const operationRepresentativeUiSchema: UiSchema = {
+let operationRepresentativeUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
@@ -193,6 +190,7 @@ export const operationRepresentativeUiSchema: UiSchema = {
   new_operation_representative: {
     "ui:FieldTemplate": SectionFieldTemplate,
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:classNames": "mt-1",
     "ui:options": {
       label: false,
@@ -232,11 +230,12 @@ export const operationRepresentativeUiSchema: UiSchema = {
 };
 
 export const createOperationRepresentativeUiSchema = (
+  existingOperationRepresentatives: OperationRepresentative[],
   existingContact: boolean = false,
 ) => {
   // disable first name, last name and email for updating existing contact
   if (existingContact)
-    return {
+    operationRepresentativeUiSchema = {
       ...operationRepresentativeUiSchema,
       new_operation_representative: {
         ...operationRepresentativeUiSchema.new_operation_representative,
@@ -260,5 +259,20 @@ export const createOperationRepresentativeUiSchema = (
         },
       },
     };
-  else return operationRepresentativeUiSchema;
+  const hasExistingOperationReps =
+    existingOperationRepresentatives &&
+    existingOperationRepresentatives.length !== 0;
+
+  if (hasExistingOperationReps)
+    operationRepresentativeUiSchema = {
+      ...operationRepresentativeUiSchema,
+      operation_representatives: {
+        ...operationRepresentativeUiSchema.operation_representatives,
+        "ui:enumNames": existingOperationRepresentatives.map(
+          (operation_representative) => operation_representative?.full_name,
+        ),
+      },
+    };
+
+  return operationRepresentativeUiSchema;
 };

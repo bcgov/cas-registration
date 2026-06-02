@@ -1,7 +1,6 @@
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps, getUiOptions } from "@rjsf/utils";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { getUiOptions } from "@rjsf/utils";
 import React from "react"; // Ensure this is imported
 
 const CheckboxWidget: React.FC<WidgetProps> = ({

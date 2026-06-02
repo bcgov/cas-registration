@@ -10,7 +10,7 @@ import {
   Tooltip,
   Zoom,
 } from "@mui/material";
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 import {
   DARK_GREY_BG_COLOR,
   BC_GOV_SEMANTICS_RED,
@@ -24,17 +24,16 @@ export interface OptionWithTooltip {
 
 export interface FieldSchemaWithTooltip {
   enum: Array<string | number>;
-  enumNames?: Array<string | number>;
   type: string;
   enumTooltips?: Array<string>;
 }
 
 export const mapOptionsWithTooltips = (
   fieldSchema: FieldSchemaWithTooltip,
+  enumNames?: string[],
 ): OptionWithTooltip[] => {
   const enumValues = fieldSchema?.enum;
   if (enumValues) {
-    const enumNames = fieldSchema?.enumNames;
     const enumTooltips = fieldSchema?.enumTooltips;
     return enumValues.map((enumValue: string | number, index: number) => ({
       id: enumValue,
@@ -59,7 +58,10 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
   const isValue = value && value.length !== 0 && value?.[0] !== undefined;
   const fieldSchema = schema.items as FieldSchemaWithTooltip;
 
-  const options = mapOptionsWithTooltips(fieldSchema);
+  const options = mapOptionsWithTooltips(
+    fieldSchema,
+    uiSchema?.["ui:enumNames"] as string[],
+  );
 
   // // Track the currently highlighted option for keyboard accessibility
   const [highlightedOption, setHighlightedOption] =

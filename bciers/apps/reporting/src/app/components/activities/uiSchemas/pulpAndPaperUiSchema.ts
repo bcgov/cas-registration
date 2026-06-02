@@ -1,6 +1,9 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
-import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import {
+  NestedArrayFieldTemplate,
+  NestedArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import { InlineFieldTemplate } from "@bciers/components/form/fields";
 import MethodologyFieldTemplate from "@bciers/components/form/fields/MethodologyFieldTemplate";
 
@@ -13,6 +16,7 @@ const uiSchema = {
   },
   carbonates: {
     "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
     "ui:FieldTemplate": SourceTypeBoxTemplate,
     "ui:options": {
       arrayAddLabel: "Add Carbonate",
@@ -34,6 +38,7 @@ const uiSchema = {
       emissions: {
         "ui:title": "Pulping and Chemical Recovery",
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+        "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
         "ui:FieldTemplate": FieldTemplate,
         "ui:options": {
           arrayAddLabel: "Add Emission",

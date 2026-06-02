@@ -1,4 +1,4 @@
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 
 const ReadOnlyRadioWidget: React.FC<WidgetProps> = (props) => {
   const { id, value, uiSchema } = props;

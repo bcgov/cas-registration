@@ -78,6 +78,7 @@ function InlineFieldTemplate({
   uiSchema,
   classNames,
   registry,
+  schema,
 }: FieldTemplateProps) {
   const isHidden = uiSchema?.["ui:widget"] === "hidden";
   if (isHidden) return null;
@@ -126,6 +127,13 @@ function InlineFieldTemplate({
             className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
           >
             <p>{resolvedUnit}</p>
+          </div>
+        )}
+        {schema.methodology_units && (
+          <div
+            className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
+          >
+            <p>{schema.methodology_units as any}</p>
           </div>
         )}
         {isErrors && (

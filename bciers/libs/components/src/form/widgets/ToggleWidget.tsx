@@ -1,6 +1,6 @@
 "use client";
 
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 import * as React from "react";
 import { useState, useLayoutEffect } from "react";
 import { styled } from "@mui/material/styles";

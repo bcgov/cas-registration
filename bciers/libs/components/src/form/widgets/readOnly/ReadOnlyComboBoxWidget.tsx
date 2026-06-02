@@ -1,4 +1,4 @@
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 
 const ReadOnlyComboBoxWidget: React.FC<WidgetProps> = ({
   id,

@@ -1,4 +1,4 @@
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 
 const ReadOnlyWidget: React.FC<WidgetProps> = ({ id, value, uiSchema }) => {
   const formatValue = Array.isArray(value) ? value.join(",\n") : value;

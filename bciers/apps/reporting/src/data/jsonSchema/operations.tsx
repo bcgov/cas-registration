@@ -66,10 +66,6 @@ export const buildOperationReviewSchema = (
             (representative: ReportOperationRepresentative) =>
               representative.id,
           ),
-          enumNames: allRepresentatives.map(
-            (representative: { representative_name: string }) =>
-              representative.representative_name,
-          ),
         },
       },
 
@@ -140,13 +136,6 @@ export const buildOperationReviewSchema = (
                         regulated_name: string;
                       }) => activity.id,
                     ),
-                    enumNames: allActivities.map(
-                      (activity: {
-                        applicable_to: string;
-                        name: string;
-                        regulated_name: string;
-                      }) => activity.name,
-                    ),
                     enumTooltips: allActivities.map(
                       (activity: {
                         applicable_to: string;
@@ -168,9 +157,6 @@ export const buildOperationReviewSchema = (
                   items: {
                     type: "number",
                     enum: allRegulatedProducts.map((product) => product.id),
-                    enumNames: allRegulatedProducts.map(
-                      (product) => product.name,
-                    ),
                   },
                 },
               }),
@@ -189,6 +175,9 @@ export const buildOperationReviewSchema = (
   }) as unknown as RJSFSchema;
 
 export const buildOperationReviewUiSchema = (
+  allActivities: Activity[],
+  allRegulatedProducts: RegulatedProduct[],
+  allRepresentatives: ReportOperationRepresentative[],
   operationId?: string,
   operationName?: string,
 ) => ({
@@ -269,6 +258,13 @@ export const buildOperationReviewUiSchema = (
 
   activities: {
     "ui:widget": "MultiSelectWidgetWithTooltip",
+    "ui:enumNames": allActivities.map(
+      (activity: {
+        applicable_to: string;
+        name: string;
+        regulated_name: string;
+      }) => activity.name,
+    ),
     "ui:options": {
       ...commonUiOptions,
       label: { style: { verticalAlign: "top" } },
@@ -279,6 +275,7 @@ export const buildOperationReviewUiSchema = (
   },
   regulated_products: {
     "ui:widget": "RegulatedProductMultiSelectWidget",
+    "ui:enumNames": allRegulatedProducts.map((product) => product.name),
     "ui:options": {
       ...commonUiOptions,
       label: { style: { verticalAlign: "top" } },
@@ -289,6 +286,10 @@ export const buildOperationReviewUiSchema = (
   },
   operation_representative_name: {
     "ui:widget": "MultiSelectWidgetWithTooltip",
+    "ui:enumNames": allRepresentatives.map(
+      (representative: { representative_name: string }) =>
+        representative.representative_name,
+    ),
     "ui:options": {
       ...commonUiOptions,
       label: { style: { verticalAlign: "top" } },

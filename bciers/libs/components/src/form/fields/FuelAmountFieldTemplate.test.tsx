@@ -12,20 +12,17 @@ const defaultProps: FieldTemplateProps = {
   label: "Annual Fuel Amount",
   children: <input data-testid="field-input" />,
   uiSchema: {},
-  formContext: {},
+  registry: { formContext: {} } as any,
   classNames: "",
   rawErrors: undefined,
   required: false,
   help: undefined,
   description: undefined,
   schema: {},
-  registry: {} as any,
   disabled: false,
   readonly: false,
   hideError: false,
   onChange: vi.fn(),
-  onKeyChange: vi.fn(),
-  onDropPropertyClick: vi.fn(),
 };
 
 const renderWidget = (overrides: Partial<FieldTemplateProps> = {}) => {
@@ -76,15 +73,17 @@ describe("FuelAmountFieldTemplate", () => {
   it("displays fuel unit next to input when fuelType.fuelUnit exists in form context", () => {
     renderWidget({
       id: "root_fuels_0_annualFuelAmount",
-      formContext: {
-        activityFormData: {
-          fuels: [
-            {
-              fuelType: {
-                fuelUnit: "snacks",
+      registry: {
+        formContext: {
+          activityFormData: {
+            fuels: [
+              {
+                fuelType: {
+                  fuelUnit: "snacks",
+                },
               },
-            },
-          ],
+            ],
+          },
         },
       },
     });
@@ -96,17 +95,19 @@ describe("FuelAmountFieldTemplate", () => {
   it("handles nested path segments correctly to resolve fuel unit", () => {
     renderWidget({
       id: "root_mobile_fuels_1_q3FuelAmount",
-      formContext: {
-        activityFormData: {
-          mobile: {
-            fuels: [
-              {},
-              {
-                fuelType: {
-                  fuelUnit: "litres",
+      registry: {
+        formContext: {
+          activityFormData: {
+            mobile: {
+              fuels: [
+                {},
+                {
+                  fuelType: {
+                    fuelUnit: "litres",
+                  },
                 },
-              },
-            ],
+              ],
+            },
           },
         },
       },
@@ -157,9 +158,11 @@ describe("FuelAmountFieldTemplate", () => {
   it("does not modify label when no fuel unit is available in form context", () => {
     renderWidget({
       id: "root_fuels_0_annualFuelAmount",
-      formContext: {
-        activityFormData: {
-          fuels: [{}],
+      registry: {
+        formContext: {
+          activityFormData: {
+            fuels: [{}],
+          },
         },
       },
     });
@@ -170,8 +173,10 @@ describe("FuelAmountFieldTemplate", () => {
   it("handles invalid parent paths gracefully without errors", () => {
     renderWidget({
       id: "root_invalid_path_fieldName",
-      formContext: {
-        activityFormData: {},
+      registry: {
+        formContext: {
+          activityFormData: {},
+        },
       },
     });
 

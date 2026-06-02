@@ -18,7 +18,6 @@ export const regulatedProductSchema = {
       items: {
         type: "number",
         enum: [1, 16, 43],
-        enumNames: ["Product 1", CHEMICAL_PULP_NAME, LIME_RECOVERED_NAME],
       },
     },
   },
@@ -28,6 +27,7 @@ export const regulatedProductUiSchema = {
   regulatedProducts: {
     "ui:widget": "RegulatedProductMultiSelectWidget",
     "ui:placeholder": "Select Regulated Product",
+    "ui:enumNames": ["Product 1", CHEMICAL_PULP_NAME, LIME_RECOVERED_NAME],
   },
 };
 

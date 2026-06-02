@@ -1,5 +1,4 @@
 import {
-  ArrayFieldTemplate,
   FieldTemplate,
   InlineFieldTemplate,
   TitleOnlyFieldTemplate,
@@ -14,6 +13,10 @@ import {
   buildProductionDataSchema2025,
   productionDataUiSchema2025,
 } from "./2025/productionData";
+import {
+  ArrayFieldTemplate,
+  ArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 const buildProductionDataSchemaDefault = (
   compliance_period_start: string,
@@ -169,6 +172,7 @@ const productionDataUiSchemaDefault = (): UiSchema => ({
   production_data: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:options": {
       addable: false,
       removable: false,

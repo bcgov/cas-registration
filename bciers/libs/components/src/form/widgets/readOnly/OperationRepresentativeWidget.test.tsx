@@ -17,7 +17,6 @@ const operationRepresentativeWidgetSchema = {
       items: {
         type: "string",
         enum: [1, 2],
-        enumNames: ["Neville Flashdance", "Oz Twindlewinks"],
       },
     },
   },
@@ -26,6 +25,7 @@ const operationRepresentativeWidgetSchema = {
 const operationRepresentativeWidgetUiSchema = {
   operationRepresentativeTestField: {
     "ui:widget": "OperationRepresentativeWidget",
+    "ui:enumNames": ["Neville Flashdance", "Oz Twindlewinks"],
   },
 };
 

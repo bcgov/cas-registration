@@ -1,7 +1,7 @@
 "use client";
 
 import TextWidget from "./TextWidget";
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 
 const URLWidget: React.FC<WidgetProps> = (props) => {
   const { onChange, value } = props;

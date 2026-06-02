@@ -10,8 +10,13 @@ import {
 } from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
 
+interface CombinedRJSFSchemas {
+  schema: RJSFSchema;
+  uiSchema: UiSchema;
+}
+
 export const createAdministrationRegistrationInformationSchema =
-  async (): Promise<RJSFSchema> => {
+  async (): Promise<CombinedRJSFSchemas> => {
     // fetch db values that are dropdown options
     const regulatedProducts: { id: number; name: string }[] =
       await getRegulatedProducts();
@@ -53,15 +58,12 @@ export const createAdministrationRegistrationInformationSchema =
       minItems: 1,
       items: {
         type: "number",
-        enum: reportingActivities.map(
+        enum: reportingActivities?.map(
           (activity: { id: number; applicable_to: string; name: string }) =>
             activity.id,
         ),
-        // @ts-expect-error - enumNames is a non-standard field required for the MultiSelectWidget
-        enumNames: reportingActivities.map(
-          (activity: { applicable_to: string; name: string }) => activity.name,
-        ),
-        enumTooltips: reportingActivities.map(
+        // @ts-expect-error - enumToolTips is a non-standard field required for the MultiSelectWidget
+        enumTooltips: reportingActivities?.map(
           (activity: {
             applicable_to: string;
             name: string;
@@ -80,9 +82,7 @@ export const createAdministrationRegistrationInformationSchema =
       type: "array",
       minItems: 1,
       items: {
-        enum: regulatedProducts.map((product) => product.id),
-        // @ts-expect-error - Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
-        enumNames: regulatedProducts.map((product) => product.name),
+        enum: regulatedProducts?.map((product) => product.id),
       },
     };
 
@@ -103,10 +103,6 @@ export const createAdministrationRegistrationInformationSchema =
           minItems: 1,
           items: {
             enum: contacts.items.map((contact) => contact.id),
-            // @ts-expect-error - Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
-            enumNames: contacts.items.map(
-              (contact) => `${contact.first_name} ${contact.last_name}`,
-            ),
           },
         },
       },
@@ -276,78 +272,88 @@ export const createAdministrationRegistrationInformationSchema =
         },
       },
     };
-    return registrationInformationSchema;
-  };
 
-export const registrationInformationUiSchema: UiSchema = {
-  "ui:order": [
-    "registration_purpose",
-    "regulated_operation_preface",
-    "regulated_products",
-    "reporting_activities",
-    // fields for opted-in (or opted-out) operations only
-    "opted_out_operation",
-    "opted_in_preface",
-    "opted_in_operation",
-    // fields for New Entrant operations only
-    "new_entrant_preface",
-    "new_entrant_application",
-  ],
-  "ui:FieldTemplate": SectionFieldTemplate,
-  registration_purpose: {
-    "ui:widget": "SelectWidget",
-  },
-  operation_representatives: {
-    "ui:widget": "MultiSelectWidgetWithTooltip",
-  },
-  regulated_operation_preface: {
-    "ui:classNames": "text-bc-bg-blue text-lg",
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": "Regulated Operation",
-  },
-  activities: {
-    "ui:widget": "MultiSelectWidgetWithTooltip",
-    "ui:placeholder": "Select Reporting Activity",
-    "ui:tooltipPrefix": "Regulatory name: ",
-  },
-  regulated_products: {
-    "ui:widget": "RegulatedProductMultiSelectWidget",
-    "ui:placeholder": "Select Regulated Product",
-  },
-  opted_out_operation: {
-    "ui:widget": "OptedOutOperationWidget",
-    "ui:options": {
-      label: false,
-    },
-  },
-  opted_in_preface: {
-    "ui:classNames": "text-bc-bg-blue text-lg",
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": "Opted-In Operation",
-  },
-  opted_in_operation: {
-    "ui:FieldTemplate": SectionFieldTemplate,
-  },
-  new_entrant_preface: {
-    "ui:classNames": "text-bc-bg-blue text-lg",
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": "New Entrant Operation",
-  },
-  reporting_operation_preface: {
-    "ui:classNames": "text-bc-bg-blue text-lg",
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": "Reporting Operation",
-  },
-  potential_reporting_preface: {
-    "ui:classNames": "text-bc-bg-blue text-lg",
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": "Potential Reporting Operation",
-  },
-  new_entrant_application: {
-    "ui:widget": "FileWidget",
-    "ui:options": {
-      filePreview: true,
-      accept: ".pdf",
-    },
-  },
-};
+    const registrationInformationUiSchema: UiSchema = {
+      "ui:order": [
+        "registration_purpose",
+        "regulated_operation_preface",
+        "regulated_products",
+        "reporting_activities",
+        // fields for opted-in (or opted-out) operations only
+        "opted_out_operation",
+        "opted_in_preface",
+        "opted_in_operation",
+        // fields for New Entrant operations only
+        "new_entrant_preface",
+        "new_entrant_application",
+      ],
+      "ui:FieldTemplate": SectionFieldTemplate,
+      registration_purpose: {
+        "ui:widget": "SelectWidget",
+      },
+      operation_representatives: {
+        "ui:widget": "MultiSelectWidgetWithTooltip",
+        "ui:enumNames": contacts.items.map(
+          (contact) => `${contact.first_name} ${contact.last_name}`,
+        ),
+      },
+      regulated_operation_preface: {
+        "ui:classNames": "text-bc-bg-blue text-lg",
+        "ui:FieldTemplate": TitleOnlyFieldTemplate,
+        "ui:title": "Regulated Operation",
+      },
+      activities: {
+        "ui:widget": "MultiSelectWidgetWithTooltip",
+        "ui:enumNames": reportingActivities?.map(
+          (activity: { applicable_to: string; name: string }) => activity.name,
+        ),
+        "ui:placeholder": "Select Reporting Activity",
+        "ui:tooltipPrefix": "Regulatory name: ",
+      },
+      regulated_products: {
+        "ui:widget": "RegulatedProductMultiSelectWidget",
+        "ui:enumNames": regulatedProducts?.map((product) => product.name),
+        "ui:placeholder": "Select Regulated Product",
+      },
+      opted_out_operation: {
+        "ui:widget": "OptedOutOperationWidget",
+        "ui:options": {
+          label: false,
+        },
+      },
+      opted_in_preface: {
+        "ui:classNames": "text-bc-bg-blue text-lg",
+        "ui:FieldTemplate": TitleOnlyFieldTemplate,
+        "ui:title": "Opted-In Operation",
+      },
+      opted_in_operation: {
+        "ui:FieldTemplate": SectionFieldTemplate,
+      },
+      new_entrant_preface: {
+        "ui:classNames": "text-bc-bg-blue text-lg",
+        "ui:FieldTemplate": TitleOnlyFieldTemplate,
+        "ui:title": "New Entrant Operation",
+      },
+      reporting_operation_preface: {
+        "ui:classNames": "text-bc-bg-blue text-lg",
+        "ui:FieldTemplate": TitleOnlyFieldTemplate,
+        "ui:title": "Reporting Operation",
+      },
+      potential_reporting_preface: {
+        "ui:classNames": "text-bc-bg-blue text-lg",
+        "ui:FieldTemplate": TitleOnlyFieldTemplate,
+        "ui:title": "Potential Reporting Operation",
+      },
+      new_entrant_application: {
+        "ui:widget": "FileWidget",
+        "ui:options": {
+          filePreview: true,
+          accept: ".pdf",
+        },
+      },
+    };
+    return {
+      schema: registrationInformationSchema,
+      uiSchema: registrationInformationUiSchema,
+    };
+  };

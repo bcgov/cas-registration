@@ -1,6 +1,5 @@
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
 import {
   complianceSummarySchema2024,
   complianceSummaryUiSchema2024,
@@ -9,6 +8,10 @@ import {
   complianceSummarySchema2025,
   complianceSummaryUiSchema2025,
 } from "./2025/complianceSummary";
+import {
+  ArrayFieldTemplate,
+  ArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 const complianceSummarySchemaDefault: RJSFSchema = {
   type: "object",
@@ -126,6 +129,7 @@ const complianceSummaryUiSchemaDefault: UiSchema = {
   },
   products: {
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:FieldTemplate": FieldTemplate,
     "ui:disabled": true,
     "ui:options": {

@@ -78,14 +78,8 @@ def handle_methodologies(
                 methodology_object["properties"][property_field] = {
                     "type": reporting_field.field_type,
                     "title": reporting_field.field_display_title or reporting_field.field_name,
+                    "methodology_units": reporting_field.field_units,
                 }
-                if reporting_field.field_units:
-                    methodology_object["properties"][f"{property_field}FieldUnits"] = {
-                        "type": "string",
-                        "default": reporting_field.field_units,
-                        "title": "Units",
-                        "readOnly": True,
-                    }
 
         methodology_one_of["methodology"]["oneOf"].append(methodology_object)
 

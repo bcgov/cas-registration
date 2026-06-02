@@ -1,5 +1,8 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import {
+  NestedArrayFieldTemplate,
+  NestedArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
@@ -34,6 +37,7 @@ const uiSchema = {
       "ui:FieldTemplate": SourceTypeBoxTemplate,
       emissions: {
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+        "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
         "ui:FieldTemplate": FieldTemplate,
         "ui:options": {
           arrayAddLabel: "Add Emission",
@@ -78,6 +82,7 @@ const uiSchema = {
       "ui:FieldTemplate": SourceTypeBoxTemplate,
       emissions: {
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+        "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
         "ui:FieldTemplate": FieldTemplate,
         "ui:options": {
           arrayAddLabel: "Add Emission",

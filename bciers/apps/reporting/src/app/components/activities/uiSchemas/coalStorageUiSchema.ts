@@ -1,5 +1,8 @@
 import { sourceTypeCheckboxUiSchema } from "./common";
-import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import {
+  NestedArrayFieldTemplate,
+  NestedArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
@@ -21,6 +24,7 @@ const uiSchema = {
       "ui:FieldTemplate": SourceTypeBoxTemplate,
       emissions: {
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+        "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
         "ui:FieldTemplate": FieldTemplate,
         "ui:options": {
           arrayAddLabel: "Add Emission",
@@ -38,6 +42,7 @@ const uiSchema = {
             },
             coalPurchases: {
               "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+              "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
               "ui:FieldTemplate": FieldTemplate,
               "ui:options": {
                 arrayAddLabel: "Add Coal Purchase",

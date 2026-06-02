@@ -2,21 +2,23 @@ import type { ReactNode, FC } from "react";
 import { UiSchema, WidgetProps } from "@rjsf/utils";
 import { Typography } from "@mui/material";
 import {
-  ArrayFieldTemplate,
   FieldTemplate,
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
 import CheckboxWidget from "@bciers/components/form/widgets/CheckboxWidget";
 import { DateWidget } from "@bciers/components/form/widgets";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
-import ObjectFieldTemplate from "@rjsf/core/lib/components/templates/ObjectFieldTemplate";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
+import {
+  ArrayFieldTemplate,
+  ArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 interface FieldTemplateProps {
   id: string;
   classNames: string;
   children: ReactNode;
-  formContext: any;
+  registry: any;
 }
 
 /**
@@ -63,9 +65,9 @@ const DynamicEmissionLabelFieldTemplate: FC<FieldTemplateProps> = ({
   id,
   classNames,
   children,
-  formContext,
+  registry,
 }: FieldTemplateProps): ReactNode => {
-  const emissionName = getAssociatedEmissionName(id, formContext);
+  const emissionName = getAssociatedEmissionName(id, registry.formContext);
   return (
     <div className={`mb-4 md:mb-2 w-full ${classNames}`}>
       <div className="flex flex-col md:flex-row items-start md:items-center w-full">
@@ -123,6 +125,7 @@ export const newEntrantUiSchema: UiSchema = {
   products: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:options": {
       addable: false,
       removable: false,
@@ -148,13 +151,13 @@ export const newEntrantUiSchema: UiSchema = {
   emissions: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:options": {
       addable: false,
       removable: false,
       label: false,
     },
     items: {
-      "ui:ObjectFieldTemplate": ObjectFieldTemplate,
       "ui:options": {
         addable: false,
         removable: false,
@@ -170,6 +173,7 @@ export const newEntrantUiSchema: UiSchema = {
       emissionData: {
         "ui:FieldTemplate": FieldTemplate,
         "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+        "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
         "ui:options": {
           addable: false,
           removable: false,

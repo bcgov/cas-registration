@@ -3,7 +3,10 @@ import {
   FieldTemplate,
   InlineFieldTemplate,
 } from "@bciers/components/form/fields";
-import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import {
+  NestedArrayFieldTemplate,
+  NestedArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import { RadioWidget } from "@bciers/components/form/widgets";
 import BiogenicEmissionsSplitFieldTemplate from "@bciers/components/form/fields/BiogenicEmissionsSplitFieldTemplate";
@@ -65,6 +68,7 @@ const pulpAndPaperUiSchema2025 = {
   },
   carbonates: {
     "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
     "ui:FieldTemplate": SourceTypeBoxTemplate,
     "ui:options": {
       arrayAddLabel: "Add Carbonate",
@@ -87,6 +91,7 @@ const pulpAndPaperUiSchema2025 = {
       emissions: {
         "ui:title": "Pulping and Chemical Recovery",
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+        "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
         "ui:FieldTemplate": FieldTemplate,
         "ui:options": {
           arrayAddLabel: "Add Emission",

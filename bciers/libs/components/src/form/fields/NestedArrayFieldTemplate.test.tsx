@@ -2,7 +2,10 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import BasicFieldTemplate from "@bciers/components/form/fields/BasicFieldTemplate";
-import NestedArrayFieldTemplate from "./NestedArrayFieldTemplate";
+import {
+  NestedArrayFieldTemplate,
+  NestedArrayFieldItemTemplate,
+} from "./NestedArrayFieldTemplate";
 
 const schema: RJSFSchema = {
   type: "object",
@@ -23,6 +26,7 @@ const schema: RJSFSchema = {
 const uiSchema = {
   units: {
     "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+    "ui:ArrayFieldItemTemplate": NestedArrayFieldItemTemplate,
     "ui:options": {
       arrayAddLabel: "Add Unit",
       title: "Unit",

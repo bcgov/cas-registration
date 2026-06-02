@@ -1,6 +1,6 @@
 "use client";
 
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 import ComboBox from "./ComboBox";
 import { actionHandler } from "@bciers/actions";
 import { useState, useLayoutEffect } from "react";

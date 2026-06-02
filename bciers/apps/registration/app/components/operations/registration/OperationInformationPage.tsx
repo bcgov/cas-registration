@@ -1,4 +1,4 @@
-import { createRegistrationOperationInformationSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
+import { createRegistrationOperationInformationSchemas } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
 import { getOperationRegistration } from "@bciers/actions/api";
 import OperationInformationForm from "apps/registration/app/components/operations/registration/OperationInformationForm";
 import { UUID } from "crypto";
@@ -15,6 +15,7 @@ const OperationInformationPage = async ({
   operation: UUID;
 }) => {
   let formData: OperationInformationFormData | { error: string } = {};
+  const schemaData = await createRegistrationOperationInformationSchemas();
   if (operation && isValidUUID(operation))
     formData = await getOperationRegistration(operation);
 
@@ -25,7 +26,8 @@ const OperationInformationPage = async ({
   return (
     <OperationInformationForm
       rawFormData={formData}
-      schema={await createRegistrationOperationInformationSchema()}
+      schema={schemaData.schema}
+      uiSchema={schemaData.uiSchema}
       step={step}
       steps={steps}
     />

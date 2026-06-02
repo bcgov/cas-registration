@@ -105,7 +105,6 @@ describe("the NewLfoFacilityForm component", () => {
               postal_code: "V8X3K1",
               latitude_of_largest_emissions: 0.1,
               longitude_of_largest_emissions: 0.1,
-              well_authorization_numbers: [],
               is_current_year: true,
               starting_date: `${currentYear}-01-01T09:00:00.000Z`,
               operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",

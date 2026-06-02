@@ -21,7 +21,7 @@ const getPropsForGroup = (
 const GroupedObjectFieldTemplateWrapper = (props: ObjectFieldTemplateProps) => {
   return (
     <>
-      {props.formContext.groupSchema.map(
+      {props.registry.formContext.groupSchema.map(
         (group: { title: string; fields: string[] }) => {
           const childProps = getPropsForGroup(group, props);
           return (

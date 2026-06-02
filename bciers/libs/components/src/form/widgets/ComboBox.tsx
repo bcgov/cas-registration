@@ -1,7 +1,7 @@
 "use client";
 
 import { Autocomplete, TextField } from "@mui/material";
-import { WidgetProps } from "@rjsf/utils/lib/types";
+import { WidgetProps } from "@rjsf/utils";
 import { useCallback } from "react";
 import {
   DARK_GREY_BG_COLOR,

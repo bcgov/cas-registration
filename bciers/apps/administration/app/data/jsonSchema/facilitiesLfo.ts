@@ -1,7 +1,10 @@
 import { RJSFSchema } from "@rjsf/utils";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import provinceOptions from "@bciers/data/provinces.json";
-import InlineArrayFieldTemplate from "@bciers/components/form/fields/InlineArrayFieldTemplate";
+import {
+  ArrayFieldTemplate,
+  ArrayFieldItemTemplate,
+} from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 const currentYear = new Date().getFullYear();
 
@@ -225,9 +228,11 @@ export const facilitiesLfoUiSchema = {
       },
     },
     well_authorization_numbers: {
-      "ui:ArrayFieldTemplate": InlineArrayFieldTemplate,
+      "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+      "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
       "ui:options": {
         arrayAddLabel: "Add Well Authorization Number",
+        inlineRemoveButton: true,
       },
     },
     bcghg_id: {
