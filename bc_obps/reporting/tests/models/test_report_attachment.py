@@ -23,6 +23,11 @@ class ReportAttachmentTest(BaseTestCase):
             ("status", "status", None, None),
         ]
 
+    def test_supports_over_100_chars_in_file_name(self):
+        long_file_name = "ten_chars " * 90 + ".longextension"
+        report_attachment = make_recipe("reporting.tests.utils.report_attachment", attachment=long_file_name)
+        self.assertEqual(report_attachment.attachment.name, long_file_name)
+
     def test_immutable_after_report_version_submitted(self):
         assert_immutable_report_version("reporting.tests.utils.report_attachment")
 
