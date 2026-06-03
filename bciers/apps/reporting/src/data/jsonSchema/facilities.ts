@@ -50,10 +50,6 @@ export const buildFacilitySchema = (
         },
         uniqueItems: true,
       },
-      other_activities_title: {
-        title: "Other activities",
-        type: "string",
-      },
       other_activities: {
         type: "array",
         title: "Other activities",
@@ -112,10 +108,6 @@ export const buildFacilityReviewUiSchema = (
       label: false,
       columns: 1,
     },
-  },
-  other_activities_title: {
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:classNames": "mt-4 mb-2 emission-array-header",
   },
   other_activities: {
     "ui:FieldTemplate": FieldTemplate,
