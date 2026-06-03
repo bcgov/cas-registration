@@ -16,6 +16,7 @@ class Document(TimeStampedModel, ScannedFileStorageMixin):
         storage=keep_deleted_items(default_storage),
         upload_to="documents",
         db_comment="The file format, metadata, etc.",
+        max_length=1000,
     )
     type = models.ForeignKey(
         DocumentType,
