@@ -113,14 +113,21 @@ In the `bciers` directory:
 
 **Or**, you can use the scripts available in `bciers/package.json`
 
-## Pre-Commit
+## Git Hooks (prek)
 
-[pre-commit](https://pre-commit.com/) runs a variety of formatting and lint checks configured in [`.pre-commit-config.yaml`](../.pre-commit-config.yaml) which are required for a pull request to pass CI.
+[prek](https://prek.j178.dev/) runs a variety of formatting and lint checks configured in [`prek.toml`](../prek.toml) which are required for a pull request to pass CI.
 
-`pre-commit install` will [configure a pre-commit hook to run before every commit](https://pre-commit.com/#usage); alternatively, you can run it manually with:
+Install prek via `pip install -r requirements.txt`, then register the git hooks:
 
 ```bash
-pre-commit run --all-files
+prek install                          # registers the git hook
+prek install --hook-type commit-msg   # also enables commit message linting
+```
+
+Alternatively, run all hooks manually without installing:
+
+```bash
+prek run --all-files
 ```
 
 If you are impatient and your work is isolated to Javascript, it may be faster to run only the linter and formatter (`eslint` and `prettier`), but it may not catch everything (such as the end-of-file fixer and trailing whitespace):
@@ -131,7 +138,7 @@ yarn lint && yarn format
 
 ## Commit Message Conventions
 
-We use [gitlint](https://jorisroovers.com/gitlint/) to check commit message formatting. You can enable it by using `pre-commit install --hook-type commit-msg`.
+We use [gitlint](https://jorisroovers.com/gitlint/) to check commit message formatting. It is managed automatically by prek — no separate install required. Enable it with `prek install --hook-type commit-msg`.
 
 This project follows the commit message conventions outlined by [Conventional Commits](https://www.conventionalcommits.org/). Besides the standard commit types (message prefixes) **feat** and **fix**, we use some other types described there based on the Angular convention; some common ones among those are **test**, **docs**, **chore** and **refactor**. You can find the configuration details in the [.gitlint](../.gitlint) file
 

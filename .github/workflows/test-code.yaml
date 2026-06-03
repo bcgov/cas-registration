@@ -63,7 +63,7 @@ jobs:
       - run: yarn npm audit
         working-directory: ./bciers
 
-  pre-commit:
+  prek:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -71,11 +71,6 @@ jobs:
         uses: ./.github/actions/dev-env-setup-frontend
       - name: dev env setup backend
         uses: ./.github/actions/dev-env-setup-backend
-      - name: set pre-commit cache directory
-        run: |
-          echo "PRE_COMMIT_HOME=$GITHUB_WORKSPACE/.pre-commit-cache" >> $GITHUB_ENV
-      - name: set PY
-        run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
       - name: create commitlint COMMIT_EDITMSG if not exists
         run: |
           if test -f ".git/COMMIT_EDITMSG"; then
@@ -83,13 +78,7 @@ jobs:
           else
               touch .git/COMMIT_EDITMSG
           fi
-      - uses: actions/cache@v5
-        with:
-          path: |
-            ./.pre-commit-cache
-          key: pre-commit-${{ env.PY }}-${{ hashFiles('.pre-commit-config.yaml') }}-v4
-      - run: pip install -r requirements.txt
-      - uses: pre-commit/action@v3.0.1
+      - uses: j178/prek-action@v2
 
   check-migrations:
     runs-on: ubuntu-latest
