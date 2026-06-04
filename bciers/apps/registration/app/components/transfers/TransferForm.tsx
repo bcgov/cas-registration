@@ -8,10 +8,7 @@ import { useRouter } from "next/navigation";
 import { IChangeEvent } from "@rjsf/core";
 import { TransferFormData } from "@/registration/app/components/transfers/types";
 import { OperatorRow } from "@/administration/app/components/operators/types";
-import {
-  createTransferSchema,
-  transferUISchema,
-} from "@/registration/app/data/jsonSchema/transfer/transfer";
+import { createTransferSchemas } from "@/registration/app/data/jsonSchema/transfer/transfer";
 import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
 import { FacilityRow } from "@/administration/app/components/facilities/types";
 import TaskList from "@bciers/components/form/components/TaskList";
@@ -30,12 +27,13 @@ export default function TransferForm({
   formData,
   operators,
 }: Readonly<TransferFormProps>) {
+  const { transferSchema, transferUISchema } = createTransferSchemas(operators);
   const router = useRouter();
 
   const [formState, setFormState] = useState(formData);
   const [key, resetKey] = useKey();
   const [error, setError] = useState(undefined);
-  const [schema, setSchema] = useState(createTransferSchema(operators));
+  const [schema, setSchema] = useState(transferSchema);
   const [uiSchema, setUiSchema] = useState(transferUISchema);
   const [fromOperatorOperations, setFromOperatorOperations] = useState(
     [] as any,
@@ -143,7 +141,13 @@ export default function TransferForm({
 
     setFromOperatorOperations(fromRes.rows);
     setToOperatorOperations(toRes.rows);
-    setSchema(createTransferSchema(operators, fromRes.rows, toRes.rows));
+    const updatedSchemaObjects = createTransferSchemas(
+      operators,
+      fromRes.rows,
+      toRes.rows,
+    );
+    setSchema(updatedSchemaObjects.transferSchema);
+    setUiSchema(updatedSchemaObjects.transferUISchema);
 
     // reset dependent selections
     setFormState({
@@ -190,15 +194,14 @@ export default function TransferForm({
       (operation: OperationRow) =>
         operation.operation__id !== transferFormData?.from_operation,
     );
-
-    setSchema(
-      createTransferSchema(
-        operators,
-        fromOperatorOperations,
-        filteredToOperatorOperations,
-        facilitiesRes.rows,
-      ),
+    const updatedSchemaObjects = createTransferSchemas(
+      operators,
+      fromOperatorOperations,
+      filteredToOperatorOperations,
+      facilitiesRes.rows,
     );
+    setSchema(updatedSchemaObjects.transferSchema);
+    setUiSchema(updatedSchemaObjects.transferUISchema);
 
     setFormState({
       ...transferFormData,
