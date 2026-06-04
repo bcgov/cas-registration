@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from uuid import UUID
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_sign_off_service import (
@@ -14,6 +15,8 @@ from .report_additional_data import create_report_additional_data
 from .report_emission_allocation import prepare_emission_allocation_for_submission
 from .report_facility_report import mark_facility_reports_complete
 from .report_production_data import prepare_production_data_for_submission
+
+FIXED_SNAPSHOT_TIMESTAMP = datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
 
 
 def prepare_and_submit_report(report_version: ReportVersion, submitting_user: UUID):
@@ -40,7 +43,9 @@ def submit_report_from_fixture(report_version: ReportVersion, submitting_user: U
 
 
 def _submit(report_version: ReportVersion, submitting_user: UUID):
-    ReportSubmissionService.submit_report(
+    from common.lib import pgtrigger
+
+    submitted = ReportSubmissionService.submit_report(
         report_version.id,
         submitting_user,
         ReportSignOffData(
@@ -57,3 +62,9 @@ def _submit(report_version: ReportVersion, submitting_user: UUID):
             signature="me",
         ),
     )
+
+    with pgtrigger.ignore(
+        "reporting.ReportVersion:immutable_report_version",
+        "reporting.ReportVersion:set_updated_audit_columns",
+    ):
+        ReportVersion.objects.filter(id=submitted.id).update(updated_at=FIXED_SNAPSHOT_TIMESTAMP)

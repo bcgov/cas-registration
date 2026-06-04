@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 from typing import Any, Optional, cast
 from django.http import HttpRequest
 from compliance.models import (
@@ -6,11 +5,10 @@ from compliance.models import (
     ComplianceReport,
     ComplianceReportVersion,
 )
+from reporting.management.commands.utils import FIXED_SNAPSHOT_TIMESTAMP
 from ..schemas import ScenarioPayload
 from ..utils import extract_user_guid
 from .base import ScenarioHandler
-
-FIXED_SNAPSHOT_TIMESTAMP = datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
 
 
 class SubmitReportScenario(ScenarioHandler):
