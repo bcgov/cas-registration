@@ -19,7 +19,33 @@ env:
   PGUSER: postgres
 
 jobs:
+  setup-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            bciers/
+            .github/
+            .tool-versions
+            bc_obps/.tool-versions
+      - name: dev env setup frontend
+        uses: ./.github/actions/dev-env-setup-frontend
+  setup-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            bc_obps/
+            .github/
+            .tool-versions
+      - name: dev env setup backend
+        uses: ./.github/actions/dev-env-setup-backend
   check-nx-affected:
+    needs: [setup-frontend]
     runs-on: ubuntu-latest
     outputs:
       nx_affected_e2e: ${{ steps.check-nx-affected.outputs.NX_AFFECTED_E2E }}
@@ -61,13 +87,13 @@ jobs:
   build-reporting:
     uses: ./.github/workflows/build-reporting.yaml
   test-code:
-    needs: [check-nx-affected, check-backend-changes, check-frontend-changes]
+    needs: [setup-frontend, setup-backend, check-nx-affected, check-backend-changes, check-frontend-changes]
     uses: ./.github/workflows/test-code.yaml
     with:
       backend_has_changes: ${{ (needs.check-backend-changes.outputs.has_changes || contains(github.event.pull_request.labels.*.name, 'run-all-ci')) && 'true' || 'false' }}
       frontend_has_changes: ${{ (needs.check-frontend-changes.outputs.has_changes || contains(github.event.pull_request.labels.*.name, 'run-all-ci')) && 'true' || 'false' }}
   test-backend:
-    needs: [check-backend-changes]
+    needs: [setup-backend, check-backend-changes]
     uses: ./.github/workflows/test-backend.yaml
     with:
       backend_has_changes: ${{ (needs.check-backend-changes.outputs.has_changes || contains(github.event.pull_request.labels.*.name, 'run-all-ci')) && 'true' || 'false' }}

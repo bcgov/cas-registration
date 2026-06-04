@@ -32,6 +32,7 @@ runs:
       with:
         poetry-version: ${{ steps.versions.outputs.poetry-version }}
     - name: Set up PostgreSQL
+      if: steps.asdf-cache-backend.outputs.cache-hit != 'true'
       shell: bash
       run: |
         sudo apt-get update
@@ -39,7 +40,9 @@ runs:
         asdf plugin add postgres || true
         asdf plugin update postgres
         MAKELEVEL=0 POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' asdf install postgres ${{ steps.versions.outputs.postgres-version }}
-        asdf reshim
+    - name: Reshim asdf
+      shell: bash
+      run: asdf reshim
     - name: Start PostgreSQL and create database
       working-directory: ./bc_obps
       shell: bash

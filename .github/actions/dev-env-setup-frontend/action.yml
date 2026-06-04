@@ -27,6 +27,7 @@ runs:
       run: |
         corepack enable
     - name: yarn cache
+      id: yarn-cache
       uses: ./.github/actions/yarn-cache
     - name: Install yarn dependencies
       shell: bash

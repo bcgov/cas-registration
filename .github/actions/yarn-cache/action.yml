@@ -1,5 +1,9 @@
 name: "Yarn cache"
 description: "Cache Yarn dependencies"
+outputs:
+  cache-hit:
+    description: "Whether the cache was hit"
+    value: ${{ steps.yarn-cache.outputs.cache-hit }}
 runs:
   using: composite
   steps:
