@@ -7,7 +7,7 @@ from reporting.migrations._helpers import load_activity_schemas_from_json, load_
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0192_V5_12_0'),
+        ('reporting', '0193_alter_reportattachment_attachment'),
     ]
 
     operations = [
