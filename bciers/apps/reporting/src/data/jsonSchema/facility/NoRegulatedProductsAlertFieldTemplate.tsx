@@ -11,7 +11,7 @@ const LinkToActivitiesPage: React.FC<Props> = ({ report_version_id }) => (
   </Link>
 );
 
-const NoRegulatedProductsAlertContent: React.FC<Props> = (props) => {
+const NoRegulatedProductsAlertFieldTemplate: React.FC<Props> = (props) => {
   return (
     <div>
       No regulated products selected on <LinkToActivitiesPage {...props} />.
@@ -21,6 +21,6 @@ const NoRegulatedProductsAlertContent: React.FC<Props> = (props) => {
 };
 
 export default AlertFieldTemplateFactory(
-  NoRegulatedProductsAlertContent,
+  NoRegulatedProductsAlertFieldTemplate,
   "ALERT",
 );

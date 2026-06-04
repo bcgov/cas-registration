@@ -11,7 +11,7 @@ import {
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
 import { createFormContext } from "../shared/formContextHelpers";
-import NoRegulatedProductsAlertContent from "@reporting/src/data/jsonSchema/facility/NoRegulatedProductsAlertFieldTemplate";
+import NoRegulatedProductsAlertFieldTemplate from "@reporting/src/data/jsonSchema/facility/NoRegulatedProductsAlertFieldTemplate";
 
 interface Props {
   report_version_id: number;
@@ -80,7 +80,7 @@ const ProductionDataForm: React.FC<Props> = ({
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "form-heading-label",
     no_regulated_products_alert: {
-      "ui:FieldTemplate": NoRegulatedProductsAlertContent,
+      "ui:FieldTemplate": NoRegulatedProductsAlertFieldTemplate,
     },
   };
 

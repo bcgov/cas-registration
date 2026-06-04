@@ -1,4 +1,4 @@
-import NoRegulatedProductsAlertContent from "@reporting/src/data/jsonSchema/facility/NoRegulatedProductsAlertFieldTemplate";
+import NoRegulatedProductsAlertFieldTemplate from "@reporting/src/data/jsonSchema/facility/NoRegulatedProductsAlertFieldTemplate";
 import Form from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { render, screen } from "@testing-library/react";
@@ -15,7 +15,7 @@ const schema: RJSFSchema = {
 
 const uiSchema: UiSchema = {
   no_regulated_products_alert: {
-    "ui:FieldTemplate": NoRegulatedProductsAlertContent,
+    "ui:FieldTemplate": NoRegulatedProductsAlertFieldTemplate,
   },
 };
 
