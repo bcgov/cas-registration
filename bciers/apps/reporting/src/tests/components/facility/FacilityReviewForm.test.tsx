@@ -188,7 +188,7 @@ describe("The FacilityReview component", () => {
       <FacilityReview
         version_id={1000}
         facility_id="abcd"
-        reportOperationActivities={mockActivitiesData}
+        facilityActivities={mockActivitiesData}
         otherActivities={mockOtherActivities}
         navigationInformation={dummyNavigationInformation}
         formsData={mockFormData}
@@ -213,7 +213,7 @@ describe("The FacilityReview component", () => {
       <FacilityReview
         version_id={1000}
         facility_id="abcd"
-        reportOperationActivities={mockActivitiesData}
+        facilityActivities={mockActivitiesData}
         otherActivities={mockOtherActivities}
         navigationInformation={dummyNavigationInformation}
         formsData={mockFormData}
