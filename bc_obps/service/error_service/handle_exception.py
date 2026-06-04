@@ -81,8 +81,8 @@ class ExceptionHandler:
 
     @staticmethod
     def set_user_context(request: HttpRequest) -> None:
-        """Set user context in error tracking (Sentry or BetterStack) from the request."""
-        if not (settings.ENABLE_SENTRY or settings.ENABLE_BETTERSTACK):
+        """Set user context in Sentry from the request."""
+        if not settings.ENABLE_SENTRY:
             return
 
         # Check if current_user is set by middleware
@@ -101,8 +101,8 @@ class ExceptionHandler:
     def capture_sentry_exception(
         exc: Any, tag: Optional[str] = None, request: Optional[HttpRequest] = None
     ) -> Optional[str]:
-        """Capture exception in Sentry (prod/test) or BetterStack (dev)."""
-        if not (settings.ENABLE_SENTRY or settings.ENABLE_BETTERSTACK):
+        """Capture exception in Sentry."""
+        if not settings.ENABLE_SENTRY:
             return None
 
         # Set user context if request is available
@@ -112,8 +112,6 @@ class ExceptionHandler:
         if tag:
             set_tag(tag, True)
 
-        # Capture exception (Sentry for prod/test, BetterStack for dev)
-        # Both use sentry_sdk, so capture_exception works for either
         event_id = capture_exception(exc)
 
         return event_id

@@ -214,8 +214,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 20000000
 
 
 # Error tracking configuration
-# Sentry and BetterStack are completely independent and can be configured separately
-ENABLE_SENTRY, ENABLE_BETTERSTACK = configure_error_tracking(ENVIRONMENT)
+ENABLE_SENTRY = configure_error_tracking(ENVIRONMENT)
 
 
 # DJANGO-NINJA SETTINGS
