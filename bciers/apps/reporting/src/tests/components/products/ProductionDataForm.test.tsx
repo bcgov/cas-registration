@@ -81,10 +81,50 @@ describe("The ProductionDataForm component", () => {
     const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
     expect(
       mockMultiStepFormWithTaskList.mock.calls[0][0].schema.properties
-        .product_selection_title.title == "No Regulated Products to select",
+        .product_selection_title.title,
+    ).toBe("No Regulated Products to select");
+    expect(calledProps.continueUrl).toBe("continue");
+    expect(calledProps.saveButtonDisabled).toBe(true);
+  });
+
+  it("Blocks an SFO facility and shows an error banner + message when no regulated products are available to be selected", async () => {
+    const mockPush = vi.fn();
+    mockRouter.mockReturnValue({ push: mockPush });
+
+    render(
+      <ProductionDataForm
+        allowedProducts={[]}
+        initialData={[]}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={"Single Facility"}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
+      />,
     );
-    expect(calledProps.continueUrl == "Continue");
-    expect(calledProps.saveButtonDisabled == true);
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+
+    expect(mockMultiStepFormWithTaskList).toHaveBeenCalledOnce();
+    // error message + disabled buttons
+    expect(calledProps.errors).toEqual(["A product must be selected."]);
+    expect(calledProps.saveButtonDisabled).toBe(true);
+    expect(calledProps.submitButtonDisabled).toBe(true);
+    // error banner
+    expect(calledProps.schema.properties.no_regulated_products_alert).toEqual({
+      type: "object",
+      readOnly: true,
+    });
+    // formContext used by AlertFieldTemplateFactory
+    expect(calledProps.formContext).toEqual({
+      no_regulated_products_alert: {
+        report_version_id: 1000,
+      },
+    });
   });
 
   it("on change, adds an item to the form data when a checkbox is checked", async () => {

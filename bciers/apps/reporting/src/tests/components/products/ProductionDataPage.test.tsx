@@ -120,9 +120,10 @@ describe("The Production Data component", () => {
         reporting_year: 2020,
       },
       payload: {
-        allowed_products: [],
+        allowed_products: [{ product_id: 123, name: "testProduct" }],
         report_products: [
           {
+            product_id: 123,
             product_name: "testProduct",
             unit: "tonnes of tests",
           },
@@ -132,7 +133,7 @@ describe("The Production Data component", () => {
     });
 
     render(await ProductionDataPage(props));
-    expect(screen.getByText("testProduct")).toBeVisible();
+    expect(screen.getAllByText("testProduct")[0]).toBeVisible();
     expect(
       screen.queryByLabelText("Production data for Apr 1 - Dec 31, 2024*"),
     ).not.toBeInTheDocument();
@@ -170,7 +171,7 @@ describe("The Production Data component", () => {
         reporting_year: 2024,
       },
       payload: {
-        allowed_products: [],
+        allowed_products: [{ product_id: 123, name: "testProduct" }],
         report_products: [
           {
             product_name: "testProduct",
@@ -199,7 +200,7 @@ describe("The Production Data component", () => {
         is_operation_opted_out: true,
       },
       payload: {
-        allowed_products: [],
+        allowed_products: [{ id: 123, name: "testProduct" }],
         report_products: [
           {
             product_name: "testProduct",
