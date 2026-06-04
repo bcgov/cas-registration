@@ -6,17 +6,16 @@ from sentry_sdk.integrations.django import DjangoIntegration
 
 def configure_error_tracking(
     environment: Literal['local', 'CI', 'dev', 'test', 'prod'] | str | None,
-) -> tuple[bool, bool]:
+) -> bool:
     """
-    Configure error tracking services (Sentry and BetterStack).
+    Configure Sentry error tracking for prod and test environments.
 
     Args:
         environment: The ENVIRONMENT variable value (e.g., 'local', 'dev', 'test', 'prod')
 
     Returns:
-        Tuple of (ENABLE_SENTRY, ENABLE_BETTERSTACK) flags
+        ENABLE_SENTRY flag
     """
-    # Sentry configuration (for prod and test environments)
     sentry_environment = os.environ.get('SENTRY_ENVIRONMENT')
     sentry_trace_sample_rate = os.environ.get('SENTRY_TRACE_SAMPLE_RATE')
     enable_sentry = sentry_environment in ['prod', 'test']
@@ -35,19 +34,4 @@ def configure_error_tracking(
             environment=mapped_environment,
         )
 
-    # BetterStack configuration (for dev environment only)
-    enable_betterstack = environment == 'dev'
-
-    if enable_betterstack:
-        betterstack_dsn = "https://FfxnuN4kg57ov7B3UpV6HanU@eu-nbg-2.betterstackdata.com/1594614"
-        # Use SENTRY_TRACE_SAMPLE_RATE for consistency (same trace sample rate for both services)
-        trace_sample_rate = os.environ.get('SENTRY_TRACE_SAMPLE_RATE')
-
-        sentry_sdk.init(
-            dsn=betterstack_dsn,
-            integrations=[DjangoIntegration()],
-            traces_sample_rate=float(trace_sample_rate) if trace_sample_rate is not None else 0,
-            environment='dev',
-        )
-
-    return enable_sentry, enable_betterstack
+    return enable_sentry
