@@ -80,7 +80,7 @@ Directory structure:
 - **Version Control**:
   - Git
   - GitHub Actions (CI/CD)
-  - Pre-commit hooks
+  - prek (git hooks)
   - Commitlint
 
 - **Code Quality**:

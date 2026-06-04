@@ -25,7 +25,7 @@
     },
     "hooks": {
       "before:bump": "./.bin/release-bump-chart-version.sh ${version} && ./.bin/release-create-empty-migrations.sh ${version}",
-      "before:git:beforeRelease": "./.bin/pre-commit-format.sh CHANGELOG.md"
+      "before:git:beforeRelease": "./.bin/hook-format.sh CHANGELOG.md"
     }
   },
   "packageManager": "yarn@4.13.0"

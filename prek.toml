@@ -1,0 +1,176 @@
+# Configuration file for `prek`
+# See https://prek.j178.dev for more information.
+
+# Priority groups (hooks at the same priority run in parallel):
+#   0 — read-only integrity checks
+#   1 — file fixers (end-of-file, trailing whitespace)
+#   2 — formatters  (prettier for JS/TS/CSS/MD, black for Python)
+#   3 — linters & validators (after formatting is complete)
+
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "prettier"
+name = "Prettier"
+language = "system"
+files = '\.(j|t)sx?$|\.json$|\.md$|\.css$|\.scss$'
+exclude = '(\.next/|node_modules/|dist/|build/|coverage/|\.nx/cache/)'
+entry = "./.bin/hook-format.sh"
+priority = 2
+
+[[repos.hooks]]
+id = "eslint"
+name = "ESLint"
+language = "system"
+files = '\.(j|t)sx?$'
+exclude = '(\.next/|node_modules/|dist/|build/|coverage/|\.nx/cache/|tests/performance/)'
+entry = "./.bin/hook-lint.sh"
+# Run once per commit instead of once per file since nx affected handles all files at once.
+# This prevents parallel executions that cause git lock conflicts when fetching origin/develop.
+pass_filenames = false
+priority = 3
+
+[[repos.hooks]]
+id = "mypy"
+name = "Mypy"
+language = "system"
+types = ["python"]
+entry = "./.bin/hook-mypy.sh"
+priority = 3
+
+# General file hygiene — prek builtin Rust implementations (faster, no network fetch)
+
+[[repos]]
+repo = "builtin"
+
+[[repos.hooks]]
+id = "check-added-large-files"
+priority = 0
+
+[[repos.hooks]]
+id = "check-case-conflict"
+priority = 0
+
+[[repos.hooks]]
+id = "check-executables-have-shebangs"
+priority = 0
+
+[[repos.hooks]]
+id = "check-shebang-scripts-are-executable"
+priority = 0
+
+[[repos.hooks]]
+id = "check-merge-conflict"
+priority = 0
+
+[[repos.hooks]]
+id = "check-toml"
+priority = 0
+
+[[repos.hooks]]
+id = "check-json"
+priority = 0
+
+[[repos.hooks]]
+id = "check-vcs-permalinks"
+priority = 0
+
+[[repos.hooks]]
+id = "check-yaml"
+exclude = "^helm/.*/templates/"
+priority = 0
+
+[[repos.hooks]]
+id = "end-of-file-fixer"
+priority = 1
+
+[[repos.hooks]]
+id = "trailing-whitespace"
+exclude = "^bc_obps/.*/__snapshots__/"
+priority = 1
+
+# debug-statements has no builtin equivalent yet — keep remote hook
+
+[[repos]]
+repo = "https://github.com/pre-commit/pre-commit-hooks"
+rev = "v6.0.0"
+
+[[repos.hooks]]
+id = "debug-statements"
+priority = 0
+
+# Python formatting and linting
+
+[[repos]]
+repo = "https://github.com/psf/black"
+rev = "25.11.0"
+
+[[repos.hooks]]
+id = "black"
+types = ["python"]
+args = ["--config", "bc_obps/pyproject.toml"]
+priority = 2
+
+[[repos]]
+repo = "https://github.com/astral-sh/ruff-pre-commit"
+rev = "v0.14.6"
+
+[[repos.hooks]]
+id = "ruff"
+args = ["bc_obps/", "--fix"]
+priority = 3
+
+# Python dependency management
+
+[[repos]]
+repo = "https://github.com/python-poetry/poetry"
+rev = "2.2.1"
+
+[[repos.hooks]]
+id = "poetry-check"
+args = ["-C", "./bc_obps"]
+priority = 3
+
+[[repos.hooks]]
+id = "poetry-lock"
+args = ["-C", "./bc_obps"]
+priority = 3
+
+# Security scanning
+
+[[repos]]
+repo = "https://github.com/PyCQA/bandit"
+rev = "1.9.2"
+
+[[repos.hooks]]
+id = "bandit"
+additional_dependencies = ["pbr"]
+args = ["-c", "bc_obps/bandit.yaml"]
+priority = 3
+
+[[repos]]
+repo = "https://github.com/zricethezav/gitleaks"
+rev = "v8.29.1"
+
+[[repos.hooks]]
+id = "gitleaks"
+priority = 0
+
+# Commit message validation (commit-msg stage)
+
+[[repos]]
+repo = "https://github.com/jorisroovers/gitlint"
+rev = "v0.19.1"
+
+[[repos.hooks]]
+id = "gitlint"
+
+[[repos]]
+repo = "https://github.com/alessandrojcm/commitlint-pre-commit-hook"
+rev = "v9.23.0"
+
+[[repos.hooks]]
+id = "commitlint"
+stages = ["commit-msg"]
+additional_dependencies = ["@commitlint/config-conventional"]
