@@ -85,7 +85,7 @@
     "next": "16.2.6",
     "next-auth": "^5.0.0-beta.30",
     "pg": "^8.11.3",
-    "postcss": "8.5.10",
+    "postcss": "8.5.11",
     "react": "^19.2.3",
     "react-cookie": "^8.0.1",
     "react-dom": "^19.2.3",
