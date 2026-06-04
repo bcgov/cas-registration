@@ -46,44 +46,51 @@ describe("Help drawer component", () => {
       "https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system",
     );
     const link2 = screen.getByRole("link", {
-      name: /Guidance document See detailed guidance for getting started and reporting/i,
+      name: /Reporting Guidance See detailed guidance for getting started and reporting/i,
     });
     expect(link2).toHaveAttribute(
       "href",
       "https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_program_and_reporting_guidance.pdf",
     );
     const link3 = screen.getByRole("link", {
-      name: /Process flow diagram and facility boundary map guidance/i,
+      name: /See detailed guidance for meeting compliance obligations, making monetary payments, using compliance units, and general compliance information./i,
     });
     expect(link3).toHaveAttribute(
       "href",
-      "https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/boundary_map_guidance.pdf",
+      "https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_compliance_guidance.pdf",
     );
     const link4 = screen.getByRole("link", {
-      name: /WCI methodologies See detailed explanations of the Western Climate Initiative/i,
+      name: /Process flow diagram and facility boundary map guidance/i,
     });
     expect(link4).toHaveAttribute(
       "href",
-      "https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/reporting/quantify",
+      "https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/boundary_map_guidance.pdf",
     );
     const link5 = screen.getByRole("link", {
-      name: /GGIRCA Greenhouse Gas Industrial Reporting and Control Act./i,
+      name: /WCI methodologies See detailed explanations of the Western Climate Initiative/i,
     });
     expect(link5).toHaveAttribute(
       "href",
-      "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01",
+      "https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/reporting/quantify",
     );
     const link6 = screen.getByRole("link", {
-      name: /GGERR Greenhouse Gas Emission Reporting Regulation./i,
+      name: /GGIRCA Greenhouse Gas Industrial Reporting and Control Act./i,
     });
     expect(link6).toHaveAttribute(
       "href",
-      "https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015",
+      "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01",
     );
     const link7 = screen.getByRole("link", {
-      name: /GGEAPAR Greenhouse Gas Emission Administrative Penalties and Appeals Regulation/i,
+      name: /GGERR Greenhouse Gas Emission Reporting Regulation./i,
     });
     expect(link7).toHaveAttribute(
+      "href",
+      "https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015",
+    );
+    const link8 = screen.getByRole("link", {
+      name: /GGEAPAR Greenhouse Gas Emission Administrative Penalties and Appeals Regulation/i,
+    });
+    expect(link8).toHaveAttribute(
       "href",
       "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/248_2015",
     );
