@@ -1,5 +1,8 @@
 import AlertNote from "@bciers/components/form/components/AlertNote";
-import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
+import {
+  bcCarbonRegistryLink,
+  complianceGuidanceLink,
+} from "@bciers/utils/src/urls";
 import { Link } from "@mui/material";
 
 export const EarnedCreditsAlertNote = () => {
@@ -15,7 +18,15 @@ export const EarnedCreditsAlertNote = () => {
         B.C. Carbon Registry
       </Link>{" "}
       (BCCR). Once issued, you may trade or use them to meet your compliance
-      obligation.
+      obligation. For guidance on using compliance units and general compliance
+      information, refer to the{" "}
+      <Link
+        href={complianceGuidanceLink}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        compliance guidance document.
+      </Link>
     </AlertNote>
   );
 };

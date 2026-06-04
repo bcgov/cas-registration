@@ -9,6 +9,7 @@ import {
   ggerrLink,
   penaltiesRegulationLink,
   wciMethodologiesLink,
+  complianceGuidanceLink,
 } from "@bciers/utils/src/urls";
 
 export default function HelpDrawer() {
@@ -55,8 +56,33 @@ export default function HelpDrawer() {
           </p>
         </Box>
       </Link>
+
       <Link
         href={bcObpsGuidanceLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        underline="hover"
+      >
+        <Box
+          sx={{
+            border: "1px solid lightgrey",
+            borderRadius: 1,
+            padding: "1rem",
+            marginBottom: "1rem",
+          }}
+        >
+          <h3 className={`text-bc-bg-blue text-2xl w-full mt-0`}>
+            Reporting Guidance
+          </h3>
+          <p>
+            See detailed guidance for getting started and reporting. See a
+            Glossary with explanations of terminology.
+          </p>
+        </Box>
+      </Link>
+
+      <Link
+        href={complianceGuidanceLink}
         target="_blank"
         rel="noopener noreferrer"
         underline="hover"
@@ -69,11 +95,12 @@ export default function HelpDrawer() {
           }}
         >
           <h3 className={`text-bc-bg-blue text-2xl w-full mt-0`}>
-            Guidance document
+            Compliance Guidance
           </h3>
           <p>
-            See detailed guidance for getting started and reporting. See a
-            Glossary with explanations of terminology.
+            See detailed guidance for meeting compliance obligations, making
+            monetary payments, using compliance units, and general compliance
+            information.
           </p>
         </Box>
       </Link>

@@ -9,6 +9,7 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { ComplianceUnitsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsGrid";
 import { MonetaryPaymentsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/MonetaryPaymentsGrid";
+import { ComplianceSummaryGuidanceBanner } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryGuidanceBanner";
 
 export const createComplianceSummaryReviewSchema = (
   reportingYear: number,
@@ -16,6 +17,8 @@ export const createComplianceSummaryReviewSchema = (
   type: "object",
   title: `Review ${reportingYear} Compliance Obligation Report`,
   properties: {
+    // Guidance Banner
+    guidance_banner: readOnlyStringField(),
     // Obligation Section
     obligation_header: readOnlyObjectField(
       `${reportingYear} Compliance Obligation`,
@@ -43,6 +46,15 @@ export const createComplianceSummaryReviewSchema = (
 export const complianceSummaryReviewUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+
+  // Guidance Banner
+  guidance_banner: {
+    "ui:widget": ComplianceSummaryGuidanceBanner,
+    "ui:options": {
+      label: false,
+      inline: true,
+    },
+  },
 
   // Summary Section
   summary_header: headerUiConfig,

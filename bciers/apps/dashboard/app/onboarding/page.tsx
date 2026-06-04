@@ -10,6 +10,7 @@ import {
   bcObpsLink,
   bcObpsGuidanceLink,
   carbonTaxExemptionLink,
+  complianceGuidanceLink,
 } from "@bciers/utils/src/urls";
 /*
 📚
@@ -120,6 +121,16 @@ export default function Page() {
                 rel="noopener noreferrer"
               >
                 Carbon Tax Exemption page.
+              </a>
+            </li>
+            <li>
+              For information on compliance, please visit the{" "}
+              <a
+                href={complianceGuidanceLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Compliance Guidance.
               </a>
             </li>
           </ul>
