@@ -50,7 +50,6 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
   // Guidance Banner
   guidance_banner: {
     "ui:widget": ComplianceSummaryGuidanceBanner,
-    // "ui:classNames": "text-bc-bg-blue mt-8 [&>label]:mb-2",
     "ui:options": {
       label: false,
       inline: true,
