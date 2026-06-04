@@ -11,6 +11,7 @@ from reporting.schema.facility_report import FacilityReportListInSchema, Facilit
 from django.db.models import QuerySet
 from django.db.models import F
 from reporting.service.sync_validation_service import SyncValidationService
+from service.activity_service import ActivityService
 
 
 class SaveFacilityReportData:
@@ -43,11 +44,9 @@ class FacilityReportService:
         # them as two separate checklists.
         report_operation = ReportOperation.objects.filter(report_version_id=report_version_id).first()
         operation_activity_ids = (
-            list(report_operation.activities.values_list('id', flat=True)) if report_operation else []
+            set(report_operation.activities.values_list('id', flat=True)) if report_operation else set()
         )
-        all_activities = list(
-            Activity.objects.all().order_by('weight', 'name').values('id', 'name', 'applicable_to', 'regulated_name')
-        )
+        all_activities = ActivityService.get_all_activities()
         facility_report.facility_activities = [  # type: ignore[attr-defined]
             a for a in all_activities if a['id'] in operation_activity_ids
         ]
