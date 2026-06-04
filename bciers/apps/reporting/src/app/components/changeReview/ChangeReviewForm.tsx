@@ -10,6 +10,8 @@ import ReasonForChangeForm from "@reporting/src/app/components/changeReview/temp
 import { getChangeReviewData } from "../../utils/getReviewChangesData";
 import Loading from "@bciers/components/loading/SkeletonForm";
 import AlertNote from "@bciers/components/form/components/AlertNote";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
 
 interface ChangeReviewProps {
   versionId: number;
@@ -28,7 +30,7 @@ export default function ChangeReviewForm({
 }: ChangeReviewProps) {
   const router = useRouter();
   const [formData, setFormData] = useState(initialFormData);
-  const [errors, setErrors] = useState<string[]>();
+  const { setErrors, renderedErrors } = useFormErrors();
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
   const [reasonForChange, setReasonForChange] = useState(
     initialFormData.reason_for_change || "",
@@ -38,6 +40,7 @@ export default function ChangeReviewForm({
   const [changesData, setChangesData] = useState<
     { changed: ChangeItem[] } | undefined
   >();
+
   useEffect(() => {
     if (!displayChanges) return;
 
@@ -47,6 +50,7 @@ export default function ChangeReviewForm({
 
       setChangesData(fetchedDiffData);
     };
+
     fetchChanges();
   }, [versionId, displayChanges]);
 
@@ -58,25 +62,26 @@ export default function ChangeReviewForm({
 
     setIsSaving(true);
 
-    const endpoint = `reporting/report-version/${versionId}`;
-    const pathToRevalidate = `reporting/reports/${versionId}/review-changes`;
-    const method = "POST";
+    const response = await actionHandler(
+      `reporting/report-version/${versionId}`,
+      "POST",
+      `reporting/reports/${versionId}/review-changes`,
+      {
+        body: JSON.stringify(payload),
+      },
+    );
 
-    const response = await actionHandler(endpoint, method, pathToRevalidate, {
-      body: JSON.stringify(payload),
-    });
+    const isValid = handleApiResponse(response, setErrors);
 
-    if (response.error) {
-      setErrors([response.error]);
-    } else {
-      if (canContinue) {
-        setIsRedirecting(true);
-        router.push(navigationInformation.continueUrl);
-      }
+    if (isValid && canContinue) {
+      setIsRedirecting(true);
+      router.push(navigationInformation.continueUrl);
     }
 
     setIsSaving(false);
+    return isValid;
   };
+
   return (
     <MultiStepWrapperWithTaskList
       initialStep={navigationInformation.headerStepIndex}
@@ -84,7 +89,7 @@ export default function ChangeReviewForm({
       taskListElements={navigationInformation.taskList}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
-      errors={errors}
+      errors={renderedErrors}
       onSubmit={() => handleSubmit(true)}
       isRedirecting={isRedirecting}
       isSaving={isSaving}

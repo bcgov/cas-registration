@@ -27,12 +27,42 @@ function toAlertType(severity: ValidationSeverity): AlertType {
   }
 }
 
+function ValidationLink({
+  href,
+  label,
+  openInNewTab,
+}: {
+  href: string;
+  label: string;
+  openInNewTab?: boolean;
+}) {
+  if (openInNewTab) {
+    return (
+      <a
+        href={href}
+        className="underline"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {label}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className="underline">
+      {label}
+    </Link>
+  );
+}
+
 // Replaces label text in message with a clickable link (inline)
 // Else fall back to label as link
 function renderMessageWithInlineLink(
   text: string,
   label?: string,
   href?: string,
+  openInNewTab?: boolean,
 ) {
   if (!label || !href) {
     return <span>{text}</span>;
@@ -42,9 +72,7 @@ function renderMessageWithInlineLink(
     return (
       <span>
         {text}{" "}
-        <Link href={href} className="underline">
-          {label}
-        </Link>
+        <ValidationLink href={href} label={label} openInNewTab={openInNewTab} />
       </span>
     );
   }
@@ -55,9 +83,7 @@ function renderMessageWithInlineLink(
   return (
     <span>
       {before}
-      <Link href={href} className="underline">
-        {label}
-      </Link>
+      <ValidationLink href={href} label={label} openInNewTab={openInNewTab} />
       {after}
     </span>
   );
@@ -75,7 +101,12 @@ function renderValidationMessage(
 
   switch (config?.renderMode) {
     case "inline_link":
-      return renderMessageWithInlineLink(message, label, href);
+      return renderMessageWithInlineLink(
+        message,
+        label,
+        href,
+        config?.openInNewTab,
+      );
 
     case "label_then_message":
       if (!label || !href) {
@@ -84,9 +115,11 @@ function renderValidationMessage(
 
       return (
         <span>
-          <Link href={href} className="underline">
-            {label}
-          </Link>
+          <ValidationLink
+            href={href}
+            label={label}
+            openInNewTab={config?.openInNewTab}
+          />
           : {message}
         </span>
       );

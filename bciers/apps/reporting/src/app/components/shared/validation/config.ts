@@ -253,6 +253,23 @@ If the value is accurate, you may save & continue.`;
       `Facility ${context?.facility_name}: Please review the ${label} and ensure that only excluded emissions are allocated to unregulated products. If they are allocated, you may save and continue.`,
   }),
 
+  missing_operation_representative: createValidationUIConfig({
+    label: "add an operation representative for this operation",
+    priority: 1,
+    renderMode: "inline_link",
+    openInNewTab: true,
+
+    getHref: (ctx) =>
+      ctx?.operation_id
+        ? `/administration/operations/${ctx.operation_id}?operations_title=${encodeURIComponent(
+            String(ctx.operation_name ?? ""),
+          )}`
+        : undefined,
+
+    getMessage: () =>
+      "Before you can continue, you must add an operation representative for this operation then return to this report.",
+  }),
+
   generic_error: createValidationUIConfig({
     renderMode: "message_only",
     getMessage: (error) =>

@@ -7,9 +7,12 @@ import {
 import { actionHandler } from "@bciers/actions";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
-import { NavigationInformation } from "../taskList/types";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { getUpdatedFacilityReportDetails } from "@reporting/src/app/utils/getUpdatedFacilityReportDetails";
 import SnackBar from "@bciers/components/form/components/SnackBar";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
 
 interface Props {
   version_id: number;
@@ -42,15 +45,20 @@ export const FacilityReview: React.FC<Props> = ({
   isSyncAllowed = true,
 }) => {
   const [formData, setFormData] = useState<FacilityReviewFormData>(formsData);
-  const [errors, setErrors] = useState<string[] | undefined>();
+  const { setErrors, renderedErrors } = useFormErrors();
   const uiSchema = buildFacilityReviewUiSchema(operationId, facility_id);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const handleSubmit = async () => {
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
     const pathToRevalidate = `reporting/reports/${version_id}/facilities/${facility_id}/review-facility-information`;
+
     if (formData.activities.length === 0) {
-      setErrors(["You must select at least one activity."]);
+      setErrors([
+        createGenericReportValidationError(
+          "You must select at least one activity.",
+        ),
+      ]);
       return false;
     }
 
@@ -73,13 +81,8 @@ export const FacilityReview: React.FC<Props> = ({
     const response = await actionHandler(endpoint, method, pathToRevalidate, {
       body: JSON.stringify(updatedFormData),
     });
-    if (response?.error) {
-      setErrors([response.error]);
-      return false;
-    }
 
-    setErrors(undefined);
-    return true;
+    return handleApiResponse(response, setErrors);
   };
   const handleSync = async () => {
     const getUpdatedFacilityData = await getUpdatedFacilityReportDetails(
@@ -88,7 +91,9 @@ export const FacilityReview: React.FC<Props> = ({
     );
 
     if (getUpdatedFacilityData.error) {
-      setErrors(["Unable to sync data."]);
+      setErrors([
+        createGenericReportValidationError(getUpdatedFacilityData.error),
+      ]);
       return;
     }
 
@@ -133,7 +138,7 @@ export const FacilityReview: React.FC<Props> = ({
         backUrl={navigationInformation.backUrl}
         saveButtonDisabled={false}
         taskListElements={navigationInformation.taskList}
-        errors={errors}
+        errors={renderedErrors}
       />
       <SnackBar
         isSnackbarOpen={isSnackbarOpen}

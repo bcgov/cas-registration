@@ -8,9 +8,8 @@ import {
 } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { actionHandler } from "@bciers/actions";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
-import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
-import { handleFormResponse } from "@reporting/src/app/utils/handleFormResponse";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
 
 export interface GasType {
   id: number;
@@ -63,7 +62,7 @@ export default function NonAttributableEmissionsForm({
   emissionCategories,
   navigationInformation,
 }: NonAttributableEmissionsFormProps) {
-  const [errors, setErrors] = useState<ReportValidationErrors>();
+  const { setErrors, renderedErrors } = useFormErrors();
   const [formData, setFormData] = useState<NonAttributableFormData>({
     emissions_exceeded: emissionFormData.emissions_exceeded,
     // Seed one empty row so the form renders a first entry when the user switches to "Yes",
@@ -83,7 +82,7 @@ export default function NonAttributableEmissionsForm({
       body: JSON.stringify(formData),
     });
 
-    return handleFormResponse(response, setErrors);
+    return handleApiResponse(response, setErrors);
   };
 
   return (
@@ -101,16 +100,7 @@ export default function NonAttributableEmissionsForm({
       onSubmit={handleSubmit}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
-      errors={
-        errors
-          ? [
-              <ReportValidationSummary
-                key="validation-production-data"
-                errors={errors}
-              />,
-            ]
-          : undefined
-      }
+      errors={renderedErrors}
     />
   );
 }

@@ -1,19 +1,21 @@
 "use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import postAttachments from "@reporting/src/app/utils/postAttachments";
 import AttachmentElement, {
   AttachmentElementOptions,
 } from "./AttachmentElement";
-import React, { useState } from "react";
 import { SupplementaryConfirmation, UploadedAttachment } from "./types";
 import { ATTACHMENT_TYPE_LABELS } from "./constants";
-import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
-import { useRouter } from "next/navigation";
-import { NavigationInformation } from "../taskList/types";
 import { getDictFromAttachmentArray } from "./AttachmentsPage";
 import { Checkbox } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
+import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
 
 interface Props extends HasReportVersion {
   initialUploadedAttachments: {
@@ -35,11 +37,10 @@ const AttachmentsForm: React.FC<Props> = ({
 }) => {
   const router = useRouter();
 
-  // That information needs to be part of state for when the user saves
   const [uploadedAttachments, setUplodadedAttachments] = useState(
     initialUploadedAttachments,
   );
-  // — supplementary confirmation state —
+
   const [
     confirmExistingAttachmentsRelevant,
     setConfirmExistingAttachmentsRelevant,
@@ -48,6 +49,7 @@ const AttachmentsForm: React.FC<Props> = ({
       initialSupplementaryConfirmation?.confirm_supplementary_existing_attachments_relevant,
     ),
   );
+
   const [
     confirmRequiredAttachmentsUploaded,
     setConfirmRequiredAttachmentsUploaded,
@@ -56,6 +58,7 @@ const AttachmentsForm: React.FC<Props> = ({
       initialSupplementaryConfirmation?.confirm_supplementary_required_attachments_uploaded,
     ),
   );
+
   const submitDisabled =
     isSupplementaryReport &&
     (!confirmExistingAttachmentsRelevant ||
@@ -64,7 +67,8 @@ const AttachmentsForm: React.FC<Props> = ({
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
-  const [errors, setErrors] = useState<string[]>();
+  const { setErrors, renderedErrors } = useFormErrors();
+
   const [hasValidationError, setHasValidationError] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{
     [fileType: string]: string;
@@ -82,7 +86,6 @@ const AttachmentsForm: React.FC<Props> = ({
     }
   };
 
-  //
   const validateAttachments = () => {
     if (
       isVerificationStatementMandatory &&
@@ -96,23 +99,25 @@ const AttachmentsForm: React.FC<Props> = ({
       });
       setHasValidationError(true);
       return false;
-    } else {
-      setValidationErrors({});
-      setHasValidationError(false);
-      return true;
     }
+
+    setValidationErrors({});
+    setHasValidationError(false);
+    return true;
   };
 
   const handleSubmit = async (canContinue: boolean) => {
-    if (!validateAttachments()) return;
+    if (!validateAttachments()) return false;
 
     if (
       !isSupplementaryReport &&
       Object.keys(pendingUploadFiles).length === 0
     ) {
-      // Nothing to submit
-      if (canContinue) return router.push(navigationInformation.continueUrl);
-      return;
+      if (canContinue) {
+        router.push(navigationInformation.continueUrl);
+      }
+
+      return true;
     }
 
     const formData = new FormData();
@@ -122,6 +127,7 @@ const AttachmentsForm: React.FC<Props> = ({
       formData.append("files", file);
       formData.append("file_types", fileType);
     }
+
     if (isSupplementaryReport) {
       formData.append(
         "confirm_supplementary_required_attachments_uploaded",
@@ -132,32 +138,33 @@ const AttachmentsForm: React.FC<Props> = ({
         String(confirmExistingAttachmentsRelevant),
       );
     }
+
     const response = await postAttachments(version_id, formData);
+    const isValid = handleApiResponse(response, setErrors);
 
-    if (response.error) {
-      setErrors([response.error]);
-    } else {
-      setPendingUploadFiles({});
-      setUplodadedAttachments(getDictFromAttachmentArray(response.attachments));
+    if (!isValid) {
+      setIsSaving(false);
+      return false;
+    }
 
-      if (canContinue) {
-        setIsRedirecting(true);
-        router.push(navigationInformation.continueUrl);
-      }
+    setPendingUploadFiles({});
+    setUplodadedAttachments(getDictFromAttachmentArray(response.attachments));
+
+    if (canContinue) {
+      setIsRedirecting(true);
+      router.push(navigationInformation.continueUrl);
     }
 
     setIsSaving(false);
+    return true;
   };
 
-  // Returns the id of the file if it has been saved,
-  // or underfined if the user changed that file.
   const getFileId = (fileType: string) => {
     return Object.keys(pendingUploadFiles).includes(fileType)
       ? undefined
       : uploadedAttachments && uploadedAttachments[fileType]?.id;
   };
 
-  // Returns the name of the file
   const getFileName = (fileType: string) => {
     return Object.keys(pendingUploadFiles).includes(fileType)
       ? pendingUploadFiles[fileType].name
@@ -189,7 +196,7 @@ const AttachmentsForm: React.FC<Props> = ({
       cancelUrl="#"
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
-      errors={errors}
+      errors={renderedErrors}
       validationError={hasValidationError}
       isSaving={isSaving}
       isRedirecting={isRedirecting}
@@ -199,16 +206,19 @@ const AttachmentsForm: React.FC<Props> = ({
       <div className="w-full form-group field field-object form-heading-label">
         <div className="form-heading">Attachments</div>
       </div>
+
       {isSupplementaryReport && (
         <Alert severity="warning" icon={<AlertIcon fill="#635231" />}>
           Review your attachments and replace any that are no longer applicable
           to this report.
         </Alert>
       )}
+
       <p>
         Please upload any of the documents below that is applicable to your
         report:
       </p>
+
       {buildAttachmentElement(
         ATTACHMENT_TYPE_LABELS.verification_statement,
         "verification_statement",
@@ -217,21 +227,26 @@ const AttachmentsForm: React.FC<Props> = ({
           error: validationErrors.verification_statement,
         },
       )}
+
       {buildAttachmentElement(
         ATTACHMENT_TYPE_LABELS.wci_352_362,
         "wci_352_362",
       )}
+
       {buildAttachmentElement(
         ATTACHMENT_TYPE_LABELS.additional_reportable_information,
         "additional_reportable_information",
       )}
+
       {buildAttachmentElement(
         ATTACHMENT_TYPE_LABELS.confidentiality_request,
         "confidentiality_request",
       )}
+
       <p>
         <b>Note:</b>
       </p>
+
       <ul>
         <li>
           An operator may claim that disclosure of the information referred to
@@ -247,13 +262,15 @@ const AttachmentsForm: React.FC<Props> = ({
           The Director under GGIRCA will be in contact with you regarding your
           request
         </li>
-      </ul>{" "}
+      </ul>
+
       {isSupplementaryReport && (
         <div className="mt-4 border-t pt-4">
           <p>
             Before clicking &apos;Save & Continue&apos;, please confirm that you
             understand and agree with the following statements:
           </p>
+
           <div className="flex items-start mt-3">
             <Checkbox
               id="confirm-required-attachment-check"
@@ -275,6 +292,7 @@ const AttachmentsForm: React.FC<Props> = ({
               to be updated for the new submission of this report.
             </label>
           </div>
+
           <div className="flex items-start mt-3">
             <Checkbox
               id="confirm-relevant-attachment-check"

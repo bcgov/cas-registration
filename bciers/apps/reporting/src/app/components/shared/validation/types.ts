@@ -18,6 +18,7 @@ export type ReportValidationMessageKey =
   | "missing_supplementary_report_version_change"
   | "missing_regulated_product"
   | "og_np_nc_allocation_mismatch"
+  | "missing_operation_representative"
   | "generic_error";
 
 // Additional metadata returned from backend used for dynamic content
@@ -69,6 +70,7 @@ export type ValidationUIConfig = {
   priority?: number;
   renderMode: ValidationRenderMode;
   getHref?: (ctx: ReportValidationError["context"]) => string | undefined;
+  openInNewTab?: boolean;
   getMessage?: (error: ReportValidationError) => string;
   formatMessage?: (args: {
     label?: string;

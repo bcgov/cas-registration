@@ -6,7 +6,9 @@ import { actionHandler } from "@bciers/actions";
 import { newEntrantUiSchema } from "@reporting/src/data/jsonSchema/newEntrantInformation/newEntrantInformation";
 import { newEntrantSchema } from "@reporting/src/data/jsonSchema/newEntrantInformation/newEntrantInformationSchema";
 import { IChangeEvent } from "@rjsf/core";
-import { NavigationInformation } from "../../taskList/types";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
 
 interface NewEntrantInfornationProps {
   version_id: number;
@@ -20,7 +22,7 @@ export default function NewEntrantInformationForm({
   navigationInformation,
 }: NewEntrantInfornationProps) {
   const [formData, setFormData] = useState(initialFormData || {});
-  const [errors, setErrors] = useState<string[]>();
+  const { setErrors, renderedErrors } = useFormErrors();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
     !initialFormData.assertion_statement,
   );
@@ -40,13 +42,8 @@ export default function NewEntrantInformationForm({
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(data),
     });
-    if (response?.error) {
-      setErrors([response.error]);
-      return false;
-    }
 
-    setErrors(undefined);
-    return true;
+    return handleApiResponse(response, setErrors);
   };
   return (
     <MultiStepFormWithTaskList
@@ -64,7 +61,7 @@ export default function NewEntrantInformationForm({
       submitButtonDisabled={submitButtonDisabled}
       formContext={formData}
       continueUrl={navigationInformation.continueUrl}
-      errors={errors}
+      errors={renderedErrors}
     />
   );
 }
