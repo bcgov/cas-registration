@@ -36,10 +36,6 @@ class TestCompliancePenaltyAccrualRls(BaseTestCase):
         )
         old_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
 
-        # operation
-        # operation = make_recipe(
-        #     'registration.tests.utils.operation', operator=new_user_operator.operator, status="Registered"
-        # )
         # timeline of current and historical ownership
         make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
