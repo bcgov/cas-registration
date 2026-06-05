@@ -73,6 +73,12 @@ runs:
       run: |
         VERSION=$(grep '^appVersion:' helm/cas-bciers/Chart.yaml | sed 's/appVersion: "\(.*\)"/\1/')
         echo "value=${VERSION}" >> $GITHUB_OUTPUT
+    - name: Get Node version from .tool-versions
+      id: node_version
+      run: |
+        NODE_VERSION=$(grep '^nodejs ' ./.tool-versions | awk '{print $2}')
+        echo "value=${NODE_VERSION}" >> $GITHUB_OUTPUT
+      shell: bash
     - name: Build images
       shell: bash
       env:
@@ -93,7 +99,10 @@ runs:
           echo "Project not in allowed project list"
           exit 1
         fi
-        npx nx container $PROJECT --skip-nx-cache
+          npx nx container $PROJECT \
+            --build-args=application_path="$PROJECT" \
+            --build-args=NODE_VERSION="${{ steps.node_version.outputs.value }}" \
+            --skip-nx-cache
       working-directory: ./bciers
       # Temp fix
       # https://github.com/docker/build-push-action/issues/252

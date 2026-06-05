@@ -1,9 +1,18 @@
+# In CI, the Node version is specified in the build args, taken from .tool-versions
+# TODO: Add docs for building locally
+ARG NODE_VERSION
+
+####################
+# Base Stage
+####################
+FROM dhi.io/node:${NODE_VERSION}-alpine3.23-dev AS base
+
 ####################
 # Bundler Stage
 # - Dependencies built by Nx build
 # - DockerHardenedImages (DHI.io)-dev image includes shell for setup
 ####################
-FROM dhi.io/node:24.15.0-alpine3.23-dev AS bundler
+FROM base AS bundler
 
 # nx/nextjs builds some files into subfolders based on project name. For a unified container, we supply the project name as a path.
 ARG application_path
@@ -22,7 +31,7 @@ RUN chmod +x /usr/local/bin/dumb-init
 # - Uses DHI.io runtime image which does not include shell
 # - Production image, copy all the files and run next
 ####################
-FROM dhi.io/node:24.15.0-alpine3.23-dev AS runner
+FROM base AS runner
 
 # HOST variables are only used in test builds for running e2e in CI
 ARG HOST_ADMINISTRATION
