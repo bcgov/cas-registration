@@ -1,18 +1,17 @@
 from datetime import date
 import unittest
-
 from model_bakery.baker import make_recipe
-
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from rls.tests.helpers import (
     assert_policies_for_cas_roles,
     assert_policies_for_industry_user,
 )
-
+from compliance.models import ComplianceReportVersion
 from compliance.models.compliance_report_version_manual_handling import (
     ComplianceReportVersionManualHandling,
 )
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 
 # ---------------------------------------------------------------------------
 # Basic field / meta tests
@@ -391,21 +390,8 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
         )
 
     def test_manual_handling_rls_cas_users(self):
-        # Minimal setup: one manual-handling record
-        compliance_report = make_recipe("compliance.tests.utils.compliance_report")
-        report_compliance_summary = make_recipe(
-            "compliance.tests.utils.report_compliance_summary",
-        )
-        compliance_report_version = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary,
-        )
-
-        make_recipe(
-            "compliance.tests.utils.compliance_report_version_manual_handling",
-            compliance_report_version=compliance_report_version,
-            analyst_comment="Some context",
+        ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING,
         )
 
         def select_function(cursor):
