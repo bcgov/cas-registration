@@ -3,6 +3,8 @@ from compliance.models.compliance_penalty_accrual import CompliancePenaltyAccrua
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from model_bakery.baker import make_recipe
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
+from compliance.models import ComplianceReportVersion
 
 
 class CompliancePenaltyAccrualTest(BaseTestCase):
@@ -26,27 +28,28 @@ class CompliancePenaltyAccrualTest(BaseTestCase):
 class TestCompliancePenaltyAccrualRls(BaseTestCase):
     def test_compliance_penalty_accrual_rls_industry_user(self):
         # create two user_operators to set up for transfers
-        new_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
+        new_user_operator = make_recipe(
+            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
+        )
         old_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
 
-        # operation
-        operation = make_recipe(
-            'registration.tests.utils.operation', operator=new_user_operator.operator, status="Registered"
-        )
         # timeline of current and historical ownership
         make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            operation=operation,
+            operation=test_data.operation,
             operator=old_user_operator.operator,
         )
         make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            operation=operation,
+            operation=test_data.operation,
             operator=new_user_operator.operator,
         )
         # old operator's data
         old_operator_report = make_recipe(
-            'reporting.tests.utils.report', operation=operation, operator=old_user_operator.operator
+            'reporting.tests.utils.report', operation=test_data.operation, operator=old_user_operator.operator
         )
         old_operator_compliance_report = make_recipe(
             'compliance.tests.utils.compliance_report', report=old_operator_report
@@ -68,24 +71,8 @@ class TestCompliancePenaltyAccrualRls(BaseTestCase):
         )
 
         # new operator's data
-        new_operator_report = make_recipe(
-            'reporting.tests.utils.report', operation=operation, operator=new_user_operator.operator
-        )
-        new_operator_compliance_report = make_recipe(
-            'compliance.tests.utils.compliance_report', report=new_operator_report
-        )
-
-        new_operator_compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=new_operator_compliance_report
-        )
-
-        new_operator_compliance_obligation = make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=new_operator_compliance_report_version,
-        )
-
         new_operator_compliance_penalty = make_recipe(
-            'compliance.tests.utils.compliance_penalty', compliance_obligation=new_operator_compliance_obligation
+            'compliance.tests.utils.compliance_penalty', compliance_obligation=test_data.compliance_obligation
         )
         new_operator_compliance_penalty_accrual = make_recipe(
             'compliance.tests.utils.compliance_penalty_accrual', compliance_penalty=new_operator_compliance_penalty
@@ -120,18 +107,11 @@ class TestCompliancePenaltyAccrualRls(BaseTestCase):
         )
 
     def test_compliance_penalty_accrual_rls_cas_users(self):
-        operator = make_recipe('registration.tests.utils.operator')
-        operation = make_recipe('registration.tests.utils.operation', operator=operator)
-        report = make_recipe('reporting.tests.utils.report', operation=operation)
-        compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=report)
-        compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
-        )
-        compliance_obligation = make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=compliance_report_version
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         )
         compliance_penalty = make_recipe(
-            'compliance.tests.utils.compliance_penalty', compliance_obligation=compliance_obligation
+            'compliance.tests.utils.compliance_penalty', compliance_obligation=test_data.compliance_obligation
         )
         make_recipe('compliance.tests.utils.compliance_penalty_accrual', id=88, compliance_penalty=compliance_penalty)
 
