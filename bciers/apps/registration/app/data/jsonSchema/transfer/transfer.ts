@@ -5,7 +5,7 @@ import { FacilityRow } from "@/administration/app/components/facilities/types";
 import { OperationRow } from "@/administration/app/components/operations/types";
 import { OperatorRow } from "@/administration/app/components/operators/types";
 
-export const createTransferSchema = (
+export const createTransferSchemas = (
   operatorOptions: OperatorRow[],
   operationOptions: OperationRow[] = [], // fromOperationOptions and operationOptions are the same
   toOperationOptions: OperationRow[] = [],
@@ -130,6 +130,54 @@ export const createTransferSchema = (
     },
   };
 
+  const transferUISchema: UiSchema = {
+    "ui:FieldTemplate": SectionFieldTemplate,
+    "ui:options": {
+      label: false,
+    },
+    transfer_header: {
+      "ui:FieldTemplate": FieldTemplate,
+      "ui:classNames": "form-heading mb-8",
+    },
+    transfer_preface: {
+      "ui:classNames": "text-bc-bg-blue text-md",
+    },
+    from_operator: {
+      "ui:widget": "ComboBox",
+      "ui:placeholder": "Select the current operator",
+    },
+    to_operator: {
+      "ui:widget": "ComboBox",
+      "ui:placeholder": "Select the new operator",
+    },
+    transfer_entity: {
+      "ui:widget": "RadioWidget",
+      "ui:classNames": "md:gap-20",
+      "ui:options": {
+        inline: true,
+      },
+    },
+    operation: {
+      "ui:widget": "ComboBox",
+      "ui:placeholder": "Select the operation",
+    },
+    effective_date: {
+      "ui:widget": "DateWidget",
+    },
+    from_operation: {
+      "ui:widget": "ComboBox",
+      "ui:placeholder": "Select the operation",
+    },
+    facilities: {
+      "ui:widget": "MultiSelectWidgetWithTooltip",
+      "ui:placeholder": "Select facilities",
+    },
+    to_operation: {
+      "ui:widget": "ComboBox",
+      "ui:placeholder": "Select the operation",
+    },
+  };
+
   const transferSchemaCopy = JSON.parse(JSON.stringify(transferSchema));
 
   if (operationOptions.length > 0) {
@@ -160,8 +208,8 @@ export const createTransferSchema = (
     // Add the facility options to the facilities field
     transferSchemaCopy.dependencies.transfer_entity.allOf[1].then.properties.facilities.items.enum =
       facilityOptions.map((facility) => facility.facility__id);
-    transferSchemaCopy.dependencies.transfer_entity.allOf[1].then.properties.facilities.items.enumNames =
-      facilityOptions.map((facility: FacilityRow) => {
+    transferUISchema.facilities["ui:enumNames"] = facilityOptions.map(
+      (facility: FacilityRow) => {
         const {
           facility__name: facilityName,
           facility__latitude_of_largest_emissions: facilityLatitude,
@@ -170,56 +218,12 @@ export const createTransferSchema = (
         return facilityLatitude && facilityLongitude
           ? `${facilityName} - (${facilityLatitude}, ${facilityLongitude})`
           : facilityName;
-      });
+      },
+    );
   }
 
-  return transferSchemaCopy;
-};
-
-export const transferUISchema: UiSchema = {
-  "ui:FieldTemplate": SectionFieldTemplate,
-  "ui:options": {
-    label: false,
-  },
-  transfer_header: {
-    "ui:FieldTemplate": FieldTemplate,
-    "ui:classNames": "form-heading mb-8",
-  },
-  transfer_preface: {
-    "ui:classNames": "text-bc-bg-blue text-md",
-  },
-  from_operator: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select the current operator",
-  },
-  to_operator: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select the new operator",
-  },
-  transfer_entity: {
-    "ui:widget": "RadioWidget",
-    "ui:classNames": "md:gap-20",
-    "ui:options": {
-      inline: true,
-    },
-  },
-  operation: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select the operation",
-  },
-  effective_date: {
-    "ui:widget": "DateWidget",
-  },
-  from_operation: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select the operation",
-  },
-  facilities: {
-    "ui:widget": "MultiSelectWidgetWithTooltip",
-    "ui:placeholder": "Select facilities",
-  },
-  to_operation: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select the operation",
-  },
+  return {
+    transferSchema: transferSchemaCopy,
+    transferUISchema: transferUISchema,
+  };
 };
