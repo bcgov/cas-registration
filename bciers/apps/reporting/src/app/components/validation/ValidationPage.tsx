@@ -37,7 +37,6 @@ export default async function ValidationPage({
   let validationErrors: ReportValidationErrors = [];
   try {
     const response = await getReportValidationData(version_id);
-    console.log(response);
     validationErrors = response.errors;
   } catch (error) {
     // eslint-disable-next-line no-console

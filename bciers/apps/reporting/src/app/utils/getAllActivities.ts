@@ -1,11 +1,9 @@
 import { actionHandler } from "@bciers/actions";
-import { Activity } from "../components/operations/types";
+import { Activity } from "@reporting/src/app/components//operations/types";
 
 export async function getAllActivities() {
   const endpoint = "reporting/activities";
   const response = await actionHandler(endpoint, "GET");
-  if (response.error) {
-    throw new Error("Failed to fetch the activities.");
-  }
+
   return response as Activity[];
 }

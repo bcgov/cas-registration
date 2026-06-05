@@ -73,16 +73,6 @@ const setupFetchMocksForErrorScenario = (error: Error) => {
   fetch.mockResponseOnce(JSON.stringify(responseToken), { status: 200 });
 };
 
-// Helper function to assert error was logged once
-const expectErrorLoggedOnce = (endpoint: string) => {
-  expect(consoleMock).toHaveBeenCalledOnce();
-  expect(consoleMock).toHaveBeenLastCalledWith(
-    "An error occurred while fetching %s:",
-    endpoint,
-    expect.any(Error),
-  );
-};
-
 describe("getToken function", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -140,16 +130,15 @@ describe("actionHandler function", () => {
     expect(result).toEqual({ test_response: "test" });
   });
 
-  it("should return an error if the fetch throws an error", async () => {
+  it("should throw if the fetch throws an error for GET", async () => {
     const error = new Error("Fetch failed");
     setupFetchMocksForErrorScenario(error);
 
-    const result = await actionHandler("/endpoint", "GET");
+    await expect(actionHandler("/endpoint", "GET")).rejects.toThrow(
+      "Fetch failed",
+    );
 
-    expectErrorLoggedOnce("/endpoint");
-    expect(result).toEqual({
-      error: "An error occurred while fetching /endpoint: Fetch failed",
-    });
+    expect(captureExceptionMock).toHaveBeenCalledWith(error);
   });
 
   it("can still return data from an allowed endpoint if fetching token fails", async () => {
@@ -174,7 +163,7 @@ describe("actionHandler function", () => {
     expect(result).toEqual({ test_data: "test" });
   });
 
-  it("should return an error if fetching token fails and the endpoint is not allowed", async () => {
+  it("should throw if fetching token fails and the endpoint is not allowed", async () => {
     // getToken fetch (initial call)
     fetch.mockResponseOnce(JSON.stringify({ message: "Error message" }), {
       status: 400,
@@ -184,9 +173,9 @@ describe("actionHandler function", () => {
       status: 400,
     });
 
-    const result = await actionHandler("/endpoint", "GET");
+    await expect(actionHandler("/endpoint", "GET")).rejects.toThrow();
 
-    expect(consoleMock).toHaveBeenCalledTimes(3);
+    expect(consoleMock).toHaveBeenCalledTimes(2);
     expect(consoleMock).toHaveBeenNthCalledWith(
       1,
       "Failed to fetch token. Status: 400",
@@ -195,29 +184,46 @@ describe("actionHandler function", () => {
       2,
       "Failed to fetch token. Status: 400",
     );
-    expect(consoleMock).toHaveBeenNthCalledWith(
-      3,
-      "An error occurred while fetching %s:",
-      "/endpoint",
-      expect.any(Error),
-    );
 
-    expect(result).toEqual({
-      error:
-        "Your session has timed out. Please log in again at https://industrialemissions.gov.bc.ca/onboarding to continue.",
-    });
+    expect(captureExceptionMock).toHaveBeenCalled();
   });
 
-  it("should return an error if the fetch response is not ok", async () => {
-    const error = new Error("Fetch failed");
-    setupFetchMocksForErrorScenario(error);
+  it("should throw for GET errors that are not handled", async () => {
+    fetch.mockResponses(
+      // getToken fetch
+      [JSON.stringify(responseToken), { status: 200 }],
+      // actionHandler fetch
+      [JSON.stringify({ message: "Error message" }), { status: 400 }],
+      // getToken fetch in catch block
+      [JSON.stringify(responseToken), { status: 200 }],
+    );
+
+    await expect(actionHandler("/endpoint", "GET")).rejects.toThrow(
+      "Error message",
+    );
+
+    expect(captureExceptionMock).toHaveBeenCalledWith(expect.any(Error));
+  });
+
+  it("should not throw for handled GET 401 responses", async () => {
+    fetch.mockResponses(
+      // getToken fetch
+      [JSON.stringify(responseToken), { status: 200 }],
+      // actionHandler fetch
+      [JSON.stringify({ message: "Unauthorized" }), { status: 401 }],
+    );
 
     const result = await actionHandler("/endpoint", "GET");
 
-    expectErrorLoggedOnce("/endpoint");
     expect(result).toEqual({
-      error: "An error occurred while fetching /endpoint: Fetch failed",
+      error: "Unauthorized",
     });
+
+    expect(captureExceptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "Unauthorized",
+      }),
+    );
   });
 
   it("should call Sentry.captureException if an error occurs", async () => {
@@ -226,11 +232,129 @@ describe("actionHandler function", () => {
       [JSON.stringify(responseToken), { status: 200 }],
       // actionHandler fetch
       [JSON.stringify({ message: "Error message" }), { status: 400 }],
+      // getToken fetch in catch block
+      [JSON.stringify(responseToken), { status: 200 }],
     );
 
-    await actionHandler("/endpoint", "GET");
+    await expect(actionHandler("/endpoint", "GET")).rejects.toThrow(
+      "Error message",
+    );
 
-    expect(captureExceptionMock).toHaveBeenCalledOnce();
+    expect(captureExceptionMock).toHaveBeenCalledWith(expect.any(Error));
+  });
+
+  it("should return validation errors for form POST 4xx responses", async () => {
+    const validationResponse = {
+      message: "Validation failed",
+      errors: [
+        {
+          key: "generic_error",
+          error: {
+            severity: "Error",
+            message: "Validation failed",
+          },
+        },
+      ],
+    };
+
+    fetch.mockResponses(
+      // getToken fetch
+      [JSON.stringify(responseToken), { status: 200 }],
+      // actionHandler fetch
+      [JSON.stringify(validationResponse), { status: 400 }],
+    );
+
+    const result = await actionHandler("/endpoint", "POST");
+
+    expect(result).toEqual({
+      error: "Validation failed",
+      validation: validationResponse,
+    });
+
+    expect(captureExceptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "Validation failed",
+      }),
+    );
+  });
+
+  it("should return validation errors for form PUT 4xx responses", async () => {
+    const validationResponse = {
+      message: "Update failed",
+      errors: [
+        {
+          key: "generic_error",
+          error: {
+            severity: "Error",
+            message: "Update failed",
+          },
+        },
+      ],
+    };
+
+    fetch.mockResponses(
+      // getToken fetch
+      [JSON.stringify(responseToken), { status: 200 }],
+      // actionHandler fetch
+      [JSON.stringify(validationResponse), { status: 422 }],
+    );
+
+    const result = await actionHandler("/endpoint", "PUT");
+
+    expect(result).toEqual({
+      error: "Update failed",
+      validation: validationResponse,
+    });
+
+    expect(captureExceptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "Update failed",
+      }),
+    );
+  });
+
+  it("should return formatted error for POST network failures", async () => {
+    const error = new Error("Fetch failed");
+    setupFetchMocksForErrorScenario(error);
+
+    const result = await actionHandler("/endpoint", "POST");
+
+    expect(result).toEqual({
+      error: "An error occurred while fetching /endpoint: Fetch failed",
+    });
+
+    expect(captureExceptionMock).toHaveBeenCalledWith(error);
+  });
+
+  it("should throw for DELETE 500 responses instead of returning formatted errors", async () => {
+    const errorResponse = {
+      message:
+        "An internal server error has occurred. Please contact ghgregulator@gov.bc.ca for help.",
+      errors: [
+        {
+          key: "generic_error",
+          error: {
+            severity: "Error",
+            message:
+              "An internal server error has occurred. Please contact ghgregulator@gov.bc.ca for help.",
+          },
+        },
+      ],
+    };
+
+    fetch.mockResponses(
+      // getToken fetch
+      [JSON.stringify(responseToken), { status: 200 }],
+      // actionHandler fetch
+      [JSON.stringify(errorResponse), { status: 500 }],
+      // getToken fetch in catch block
+      [JSON.stringify(responseToken), { status: 200 }],
+    );
+
+    await expect(actionHandler("/endpoint", "DELETE")).rejects.toThrow(
+      "An internal server error has occurred.",
+    );
+
     expect(captureExceptionMock).toHaveBeenCalledWith(expect.any(Error));
   });
 });

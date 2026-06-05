@@ -8,6 +8,9 @@ import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormDat
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { getAllGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
+import { getActivityInitData } from "@reporting/src/app/utils/getActivityInitData";
+import { getActivitySchema } from "@reporting/src/app/utils/getActivitySchema";
+
 import { UUID } from "crypto";
 import {
   HeaderStep,
@@ -17,6 +20,14 @@ import {
 // Mock all dependencies
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
+}));
+
+vi.mock("@reporting/src/app/utils/getActivityInitData", () => ({
+  getActivityInitData: vi.fn(),
+}));
+
+vi.mock("@reporting/src/app/utils/getActivitySchema", () => ({
+  getActivitySchema: vi.fn(),
 }));
 
 vi.mock("@bciers/utils/src/safeJsonParse", () => ({
@@ -123,15 +134,25 @@ describe("ActivityPage Component", () => {
     (getOrderedActivities as ReturnType<typeof vi.fn>).mockResolvedValue(
       mockOrderedActivities,
     );
-
     (actionHandler as ReturnType<typeof vi.fn>).mockImplementation((url) => {
-      if (url.includes("initial-activity-data")) {
-        return Promise.resolve(mockActivityData);
-      } else if (url.includes("build-form-schema")) {
-        return Promise.resolve(mockJsonSchema);
+      if (url.includes("reporting/reporting-year")) {
+        return Promise.resolve({
+          reporting_year: 2024,
+          report_due_date: "2025-05-31",
+          reporting_window_end: "2025-03-31",
+          report_open_date: "2025-01-01",
+          is_reporting_open: true,
+        });
       }
+
       return Promise.resolve({ success: true });
     });
+    (getActivityInitData as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockActivityData,
+    );
+    (getActivitySchema as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockJsonSchema,
+    );
 
     (safeJsonParse as ReturnType<typeof vi.fn>).mockImplementation((data) => {
       if (data === mockJsonSchema) {
@@ -260,10 +281,10 @@ describe("ActivityPage Component", () => {
 
       expect(getAllGasTypes).toHaveBeenCalled();
       expect(getOrderedActivities).toHaveBeenCalledWith(versionId, facilityId);
-      expect(actionHandler).toHaveBeenCalledWith(
-        expect.stringContaining("initial-activity-data"),
-        "GET",
-        "",
+      expect(getActivityInitData).toHaveBeenCalledWith(
+        versionId,
+        facilityId,
+        mockOrderedActivities[0].id,
       );
       expect(getActivityFormData).toHaveBeenCalledWith(
         versionId,
@@ -288,22 +309,17 @@ describe("ActivityPage Component", () => {
     });
 
     it("should throw error when activity data fetch fails", async () => {
-      (actionHandler as ReturnType<typeof vi.fn>).mockImplementation((url) => {
-        if (url.includes("initial-activity-data")) {
-          return Promise.resolve({ error: "API Error" });
-        } else if (url.includes("build-form-schema")) {
-          return Promise.resolve(mockJsonSchema);
-        }
-        return Promise.resolve({ success: true });
-      });
+      (getActivityInitData as ReturnType<typeof vi.fn>).mockRejectedValue(
+        new Error("We couldn't find the activity data for this facility."),
+      );
 
-      await expect(async () => {
-        await renderActivityPage({
+      await expect(
+        renderActivityPage({
           versionId,
           facilityId,
           step: 0,
-        });
-      }).rejects.toThrow(
+        }),
+      ).rejects.toThrow(
         "We couldn't find the activity data for this facility.",
       );
     });
@@ -328,6 +344,7 @@ describe("ActivityPage Component", () => {
       (getActivityFormData as ReturnType<typeof vi.fn>).mockResolvedValue(
         mockFormDataWithSelectedSourceTypes,
       );
+
       (safeJsonParse as ReturnType<typeof vi.fn>).mockImplementation((data) =>
         data === mockJsonSchema
           ? mockJsonSchema
@@ -340,10 +357,11 @@ describe("ActivityPage Component", () => {
         step: 0,
       });
 
-      expect(actionHandler).toHaveBeenCalledWith(
-        expect.stringContaining("&source_types[]=1&source_types[]=3"),
-        "GET",
-        "",
+      expect(getActivitySchema).toHaveBeenCalledWith(
+        versionId,
+        mockOrderedActivities[0].id,
+        "&source_types[]=1&source_types[]=3",
+        facilityId,
       );
     });
 
@@ -363,46 +381,49 @@ describe("ActivityPage Component", () => {
         step: 0,
       });
 
-      expect(actionHandler).toHaveBeenCalledWith(
-        expect.not.stringContaining("&source_types[]="),
-        "GET",
+      expect(getActivitySchema).toHaveBeenCalledWith(
+        versionId,
+        mockOrderedActivities[0].id,
         "",
+        facilityId,
       );
     });
-  });
 
-  describe("Component Rendering", () => {
-    it("should render ActivityForm with correct props", async () => {
-      const component = await renderActivityPage({
-        versionId,
-        facilityId,
-        step: 0,
+    describe("Component Rendering", () => {
+      it("should render ActivityForm with correct props", async () => {
+        const component = await renderActivityPage({
+          versionId,
+          facilityId,
+          step: 0,
+        });
+
+        expect(component.getByTestId("activity-form")).toBeInTheDocument();
       });
 
-      expect(component.getByTestId("activity-form")).toBeInTheDocument();
-    });
+      it("should pass correct props to ActivityForm", async () => {
+        await renderActivityPage({
+          versionId,
+          facilityId,
+          step: 0,
+        });
 
-    it("should pass correct props to ActivityForm", async () => {
-      await renderActivityPage({
-        versionId,
-        facilityId,
-        step: 0,
+        expect(ActivityFormMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            activityData: mockActivityData,
+            activityFormData: mockFormData,
+            currentActivity: mockOrderedActivities[0],
+            navigationInformation: mockNavigationInformation,
+            reportVersionId: versionId,
+            facilityId,
+            initialJsonSchema: mockJsonSchema.schema,
+            initialSelectedSourceTypeIds: ["1"],
+            gasTypes: mockGasTypes,
+            reportingYear: 2024,
+            activityIndex: 0,
+          }),
+          undefined,
+        );
       });
-
-      expect(ActivityFormMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          activityData: mockActivityData,
-          activityFormData: mockFormData,
-          currentActivity: mockOrderedActivities[0],
-          navigationInformation: mockNavigationInformation,
-          reportVersionId: versionId,
-          facilityId: facilityId,
-          initialJsonSchema: mockJsonSchema.schema,
-          initialSelectedSourceTypeIds: ["1"],
-          gasTypes: mockGasTypes,
-        }),
-        undefined,
-      );
     });
   });
 

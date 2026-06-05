@@ -17,6 +17,26 @@ import * as Sentry from "@sentry/nextjs";
 import { captureException } from "@bciers/sentryConfig/sentry";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
+const FORM_METHODS = ["POST", "PUT", "PATCH"] as const;
+
+const shouldReturnError = (method: string, status: number, res: any) => {
+  if (
+    FORM_METHODS.includes(method as any) &&
+    status >= 400 &&
+    status < 500 &&
+    Array.isArray(res?.errors)
+  ) {
+    return true;
+  }
+
+  // Dashboard/operator checks may return plain 401 when the user has no operator.
+  if (method === "GET" && status === 401) {
+    return true;
+  }
+
+  return false;
+};
+
 // Helper function to parse action handler errors
 const parseHandlerError = (res: any, status: number) => {
   // Handle structured validation errors
@@ -142,13 +162,21 @@ export async function actionHandler(
           `${process.env.API_URL}${endpoint}`,
           mergedOptions,
         );
+
         if (!response.ok) {
           const res = await response.json();
 
-          // if we have an error message, we want to capture it in Sentry otherwise we want to capture the status code
-          const error = res.message || `HTTP error! Status: ${response.status}`;
-          captureException(new Error(error), userGuid);
-          return parseHandlerError(res, response.status);
+          const errorMessage =
+            res?.message || `HTTP error! Status: ${response.status}`;
+
+          const error = new Error(errorMessage);
+
+          if (shouldReturnError(method, response.status, res)) {
+            captureException(error, userGuid);
+            return parseHandlerError(res, response.status);
+          }
+
+          throw error;
         }
 
         const data = await response.json();
@@ -162,8 +190,14 @@ export async function actionHandler(
         // Get user_guid from token for error reporting
         const token = await getToken();
         const userGuid = token?.user_guid || "";
+
         captureException(error as Error, userGuid);
-        return formatError(error, endpoint);
+
+        if (method === "POST" || method === "PUT" || method === "PATCH") {
+          return formatError(error, endpoint);
+        }
+
+        throw error;
       }
     },
   );

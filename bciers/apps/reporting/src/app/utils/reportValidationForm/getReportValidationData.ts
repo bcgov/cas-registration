@@ -12,11 +12,5 @@ export async function getReportValidationData(
 
   const response = await actionHandler(endpoint, "GET");
 
-  if ((response as any).error) {
-    throw new Error(
-      `Failed to fetch validation data for report version ${reportVersionId}.`,
-    );
-  }
-
   return response as ReportValidationResponse;
 }

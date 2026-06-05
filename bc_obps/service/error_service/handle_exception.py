@@ -26,6 +26,7 @@ class ExceptionResponse:
     status: int
     sentry_tag: Optional[str] = None
     payload_builder: Optional[Callable[[Any], dict[str, Any]]] = None
+    key: str = "generic_error"
 
 
 class ExceptionHandler:
@@ -43,9 +44,16 @@ class ExceptionHandler:
         (UserError,): ExceptionResponse(lambda exc: str(exc), 400),
         (ObjectDoesNotExist,): ExceptionResponse("Not Found", 404),
         (ValidationError,): ExceptionResponse(lambda exc: generate_useful_error(exc), 422),
-        (PermissionError,): ExceptionResponse("Permission denied.", 403),
+        (PermissionError,): ExceptionResponse(
+            "Permission denied.",
+            403,
+            key="permission_denied",
+        ),
         (InternalError, ProgrammingError, DatabaseError): ExceptionResponse(
-            "Internal Server Error.", 500, "database_error"
+            "Internal Server Error.",
+            500,
+            "internal_server_error",
+            key="internal_server_error",
         ),
         (ReportValidationException,): ExceptionResponse(
             None,
@@ -128,19 +136,15 @@ class ExceptionHandler:
         return {"message": message}
 
     @staticmethod
-    def build_error_response_body(
-        message: str,
-        context: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def build_error_response_body(message: str, key: str = "generic_error") -> dict[str, Any]:
         return {
             "message": message,
             "errors": [
                 {
-                    "key": "generic_error",
+                    "key": key,
                     "error": {
                         "severity": Severity.ERROR.value,
                         "message": message,
-                        "context": context,
                     },
                 }
             ],
@@ -165,7 +169,10 @@ class ExceptionHandler:
             return Response(body, status=response_config.status)
 
         return Response(
-            cls.build_error_response_body(body["message"]),
+            cls.build_error_response_body(
+                body["message"],
+                key=response_config.key,
+            ),
             status=response_config.status,
         )
 
@@ -191,7 +198,7 @@ class ExceptionHandler:
         if event_id:
             logger.critical(f"Unexpected error. Sentry Reference ID: {event_id}", exc_info=True)
 
-        message = "An internal server error has occurred. " "Please contact ghgregulator@gov.bc.ca for help" + (
+        message = "An internal server error has occurred. Please contact ghgregulator@gov.bc.ca for help" + (
             f" and include the reference code: {event_id}" if event_id else "."
         )
 

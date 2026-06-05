@@ -11,6 +11,12 @@ import type {
 } from "./types";
 import { validationUIConfig } from "./config";
 
+type ValidationLinkProps = {
+  href: string;
+  label: string;
+  openInNewTab?: boolean;
+};
+
 type ReportValidationSummaryProps = {
   errors?: ReportValidationErrors;
 };
@@ -31,11 +37,7 @@ function ValidationLink({
   href,
   label,
   openInNewTab,
-}: {
-  href: string;
-  label: string;
-  openInNewTab?: boolean;
-}) {
+}: Readonly<ValidationLinkProps>) {
   if (openInNewTab) {
     return (
       <a

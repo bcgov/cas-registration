@@ -53,7 +53,6 @@ class TestExceptionHandler:
                     "error": {
                         "severity": "Error",
                         "message": "Test error",
-                        "context": None,
                     },
                 }
             ],
