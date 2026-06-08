@@ -68,9 +68,9 @@ export const FacilityReview: React.FC<Props> = ({
     );
     const updatedFormData = {
       ...formData,
-      activities: selectedActivityNames
-        .map((activityName: string) => activityNameToIdMap.get(activityName))
-        .filter((id): id is number => id !== undefined),
+      activities: selectedActivityNames.map((activityName: string) =>
+        activityNameToIdMap.get(activityName),
+      ),
     };
 
     const response = await actionHandler(endpoint, method, pathToRevalidate, {
