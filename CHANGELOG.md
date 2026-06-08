@@ -1,5 +1,18 @@
 # Changelog
 
+# [5.13.0](https://github.com/bcgov/cas-registration/compare/v5.12.0...v5.13.0) (2026-06-08)
+
+### Bug Fixes
+
+- dhi must use CMD exec form not shell form ([dc495bb](https://github.com/bcgov/cas-registration/commit/dc495bb341cb4e0c6da0eca99da50374cbd64b9b))
+- make annualFuelAmount required on the front-end forms (to match backend requirements) ([6e563e5](https://github.com/bcgov/cas-registration/commit/6e563e5c9a88d2b4b7f22e0eb67be6ec5f8c53fa))
+- Shortcircuit SFO without products with banner + error message to resolve the incorrect error message on production data page with only unregulated products ([9a57d36](https://github.com/bcgov/cas-registration/commit/9a57d363700f3509fc9035d4d1fadfea7a8b1abb))
+- uploaded file name can now exceed 100 characters ([88e0ab0](https://github.com/bcgov/cas-registration/commit/88e0ab0dc11aa173f99b961d95de9e15e8390800))
+
+### Features
+
+- add compliance guidance card to help menu, banner to obligation review and request credits pages, and update helpful links ([622f2ef](https://github.com/bcgov/cas-registration/commit/622f2ef7164775ce2390800c234c62eeed32e684))
+
 # [5.12.0](https://github.com/bcgov/cas-registration/compare/v5.11.0...v5.12.0) (2026-06-01)
 
 ### Bug Fixes
