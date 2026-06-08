@@ -5,6 +5,7 @@ import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 import { SubmittedPOM } from "@/reporting-e2e/poms/submitted";
 import { AnnualReportPOM } from "@/reporting-e2e/poms/annual-report";
+import { ReportHistoryPOM } from "@/reporting-e2e/poms/report-history";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 const internalTest = setupBeforeAllTest(UserRole.CAS_ANALYST);
@@ -16,7 +17,7 @@ test.describe("LFO: view a submitted report for the current reporting year", () 
     page,
     happoScreenshot,
   }) => {
-    // ── 1. Navigate to the past reports grid ──
+    // ── 1. Navigate to the current reports grid ──
     const grid = new CurrentReportsPOM(page);
     await grid.route();
 
@@ -24,7 +25,8 @@ test.describe("LFO: view a submitted report for the current reporting year", () 
 
     // ── 2. Click "View Details" for the report — navigates to the 'Submitted' report view ──
     await grid.reportHistoryForOperation(OPERATION_NAMES.BANANA_LFO);
-    await grid.viewDetailsFromReportHistory();
+    const historyGrid = new ReportHistoryPOM(page);
+    await historyGrid.viewDetailsFromReportHistory(1);
 
     const submittedReport = new SubmittedPOM(page);
     await submittedReport.verifySubmittedReportView(
@@ -53,7 +55,7 @@ test.describe("LFO: view a submitted report for the current reporting year", () 
       internalTest(
         "CAS analyst views a submitted LFO report",
         async ({ page, happoScreenshot }) => {
-          // ── 1. Navigate to the past reports grid ──
+          // ── 1. Navigate to the current reports grid ──
           const grid = new CurrentReportsPOM(page);
           await grid.route();
 

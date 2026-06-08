@@ -34,7 +34,10 @@ import {
   fillInputValueByLocator,
   waitForGridReady,
 } from "@bciers/e2e/utils/helpers";
-import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
+import {
+  clickViewReportDetails,
+  verifyFormTitle,
+} from "@/reporting-e2e/utils/helpers";
 
 export class CurrentReportsPOM {
   readonly page: Page;
@@ -180,23 +183,7 @@ export class CurrentReportsPOM {
       .first();
 
     await expect(row).toBeVisible();
-    await this.clickViewReportDetails(row, isExternalUser);
-  }
-
-  /**
-   * Clicks the "View Details" button for a specific report version in the report history page, based on the version number.
-   */
-  async viewDetailsFromReportHistory(
-    version: string | number = "1",
-  ): Promise<void> {
-    await waitForGridReady(this.page);
-    const versionName = `Version ${version}`;
-    const row = this.page
-      .getByRole("row")
-      .filter({ hasText: versionName })
-      .first();
-    await expect(row).toBeVisible();
-    await this.clickViewReportDetails(row);
+    await clickViewReportDetails(this.page, row, isExternalUser);
   }
 
   /***
@@ -230,7 +217,7 @@ export class CurrentReportsPOM {
       this.page.waitForURL(
         (u) =>
           new RegExp(
-            String.raw`${AppRoutes.REPORT_HISTORY_GRID}/\d+$`,
+            String.raw`${AppRoutes.GRID_REPORT_HISTORY}/\d+$`,
             "i",
           ).test(u.toString()),
         { waitUntil: "domcontentloaded" },
@@ -306,31 +293,6 @@ export class CurrentReportsPOM {
     await clickButton(this.page, FORM_BUTTON_TEXT.SAVE_AND_CONTINUE, {
       inForm: opts?.inForm,
       waitForUrl,
-    });
-  }
-
-  private async clickViewReportDetails(
-    row: Locator,
-    isExternalUser: boolean = true,
-  ): Promise<void> {
-    const viewReportRoute = isExternalUser
-      ? ReportRoutes.SUBMITTED_REPORT
-      : ReportRoutes.ANNUAL_REPORT;
-
-    const routeRegex = new RegExp(
-      String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${viewReportRoute}`,
-      "i",
-    );
-    const buttonName = new RegExp(
-      isExternalUser
-        ? ACTION_BUTTON_TEXT.VIEW_DETAILS + "$"
-        : ACTION_BUTTON_TEXT.VIEW_REPORT + "$",
-      "i",
-    );
-
-    await clickButton(this.page, buttonName, {
-      root: row,
-      waitForUrl: routeRegex,
     });
   }
 
