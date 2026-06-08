@@ -1,7 +1,10 @@
+# In CI, the Python version is specified in the build args, see .github/workflows/build-backend.yaml
+ARG PYTHON_VERSION
+
 ####################
 # Base Stage
 ####################
-FROM python:3.12.11-slim AS base
+FROM dhi.io/python:${PYTHON_VERSION}-debian13-dev AS base
 
 # Prevent Python from writing .pyc files to disk
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -18,9 +21,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR ${HOME}
 
-# Recreate bc_obps user with bash shell
-RUN useradd -ms /bin/bash -d ${HOME} --uid ${USER_ID} -g root bc_obps && \
-    chown -R bc_obps:0 ${HOME} && \
+# Grant the numbered user complete access to the workspace root directory
+RUN chown -R ${USER_ID}:0 ${HOME} && \
     chmod -R g+rwX ${HOME}
 
 ####################
@@ -30,53 +32,38 @@ FROM base AS builder
 
 # Refresh package lists from repositories
 RUN apt-get update && \
-# Upgrade the installed system packages from apt-get update, making sure security is up to date
-    apt-get upgrade -y && \
-# Install minimal build tools required for asdf (git), curl for Poetry plugin, build-essential for compiling Python, and additional libs for Python
-    apt-get install -y --no-install-recommends build-essential curl git libc6-dev libffi-dev libssl-dev zlib1g-dev && \
+# Install minimal tools and dependencies
+    apt-get install -y --no-install-recommends build-essential curl && \
 # Remove apt cache to reduce image size
     apt-get clean && \
 # Delete package lists to further slim the image
     rm -rf /var/lib/apt/lists/*
 
-# Copy version config and Poetry files with ownership set to bc_obps
-COPY --chown=bc_obps:0 .tool-versions pyproject.toml poetry.lock ${HOME}/
+# Add bin path for poetry
+ENV PATH="/app/.local/bin:${PATH}"
+
+# Copy version config and Poetry files with ownership set to numbered user
+COPY --chown=${USER_ID}:0 .tool-versions pyproject.toml poetry.lock ${HOME}/
 
 USER ${USER_ID}
-
-# Clone asdf shallowly from GitHub
-RUN git clone --depth 1 --branch v${ASDF_VERSION} https://github.com/asdf-vm/asdf.git ${HOME}/asdf
-
-# Ensure asdf is available in non-interactive shells
-ENV BASH_ENV="${HOME}/asdf/asdf.sh"
 
 # Use bash with environment sourcing for asdf commands
 SHELL ["/bin/bash", "-c"]
 
-# Filter .tool-versions for python and poetry
-RUN sed -i -nr '/python|poetry/p' ${HOME}/.tool-versions && \
-    # Add plugins for each tool listed in .tool-versions
-    cat ${HOME}/.tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin add && \
-    # Update all plugins to latest versions
-    asdf plugin update --all && \
-    # Install tools (Python, Poetry) from .tool-versions
-    asdf install && \
-    # Regenerate shims for installed tools
-    asdf reshim
-
 # Configure Poetry and install dependencies
 # Extract Poetry version from .tool-versions
-RUN export POETRY_VERSION=$(grep '^poetry ' ${HOME}/.tool-versions | awk '{print $2}') && \
+RUN POETRY_VERSION=$(grep '^poetry ' ${HOME}/.tool-versions | awk '{print $2}') && \
+    # Use inbuilt Python to install Poetry
+    curl -sSL https://install.python-poetry.org | python3 - && \
     # Add Poetry to PATH in bashrc
-    echo "export PATH=${HOME}/.asdf/installs/poetry/${POETRY_VERSION}/bin:${PATH}" >> ${HOME}/.bashrc && \
     # Keep virtualenv in project directory (.venv)
-    poetry config virtualenvs.create true && \
-    poetry config virtualenvs.in-project true && \
+    ${HOME}/.local/bin/poetry config virtualenvs.create true && \
+    ${HOME}/.local/bin/poetry config virtualenvs.in-project true && \
     # Install dependencies without dev group, non-interactively
-    poetry install --without dev --no-root --no-interaction --no-ansi --compile
+    ${HOME}/.local/bin/poetry install --without dev --no-root --no-interaction --no-ansi --compile
 
-# Copy all remaining files, owned by bc_obps
-COPY --chown=bc_obps:0 . ${HOME}/
+# Copy all remaining files, owned by numbered user
+COPY --chown=${USER_ID}:0 . ${HOME}/
 
 ####################
 # Runner Stage
@@ -85,8 +72,6 @@ FROM base AS runner
 
 # Refresh package lists from repositories
 RUN apt-get update && \
-    # Upgrade the installed system packages from apt-get update, making sure security is up to date
-    apt-get upgrade -y && \
     # Install essential runner packages and WeasyPrint dependencies
     apt-get install -y --no-install-recommends \
     curl \
@@ -103,7 +88,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy application from the builder stage
-COPY --from=builder --chown=bc_obps:0 ${HOME}/ ${HOME}/
+COPY --from=builder --chown=${USER_ID}:0 ${HOME}/ ${HOME}/
 
 # Remove asdf and Poetry files
 RUN rm .tool-versions pyproject.toml poetry.lock
