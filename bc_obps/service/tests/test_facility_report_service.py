@@ -54,9 +54,9 @@ class TestFacilityReportService(TestCase):
 
         facility_activity_ids = {a['id'] for a in result.facility_activities}
         other_activity_ids = {a['id'] for a in result.other_activities}
-        assert {a1.id, a2.id}.issubset(facility_activity_ids)
-        assert a3.id in other_activity_ids
-        assert facility_activity_ids.isdisjoint(other_activity_ids)
+
+        assert facility_activity_ids == {a1.id, a2.id}
+        assert other_activity_ids == {a3.id}
 
     def test_get_activities_throws_if_facility_report_does_not_exist(self):
         with self.assertRaises(ObjectDoesNotExist) as exception_context:
