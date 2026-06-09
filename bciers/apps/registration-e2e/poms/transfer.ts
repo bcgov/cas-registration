@@ -223,14 +223,4 @@ export class TransferPOM {
       this.page.getByRole("link", { name: /make a transfer/i }),
     ).toBeVisible();
   }
-
-  async stabilizeSubmissionDates() {
-    await this.page
-      .locator('[data-field="created_at"]')
-      .evaluateAll((cells: HTMLElement[]) => {
-        cells.forEach((cell) => {
-          cell.textContent = "Jan 1, 2024\n12:00 a.m. PT";
-        });
-      });
-  }
 }
