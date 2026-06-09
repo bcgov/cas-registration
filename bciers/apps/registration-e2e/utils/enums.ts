@@ -23,7 +23,7 @@ export enum TransferE2EValues {
   FIXTURE_PENDING_FACILITY_NAME = "Facility 10",
 
   // Effective dates
-  PAST_DATE = "2024-01-01",
+  PAST_DATE = "2025-01-01",
   FUTURE_DATE = "2099-12-31",
   NEW_EFFECTIVE_DATE = "2099-06-15",
 }

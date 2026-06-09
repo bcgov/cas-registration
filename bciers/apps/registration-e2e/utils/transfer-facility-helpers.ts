@@ -53,6 +53,7 @@ export async function futureFacilityTransferTest(
     TransferE2EValues.FACILITY_NAME,
     TransferStatus.TO_BE_TRANSFERRED,
   );
+  await transferPage.stabilizeSubmissionDates();
 }
 
 export async function pastFacilityTransferTest(page: Page) {
