@@ -43,10 +43,8 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
   );
   const isFinalAnalystSuggestion =
     hasPriorAnalystSubmission &&
-    (initialFormData?.analyst_suggestion ===
-      AnalystSuggestion.READY_TO_APPROVE ||
-      initialFormData?.analyst_suggestion ===
-        AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT);
+    initialFormData?.analyst_suggestion ===
+      AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT;
 
   const handleFormChange = (
     e: IChangeEvent<RequestIssuanceComplianceSummaryData>,

@@ -124,11 +124,8 @@ class ComplianceEarnedCreditsService:
         Handles the update of earned credits by a CAS analyst
         """
 
-        # Prevent further updates once an analyst has provided a final suggestion
-        if earned_credit.analyst_suggestion in [
-            ComplianceEarnedCredit.AnalystSuggestion.READY_TO_APPROVE,
-            ComplianceEarnedCredit.AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
-        ]:
+        # Prevent further updates once the analyst has declined the request
+        if earned_credit.analyst_suggestion == ComplianceEarnedCredit.AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT:
             raise UserError("Updates are not allowed after the analyst has provided a final suggestion")
 
         analyst_allowed_statuses = [
