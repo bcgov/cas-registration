@@ -222,7 +222,10 @@ const OperationInformationForm = ({
           ),
           status: confirmedFormData.status,
           missing_representative_alert: isMissingRepresentative,
-        }}
+          onFileSelected: (file: File, propName: string) => {
+            console.log(`File selected for ${propName}:`, file);
+          }
+          }}
       />
     </>
   );

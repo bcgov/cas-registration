@@ -15,6 +15,7 @@ import {
   BoroIdWidget,
   OptedOutOperationWidget,
   OperationRepresentativeWidget,
+  NewFileWidget,
 } from "../widgets";
 import ApplyComplianceUnitsWidget from "@/compliance/src/app/widgets/ApplyComplianceUnitsWidget";
 import {
@@ -33,6 +34,7 @@ const readOnlyTheme = {
     DateWidget: ReadOnlyDateWidget,
     EmailWidget: ReadOnlyWidget,
     FileWidget: ReadOnlyFileWidget,
+    NewFileWidget: NewFileWidget,
     MultiSelectWidgetWithTooltip: ReadOnlyMultiSelectWidget,
     RegulatedProductMultiSelectWidget: ReadOnlyMultiSelectWidget,
     PhoneWidget: ReadOnlyWidget,
