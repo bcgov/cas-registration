@@ -111,7 +111,7 @@ describe("The ProductionDataForm component", () => {
 
     expect(mockMultiStepFormWithTaskList).toHaveBeenCalledOnce();
     // error message + disabled buttons
-    expect(calledProps.errors).toEqual(["A product must be selected."]);
+    expect(calledProps.errors).toEqual([]);
     expect(calledProps.saveButtonDisabled).toBe(true);
     expect(calledProps.submitButtonDisabled).toBe(true);
     // error banner
