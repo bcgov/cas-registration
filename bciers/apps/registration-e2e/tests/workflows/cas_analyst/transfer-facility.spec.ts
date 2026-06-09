@@ -7,8 +7,8 @@ const test = setupBeforeEachTest(UserRole.CAS_ANALYST);
 const roleLabel = "CAS Analyst";
 
 // 🏷 Annotate test suite as serial to use 1 worker - prevents failure in setupTestEnvironment
-// fillFacilityTransferForm toPass(75s) exceeds the 60s global timeout — set 120s here.
-test.describe.configure({ mode: "serial", timeout: 120_000 });
+test.describe.configure({ mode: "serial", timeout: 120000 });
+
 test.describe("CAS Analyst - Transfer Facility", () => {
   test("Transfer facility with future effective date shows 'To be transferred' status", async ({
     page,

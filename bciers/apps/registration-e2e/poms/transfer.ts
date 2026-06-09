@@ -35,14 +35,6 @@ export class TransferPOM {
     await this.page.waitForLoadState();
   }
 
-  /**
-   * Fills the operation transfer form with the given operator, operation, and effective date.
-   *
-   * Wraps the radio selection, operation, date, and button check in expect.toPass because
-   * handleOperatorChange Server Actions fire on each operator change with a stale closure
-   * capturing transfer_entity = "". If a stale SA completes after radio.check(), it resets
-   * the radio to unchecked. Retrying the entire block re-checks it after all SAs have settled.
-   */
   async fillOperationTransferForm(
     fromOperator: string,
     toOperator: string,
@@ -66,13 +58,9 @@ export class TransferPOM {
       await expect(
         this.page.getByRole("button", { name: /transfer entity/i }),
       ).toBeEnabled({ timeout: 2000 });
-    }).toPass({ timeout: 40_000 });
+    }).toPass({ timeout: 40000 });
   }
 
-  /**
-   * Fills the facility transfer form with the given operators, source operation, facility,
-   * destination operation, and effective date.
-   */
   async fillFacilityTransferForm(
     fromOperator: string,
     toOperator: string,
@@ -112,7 +100,7 @@ export class TransferPOM {
         .getByRole("option", { name: facility })
         .first()
         .click();
-    }).toPass({ timeout: 75_000 });
+    }).toPass({ timeout: 75000 });
     await fillInputValueByLabel(
       this.page,
       /effective date of transfer/i,
