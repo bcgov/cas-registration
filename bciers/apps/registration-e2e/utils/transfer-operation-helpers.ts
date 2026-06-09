@@ -26,7 +26,6 @@ export async function transfersGridTest(
   const transferPage = new TransferPOM(page);
   await transferPage.route();
   await transferPage.assertMakeTransferButtonVisible();
-  await transferPage.stabilizeSubmissionDates();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: `${roleLabel} - Transfers grid`,
     variant: "default",
