@@ -26,6 +26,7 @@ import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import ConfirmChangeOfFieldModal from "@/registration/app/components/operations/registration/ConfirmChangeOfFieldModal";
+import { useFileUploadWidget } from "@bciers/components/form/widgets/NewFileWidget";
 
 const OperationInformationForm = ({
   formData,
@@ -58,6 +59,13 @@ const OperationInformationForm = ({
   // To get the user's role from the session
   const role = useSessionRole();
   const searchParams = useSearchParams();
+
+  const [fileWidgetContext, submitWithFiles] = useFileUploadWidget(
+    `registration/operations/${operationId}/new`,
+    "POST",
+    `/operations/${operationId}`,
+  );
+
   const isRedirectedFromContacts = searchParams.get("from_contacts") as string;
 
   function checkMissingRepresentative(data: any) {
@@ -96,14 +104,17 @@ const OperationInformationForm = ({
   }) => {
     setError(undefined);
     const pathToRevalidate = `/operations/${operationId}`;
-    const response = await actionHandler(
-      `registration/operations/${operationId}`,
-      "PUT",
-      pathToRevalidate,
-      {
-        body: JSON.stringify(data.formData),
-      },
-    );
+
+    const response = await submitWithFiles(data.formData);
+
+    // const response = await actionHandler(
+    //   `registration/operations/${operationId}`,
+    //   "PUT",
+    //   pathToRevalidate,
+    //   {
+    //     body: JSON.stringify(data.formData),
+    //   },
+    // );
 
     if (response?.error) {
       // Users get this error when they select a contact that's missing address information. We include a link to the Contacts page because the user has to fix the error from there, not here in the operation form.
@@ -222,6 +233,7 @@ const OperationInformationForm = ({
           ),
           status: confirmedFormData.status,
           missing_representative_alert: isMissingRepresentative,
+          ...fileWidgetContext
         }}
       />
     </>
