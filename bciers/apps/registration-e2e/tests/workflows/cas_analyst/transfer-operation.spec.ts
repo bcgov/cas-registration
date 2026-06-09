@@ -7,6 +7,7 @@ const test = setupBeforeEachTest(UserRole.CAS_ANALYST);
 const roleLabel = "CAS Analyst";
 
 test.describe.configure({ mode: "serial" });
+
 test.describe("CAS Analyst - Transfer Operation", () => {
   test("'Make a Transfer' button is visible in the transfers grid", async ({
     page,
