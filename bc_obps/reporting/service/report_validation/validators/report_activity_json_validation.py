@@ -5,6 +5,7 @@ import jsonschema
 from reporting.models.report_version import ReportVersion
 from reporting.models.source_type import SourceType
 from reporting.service.report_validation.report_validation_error import (
+    ErrorContext,
     ReportValidationError,
     ReportValidationErrorKey,
     Severity,
@@ -72,7 +73,14 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                     ReportValidationError(
                         severity=Severity.ERROR,
                         message=f"Validation error: {e.message} at: {' > '.join(str(elt) for elt in e.path)}",
-                        key=ReportValidationErrorKey.ACTIVITY_JSON_SCHEMA_VALIDATION_ERROR,
+                        key=ReportValidationErrorKey.REPORT_ACTIVITY_JSON_VALIDATION,
+                        context=ErrorContext(
+                            report_version_id=report_version.id,
+                            facility_id=facility_report.facility_id,
+                            facility_name=facility_report.facility.name,
+                            activity_id=report_raw_activity.activity_id,
+                            activity_name=report_raw_activity.activity.name,
+                        ),
                     )
                 )
 
