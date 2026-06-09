@@ -1,6 +1,7 @@
 from uuid import UUID
+from dataclasses import dataclass
 from django.db import transaction
-from typing import Any, List, Optional, cast
+from typing import Any, Dict, List, Optional, cast
 from ninja import Query
 from registration.models import Activity, Facility
 from reporting.models import ReportActivity, ReportProductEmissionAllocation, ReportProduct
@@ -8,10 +9,21 @@ from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.schema.facility_report import FacilityReportListInSchema, FacilityReportFilterSchema
-from django.db.models import QuerySet
-from django.db.models import F
+from django.db.models import QuerySet, F
 from reporting.service.sync_validation_service import SyncValidationService
 from service.activity_service import ActivityService
+
+
+@dataclass
+class FacilityReportData:
+    facility_name: str
+    facility_type: str
+    facility_activities: List[Dict[str, Any]]
+    other_activities: List[Dict[str, Any]]
+    report_version_id: int
+    is_completed: bool
+    regulated_products: Optional[List[int]]
+    facility_bcghgid: Optional[str] = None
 
 
 class SaveFacilityReportData:
@@ -32,6 +44,30 @@ class SaveFacilityReportData:
 
 class FacilityReportService:
     @classmethod
+    def _build_facility_report_data(cls, facility_report: FacilityReport, report_version_id: int) -> FacilityReportData:
+        report_operation = ReportOperation.objects.filter(report_version_id=report_version_id).first()
+
+        all_activities = ActivityService.get_all_activities()
+        operation_activity_ids = (
+            set(report_operation.activities.values_list('id', flat=True)) if report_operation else set()
+        )
+        operation_activities = [activity for activity in all_activities if activity['id'] in operation_activity_ids]
+        other_activities = [activity for activity in all_activities if activity['id'] not in operation_activity_ids]
+
+        return FacilityReportData(
+            facility_name=facility_report.facility_name,
+            facility_type=facility_report.facility_type,
+            facility_activities=operation_activities,
+            other_activities=other_activities,
+            report_version_id=report_version_id,
+            is_completed=facility_report.is_completed,
+            regulated_products=list(
+                ReportProduct.objects.filter(facility_report_id=facility_report.id).values_list('product_id', flat=True)
+            ),
+            facility_bcghgid=facility_report.facility_bcghgid,
+        )
+
+    @classmethod
     def get_facility_report_by_version_and_id(cls, report_version_id: int, facility_id: UUID) -> FacilityReport:
         facility_report = FacilityReport.objects.annotate(operation_id=F('report_version__report__operation_id')).get(
             report_version_id=report_version_id, facility_id=facility_id
@@ -39,20 +75,11 @@ class FacilityReportService:
 
         facility_report.is_sync_allowed = SyncValidationService.is_facility_sync_allowed(report_version_id, facility_id)  # type: ignore[attr-defined]
 
-        # Partition all activities into those selected on the related ReportOperation
-        # and the remaining ("other") activities, so the facility review UI can render
-        # them as two separate checklists.
-        report_operation = ReportOperation.objects.filter(report_version_id=report_version_id).first()
-        operation_activity_ids = (
-            set(report_operation.activities.values_list('id', flat=True)) if report_operation else set()
-        )
-        all_activities = ActivityService.get_all_activities()
-        facility_report.facility_activities = [  # type: ignore[attr-defined]
-            a for a in all_activities if a['id'] in operation_activity_ids
-        ]
-        facility_report.other_activities = [  # type: ignore[attr-defined]
-            a for a in all_activities if a['id'] not in operation_activity_ids
-        ]
+        facility_report_data = cls._build_facility_report_data(facility_report, report_version_id)
+
+        for field_name in ('facility_activities', 'other_activities'):
+            setattr(facility_report, field_name, getattr(facility_report_data, field_name))
+
         return facility_report
 
     @classmethod
@@ -73,9 +100,7 @@ class FacilityReportService:
         """
         Add activities to a facility report without removing or duplicating existing ones.
         """
-        facility_report.activities.add(
-            *Activity.objects.exclude(id__in=facility_report.activities.all()).filter(id__in=activities)
-        )
+        facility_report.activities.add(*Activity.objects.filter(id__in=activities))
 
     @classmethod
     def set_activities_for_facility_report(cls, facility_report: FacilityReport, activities: List[int]) -> None:
