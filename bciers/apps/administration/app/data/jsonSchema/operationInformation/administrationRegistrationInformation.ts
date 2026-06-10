@@ -41,8 +41,8 @@ export const createAdministrationRegistrationInformationSchema =
       throw new Error("Failed to retrieve reporting activities information");
     // fetch valid reporting years for OptedOutOperation dropdown
     const validReportingYears: { reporting_year: number }[] =
-      // NOTE: getReportingYears() includes optional query param exclude_past.
-      // Not using it immediately due to timing of opt-out feature rollout relative to reporting year,
+      // NOTE: getReportingYears() includes optional query param scope.
+      // Not using it here immediately due to timing of opt-out feature rollout relative to reporting year,
       // but will be able to make use of this feature in the future to simplify the dropdown list
       await getReportingYears();
     if (validReportingYears && "error" in validReportingYears)
