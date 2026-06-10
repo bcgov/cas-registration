@@ -13,6 +13,7 @@
 import { Page } from "@playwright/test";
 import {
   analyzeAccessibility,
+  stabilizeGrid,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
 import { TransferPOM } from "../poms/transfer";
@@ -26,6 +27,7 @@ export async function transfersGridTest(
   const transferPage = new TransferPOM(page);
   await transferPage.route();
   await transferPage.assertMakeTransferButtonVisible();
+  await stabilizeGrid(page, 6);
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: `${roleLabel} - Transfers grid`,
     variant: "default",
