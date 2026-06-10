@@ -206,6 +206,7 @@ const ProductionDataForm: React.FC<Props> = ({
       onChange={(data: any) => onChange((data as any).formData)}
       continueUrl={navigationInformation.continueUrl}
       errors={errors}
+      submitButtonDisabled={formData.product_selection.length <= 0}
     />
   );
 };

@@ -26,9 +26,6 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     except ReportOperation.DoesNotExist:
         return errors
 
-    if report_operation.operation_type == Operation.Types.LFO:
-        return errors
-
     if report_operation.registration_purpose not in REGULATED_OPERATION_PURPOSES:
         return errors
 
