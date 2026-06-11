@@ -1,15 +1,16 @@
-from typing import Literal, Tuple
+from typing import List, Literal, Optional, Tuple
 from uuid import UUID
+from ninja import Field, File, Form, ModelSchema, Schema, UploadedFile
 from registration.schema import OperationInformationInUpdate, OperationOut, OperationOutWithDocuments, Message
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
+from registration.schema.multiple_operator import MultipleOperatorIn
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.operation_service import OperationService
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from registration.models import Operation
-
 
 ##### GET #####
 
@@ -55,3 +56,40 @@ def update_operation(
     request: HttpRequest, operation_id: UUID, payload: OperationInformationInUpdate
 ) -> Tuple[Literal[200], Operation]:
     return 200, OperationService.update_operation(get_current_user_guid(request), payload, operation_id)
+
+
+##### New stuff
+
+
+class NewOperationInformationIn(Schema):
+    name: Optional[str] = None
+    type: Optional[str] = None
+    registration_purpose: Optional[Operation.Purposes] = None
+    regulated_products: Optional[List[int]] = None
+    activities: Optional[List[int]] = None
+    naics_code_id: Optional[int] = None
+    secondary_naics_code_id: Optional[int] = None
+    tertiary_naics_code_id: Optional[int] = None
+    multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
+    date_of_first_shipment: Optional[str] = None
+    operation_representatives: Optional[List[int]] = None
+
+
+@router.post(
+    "/operations/{uuid:operation_id}/new",
+    response={200: OperationOut, custom_codes_4xx: Message},
+    tags=OPERATION_TAGS,
+    description="Updates the details of a specific operation by its ID, with files being passed as multipart form data.",
+)
+def update_operation_new(
+    request: HttpRequest,
+    operation_id: UUID,
+    details: NewOperationInformationIn,
+    boundary_map: File[UploadedFile] = None,
+    process_flow_diagram: File[UploadedFile] = None,
+    new_entrant_application: File[UploadedFile] = None,
+) -> Tuple[Literal[200], Operation]:
+
+    raise Exception(details)
+
+    return 200, Operation.objects.first()

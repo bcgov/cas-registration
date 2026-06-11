@@ -1,6 +1,8 @@
 from datetime import date, datetime
+from dataclasses import dataclass
 from typing import List, Optional, Tuple, Callable, Generator, Union
 from zoneinfo import ZoneInfo
+from django.core.files.base import ContentFile
 from django.db.models import QuerySet
 from common.exceptions import UserError
 from registration.emails import send_registration_and_boro_id_email
@@ -59,6 +61,37 @@ from service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineService,
 )
 from reporting.models.report import Report
+
+
+@dataclass
+class UpdateOperationData:
+    name: str
+    type: str
+    registration_purpose: Optional[Operation.Purposes] = None
+    regulated_products: Optional[List[int]] = None
+    activities: Optional[List[int]] = None
+    naics_code_id: Optional[int] = None
+    secondary_naics_code_id: Optional[int] = None
+    tertiary_naics_code_id: Optional[int] = None
+    multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
+    date_of_first_shipment: Optional[str] = None
+    operation_representatives: List[int] = []
+
+    # Attachments
+    boundary_map: Optional[ContentFile] = None
+    process_flow_diagram: Optional[ContentFile] = None
+    new_entrant_application: Optional[ContentFile] = None
+
+    def operation_fields(self) -> dict:
+        return {
+            "name": self.name,
+            "type": self.type,
+            "naics_code_id": self.naics_code_id,
+            "secondary_naics_code_id": self.secondary_naics_code_id,
+            "tertiary_naics_code_id": self.tertiary_naics_code_id,
+            "date_of_first_shipment": self.date_of_first_shipment,
+            "registration_purpose": self.registration_purpose,
+        }
 
 
 class OperationService:
@@ -342,7 +375,7 @@ class OperationService:
         operation: Operation
         if operation_id:
             operation = OperationService.get_if_authorized(user_guid, operation_id)
-            cls.update_operation(user_guid, payload, operation_id)
+            cls.update_operation(user_guid, payload, operation_id, update_operation_representatives=False)
         else:
             operation = cls._create_operation(
                 user_guid,
@@ -403,8 +436,9 @@ class OperationService:
     def update_operation(
         cls,
         user_guid: UUID,
-        payload: OperationInformationIn,
+        updated_operation_data: UpdateOperationData,
         operation_id: UUID,
+        update_operation_representatives: bool = True,
     ) -> Operation:
         # will need to retrieve operation as it exists currently in DB first, to determine whether there's been a change to the RP
 
@@ -413,49 +447,36 @@ class OperationService:
             operation_id,
         )
 
-        if payload.registration_purpose != operation.registration_purpose:
-            payload = cls.handle_change_of_registration_purpose(user_guid, operation, payload)
+        if updated_operation_data.registration_purpose != operation.registration_purpose:
+            updated_operation_data = cls.handle_change_of_registration_purpose(
+                user_guid, operation, updated_operation_data
+            )
             # send a signal that the registration purpose has changed
             operation_registration_purpose_changed.send(
                 sender=OperationService,
                 operation_id=operation.id,
             )
-        if payload.type != operation.type:
+        if updated_operation_data.type != operation.type:
             if operation.status == Operation.Statuses.REGISTERED:
                 raise UserError("Cannot change the type of an operation that has already been registered.")
             FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id(user_guid, operation.id)
 
-        operation_data = payload.dict(
-            include={
-                'name',
-                'type',
-                'naics_code_id',
-                'secondary_naics_code_id',
-                'tertiary_naics_code_id',
-                'date_of_first_shipment',
-                'registration_purpose',
-            }
-        )
+        operation_data = updated_operation_data.operation_fields()
 
         operation_data['pk'] = operation_id
         operation_data['operator_id'] = operation.operator.id
 
         operation, _ = Operation.custom_update_or_create(Operation, **operation_data)
 
-        operation.activities.set(payload.activities) if payload.activities else operation.activities.clear()
+        operation.activities.set(updated_operation_data.activities or [])
+        operation.regulated_products.set(updated_operation_data.regulated_products or [])
 
-        (
-            operation.regulated_products.set(payload.regulated_products)
-            if payload.regulated_products
-            else operation.regulated_products.clear()
-        )
-
-        if operation.status == Operation.Statuses.REGISTERED and isinstance(payload, OperationInformationInUpdate):
+        if operation.status == Operation.Statuses.REGISTERED and update_operation_representatives:
             # operation representatives are only mandatory to register (vs. simply update) and operation
-            for contact_id in payload.operation_representatives:
+            for contact_id in updated_operation_data.operation_representatives:
                 ContactService.raise_exception_if_contact_missing_address_information(contact_id)
 
-            operation.contacts.set(payload.operation_representatives)
+            operation.contacts.set(updated_operation_data.operation_representatives)
 
         # create or replace documents
         operation_documents = [
@@ -466,11 +487,11 @@ class OperationService:
                         DocumentService.create_or_replace_operation_document(
                             user_guid,
                             operation.id,
-                            payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
+                            updated_operation_data.boundary_map,
                             'boundary_map',
                         )
                     ]
-                    if payload.boundary_map
+                    if updated_operation_data.boundary_map
                     else []
                 ),
                 *(
@@ -478,11 +499,11 @@ class OperationService:
                         DocumentService.create_or_replace_operation_document(
                             user_guid,
                             operation.id,
-                            payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
+                            updated_operation_data.process_flow_diagram,
                             'process_flow_diagram',
                         )
                     ]
-                    if payload.process_flow_diagram
+                    if updated_operation_data.process_flow_diagram
                     else []
                 ),
                 *(
@@ -490,11 +511,11 @@ class OperationService:
                         DocumentService.create_or_replace_operation_document(
                             user_guid,
                             operation.id,
-                            payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
+                            updated_operation_data.new_entrant_application,
                             'new_entrant_application',
                         )
                     ]
-                    if payload.new_entrant_application
+                    if updated_operation_data.new_entrant_application
                     else []
                 ),
             ]
@@ -510,10 +531,10 @@ class OperationService:
             operation = cls._create_opted_in_operation_detail(user_guid, operation)
 
         if operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
-            cls._create_or_update_eio(user_guid, operation, payload)
+            cls._create_or_update_eio(user_guid, operation, updated_operation_data)
 
         # # handle multiple operators
-        multiple_operators_data = payload.multiple_operators_array
+        multiple_operators_data = updated_operation_data.multiple_operators_array
         cls.upsert_multiple_operators(operation, multiple_operators_data, user_guid)
 
         return operation
@@ -715,8 +736,8 @@ class OperationService:
 
     @classmethod
     def handle_change_of_registration_purpose(
-        cls, user_guid: UUID, operation: Operation, payload: OperationInformationIn
-    ) -> OperationInformationIn:
+        cls, user_guid: UUID, operation: Operation, operation_data: UpdateOperationData
+    ) -> UpdateOperationData:
         """
         Logic to handle the situation when an industry user changes the selected registration purpose (RP) for their operation.
         Changing the RP can happen during or after submitting the operation's registration info.
@@ -734,19 +755,19 @@ class OperationService:
             if operation.opted_in_operation_id:  # To make mypy happy
                 OptedInOperationDetail.objects.filter(pk=operation.opted_in_operation_id).delete()
         elif old_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
-            payload.date_of_first_shipment = None
+            operation_data.date_of_first_shipment = None
             DocumentService.archive_or_delete_operation_document(user_guid, operation.id, 'new_entrant_application')
 
-        new_purpose = payload.registration_purpose
+        new_purpose = operation_data.registration_purpose
         if new_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             # remove operation data that's no longer relevant (because operation is now an EIO)
-            payload.activities = []
-            payload.regulated_products = []
-            payload.naics_code_id = None
-            payload.secondary_naics_code_id = None
-            payload.tertiary_naics_code_id = None
-            payload.boundary_map = None
-            payload.process_flow_diagram = None
+            operation_data.activities = []
+            operation_data.regulated_products = []
+            operation_data.naics_code_id = None
+            operation_data.secondary_naics_code_id = None
+            operation_data.tertiary_naics_code_id = None
+            operation_data.boundary_map = None
+            operation_data.process_flow_diagram = None
             DocumentService.archive_or_delete_operation_document(user_guid, operation.id, 'process_flow_diagram')
             DocumentService.archive_or_delete_operation_document(user_guid, operation.id, 'boundary_map')
         elif new_purpose in [
@@ -754,9 +775,9 @@ class OperationService:
             Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
         ]:
             # remove regulated products - they're not relevant to Reporting/Potential Reporting operations
-            payload.regulated_products = []
+            operation_data.regulated_products = []
 
-        return payload
+        return operation_data
 
     # list previous reportable operations methods:
     @staticmethod
