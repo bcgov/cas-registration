@@ -26,10 +26,7 @@ spec:
             {{- include "cas-bciers.backendEnvVars" . | nindent 12 }}
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: "/attachment-credentials/attachment-credentials.json"
-          resources:
-            requests:
-              cpu: 10m
-              memory: 192Mi
+          resources: {{ toYaml .Values.checkDocumentFileStatus.resources | nindent 12 }}
           command:
             - /usr/bin/env
             - bash
