@@ -12,6 +12,8 @@ class RegulatedProduct(BaseModel):
     name = models.CharField(max_length=1000, db_comment="The name of a regulated product")
     unit = models.CharField(max_length=1000, default="N/A", db_comment="The unit of measure for a regulated product")
     is_regulated = models.BooleanField(db_comment="Indicates if a product is regulated")
+    valid_from = models.DateField(db_comment="Date from which this regulated product is valid for reporting")
+    valid_to = models.DateField(db_comment="Date until which this regulated product is valid for reporting")
     history = HistoricalRecords(
         table_name='erc_history"."regulated_product_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
