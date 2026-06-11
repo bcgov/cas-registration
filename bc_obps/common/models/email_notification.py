@@ -5,9 +5,14 @@ from common.models.email_notification_template import EmailNotificationTemplate
 
 class EmailNotification(models.Model):
     transaction_id = models.UUIDField(
-        primary_key=True, editable=False, db_comment="Transaction identifier for the email message in CHES API"
+        primary_key=True,
+        editable=False,
+        db_comment="Transaction identifier for the email message in CHES (Common Hosted Email Service), BC government's shared email API",
     )
-    message_id = models.UUIDField(editable=False, db_comment="Message identifier for the email message in CHES API")
+    message_id = models.UUIDField(
+        editable=False,
+        db_comment="Message identifier for the email message in CHES (Common Hosted Email Service), BC government's shared email API",
+    )
     recipients_email = ArrayField(
         models.EmailField(max_length=255), db_comment="List of email addresses to send the email to"
     )

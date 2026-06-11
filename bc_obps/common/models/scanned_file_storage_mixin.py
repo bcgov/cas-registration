@@ -25,7 +25,12 @@ class ScannedFileStorageMixin(models.Model):
         CLEAN = "Clean"
         QUARANTINED = "Quarantined"
 
-    status = models.CharField(max_length=100, choices=FileStatus.choices, default=FileStatus.UNSCANNED)
+    status = models.CharField(
+        max_length=100,
+        choices=FileStatus.choices,
+        default=FileStatus.UNSCANNED,
+        db_comment="The virus/malware scan status of the uploaded file. Set by the scanning service (Unscanned before scan, Clean if safe, Quarantined if malware detected)",
+    )
 
     # Additional remote file methods
 
