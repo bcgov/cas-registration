@@ -1,7 +1,6 @@
 from model_bakery.baker import make_recipe
 import pytest
 from registration.models.operation import Operation
-from registration.models.regulated_product import RegulatedProduct
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
@@ -69,7 +68,8 @@ class TestOperationRegulatedProductsSelectedValidator:
             registration_purpose=reg_purpose,
         )
 
-        unregulated_product = RegulatedProduct.objects.create(
+        unregulated_product = make_recipe(
+            'registration.tests.utils.regulated_product',
             name="Unregulated product",
             unit="tonnes",
             is_regulated=False,
@@ -102,7 +102,8 @@ class TestOperationRegulatedProductsSelectedValidator:
             registration_purpose=reg_purpose,
         )
 
-        regulated_product = RegulatedProduct.objects.create(
+        regulated_product = make_recipe(
+            'registration.tests.utils.regulated_product',
             name="Regulated product",
             unit="tonnes",
             is_regulated=True,
