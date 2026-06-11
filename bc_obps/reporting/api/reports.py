@@ -9,7 +9,7 @@ from django.http import HttpRequest
 from reporting.api.permissions import check_operation_ownership
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from reporting.schema.report import StartReportIn, CreateReportVersionIn
+from reporting.schema.report import StartReportIn, CreateReportVersionIn, CreateReportForReportingYearIn
 from service.report_service import ReportService
 from service.report_version_service import ReportVersionService, ReportVersionData
 from service.reporting_year_service import ReportingYearService
@@ -25,6 +25,7 @@ from reporting.api.permissions import (
     approved_industry_user_report_composite_auth,
 )
 from reporting.models import ReportingYear, ReportVersion
+from common.api.utils.current_user_utils import get_current_user_guid
 
 
 @router.post(
@@ -37,6 +38,30 @@ from reporting.models import ReportingYear, ReportVersion
 )
 def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
     report_version_id = ReportService.create_report(payload.operation_id, payload.reporting_year)
+    return 201, report_version_id
+
+
+@router.post(
+    "/create-report-for-reporting-year",
+    response={201: int, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""
+    Creates a report for a given operation and reporting year
+
+    Allows a new report creation for a selected year when the authenticated
+    user's operator owned the operation during any portion of the reporting year
+    """,
+    auth=authorize("approved_industry_user"),
+)
+def create_report_for_reporting_year(
+    request: HttpRequest,
+    payload: CreateReportForReportingYearIn,
+) -> Tuple[Literal[201], int]:
+    report_version_id = ReportService.create_report_for_reporting_year(
+        user_guid=get_current_user_guid(request),
+        data=payload,
+    )
+
     return 201, report_version_id
 
 

@@ -1,10 +1,7 @@
 import { actionHandler } from "@bciers/actions";
 
-export type ReportingYearScope = "all" | "past";
-
-async function getReportingYears(scope: ReportingYearScope = "all") {
-  const query = scope === "all" ? "" : `?scope=${scope}`;
-
+async function getReportingYears(exclude_past?: boolean) {
+  const query = exclude_past ? `?exclude_past=${exclude_past}` : "";
   return actionHandler(`reporting/reporting-years${query}`, "GET", "");
 }
 

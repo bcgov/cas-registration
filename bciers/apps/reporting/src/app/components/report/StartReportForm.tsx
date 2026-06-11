@@ -13,8 +13,9 @@ interface StartReportFormProps {
 }
 
 interface StartReportFormData {
-  reporting_year?: number;
-  reporting_operation?: string;
+  reporting_year: number;
+  operation_id: string;
+  registration_purpose: string;
 }
 
 export default function StartReportForm({
@@ -22,21 +23,24 @@ export default function StartReportForm({
   uiSchema,
 }: StartReportFormProps) {
   const router = useRouter();
-  const [formData, setFormData] = useState<StartReportFormData>({});
+  const [formData, setFormData] = useState<Partial<StartReportFormData>>({});
   const [errorList, setErrorList] = useState([] as any[]);
 
-  const submitHandler = async (data: { formData?: StartReportFormData }) => {
+  const handleSubmit = async (data: { formData?: StartReportFormData }) => {
     setErrorList([]);
 
+    const payload = {
+      operation_id: data.formData?.operation_id,
+      reporting_year: data.formData?.reporting_year,
+      registration_purpose: data.formData?.registration_purpose,
+    };
+
     const response = await actionHandler(
-      "reporting/reports/start",
+      "reporting/create-report-for-reporting-year",
       "POST",
-      "/reports/start",
+      "/reports/previous-years",
       {
-        body: JSON.stringify({
-          reporting_year: data.formData?.reporting_year,
-          operation_id: data.formData?.reporting_operation,
-        }),
+        body: JSON.stringify(payload),
       },
     );
 
@@ -45,7 +49,7 @@ export default function StartReportForm({
       return;
     }
 
-    window.location.href = `/reports/${response.report_version_id}`;
+    router.push(`/reporting/reports/${response}/review-operation-information`);
   };
 
   return (
@@ -54,7 +58,7 @@ export default function StartReportForm({
       schema={schema}
       uiSchema={uiSchema}
       onChange={(data: any) => setFormData(data.formData)}
-      onSubmit={submitHandler}
+      onSubmit={handleSubmit}
     >
       {errorList.length > 0 &&
         errorList.map((e: any) => (
@@ -63,21 +67,21 @@ export default function StartReportForm({
           </Alert>
         ))}
 
-      <div className="flex justify-between pt-6">
+      <div className="flex justify-start gap-3 pt-6">
         <Button
           variant="outlined"
           onClick={() => router.back()}
-          className="min-w-[120px] border-bc-blue py-2.5 text-bc-links hover:border-bc-primary-blue"
+          className="min-w-[82px] border-bc-blue px-6 py-2.5 text-bc-links hover:border-bc-primary-blue"
         >
-          Back
+          Cancel
         </Button>
 
         <Button
           variant="contained"
           type="submit"
-          className="min-w-[120px] bg-bc-blue py-2.5 hover:bg-bc-primary-blue"
+          className="min-w-[82px] bg-bc-blue px-6 py-2.5 hover:bg-bc-primary-blue"
         >
-          Start Report
+          Start
         </Button>
       </div>
     </FormBase>
