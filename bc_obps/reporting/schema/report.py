@@ -17,3 +17,13 @@ class CreateReportVersionIn(Schema):
     """
 
     operation_id: UUID
+
+
+class CreateReportForReportingYearIn(Schema):
+    """
+    Schema for the start report for selected reporting year endpoint request
+    """
+
+    operation_id: UUID
+    reporting_year: int
+    registration_purpose: str
