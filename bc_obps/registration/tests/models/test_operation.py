@@ -3,7 +3,6 @@ from common.tests.utils.helpers import BaseTestCase
 from registration.models import (
     BcObpsRegulatedOperation,
     Activity,
-    RegulatedProduct,
     Operation,
     User,
 )
@@ -69,8 +68,12 @@ class OperationModelTest(BaseTestCase):
         )
         cls.test_object.regulated_products.set(
             [
-                RegulatedProduct.objects.create(name="test", unit="test unit", is_regulated=True),
-                RegulatedProduct.objects.create(name="test2", unit="test2 unit2", is_regulated=False),
+                baker.make_recipe(
+                    'registration.tests.utils.regulated_product', name="test", unit="test unit", is_regulated=True
+                ),
+                baker.make_recipe(
+                    'registration.tests.utils.regulated_product', name="test2", unit="test2 unit2", is_regulated=False
+                ),
             ]
         )
         cls.field_data = [
