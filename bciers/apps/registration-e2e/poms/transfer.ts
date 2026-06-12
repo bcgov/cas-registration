@@ -187,7 +187,7 @@ export class TransferPOM {
     await expect(this.page.getByText(/will be transferred/i)).toBeVisible();
   }
 
-  async assertTransferSuccess(timing: "past" | "future") {
+  async submitAndAssertTransfer(timing: "past" | "future") {
     await this.submitTransfer();
     if (timing === "past") {
       await this.assertPastTransferSuccess();

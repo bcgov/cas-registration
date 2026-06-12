@@ -60,7 +60,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"Loading: {fixture}"))
             call_command('loaddata', fixture)
 
-        if 'transfer_event.json' in ' '.join(fixtures):
+        if any('transfer_event.json' in f for f in fixtures):
             self._fix_transfer_event_submission_timestamps()
 
     def _fix_transfer_event_submission_timestamps(self):
