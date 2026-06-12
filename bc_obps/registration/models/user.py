@@ -11,17 +11,22 @@ from registration.models.rls_configs.user import Rls as UserRls
 
 
 class User(UserAndContactCommonInfo, TimeStampedModel):
-    user_guid = models.UUIDField(primary_key=True, db_comment="A GUID to identify the user")
-    business_guid = models.UUIDField(db_comment="A GUID to identify the business")
+    user_guid = models.UUIDField(
+        primary_key=True,
+        db_comment="A GUID (Globally Unique Identifier) assigned by BCeID (BC Electronic Identity) to uniquely identify the user. Primary key.",
+    )
+    business_guid = models.UUIDField(
+        db_comment="A GUID (Globally Unique Identifier) assigned by BCeID (BC Electronic Identity) to identify the business the user is associated with"
+    )
     bceid_business_name = models.CharField(
         max_length=1000,
-        db_comment="The name of the business the user is associated with as per their Business BCeID account",
+        db_comment="The name of the business the user is associated with, as stored in their Business BCeID (BC Electronic Identity) account",
     )
     app_role = models.ForeignKey(
         AppRole,
         on_delete=models.DO_NOTHING,
         related_name="users",
-        db_comment="The role assigned to this user which defines the permissions the use has.",
+        db_comment="The role assigned to this user which defines the permissions the user has. Foreign key to erc.app_role",
     )
     history = HistoricalRecords(
         table_name='erc_history"."user_history',
@@ -29,7 +34,7 @@ class User(UserAndContactCommonInfo, TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = "Table containing information about app users. Industry users are all associated with a business and are identified via their Business BCEID."
+        db_table_comment = "Table containing information about app users. Industry users are all associated with a business and are identified via their Business BCeID (BC Electronic Identity)."
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.USER.value}'
 
         constraints = [

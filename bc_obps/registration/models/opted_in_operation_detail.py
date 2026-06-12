@@ -28,12 +28,12 @@ class OptedInOperationDetail(TimeStampedModel):
     meets_naics_code_11_22_562_classification_requirements = models.BooleanField(
         blank=True,
         null=True,
-        db_comment="Is this operation's primary economic activity classified by the following NAICS Code - 11, 22, or 562?",
+        db_comment="Is this operation's primary economic activity classified under NAICS (North American Industry Classification System) code 11, 22, or 562?",
     )
     meets_producing_gger_schedule_a1_regulated_product = models.BooleanField(
         blank=True,
         null=True,
-        db_comment="Does this operation produce a regulated product listed in Table 2 of Schedule A.1 of the GGERR?",
+        db_comment="Does this operation produce a regulated product listed in Table 2 of Schedule A.1 of the GGERR (Greenhouse Gas Emission Reporting Regulation)?",
     )
     meets_reporting_and_regulated_obligations = models.BooleanField(
         blank=True,
@@ -50,7 +50,7 @@ class OptedInOperationDetail(TimeStampedModel):
         on_delete=models.PROTECT,
         blank=True,
         null=True,
-        db_comment="The final reporting year an opted-out operation is expected to report for, if applicable.",
+        db_comment="The final reporting year that this opted-in operation is expected to report for, if applicable. Foreign key to reporting.reporting_year",
     )
     history = HistoricalRecords(
         table_name='erc_history"."opted_in_operation_detail_history',

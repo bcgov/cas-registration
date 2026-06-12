@@ -22,7 +22,7 @@ class Document(TimeStampedModel, ScannedFileStorageMixin):
         DocumentType,
         on_delete=models.DO_NOTHING,
         related_name="documents",
-        db_comment="Type of document, e.g., boundary map",
+        db_comment="The type of this document (e.g. boundary map, process flow diagram). Foreign key to erc.document_type",
     )
     description = models.CharField(max_length=1000, blank=True, null=True, db_comment="Description of the document")
     operation = models.ForeignKey(
@@ -31,7 +31,7 @@ class Document(TimeStampedModel, ScannedFileStorageMixin):
         null=True,
         on_delete=models.DO_NOTHING,
         related_name="documents",
-        db_comment="The operation that the document is about",
+        db_comment="The operation this document is associated with. Foreign key to erc.operation",
     )
     history = HistoricalRecords(
         table_name='erc_history"."document_history',

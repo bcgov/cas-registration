@@ -24,31 +24,35 @@ class Facility(TimeStampedModel):
     operation = models.ForeignKey(
         Operation,
         on_delete=models.PROTECT,
-        db_comment="The operation who currently owns the facility (see the FacilityDesignatedOperationTimeline for past and upcoming ownership)",
+        db_comment="The operation that currently owns this facility (historical ownership is tracked in erc.facility_designated_operation_timeline). Foreign key to erc.operation",
         related_name="facilities",
     )
     name = models.CharField(
         max_length=1000,
-        db_comment="The name of the facility when the operation owned it",
+        db_comment="The current name of the facility",
         unique=True,
     )
     is_current_year = models.BooleanField(
-        blank=True, null=True, db_comment="The facility's starting date is within the current year or preceeding year"
+        blank=True, null=True, db_comment="The facility's starting date is within the current year or preceding year"
     )
     starting_date = models.DateTimeField(
         blank=True, null=True, db_comment="The date of the facility starting operations"
     )
-    type = models.CharField(max_length=100, choices=Types.choices, db_comment="The type of the facility")
+    type = models.CharField(
+        max_length=100,
+        choices=Types.choices,
+        db_comment="The type of the facility. Valid values: Single Facility, Large Facility, Medium Facility, Small Aggregate, Electricity Import",
+    )
     address = models.ForeignKey(
         Address,
         on_delete=models.PROTECT,
-        db_comment="The address of the facility",
+        db_comment="The address of the facility. Foreign key to erc.address",
         blank=True,
         null=True,
         related_name='%(class)s_address',
     )
     swrs_facility_id = models.IntegerField(
-        db_comment="A facility's SWRS facility ID.",
+        db_comment="A facility's SWRS (Single Window Reporting System) facility ID. Only populated for facilities imported from the SWRS dataset.",
         blank=True,
         null=True,
     )
@@ -56,7 +60,7 @@ class Facility(TimeStampedModel):
         "BcGreenhouseGasId",
         on_delete=models.PROTECT,
         max_length=1000,
-        db_comment="A facility's BCGHG identifier.",
+        db_comment="A facility's BCGHG (BC Greenhouse Gas) identifier. Foreign key to erc.bc_greenhouse_gas_id",
         blank=True,
         null=True,
     )
@@ -84,7 +88,7 @@ class Facility(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = "Contains data on facilities that emit carbon emissions and must report them to Clean Growth. A Linear Facilities Operation is made up of several different facilities whereas a Single Facility Operation has only one facility. In the case of a single facility operation, much of the data in this table will overlap with the parent record in the operation table."
+        db_table_comment = "Contains data on facilities that emit carbon emissions and must report them to Clean Growth. A facility is a distinct location or unit within an industrial operation. A Linear Facilities Operation (LFO) is made up of several different facilities whereas a Single Facility Operation (SFO) has only one facility. In the case of an SFO, much of the data in this table will overlap with the parent record in the operation table."
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.FACILITY.value}'
         verbose_name_plural = "Facilities"
         triggers = [

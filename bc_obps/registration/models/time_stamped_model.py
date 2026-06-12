@@ -19,24 +19,35 @@ class TimeStampedModel(BaseModel):
         blank=True,
         on_delete=models.PROTECT,
         related_name='%(class)s_created',
+        db_comment="ID of the user who created the record. Foreign key to erc.user",
     )
-    created_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(
+        null=True, blank=True, db_comment="Timestamp with timezone of when the record was created"
+    )
     updated_by = models.ForeignKey(
         'registration.User',
         on_delete=models.PROTECT,
         null=True,
         blank=True,
         related_name='%(class)s_updated',
+        db_comment="ID of the user who last updated the record. Foreign key to erc.user",
     )
-    updated_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(
+        null=True, blank=True, db_comment="Timestamp with timezone of when the record was last updated"
+    )
     archived_by = models.ForeignKey(
         'registration.User',
         on_delete=models.PROTECT,
         null=True,
         blank=True,
         related_name='%(class)s_archived',
+        db_comment="ID of the user who archived (soft-deleted) the record. Null if the record is active. Foreign key to erc.user",
     )
-    archived_at = models.DateTimeField(null=True, blank=True)
+    archived_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        db_comment="Timestamp with timezone of when the record was archived (soft-deleted). Null if the record is active",
+    )
     objects = TimeStampedModelManager()
 
     class Meta:

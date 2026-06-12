@@ -60,7 +60,7 @@ class Operation(TimeStampedModel):
     operator = models.ForeignKey(
         Operator,
         on_delete=models.PROTECT,
-        db_comment="The operator who owns the operation",
+        db_comment="The operator that owns this operation. Foreign key to erc.operator",
         related_name="operations",
     )
     naics_code = models.ForeignKey(
@@ -68,7 +68,7 @@ class Operation(TimeStampedModel):
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        db_comment="This column refers to an operation's primary NAICS code.",
+        db_comment="The primary NAICS (North American Industry Classification System) code for this operation. Foreign key to erc.naics_code",
         related_name='operations',
     )
     secondary_naics_code = models.ForeignKey(
@@ -76,7 +76,7 @@ class Operation(TimeStampedModel):
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
-        db_comment="This column refers to an operation's secondary NAICS code.",
+        db_comment="The secondary NAICS (North American Industry Classification System) code for this operation, if applicable. Foreign key to erc.naics_code",
         related_name='operations_naics_secondary',
     )
     tertiary_naics_code = models.ForeignKey(
@@ -84,11 +84,11 @@ class Operation(TimeStampedModel):
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
-        db_comment="This column refers to an operation's tertiary NAICS code.",
+        db_comment="The tertiary NAICS (North American Industry Classification System) code for this operation, if applicable. Foreign key to erc.naics_code",
         related_name='operations_naics_tertiary',
     )
     swrs_facility_id = models.IntegerField(
-        db_comment="An operation's SWRS facility ID. Only needed if the operation submitted a report the previous year.",
+        db_comment="The SWRS (Single Window Reporting System) facility ID associated with this operation, if it reported under that system in the previous year",
         blank=True,
         null=True,
     )
@@ -96,7 +96,7 @@ class Operation(TimeStampedModel):
         "BcGreenhouseGasId",
         on_delete=models.PROTECT,
         max_length=1000,
-        db_comment="An operation's BCGHG identifier.",
+        db_comment="An operation's BCGHG (BC Greenhouse Gas) identifier. Foreign key to erc.bc_greenhouse_gas_id",
         blank=True,
         null=True,
     )
@@ -122,7 +122,7 @@ class Operation(TimeStampedModel):
         on_delete=models.PROTECT,
         blank=True,
         null=True,
-        db_comment="The BC OBPS regulated operation ID of an operation when operation is approved",
+        db_comment="The BC OBPS (Output-Based Pricing System) regulated operation record (BORO ID) assigned when this operation is approved. Foreign key to erc.bc_obps_regulated_operation",
     )
     regulated_products = models.ManyToManyField(
         RegulatedProduct,
@@ -139,7 +139,7 @@ class Operation(TimeStampedModel):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        db_comment="Details about the operation if it is opted in",
+        db_comment="Details about this operation's opt-in status, if applicable. Foreign key to erc.opted_in_operation_detail",
         related_name="operation",
     )
     date_of_first_shipment = models.CharField(

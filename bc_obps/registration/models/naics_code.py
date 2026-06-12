@@ -9,8 +9,14 @@ from registration.models.rls_configs.naics_code import Rls as NaicsCodeRls
 
 
 class NaicsCode(BaseModel):
-    naics_code = models.CharField(max_length=1000, db_comment="NAICS code")
-    naics_description = models.CharField(max_length=1000, db_comment="Description of the NAICS code")
+    naics_code = models.CharField(
+        max_length=1000,
+        db_comment="The 6-digit North American Industry Classification System (NAICS) code identifying the primary economic activity of an operation",
+    )
+    naics_description = models.CharField(
+        max_length=1000,
+        db_comment="Description of the NAICS (North American Industry Classification System) code",
+    )
     is_regulated = models.BooleanField(db_comment="Whether the NAICS code applies to regulated operations")
     history = HistoricalRecords(
         table_name='erc_history"."naics_code_history',

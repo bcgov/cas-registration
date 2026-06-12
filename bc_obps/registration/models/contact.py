@@ -12,7 +12,7 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
         BusinessRole,
         on_delete=models.DO_NOTHING,
         related_name="contacts",
-        db_comment="The role assigned to this contact which defines the permissions the contact has.",
+        db_comment="The business role of this contact within the operator/operation (e.g. Operation Representative). Foreign key to erc.business_role",
     )
     address = models.ForeignKey(
         Address,
@@ -28,6 +28,7 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
         blank=True,
         on_delete=models.DO_NOTHING,
         related_name="contacts",
+        db_comment="The operator this contact belongs to. Foreign key to erc.operator",
     )
 
     history = HistoricalRecords(
