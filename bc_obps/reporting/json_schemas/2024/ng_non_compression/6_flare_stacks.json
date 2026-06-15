@@ -82,7 +82,8 @@
               "required": ["annualFuelAmount"]
             }
           }
-        }
+        },
+        "required": ["sourceSubType"]
       }
     }
   }

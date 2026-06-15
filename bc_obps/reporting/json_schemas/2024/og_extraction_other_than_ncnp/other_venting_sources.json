@@ -53,7 +53,8 @@
               "required": ["gasType", "emission"]
             }
           }
-        }
+        },
+        "required": ["sourceSubType"]
       }
     }
   }
