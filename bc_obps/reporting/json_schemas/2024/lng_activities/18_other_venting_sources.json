@@ -46,9 +46,9 @@
                   "readOnly": true,
                   "description": "Computed upon saving"
                 }
-              }
-            },
-            "required": ["gasType", "emission"]
+              },
+              "required": ["gasType", "emission"]
+            }
           }
         }
       }
