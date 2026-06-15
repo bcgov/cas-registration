@@ -4,7 +4,7 @@ import {
   checkFormFieldsReadOnly,
 } from "@bciers/e2e/utils/helpers";
 
-const OPERATION_INFO = {
+const OPERATION_INFO_FIELDS = {
   // Field labels
   REPORT_TYPE_LABEL:
     "Select what type of report you are filling. If you are uncertain about which report type your operation should complete, please contact GHGRegulator@gov.bc.ca.",
@@ -17,7 +17,8 @@ const OPERATION_INFO = {
   BCGHG_ID_LABEL: "BCGHG ID",
   BORO_ID_LABEL: "BORO ID",
   REPORTING_ACTIVITIES_LABEL: "Reporting activities",
-
+};
+const BUGLE_SFO_VALUES = {
   // Bugle SFO expected values
   BUGLE_SFO_REPORT_TYPE: "Annual Report",
   BUGLE_SFO_OPERATION_NAME: "Bugle SFO - Registered - name from admin",
@@ -32,7 +33,7 @@ const OPERATION_INFO = {
   BUGLE_SFO_REPORTING_ACTIVITIES: [
     "General stationary combustion excluding line tracing",
   ],
-} as const;
+};
 
 export class ReportOperationPOM {
   readonly page: Page;
@@ -47,58 +48,58 @@ export class ReportOperationPOM {
       this.page.getByRole("combobox", {
         name: /Select what type of report/i,
       }),
-    ).toHaveValue(OPERATION_INFO.BUGLE_SFO_REPORT_TYPE);
+    ).toHaveValue(BUGLE_SFO_VALUES.BUGLE_SFO_REPORT_TYPE);
 
     // 2. Operation representatives — multi-select, selected names visible as chips
     await assertFieldVisibility(
       this.page,
-      OPERATION_INFO.BUGLE_SFO_OPERATION_REPRESENTATIVES as unknown as string[],
+      BUGLE_SFO_VALUES.BUGLE_SFO_OPERATION_REPRESENTATIVES as unknown as string[],
       true,
     );
 
     // 3–5. Editable text inputs — verify pre-populated values
     const operatorLegalName = this.page.getByLabel(
-      new RegExp(OPERATION_INFO.OPERATOR_LEGAL_NAME_LABEL, "i"),
+      new RegExp(OPERATION_INFO_FIELDS.OPERATOR_LEGAL_NAME_LABEL, "i"),
     );
     const operatorTradeName = this.page.getByLabel(
-      new RegExp(OPERATION_INFO.OPERATOR_TRADE_NAME_LABEL, "i"),
+      new RegExp(OPERATION_INFO_FIELDS.OPERATOR_TRADE_NAME_LABEL, "i"),
     );
     const operationName = this.page.getByLabel(
-      new RegExp(OPERATION_INFO.OPERATION_NAME_LABEL, "i"),
+      new RegExp(OPERATION_INFO_FIELDS.OPERATION_NAME_LABEL, "i"),
     );
 
     await expect(operatorLegalName).toHaveValue(
-      OPERATION_INFO.BUGLE_SFO_OPERATOR_LEGAL_NAME,
+      BUGLE_SFO_VALUES.BUGLE_SFO_OPERATOR_LEGAL_NAME,
     );
     await expect(operatorTradeName).toHaveValue(
-      OPERATION_INFO.BUGLE_SFO_OPERATOR_TRADE_NAME,
+      BUGLE_SFO_VALUES.BUGLE_SFO_OPERATOR_TRADE_NAME,
     );
     await expect(operationName).toHaveValue(
-      OPERATION_INFO.BUGLE_SFO_OPERATION_NAME,
+      BUGLE_SFO_VALUES.BUGLE_SFO_OPERATION_NAME,
     );
 
     // 6–9. Read-only fields — verify values and disabled state
     const operationType = this.page.getByLabel(
-      new RegExp(OPERATION_INFO.OPERATION_TYPE_LABEL, "i"),
+      new RegExp(OPERATION_INFO_FIELDS.OPERATION_TYPE_LABEL, "i"),
     );
     const registrationPurpose = this.page.getByLabel(
-      new RegExp(OPERATION_INFO.REGISTRATION_PURPOSE_LABEL, "i"),
+      new RegExp(OPERATION_INFO_FIELDS.REGISTRATION_PURPOSE_LABEL, "i"),
     );
     const bcghgId = this.page.getByLabel(
-      new RegExp(OPERATION_INFO.BCGHG_ID_LABEL, "i"),
+      new RegExp(OPERATION_INFO_FIELDS.BCGHG_ID_LABEL, "i"),
     );
     const boroId = this.page.getByLabel(
-      new RegExp(OPERATION_INFO.BORO_ID_LABEL, "i"),
+      new RegExp(OPERATION_INFO_FIELDS.BORO_ID_LABEL, "i"),
     );
 
     await expect(operationType).toHaveValue(
-      OPERATION_INFO.BUGLE_SFO_OPERATION_TYPE,
+      BUGLE_SFO_VALUES.BUGLE_SFO_OPERATION_TYPE,
     );
     await expect(registrationPurpose).toHaveValue(
-      OPERATION_INFO.BUGLE_SFO_REGISTRATION_PURPOSE,
+      BUGLE_SFO_VALUES.BUGLE_SFO_REGISTRATION_PURPOSE,
     );
-    await expect(bcghgId).toHaveValue(OPERATION_INFO.BUGLE_SFO_BCGHG_ID);
-    await expect(boroId).toHaveValue(OPERATION_INFO.BUGLE_SFO_BORO_ID);
+    await expect(bcghgId).toHaveValue(BUGLE_SFO_VALUES.BUGLE_SFO_BCGHG_ID);
+    await expect(boroId).toHaveValue(BUGLE_SFO_VALUES.BUGLE_SFO_BORO_ID);
     await checkFormFieldsReadOnly([
       operationType,
       registrationPurpose,
@@ -109,7 +110,15 @@ export class ReportOperationPOM {
     // 10. Reporting activities
     await assertFieldVisibility(
       this.page,
-      OPERATION_INFO.BUGLE_SFO_REPORTING_ACTIVITIES as unknown as string[],
+      BUGLE_SFO_VALUES.BUGLE_SFO_REPORTING_ACTIVITIES as unknown as string[],
+      true,
+    );
+  }
+
+  async verifyFieldVisibility(): Promise<void> {
+    await assertFieldVisibility(
+      this.page,
+      Object.values(OPERATION_INFO_FIELDS),
       true,
     );
   }
