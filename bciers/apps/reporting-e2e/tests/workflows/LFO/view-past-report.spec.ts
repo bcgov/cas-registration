@@ -5,6 +5,7 @@ import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 import { SubmittedPOM } from "@/reporting-e2e/poms/submitted";
 import { AnnualReportPOM } from "@/reporting-e2e/poms/annual-report";
 import { PastReportsPOM } from "@/reporting-e2e/poms/past-reports";
+import { ReportHistoryPOM } from "@/reporting-e2e/poms/report-history";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 const internalTest = setupBeforeAllTest(UserRole.CAS_ANALYST);
@@ -28,7 +29,8 @@ test.describe("LFO: An industry user views a submitted report for a past reporti
 
     // ── 2. Click "View Details" for the report — navigates to the 'Submitted' report view ──
     await grid.reportHistoryForOperation(OPERATION_NAMES.BANANA_LFO, "2024");
-    await grid.viewDetailsFromReportHistory();
+    const historyGrid = new ReportHistoryPOM(page);
+    await historyGrid.viewDetailsFromReportHistory();
 
     const submittedReport = new SubmittedPOM(page);
     await submittedReport.verifySubmittedReportView(
