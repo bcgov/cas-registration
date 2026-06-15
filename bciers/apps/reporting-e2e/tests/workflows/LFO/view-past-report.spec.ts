@@ -11,7 +11,7 @@ const internalTest = setupBeforeAllTest(UserRole.CAS_ANALYST);
 
 test.describe.configure({ mode: "serial" });
 
-test.describe("LFO: view a submitted report for a past reporting year", () => {
+test.describe("LFO: An industry user views a submitted report for a past reporting year", () => {
   test("Industry user views a submitted LFO report", async ({
     page,
     happoScreenshot,
@@ -47,49 +47,49 @@ test.describe("LFO: view a submitted report for a past reporting year", () => {
       variant: "external",
     });
   });
-
-  internalTest.describe(
-    "LFO: view a submitted report for a past reporting year",
-    () => {
-      internalTest(
-        "CAS analyst views a submitted LFO report",
-        async ({ page, happoScreenshot }) => {
-          // ── 1. Navigate to the past reports grid ──
-          const grid = new PastReportsPOM(page);
-          await grid.route();
-          await takeStabilizedScreenshot(happoScreenshot, page, {
-            component: "Past Reports Grid",
-            variant: "internal",
-          });
-
-          await grid.searchByYear("2024");
-          await grid.searchByOperationName(OPERATION_NAMES.BANANA_LFO);
-
-          // ── 2. Click "View Details" for the report — navigates to the 'Annual Report' view ──
-          await grid.viewDetailsFromReportGrid(
-            OPERATION_NAMES.BANANA_LFO,
-            false,
-            "2024",
-          );
-
-          const annualReport = new AnnualReportPOM(page);
-          await annualReport.verifySubmittedReportView(
-            OPERATION_NAMES.BANANA_LFO,
-            true,
-          );
-
-          // ── 3. Click "View Details" for a specific facility in the facility grid ──
-          await annualReport.viewDetailsFromFacilityGrid(
-            "Facility 1",
-            FacilityIDs.BANANA_LFO_1,
-          );
-          await annualReport.verifyFacilitySubmittedReportView("Facility 1");
-          await takeStabilizedScreenshot(happoScreenshot, page, {
-            component: "LFO Past Facility Report - Submitted",
-            variant: "internal",
-          });
-        },
-      );
-    },
-  );
 });
+
+internalTest.describe(
+  "LFO: An internal user views a submitted report for a past reporting year",
+  () => {
+    internalTest(
+      "CAS analyst views a submitted LFO report",
+      async ({ page, happoScreenshot }) => {
+        // ── 1. Navigate to the past reports grid ──
+        const grid = new PastReportsPOM(page);
+        await grid.route();
+        await takeStabilizedScreenshot(happoScreenshot, page, {
+          component: "Past Reports Grid",
+          variant: "internal",
+        });
+
+        await grid.searchByYear("2024");
+        await grid.searchByOperationName(OPERATION_NAMES.BANANA_LFO);
+
+        // ── 2. Click "View Details" for the report — navigates to the 'Annual Report' view ──
+        await grid.viewDetailsFromReportGrid(
+          OPERATION_NAMES.BANANA_LFO,
+          false,
+          "2024",
+        );
+
+        const annualReport = new AnnualReportPOM(page);
+        await annualReport.verifySubmittedReportView(
+          OPERATION_NAMES.BANANA_LFO,
+          true,
+        );
+
+        // ── 3. Click "View Details" for a specific facility in the facility grid ──
+        await annualReport.viewDetailsFromFacilityGrid(
+          "Facility 1",
+          FacilityIDs.BANANA_LFO_1,
+        );
+        await annualReport.verifyFacilitySubmittedReportView("Facility 1");
+        await takeStabilizedScreenshot(happoScreenshot, page, {
+          component: "LFO Past Facility Report - Submitted",
+          variant: "internal",
+        });
+      },
+    );
+  },
+);
