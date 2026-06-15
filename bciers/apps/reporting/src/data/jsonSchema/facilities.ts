@@ -12,7 +12,8 @@ export interface ActivityData {
 }
 
 export const buildFacilitySchema = (
-  activities: ActivityData[],
+  facilityActivities: ActivityData[],
+  otherActivities: ActivityData[],
   isSyncAllowed: boolean = true,
 ) =>
   ({
@@ -36,13 +37,25 @@ export const buildFacilitySchema = (
         title: "Activities",
         type: "string",
       },
-
-      activities: {
+      activity_selection_description: {
+        title:
+          "Select ONLY the activities that apply to this facility. Deselect any activities that are not applicable to this facility.",
+        type: "string",
+      },
+      facility_activities: {
         type: "array",
-        title: "Activities",
         items: {
           type: "string",
-          enum: activities.map((activitiy) => activitiy.name),
+          enum: facilityActivities.map((activity) => activity.name),
+        },
+        uniqueItems: true,
+      },
+      other_activities: {
+        type: "array",
+        title: "Other activities",
+        items: {
+          type: "string",
+          enum: otherActivities.map((activity) => activity.name),
         },
         uniqueItems: true,
       },
@@ -85,7 +98,18 @@ export const buildFacilityReviewUiSchema = (
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:classNames": "mt-2 mb-5 emission-array-header",
   },
-  activities: {
+  activity_selection_description: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+  },
+  facility_activities: {
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:widget": CheckboxGroupWidget,
+    "ui:options": {
+      label: false,
+      columns: 1,
+    },
+  },
+  other_activities: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": CheckboxGroupWidget,
     "ui:options": {
