@@ -94,11 +94,11 @@ export const validationUIConfig: Partial<
     formatMessage: ({ error }) => {
       const ctx = error.context;
 
-      return `Validation error detected for ${String(
+      return `JSON schema validation failure detected for ${String(
         ctx?.facility_name ?? "facility",
       )} ${String(
         ctx?.activity_name ?? "activity",
-      )}. Please review the activity data and correct any invalid or unexpected values.`;
+      )}. Please forward this error message to ghgregulator@gov.bc.ca to resolve this issue.`;
     },
   }),
 
