@@ -45,6 +45,8 @@ export class CurrentReportsPOM {
   readonly url: string =
     process.env.E2E_BASEURL + AppRoutes.GRID_REPORTING_CURRENT_REPORTS;
 
+  readonly subdirectory: string = "current-reports";
+
   readonly saveAndContinueButton: Locator;
 
   readonly submitButton: Locator;
@@ -332,7 +334,7 @@ export class CurrentReportsPOM {
     await this.page.waitForURL(
       (u) =>
         u.searchParams.get("operation_name") === operationName &&
-        /\/current-reports\/?$/i.test(u.pathname),
+        new RegExp(`/${this.subdirectory}/?$`, "i").test(u.pathname),
       { timeout: 10_000 },
     );
 
