@@ -61,7 +61,7 @@ const OperationInformationForm = ({
   const searchParams = useSearchParams();
 
   const [fileWidgetContext, submitWithFiles] = useFileUploadWidget(
-    `registration/operations/${operationId}/new`,
+    `registration/operations/${operationId}`,
     "POST",
     `/operations/${operationId}`,
   );
@@ -233,7 +233,7 @@ const OperationInformationForm = ({
           ),
           status: confirmedFormData.status,
           missing_representative_alert: isMissingRepresentative,
-          ...fileWidgetContext
+          ...fileWidgetContext,
         }}
       />
     </>

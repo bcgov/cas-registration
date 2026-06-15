@@ -1,6 +1,7 @@
-from registration.schema import OptedInOperationDetailIn
+from common.lib.dataclasses import asdict
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.utils import update_model_instance
+from service.data_types.operation_service_data_types import OptedInOperationDetailData
 
 
 class OptedInOperationDataAccessService:
@@ -8,16 +9,18 @@ class OptedInOperationDataAccessService:
     def update_opted_in_operation_detail(
         cls,
         opted_in_operation_detail_id: int,
-        opted_in_operation_detail_data: OptedInOperationDetailIn,
+        opted_in_operation_detail_data: OptedInOperationDetailData,
     ) -> OptedInOperationDetail:
         """
         Updates an existing OptedInOperationDetail instance.
         """
         opted_in_operation_detail = OptedInOperationDetail.objects.get(id=opted_in_operation_detail_id)
+        update_dict = asdict(opted_in_operation_detail_data)
+
         updated_opted_in_operation_detail_instance = update_model_instance(
             opted_in_operation_detail,
-            opted_in_operation_detail_data.dict().keys(),
-            opted_in_operation_detail_data.dict(),
+            update_dict.keys(),
+            update_dict,
         )
         updated_opted_in_operation_detail_instance.save()
         return updated_opted_in_operation_detail_instance

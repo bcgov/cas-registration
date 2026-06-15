@@ -9,18 +9,18 @@ from registration.schema import (
     OperationTimelineFilterSchema,
     OperationTimelineListOut,
 )
+from service.data_types.operation_service_data_types import OperationData
 from service.operation_service import OperationService
 from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from ninja import Query
+from ninja import File, Query, UploadedFile
 from django.db.models import QuerySet
 from ninja.pagination import paginate
 from registration.utils import CustomPagination
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
-
 
 ##### GET #####
 
@@ -75,6 +75,18 @@ def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[
     auth=authorize("approved_industry_user"),
 )
 def register_create_operation_information(
-    request: HttpRequest, payload: OperationInformationIn
+    request: HttpRequest,
+    payload: OperationInformationIn,
+    boundary_map: File[UploadedFile] = None,  # type: ignore
+    process_flow_diagram: File[UploadedFile] = None,  # type: ignore
+    new_entrant_application: File[UploadedFile] = None,  # type: ignore
 ) -> Tuple[Literal[201], Operation]:
-    return 201, OperationService.register_operation_information(get_current_user_guid(request), None, payload)
+
+    operation_data = OperationData(
+        **payload.model_dump(),
+        boundary_map=boundary_map,
+        process_flow_diagram=process_flow_diagram,
+        new_entrant_application=new_entrant_application,
+    )
+
+    return 201, OperationService.register_operation_information(get_current_user_guid(request), None, operation_data)

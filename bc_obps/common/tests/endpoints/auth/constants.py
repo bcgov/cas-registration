@@ -236,7 +236,7 @@ ENDPOINTS = {
             "kwargs": {"version_id": MOCK_INT},
         },
         {
-            "method": "put",
+            "method": "post",
             "endpoint_name": "register_edit_operation_information",
             "kwargs": {"operation_id": MOCK_UUID},
         },
@@ -266,7 +266,7 @@ ENDPOINTS = {
             "kwargs": {"version_id": MOCK_INT},
         },
         {
-            "method": "put",
+            "method": "post",
             "endpoint_name": "update_operation",
             "kwargs": {"operation_id": MOCK_UUID},
         },
@@ -290,7 +290,7 @@ ENDPOINTS = {
             "kwargs": {"operation_id": MOCK_UUID},
         },
         {
-            "method": "put",
+            "method": "post",
             "endpoint_name": "create_or_replace_new_entrant_application",
             "kwargs": {"operation_id": MOCK_UUID},
         },

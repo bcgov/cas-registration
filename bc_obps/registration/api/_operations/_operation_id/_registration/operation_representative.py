@@ -41,4 +41,10 @@ def create_operation_representative(
 def remove_operation_representative(
     request: HttpRequest, operation_id: UUID, payload: OperationRepresentativeRemove
 ) -> Tuple[Literal[200], OperationRepresentativeRemove]:
-    return 200, OperationService.remove_operation_representative(get_current_user_guid(request), operation_id, payload)
+    removed_id = OperationService.remove_operation_representative(
+        get_current_user_guid(request),
+        operation_id,
+        payload.id,
+    )
+
+    return 200, OperationRepresentativeRemove(id=removed_id)

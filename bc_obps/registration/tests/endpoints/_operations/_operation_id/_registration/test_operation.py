@@ -1,23 +1,28 @@
-from registration.tests.constants import MOCK_DATA_URL
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.models import Operation
 from registration.utils import custom_reverse_lazy
 from model_bakery import baker
 import json
 
+from tests.test_files import create_test_file
 
-class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
+
+class TestPostOperationRegistrationInformationEndpoint(CommonTestSetup):
     mock_payload = {
-        "registration_purpose": "Reporting Operation",
-        "regulated_products": [1],
-        "name": "op name",
-        "type": Operation.Types.SFO,
-        "naics_code_id": 1,
-        "secondary_naics_code_id": 2,
-        "tertiary_naics_code_id": 3,
-        "activities": [1],
-        "boundary_map": MOCK_DATA_URL,
-        "process_flow_diagram": MOCK_DATA_URL,
+        "payload": json.dumps(
+            {
+                "registration_purpose": "Reporting Operation",
+                "regulated_products": [1],
+                "name": "op name",
+                "type": Operation.Types.SFO,
+                "naics_code_id": 1,
+                "secondary_naics_code_id": 2,
+                "tertiary_naics_code_id": 3,
+                "activities": [1],
+            }
+        ),
+        "boundary_map": create_test_file("boundary_map.pdf"),
+        "process_flow_diagram": create_test_file("process_flow_diagram.pdf"),
     }
 
     def test_users_cannot_update_other_users_operations(self):
@@ -26,13 +31,13 @@ class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
         operation = baker.make_recipe(
             'registration.tests.utils.operation',
         )
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            json.dumps(self.mock_payload),
-            custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
+        response = TestUtils.client.post(
+            path=custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
+            data=self.mock_payload,
+            format="multipart",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
+
         # RLS makes this 404 instead of 401
         # assert response.status_code == 404
         assert response.status_code == 401
@@ -40,12 +45,12 @@ class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
     def test_register_edit_operation_information_endpoint_success(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            json.dumps(self.mock_payload),
-            custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
+
+        response = TestUtils.client.post(
+            path=custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
+            data=self.mock_payload,
+            format="multipart",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
         response_json = response.json()
 
@@ -57,14 +62,14 @@ class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
     def test_register_edit_operation_information_endpoint_fail(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            {
+
+        response = TestUtils.client.post(
+            path=custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
+            data={
                 'bad data': 'im bad',
             },
-            custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
+            format="multipart",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
         # Assert

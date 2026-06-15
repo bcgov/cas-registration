@@ -1,8 +1,8 @@
 from datetime import date, datetime
-from dataclasses import dataclass
-from typing import List, Optional, Tuple, Callable, Generator, Union
+from typing import List, Optional, Tuple, Callable, Generator
 from zoneinfo import ZoneInfo
-from django.core.files.base import ContentFile
+from common.lib.dataclasses import asdict
+from django.core.files.uploadedfile import UploadedFile
 from django.db.models import QuerySet
 from common.exceptions import UserError
 from registration.emails import send_registration_and_boro_id_email
@@ -36,19 +36,19 @@ from service.data_access_service.user_service import UserDataAccessService
 from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
+from service.data_types.operation_service_data_types import (
+    MultipleOperatorData,
+    OperationData,
+    OptedInOperationDetailData,
+    UpdateOperationData,
+)
 from service.document_service import DocumentService
 from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
 from service.facility_service import FacilityService
 from registration.schema import (
-    OperationInformationIn,
-    OperationInformationInUpdate,
-    OperationRepresentativeRemove,
-    OptedInOperationDetailIn,
-    OperationNewEntrantApplicationIn,
     OperationRepresentativeIn,
     FacilityIn,
     OperationTimelineFilterSchema,
-    MultipleOperatorIn,
 )
 from django.db.models import Q
 from django.utils import timezone
@@ -61,37 +61,6 @@ from service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineService,
 )
 from reporting.models.report import Report
-
-
-@dataclass
-class UpdateOperationData:
-    name: str
-    type: str
-    registration_purpose: Optional[Operation.Purposes] = None
-    regulated_products: Optional[List[int]] = None
-    activities: Optional[List[int]] = None
-    naics_code_id: Optional[int] = None
-    secondary_naics_code_id: Optional[int] = None
-    tertiary_naics_code_id: Optional[int] = None
-    multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
-    date_of_first_shipment: Optional[str] = None
-    operation_representatives: List[int] = []
-
-    # Attachments
-    boundary_map: Optional[ContentFile] = None
-    process_flow_diagram: Optional[ContentFile] = None
-    new_entrant_application: Optional[ContentFile] = None
-
-    def operation_fields(self) -> dict:
-        return {
-            "name": self.name,
-            "type": self.type,
-            "naics_code_id": self.naics_code_id,
-            "secondary_naics_code_id": self.secondary_naics_code_id,
-            "tertiary_naics_code_id": self.tertiary_naics_code_id,
-            "date_of_first_shipment": self.date_of_first_shipment,
-            "registration_purpose": self.registration_purpose,
-        }
 
 
 class OperationService:
@@ -168,7 +137,7 @@ class OperationService:
     @classmethod
     @transaction.atomic()
     def update_opted_in_operation_detail(
-        cls, user_guid: UUID, operation_id: UUID, payload: OptedInOperationDetailIn
+        cls, user_guid: UUID, operation_id: UUID, payload: OptedInOperationDetailData
     ) -> OptedInOperationDetail:
         operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
         if not operation.opted_in_operation:
@@ -196,7 +165,7 @@ class OperationService:
 
     @classmethod
     def create_or_replace_new_entrant_application(
-        cls, user_guid: UUID, operation_id: UUID, payload: OperationNewEntrantApplicationIn
+        cls, user_guid: UUID, operation_id: UUID, new_entrant_application: UploadedFile
     ) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
 
@@ -206,7 +175,7 @@ class OperationService:
         ) = DocumentService.create_or_replace_operation_document(
             user_guid,
             operation_id,
-            payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
+            new_entrant_application,
             "new_entrant_application",
         )
         if new_entrant_application_document_created:
@@ -240,7 +209,7 @@ class OperationService:
 
     @classmethod
     @transaction.atomic()
-    def _create_or_update_eio(cls, user_guid: UUID, operation: Operation, payload: OperationInformationIn) -> None:
+    def _create_or_update_eio(cls, user_guid: UUID, operation: Operation, payload: OperationData) -> None:
         # EIO operations have a facility with the same data as the operation
         eio_payload = FacilityIn(name=payload.name, type=Facility.Types.ELECTRICITY_IMPORT, operation_id=operation.id)
         facility = operation.facilities.first()
@@ -265,39 +234,37 @@ class OperationService:
     @classmethod
     @transaction.atomic()
     def remove_operation_representative(
-        cls, user_guid: UUID, operation_id: UUID, payload: OperationRepresentativeRemove
-    ) -> OperationRepresentativeRemove:
+        cls,
+        user_guid: UUID,
+        operation_id: UUID,
+        contact_id: int,
+    ) -> int:
         operation: Operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
-        operation.contacts.remove(payload.id)
+        operation.contacts.remove(contact_id)
 
-        return OperationRepresentativeRemove(id=payload.id)
+        return contact_id
 
     @classmethod
     @transaction.atomic()
     def _create_operation(
         cls,
         user_guid: UUID,
-        payload: OperationInformationIn,
+        operation_data: OperationData,
     ) -> Operation:
-        operation_data = payload.dict(
-            include={
-                'name',
-                'type',
-                'naics_code_id',
-                'secondary_naics_code_id',
-                'tertiary_naics_code_id',
-                'date_of_first_shipment',
-                'registration_purpose',
-            }
-        )
+        operation_fields = operation_data.operation_fields()
+
         user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
-        operation_data['operator_id'] = user_operator.operator_id
+        operation_fields['operator_id'] = user_operator.operator_id
 
         operation = OperationDataAccessService.create_operation(
             user_guid,
-            operation_data,
-            payload.activities if hasattr(payload, "activities") and payload.activities else [],
-            payload.regulated_products if hasattr(payload, "regulated_products") and payload.regulated_products else [],
+            operation_fields,
+            operation_data.activities if hasattr(operation_data, "activities") and operation_data.activities else [],
+            (
+                operation_data.regulated_products
+                if hasattr(operation_data, "regulated_products") and operation_data.regulated_products
+                else []
+            ),
         )
 
         OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline(
@@ -310,56 +277,47 @@ class OperationService:
         )
 
         # create documents
-        operation_documents = [
-            doc
-            for doc in [
-                *(
-                    [
-                        DocumentDataAccessService.create_document(
-                            user_guid,
-                            payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
-                            'boundary_map',
-                            operation.id,
-                        )
-                    ]
-                    if payload.boundary_map
-                    else []
-                ),
-                *(
-                    [
-                        DocumentDataAccessService.create_document(
-                            user_guid,
-                            payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
-                            'process_flow_diagram',
-                            operation.id,
-                        )
-                    ]
-                    if payload.process_flow_diagram
-                    else []
-                ),
-                *(
-                    DocumentDataAccessService.create_document(
-                        user_guid,
-                        payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
-                        'new_entrant_application',
-                        operation.id,
-                    )
-                    if payload.new_entrant_application
-                    else []
-                ),
-            ]
-        ]
+        operation_documents = []
+
+        if operation_data.boundary_map:
+            operation_documents.append(
+                DocumentDataAccessService.create_document(
+                    user_guid,
+                    operation_data.boundary_map,
+                    'boundary_map',
+                    operation.id,
+                )
+            )
+        if operation_data.process_flow_diagram:
+            operation_documents.append(
+                DocumentDataAccessService.create_document(
+                    user_guid,
+                    operation_data.process_flow_diagram,
+                    'process_flow_diagram',
+                    operation.id,
+                )
+            )
+        if operation_data.new_entrant_application:
+            operation_documents.append(
+                DocumentDataAccessService.create_document(
+                    user_guid,
+                    operation_data.new_entrant_application,
+                    'new_entrant_application',
+                    operation.id,
+                )
+            )
+
         operation.documents.add(*operation_documents)
 
         # handle multiple operators
-        multiple_operators_data = payload.multiple_operators_array
+        multiple_operators_data = operation_data.multiple_operators_array
         cls.upsert_multiple_operators(operation, multiple_operators_data, user_guid)
 
         # handle purposes
         if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
             operation = cls._create_opted_in_operation_detail(user_guid, operation)
         if operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
-            cls._create_or_update_eio(user_guid, operation, payload)
+            cls._create_or_update_eio(user_guid, operation, operation_data)
 
         return operation
 
@@ -369,13 +327,13 @@ class OperationService:
         cls,
         user_guid: UUID,
         operation_id: UUID | None,
-        payload: Union[OperationInformationIn, OperationInformationInUpdate],
+        payload: OperationData,
     ) -> Operation:
         # can't optimize this much more without looking at files--the extra hits to operation are in the middleware, and the multi hits to document are from the resolvers
         operation: Operation
         if operation_id:
             operation = OperationService.get_if_authorized(user_guid, operation_id)
-            cls.update_operation(user_guid, payload, operation_id, update_operation_representatives=False)
+            cls.update_operation(user_guid, payload, operation_id)
         else:
             operation = cls._create_operation(
                 user_guid,
@@ -388,7 +346,7 @@ class OperationService:
     @classmethod
     @transaction.atomic()
     def upsert_multiple_operators(
-        cls, operation: Operation, multiple_operators_data: list[MultipleOperatorIn] | None, user_guid: UUID
+        cls, operation: Operation, multiple_operators_data: list[MultipleOperatorData] | None, user_guid: UUID
     ) -> None:
         old_multiple_operators: QuerySet[MultipleOperator] = operation.multiple_operators.all()
         # if all multiple operators have been removed, archive them
@@ -399,18 +357,22 @@ class OperationService:
 
         new_multiple_operators = []
         for mo_data in multiple_operators_data:
-            mo_operator_data: dict = mo_data.dict(
+            mo_operator_data: dict = asdict(
+                mo_data,
                 include={
                     'legal_name',
                     'trade_name',
-                    'business_structure',
+                    'business_structure_id',
                     'cra_business_number',
                     'bc_corporate_registry_number',
-                }
+                },
             )
+
             old_address_id = mo_data.attorney_address if hasattr(mo_data, 'attorney_address') else None
-            new_address = mo_data.dict(
-                include={'street_address', 'municipality', 'province', 'postal_code'}, exclude_none=True
+            new_address: dict = asdict(
+                mo_data,
+                include={'street_address', 'municipality', 'province', 'postal_code'},
+                exclude_none=True,
             )
             if old_address_id and not new_address:
                 old_address = Address.objects.get(id=old_address_id)
@@ -436,9 +398,8 @@ class OperationService:
     def update_operation(
         cls,
         user_guid: UUID,
-        updated_operation_data: UpdateOperationData,
+        updated_operation_data: OperationData,
         operation_id: UUID,
-        update_operation_representatives: bool = True,
     ) -> Operation:
         # will need to retrieve operation as it exists currently in DB first, to determine whether there's been a change to the RP
 
@@ -471,7 +432,9 @@ class OperationService:
         operation.activities.set(updated_operation_data.activities or [])
         operation.regulated_products.set(updated_operation_data.regulated_products or [])
 
-        if operation.status == Operation.Statuses.REGISTERED and update_operation_representatives:
+        if operation.status == Operation.Statuses.REGISTERED and isinstance(
+            updated_operation_data, UpdateOperationData
+        ):
             # operation representatives are only mandatory to register (vs. simply update) and operation
             for contact_id in updated_operation_data.operation_representatives:
                 ContactService.raise_exception_if_contact_missing_address_information(contact_id)
@@ -736,8 +699,8 @@ class OperationService:
 
     @classmethod
     def handle_change_of_registration_purpose(
-        cls, user_guid: UUID, operation: Operation, operation_data: UpdateOperationData
-    ) -> UpdateOperationData:
+        cls, user_guid: UUID, operation: Operation, operation_data: OperationData
+    ) -> OperationData:
         """
         Logic to handle the situation when an industry user changes the selected registration purpose (RP) for their operation.
         Changing the RP can happen during or after submitting the operation's registration info.

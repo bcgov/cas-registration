@@ -1,13 +1,12 @@
-from typing import List, Literal, Optional, Tuple
+from typing import Literal, Tuple
 from uuid import UUID
-from ninja import Field, File, Form, ModelSchema, Schema, UploadedFile
+from ninja import File, UploadedFile
 from registration.schema import OperationInformationInUpdate, OperationOut, OperationOutWithDocuments, Message
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
-from registration.schema.multiple_operator import MultipleOperatorIn
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.operation_service import OperationService
+from service.operation_service import OperationService, UpdateOperationData
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from registration.models import Operation
@@ -42,54 +41,32 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
     return 200, operation
 
 
-##### PUT ######
-
-
-@router.put(
-    "/operations/{uuid:operation_id}",
-    response={200: OperationOut, custom_codes_4xx: Message},
-    tags=OPERATION_TAGS,
-    description="Updates the details of a specific operation by its ID.",
-    auth=authorize("approved_industry_user"),
-)
-def update_operation(
-    request: HttpRequest, operation_id: UUID, payload: OperationInformationInUpdate
-) -> Tuple[Literal[200], Operation]:
-    return 200, OperationService.update_operation(get_current_user_guid(request), payload, operation_id)
-
-
-##### New stuff
-
-
-class NewOperationInformationIn(Schema):
-    name: Optional[str] = None
-    type: Optional[str] = None
-    registration_purpose: Optional[Operation.Purposes] = None
-    regulated_products: Optional[List[int]] = None
-    activities: Optional[List[int]] = None
-    naics_code_id: Optional[int] = None
-    secondary_naics_code_id: Optional[int] = None
-    tertiary_naics_code_id: Optional[int] = None
-    multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
-    date_of_first_shipment: Optional[str] = None
-    operation_representatives: Optional[List[int]] = None
+##### POST #####
 
 
 @router.post(
-    "/operations/{uuid:operation_id}/new",
+    "/operations/{uuid:operation_id}",
     response={200: OperationOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="Updates the details of a specific operation by its ID, with files being passed as multipart form data.",
+    auth=authorize("approved_industry_user"),
 )
-def update_operation_new(
+def update_operation(
     request: HttpRequest,
     operation_id: UUID,
-    details: NewOperationInformationIn,
-    boundary_map: File[UploadedFile] = None,
-    process_flow_diagram: File[UploadedFile] = None,
-    new_entrant_application: File[UploadedFile] = None,
+    payload: OperationInformationInUpdate,
+    boundary_map: File[UploadedFile] = None,  # type: ignore
+    process_flow_diagram: File[UploadedFile] = None,  # type: ignore
+    new_entrant_application: File[UploadedFile] = None,  # type: ignore
 ) -> Tuple[Literal[200], Operation]:
 
-    raise Exception(details)
+    data = UpdateOperationData(
+        boundary_map=boundary_map,
+        process_flow_diagram=process_flow_diagram,
+        new_entrant_application=new_entrant_application,
+        **payload.model_dump(),
+    )
 
-    return 200, Operation.objects.first()
+    operation = OperationService.update_operation(get_current_user_guid(request), data, operation_id)
+
+    return 200, operation
