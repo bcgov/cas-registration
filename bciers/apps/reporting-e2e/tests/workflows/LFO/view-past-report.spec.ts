@@ -30,7 +30,7 @@ test.describe("LFO: An industry user views a submitted report for a past reporti
     // ── 2. Click "View Details" for the report — navigates to the 'Submitted' report view ──
     await grid.reportHistoryForOperation(OPERATION_NAMES.BANANA_LFO, "2024");
     const historyGrid = new ReportHistoryPOM(page);
-    await historyGrid.viewDetailsFromReportHistory();
+    await historyGrid.viewDetailsFromReportHistory(1);
 
     const submittedReport = new SubmittedPOM(page);
     await submittedReport.verifySubmittedReportView(
