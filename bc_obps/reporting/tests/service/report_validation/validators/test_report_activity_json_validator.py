@@ -1,5 +1,5 @@
 import json
-from unittest.mock import patch
+from unittest.mock import ANY, patch
 from model_bakery.baker import make_recipe
 import pytest
 from registration.models.activity import Activity
@@ -121,7 +121,8 @@ class TestReportActivityJsonValidator:
             "facility_00000000-0000-0000-0000-000000000012_test-activity": ReportValidationError(
                 Severity.ERROR,
                 "Validation error: Unevaluated properties are not allowed ('prop3' was unexpected) at: sourceTypes > testSourceType",
-                ReportValidationErrorKey.ACTIVITY_JSON_SCHEMA_VALIDATION_ERROR,
+                ReportValidationErrorKey.REPORT_ACTIVITY_JSON_VALIDATION,
+                context=ANY,
             )
         }
 
