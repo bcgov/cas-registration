@@ -1,11 +1,12 @@
 import json
-from unittest.mock import patch
+from unittest.mock import ANY, patch
 from model_bakery.baker import make_recipe
 import pytest
 from registration.models.activity import Activity
 from reporting.models.reporting_year import ReportingYear
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
+    ReportValidationErrorKey,
     Severity,
 )
 from reporting.service.report_validation.validators.report_activity_json_validation import (
@@ -56,7 +57,6 @@ class TestReportActivityJsonValidator:
             and "dependencies" not in schema["properties"]["test_prop"]
         )
 
-    @pytest.mark.skip("Validator disabled until fixes with jsonschema draft2020 can be addressed. (reporting/#941)")
     @patch("service.form_builder_service.FormBuilderService.build_form_schema")
     def test_validate_with_extra_field(self, mock_build_form_schema):
         mock_build_form_schema.return_value = json.dumps(
@@ -102,7 +102,7 @@ class TestReportActivityJsonValidator:
 
         raw_activity_data = make_recipe(
             "reporting.tests.utils.report_raw_activity_data",
-            report_version=1,
+            report_version=raw_activity_data.facility_report.report_version,
             facility_report__facility__id="00000000-0000-0000-0000-000000000012",
             activity__slug="test-activity",
             json_data={
@@ -121,6 +121,8 @@ class TestReportActivityJsonValidator:
             "facility_00000000-0000-0000-0000-000000000012_test-activity": ReportValidationError(
                 Severity.ERROR,
                 "Validation error: Unevaluated properties are not allowed ('prop3' was unexpected) at: sourceTypes > testSourceType",
+                ReportValidationErrorKey.REPORT_ACTIVITY_JSON_VALIDATION,
+                context=ANY,
             )
         }
 
@@ -289,3 +291,42 @@ class TestReportActivityJsonValidator:
         errors = validate(raw_activity_data.facility_report.report_version)
 
         assert errors == {}
+
+    def test_validate_with_flag_exludes_unevaluated_properties(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "test_prop": {
+                    "type": "object",
+                    "properties": {
+                        "test_prop_1": {"type": "string"},
+                        "test_prop_2": {"type": "object", "properties": {"test_prop_3": {"type": "string"}}},
+                    },
+                    "dependencies": {
+                        "test_prop_1": {
+                            "properties": {
+                                "test_prop_2": {
+                                    "type": "object",
+                                    "properties": {"test_prop_3": {}},
+                                },
+                            }
+                        }
+                    },
+                },
+            },
+            "dependencies": {"name": {"minLength": 3}},
+        }
+
+        enable_jsonschema_draft_2020_validation(schema, False)
+
+        assert "unevaluatedProperties" not in schema
+        assert "unevaluatedProperties" not in schema["properties"]["test_prop"]
+        assert (
+            "unevaluatedProperties"
+            not in schema["properties"]["test_prop"]["properties"]["test_prop_2"]["properties"]["test_prop_3"]
+        )
+        assert (
+            "unevaluatedProperties"
+            not in schema["properties"]["test_prop"]["dependentSchemas"]["test_prop_1"]["properties"]["test_prop_2"]
+        )

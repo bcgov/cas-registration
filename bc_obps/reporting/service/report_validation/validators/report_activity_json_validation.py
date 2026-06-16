@@ -2,6 +2,7 @@ import json
 import logging
 from typing import Any
 import jsonschema
+from registration.models.activity import Activity
 from reporting.models.report_version import ReportVersion
 from reporting.models.source_type import SourceType
 from reporting.service.report_validation.report_validation_error import (
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 
-def enable_jsonschema_draft_2020_validation(schema: Any) -> None:
+def enable_jsonschema_draft_2020_validation(schema: Any, validate_unevaluated_properties: bool = True) -> None:
     """
     RJSF uses draft-07 and doesn't support the `unevaluatedProperties` keyword.
     This method replaces the `dependencies` keyword with `dependentSchemas` and adds
@@ -28,14 +29,16 @@ def enable_jsonschema_draft_2020_validation(schema: Any) -> None:
 
     if isinstance(schema, list):
         for item in schema:
-            enable_jsonschema_draft_2020_validation(item)
+            enable_jsonschema_draft_2020_validation(item, validate_unevaluated_properties)
 
     if isinstance(schema, dict):
         for key in schema:
-            enable_jsonschema_draft_2020_validation(schema[key])
-
-        if "properties" in schema and schema.get("type") == "object":
-            schema["unevaluatedProperties"] = False
+            enable_jsonschema_draft_2020_validation(schema[key], validate_unevaluated_properties)
+        # Schemas with complex schema dependencies recommended to not set this due to validation failure
+        # https://rjsf-team.github.io/react-jsonschema-form/docs/advanced-customization/internals/#json-schema-supporting-status
+        if validate_unevaluated_properties:
+            if "properties" in schema and schema.get("type") == "object":
+                schema["unevaluatedProperties"] = False
 
         if "dependencies" in schema:
             schema["dependentSchemas"] = schema.pop("dependencies")
@@ -52,6 +55,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             source_type_ids = list(
                 SourceType.objects.filter(json_key__in=source_type_json_keys).values_list("id", flat=True)
             )
+            alumina_activity = Activity.objects.get(slug='aluminum_production')
 
             activity_schema = json.loads(
                 FormBuilderService.build_form_schema(
@@ -61,8 +65,9 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                     str(facility_report.facility_id),
                 )
             )["schema"]
-
-            enable_jsonschema_draft_2020_validation(activity_schema)
+            enable_jsonschema_draft_2020_validation(
+                activity_schema, report_raw_activity.activity_id != alumina_activity.id
+            )
 
             validator = jsonschema.Draft202012Validator(activity_schema)
 
