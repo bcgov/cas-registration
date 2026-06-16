@@ -12,20 +12,20 @@ class ComplianceReport(TimeStampedModel):
         Report,
         on_delete=models.CASCADE,
         related_name="compliance_report",
-        db_comment="The emissions report associated with this compliance report",
+        db_comment="The emissions report associated with this compliance report. Foreign key to erc.report",
     )
 
     compliance_period = models.ForeignKey(
         CompliancePeriod,
         on_delete=models.PROTECT,
         related_name="compliance_reports",
-        db_comment="The compliance period this compliance report is for",
+        db_comment="The compliance period this compliance report is for. Foreign key to erc.compliance_period",
     )
     bccr_subaccount_id = models.CharField(
         max_length=15,
         blank=True,
         null=True,
-        db_comment="The BCCR subaccount ID associated with this compliance report. This is nullable because not all compliance reports will have a BCCR subaccount to deal with the compliance units.",
+        db_comment="The BCCR (BC Carbon Registry) subaccount ID associated with this compliance report. This is nullable because not all compliance reports will have a BCCR subaccount to deal with the compliance units",
     )
 
     class Meta(TimeStampedModel.Meta):

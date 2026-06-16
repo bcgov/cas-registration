@@ -17,7 +17,9 @@ class ComplianceChargeRate(TimeStampedModel):
         db_comment="The associated reporting year for this compliance charge rate",
     )
     rate = models.DecimalField(
-        max_digits=10, decimal_places=2, db_comment="The compliance charge rate in CAD dollars per tCO2e"
+        max_digits=10,
+        decimal_places=2,
+        db_comment="The compliance charge rate in CAD dollars per tCO2e (tonnes of carbon dioxide equivalent)",
     )
 
     class Meta(TimeStampedModel.Meta):

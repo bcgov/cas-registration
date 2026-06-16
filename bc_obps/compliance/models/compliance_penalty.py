@@ -22,14 +22,14 @@ class CompliancePenalty(TimeStampedModel):
         ComplianceObligation,
         on_delete=models.CASCADE,
         related_name="compliance_penalties",
-        db_comment="The compliance obligation not paid on time which triggered this penalty",
+        db_comment="The compliance obligation that was not paid on time which triggered this penalty. Foreign key to erc.compliance_obligation",
     )
 
     elicensing_invoice = models.OneToOneField(
         ElicensingInvoice,
         on_delete=models.PROTECT,
         related_name="compliance_penalty",
-        db_comment="The invoice from elicensing that this penalty created",
+        db_comment="The invoice from elicensing that this penalty created. Foreign key to erc.elicensing_invoice. The data in the elicensing_invoice table comes from elicensing",
         null=True,
         blank=True,
     )
@@ -57,7 +57,7 @@ class CompliancePenalty(TimeStampedModel):
         max_length=20,
         choices=Frequency.choices,
         default=Frequency.DAILY,
-        db_comment="Defines how often interest is compounded for this penalty (e.g., daily or monthly).",
+        db_comment="Defines how often interest is compounded for this penalty (e.g., daily or monthly)",
     )
 
     penalty_amount = models.DecimalField(
@@ -70,7 +70,7 @@ class CompliancePenalty(TimeStampedModel):
     penalty_type = models.CharField(
         max_length=100,
         choices=PenaltyType.choices,
-        db_comment="The type of penalty.",
+        db_comment="The type of penalty. (e.g., Automatic Overdue, Late Submission)",
     )
 
     status = models.CharField(
@@ -83,7 +83,7 @@ class CompliancePenalty(TimeStampedModel):
     invoice_number = models.CharField(
         null=True,
         blank=True,
-        db_comment="The invoice number for the related elicensing invoice. Populated immediately on invoice creation in elicensing to ensure the link is not lost between invoice creation in elicensing and the refresh function that creates the elicensing_invoice record in the erc data.",
+        db_comment="The invoice number for the related elicensing invoice. Populated immediately on invoice creation in elicensing to ensure the link is not lost between invoice creation in elicensing and the refresh function that creates the elicensing_invoice record in the erc data",
     )
 
     class Meta(TimeStampedModel.Meta):

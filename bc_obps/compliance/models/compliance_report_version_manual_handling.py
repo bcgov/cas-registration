@@ -34,25 +34,25 @@ class ComplianceReportVersionManualHandling(TimeStampedModel):
         ComplianceReportVersion,
         on_delete=models.CASCADE,
         related_name="manual_handling_record",
-        db_comment="The CRV that requires manual handling.",
+        db_comment="The Compliance Report Version that requires manual handling. Foreign key to erc.compliance_report_version",
     )
 
     handling_type = models.CharField(
         max_length=50,
         choices=HandlingType.choices,
-        db_comment="The type of manual handling.",
+        db_comment="The type of manual handling. (e.g., obligation, earned credits)",
     )
 
     context = models.CharField(
         max_length=100,
         choices=Context.choices,
-        db_comment="Reason for requiring manual handling.",
+        db_comment="Reason for requiring manual handling",
     )
 
     analyst_comment = models.TextField(
         blank=True,
         null=True,
-        db_comment="Optional comment entered by the analyst.",
+        db_comment="Optional comment entered by the analyst",
     )
 
     analyst_submitted_date = models.DateField(
@@ -67,20 +67,20 @@ class ComplianceReportVersionManualHandling(TimeStampedModel):
         blank=True,
         null=True,
         related_name="compliance_manual_handling_analyst_submitted_by",
-        db_comment="The analyst who provided the manual handling comment.",
+        db_comment="The analyst who provided the manual handling comment. Foreign key to erc.user",
     )
 
     director_decision = models.CharField(
         max_length=50,
         choices=DirectorDecision.choices,
         default=DirectorDecision.PENDING_MANUAL_HANDLING,
-        db_comment="Director's decision about the manual handling case.",
+        db_comment="Director's decision about the manual handling case. (e.g., pending manual handling, issue has been resolved)",
     )
 
     director_decision_date = models.DateField(
         blank=True,
         null=True,
-        db_comment="The date on which the director made the decision.",
+        db_comment="The date on which the director made the decision",
     )
 
     director_decision_by = models.ForeignKey(
@@ -89,7 +89,7 @@ class ComplianceReportVersionManualHandling(TimeStampedModel):
         blank=True,
         null=True,
         related_name="compliance_manual_handling_director_decision_by",
-        db_comment="The director who made the decision.",
+        db_comment="The director who made the decision. Foreign key to erc.user",
     )
 
     class Meta(TimeStampedModel.Meta):

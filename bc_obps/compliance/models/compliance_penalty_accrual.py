@@ -11,7 +11,7 @@ class CompliancePenaltyAccrual(TimeStampedModel):
         CompliancePenalty,
         on_delete=models.CASCADE,
         related_name="compliance_penalty_accruals",
-        db_comment="The penalty record that this daily accrual record relates to",
+        db_comment="The penalty record that this daily accrual record relates to. Foreign key to erc.compliance_penalty",
     )
 
     date = models.DateField(

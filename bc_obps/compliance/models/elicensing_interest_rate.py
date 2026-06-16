@@ -24,7 +24,7 @@ class ElicensingInterestRate(BaseModel):
     interest_rate = models.DecimalField(
         decimal_places=6,
         max_digits=6,
-        db_comment="The interest rate from elicensing",
+        db_comment="The interest rate pulled from elicensing",
     )
 
     start_date = models.DateField(
@@ -32,7 +32,7 @@ class ElicensingInterestRate(BaseModel):
     )
 
     end_date = models.DateField(
-        db_comment="The last date that the rate was in effect. Date is generated in BCIERS when a new interest rate record is pulled from elicensing. End date is one day before the start date of the new record.",
+        db_comment="The last date that the rate was in effect. Date is generated in BCIERS (B.C. Industrial Emissions Reporting System) when a new interest rate record is pulled from elicensing. End date is one day before the start date of the new record",
     )
 
     is_current_rate = models.BooleanField(

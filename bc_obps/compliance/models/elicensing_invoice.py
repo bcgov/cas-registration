@@ -10,12 +10,12 @@ class ElicensingInvoice(TimeStampedModel):
 
     """
 
-    invoice_number = models.CharField(db_comment="The invoice number from elicensing.")
+    invoice_number = models.CharField(db_comment="The invoice number pulled from elicensing")
 
     elicensing_client_operator = models.ForeignKey(
         ElicensingClientOperator,
         on_delete=models.CASCADE,
-        db_comment="Foreign key to the elicensing_client_operator record for the client who this invoice is for",
+        db_comment="The elicensing_client_operator record for the client who this invoice is for. Foreign key to erc.elicensing_client_operator",
         related_name="elicensing_invoices",
     )
 
@@ -24,14 +24,14 @@ class ElicensingInvoice(TimeStampedModel):
     outstanding_balance = models.DecimalField(
         decimal_places=2,
         max_digits=20,
-        db_comment="The outstanding balance for this invoice. invoiceOutstandingBalance in elicensing. This value is the combination of invoice_fee_balance & invoice_interest_balance.",
+        db_comment="The outstanding balance for this invoice. invoiceOutstandingBalance in elicensing. This value is the combination of invoice_fee_balance & invoice_interest_balance",
     )
 
     invoice_fee_balance = models.DecimalField(
         decimal_places=2,
         max_digits=20,
         null=True,
-        db_comment="The balance of fees for this invoice. invoiceFeeBalance in elicensing. This value does not include FAA interest (invoice_interest_balance).",
+        db_comment="The balance of fees for this invoice. invoiceFeeBalance in elicensing. This value does not include FAA (Financial Administration Act) interest (invoice_interest_balance)",
     )
 
     invoice_interest_balance = models.DecimalField(
@@ -42,7 +42,7 @@ class ElicensingInvoice(TimeStampedModel):
     )
 
     is_void = models.BooleanField(
-        default=False, db_comment="Boolean field indicates whether this invoice has been voided"
+        default=False, db_comment="Boolean field indicates whether or not this invoice has been voided"
     )
 
     last_refreshed = models.DateTimeField(

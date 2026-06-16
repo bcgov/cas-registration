@@ -36,7 +36,7 @@ class CompliancePeriod(TimeStampedModel):
         ReportingYear,
         on_delete=models.PROTECT,
         related_name='compliance_period',
-        db_comment="The associated reporting year for this compliance period",
+        db_comment="The associated reporting year for this compliance period. Foreign key to erc.reporting_year",
     )
 
     class Meta(TimeStampedModel.Meta):

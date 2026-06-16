@@ -23,14 +23,14 @@ class ElicensingAdjustment(TimeStampedModel):
     elicensing_line_item = models.ForeignKey(
         ElicensingLineItem,
         on_delete=models.CASCADE,
-        db_comment="Foreign key to the line item record this adjustment relates to",
+        db_comment="Line item record this adjustment relates to. Foreign key to erc.elicensing_line_item",
         related_name="elicensing_adjustments",
     )
 
     supplementary_compliance_report_version = models.ForeignKey(
         ComplianceReportVersion,
         on_delete=models.CASCADE,
-        db_comment="Foreign key to the supplementary compliance report version that triggered this adjustment. When a supplementary report reduces excess emissions, an adjustment is created and applied to the existing invoice from the original compliance report version, but this field tracks which supplementary version caused the adjustment.",
+        db_comment="The supplementary compliance report version that triggered this adjustment. When a supplementary report reduces excess emissions, an adjustment is created and applied to the existing invoice from the original compliance report version, but this field tracks which supplementary version caused the adjustment. Foreign key to erc.compliance_report_version",
         related_name="elicensing_adjustments",
         null=True,
         blank=True,
@@ -39,7 +39,7 @@ class ElicensingAdjustment(TimeStampedModel):
     amount = models.DecimalField(
         decimal_places=2,
         max_digits=20,
-        db_comment="The amount of this adjustment in dollars from elicensing",
+        db_comment="The amount of this adjustment in CAD dollars from elicensing",
     )
 
     adjustment_date = models.DateField(db_comment="date of the adjustment in elicensing", null=True, blank=True)
@@ -48,7 +48,7 @@ class ElicensingAdjustment(TimeStampedModel):
         db_comment="Reason for adjustment in elicensing", choices=Reason.choices, null=True, blank=True
     )
 
-    type = models.CharField(db_comment="Type of adjustment in elicensing", null=True, blank=True)
+    type = models.CharField(db_comment="Type of adjustment in elicensing. (e.g. 'CREDIT')", null=True, blank=True)
 
     comment = models.CharField(db_comment="Comments on adjustment in elicensing", null=True, blank=True)
 

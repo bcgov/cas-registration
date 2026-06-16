@@ -33,18 +33,18 @@ class ComplianceEarnedCredit(TimeStampedModel):
         ComplianceReportVersion,
         on_delete=models.CASCADE,
         related_name="compliance_earned_credit",
-        db_comment="The compliance report version this earned_credit record belongs to",
+        db_comment="The compliance report version this earned_credit record belongs to. Foreign key to erc.compliance_report_version",
     )
 
     earned_credits_amount = models.PositiveIntegerField(
-        db_comment="The amount of earned credits. Whole numbers only.",
+        db_comment="Amount of credited units that regulated operations earn when their annual emissions are under their emission limit, at a rate of one credit per one tonne of CO2e (carbon dioxide equivalent) below their emission limit. Whole numbers only",
     )
 
     issuance_status = models.CharField(
         max_length=100,
         choices=IssuanceStatus.choices,
         default=IssuanceStatus.CREDITS_NOT_ISSUED,
-        db_comment="The status of this of the earned credits in this record.",
+        db_comment="The status of the earned credits in this record. (e.g. Credits Not Issued in BCCR (BC Carbon Registry), Issuance Requested, Changes Required, Approved, Declined)",
     )
 
     issued_date = models.DateField(
@@ -59,7 +59,7 @@ class ComplianceEarnedCredit(TimeStampedModel):
         blank=True,
         null=True,
         related_name="compliance_earned_credits_issued_by",
-        db_comment="The user who issued the earned credits",
+        db_comment="The user who issued the earned credits. Foreign key to erc.user",
     )
 
     analyst_submitted_date = models.DateField(
@@ -73,34 +73,34 @@ class ComplianceEarnedCredit(TimeStampedModel):
         blank=True,
         null=True,
         related_name="compliance_earned_credits_analyst_submitted_by",
-        db_comment="The analyst who provided the suggestion",
+        db_comment="The compliance analyst who provided the suggestion",
     )
 
     bccr_holding_account_id = models.CharField(
         max_length=15,
         blank=True,
         null=True,
-        db_comment="The BCCR holding account ID. This is the ID of the account holder in the BC Carbon Registry",
+        db_comment="The ID of the account holder in the BC Carbon Registry",
     )
 
     bccr_trading_name = models.CharField(
         max_length=255,
         blank=True,
         null=True,
-        db_comment="The BCCR trading name. This is the name of the account holder in the BC Carbon Registry",
+        db_comment="The name of the account holder in the BC Carbon Registry",
     )
 
     bccr_project_id = models.CharField(
         max_length=50,
         blank=True,
         null=True,
-        db_comment="The BCCR project ID associated with this earned credit, for idempotency.",
+        db_comment="The BCCR (BC Carbon Registry) project ID associated with this earned credit, for idempotency",
     )
     bccr_issuance_id = models.CharField(
         max_length=50,
         blank=True,
         null=True,
-        db_comment="The BCCR issuance ID associated with this earned credit, for idempotency.",
+        db_comment="The BCCR (BC Carbon Registry) issuance ID associated with this earned credit, for idempotency",
     )
 
     analyst_suggestion = models.CharField(
@@ -114,13 +114,13 @@ class ComplianceEarnedCredit(TimeStampedModel):
     analyst_comment = models.TextField(
         blank=True,
         null=True,
-        db_comment="Comments from an analyst. Made when deciding whether or not to recommend issuance from the director",
+        db_comment="Comments from an analyst. Made when deciding whether or not to recommend issuance from the director under the GGIRCA (Greenhouse Gas Industrial Reporting and Control Act)",
     )
 
     director_comment = models.TextField(
         blank=True,
         null=True,
-        db_comment="Comments from the director. Made when deciding whether or not to issue the credits",
+        db_comment="Comments from the director under the GGIRCA (Greenhouse Gas Industrial Reporting and Control Act). Made when deciding whether or not to issue the credits",
     )
 
     issuance_requested_date = models.DateField(

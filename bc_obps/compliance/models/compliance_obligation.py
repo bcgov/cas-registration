@@ -25,14 +25,14 @@ class ComplianceObligation(TimeStampedModel):
         ComplianceReportVersion,
         on_delete=models.CASCADE,
         related_name="obligation",
-        db_comment="The compliance report version this obligation belongs to",
+        db_comment="The compliance report version this obligation belongs to. Foreign key to erc.compliance_report_version",
     )
 
     elicensing_invoice = models.OneToOneField(
         ElicensingInvoice,
         on_delete=models.PROTECT,
         related_name="compliance_obligation",
-        db_comment="Foreign key to the elicensing_invoice in the OBPS data. The data in the elicensing_invoice table comes from elicensing",
+        db_comment="Foreign key to the elicensing_invoice in the OBPS (Output-Based Pricing System) data. The data in the elicensing_invoice table comes from elicensing",
         null=True,
         blank=True,
     )
@@ -40,12 +40,12 @@ class ComplianceObligation(TimeStampedModel):
     invoice_number = models.CharField(
         null=True,
         blank=True,
-        db_comment="The invoice number for the related elicensing invoice. Populated immediately on invoice creation in elicensing to ensure the link is not lost between invoice creation in elicensing and the refresh function that creates the elicensing_invoice record in the erc data.",
+        db_comment="The invoice number for the related elicensing invoice. Populated immediately on invoice creation in elicensing to ensure the link is not lost between invoice creation in elicensing and the refresh function that creates the elicensing_invoice record in the erc data",
     )
 
     obligation_id = models.CharField(
         max_length=30,
-        db_comment="A human-readable identifier for the obligation in format YY-OOOO-R-V",
+        db_comment="A human-readable identifier for the obligation in format YY-OOOO-R-V. 'YY-OOOO' representing the BORO (BC OBPS Regulated Operation) ID. 'R' representing the Report ID. 'V' representing the Report Version ID number",
     )
 
     fee_amount_dollars = models.DecimalField(
@@ -53,7 +53,7 @@ class ComplianceObligation(TimeStampedModel):
         decimal_places=2,
         null=True,
         blank=True,
-        db_comment="The fee amount in CAD dollars",
+        db_comment="The fee amount obligated to be paid in CAD dollars",
     )
 
     fee_date = models.DateField(null=True, blank=True, db_comment="The date the fee was created")

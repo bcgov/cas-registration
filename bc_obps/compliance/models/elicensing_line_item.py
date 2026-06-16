@@ -21,13 +21,13 @@ class ElicensingLineItem(TimeStampedModel):
     elicensing_invoice = models.ForeignKey(
         ElicensingInvoice,
         on_delete=models.CASCADE,
-        db_comment="Foreign key to the OBPS elicensing_invoice table.",
+        db_comment="The OBPS (Output-Based Pricing System) elicensing_invoice table. Foreign key to erc.elicensing_invoice",
         related_name="elicensing_line_items",
     )
 
     fee_date = models.DateField(db_comment="The date of the fee. feeDueDate in elicensing")
 
-    description = models.CharField(db_comment="Description of the line item (fee).", blank=True, null=True)
+    description = models.CharField(db_comment="Description of the line item (fee)", blank=True, null=True)
 
     base_amount = models.DecimalField(
         decimal_places=2,
