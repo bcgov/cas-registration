@@ -1,6 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import ActionCell from "@/compliance/src/app/components/compliance-summaries/cells/ActionCell";
+import ActionCell, {
+  ACTION_CELL_TEXT,
+} from "@/compliance/src/app/components/compliance-summaries/cells/ActionCell";
 import { ComplianceSummary } from "@/compliance/src/app/types";
 import {
   ComplianceSummaryStatus,
@@ -99,7 +101,7 @@ describe("ActionCell", () => {
         );
       });
 
-      it("displays 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
+      it("displays non-clickable 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
         render(
           ActionCell(
             createMockParams(
@@ -110,7 +112,14 @@ describe("ActionCell", () => {
             ),
           ),
         );
-        expectLink("Pending Invoice Creation", "#");
+        expect(
+          screen.getByText(ACTION_CELL_TEXT.PENDING_INVOICE_CREATION),
+        ).toBeVisible();
+        expect(
+          screen.queryByRole("link", {
+            name: ACTION_CELL_TEXT.PENDING_INVOICE_CREATION,
+          }),
+        ).toBeNull();
       });
     });
 
@@ -140,7 +149,7 @@ describe("ActionCell", () => {
         );
       });
 
-      it("displays 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
+      it("displays non-clickable 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
         render(
           ActionCell(
             createMockParams(
@@ -151,7 +160,14 @@ describe("ActionCell", () => {
             ),
           ),
         );
-        expectLink("Pending Invoice Creation", "#");
+        expect(
+          screen.getByText(ACTION_CELL_TEXT.PENDING_INVOICE_CREATION),
+        ).toBeVisible();
+        expect(
+          screen.queryByRole("link", {
+            name: ACTION_CELL_TEXT.PENDING_INVOICE_CREATION,
+          }),
+        ).toBeNull();
       });
     });
   });
@@ -422,7 +438,7 @@ describe("ActionCell", () => {
       expect(screen.queryByRole("link", { name: "Resolve Issue" })).toBeNull();
     });
 
-    it("renders 'View Detail' link to resolve-issue for CAS users when director_decision is issue_resolved", () => {
+    it("renders 'View Details' link to resolve-issue for CAS users when director_decision is issue_resolved", () => {
       render(
         ActionCell(
           createMockParams(
@@ -438,7 +454,9 @@ describe("ActionCell", () => {
         ),
       );
 
-      const link = screen.getByRole("link", { name: "View Detail" });
+      const link = screen.getByRole("link", {
+        name: ACTION_CELL_TEXT.VIEW_DETAILS,
+      });
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
         "href",
