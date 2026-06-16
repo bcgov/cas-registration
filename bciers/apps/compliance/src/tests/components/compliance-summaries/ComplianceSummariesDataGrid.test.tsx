@@ -413,7 +413,7 @@ describe("ComplianceSummariesDataGrid component", () => {
     );
   });
 
-  it("shows 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", async () => {
+  it("shows non-clickable 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", async () => {
     render(
       <ComplianceSummariesDataGrid
         initialData={mockResponse}
@@ -426,11 +426,13 @@ describe("ComplianceSummariesDataGrid component", () => {
     );
     expect(dataRow).toBeTruthy();
     expect(
-      within(dataRow!).getByRole("link", { name: "Pending Invoice Creation" }),
+      within(dataRow!).getByText("Pending Invoice Creation"),
     ).toBeVisible();
     expect(
-      within(dataRow!).getByRole("link", { name: "Pending Invoice Creation" }),
-    ).toHaveAttribute("href", "#");
+      within(dataRow!).queryByRole("link", {
+        name: "Pending Invoice Creation",
+      }),
+    ).toBeNull();
   });
 
   it("shows 'Contact Us' (non-link) and highlights the row when requires_manual_handling is true", () => {
@@ -566,7 +568,7 @@ describe("ComplianceSummariesDataGrid component", () => {
     );
   });
 
-  it("shows 'View Detail' link to resolve-issue for CAS users when director_decision is issue_resolved", () => {
+  it("shows 'View Details' link to resolve-issue for CAS users when director_decision is issue_resolved", () => {
     const resolvedRowCas: ComplianceSummary = {
       id: 101,
       operation_name: "Operation Resolved CAS",
@@ -600,9 +602,9 @@ describe("ComplianceSummariesDataGrid component", () => {
     );
     expect(resolvedRowEl).toBeTruthy();
 
-    // CAS should see a clickable "View Detail" link
+    // CAS should see a clickable "View Details" link
     const link = within(resolvedRowEl!).getByRole("link", {
-      name: "View Detail",
+      name: "View Details",
     });
     expect(link).toBeVisible();
     expect(link).toHaveAttribute(
