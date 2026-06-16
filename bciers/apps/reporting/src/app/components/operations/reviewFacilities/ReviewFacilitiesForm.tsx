@@ -11,6 +11,10 @@ import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperatio
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../../taskList/types";
 import SnackBar from "@bciers/components/form/components/SnackBar";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+
 interface Props {
   initialData: any;
   version_id: number;
@@ -41,10 +45,9 @@ export default function LFOFacilitiesForm({
 }: Props) {
   const [formData, setFormData] = useState(() => ({ ...initialData }));
   const [facilitiesData, setFacilitiesData] = useState(() => ({
-    // a store of the facilities data that can be updated without changing the form data
     ...initialData,
   }));
-  const [errors, setErrors] = useState<string[] | undefined>(undefined);
+  const { setErrors, renderedErrors } = useFormErrors();
   const [modalOpen, setModalOpen] = useState(false);
   const [submittingDisabled, setSubmittingDisabled] = useState(false);
   const [deselectedFacilities, setDeselectedFacilities] = useState<string[]>(
@@ -64,7 +67,6 @@ export default function LFOFacilitiesForm({
   const uiSchema: any = buildReviewFacilitiesUiSchema(initialData.operation_id);
   const router = useRouter();
 
-  // takes the form data and returns an array of facility_ids that are being selected. uses the intial form data as source of id-name mapping
   const getFacilityIdsForSubmission = (data: SubmissionData) => {
     const facilityIds: string[] = [];
 
@@ -73,7 +75,6 @@ export default function LFOFacilitiesForm({
       return facility ? facility.facility_id : null;
     };
 
-    // Handle Current Facilities
     if (data.current_facilities_section?.current_facilities?.length) {
       data.current_facilities_section.current_facilities.forEach(
         (name: string) => {
@@ -86,7 +87,6 @@ export default function LFOFacilitiesForm({
       );
     }
 
-    // Handle Past Facilities (Avoiding undefined errors)
     if (data.past_facilities_section?.past_facilities?.length) {
       data.past_facilities_section.past_facilities.forEach((name: string) => {
         const facilityId = findFacilityId(
@@ -100,7 +100,6 @@ export default function LFOFacilitiesForm({
     return facilityIds;
   };
 
-  // returns an array of facility names that were previously selected but are not currently selected
   const getListOfRemovedFacilities = () => {
     const selectedFacilities = [
       ...(formData.current_facilities_section?.current_facilities || []),
@@ -131,41 +130,42 @@ export default function LFOFacilitiesForm({
   const handleChange = (e: any) => {
     setFormData({ ...e.formData });
     const anyFacilitySelected = isAnyFacilitySelected(e.formData);
+
     if (!anyFacilitySelected) {
-      setErrors(["No facilities selected."]);
+      setErrors([
+        createGenericReportValidationError("No facilities selected."),
+      ]);
       setSubmittingDisabled(true);
-    } else {
-      setErrors(undefined);
-      setSubmittingDisabled(false);
+      return;
     }
+
+    setErrors(undefined);
+    setSubmittingDisabled(false);
   };
 
   const submit = async (data: any) => {
-    const endpoint = `reporting/report-version/${version_id}/review-facilities`;
-    const method = "POST";
-    const pathToRevalidate = `reporting/reports/${version_id}/review-facilities`;
-    try {
-      const response = await actionHandler(endpoint, method, pathToRevalidate, {
+    const response = await actionHandler(
+      `reporting/report-version/${version_id}/review-facilities`,
+      "POST",
+      `reporting/reports/${version_id}/review-facilities`,
+      {
         body: JSON.stringify(
           getFacilityIdsForSubmission(data.formData ? data.formData : formData),
         ),
-      });
+      },
+    );
 
-      if (response?.error) {
-        setErrors([response.error]);
-        return false;
-      }
+    const isValid = handleApiResponse(response, setErrors);
 
-      setErrors(undefined);
-      // this check uses a state variable because this function can be called by a modal which is disconnected from the child component that bubbles up this value
-      if (continueAfterSubmit !== undefined && continueAfterSubmit) {
-        router.push(navigationInformation.continueUrl);
-      }
-      return true;
-    } catch (_err) {
-      setErrors(["An unexpected error occurred."]);
+    if (!isValid) {
       return false;
     }
+
+    if (continueAfterSubmit) {
+      router.push(navigationInformation.continueUrl);
+    }
+
+    return true;
   };
 
   const handleModalOpen = async () => {
@@ -187,14 +187,12 @@ export default function LFOFacilitiesForm({
     const deselected = getListOfRemovedFacilities();
     setDeselectedFacilities(deselected);
 
-    // if there are deselected facilities, open the confirmation modal
     if (deselected.length > 0) {
       setContinueAfterSubmit(navigateAfterSubmit);
       return handleModalOpen();
-    } else {
-      const response = await submit(data);
-      return response;
     }
+
+    return submit(data);
   };
 
   const handleSync = async () => {
@@ -247,7 +245,7 @@ export default function LFOFacilitiesForm({
         }}
         taskListElements={navigationInformation.taskList}
         steps={navigationInformation.headerSteps}
-        errors={errors}
+        errors={renderedErrors}
         continueUrl={navigationInformation.continueUrl}
         initialStep={navigationInformation.headerStepIndex}
         onChange={handleChange}

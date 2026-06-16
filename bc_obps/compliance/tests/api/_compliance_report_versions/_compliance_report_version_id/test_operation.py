@@ -3,6 +3,7 @@ from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
+from common.tests.utils.helpers import assert_error_response
 
 VALIDATE_VERSION_OWNERSHIP_PATH = "compliance.api.permissions._validate_version_ownership_in_url"
 
@@ -51,5 +52,4 @@ class TestReportOperationByComplianceReportVersionEndpoint(CommonTestSetup):
             self._get_endpoint_url(invalid_compliance_report_version_id),
         )
         # Assert
-        assert response.status_code == 404
-        assert response.json() == {'message': 'Not Found'}
+        assert_error_response(response, 404, "Not Found")

@@ -3,6 +3,7 @@ from compliance.dataclass import BCCRUnit, RefreshWrapperReturn
 from django.test import SimpleTestCase, override_settings, Client
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.utils import custom_reverse_lazy
+from common.tests.utils.helpers import assert_error_response
 
 VALIDATE_PERMISSION_PATH = "common.permissions.validate_all"
 SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.get_applied_compliance_units_data"
@@ -89,8 +90,10 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
         # Act
         response = self.client.get(self._get_endpoint_url())
         # Assert
-        assert response.status_code == 400
-        assert response.json() == {
-            "message": "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help."
-        }
+        message = "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help."
+        assert_error_response(
+            response,
+            status_code=400,
+            message=message,
+        )
         mock_service.assert_called_once_with(compliance_report_version_id=self.compliance_report_version_id)

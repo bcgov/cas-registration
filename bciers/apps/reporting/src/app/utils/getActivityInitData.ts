@@ -7,10 +7,6 @@ export async function getActivityInitData(
 ) {
   const endpoint = `reporting/report-version/${reportVersionId}/facility-report/${facilityId}/initial-activity-data?activity_id=${activityId}`;
   const response = await actionHandler(endpoint, "GET");
-  if (response.error) {
-    throw new Error(
-      `Failed to fetch the activity init data for report version ${reportVersionId}, facility ${facilityId}, activity ${activityId}.`,
-    );
-  }
+
   return response;
 }

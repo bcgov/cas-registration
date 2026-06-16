@@ -7,13 +7,15 @@ import AttachmentElement, {
 import React, { useState } from "react";
 import { SupplementaryConfirmation, UploadedAttachment } from "./types";
 import { ATTACHMENT_TYPE_LABELS } from "./constants";
-import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
 import { useRouter } from "next/navigation";
-import { NavigationInformation } from "../taskList/types";
 import { getDictFromAttachmentArray } from "./AttachmentsPage";
 import { Checkbox } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
+import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
 
 interface Props extends HasReportVersion {
   initialUploadedAttachments: {
@@ -64,7 +66,7 @@ const AttachmentsForm: React.FC<Props> = ({
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
-  const [errors, setErrors] = useState<string[]>();
+  const { setErrors, renderedErrors } = useFormErrors();
   const [hasValidationError, setHasValidationError] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{
     [fileType: string]: string;
@@ -133,20 +135,23 @@ const AttachmentsForm: React.FC<Props> = ({
       );
     }
     const response = await postAttachments(version_id, formData);
+    const isValid = handleApiResponse(response, setErrors);
 
-    if (response.error) {
-      setErrors([response.error]);
-    } else {
-      setPendingUploadFiles({});
-      setUplodadedAttachments(getDictFromAttachmentArray(response.attachments));
+    if (!isValid) {
+      setIsSaving(false);
+      return false;
+    }
 
-      if (canContinue) {
-        setIsRedirecting(true);
-        router.push(navigationInformation.continueUrl);
-      }
+    setPendingUploadFiles({});
+    setUplodadedAttachments(getDictFromAttachmentArray(response.attachments));
+
+    if (canContinue) {
+      setIsRedirecting(true);
+      router.push(navigationInformation.continueUrl);
     }
 
     setIsSaving(false);
+    return true;
   };
 
   // Returns the id of the file if it has been saved,
@@ -189,7 +194,7 @@ const AttachmentsForm: React.FC<Props> = ({
       cancelUrl="#"
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
-      errors={errors}
+      errors={renderedErrors}
       validationError={hasValidationError}
       isSaving={isSaving}
       isRedirecting={isRedirecting}

@@ -68,7 +68,7 @@ describe("ValidationPage", () => {
     });
     mockGetNavigationInformation.mockResolvedValue(dummyNavigationInformation);
     mockGetReportValidationData.mockResolvedValue({
-      payload: { errors: mockErrors },
+      errors: mockErrors,
     });
 
     render(await ValidationPage({ version_id: versionId }));

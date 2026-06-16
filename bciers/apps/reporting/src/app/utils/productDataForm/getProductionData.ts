@@ -13,12 +13,6 @@ export async function getProductionData(
 
   const response = await actionHandler(endpoint, "GET");
 
-  if ((response as any).error) {
-    throw new Error(
-      `Failed to fetch production data for report version ${reportVersionId} and facility ${facilityId}.`,
-    );
-  }
-
   return response as ProductionDataFormResponse;
 }
 

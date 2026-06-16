@@ -15,7 +15,7 @@ from registration.constants import UNAUTHORIZED_MESSAGE
 from common.exceptions import UserError
 from compliance.service.exceptions import ComplianceInvoiceError
 from reporting.service.exceptions import ReportValidationException
-from reporting.service.report_validation.report_validation_error import ReportValidationErrorKey
+from reporting.service.report_validation.report_validation_error import ReportValidationErrorKey, Severity
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +26,7 @@ class ExceptionResponse:
     status: int
     sentry_tag: Optional[str] = None
     payload_builder: Optional[Callable[[Any], dict[str, Any]]] = None
+    key: str = "generic_error"
 
 
 class ExceptionHandler:
@@ -43,9 +44,16 @@ class ExceptionHandler:
         (UserError,): ExceptionResponse(lambda exc: str(exc), 400),
         (ObjectDoesNotExist,): ExceptionResponse("Not Found", 404),
         (ValidationError,): ExceptionResponse(lambda exc: generate_useful_error(exc), 422),
-        (PermissionError,): ExceptionResponse("Permission denied.", 403),
+        (PermissionError,): ExceptionResponse(
+            "Permission denied.",
+            403,
+            key="permission_denied",
+        ),
         (InternalError, ProgrammingError, DatabaseError): ExceptionResponse(
-            "Internal Server Error.", 500, "database_error"
+            "Internal Server Error.",
+            500,
+            "internal_server_error",
+            key="internal_server_error",
         ),
         (ReportValidationException,): ExceptionResponse(
             None,
@@ -127,6 +135,47 @@ class ExceptionHandler:
             message = message(exc)
         return {"message": message}
 
+    @staticmethod
+    def build_error_response_body(message: str, key: str = "generic_error") -> dict[str, Any]:
+        return {
+            "message": message,
+            "errors": [
+                {
+                    "key": key,
+                    "error": {
+                        "severity": Severity.ERROR.value,
+                        "message": message,
+                    },
+                }
+            ],
+        }
+
+    @classmethod
+    def handle_mapped_exception(
+        cls,
+        request: HttpRequest,
+        exc: BaseException,
+        response_config: ExceptionResponse,
+    ) -> Response:
+        body = cls.get_response_body(exc, response_config)
+        # Handle Sentry for specific cases
+        if response_config.sentry_tag:
+            event_id = cls.capture_sentry_exception(exc, response_config.sentry_tag, request)
+            if event_id:
+                body["message"] += f" Reference ID: {event_id}"
+                logger.critical(body["message"], exc_info=True)
+
+        if response_config.payload_builder:
+            return Response(body, status=response_config.status)
+
+        return Response(
+            cls.build_error_response_body(
+                body["message"],
+                key=response_config.key,
+            ),
+            status=response_config.status,
+        )
+
     @classmethod
     def handle(cls, request: HttpRequest, exc: Union[BaseException, type[BaseException]]) -> Response:
         """Handle exceptions and return appropriate API response."""
@@ -134,35 +183,27 @@ class ExceptionHandler:
 
         # Handle unauthorized access
         if exc.args and exc.args[0] == UNAUTHORIZED_MESSAGE:
-            return Response({"message": UNAUTHORIZED_MESSAGE}, status=401)
+            return Response(
+                cls.build_error_response_body(UNAUTHORIZED_MESSAGE),
+                status=401,
+            )
 
         # Check mapped exceptions
         for exc_types, response_config in cls.EXCEPTION_MAP.items():
             if isinstance(exc, exc_types):
-                body = cls.get_response_body(exc, response_config)
-
-                # Handle Sentry for specific cases
-                if response_config.sentry_tag:
-                    event_id = cls.capture_sentry_exception(exc, response_config.sentry_tag, request)
-                    if event_id:
-                        body["message"] += f" Reference ID: {event_id}"
-                        logger.critical(body["message"], exc_info=True)
-
-                return Response(body, status=response_config.status)
+                return cls.handle_mapped_exception(request, exc, response_config)
 
         # Default: unexpected error
         event_id = cls.capture_sentry_exception(exc, "unexpected_error", request)
         if event_id:
             logger.critical(f"Unexpected error. Sentry Reference ID: {event_id}", exc_info=True)
 
+        message = "An internal server error has occurred. Please contact ghgregulator@gov.bc.ca for help" + (
+            f" and include the reference code: {event_id}" if event_id else "."
+        )
+
         return Response(
-            {
-                "message": (
-                    "An internal server error has occurred. "
-                    "Please contact ghgregulator@gov.bc.ca for help"
-                    + (f" and include the reference code: {event_id}" if event_id else ".")
-                )
-            },
+            cls.build_error_response_body(message),
             status=500,
         )
 

@@ -3,6 +3,7 @@ from django.test import TestCase
 from registration.models import User, AppRole
 import uuid
 from django.db import connection
+from reporting.service.report_validation.report_validation_error import Severity
 
 
 def set_db_user_guid_for_tests():
@@ -84,3 +85,22 @@ class BaseTestCase(TestCase):
                 self.assertIn('set_updated_audit_columns', triggers)
             else:
                 pass
+
+
+def assert_error_response(
+    response,
+    status_code: int,
+    message: str,
+    error_key: str = "generic_error",
+) -> None:
+    assert response.status_code == status_code
+
+    response_json = response.json()
+
+    assert response_json["message"] == message
+
+    error = response_json["errors"][0]
+
+    assert error["key"] == error_key
+    assert error["error"]["severity"] == Severity.ERROR.value
+    assert error["error"]["message"] == message

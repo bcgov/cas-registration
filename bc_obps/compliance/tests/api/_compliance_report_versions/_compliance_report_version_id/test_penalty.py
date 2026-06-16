@@ -7,6 +7,7 @@ from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from compliance.models import ElicensingPayment
+from common.tests.utils.helpers import assert_error_response
 
 
 class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
@@ -71,8 +72,7 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
             ),
         )
 
-        assert response.status_code == 404
-        assert response.json() == {"message": "Not Found"}
+        assert_error_response(response, 404, "Not Found")
 
 
 class TestLateSubmissionPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
@@ -136,5 +136,4 @@ class TestLateSubmissionPenaltyByComplianceReportVersionEndpoint(CommonTestSetup
             ),
         )
 
-        assert response.status_code == 404
-        assert response.json() == {"message": "Not Found"}
+        assert_error_response(response, 404, "Not Found")

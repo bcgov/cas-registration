@@ -1,4 +1,3 @@
-import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import ActivityForm from "./ActivityForm";
 import type { UUID } from "crypto";
@@ -6,10 +5,15 @@ import { ActivityData } from "@reporting/src/app/components/taskList/taskListPag
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
-import { getNavigationInformation } from "../taskList/navigationInformation";
-import { HeaderStep, ReportingPage } from "../taskList/types";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import {
+  HeaderStep,
+  ReportingPage,
+} from "@reporting/src/app/components/taskList/types";
 import { getAllGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
 import { getReportingYear } from "@bciers/actions/api";
+import { getActivityInitData } from "@reporting/src/app/utils/getActivityInitData";
+import { getActivitySchema } from "@reporting/src/app/utils/getActivitySchema";
 
 type DefaultSearchParams = Record<string, string | number | undefined>;
 
@@ -47,14 +51,12 @@ export default async function ActivityPage({
   }
   if (!currentActivity) currentActivity = orderedActivities[0];
 
-  const activityData = await actionHandler(
-    `reporting/report-version/${versionId}/facility-report/${facilityId}/initial-activity-data?activity_id=${currentActivity.id}`,
-    "GET",
-    "",
+  const activityData = await getActivityInitData(
+    versionId,
+    facilityId,
+    currentActivity.id,
   );
-  if (activityData.error) {
-    throw new Error("We couldn't find the activity data for this facility.");
-  }
+
   const reportingYear = await getReportingYear();
 
   const activityDataObject = safeJsonParse(activityData);
@@ -90,11 +92,11 @@ export default async function ActivityPage({
       sourceTypeQueryString += `&source_types[]=${k}`;
     }
   }
-
-  const jsonSchema = await actionHandler(
-    `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${versionId}&facility_id=${facilityId}${sourceTypeQueryString}`,
-    "GET",
-    "",
+  const jsonSchema = await getActivitySchema(
+    versionId,
+    currentActivity.id,
+    sourceTypeQueryString,
+    facilityId,
   );
 
   return (

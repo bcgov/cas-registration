@@ -7,6 +7,7 @@ from registration.models import BusinessStructure
 from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
+from common.tests.utils.helpers import assert_error_response
 
 
 class TestCreateUserOperator(CommonTestSetup):
@@ -72,10 +73,11 @@ class TestCreateUserOperator(CommonTestSetup):
             "legal_name": operator.legal_name,
         }
         post_response = self._post_with_auth(payload_with_duplicate)
-
-        assert post_response.status_code == status_code
-        assert post_response.json() == {"message": message}
-
+        assert_error_response(
+            post_response,
+            status_code=status_code,
+            message=message,
+        )
         # duplicate CRA business number
         message = "Cra Business Number: Operator with this Cra business number already exists."
         payload_with_duplicate = {
@@ -83,8 +85,11 @@ class TestCreateUserOperator(CommonTestSetup):
             "cra_business_number": operator.cra_business_number,
         }
         post_response = self._post_with_auth(payload_with_duplicate)
-        assert post_response.status_code == status_code
-        assert post_response.json() == {"message": message}
+        assert_error_response(
+            post_response,
+            status_code=status_code,
+            message=message,
+        )
 
         # duplicate Bc Corporate Registry Number
         message = "Bc Corporate Registry Number: Operator with this Bc corporate registry number already exists."
@@ -93,8 +98,11 @@ class TestCreateUserOperator(CommonTestSetup):
             "bc_corporate_registry_number": operator.bc_corporate_registry_number,
         }
         post_response = self._post_with_auth(payload_with_duplicate)
-        assert post_response.status_code == status_code
-        assert post_response.json() == {"message": message}
+        assert_error_response(
+            post_response,
+            status_code=status_code,
+            message=message,
+        )
 
     def test_payload_required_fields(self):
         """

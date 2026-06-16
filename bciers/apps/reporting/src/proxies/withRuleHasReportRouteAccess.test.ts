@@ -1,9 +1,6 @@
 import { NextURL } from "next/dist/server/web/next-url";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
-import {
-  withRuleHasReportRouteAccess,
-  permissionRules,
-} from "./withRuleHasReportRouteAccess";
+import { withRuleHasReportRouteAccess } from "./withRuleHasReportRouteAccess";
 import { getToken } from "@bciers/testConfig/mocks";
 import {
   mockCasUserToken,
@@ -53,24 +50,57 @@ async function runProxy(path: string) {
 }
 
 describe("withRuleHasReportRouteAccess - permissionRules", () => {
-  it.each(permissionRules.map((r) => r.name))(
-    `redirects industry user when "%s" validation fails`,
-    async (ruleName) => {
-      vi.spyOn(constants, "fetchResponse").mockResolvedValueOnce({});
-      const { res } = await runProxy(`${BASE_PATH}/test-path-${ruleName}`);
-      expect(NextResponse.redirect).toHaveBeenCalledOnce();
-      expect(res!.status).toBe(307);
-    },
-  );
-});
+  it("redirects to onboarding when getReportingOperation throws", async () => {
+    vi.spyOn(opUtil, "getReportingOperation").mockRejectedValueOnce(
+      new Error("API Error"),
+    );
 
-it("redirects to onboarding when fetchResponse throws", async () => {
-  vi.spyOn(constants, "fetchResponse").mockRejectedValue(
-    new Error("API Error"),
-  );
-  const { res } = await runProxy(`${BASE_PATH}/test-path-error`);
-  expect(NextResponse.redirect).toHaveBeenCalledOnce();
-  expect(res!.status).toBe(307);
+    const { res } = await runProxy(
+      `${BASE_PATH}/${constants.reportRoutesLFO[0]}`,
+    );
+
+    expect(NextResponse.redirect).toHaveBeenCalledOnce();
+    expect(res!.status).toBe(307);
+  });
+
+  it("redirects to onboarding when getRegistrationPurpose throws", async () => {
+    vi.spyOn(regPurpUtil, "getRegistrationPurpose").mockRejectedValueOnce(
+      new Error("API Error"),
+    );
+
+    const { res } = await runProxy(
+      `${BASE_PATH}/${constants.restrictedRoutesNewEntrant[0]}`,
+    );
+
+    expect(NextResponse.redirect).toHaveBeenCalledOnce();
+    expect(res!.status).toBe(307);
+  });
+
+  it("redirects to onboarding when getReportVerificationStatus throws", async () => {
+    vi.spyOn(verifyUtil, "getReportVerificationStatus").mockRejectedValueOnce(
+      new Error("API Error"),
+    );
+
+    const { res } = await runProxy(
+      `/reporting/reports/${defaultVersionId}/verification`,
+    );
+
+    expect(NextResponse.redirect).toHaveBeenCalledOnce();
+    expect(res!.status).toBe(307);
+  });
+
+  it("redirects to onboarding when getIsSupplementaryReport throws", async () => {
+    vi.spyOn(suppUtil, "getIsSupplementaryReport").mockRejectedValueOnce(
+      new Error("API Error"),
+    );
+
+    const { res } = await runProxy(
+      `${BASE_PATH}/${constants.restrictedSupplementaryReport[0]}`,
+    );
+
+    expect(NextResponse.redirect).toHaveBeenCalledOnce();
+    expect(res!.status).toBe(307);
+  });
 });
 
 // Restricted routes tests

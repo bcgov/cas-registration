@@ -14,17 +14,20 @@ import {
   HeaderStep,
   NavigationInformation,
   ReportingPage,
-} from "../taskList/types";
+} from "@reporting/src/app/components/taskList/types";
 import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilitiesInfoText";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
-import { operationRepresentativeLink } from "@reporting/src/data/jsonSchema/reviewOperationInformationText";
 import {
   Activity,
   RegulatedProduct,
   ReportOperationRepresentative,
 } from "./types";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import { ReportValidationItem } from "@reporting/src/app/components/shared/validation/types";
+import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
 
 interface Props {
   formData: any;
@@ -59,14 +62,23 @@ export default function OperationReviewForm({
   const [pageSchema, setPageSchema] = useState(schema);
   const [hasReps, setHasReps] = useState(allRepresentatives.length > 0);
 
-  const missingOperationRepresentativeError = operationRepresentativeLink(
-    formData.operation_id,
-    formData.operation_name,
+  const missingOperationRepresentativeError: ReportValidationItem = {
+    key: "missing_operation_representative",
+    error: {
+      severity: "Error",
+      message:
+        "Before you can continue, you must add an operation representative for this operation then return to this report.",
+      context: {
+        operation_id: formData.operation_id,
+        operation_name: formData.operation_name,
+      },
+    },
+  };
+
+  const { setErrors, renderedErrors } = useFormErrors(
+    hasReps ? undefined : [missingOperationRepresentativeError],
   );
 
-  const [errors, setErrors] = useState<
-    (string | React.ReactNode)[] | undefined
-  >(hasReps ? undefined : [missingOperationRepresentativeError]);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [navigationInfo, setNavigationInfo] = useState(navigationInformation);
@@ -81,12 +93,7 @@ export default function OperationReviewForm({
       body: JSON.stringify(formDataState),
     });
 
-    if (response?.error) {
-      setErrors([response?.error]);
-      return false;
-    }
-    setErrors(undefined);
-    return true;
+    return handleApiResponse(response, setErrors);
   };
 
   const onChangeHandler = (data: { formData: any }) => {
@@ -105,7 +112,7 @@ export default function OperationReviewForm({
   const handleSync = async () => {
     const newData = await getUpdatedReportOperationDetails(version_id);
     if (newData.error) {
-      setErrors(["Unable to sync data."]);
+      setErrors([createGenericReportValidationError(newData.error)]);
       return;
     }
     setPageSchema(
@@ -213,7 +220,7 @@ export default function OperationReviewForm({
         onChange={onChangeHandler as (data: object) => void}
         backUrl={navigationInfo.backUrl}
         continueUrl={navigationInfo.continueUrl}
-        errors={errors}
+        errors={renderedErrors}
         backButtonText={"Back to All Reports"}
       />
       <SnackBar

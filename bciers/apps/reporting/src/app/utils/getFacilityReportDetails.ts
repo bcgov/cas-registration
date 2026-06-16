@@ -6,10 +6,6 @@ export async function getFacilityReportDetails(
 ) {
   const endpoint = `reporting/report-version/${reportVersionId}/facility-report/${facilityId}`;
   const response = await actionHandler(endpoint, "GET");
-  if (response.error) {
-    throw new Error(
-      `Failed to fetch the facility details for report version ${reportVersionId}, facility ${facilityId}.`,
-    );
-  }
+
   return response;
 }
