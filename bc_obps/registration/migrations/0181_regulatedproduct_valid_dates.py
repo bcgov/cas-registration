@@ -10,7 +10,7 @@ def populate_valid_dates(apps, schema_editor):
         valid_from=date(2023, 1, 1),
         valid_to=date(2099, 12, 31),
     )
-    RegulatedProduct.objects.filter(name='Pulp and paper: chemical pulp').update(
+    RegulatedProduct.objects.filter(name='Pulp and paper: lime recovered by kiln').update(
         valid_from=date(2025, 1, 1),
     )
 
