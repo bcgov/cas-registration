@@ -354,7 +354,7 @@ class OperationService:
                 include={
                     'legal_name',
                     'trade_name',
-                    'business_structure',
+                    'business_structure_id',
                     'cra_business_number',
                     'bc_corporate_registry_number',
                 },

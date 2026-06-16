@@ -9,7 +9,7 @@ from registration.models.operation import Operation
 class MultipleOperatorData:
     legal_name: str
     trade_name: str
-    business_structure: str
+    business_structure_id: str
     cra_business_number: str
 
     id: Optional[int] = None
