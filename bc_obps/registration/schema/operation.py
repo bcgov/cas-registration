@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from uuid import UUID
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from typing import List, Optional
@@ -77,41 +78,22 @@ class OperationRepresentativeRemove(ModelSchema):
         fields = ['id']
 
 
-class OperationInformationIn(ModelSchema):
+class OperationInformationIn(Schema):
     name: str
     type: str
     registration_purpose: Optional[Operation.Purposes] = None
     regulated_products: Optional[List[int]] = None
     activities: Optional[List[int]] = None
-    boundary_map: Optional[str] = None
-    process_flow_diagram: Optional[str] = None
     naics_code_id: Optional[int] = None
     secondary_naics_code_id: Optional[int] = None
     tertiary_naics_code_id: Optional[int] = None
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
-    date_of_first_shipment: Optional[str] = Field(None, alias="date_of_first_shipment")
+    date_of_first_shipment: Optional[str] = None
+
+    # Attachment file names
+    boundary_map: Optional[str] = None
+    process_flow_diagram: Optional[str] = None
     new_entrant_application: Optional[str] = None
-
-    @field_validator("boundary_map")
-    @classmethod
-    def validate_boundary_map(cls, value: str) -> ContentFile:
-        return data_url_to_file(value)
-
-    @field_validator("process_flow_diagram")
-    @classmethod
-    def validate_process_flow_diagram(cls, value: str) -> ContentFile:
-        return data_url_to_file(value)
-
-    @field_validator("new_entrant_application")
-    @classmethod
-    def validate_new_entrant_application(cls, value: Optional[str]) -> Optional[ContentFile]:
-        if value:
-            return data_url_to_file(value)
-        return None
-
-    class Meta:
-        model = Operation
-        fields = ["name", 'type']
 
 
 class OperationInformationInUpdate(OperationInformationIn):
@@ -158,6 +140,12 @@ class OptedOutOperationDetailIn(Schema):
     Accepts final_reporting_year as an integer from the frontend."""
 
     final_reporting_year: Optional[int] = None
+
+
+@dataclass
+class TestDataClass:
+    test: str
+    test2: int
 
 
 class OperationOut(ModelSchema):

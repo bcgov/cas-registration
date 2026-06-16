@@ -20,7 +20,7 @@ class MultipleOperatorData:
     postal_code: Optional[str] = None
 
 
-@dataclass
+@dataclass(kw_only=True)  # Allowing for extension with required fields
 class OperationData:
     name: str
     type: str
@@ -52,7 +52,7 @@ class OperationData:
 
 @dataclass
 class UpdateOperationData(OperationData):
-    operation_representatives: List[int] = None
+    operation_representatives: List[int]
 
 
 @dataclass
