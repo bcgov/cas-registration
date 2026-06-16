@@ -8,6 +8,8 @@ A web app for Registration in OBPS under the Clean Growth branch.
 
 [![Nightly Build and Test](https://github.com/bcgov/cas-registration/actions/workflows/nightly.yaml/badge.svg)](https://github.com/bcgov/cas-registration/actions/workflows/nightly.yaml)
 
+[![Contributions](https://img.shields.io/badge/contributions-unwelcome-red)](https://img.shields.io/badge/contributions-unwelcome-red)
+
 ## Documentation
 
 - [Developer and Application Documentation](./docs/README.md)
