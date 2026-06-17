@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from model_bakery import baker
 from copy import deepcopy
@@ -7,6 +9,7 @@ from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.tests.constants import MOCK_DATA_URL
 from registration.utils import custom_reverse_lazy
+from service.tests.operation_service.test_operation_service import create_test_file
 
 
 class TestChangingRegistrationPurpose(CommonTestSetup):
@@ -61,13 +64,15 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             Operation.Purposes.NEW_ENTRANT_OPERATION,
         ]:
             operation_information_payload.update({"regulated_products": [1, 2]})
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            operation_information_payload,
-            custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': self.operation.id}),
+
+        TestUtils.save_app_role(self, "industry_user")
+        response = TestUtils.client.post(
+            path=custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': self.operation.id}),
+            data={"payload": json.dumps(operation_information_payload)},
+            format="multipart",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
+
         if response.status_code != 200:
             raise Exception(response.json())
         self.operation.refresh_from_db()
@@ -81,6 +86,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             "registration_purpose": new_purpose,
             "activities": [],  # activities is required in payload so needs to be explicitly set, even if it's empty
         }
+        files_payload = {}
         if new_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             # any purpose other than EIO requires these additional fields
             operation_payload.update(
@@ -93,6 +99,12 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
                     "secondary_naics_code_id": self.operation.secondary_naics_code_id or naics_codes[1].id,
                 }
             )
+            files_payload.update(
+                {
+                    "boundary_map": create_test_file("boundary_map.pdf"),
+                    "process_flow_diagram": create_test_file("process_flow_diagram.pdf"),
+                }
+            )
         if new_purpose in [
             Operation.Purposes.OBPS_REGULATED_OPERATION,
             Operation.Purposes.NEW_ENTRANT_OPERATION,
@@ -100,12 +112,12 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         ]:
             # regulated operations need to report their
             operation_payload.update({"regulated_products": [1, 2]})
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            operation_payload,
-            custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': self.operation.id}),
+
+        response = TestUtils.client.post(
+            path=custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': self.operation.id}),
+            data={"payload": json.dumps(operation_payload), **files_payload},
+            format="multipart",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
         if response.status_code != 200:
             raise Exception(response.json())
@@ -133,14 +145,13 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         self.operation.refresh_from_db()
 
     def _set_new_entrant_info(self):
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            {"new_entrant_application": MOCK_DATA_URL},
-            custom_reverse_lazy(
+        response = TestUtils.client.post(
+            path=custom_reverse_lazy(
                 "create_or_replace_new_entrant_application", kwargs={'operation_id': self.operation.id}
             ),
+            data={"new_entrant_application": create_test_file("new_entrant_application.pdf")},
+            format="multipart",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
         if response.status_code != 200:
             raise Exception(response.json())

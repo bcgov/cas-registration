@@ -1,8 +1,6 @@
 from datetime import timedelta
 import os
 from unittest.mock import patch, MagicMock
-from django.core.files.base import ContentFile
-from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 from django.test import override_settings
 import pytest
 from common.lib import pgtrigger
@@ -35,13 +33,10 @@ from registration.models.multiple_operator import MultipleOperator
 from registration.models.operation import Operation
 from model_bakery import baker
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
+from tests.test_files import create_test_file
 
 pytestmark = pytest.mark.django_db
 email_service = EmailService()
-
-
-def create_test_file(name: str) -> UploadedFile:
-    return InMemoryUploadedFile(ContentFile(b"file_content", name=name), None, name, None, 12, "utf-8")
 
 
 def set_up_valid_mock_operation(purpose: Operation.Purposes, document_scan_status: Document.FileStatus = "Clean"):
