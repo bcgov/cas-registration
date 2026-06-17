@@ -112,10 +112,13 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         has_penalty = hasattr(invoice, 'compliance_penalty') and getattr(invoice, 'compliance_penalty', None)
         if has_penalty:
             return False
+        # Only consider the fee balance (the tCO2e obligation) when deciding if the obligation is met.
+        # Unpaid FAA interest (part of outstanding_balance) must not block the obligation from being
+        # considered met or block automatic penalty generation.
         return (
             invoice.compliance_obligation.compliance_report_version.status
             == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
-            and invoice.outstanding_balance == Decimal('0.00')
+            and (invoice.invoice_fee_balance or Decimal('0.00')) == Decimal('0.00')
         )
 
     def handle(self, invoice: ElicensingInvoice) -> None:

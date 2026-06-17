@@ -166,7 +166,7 @@ class TestPenalty(ComplianceIntegrationTestBase):
 
     @staticmethod
     def _create_payment_and_mark_paid(obligation, amount, received_date):
-        """Create payment record and set invoice outstanding_balance to 0."""
+        """Create payment record and set invoice fee/outstanding balances to 0."""
         line_item = ElicensingLineItem.objects.get(
             elicensing_invoice=obligation.elicensing_invoice,
             line_item_type=ElicensingLineItem.LineItemType.FEE,
@@ -179,7 +179,8 @@ class TestPenalty(ComplianceIntegrationTestBase):
         )
         invoice = obligation.elicensing_invoice
         invoice.outstanding_balance = Decimal("0.00")
-        invoice.save(update_fields=["outstanding_balance"])
+        invoice.invoice_fee_balance = Decimal("0.00")
+        invoice.save(update_fields=["outstanding_balance", "invoice_fee_balance"])
 
     # ------------------------------------------------------------------
     # Test 1: Non-supplementary, paid before due date
@@ -332,6 +333,68 @@ class TestPenalty(ComplianceIntegrationTestBase):
 
         self.initial_obligation.refresh_from_db()
         assert self.initial_obligation.penalty_status == ComplianceObligation.PenaltyStatus.NOT_PAID
+
+    # ------------------------------------------------------------------
+    # Test 2b: Fee paid but FAA interest still owing
+    # ------------------------------------------------------------------
+
+    @patch(REFRESH_DATA_BY_INVOICE)
+    @patch(SEND_OBLIGATION_MET_EMAIL)
+    @patch(CREATE_PENALTY_INVOICE)
+    @patch(REFRESH_DATA)
+    @patch(SEND_OBLIGATION_EMAIL)
+    @patch(HANDLE_OBLIGATION_INTEGRATION)
+    def test_obligation_met_and_penalty_created_when_fee_paid_but_interest_owing(
+        self,
+        mock_elicensing,
+        _mock_obl_email,
+        mock_refresh,
+        mock_penalty_invoice,
+        _mock_met_email,
+        mock_refresh_by_invoice,
+    ):
+        """Non-supplementary report paid in full on the fee, but FAA interest is still outstanding.
+
+        Expected: unpaid FAA interest must not block the obligation from being considered met,
+        and the automatic overdue penalty must still be generated.
+        """
+        mock_elicensing.side_effect = self.fake_handle_obligation_post_invoice
+        mock_refresh.side_effect = self.fake_refresh
+        mock_penalty_invoice.side_effect = self._fake_create_penalty_invoice
+
+        self._create_base_infrastructure()
+        self._create_initial_report_with_obligation_post_invoice(Decimal("100"))
+
+        self._set_obligation_dates(
+            self.initial_obligation,
+            created_at_date=self.OBLIGATION_CREATED_DATE,
+            invoice_due_date=self.INVOICE_DUE_DATE,
+        )
+
+        # Pay the fee but leave FAA interest outstanding.
+        self._create_payment_and_mark_paid(
+            self.initial_obligation,
+            amount=self.initial_obligation.fee_amount_dollars,
+            received_date=self.PAYMENT_DATE_AFTER_DUE,
+        )
+        invoice = self.initial_obligation.elicensing_invoice
+        invoice.invoice_interest_balance = Decimal("25.00")
+        invoice.outstanding_balance = Decimal("25.00")  # fee balance is 0, only interest remains
+        invoice.save(update_fields=["invoice_interest_balance", "outstanding_balance"])
+
+        manager = ComplianceHandlerManager()
+        manager.process_compliance_updates(self.initial_obligation.elicensing_invoice)
+
+        # Obligation is considered met despite outstanding interest
+        self.initial_crv.refresh_from_db()
+        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+
+        # Automatic overdue penalty was still generated
+        auto_penalty = CompliancePenalty.objects.get(
+            compliance_obligation=self.initial_obligation,
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+        )
+        assert auto_penalty.penalty_amount > Decimal("0")
 
     # ------------------------------------------------------------------
     # Test 3: Supplementary, paid before due date
