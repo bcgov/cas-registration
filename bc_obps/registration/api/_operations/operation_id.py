@@ -1,4 +1,4 @@
-from typing import Literal, Optional, Tuple
+from typing import Literal, Tuple
 from uuid import UUID
 from ninja import File, UploadedFile
 from registration.schema import OperationInformationInUpdate, OperationOut, OperationOutWithDocuments, Message
@@ -54,17 +54,17 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
 def update_operation(
     request: HttpRequest,
     operation_id: UUID,
-    details: OperationInformationInUpdate,
-    boundary_map: Optional[File[UploadedFile]] = None,
-    process_flow_diagram: Optional[File[UploadedFile]] = None,
-    new_entrant_application: Optional[File[UploadedFile]] = None,
+    payload: OperationInformationInUpdate,
+    boundary_map: File[UploadedFile] = None,  # type: ignore
+    process_flow_diagram: File[UploadedFile] = None,  # type: ignore
+    new_entrant_application: File[UploadedFile] = None,  # type: ignore
 ) -> Tuple[Literal[200], Operation]:
 
     data = UpdateOperationData(
         boundary_map=boundary_map,
         process_flow_diagram=process_flow_diagram,
         new_entrant_application=new_entrant_application,
-        **details.dict(),
+        **payload.model_dump(),
     )
 
     operation = OperationService.update_operation(get_current_user_guid(request), data, operation_id)
