@@ -1,4 +1,4 @@
-from typing import Literal, Optional, Tuple
+from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from ninja import File, UploadedFile
@@ -37,17 +37,18 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
 def register_edit_operation_information(
     request: HttpRequest,
     operation_id: UUID,
-    details: OperationInformationIn,
-    boundary_map: Optional[File[UploadedFile]] = None,
-    process_flow_diagram: Optional[File[UploadedFile]] = None,
-    new_entrant_application: Optional[File[UploadedFile]] = None,
+    payload: OperationInformationIn,
+    # django-ninja doesn't parse multipart requests properly if the type is marked Optional
+    boundary_map: File[UploadedFile] = None,  # type: ignore
+    process_flow_diagram: File[UploadedFile] = None,  # type: ignore
+    new_entrant_application: File[UploadedFile] = None,  # type: ignore
 ) -> Tuple[Literal[200], Operation]:
 
     data = OperationData(
         boundary_map=boundary_map,
         process_flow_diagram=process_flow_diagram,
         new_entrant_application=new_entrant_application,
-        **details.dict(),
+        **payload.model_dump(),
     )
     operation = OperationService.register_operation_information(get_current_user_guid(request), operation_id, data)
 

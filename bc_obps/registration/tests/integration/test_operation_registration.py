@@ -1,3 +1,5 @@
+import json
+
 from django.core.files.base import ContentFile
 import pytest
 from django.db.models import Q
@@ -44,29 +46,32 @@ class TestOperationRegistration(CommonTestSetup):
     def _set_operation_information(self, purpose: Operation.Purposes, operation_type: Operation.Types):
         if operation_type == Operation.Types.EIO:
             form = {
-                "details": {
-                    "registration_purpose": purpose,
-                    "name": f"{purpose} name",
-                    "type": operation_type.value,
-                }
+                "payload": json.dumps(
+                    {
+                        "registration_purpose": purpose,
+                        "name": f"{purpose} name",
+                        "type": operation_type.value,
+                    }
+                )
             }
         else:
             form = {
-                "details": {
-                    "registration_purpose": purpose,
-                    "regulated_products": [] if purpose in self.purposes_with_no_regulated_products else [1, 2],
-                    "name": f"{purpose} name",
-                    "type": operation_type,
-                    "naics_code_id": 1,
-                    "secondary_naics_code_id": 2,
-                    "tertiary_naics_code_id": 3,
-                    "activities": [1, 2],
-                    "boundary_map": "file1.pdf",
-                    "process_flow_diagram": "file2.txt",
-                },
+                "payload": json.dumps(
+                    {
+                        "registration_purpose": purpose,
+                        "regulated_products": [] if purpose in self.purposes_with_no_regulated_products else [1, 2],
+                        "name": f"{purpose} name",
+                        "type": operation_type,
+                        "naics_code_id": 1,
+                        "secondary_naics_code_id": 2,
+                        "tertiary_naics_code_id": 3,
+                        "activities": [1, 2],
+                        "boundary_map": "file1.pdf",
+                        "process_flow_diagram": "file2.txt",
+                    }
+                ),
                 "boundary_map": ContentFile(b"data1", "file1.pdf"),
                 "process_flow_diagram": ContentFile(b"data2", "file2.txt"),
-                "new_entrant_application": ContentFile(b"data3", "file3.txt"),
             }
         TestUtils.save_app_role(self, "industry_user")
         endpoint = custom_reverse_lazy(
@@ -368,4 +373,4 @@ class TestOperationRegistration(CommonTestSetup):
         assert self.operation.facilities.count() == 1
 
         assert self.operation.status == Operation.Statuses.REGISTERED
-        assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION()
+        assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION

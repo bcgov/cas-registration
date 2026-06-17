@@ -88,11 +88,6 @@ class OperationInformationIn(Schema):
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
     date_of_first_shipment: Optional[str] = None
 
-    # Attachment file names
-    boundary_map: Optional[str] = None
-    process_flow_diagram: Optional[str] = None
-    new_entrant_application: Optional[str] = None
-
 
 class OperationInformationInUpdate(OperationInformationIn):
     operation_representatives: List[int]
