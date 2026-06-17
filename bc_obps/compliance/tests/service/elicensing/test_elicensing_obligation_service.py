@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 import uuid
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 import pytest
 from compliance.models.compliance_obligation import ComplianceObligation
@@ -425,7 +425,7 @@ class TestElicensingObligationService:
         test_data = ComplianceTestHelper.build_test_data(
             reporting_year=2024, crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
         )
-        test_data.compliance_obligation.created_at = datetime(2025, 12, 15, 11, 11)
+        test_data.compliance_obligation.created_at = datetime(2025, 12, 15, 11, 11, tzinfo=timezone.utc)
         test_data.compliance_obligation.save()
         client_operator = make_recipe(
             'compliance.tests.utils.elicensing_client_operator',

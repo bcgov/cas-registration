@@ -99,7 +99,7 @@ class TestOperationOwnershipFromPayload:
             "registration.tests.utils.operation_designated_operator_timeline",
             operation=operation,
             operator=user_operator.operator,
-            start_date="2023-01-01",
+            start_date="2023-01-01T00:00:00Z",
             end_date=None,
         )
 
@@ -120,7 +120,7 @@ class TestOperationOwnershipFromPayload:
             "registration.tests.utils.operation_designated_operator_timeline",
             operation=operation,
             operator=operation.operator,
-            start_date="2023-01-01",
+            start_date="2023-01-01T00:00:00Z",
             end_date=None,
         )
 
@@ -163,14 +163,14 @@ class TestOperationOwnershipFromPayload:
             "registration.tests.utils.operation_designated_operator_timeline",
             operation=operation,
             operator=old_user_operator.operator,
-            start_date="2024-01-01",
-            end_date="2025-01-31",
+            start_date="2024-01-01T00:00:00Z",
+            end_date="2025-01-31T00:00:00Z",
         )
         make_recipe(
             "registration.tests.utils.operation_designated_operator_timeline",
             operation=operation,
             operator=new_user_operator.operator,
-            start_date="2025-02-01",
+            start_date="2025-02-01T00:00:00Z",
             end_date=None,
         )
 

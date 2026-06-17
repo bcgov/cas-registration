@@ -161,8 +161,8 @@ class TestComplianceReportVersionService:
         xferred_operation = baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
-            start_date="2024-01-01 01:46:20.789146",
-            end_date="2026-02-27 01:46:20.789146",
+            start_date="2024-01-01 01:46:20.789146+00:00",
+            end_date="2026-02-27 01:46:20.789146+00:00",
             operator=operator,
         )
 
@@ -181,8 +181,8 @@ class TestComplianceReportVersionService:
         xferred_operation_2 = baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
-            start_date="2024-01-01 01:46:20.789146",
-            end_date="2026-02-27 01:46:20.789146",
+            start_date="2024-01-01 01:46:20.789146+00:00",
+            end_date="2026-02-27 01:46:20.789146+00:00",
             operator=operator,
         )
 

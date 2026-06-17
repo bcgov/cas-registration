@@ -67,7 +67,7 @@ class ReportEmission(ReportDataBaseModel):
         app_label = "reporting"
         constraints = [
             models.CheckConstraint(
-                check=~(Q(report_fuel__isnull=False) & Q(report_unit__isnull=False)),
+                condition=~(Q(report_fuel__isnull=False) & Q(report_unit__isnull=False)),
                 name="fuel_or_unit_but_not_both",
                 violation_error_message="An emission record must belong to either a fuel, a unit, or none, but not both",
             )
