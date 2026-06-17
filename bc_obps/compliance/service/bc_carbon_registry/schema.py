@@ -40,6 +40,7 @@ class FilterModel(BaseModel):
     accountTypeCode: CommonFilterType = None
     stateCode: CommonFilterType = None
     vintage: CommonFilterType = None
+    unitType: CommonFilterType = None
     complianceYear: CommonFilterType = None
     boroId: CommonFilterType = None
 

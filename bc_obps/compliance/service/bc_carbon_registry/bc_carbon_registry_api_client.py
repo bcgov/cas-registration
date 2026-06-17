@@ -303,22 +303,35 @@ class BCCarbonRegistryAPIClient:
         filter_model.stateCode = {
             "columnFilters": [ColumnFilter(filterType="Text", type=filter_type, filter=state_filter)]
         }
-        filter_model.vintage = {
+
+        # BCO (offsets): filter by vintage. BCE (earned credits): fetch all vintages.
+        bco_filter = FilterModel(**filter_model.model_dump(exclude_none=True))
+        bco_filter.unitType = {"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="BCO")]}
+        bco_filter.vintage = {
             "columnFilters": [ColumnFilter(filterType="Number", type="greaterThanOrEqual", filter=vintage_year - 3)]
         }
 
-        payload = SearchFilterWrapper(
-            searchFilter=SearchFilter(
-                pagination=Pagination(start=start, limit=limit),
-                filterModel=filter_model,
+        bce_filter = FilterModel(**filter_model.model_dump(exclude_none=True))
+        bce_filter.unitType = {"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="BCE")]}
+
+        def _fetch(f: FilterModel) -> Dict:
+            return self._make_request(
+                "POST",
+                self.UNIT_SEARCH_ENDPOINT,
+                data=SearchFilterWrapper(
+                    searchFilter=SearchFilter(pagination=Pagination(start=start, limit=limit), filterModel=f)
+                ),
+                response_model=UnitDetailsResponse,
             )
-        )
-        return self._make_request(
-            "POST",
-            self.UNIT_SEARCH_ENDPOINT,
-            data=payload,
-            response_model=UnitDetailsResponse,
-        )
+
+        bco_result = _fetch(bco_filter)
+        bce_result = _fetch(bce_filter)
+
+        merged = bco_result.copy()
+        merged["entities"] = bco_result.get("entities", []) + bce_result.get("entities", [])
+        merged["totalEntities"] = bco_result.get("totalEntities", 0) + bce_result.get("totalEntities", 0)
+        merged["numberOfElements"] = bco_result.get("numberOfElements", 0) + bce_result.get("numberOfElements", 0)
+        return merged
 
     def get_project_details(self, project_id: Union[str, int]) -> Dict:
         if isinstance(project_id, str) and not project_id.isdigit():
