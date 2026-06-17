@@ -154,7 +154,14 @@ vi.mock("apps/compliance/src/app/utils/getElicensingInvoices.ts", () => ({
 }));
 
 // mock fetch
-const _fetchMock = vi.fn();
+type FetchMock = ReturnType<typeof vi.fn> & {
+  mockResponseOnce(body: string, init?: ResponseInit): void;
+  mockResponse(body: string, init?: ResponseInit): void;
+  mockResponses(...responses: Array<[string, ResponseInit?]>): void;
+  mockRejectOnce(err: Error): void;
+  mockReject(err: Error): void;
+};
+const _fetchMock = vi.fn() as FetchMock;
 vi.stubGlobal("fetch", _fetchMock);
 _fetchMock.mockResponseOnce = (body: string, init?: ResponseInit) =>
   _fetchMock.mockResolvedValueOnce(
