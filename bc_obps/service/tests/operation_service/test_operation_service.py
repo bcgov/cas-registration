@@ -23,7 +23,6 @@ from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOpera
 from registration.schema import (
     FacilityIn,
     OperationRepresentativeIn,
-    OperationNewEntrantApplicationIn,
     OperationTimelineFilterSchema,
 )
 from registration.enums.enums import EmailTemplateNames
@@ -34,7 +33,6 @@ from service.operation_service import OperationService
 from service.email.email_service import EmailService
 from registration.models.multiple_operator import MultipleOperator
 from registration.models.operation import Operation
-from registration.tests.constants import MOCK_DATA_URL
 from model_bakery import baker
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 
@@ -492,9 +490,7 @@ class TestOperationService:
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
         )
-        payload = OperationNewEntrantApplicationIn(
-            new_entrant_application=MOCK_DATA_URL,
-        )
+        payload = create_test_file("new_entrant_application.pdf")
         operation = OperationService.create_or_replace_new_entrant_application(
             approved_user_operator.user.user_guid, users_operation.id, payload
         )

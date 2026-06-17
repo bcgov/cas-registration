@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Optional, Tuple, Callable, Generator
 from zoneinfo import ZoneInfo
 from common.lib.dataclasses import asdict
+from django.core.files.uploadedfile import UploadedFile
 from django.db.models import QuerySet
 from common.exceptions import UserError
 from registration.emails import send_registration_and_boro_id_email
@@ -44,7 +45,6 @@ from service.document_service import DocumentService
 from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
 from service.facility_service import FacilityService
 from registration.schema import (
-    OperationNewEntrantApplicationIn,
     OperationRepresentativeIn,
     FacilityIn,
     OperationTimelineFilterSchema,
@@ -157,7 +157,7 @@ class OperationService:
 
     @classmethod
     def create_or_replace_new_entrant_application(
-        cls, user_guid: UUID, operation_id: UUID, payload: OperationNewEntrantApplicationIn
+        cls, user_guid: UUID, operation_id: UUID, new_entrant_application: UploadedFile
     ) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
 
@@ -167,7 +167,7 @@ class OperationService:
         ) = DocumentService.create_or_replace_operation_document(
             user_guid,
             operation_id,
-            payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
+            new_entrant_application,
             "new_entrant_application",
         )
         if new_entrant_application_document_created:

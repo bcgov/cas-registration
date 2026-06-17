@@ -7,9 +7,7 @@ from registration.schema import OperatorForOperationOut, MultipleOperatorIn, Mul
 from ninja import Field, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from pydantic import field_validator, ConfigDict
-from django.core.files.base import ContentFile
-from registration.utils import data_url_to_file
+from pydantic import ConfigDict
 from registration.utils import file_to_data_url
 from registration.models import Operator, User
 from ninja.types import DictStrAny
@@ -262,15 +260,6 @@ class OperationRegistrationSubmissionIn(Schema):
     acknowledgement_of_review: bool
     acknowledgement_of_records: bool
     acknowledgement_of_information: bool
-
-
-class OperationNewEntrantApplicationIn(Schema):
-    new_entrant_application: str
-
-    @field_validator("new_entrant_application")
-    @classmethod
-    def validate_new_entrant_application(cls, value: str) -> ContentFile:
-        return data_url_to_file(value)
 
 
 class OperationNewEntrantApplicationOut(ModelSchema):

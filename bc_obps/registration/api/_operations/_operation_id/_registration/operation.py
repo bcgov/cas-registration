@@ -37,7 +37,7 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
 def register_edit_operation_information(
     request: HttpRequest,
     operation_id: UUID,
-    payload: OperationInformationIn,
+    details: OperationInformationIn,
     boundary_map: Optional[File[UploadedFile]] = None,
     process_flow_diagram: Optional[File[UploadedFile]] = None,
     new_entrant_application: Optional[File[UploadedFile]] = None,
@@ -47,7 +47,7 @@ def register_edit_operation_information(
         boundary_map=boundary_map,
         process_flow_diagram=process_flow_diagram,
         new_entrant_application=new_entrant_application,
-        **payload.dict(),
+        **details.dict(),
     )
     operation = OperationService.register_operation_information(get_current_user_guid(request), operation_id, data)
 
