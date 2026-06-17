@@ -1542,7 +1542,6 @@ __metadata:
     uuid: "npm:^14.0.0"
     vite: "npm:8.0.16"
     vitest: "npm:^4.1.8"
-    vitest-fetch-mock: "npm:^0.4.5"
   languageName: unknown
   linkType: soft
 
@@ -17425,15 +17424,6 @@ __metadata:
   bin:
     vite: bin/vite.js
   checksum: 10c0/d75be3fbe2f63e6a8145325970338afaf0dd4d96ba9175c13f9a286fd5f95afc489401b693e4fa6c0899a4dd0e137be91cdf9401a40a635563911ad5036e3467
-  languageName: node
-  linkType: hard
-
-"vitest-fetch-mock@npm:^0.4.5":
-  version: 0.4.5
-  resolution: "vitest-fetch-mock@npm:0.4.5"
-  peerDependencies:
-    vitest: ">=2.0.0"
-  checksum: 10c0/c877ae9e1769481dd0c955ce311651030b6eee0bb1d8f9c9388f33a0d8f7f2b6e451268e0ed171d5a26b4390dd887656caa366d2152b1d552bc09b27c2dd8792
   languageName: node
   linkType: hard
 

@@ -35,7 +35,6 @@ import {
   getElicensingInvoices,
   getContact,
 } from "./mocks";
-import createFetchMock from "vitest-fetch-mock";
 
 declare module "vitest" {
   interface Assertion<T = any>
@@ -155,6 +154,21 @@ vi.mock("apps/compliance/src/app/utils/getElicensingInvoices.ts", () => ({
 }));
 
 // mock fetch
-export const fetchMocker = createFetchMock(vi);
-
-fetchMocker.enableMocks();
+const _fetchMock = vi.fn();
+vi.stubGlobal("fetch", _fetchMock);
+_fetchMock.mockResponseOnce = (body: string, init?: ResponseInit) =>
+  _fetchMock.mockResolvedValueOnce(
+    new Response(body, { status: 200, ...init }),
+  );
+_fetchMock.mockResponse = (body: string, init?: ResponseInit) =>
+  _fetchMock.mockResolvedValue(new Response(body, { status: 200, ...init }));
+_fetchMock.mockResponses = (...responses: Array<[string, ResponseInit?]>) =>
+  responses.forEach(([body, init]) =>
+    _fetchMock.mockResolvedValueOnce(
+      new Response(body, { status: 200, ...init }),
+    ),
+  );
+_fetchMock.mockRejectOnce = (err: Error) =>
+  _fetchMock.mockRejectedValueOnce(err);
+_fetchMock.mockReject = (err: Error) => _fetchMock.mockRejectedValue(err);
+export const fetchMocker = _fetchMock;
