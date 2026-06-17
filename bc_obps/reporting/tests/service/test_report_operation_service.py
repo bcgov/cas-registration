@@ -10,9 +10,12 @@ class TestReportOperationService:
     def setup_method(self):
         self.operator = baker.make_recipe("registration.tests.utils.operator")
         self.operation = baker.make_recipe("registration.tests.utils.operation", operator=self.operator)
+        self.reporting_year = baker.make_recipe("reporting.tests.utils.reporting_year", reporting_year=2029)
         self.report_version = baker.make_recipe(
             "reporting.tests.utils.report_version",
-            report=baker.make_recipe("reporting.tests.utils.report", operation=self.operation),
+            report=baker.make_recipe(
+                "reporting.tests.utils.report", operation=self.operation, reporting_year=self.reporting_year
+            ),
             report_type="Annual Report",
             status="Draft",
         )
@@ -77,6 +80,20 @@ class TestReportOperationService:
         assert "is_sync_allowed" in result
         assert isinstance(result["is_sync_allowed"], bool)
         assert result["reporting_year"] == self.report_version.report.reporting_year.reporting_year
+
+    def test_get_report_operation_data_by_version_id_shows_valid_regulated_products(self):
+        valid_product = baker.make_recipe(
+            "registration.tests.utils.regulated_product",
+        )
+        expired_product = baker.make_recipe(
+            "registration.tests.utils.regulated_product",
+            valid_from=f"{self.reporting_year.reporting_year + 5}-01-01",
+        )
+
+        result = ReportOperationService.get_report_operation_data_by_version_id(self.report_version.id)
+
+        assert valid_product in result["all_regulated_products"]
+        assert expired_product not in result["all_regulated_products"]
 
     def test_update_report_service(self):
         self.operation.name = "New Operation Name"
