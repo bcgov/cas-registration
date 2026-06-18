@@ -151,9 +151,9 @@ describe("the SingleStepTaskListForm component", () => {
     const schemaNonRequired: RJSFSchema = {
       type: "object",
       properties: {
-        section1,
-        section2,
-        section3,
+        section1: { ...section1, required: [] },
+        section2: { ...section2, required: [] },
+        section3: { ...section3, required: [] },
       },
     };
     const mockOnSubmit = vi.fn();

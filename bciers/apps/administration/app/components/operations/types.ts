@@ -54,6 +54,7 @@ export interface OperationInformationFormData {
 }
 
 export interface OperationInformationPartialFormData {
+  [key: string]: unknown;
   name?: string;
   type?: string;
   naics_code_id?: number;
