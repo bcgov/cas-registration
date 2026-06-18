@@ -40,14 +40,6 @@ class Command(BaseCommand):
 
         # Load any additional fixtures you need *after* reports exist
         extra = [
-            f'{self.fixture_base_dir}/report_person_responsible.json',
-            f'{self.fixture_base_dir}/report_raw_activity_data.json',
-            f'{self.fixture_base_dir}/report_activity.json',
-            f'{self.fixture_base_dir}/report_source_type.json',
-            f'{self.fixture_base_dir}/report_unit.json',
-            f'{self.fixture_base_dir}/report_fuel.json',
-            f'{self.fixture_base_dir}/report_emission.json',
-            f'{self.fixture_base_dir}/report_methodology.json',
             f'{self.fixture_base_dir}/report_product.json',
             f'{self.fixture_base_dir}/report_emission_allocation.json',
             f'{self.fixture_base_dir}/report_product_emission_allocation.json',
@@ -77,6 +69,21 @@ class Command(BaseCommand):
                 ro.operator_legal_name = _strip_admin_suffix(ro.operator_legal_name)
                 ro.operation_name = _strip_admin_suffix(ro.operation_name)
                 ro.save()
+
+            # load immutable-after-submission fixtures before the submission step
+            pre_submit_fixtures = [
+                f'{self.fixture_base_dir}/report_person_responsible.json',
+                f'{self.fixture_base_dir}/report_raw_activity_data.json',
+                f'{self.fixture_base_dir}/report_activity.json',
+                f'{self.fixture_base_dir}/report_source_type.json',
+                f'{self.fixture_base_dir}/report_unit.json',
+                f'{self.fixture_base_dir}/report_fuel.json',
+                f'{self.fixture_base_dir}/report_emission.json',
+                f'{self.fixture_base_dir}/report_methodology.json',
+            ]
+            for fixture in pre_submit_fixtures:
+                self.stdout.write(self.style.SUCCESS(f"Loading pre-submit fixture: {fixture}"))
+                call_command('loaddata', fixture)
 
             # submit reports
             operation_ids_to_submit = [

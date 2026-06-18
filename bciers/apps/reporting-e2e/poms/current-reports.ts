@@ -4,6 +4,7 @@ import {
   AttachmentCheckboxLabel,
   FacilityIDs,
   OPERATION_NAMES,
+  REPORT_ID_TO_OPERATION_NAME,
   REPORT_STATUS,
   ReportIDs,
   ReportRoutes,
@@ -23,6 +24,7 @@ import {
   SIGN_OFF_SIGNATURE_NAME,
   REVIEW_CHANGES_DEFAULT_REASON,
   REVIEW_CHANGES_REASON_LABEL,
+  SUPPLEMENTARY_REPORT_DIALOG_TEXT,
 } from "@/reporting-e2e/utils/constants";
 
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
@@ -561,12 +563,9 @@ export class CurrentReportsPOM {
   async createSupplementaryReportById(
     reportId: string | number,
   ): Promise<number> {
-    const operationName =
-      reportId === ReportIDs.OBLIGATION_NOT_MET
-        ? OPERATION_NAMES.OBLIGATION_NOT_MET
-        : reportId === ReportIDs.EARNED_CREDITS
-          ? OPERATION_NAMES.EARNED_CREDITS
-          : OPERATION_NAMES.NO_OBLIGATION;
+    const operationName = REPORT_ID_TO_OPERATION_NAME[
+      reportId as ReportIDs
+    ] as string;
 
     // find row
     const row = this.page

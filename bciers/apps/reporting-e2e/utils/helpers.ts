@@ -14,6 +14,15 @@ export async function verifyFormTitle(
   ).toHaveText(title);
 }
 
+export async function verifyReportHeader(
+  page: Page,
+  operationName: string,
+  versionText: string,
+): Promise<void> {
+  await expect(page.locator("main h2")).toHaveText(operationName);
+  await expect(page.locator("main small")).toHaveText(versionText);
+}
+
 export async function verifySaveAsPDF(page: Page): Promise<void> {
   const saveAsPDFButton = page.getByRole("button", {
     name: /Save as PDF/i,

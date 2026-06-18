@@ -11,11 +11,125 @@ import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { SFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
-import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
+import {
+  verifyFormTitle,
+  verifyReportHeader,
+} from "@/reporting-e2e/utils/helpers";
+import { APIRequestContext, Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
 test.describe.configure({ mode: "serial" });
+
+// helper function to create and submit a new report for the initial Bugle SFO test
+// used to set up the supplementary report test
+// returns the versionId of the created report
+async function submitInitialBugleSfoReport(
+  page: Page,
+  request: APIRequestContext,
+): Promise<number> {
+  const setup = new ReportSetUpPOM(page);
+  await setup.primeReportingYear("open");
+
+  const grid = new CurrentReportsPOM(page);
+  await grid.route();
+
+  const versionId = await grid.startNewReportForOperation(
+    OPERATION_NAMES.BUGLE_SFO,
+  );
+  const report = new CurrentReportPOM(page);
+  const facilityReport = new SFOFacilityReportPOM(page, FacilityIDs.BUGLE_SFO);
+
+  // Review Operation Information
+  await report.verifyBugleSfoOperationInfo();
+  await report.saveAndContinue(
+    new RegExp(report.personResponsibleUrl(versionId), "i"),
+  );
+
+  // Person Responsible — select "Bill Blue" (contact linked to the op)
+  await report.fillPersonResponsible("Bill Blue");
+  await report.saveAndContinue(
+    new RegExp(report.activitiesUrl(versionId, FacilityIDs.BUGLE_SFO), "i"),
+  );
+
+  // Activity - GSC
+  await facilityReport.fillGscActivity();
+  await facilityReport.saveAndContinue(
+    new RegExp(facilityReport.nonAttributableUrl(), "i"),
+  );
+
+  // Non-Attributable Emissions
+  await facilityReport.fillNonAttributable();
+  await facilityReport.saveAndContinue(
+    new RegExp(
+      `/facilities/${FacilityIDs.BUGLE_SFO}/${ReportRoutes.EMISSION_SUMMARY}`,
+    ),
+  );
+
+  // Emission Summary
+  await facilityReport.clickContinue(
+    new RegExp(
+      `/facilities/${FacilityIDs.BUGLE_SFO}/${ReportRoutes.PRODUCTION_DATA}`,
+    ),
+  );
+
+  // Production Data
+  await facilityReport.fillProductionData();
+  await facilityReport.saveAndContinue(
+    new RegExp(
+      `/facilities/${FacilityIDs.BUGLE_SFO}/${ReportRoutes.ALLOCATION_OF_EMISSIONS}`,
+    ),
+  );
+
+  // Allocation of Emissions
+  await facilityReport.verifyAllocationAlerts();
+  await facilityReport.fillAllocationOfEmissions();
+  await facilityReport.saveAndContinue(
+    new RegExp(`${versionId}/${ReportRoutes.ADDITIONAL_REPORTING_DATA}`),
+  );
+
+  // Additional Reporting Data
+  await report.fillAdditionalData();
+  await report.saveAndContinue(
+    new RegExp(`${versionId}/${ReportRoutes.COMPLIANCE_SUMMARY}`),
+  );
+
+  // Compliance Summary
+  await report.verifyComplianceSummary();
+  await report.continue(new RegExp(`${versionId}/${ReportRoutes.VALIDATION}`));
+
+  // Report Validation
+  await report.verifyReportValidation();
+  await report.continue(
+    new RegExp(`${versionId}/${ReportRoutes.FINAL_REVIEW}`),
+  );
+
+  // Final Review
+  await report.verifyFinalReview();
+  await report.continue(
+    new RegExp(`${versionId}/${ReportRoutes.VERIFICATION}`),
+  );
+
+  // Verification
+  await report.fillVerification();
+  await report.saveAndContinue(
+    new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
+  );
+
+  // Attachments
+  await report.uploadVerificationStatement();
+  await report.saveAndContinue(
+    new RegExp(`${versionId}/${ReportRoutes.SIGN_OFF}`),
+    false,
+  );
+
+  // Sign-off and submit
+  await grid.submitReportById(request, versionId, false, false, true);
+  await grid.verifySubmissionPage();
+
+  return versionId;
+}
 
 test.describe("SFO: create and submit a new report for the current reporting year", () => {
   test("Industry user starts, fills, and submits a new SFO report", async ({
@@ -212,5 +326,132 @@ test.describe("SFO: create and submit a new report for the current reporting yea
       component: "SFO Report - Current Reports Grid",
       variant: "submitted",
     });
+  });
+});
+
+test.describe("SFO: create and submit a supplementary report for the current reporting year", () => {
+  test("Industry user creates and submits a supplementary report for Bangles SFO", async ({
+    page,
+    request,
+    happoScreenshot,
+  }) => {
+    // ── 0. Go to Reporting dashboard for the current reporting year ──
+    const setup = new ReportSetUpPOM(page);
+    await setup.primeReportingYear("open");
+
+    // ── 1. Navigate to the current reports grid ──
+    const grid = new CurrentReportsPOM(page);
+    await grid.route();
+
+    // ── 2. Create a supplementary report for Bangles SFO from the options menu in the grid ──
+    const supplementaryVersionId = await grid.createSupplementaryReportById(13);
+    const report = new CurrentReportPOM(page);
+    const facilityReport = new SFOFacilityReportPOM(
+      page,
+      FacilityIDs.BANGLES_SFO,
+    );
+
+    // ── 3. Review Operation Information — verify fields are pre-populated with the same values as the original report ──
+    await verifyReportHeader(page, OPERATION_NAMES.BANGLES_SFO, "Version 2");
+
+    await verifyFormTitle(page, "Review Operation Information");
+    await report.verifyBanglesSfoOperationInfo();
+
+    await report.saveAndContinue(
+      new RegExp(report.personResponsibleUrl(supplementaryVersionId), "i"),
+    );
+
+    // ── 4. Person Responsible — change from "Bob Brown" to "Bill Blue" ──
+    await verifyFormTitle(page, "Person Responsible for Submitting Report");
+    // await expect(report.page.getByTestId("root_person_responsible")).toHaveText("Bob Brown");
+    await report.fillPersonResponsible("Bill Blue");
+    await report.saveAndContinue(
+      new RegExp(
+        report.activitiesUrl(supplementaryVersionId, FacilityIDs.BANGLES_SFO),
+        "i",
+      ),
+    );
+
+    // ── 5. Activities — verify GSC activity with same details is pre-populated. Update annual fuel amount and emissions quantity ──
+    await verifyFormTitle(
+      page,
+      "General stationary combustion excluding line tracing (at SFO)",
+    );
+    await expect(
+      report.page.locator("#root_gscWithProductionOfUsefulEnergy"),
+    ).toBeChecked();
+    await expect(
+      report.page.locator("#root_gscWithoutProductionOfUsefulEnergy"),
+    ).not.toBeChecked();
+
+    const annualFuelLocator = report.page.locator(
+      "#root_sourceTypes_gscWithProductionOfUsefulEnergy_units_0_fuels_0_annualFuelAmount",
+    );
+    await expect(annualFuelLocator).toHaveValue("12,000");
+    annualFuelLocator.clear();
+    annualFuelLocator.fill("12600");
+
+    const emissionsQuantityLocator = report.page.locator(
+      "#root_sourceTypes_gscWithProductionOfUsefulEnergy_units_0_fuels_0_emissions_0_emission",
+    );
+    await expect(emissionsQuantityLocator).toHaveValue("11,000");
+    emissionsQuantityLocator.clear();
+    emissionsQuantityLocator.fill("11800");
+
+    await report.saveAndContinue(
+      new RegExp(
+        `/facilities/${FacilityIDs.BANGLES_SFO}/${ReportRoutes.NON_ATTRIBUTABLE}`,
+      ),
+    );
+
+    // ── 6. Non-Attributable Emissions (no entries needed) ──
+    await verifyFormTitle(page, "Non-Attributable Emissions");
+    await expect(report.page.getByRole("radio", { name: "No" })).toBeChecked();
+    await report.saveAndContinue(
+      new RegExp(
+        `/facilities/${FacilityIDs.BANGLES_SFO}/${ReportRoutes.EMISSION_SUMMARY}`,
+      ),
+    );
+
+    // ── 7. Emission Summary (read-only) — verify values are updated based on changed activity data ──
+    await verifyFormTitle(page, "Emissions Summary (in tCO2e)");
+    const emissionsAttributableForReportingLocator = report.page.locator(
+      "#root_attributable_for_reporting",
+    );
+    await expect(emissionsAttributableForReportingLocator).toHaveValue(
+      "11,800",
+    );
+    await expect(emissionsAttributableForReportingLocator).toBeDisabled();
+
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "SFO Supplementary Report - Emissions Summary",
+      variant: "default",
+    });
+    await report.saveAndContinue(
+      new RegExp(
+        `/facilities/${FacilityIDs.BANGLES_SFO}/${ReportRoutes.PRODUCTION_DATA}`,
+      ),
+    );
+
+    // ── 8. Production Data — verify Cement equivalent is pre-selected, update annual production ──
+    await verifyFormTitle(page, "Production Data");
+
+    // ── 9. Allocation of Emissions — verify same methodology is pre-selected, update allocation data based on updated production data ──
+
+    // ── 10. Additional Reporting Data — verify fields are pre-populated with the same values as the original report ──
+
+    // ── 11. Compliance Summary (read-only) — verify values are updated based on changed activity and allocation data ──
+
+    // ── 12. Review Changes - submit reason for change ──
+
+    // ── 13. Report Validation (read-only) — confirm no validation warnings/errors detected ──
+
+    // ── 14. Final Review (read-only) — verify updated report details are reflected in the summary ──
+
+    // ── 15. Verification — confirm verification details are the same as before ──
+
+    // ── 16. Attachments — confirm previously uploaded verification statement is still attached, upload new version. Enable required checkboxes regarding attachments  ──
+
+    // ── 17. Sign-off and submit - select all checkboxes, sign (submission stubbed to avoid external calls) ──
   });
 });

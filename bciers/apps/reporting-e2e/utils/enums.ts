@@ -11,6 +11,8 @@ export enum ReportIDs {
   OBLIGATION_NOT_MET = "3",
   EARNED_CREDITS = "4",
   NO_OBLIGATION = "5",
+  BUGLE_SFO = "18",
+  BANGLES_SFO = "13",
 }
 
 // Matching facility ids for report record ids
@@ -21,6 +23,7 @@ export enum FacilityIDs {
   BUGLE_SFO = "f486f2fb-62ed-438d-bb3e-0819b51e3aff",
   BEES_LFO = "d477f3d9-2917-4f36-b5ae-166d47dc8172",
   BANANA_LFO_1 = "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
+  BANGLES_SFO = "9f7b0848-021e-4d08-9852-10524c4e5456",
 }
 
 // Report workflow routes
@@ -95,6 +98,8 @@ export const REPORT_ID_TO_OPERATION_NAME: Record<ReportIDs, string> = {
   [ReportIDs.OBLIGATION_NOT_MET]: OPERATION_NAMES.OBLIGATION_NOT_MET,
   [ReportIDs.EARNED_CREDITS]: OPERATION_NAMES.EARNED_CREDITS,
   [ReportIDs.NO_OBLIGATION]: OPERATION_NAMES.NO_OBLIGATION,
+  [ReportIDs.BUGLE_SFO]: OPERATION_NAMES.BUGLE_SFO,
+  [ReportIDs.BANGLES_SFO]: OPERATION_NAMES.BANGLES_SFO,
 };
 
 export enum REPORT_STATUS {

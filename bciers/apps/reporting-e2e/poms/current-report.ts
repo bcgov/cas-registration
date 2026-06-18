@@ -63,6 +63,11 @@ export class CurrentReportPOM {
     await operationReview.verifyBugleSfoFields();
   }
 
+  async verifyBanglesSfoOperationInfo(): Promise<void> {
+    const operationReview = new ReportOperationPOM(this.page);
+    await operationReview.verifyBanglesSfoFields();
+  }
+
   async fillPersonResponsible(contactName: string): Promise<void> {
     const personResponsible = new PersonResponsiblePOM(this.page);
     await personResponsible.selectContact(contactName);
