@@ -49,7 +49,7 @@ export default function StartReportForm({
       return;
     }
 
-    router.push(`/reporting/reports/${response}/review-operation-information`);
+    router.push(`/reports/${response}/review-operation-information`);
   };
 
   return (

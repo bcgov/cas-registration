@@ -765,6 +765,12 @@ class OperationService:
         return operation.regulated_products.filter(
             valid_from__lte=reporting_year_date, valid_to__gte=reporting_year_date
         )
+    def _is_reportable_operation_year(
+        operation_year: tuple[UUID, int],
+        added_operation_years: set[tuple[UUID, int]],
+        existing_reports: set[tuple[UUID, int]],
+    ) -> bool:
+        return operation_year not in added_operation_years and operation_year not in existing_reports
 
     @classmethod
     def _get_previous_reporting_years(cls) -> QuerySet[ReportingYear]:
@@ -800,9 +806,9 @@ class OperationService:
         user_guid: UUID,
     ) -> list[dict]:
         """
-        Returns the reporting year/operation  combinations for which the current user is eligible to create a report
+        Returns the reporting year/operation combinations for which the current user is eligible to create a report
 
-        An reporting year/operation  combination is eligible if:
+        An reporting year/operation combination is eligible if:
         1. The operation was designated to the user's operator for that reporting year, or
         2. The operation is currently registered to the user's operator as a fallback
 
@@ -814,7 +820,6 @@ class OperationService:
         reporting_years = cls._get_previous_reporting_years()
         year_values = {reporting_year.reporting_year for reporting_year in reporting_years}
 
-        # Find all registered operation timelines associated with the user's operator
         timelines = list(
             OperationDesignatedOperatorTimeline.objects.select_related("operation")
             .filter(
@@ -824,7 +829,6 @@ class OperationService:
             .order_by("operation__name", "start_date")
         )
 
-        # Find all currently registered operations for fallback handling
         current_registered_operations = list(
             Operation.objects.filter(
                 operator_id=user_operator.operator_id,
@@ -836,7 +840,6 @@ class OperationService:
             operation.id for operation in current_registered_operations
         }
 
-        # Bulk fetch existing reports
         existing_reports = set(
             Report.objects.filter(
                 operation_id__in=all_operation_ids,
@@ -847,7 +850,6 @@ class OperationService:
             )
         )
 
-        # Bulk fetch designated operator timelines
         designations_lookup = (
             OperationDesignatedOperatorTimelineService.get_operation_designated_operators_for_reporting_years(
                 operation_ids=all_operation_ids,
@@ -858,7 +860,6 @@ class OperationService:
         reportable_operations: list[dict] = []
         added_operation_years: set[tuple[UUID, int]] = set()
 
-        # Add combinations that are valid based on historical designated operator timelines
         for timeline in timelines:
             for reporting_year in reporting_years:
                 operation_year = (
@@ -866,33 +867,31 @@ class OperationService:
                     reporting_year.reporting_year,
                 )
 
-                if operation_year in added_operation_years:
-                    continue
-
-                if operation_year in existing_reports:
+                if not cls._is_reportable_operation_year(
+                    operation_year,
+                    added_operation_years,
+                    existing_reports,
+                ):
                     continue
 
                 designated_operator_timeline = designations_lookup.get(operation_year)
 
-                if not designated_operator_timeline:
-                    continue
+                if (
+                    designated_operator_timeline
+                    and designated_operator_timeline.operator.id == user_operator.operator_id
+                ):
+                    reportable_operations.append(
+                        {
+                            **cls._build_reportable_operation_row(
+                                timeline,
+                                reporting_year,
+                            ),
+                            "is_current_registered_fallback": False,
+                        }
+                    )
 
-                if designated_operator_timeline.operator.id != user_operator.operator_id:
-                    continue
+                    added_operation_years.add(operation_year)
 
-                reportable_operations.append(
-                    {
-                        **cls._build_reportable_operation_row(
-                            timeline,
-                            reporting_year,
-                        ),
-                        "is_current_registered_fallback": False,
-                    }
-                )
-
-                added_operation_years.add(operation_year)
-
-        # Fallback: include current registered operations for operation/year combinations not already returned by the historical designation logic
         for operation in current_registered_operations:
             for reporting_year in reporting_years:
                 operation_year = (
@@ -900,10 +899,11 @@ class OperationService:
                     reporting_year.reporting_year,
                 )
 
-                if operation_year in added_operation_years:
-                    continue
-
-                if operation_year in existing_reports:
+                if not cls._is_reportable_operation_year(
+                    operation_year,
+                    added_operation_years,
+                    existing_reports,
+                ):
                     continue
 
                 reportable_operations.append(
