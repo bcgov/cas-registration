@@ -8,7 +8,6 @@ from ninja import Field, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from pydantic import ConfigDict
-from registration.utils import file_to_data_url
 from registration.models import Operator, User
 from ninja.types import DictStrAny
 
@@ -29,14 +28,14 @@ class OperationRegistrationOut(ModelSchema):
     def resolve_boundary_map(obj: Operation) -> Optional[str]:
         boundary_map = obj.get_boundary_map()
         if boundary_map:
-            return file_to_data_url(boundary_map)
+            return boundary_map.file.name  # type: ignore
         return None
 
     @staticmethod
     def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
         process_flow_diagram = obj.get_process_flow_diagram()
         if process_flow_diagram:
-            return file_to_data_url(process_flow_diagram)
+            return process_flow_diagram.file.name  # type: ignore
         return None
 
     @staticmethod
@@ -211,21 +210,21 @@ class OperationOutWithDocuments(OperationOut):
     def resolve_boundary_map(obj: Operation) -> Optional[str]:
         boundary_map = obj.get_boundary_map()
         if boundary_map:
-            return file_to_data_url(boundary_map)
+            return boundary_map.file.name  # type: ignore
         return None
 
     @staticmethod
     def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
         process_flow_diagram = obj.get_process_flow_diagram()
         if process_flow_diagram:
-            return file_to_data_url(process_flow_diagram)
+            return process_flow_diagram.file.name  # type: ignore
         return None
 
     @staticmethod
     def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
         new_entrant_application = obj.get_new_entrant_application()
         if new_entrant_application:
-            return file_to_data_url(new_entrant_application)
+            return new_entrant_application.file.name  # type: ignore
         return None
 
 

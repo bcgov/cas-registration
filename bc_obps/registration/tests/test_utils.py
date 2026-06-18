@@ -1,12 +1,9 @@
 import pytest
-import base64
 from model_bakery import baker
 from common.permissions import raise_401_if_user_not_authorized
 from registration.models import User, UserOperator, AppRole
 from registration.models.operation import Operation
 from registration.utils import (
-    file_to_data_url,
-    data_url_to_file,
     is_document_scan_complete,
     update_model_instance,
     generate_useful_error,
@@ -14,8 +11,7 @@ from registration.utils import (
 from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase, override_settings
-from registration.tests.utils.bakers import document_baker, user_operator_baker
-import requests
+from registration.tests.utils.bakers import user_operator_baker
 from service.tests.operation_service.test_operation_service import set_up_valid_mock_operation
 
 pytestmark = pytest.mark.django_db
@@ -210,98 +206,6 @@ class TestCheckIfRoleAuthorized(TestCase):
         # note there is no baker.make(User) here
         with pytest.raises(HttpError):
             raise_401_if_user_not_authorized(self.request, ['industry_user'])
-
-
-class TestFileTODataURL:
-    @staticmethod
-    def test_file_to_data_url_returns_data_url(mocker, monkeypatch):
-        monkeypatch.setenv("CI", "false")
-        monkeypatch.setenv("ENVIRONMENT", "develop")
-
-        # Mock the document object
-        document = document_baker()
-
-        # Mock the response of requests.get
-        mock_response = mocker.MagicMock()
-        mock_response.status_code = 200
-        mock_response.content = b"PDF content"
-
-        mocker.patch("registration.utils.requests.get", return_value=mock_response)
-
-        # Call the function
-        result = file_to_data_url(document)
-
-        # Check the expected result
-        encoded_content = base64.b64encode(b"PDF content").decode("utf-8")
-        expected_result = f"data:application/pdf;name=test.pdf;scanstatus=Unscanned;base64,{encoded_content}"
-        assert result == expected_result
-
-    @staticmethod
-    def test_file_to_data_url_handles_timeout(mocker, caplog, monkeypatch):
-        monkeypatch.setenv("CI", "false")
-        monkeypatch.setenv("ENVIRONMENT", "develop")
-
-        # Mock the document object
-        document = document_baker()
-
-        # Mock the response of requests.get to raise a timeout exception
-        mocker.patch("registration.utils.requests.get", side_effect=requests.exceptions.Timeout)
-
-        # Call the function
-        result = file_to_data_url(document)
-
-        # Check the result is None
-        assert result is None
-
-        # Check that the timeout was logged
-        assert "Request timed out" in caplog.text
-
-    @staticmethod
-    def test_file_to_data_url_handles_request_exception(mocker, caplog, monkeypatch):
-        monkeypatch.setenv("CI", "false")
-        monkeypatch.setenv("ENVIRONMENT", "develop")
-
-        # Mock the document object
-        document = document_baker()
-
-        # Mock the response of requests.get to raise a request exception
-        mocker.patch(
-            "registration.utils.requests.get", side_effect=requests.exceptions.RequestException("An error occurred")
-        )
-
-        # Call the function
-        result = file_to_data_url(document)
-
-        # Check the result is None
-        assert result is None
-
-        # Check that the exception was logged
-        assert "An error occurred" in caplog.text
-
-
-class TestDataUrlToFile:
-    @staticmethod
-    def test_data_url_to_file():
-        data_url = "data:application/pdf;name=test.pdf;base64,UERGIENvbnRlbnQ="
-        content_file = data_url_to_file(data_url)
-
-        assert content_file.name == "test.pdf"
-        assert content_file.read() == b"PDF Content"
-
-    @staticmethod
-    def test_data_url_to_file_no_name():
-        data_url = "data:application/pdf;base64,UERGIENvbnRlbnQ="
-        content_file = data_url_to_file(data_url)
-
-        assert content_file.name is None
-        assert content_file.read() == b"PDF Content"
-
-    @staticmethod
-    def test_data_url_to_file_invalid_base64():
-        data_url = "data:application/pdf;name=test.pdf;base64,invalidbase64data"
-
-        with pytest.raises(base64.binascii.Error):
-            data_url_to_file(data_url)
 
 
 class TestDocumentScanStatus:
