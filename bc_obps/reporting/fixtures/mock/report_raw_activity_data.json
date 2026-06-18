@@ -139,5 +139,52 @@
       "report_version_id": 5,
       "updated_by_id": null
     }
+  },
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "sourceTypes": {
+          "gscWithProductionOfUsefulEnergy": {
+            "units": [
+              {
+                "fuels": [
+                  {
+                    "fuelType": {
+                      "fuelName": "Diesel",
+                      "fuelClassification": "Non-biomass"
+                    },
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 11000,
+                        "methodology": {
+                          "methodology": "Default EF"
+                        }
+                      }
+                    ],
+                    "fuelDescription": "Diesel fuel",
+                    "annualFuelAmount": 12000
+                  }
+                ],
+                "gscUnitName": "GSC Unit Name 1",
+                "gscUnitType": "Kiln"
+              }
+            ]
+          }
+        },
+        "gscWithProductionOfUsefulEnergy": true
+      },
+      "activity_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility_report_id": 51,
+      "report_version_id": 13,
+      "updated_by_id": null
+    }
   }
 ]
