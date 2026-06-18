@@ -1,5 +1,17 @@
 # Changelog
 
+# [5.14.0](https://github.com/bcgov/cas-registration/compare/v5.13.1...v5.14.0) (2026-06-18)
+
+### Bug Fixes
+
+- disable adding unevaluatedPropeties if activity alumina + tests ([8ce048d](https://github.com/bcgov/cas-registration/commit/8ce048db578e5abdbaf707fc45c69b5ef6f5271d))
+- handle credited emissions below 1 in NewEarnedCreditsHandler ([05d48f9](https://github.com/bcgov/cas-registration/commit/05d48f954049dc2a8a994259f7981d3e61707117))
+- make compliance summaries action column consistent ([97b7a2c](https://github.com/bcgov/cas-registration/commit/97b7a2ccdb2d7420ca0a70a3ee4633a732926539))
+
+### Features
+
+- add valid date fields to RegulatedProduct ([df58ddb](https://github.com/bcgov/cas-registration/commit/df58ddb4cc5f8edf296f7c6a4f26747b31d5fa31))
+
 ## [5.13.1](https://github.com/bcgov/cas-registration/compare/v5.13.0...v5.13.1) (2026-06-11)
 
 # [5.13.0](https://github.com/bcgov/cas-registration/compare/v5.12.0...v5.13.0) (2026-06-08)
