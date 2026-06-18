@@ -42,7 +42,7 @@ export default async function ReportsBasePage({
       case CURRENT_REPORTS_TAB_INDEX:
         return `Reporting year ${reportingYearData.reporting_year}`;
       case PAST_REPORTS_TAB_INDEX:
-        return "Past Reports";
+        return "Previous Reporting Years";
       case ATTACHMENTS_TAB_INDEX:
         return "Download Report Attachments";
       default:

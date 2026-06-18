@@ -39,13 +39,13 @@ describe("ReportsBasePage", () => {
       // Check for both h2 (reporting year) and h3 (due date) in inline variant
       expect(
         screen.getByRole("heading", { level: 2, name: /reporting year 2024/i }),
-      ).toBeInTheDocument();
+      ).toBeVisible();
       expect(
         screen.getByRole("heading", {
           level: 3,
           name: /reports due may 31, 2025/i,
         }),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
 
     it("renders inline reporting year header for industry_user_admin on current reports tab", async () => {
@@ -62,16 +62,16 @@ describe("ReportsBasePage", () => {
 
       expect(
         screen.getByRole("heading", { level: 2, name: /reporting year 2024/i }),
-      ).toBeInTheDocument();
+      ).toBeVisible();
       expect(
         screen.getByRole("heading", {
           level: 3,
           name: /reports due may 31, 2025/i,
         }),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
 
-    it("renders Past Reports title on past reports tab for industry users", async () => {
+    it("renders previous reporting years title on previous reporting years tab for industry users", async () => {
       (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(
         "industry_user",
       );
@@ -84,8 +84,8 @@ describe("ReportsBasePage", () => {
       );
 
       expect(
-        screen.getByRole("heading", { name: /past reports/i }),
-      ).toBeInTheDocument();
+        screen.getByRole("heading", { name: /previous reporting years/i }),
+      ).toBeVisible();
       // Should not show the due date when not on current reports tab
       expect(
         screen.queryByText(/reports due may 31, 2025/i),
@@ -105,11 +105,11 @@ describe("ReportsBasePage", () => {
       );
 
       expect(
-        screen.getByRole("tab", { name: /view annual report\(s\)/i }),
-      ).toBeInTheDocument();
+        screen.getByRole("tab", { name: /current reporting year/i }),
+      ).toBeVisible();
       expect(
-        screen.getByRole("tab", { name: /view past reports/i }),
-      ).toBeInTheDocument();
+        screen.getByRole("tab", { name: /previous reporting years/i }),
+      ).toBeVisible();
       // Industry users should not see attachments tab
       expect(
         screen.queryByRole("tab", { name: /download report attachments/i }),
@@ -132,7 +132,7 @@ describe("ReportsBasePage", () => {
 
       expect(
         screen.getByRole("heading", { name: /reporting year 2024/i }),
-      ).toBeInTheDocument();
+      ).toBeVisible();
       // Should not show the inline due date for internal users
       expect(
         screen.queryByRole("heading", { level: 3, name: /reports due/i }),
@@ -153,7 +153,7 @@ describe("ReportsBasePage", () => {
 
       expect(
         screen.getByRole("heading", { name: /reporting year 2024/i }),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
 
     it("renders correct tabs for internal users including attachments", async () => {
@@ -169,14 +169,14 @@ describe("ReportsBasePage", () => {
       );
 
       expect(
-        screen.getByRole("tab", { name: /view annual reports/i }),
-      ).toBeInTheDocument();
+        screen.getByRole("tab", { name: /current reporting year/i }),
+      ).toBeVisible();
       expect(
-        screen.getByRole("tab", { name: /view past reports/i }),
-      ).toBeInTheDocument();
+        screen.getByRole("tab", { name: /previous reporting years/i }),
+      ).toBeVisible();
       expect(
         screen.getByRole("tab", { name: /download report attachments/i }),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
 
     it("renders Download Report Attachments title for attachments tab", async () => {
@@ -195,10 +195,10 @@ describe("ReportsBasePage", () => {
         screen.getByRole("heading", {
           name: /download report attachments/i,
         }),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
 
-    it("renders Past Reports title on past reports tab for internal users", async () => {
+    it("renders Previous Reporting Years title on previous reporting years tab for internal users", async () => {
       (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(
         "cas_analyst",
       );
@@ -211,8 +211,8 @@ describe("ReportsBasePage", () => {
       );
 
       expect(
-        screen.getByRole("heading", { name: /past reports/i }),
-      ).toBeInTheDocument();
+        screen.getByRole("heading", { name: /previous reporting years/i }),
+      ).toBeVisible();
     });
   });
 
@@ -229,8 +229,8 @@ describe("ReportsBasePage", () => {
         }),
       );
 
-      expect(screen.getByTestId("child-content")).toBeInTheDocument();
-      expect(screen.getByText("Test Content")).toBeInTheDocument();
+      expect(screen.getByTestId("child-content")).toBeVisible();
+      expect(screen.getByText("Test Content")).toBeVisible();
     });
   });
 
@@ -248,12 +248,12 @@ describe("ReportsBasePage", () => {
       );
 
       const tab = screen.getByRole("tab", {
-        name: /view annual report\(s\)/i,
+        name: /current reporting year/i,
       });
       expect(tab).toHaveAttribute("href", "/reports/current-reports");
     });
 
-    it("has correct href for past reports tab", async () => {
+    it("has correct href for previous reporting years tab", async () => {
       (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(
         "industry_user",
       );
@@ -265,7 +265,9 @@ describe("ReportsBasePage", () => {
         }),
       );
 
-      const tab = screen.getByRole("tab", { name: /view past reports/i });
+      const tab = screen.getByRole("tab", {
+        name: /previous reporting years/i,
+      });
       expect(tab).toHaveAttribute("href", "/reports/previous-years");
     });
 
