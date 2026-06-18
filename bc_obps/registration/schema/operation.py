@@ -264,7 +264,7 @@ class OperationNewEntrantApplicationOut(ModelSchema):
     def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
         new_entrant_application = obj.get_new_entrant_application()
         if new_entrant_application:
-            return file_to_data_url(new_entrant_application)
+            return new_entrant_application.file.name  # type: ignore
         return None
 
     class Meta:

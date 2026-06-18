@@ -7,7 +7,6 @@ from registration.models import Operation, NaicsCode, DocumentType
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.tests.constants import MOCK_DATA_URL
 from registration.utils import custom_reverse_lazy
 from service.tests.operation_service.test_operation_service import create_test_file
 
@@ -48,14 +47,19 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             "registration_purpose": self.operation.registration_purpose,
             "activities": [],  # activities is required in payload so needs to be explicitly set, even if it's empty
         }
+        files_payload = {}
         if self.operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             operation_information_payload.update(
                 {
-                    "boundary_map": MOCK_DATA_URL,
-                    "process_flow_diagram": MOCK_DATA_URL,
                     "activities": [2, 3],
                     "naics_code_id": naics_codes[0].id,
                     "secondary_naics_code_id": naics_codes[1].id,
+                }
+            )
+            files_payload.update(
+                {
+                    "boundary_map": create_test_file("boundary_map.pdf"),
+                    "process_flow_diagram": create_test_file("process_flow_diagram.pdf"),
                 }
             )
         if self.operation.registration_purpose in [
@@ -68,7 +72,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         TestUtils.save_app_role(self, "industry_user")
         response = TestUtils.client.post(
             path=custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': self.operation.id}),
-            data={"payload": json.dumps(operation_information_payload)},
+            data={"payload": json.dumps(operation_information_payload), **files_payload},
             format="multipart",
             HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
@@ -91,8 +95,6 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             # any purpose other than EIO requires these additional fields
             operation_payload.update(
                 {
-                    "boundary_map": MOCK_DATA_URL,
-                    "process_flow_diagram": MOCK_DATA_URL,
                     "activities": [2, 3],
                     "naics_code_id": self.operation.naics_code_id
                     or naics_codes[0].id,  # if old purpose was EIO, operation won't have any NAICS codes

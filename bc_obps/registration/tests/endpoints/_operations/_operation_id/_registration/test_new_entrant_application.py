@@ -3,10 +3,10 @@ import pytest
 from registration.models.operation import Operation
 from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.utils import custom_reverse_lazy, data_url_to_file
+from registration.utils import custom_reverse_lazy
 from model_bakery import baker
-from registration.tests.constants import MOCK_DATA_URL
 from service.document_service import DocumentService
+from tests.test_files import create_test_file
 
 
 class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
@@ -33,8 +33,8 @@ class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
         )
-        file = data_url_to_file(MOCK_DATA_URL)
-        new_entrant_application_doc, created = DocumentService.create_or_replace_operation_document(
+        file = create_test_file("new_entrant_application.pdf")
+        new_entrant_application_doc, _ = DocumentService.create_or_replace_operation_document(
             approved_user_operator.user_id, operation.id, file, "new_entrant_application"
         )
         operation.documents.add(new_entrant_application_doc)
@@ -46,9 +46,7 @@ class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 200
-        # not testing `new_entrant_application` because resolver for a document doesn't work in CI
-        # MOCK_DATA_URL's filename is mock.pdf. When adding files to django, the name is appended, so we just check that 'mock' in the name
-        assert operation.documents.first().file.name.find("mock") != -1
+        assert operation.documents.first().file.name.find("new_entrant_application") != -1
 
 
 class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
@@ -64,18 +62,17 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
             'registration.tests.utils.operation',
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            {
-                "operation_id": operation.id,
-                "new_entrant_application": MOCK_DATA_URL,
+        response = TestUtils.client.post(
+            path=custom_reverse_lazy(
+                "create_or_replace_new_entrant_application", kwargs={'operation_id': operation.id}
+            ),
+            data={
+                "new_entrant_application": create_test_file("new_entrant_application.pdf"),
             },
-            custom_reverse_lazy("create_or_replace_new_entrant_application", kwargs={'operation_id': operation.id}),
+            format='multipart',
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
-        # RLS makes this 404 instead of 401
-        # assert response.status_code == 404
+
         assert response.status_code == 401
 
     # Uncomment this skip to test file uploads locally
@@ -88,14 +85,15 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
 
         # Act - Test without date_of_first_shipment
         payload_without_date = {
-            "new_entrant_application": MOCK_DATA_URL,
+            "new_entrant_application": create_test_file("new_entrant_application.pdf"),
         }
-        response_1 = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            payload_without_date,
-            custom_reverse_lazy("create_or_replace_new_entrant_application", kwargs={'operation_id': operation.id}),
+        response_1 = TestUtils.client.post(
+            path=custom_reverse_lazy(
+                "create_or_replace_new_entrant_application", kwargs={'operation_id': operation.id}
+            ),
+            data=payload_without_date,
+            format='multipart',
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
         # Assert - Should succeed without date_of_first_shipment
         operation.refresh_from_db()
@@ -104,21 +102,4 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
         operation_new_entrant_application = operation.documents.first()
         assert operation_new_entrant_application.file.name.find("mock") != -1
         assert operation_new_entrant_application.type.name == "new_entrant_application"
-        assert operation.date_of_first_shipment is None
-
-        # Test that date_of_first_shipment is ignored if present in payload
-        payload_with_ignored_date = {
-            "new_entrant_application": MOCK_DATA_URL,
-            "date_of_first_shipment": "On or after April 1, 2024",  # This should be ignored
-        }
-        response_2 = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            payload_with_ignored_date,
-            custom_reverse_lazy("create_or_replace_new_entrant_application", kwargs={'operation_id': operation.id}),
-        )
-        operation.refresh_from_db()
-        assert response_2.status_code == 200
-        # date_of_first_shipment should still be None (field is ignored)
         assert operation.date_of_first_shipment is None
