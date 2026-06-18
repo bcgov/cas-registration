@@ -33,7 +33,7 @@ class OptedInOperationDetail(TimeStampedModel):
     meets_producing_gger_schedule_a1_regulated_product = models.BooleanField(
         blank=True,
         null=True,
-        db_comment="Does this operation produce a regulated product listed in Table 2 of Schedule A.1 of the GGERR (Greenhouse Gas Emission Reporting Regulation)?",
+        db_comment="Does this operation produce a regulated product listed in Table 2 of Schedule A.1 of the GGERR (Greenhouse Gas Emission Reporting Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015)?",
     )
     meets_reporting_and_regulated_obligations = models.BooleanField(
         blank=True,

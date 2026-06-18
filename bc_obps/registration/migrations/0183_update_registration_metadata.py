@@ -1973,7 +1973,7 @@ class Migration(migrations.Migration):
             name='meets_producing_gger_schedule_a1_regulated_product',
             field=models.BooleanField(
                 blank=True,
-                db_comment='Does this operation produce a regulated product listed in Table 2 of Schedule A.1 of the GGERR (Greenhouse Gas Emission Reporting Regulation)?',
+                db_comment="Does this operation produce a regulated product listed in Table 2 of Schedule A.1 of the GGERR (Greenhouse Gas Emission Reporting Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015)?",
                 null=True,
             ),
         ),
@@ -2229,7 +2229,7 @@ class Migration(migrations.Migration):
             model_name='historicalregulatedproduct',
             name='name',
             field=models.CharField(
-                db_comment="The name of the product as listed in Schedule A.1 of the GHGIRCA (Greenhouse Gas Industrial Reporting and Control Act) (e.g. 'Cement equivalent', 'Mining: coal', 'Sold electricity').",
+                db_comment="The name of the product as listed in Schedule A.1 of the GGIRCA (Greenhouse Gas Industrial Reporting and Control Act https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01) (e.g. 'Cement equivalent', 'Mining: coal', 'Sold electricity').",
                 max_length=1000,
             ),
         ),
@@ -3009,15 +3009,25 @@ class Migration(migrations.Migration):
                 to='registration.naicscode',
             ),
         ),
-        migrations.AlterField(
-            model_name='operation',
-            name='operator',
-            field=models.ForeignKey(
-                db_comment='The operator that owns this operation. Foreign key to erc.operator',
-                on_delete=django.db.models.deletion.PROTECT,
-                related_name='operations',
-                to='registration.operator',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.operation.operator_id IS 'The operator that owns this operation. Foreign key to erc.operator'",
+                    reverse_sql="COMMENT ON COLUMN erc.operation.operator_id IS NULL",
+                ),
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='operation',
+                    name='operator',
+                    field=models.ForeignKey(
+                        db_comment='The operator that owns this operation. Foreign key to erc.operator',
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='operations',
+                        to='registration.operator',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='operation',
@@ -3352,7 +3362,7 @@ class Migration(migrations.Migration):
             name='meets_producing_gger_schedule_a1_regulated_product',
             field=models.BooleanField(
                 blank=True,
-                db_comment='Does this operation produce a regulated product listed in Table 2 of Schedule A.1 of the GGERR (Greenhouse Gas Emission Reporting Regulation)?',
+                db_comment="Does this operation produce a regulated product listed in Table 2 of Schedule A.1 of the GGERR (Greenhouse Gas Emission Reporting Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015)?",
                 null=True,
             ),
         ),
@@ -3589,7 +3599,7 @@ class Migration(migrations.Migration):
             model_name='regulatedproduct',
             name='name',
             field=models.CharField(
-                db_comment="The name of the product as listed in Schedule A.1 of the GHGIRCA (Greenhouse Gas Industrial Reporting and Control Act) (e.g. 'Cement equivalent', 'Mining: coal', 'Sold electricity').",
+                db_comment="The name of the product as listed in Schedule A.1 of the GGIRCA (Greenhouse Gas Industrial Reporting and Control Act https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01) (e.g. 'Cement equivalent', 'Mining: coal', 'Sold electricity').",
                 max_length=1000,
             ),
         ),
@@ -4015,15 +4025,25 @@ class Migration(migrations.Migration):
                 to='registration.user',
             ),
         ),
-        migrations.AlterField(
-            model_name='useroperator',
-            name='operator',
-            field=models.ForeignKey(
-                db_comment='The operator this user is requesting or has access to. Foreign key to erc.operator',
-                on_delete=django.db.models.deletion.DO_NOTHING,
-                related_name='user_operators',
-                to='registration.operator',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.user_operator.operator_id IS 'The operator this user is requesting or has access to. Foreign key to erc.operator'",
+                    reverse_sql="COMMENT ON COLUMN erc.user_operator.operator_id IS NULL",
+                ),
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='useroperator',
+                    name='operator',
+                    field=models.ForeignKey(
+                        db_comment='The operator this user is requesting or has access to. Foreign key to erc.operator',
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name='user_operators',
+                        to='registration.operator',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='useroperator',
@@ -4044,15 +4064,25 @@ class Migration(migrations.Migration):
                 to='registration.user',
             ),
         ),
-        migrations.AlterField(
-            model_name='useroperator',
-            name='user',
-            field=models.ForeignKey(
-                db_comment='The user requesting or having access to this operator. Foreign key to erc.user',
-                on_delete=django.db.models.deletion.DO_NOTHING,
-                related_name='user_operators',
-                to='registration.user',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.user_operator.user_id IS 'The user requesting or having access to this operator. Foreign key to erc.user'",
+                    reverse_sql="COMMENT ON COLUMN erc.user_operator.user_id IS NULL",
+                ),
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='useroperator',
+                    name='user',
+                    field=models.ForeignKey(
+                        db_comment='The user requesting or having access to this operator. Foreign key to erc.user',
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name='user_operators',
+                        to='registration.user',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='useroperator',

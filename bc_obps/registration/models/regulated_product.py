@@ -11,7 +11,7 @@ from registration.models.rls_configs.regulated_product import Rls as RegulatedPr
 class RegulatedProduct(BaseModel):
     name = models.CharField(
         max_length=1000,
-        db_comment="The name of the product as listed in Schedule A.1 of the GHGIRCA (Greenhouse Gas Industrial Reporting and Control Act) (e.g. 'Cement equivalent', 'Mining: coal', 'Sold electricity').",
+        db_comment="The name of the product as listed in Schedule A.1 of the GGIRCA (Greenhouse Gas Industrial Reporting and Control Act https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01) (e.g. 'Cement equivalent', 'Mining: coal', 'Sold electricity').",
     )
     unit = models.CharField(max_length=1000, default="N/A", db_comment="The unit of measure for a regulated product")
     is_regulated = models.BooleanField(db_comment="Indicates if a product is regulated")
