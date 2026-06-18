@@ -8,7 +8,7 @@ from datetime import date
 
 class RegulatedProductDataAccessService:
     @classmethod
-    def get_regulated_products(cls, request_date: date = date.today()) -> QuerySet[RegulatedProduct]:
+    def get_valid_regulated_products(cls, request_date: date = date.today()) -> QuerySet[RegulatedProduct]:
         cached_data: Optional[QuerySet[RegulatedProduct]] = cache.get("regulated_products")
         if cached_data:
             return cached_data

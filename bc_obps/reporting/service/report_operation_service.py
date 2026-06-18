@@ -20,7 +20,7 @@ class ReportOperationService:
         report_operation = cls.get_report_operation_by_version_id(version_id)
         all_activities = ActivityService.get_all_activities()
         reporting_year = ReportingYearService.get_reporting_year_by_version_id(version_id)
-        regulated_products = RegulatedProductDataAccessService.get_regulated_products(
+        regulated_products = RegulatedProductDataAccessService.get_valid_regulated_products(
             date(reporting_year.reporting_year, 1, 1)
         )
         purpose = report_operation["registration_purpose"]
