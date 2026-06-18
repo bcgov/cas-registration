@@ -489,3 +489,191 @@ class TestReportService(TestCase):
             Activity.objects.filter(id__in=[18, 14]),
             ordered=False,
         )
+
+    def test_create_report_for_reporting_year_uses_selected_registration_purpose(self):
+        """
+        Test that creating a report for a reporting year updates the operation's
+        registration purpose and snapshots the selected registration purpose
+        into the created ReportOperation.
+        """
+        operator = operator_baker()
+        operation = operation_baker(
+            operator_id=operator.id,
+            type=Operation.Types.LFO,
+            status=Operation.Statuses.REGISTERED,
+            bc_obps_regulated_operation=bc_obps_regulated_operation_baker(),
+        )
+        make_recipe(
+            "registration.tests.utils.operation_designated_operator_timeline",
+            operator=operator,
+            operation=operation,
+            start_date="2023-01-01",
+            end_date=None,
+        )
+
+        data = mock.Mock()
+        data.operation_id = operation.id
+        data.reporting_year = 2023
+        data.registration_purpose = Operation.Purposes.REPORTING_OPERATION
+
+        with (
+            mock.patch(
+                "service.data_access_service.report_service.ReportDataAccessService.report_exists",
+                return_value=False,
+            ),
+            mock.patch(
+                "service.data_access_service.user_service.UserDataAccessService.get_user_operator_by_user",
+            ) as mock_get_user_operator,
+        ):
+            mock_get_user_operator.return_value.operator_id = operator.id
+            mock_get_user_operator.return_value.operator = operator
+
+            report_version_id = ReportService.create_report_for_reporting_year(
+                user_guid="00000000-0000-0000-0000-000000000000",
+                data=data,
+            )
+
+        report_version = ReportVersion.objects.get(id=report_version_id)
+
+        operation.refresh_from_db()
+
+        self.assertEqual(operation.registration_purpose, Operation.Purposes.REPORTING_OPERATION)
+        self.assertEqual(
+            report_version.report_operation.registration_purpose,
+            Operation.Purposes.REPORTING_OPERATION,
+        )
+
+    def test_create_report_for_reporting_year_fallback_uses_current_operator(self):
+        """
+        Test that when no designated operator timeline exists for the requested
+        reporting year, the fallback path allows report creation only for an
+        operation currently registered to the authenticated user's operator.
+        """
+        operator = operator_baker()
+        operation = operation_baker(
+            operator_id=operator.id,
+            type=Operation.Types.LFO,
+            status=Operation.Statuses.REGISTERED,
+            bc_obps_regulated_operation=bc_obps_regulated_operation_baker(),
+        )
+
+        data = mock.Mock()
+        data.operation_id = operation.id
+        data.reporting_year = 2023
+        data.registration_purpose = Operation.Purposes.REPORTING_OPERATION
+
+        with (
+            mock.patch(
+                "service.data_access_service.report_service.ReportDataAccessService.report_exists",
+                return_value=False,
+            ),
+            mock.patch(
+                "service.report_service.OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year",
+                return_value=None,
+            ),
+            mock.patch(
+                "service.data_access_service.user_service.UserDataAccessService.get_user_operator_by_user",
+            ) as mock_get_user_operator,
+        ):
+            mock_get_user_operator.return_value.operator_id = operator.id
+            mock_get_user_operator.return_value.operator = operator
+
+            report_version_id = ReportService.create_report_for_reporting_year(
+                user_guid="00000000-0000-0000-0000-000000000000",
+                data=data,
+            )
+
+        report_version = ReportVersion.objects.get(id=report_version_id)
+
+        self.assertEqual(report_version.report.operator_id, operator.id)
+        self.assertEqual(
+            report_version.report_operation.registration_purpose,
+            Operation.Purposes.REPORTING_OPERATION,
+        )
+
+    def test_create_report_for_reporting_year_fallback_rejects_wrong_current_operator(self):
+        """
+        Test that when no designated operator timeline exists, the fallback path
+        rejects report creation if the operation is not currently registered to
+        the authenticated user's operator.
+        """
+        operation_operator = operator_baker()
+        user_operator = operator_baker()
+
+        operation = operation_baker(
+            operator_id=operation_operator.id,
+            type=Operation.Types.LFO,
+            status=Operation.Statuses.REGISTERED,
+            bc_obps_regulated_operation=bc_obps_regulated_operation_baker(),
+        )
+        reporting_year, _ = ReportingYear.objects.get_or_create(reporting_year=2023)
+
+        data = mock.Mock()
+        data.operation_id = operation.id
+        data.reporting_year = reporting_year.reporting_year
+        data.registration_purpose = Operation.Purposes.REPORTING_OPERATION
+
+        with (
+            mock.patch(
+                "service.report_service.OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year",
+                return_value=None,
+            ),
+            mock.patch(
+                "service.data_access_service.user_service.UserDataAccessService.get_user_operator_by_user",
+            ) as mock_get_user_operator,
+        ):
+            mock_get_user_operator.return_value.operator_id = user_operator.id
+            mock_get_user_operator.return_value.operator = user_operator
+
+            with self.assertRaises(Exception) as exception_context:
+                ReportService.create_report_for_reporting_year(
+                    user_guid="00000000-0000-0000-0000-000000000000",
+                    data=data,
+                )
+
+        self.assertEqual(
+            str(exception_context.exception),
+            "You are not authorized to create a report for this operation and reporting year.",
+        )
+
+    def test_create_report_for_reporting_year_fallback_rejects_unregistered_operation(self):
+        """
+        Test that when no designated operator timeline exists, the fallback path
+        rejects report creation if the operation is not currently registered.
+        """
+        operator = operator_baker()
+        operation = operation_baker(
+            operator_id=operator.id,
+            type=Operation.Types.LFO,
+            status=Operation.Statuses.DRAFT,
+            registration_purpose=Operation.Purposes.REPORTING_OPERATION,
+        )
+        reporting_year, _ = ReportingYear.objects.get_or_create(reporting_year=2023)
+
+        data = mock.Mock()
+        data.operation_id = operation.id
+        data.reporting_year = reporting_year.reporting_year
+        data.registration_purpose = Operation.Purposes.REPORTING_OPERATION
+
+        with (
+            mock.patch(
+                "service.report_service.OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year",
+                return_value=None,
+            ),
+            mock.patch(
+                "service.data_access_service.user_service.UserDataAccessService.get_user_operator_by_user",
+            ) as mock_get_user_operator,
+        ):
+            mock_get_user_operator.return_value.operator_id = operator.id
+            mock_get_user_operator.return_value.operator = operator
+
+            with self.assertRaises(Exception) as exception_context:
+                ReportService.create_report_for_reporting_year(
+                    user_guid="00000000-0000-0000-0000-000000000000",
+                    data=data,
+                )
+
+        self.assertEqual(
+            str(exception_context.exception),
+            "Only currently registered operations can be used to create a report for this reporting year.",
+        )

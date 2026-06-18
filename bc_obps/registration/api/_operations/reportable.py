@@ -17,7 +17,7 @@ from registration.constants import OPERATION_TAGS
     tags=OPERATION_TAGS,
     auth=authorize("approved_industry_user"),
     description="""
-    Returns the reporting year/operation combinations for which the current user is eligible to create a report
+    Returns the previous reporting year/operation combinations for which the current user is eligible to create a report
     """,
 )
 def list_previous_reportable_operations(
