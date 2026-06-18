@@ -562,7 +562,7 @@ class TestBCCarbonRegistryAPIClient:
             "unitType": "BCO",
             "className": "BCO",
         }
-        bco_response = Mock(
+        offset_response = Mock(
             status_code=200,
             json=lambda: {
                 "totalEntities": 1,
@@ -573,7 +573,7 @@ class TestBCCarbonRegistryAPIClient:
                 "entities": [{**base_entity, "unitType": "BCO", "className": "BCO"}],
             },
         )
-        bce_response = Mock(
+        earned_credit_response = Mock(
             status_code=200,
             json=lambda: {
                 "totalEntities": 1,
@@ -584,7 +584,7 @@ class TestBCCarbonRegistryAPIClient:
                 "entities": [{**base_entity, "unitType": "BCE", "className": "BCE"}],
             },
         )
-        mock_request.side_effect = [bco_response, bce_response]
+        mock_request.side_effect = [offset_response, earned_credit_response]
         # Act
         result = client.list_all_units(account_id="123", vintage_year=2022, limit=10, start=0)
         # Assert
@@ -609,25 +609,29 @@ class TestBCCarbonRegistryAPIClient:
             ]
         )
         # Verify BCO request: unitType=BCO, vintage>=2019 (2022-3), accountId, REGULATED_OPERATION, ACTIVE
-        bco_payload = mock_request.call_args_list[0].kwargs.get("json") or mock_request.call_args_list[0][1].get("json")
-        bco_filter = bco_payload["searchFilter"]["filterModel"]
-        assert "accountId" in bco_filter
-        assert "subAccountId" not in bco_filter
-        assert bco_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "REGULATED_OPERATION"
-        assert bco_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE"
-        assert bco_filter["stateCode"]["columnFilters"][0]["type"] == "equals"
-        assert bco_filter["unitType"]["columnFilters"][0]["filter"] == "BCO"
-        assert bco_filter["vintage"]["columnFilters"][0]["filter"] == 2019
-        assert bco_filter["vintage"]["columnFilters"][0]["type"] == "greaterThanOrEqual"
+        offset_payload = mock_request.call_args_list[0].kwargs.get("json") or mock_request.call_args_list[0][1].get(
+            "json"
+        )
+        offset_filter = offset_payload["searchFilter"]["filterModel"]
+        assert "accountId" in offset_filter
+        assert "subAccountId" not in offset_filter
+        assert offset_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "REGULATED_OPERATION"
+        assert offset_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE"
+        assert offset_filter["stateCode"]["columnFilters"][0]["type"] == "equals"
+        assert offset_filter["unitType"]["columnFilters"][0]["filter"] == "BCO"
+        assert offset_filter["vintage"]["columnFilters"][0]["filter"] == 2019
+        assert offset_filter["vintage"]["columnFilters"][0]["type"] == "greaterThanOrEqual"
         # Verify BCE request: unitType=BCE, no vintage filter, same account/state filters
-        bce_payload = mock_request.call_args_list[1].kwargs.get("json") or mock_request.call_args_list[1][1].get("json")
-        bce_filter = bce_payload["searchFilter"]["filterModel"]
-        assert "accountId" in bce_filter
-        assert "subAccountId" not in bce_filter
-        assert bce_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "REGULATED_OPERATION"
-        assert bce_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE"
-        assert bce_filter["unitType"]["columnFilters"][0]["filter"] == "BCE"
-        assert "vintage" not in bce_filter
+        earned_credit_payload = mock_request.call_args_list[1].kwargs.get("json") or mock_request.call_args_list[1][
+            1
+        ].get("json")
+        earned_credit_filter = earned_credit_payload["searchFilter"]["filterModel"]
+        assert "accountId" in earned_credit_filter
+        assert "subAccountId" not in earned_credit_filter
+        assert earned_credit_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "REGULATED_OPERATION"
+        assert earned_credit_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE"
+        assert earned_credit_filter["unitType"]["columnFilters"][0]["filter"] == "BCE"
+        assert "vintage" not in earned_credit_filter
 
     def test_list_all_units_sub_account_success(self, authenticated_client):
         # Arrange
@@ -646,7 +650,7 @@ class TestBCCarbonRegistryAPIClient:
             "unitType": "BCO",
             "className": "BCO",
         }
-        bco_response = Mock(
+        offset_response = Mock(
             status_code=200,
             json=lambda: {
                 "totalEntities": 1,
@@ -657,7 +661,7 @@ class TestBCCarbonRegistryAPIClient:
                 "entities": [{**base_entity, "unitType": "BCO", "className": "BCO"}],
             },
         )
-        bce_response = Mock(
+        earned_credit_response = Mock(
             status_code=200,
             json=lambda: {
                 "totalEntities": 1,
@@ -668,7 +672,7 @@ class TestBCCarbonRegistryAPIClient:
                 "entities": [{**base_entity, "unitType": "BCE", "className": "BCE"}],
             },
         )
-        mock_request.side_effect = [bco_response, bce_response]
+        mock_request.side_effect = [offset_response, earned_credit_response]
         # Act
         result = client.list_all_units(
             account_id="456", vintage_year=2022, limit=10, start=0, account_type="sub_account"
@@ -679,25 +683,29 @@ class TestBCCarbonRegistryAPIClient:
         assert len(result["entities"]) == 2
         assert mock_request.call_count == 2
         # Verify BCO request: subAccountId, COMPLIANCE_SUB_ACCOUNT, ACTIVE,RETIRED, vintage filter, unitType=BCO
-        bco_payload = mock_request.call_args_list[0].kwargs.get("json") or mock_request.call_args_list[0][1].get("json")
-        bco_filter = bco_payload["searchFilter"]["filterModel"]
-        assert "subAccountId" in bco_filter
-        assert "accountId" not in bco_filter
-        assert bco_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "COMPLIANCE_SUB_ACCOUNT"
-        assert bco_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE,RETIRED"
-        assert bco_filter["stateCode"]["columnFilters"][0]["type"] == "in"
-        assert bco_filter["unitType"]["columnFilters"][0]["filter"] == "BCO"
-        assert "vintage" in bco_filter
+        offset_payload = mock_request.call_args_list[0].kwargs.get("json") or mock_request.call_args_list[0][1].get(
+            "json"
+        )
+        offset_filter = offset_payload["searchFilter"]["filterModel"]
+        assert "subAccountId" in offset_filter
+        assert "accountId" not in offset_filter
+        assert offset_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "COMPLIANCE_SUB_ACCOUNT"
+        assert offset_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE,RETIRED"
+        assert offset_filter["stateCode"]["columnFilters"][0]["type"] == "in"
+        assert offset_filter["unitType"]["columnFilters"][0]["filter"] == "BCO"
+        assert "vintage" in offset_filter
         # Verify BCE request: subAccountId, COMPLIANCE_SUB_ACCOUNT, ACTIVE,RETIRED, no vintage filter, unitType=BCE
-        bce_payload = mock_request.call_args_list[1].kwargs.get("json") or mock_request.call_args_list[1][1].get("json")
-        bce_filter = bce_payload["searchFilter"]["filterModel"]
-        assert "subAccountId" in bce_filter
-        assert "accountId" not in bce_filter
-        assert bce_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "COMPLIANCE_SUB_ACCOUNT"
-        assert bce_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE,RETIRED"
-        assert bce_filter["stateCode"]["columnFilters"][0]["type"] == "in"
-        assert bce_filter["unitType"]["columnFilters"][0]["filter"] == "BCE"
-        assert "vintage" not in bce_filter
+        earned_credit_payload = mock_request.call_args_list[1].kwargs.get("json") or mock_request.call_args_list[1][
+            1
+        ].get("json")
+        earned_credit_filter = earned_credit_payload["searchFilter"]["filterModel"]
+        assert "subAccountId" in earned_credit_filter
+        assert "accountId" not in earned_credit_filter
+        assert earned_credit_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "COMPLIANCE_SUB_ACCOUNT"
+        assert earned_credit_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE,RETIRED"
+        assert earned_credit_filter["stateCode"]["columnFilters"][0]["type"] == "in"
+        assert earned_credit_filter["unitType"]["columnFilters"][0]["filter"] == "BCE"
+        assert "vintage" not in earned_credit_filter
 
     def test_list_all_units_invalid_params(self, setup, caplog):
         # Arrange

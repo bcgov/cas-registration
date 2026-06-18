@@ -305,14 +305,16 @@ class BCCarbonRegistryAPIClient:
         }
 
         # BCO (offsets): filter by vintage. BCE (earned credits): fetch all vintages.
-        bco_filter = FilterModel(**filter_model.model_dump(exclude_none=True))
-        bco_filter.unitType = {"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="BCO")]}
-        bco_filter.vintage = {
+        offset_filter = FilterModel(**filter_model.model_dump(exclude_none=True))
+        offset_filter.unitType = {"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="BCO")]}
+        offset_filter.vintage = {
             "columnFilters": [ColumnFilter(filterType="Number", type="greaterThanOrEqual", filter=vintage_year - 3)]
         }
 
-        bce_filter = FilterModel(**filter_model.model_dump(exclude_none=True))
-        bce_filter.unitType = {"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="BCE")]}
+        earned_credit_filter = FilterModel(**filter_model.model_dump(exclude_none=True))
+        earned_credit_filter.unitType = {
+            "columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="BCE")]
+        }
 
         def _fetch(f: FilterModel) -> Dict:
             return self._make_request(
@@ -324,13 +326,15 @@ class BCCarbonRegistryAPIClient:
                 response_model=UnitDetailsResponse,
             )
 
-        bco_result = _fetch(bco_filter)
-        bce_result = _fetch(bce_filter)
+        offset_result = _fetch(offset_filter)
+        earned_credit_result = _fetch(earned_credit_filter)
 
-        merged = bco_result.copy()
-        merged["entities"] = bco_result.get("entities", []) + bce_result.get("entities", [])
-        merged["totalEntities"] = bco_result.get("totalEntities", 0) + bce_result.get("totalEntities", 0)
-        merged["numberOfElements"] = bco_result.get("numberOfElements", 0) + bce_result.get("numberOfElements", 0)
+        merged = offset_result.copy()
+        merged["entities"] = offset_result.get("entities", []) + earned_credit_result.get("entities", [])
+        merged["totalEntities"] = offset_result.get("totalEntities", 0) + earned_credit_result.get("totalEntities", 0)
+        merged["numberOfElements"] = offset_result.get("numberOfElements", 0) + earned_credit_result.get(
+            "numberOfElements", 0
+        )
         return merged
 
     def get_project_details(self, project_id: Union[str, int]) -> Dict:
