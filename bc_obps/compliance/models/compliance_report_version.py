@@ -21,25 +21,25 @@ class ComplianceReportVersion(TimeStampedModel):
         ComplianceReport,
         on_delete=models.CASCADE,
         related_name="compliance_report_versions",
-        db_comment="The parent compliance report object that this compliance report version belongs to",
+        db_comment="The parent compliance report object that this compliance report version belongs to. Foreign key to erc.compliance_report",
     )
 
     report_compliance_summary = models.OneToOneField(
         ReportComplianceSummary,
         on_delete=models.CASCADE,
         related_name="compliance_report_version",
-        db_comment="The compliance summary data from the reporting module that this compliance report version relates to",
+        db_comment="The compliance summary record generated from the emissions report data that this compliance report version relates to. Foreign key to erc.report_compliance_summary",
     )
 
     excess_emissions_delta_from_previous = models.DecimalField(
-        db_comment="The delta of the excess emissions reported in the compliance_summary for this version and the previous one",
+        db_comment="The delta of the excess emissions reported in the compliance_summary between this version and the previous one",
         decimal_places=4,
         max_digits=20,
         default=0.0000,
     )
 
     credited_emissions_delta_from_previous = models.DecimalField(
-        db_comment="The delta of the credited emissions reported in the compliance_summary for this version and the previous one",
+        db_comment="The delta of the credited emissions reported in the compliance_summary between this version and the previous one",
         decimal_places=4,
         max_digits=20,
         default=0.0000,
@@ -53,7 +53,7 @@ class ComplianceReportVersion(TimeStampedModel):
 
     is_supplementary = models.BooleanField(
         default=False,
-        db_comment="Boolean value identifies whether this record is the result of a supplementary emissions report version",
+        db_comment="Boolean value identifies whether or not this record is the result of a supplementary emissions report version",
     )
 
     previous_version = models.ForeignKey(
@@ -62,7 +62,7 @@ class ComplianceReportVersion(TimeStampedModel):
         null=True,
         blank=True,
         related_name="subsequent_versions",
-        db_comment="Reference to the previous version of this compliance report version.",
+        db_comment="Reference to the previous version of this compliance report version if there is one. Foreign key to erc.compliance_report_version",
     )
 
     class Meta(TimeStampedModel.Meta):
