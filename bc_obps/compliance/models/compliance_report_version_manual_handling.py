@@ -95,7 +95,7 @@ class ComplianceReportVersionManualHandling(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
         db_table = 'erc"."compliance_report_version_manual_handling'
-        db_table_comment = "Tracks analyst and director manual handling resolution for compliance report versions"
+        db_table_comment = "Tracks analyst and director manual handling resolution for compliance report versions. Some compliance report versions will require manual intervention outside of BCIERS to be resolved (ie: directly in eLicensing or the BC Carbon Registry)"
         triggers = [
             *TimeStampedModel.Meta.triggers,
             # Auto-populate analyst_submitted_date / analyst_submitted_by when analyst_comment changes

@@ -28,7 +28,7 @@ class ComplianceReportVersion(TimeStampedModel):
         ReportComplianceSummary,
         on_delete=models.CASCADE,
         related_name="compliance_report_version",
-        db_comment="The compliance summary data from the reporting module that this compliance report version relates to. Foreign key to reporting.report_compliance_summary",
+        db_comment="The compliance summary record generated from the emissions report data that this compliance report version relates to. Foreign key to erc.report_compliance_summary",
     )
 
     excess_emissions_delta_from_previous = models.DecimalField(

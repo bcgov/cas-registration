@@ -53,7 +53,7 @@ class ComplianceObligation(TimeStampedModel):
         decimal_places=2,
         null=True,
         blank=True,
-        db_comment="The fee amount obligated to be paid in CAD dollars",
+        db_comment="The fee amount in CAD dollars. This value is calculated by multiplying the amount of tCO2e by the charge rate per tonne for the reporting year. https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01",
     )
 
     fee_date = models.DateField(null=True, blank=True, db_comment="The date the fee was created")

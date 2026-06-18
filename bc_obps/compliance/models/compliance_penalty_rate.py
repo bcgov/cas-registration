@@ -19,7 +19,7 @@ class CompliancePenaltyRate(TimeStampedModel):
     rate = models.DecimalField(
         max_digits=6,
         decimal_places=6,
-        db_comment="The compliance penalty rate applied daily if an obligation is not paid on time",
+        db_comment="The compliance penalty rate applied daily if an obligation is not paid on time. The rate is defined by Greenhouse Gas Emission Administrative Penalties and Appeals Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/248_2015",
     )
 
     is_current_rate = models.BooleanField(

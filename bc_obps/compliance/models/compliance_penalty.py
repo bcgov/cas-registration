@@ -43,7 +43,7 @@ class CompliancePenalty(TimeStampedModel):
     accrual_final_date = models.DateField(
         null=True,
         blank=True,
-        db_comment="The date on which the penalty stopped accruing (typically the payment date or when obligation is paid to $0)",
+        db_comment="The date on which the penalty stopped accruing (typically the payment received date when obligation is paid to $0)",
     )
 
     accrual_frequency = models.CharField(

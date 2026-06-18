@@ -21,7 +21,9 @@ class CompliancePeriod(TimeStampedModel):
     start_date = models.DateField(blank=False, null=False, db_comment="Start date of the compliance period, UTC-based")
     end_date = models.DateField(blank=False, null=False, db_comment="End date of the compliance period, UTC-based")
     compliance_deadline = models.DateField(
-        blank=False, null=False, db_comment="Deadline date for compliance submissions, UTC-based"
+        blank=False,
+        null=False,
+        db_comment="Deadline date for compliance obligations to be paid before the obligation is considered late and begins accruing a penalty, UTC-based",
     )
     invoice_generation_date = models.DateField(
         db_comment="Date on which invoices for this compliance period should be generated"
@@ -29,7 +31,7 @@ class CompliancePeriod(TimeStampedModel):
     max_credit_usage_percentage = models.DecimalField(
         max_digits=4,
         decimal_places=2,
-        db_comment="Maximum percentage of the compliance obligation that can be met using compliance units (e.g. 0.50 = 50 percent)",
+        db_comment="Maximum percentage of the compliance obligation that can be met using compliance units (e.g. 0.50 = 50 percent). This maximum percentage is defined by GGERR https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015",
     )
 
     reporting_year = models.ForeignKey(

@@ -30,7 +30,7 @@ class ElicensingAdjustment(TimeStampedModel):
     supplementary_compliance_report_version = models.ForeignKey(
         ComplianceReportVersion,
         on_delete=models.CASCADE,
-        db_comment="The supplementary compliance report version that triggered this adjustment. When a supplementary report reduces excess emissions, an adjustment is created and applied to the existing invoice from the original compliance report version, but this field tracks which supplementary version caused the adjustment. Foreign key to erc.compliance_report_version",
+        db_comment="The supplementary compliance report version that triggered this adjustment. When a supplementary report reduces excess emissions, an adjustment is created and applied to the existing invoice from the original compliance report version. This field tracks which supplementary version caused the adjustment. Foreign key to erc.compliance_report_version",
         related_name="elicensing_adjustments",
         null=True,
         blank=True,

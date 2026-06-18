@@ -73,14 +73,14 @@ class ComplianceEarnedCredit(TimeStampedModel):
         blank=True,
         null=True,
         related_name="compliance_earned_credits_analyst_submitted_by",
-        db_comment="The compliance analyst who provided the suggestion",
+        db_comment="The compliance analyst who provided the suggestion. References erc.user",
     )
 
     bccr_holding_account_id = models.CharField(
         max_length=15,
         blank=True,
         null=True,
-        db_comment="The ID of the account holder in the BC Carbon Registry",
+        db_comment="The ID of the holding account in the BC Carbon Registry. This identifier determines the account to which earned credits will be issued in the registry",
     )
 
     bccr_trading_name = models.CharField(
@@ -114,13 +114,13 @@ class ComplianceEarnedCredit(TimeStampedModel):
     analyst_comment = models.TextField(
         blank=True,
         null=True,
-        db_comment="Comments from an analyst. Made when deciding whether or not to recommend issuance from the director under the GGIRCA (Greenhouse Gas Industrial Reporting and Control Act)",
+        db_comment="Comments from an analyst. Made when deciding whether or not to recommend issuance of the earned credits from the director.",
     )
 
     director_comment = models.TextField(
         blank=True,
         null=True,
-        db_comment="Comments from the director under the GGIRCA (Greenhouse Gas Industrial Reporting and Control Act). Made when deciding whether or not to issue the credits",
+        db_comment="Comments from the director. Made when deciding whether or not to issue the earned credits",
     )
 
     issuance_requested_date = models.DateField(
