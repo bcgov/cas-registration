@@ -7,9 +7,9 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0049_V5_13_1'),
-        ('registration', '0182_update_document_metadata'),
-        ('reporting', '0197_update_reportattachment_metadata'),
+        ('compliance', '0050_V5_14_0'),
+        ('registration', '0183_V5_14_0'),
+        ('reporting', '0198_V5_14_0'),
     ]
 
     operations = [
