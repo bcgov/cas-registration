@@ -1,4 +1,5 @@
 import { UUID } from "crypto";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 export interface FacilityRow {
   id: UUID;
@@ -14,6 +15,28 @@ export interface FacilityRow {
 export interface FacilityInitialData {
   rows: FacilityRow[];
   row_count: number;
+}
+
+export interface FacilityFormData {
+  [key: string]: unknown;
+  id?: string;
+  name?: string;
+  type?: string;
+  is_current_year?: boolean;
+  starting_date?: string;
+  bcghg_id?: string;
+  street_address?: string;
+  municipality?: string;
+  province?: string;
+  postal_code?: string;
+  latitude_of_largest_emissions?: number;
+  longitude_of_largest_emissions?: number;
+  well_authorization_numbers?: string[];
+}
+
+export interface Operation {
+  name: string;
+  type: OperationTypes;
 }
 
 export interface FacilitiesSearchParams {

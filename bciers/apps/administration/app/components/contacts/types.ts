@@ -21,6 +21,7 @@ export interface ContactsSearchParams {
 }
 
 export interface ContactFormData {
+  [key: string]: unknown;
   id?: number;
   selected_user?: UUID;
   first_name?: string;
