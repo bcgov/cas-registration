@@ -138,13 +138,13 @@ export const operationInformationUISchema: UiSchema = {
     "ui:placeholder": "Select Tertiary NAICS code",
   },
   process_flow_diagram: {
-    "ui:widget": "NewFileWidget",
+    "ui:widget": "FileWidget",
     "ui:options": {
       filePreview: true,
     },
   },
   boundary_map: {
-    "ui:widget": "NewFileWidget",
+    "ui:widget": "FileWidget",
     "ui:options": {
       filePreview: true,
     },

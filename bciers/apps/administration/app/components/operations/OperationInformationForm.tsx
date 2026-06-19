@@ -26,7 +26,7 @@ import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import ConfirmChangeOfFieldModal from "@/registration/app/components/operations/registration/ConfirmChangeOfFieldModal";
-import { useFileUploadWidget } from "@bciers/components/form/widgets/NewFileWidget";
+import { useFileUploadWidget } from "@bciers/components/form/widgets/FileWidget";
 
 const OperationInformationForm = ({
   formData,

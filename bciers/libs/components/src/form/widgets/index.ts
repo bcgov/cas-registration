@@ -5,7 +5,6 @@ export { default as ComboBox } from "./ComboBox";
 export { default as DateWidget } from "./DateWidget";
 export { default as EmailWidget } from "./EmailWidget";
 export { default as FileWidget } from "./FileWidget";
-export { default as NewFileWidget } from "./NewFileWidget";
 export { default as RegulatedProductMultiSelectWidget } from "./RegulatedProductMultiSelectWidget";
 export { default as MultiSelectWidgetWithTooltip } from "./MultiSelectWidgetWithTooltip";
 export { default as OperatorSearchWidget } from "./OperatorSearchWidget";
