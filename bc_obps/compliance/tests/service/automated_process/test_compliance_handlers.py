@@ -218,6 +218,7 @@ class TestObligationPaidHandler:
             "compliance.tests.utils.elicensing_invoice",
             compliance_obligation=self.obligation,
             outstanding_balance=Decimal("0.00"),
+            invoice_fee_balance=Decimal("0.00"),
             due_date=timezone.now().date() - timedelta(days=1),  # Past due
         )
         compliance_period = self.compliance_report_version.compliance_report.compliance_period
@@ -248,12 +249,24 @@ class TestObligationPaidHandler:
         result = self.handler.can_handle(self.invoice)
         assert result is False
 
-    def test_can_not_handle_with_outstanding_balance(self):
+    def test_can_not_handle_with_fee_balance_outstanding(self):
+        self.invoice.invoice_fee_balance = Decimal("100.00")
         self.invoice.outstanding_balance = Decimal("100.00")
         self.invoice.save()
 
         result = self.handler.can_handle(self.invoice)
         assert result is False
+
+    def test_can_handle_when_only_faa_interest_is_outstanding(self):
+        # The fee (tCO2e obligation) is fully paid but FAA interest is still owing.
+        # Unpaid interest must not block the obligation from being considered met
+        self.invoice.invoice_fee_balance = Decimal("0.00")
+        self.invoice.invoice_interest_balance = Decimal("50.00")
+        self.invoice.outstanding_balance = Decimal("50.00")
+        self.invoice.save()
+
+        result = self.handler.can_handle(self.invoice)
+        assert result is True
 
     def test_can_not_handle_with_penalty_invoice(self):
         baker.make_recipe(
@@ -487,6 +500,7 @@ class TestComplianceHandlerManager:
             "compliance.tests.utils.elicensing_invoice",
             compliance_obligation=self.obligation,
             outstanding_balance=Decimal("0.00"),
+            invoice_fee_balance=Decimal("0.00"),
             due_date=timezone.now().date() - timedelta(days=1),  # Overdue
         )
         compliance_period = invoice.compliance_obligation.compliance_report_version.compliance_report.compliance_period
