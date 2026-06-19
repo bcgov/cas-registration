@@ -303,22 +303,39 @@ class BCCarbonRegistryAPIClient:
         filter_model.stateCode = {
             "columnFilters": [ColumnFilter(filterType="Text", type=filter_type, filter=state_filter)]
         }
-        filter_model.vintage = {
+
+        # BCO (offsets): filter by vintage. BCE (earned credits): fetch all vintages.
+        offset_filter = FilterModel(**filter_model.model_dump(exclude_none=True))
+        offset_filter.unitType = {"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="BCO")]}
+        offset_filter.vintage = {
             "columnFilters": [ColumnFilter(filterType="Number", type="greaterThanOrEqual", filter=vintage_year - 3)]
         }
 
-        payload = SearchFilterWrapper(
-            searchFilter=SearchFilter(
-                pagination=Pagination(start=start, limit=limit),
-                filterModel=filter_model,
+        earned_credit_filter = FilterModel(**filter_model.model_dump(exclude_none=True))
+        earned_credit_filter.unitType = {
+            "columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="BCE")]
+        }
+
+        def _fetch(f: FilterModel) -> Dict:
+            return self._make_request(
+                "POST",
+                self.UNIT_SEARCH_ENDPOINT,
+                data=SearchFilterWrapper(
+                    searchFilter=SearchFilter(pagination=Pagination(start=start, limit=limit), filterModel=f)
+                ),
+                response_model=UnitDetailsResponse,
             )
+
+        offset_result = _fetch(offset_filter)
+        earned_credit_result = _fetch(earned_credit_filter)
+
+        merged = offset_result.copy()
+        merged["entities"] = offset_result.get("entities", []) + earned_credit_result.get("entities", [])
+        merged["totalEntities"] = offset_result.get("totalEntities", 0) + earned_credit_result.get("totalEntities", 0)
+        merged["numberOfElements"] = offset_result.get("numberOfElements", 0) + earned_credit_result.get(
+            "numberOfElements", 0
         )
-        return self._make_request(
-            "POST",
-            self.UNIT_SEARCH_ENDPOINT,
-            data=payload,
-            response_model=UnitDetailsResponse,
-        )
+        return merged
 
     def get_project_details(self, project_id: Union[str, int]) -> Dict:
         if isinstance(project_id, str) and not project_id.isdigit():
