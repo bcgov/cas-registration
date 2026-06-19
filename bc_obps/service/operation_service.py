@@ -6,6 +6,7 @@ from common.exceptions import UserError
 from registration.emails import send_registration_and_boro_id_email
 from registration.enums.enums import EmailTemplateNames
 from registration.models.facility import Facility
+from registration.models.regulated_product import RegulatedProduct
 from registration.signals.signals import operation_registration_purpose_changed
 from registration.utils import is_document_scan_complete
 from service.contact_service import ContactService
@@ -13,6 +14,7 @@ from service.data_access_service.document_service import DocumentDataAccessServi
 from service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
+from service.reporting_year_service import ReportingYearService
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.document_type import DocumentType
@@ -749,3 +751,16 @@ class OperationService:
             payload.regulated_products = []
 
         return payload
+
+    @classmethod
+    def get_valid_operation_regulated_products(
+        cls, operation: Operation, reporting_year: int
+    ) -> QuerySet[RegulatedProduct]:
+        """
+        Get the regulated products that are valid for the operation, based on the operation's type and activities.
+        This is used to validate that the operation's selected regulated products are valid when registering or updating an operation.
+        """
+        reporting_year_date = ReportingYearService.get_date_for_reporting_year(reporting_year)
+        return operation.regulated_products.filter(
+            valid_from__lte=reporting_year_date, valid_to__gte=reporting_year_date
+        )

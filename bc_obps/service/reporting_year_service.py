@@ -1,3 +1,4 @@
+from datetime import date
 from django.db.models import QuerySet
 from django.utils import timezone
 from reporting.models.report import Report
@@ -43,3 +44,7 @@ class ReportingYearService:
     def get_reporting_year_by_version_id(cls, version_id: int) -> ReportingYear:
         report_version = ReportVersion.objects.get(id=version_id)
         return report_version.report.reporting_year
+
+    @classmethod
+    def get_date_for_reporting_year(cls, reporting_year: int) -> date:
+        return date(reporting_year, 5, 1)
