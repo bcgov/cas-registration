@@ -3,6 +3,7 @@ from uuid import UUID
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from typing import List, Optional
 from registration.models.contact import Contact
+from registration.models.document import Document
 from registration.schema import OperatorForOperationOut, MultipleOperatorIn, MultipleOperatorOut
 from ninja import Field, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
@@ -135,9 +136,16 @@ class OptedOutOperationDetailIn(Schema):
 
 
 @dataclass
-class TestDataClass:
-    test: str
-    test2: int
+class DocumentOut(ModelSchema):
+    name: str
+
+    @staticmethod
+    def resolve_name(obj: Document) -> str:
+        return obj.file.name.split('/')[-1]  # type: ignore
+
+    class Meta:
+        model = Document
+        fields = ['id', 'status']
 
 
 class OperationOut(ModelSchema):
@@ -146,15 +154,12 @@ class OperationOut(ModelSchema):
     tertiary_naics_code_id: Optional[int] = Field(None, alias="tertiary_naics_code.id")
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
     operator: Optional[OperatorForOperationOut] = None
-    boundary_map: Optional[str] = None
-    process_flow_diagram: Optional[str] = None
     registration_purpose: Optional[str] = None
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
     opted_in_operation: Optional[OptedInOperationDetailOut] = None
     opted_out_operation: Optional[int] = None
     date_of_first_shipment: Optional[str] = None
-    new_entrant_application: Optional[str] = None
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
     operation_representatives: Optional[List[int]] = []
 
@@ -206,26 +211,21 @@ class OperationOut(ModelSchema):
 
 
 class OperationOutWithDocuments(OperationOut):
-    @staticmethod
-    def resolve_boundary_map(obj: Operation) -> Optional[str]:
-        boundary_map = obj.get_boundary_map()
-        if boundary_map:
-            return boundary_map.file.name  # type: ignore
-        return None
+    boundary_map: Optional[DocumentOut] = None
+    process_flow_diagram: Optional[DocumentOut] = None
+    new_entrant_application: Optional[DocumentOut] = None
 
     @staticmethod
-    def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
-        process_flow_diagram = obj.get_process_flow_diagram()
-        if process_flow_diagram:
-            return process_flow_diagram.file.name  # type: ignore
-        return None
+    def resolve_boundary_map(obj: Operation) -> Optional[Document]:
+        return obj.get_boundary_map()
 
     @staticmethod
-    def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
-        new_entrant_application = obj.get_new_entrant_application()
-        if new_entrant_application:
-            return new_entrant_application.file.name  # type: ignore
-        return None
+    def resolve_process_flow_diagram(obj: Operation) -> Optional[Document]:
+        return obj.get_process_flow_diagram()
+
+    @staticmethod
+    def resolve_new_entrant_application(obj: Operation) -> Optional[Document]:
+        return obj.get_new_entrant_application()
 
 
 class OperationCreateOut(ModelSchema):
