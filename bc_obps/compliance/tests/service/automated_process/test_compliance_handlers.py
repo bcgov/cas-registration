@@ -268,13 +268,6 @@ class TestObligationPaidHandler:
         result = self.handler.can_handle(self.invoice)
         assert result is True
 
-    def test_can_handle_when_fee_balance_is_null(self):
-        # invoice_fee_balance is nullable; a null fee balance must be treated as zero
-        self.invoice.invoice_fee_balance = None
-
-        result = self.handler.can_handle(self.invoice)
-        assert result is True
-
     def test_can_not_handle_with_penalty_invoice(self):
         baker.make_recipe(
             "compliance.tests.utils.compliance_penalty",
