@@ -4,7 +4,8 @@ from django.db.models import QuerySet
 
 from common.permissions import authorize, compose_auth
 from django.http import HttpRequest
-from registration.models import RegulatedProduct
+
+# from registration.models import RegulatedProduct
 from reporting.api.permissions import check_operation_ownership
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
@@ -15,7 +16,8 @@ from service.reporting_year_service import ReportingYearService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
-from ..schema.report_regulated_products import RegulatedProductOut
+
+# from ..schema.report_regulated_products import RegulatedProductOut
 from ..schema.report_version import ReportVersionTypeIn, ReportVersionIn, ReportingVersionOut
 from reporting.api.permissions import (
     approved_industry_user_report_version_composite_auth,
@@ -76,20 +78,6 @@ def get_all_reporting_years(
     request: HttpRequest, exclude_past: Optional[bool] = None
 ) -> Tuple[Literal[200], QuerySet[ReportingYear]]:
     return 200, ReportingYearService.get_all_reporting_years(exclude_past or False)
-
-
-@router.get(
-    "/report-version/{version_id}/report-operation/regulated-products",
-    response={200: List[RegulatedProductOut], custom_codes_4xx: Message},
-    tags=EMISSIONS_REPORT_TAGS,
-    description="""Retrieves all regulated products associated with a report operation identified by its version ID.""",
-    auth=approved_industry_user_report_version_composite_auth,
-)
-def get_regulated_products_by_version_id(
-    request: HttpRequest, version_id: int
-) -> tuple[Literal[200], QuerySet[RegulatedProduct]]:
-    regulated_products = ReportService.get_regulated_products_by_version_id(version_id)
-    return 200, regulated_products
 
 
 @router.get(

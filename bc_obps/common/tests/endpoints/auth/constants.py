@@ -81,11 +81,6 @@ ENDPOINTS = {
             "endpoint_name": "get_report_verification_by_version_id",
             "kwargs": {"version_id": MOCK_INT},
         },
-        {
-            "method": "get",
-            "endpoint_name": "get_regulated_products_by_version_id",
-            "kwargs": {"version_id": MOCK_INT},
-        },
         {"method": "get", "endpoint_name": "get_gas_type"},
         {"method": "get", "endpoint_name": "get_emission_category"},
         {

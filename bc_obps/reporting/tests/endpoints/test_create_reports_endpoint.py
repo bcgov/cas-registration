@@ -149,7 +149,6 @@ class TestReportsEndpoint(CommonTestSetup):
         assert_report_version_ownership_is_validated("get_report_operation_by_version_id")
         assert_report_version_ownership_is_validated("save_report")
         assert_report_version_ownership_is_validated("change_report_version_type", "post")
-        assert_report_version_ownership_is_validated("get_regulated_products_by_version_id")
         assert_report_version_ownership_is_validated("get_report_version")
 
     @patch("service.report_version_service.ReportVersionService.delete_report_version")
