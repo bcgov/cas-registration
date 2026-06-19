@@ -90,6 +90,16 @@ id = "trailing-whitespace"
 exclude = "^bc_obps/.*/__snapshots__/"
 priority = 1
 
+# Renovate config validation
+
+[[repos]]
+repo = "https://github.com/renovatebot/pre-commit-hooks"
+rev = "fdcc0dbc2b0f11c69603e2c433f143591fd9309e"  # 43.227.0
+
+[[repos.hooks]]
+id = "renovate-config-validator"
+priority = 0
+
 # debug-statements has no builtin equivalent yet — keep remote hook
 
 [[repos]]
