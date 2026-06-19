@@ -53,7 +53,7 @@ class TestReportsEndpoint(CommonTestSetup):
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=operation,
             operator=operation.operator,
-            start_date=timezone.datetime(2024, 1, 1).date(),
+            start_date=timezone.make_aware(timezone.datetime(2024, 1, 1)),
             end_date=None,
         )
 
@@ -68,7 +68,7 @@ class TestReportsEndpoint(CommonTestSetup):
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=report.operation,
             operator=report.operation.operator,
-            start_date=timezone.datetime(2022, 1, 1).date(),
+            start_date=timezone.make_aware(timezone.datetime(2022, 1, 1)),
             end_date=None,
         )
 
@@ -94,7 +94,7 @@ class TestReportsEndpoint(CommonTestSetup):
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=operation,
             operator=user_operator.operator,
-            start_date=timezone.datetime(2022, 1, 1).date(),
+            start_date=timezone.make_aware(timezone.datetime(2022, 1, 1)),
             end_date=None,
         )
 

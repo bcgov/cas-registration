@@ -103,8 +103,8 @@ electricity_import_data = Recipe(ReportElectricityImportData, report_version=for
 configuration = Recipe(
     Configuration,
     # We make one config per week
-    valid_from=seq(date(4001, 1, 1), start=date(3001, 1, 1), increment_by=timedelta(days=8)),
-    valid_to=seq(date(4001, 1, 7), start=date(3001, 1, 7), increment_by=timedelta(days=8)),
+    valid_from=seq(date(4001, 1, 1), increment_by=timedelta(days=8)),
+    valid_to=seq(date(4001, 1, 7), increment_by=timedelta(days=8)),
 )
 
 activity = Recipe(Activity)

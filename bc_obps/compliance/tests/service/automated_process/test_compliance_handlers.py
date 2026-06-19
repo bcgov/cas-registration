@@ -330,7 +330,9 @@ class TestObligationPaidHandler:
                 self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
             )
 
-            deadline_datetime = datetime(compliance_deadline.year, compliance_deadline.month, compliance_deadline.day)
+            deadline_datetime = timezone.make_aware(
+                datetime(compliance_deadline.year, compliance_deadline.month, compliance_deadline.day)
+            )
             self.compliance_report_version.is_supplementary = True
             self.obligation.created_at = deadline_datetime + timedelta(days=5)
             self.invoice.due_date = (deadline_datetime + timedelta(days=30)).date()
@@ -359,7 +361,9 @@ class TestObligationPaidHandler:
             deadline_date = (
                 self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
             )
-            deadline_datetime = datetime(deadline_date.year, deadline_date.month, deadline_date.day)
+            deadline_datetime = timezone.make_aware(
+                datetime(deadline_date.year, deadline_date.month, deadline_date.day)
+            )
             self.obligation.created_at = deadline_datetime + timedelta(days=5)
             self.obligation.save()
 
@@ -384,7 +388,9 @@ class TestObligationPaidHandler:
             deadline_date = (
                 self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
             )
-            deadline_datetime = datetime(deadline_date.year, deadline_date.month, deadline_date.day)
+            deadline_datetime = timezone.make_aware(
+                datetime(deadline_date.year, deadline_date.month, deadline_date.day)
+            )
             self.obligation.created_at = deadline_datetime - timedelta(days=5)
             self.obligation.save()
 

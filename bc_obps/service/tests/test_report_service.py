@@ -35,7 +35,7 @@ class TestReportService(TestCase):
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=operator,
             operation=operation,
-            start_date="2023-01-01",
+            start_date="2023-01-01T00:00:00Z",
             end_date=None,
         )
 
@@ -93,7 +93,7 @@ class TestReportService(TestCase):
                 'registration.tests.utils.operation_designated_operator_timeline',
                 operator=operation.operator,
                 operation=operation,
-                start_date="2023-01-01",
+                start_date="2023-01-01T00:00:00Z",
                 end_date=None,
             )
 
@@ -202,14 +202,14 @@ class TestReportService(TestCase):
                 'registration.tests.utils.operation_designated_operator_timeline',
                 operator=operator_old,
                 operation=operation,
-                start_date="2020-01-01",
-                end_date="2025-03-01",
+                start_date="2020-01-01T00:00:00Z",
+                end_date="2025-03-01T00:00:00Z",
             )
             make_recipe(
                 'registration.tests.utils.operation_designated_operator_timeline',
                 operator=operator_new,
                 operation=operation,
-                start_date="2025-03-02",
+                start_date="2025-03-02T00:00:00Z",
                 end_date=None,
             )
             # Create contacts for the old operator because they will be used as operation representatives instead of the operation contacts

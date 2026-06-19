@@ -56,14 +56,14 @@ class TestOperationDesignatedOperatorTimelineService:
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=operation,
             operator=operator1,
-            start_date=timezone.datetime(2024, 6, 1).date(),
-            end_date=timezone.datetime(2025, 5, 31).date(),
+            start_date=timezone.make_aware(timezone.datetime(2024, 6, 1)),
+            end_date=timezone.make_aware(timezone.datetime(2025, 5, 31)),
         )
         timeline2 = baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=operation,
             operator=operator2,
-            start_date=timezone.datetime(2025, 5, 31).date(),
+            start_date=timezone.make_aware(timezone.datetime(2025, 5, 31)),
             end_date=None,
         )
 

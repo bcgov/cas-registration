@@ -156,7 +156,7 @@ class TestReportFacilitiesService(TestCase):
             FacilityDesignatedOperationTimeline,
             operation=self.operation,
             facility=facility,
-            end_date=timezone.now().date(),
+            end_date=timezone.now(),
         )
 
         # Act: Save the facility
@@ -265,7 +265,7 @@ class TestReportFacilitiesService(TestCase):
             FacilityDesignatedOperationTimeline,
             operation=self.operation,
             facility=past_facility,
-            end_date=timezone.now().date(),
+            end_date=timezone.now(),
         )
 
         # Act

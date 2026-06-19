@@ -1,4 +1,5 @@
-from datetime import date
+from datetime import date, datetime
+from django.utils import timezone
 from decimal import Decimal
 from django.test import TestCase
 from model_bakery.baker import make_recipe
@@ -102,8 +103,8 @@ class TestRegulatoryValues(TestCase):
         report_version = make_recipe(
             "reporting.tests.utils.report_version",
             report__reporting_year__reporting_year=2100,
-            report__reporting_year__reporting_window_start=date(2101, 3, 19),
-            report__reporting_year__reporting_window_end=date(2101, 3, 22),
+            report__reporting_year__reporting_window_start=timezone.make_aware(datetime(2101, 3, 19)),
+            report__reporting_year__reporting_window_end=timezone.make_aware(datetime(2101, 3, 22)),
         )
         make_recipe(
             "reporting.tests.utils.report_operation",
@@ -136,8 +137,8 @@ class TestRegulatoryValues(TestCase):
             "registration.tests.utils.operation_designated_operator_timeline",
             operation=operation,
             operator=operation.operator,
-            start_date=date(2023, 1, 1),
-            end_date=date(2030, 1, 1),
+            start_date=timezone.make_aware(datetime(2023, 1, 1)),
+            end_date=timezone.make_aware(datetime(2030, 1, 1)),
         )
         # create new report
         report_version_id = ReportService.create_report(

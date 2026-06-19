@@ -65,21 +65,21 @@ class TestVersionOwnershipFromUrl:
             "registration.tests.utils.operation_designated_operator_timeline",
             operation=operation,
             operator=old_user_operator.operator,
-            start_date="2023-05-01",
-            end_date="2023-12-31",
+            start_date="2023-05-01T00:00:00Z",
+            end_date="2023-12-31T00:00:00Z",
         )
         make_recipe(
             "registration.tests.utils.operation_designated_operator_timeline",
             operation=operation,
             operator=new_user_operator.operator,
-            start_date="2024-01-01",
+            start_date="2024-01-01T00:00:00Z",
             end_date=None,
         )
 
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             report__operator=new_user_operator.operator,
-            compliance_report__created_at='2024-06-15',
+            compliance_report__created_at='2024-06-15T00:00:00Z',
             compliance_report__report__operation=operation,
         )
 
