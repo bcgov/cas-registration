@@ -27,10 +27,12 @@ For Red Hat/CentOS/Fedora:
 sudo dnf install gnupg2
 ```
 
-For macOS (using Homebrew):
+For macOS (recommended): install [GPG Suite](https://gpgtools.org/), which includes **GPG Keychain** — a GUI key manager that integrates with the macOS Keychain so you are not prompted for your passphrase on every commit.
+
+Alternatively, install via Homebrew (no Keychain integration):
 
 ```bash
-brew install gnupg
+brew install gnupg pinentry-mac
 ```
 
 For Windows:
@@ -87,8 +89,8 @@ gpg --full-generate-key
 
 When prompted:
 
-1. Choose key type: Select `9` for "ECC (sign and encrypt)"
-2. Choose curve: Select `1` for "Curve 25519"
+1. Choose key type: Select `1` for "RSA and RSA" (recommended — most compatible, especially on macOS with MacGPG2)
+2. Key size: Enter `4096`
 3. Set expiration: Enter `0` for a key that never expires
 4. Enter your real name and email address (use your GitHub email)
 5. Enter a secure passphrase
@@ -307,20 +309,22 @@ If your organization uses SAML SSO, follow these steps:
 
 ### Test GPG Signing
 
-Make a commit to test GPG signing:
+Make a signed empty commit to test GPG signing without affecting history:
 
 ```bash
-git commit -m "Test signed commit"
+git commit --allow-empty -S -m "test: verify GPG signing"
+git log --show-signature -1
+# Should show "Good signature from ..."
+git reset --hard HEAD~1  # clean up the test commit
 ```
-
-You should be prompted for your GPG passphrase.
 
 ### Test SSH Connection
 
-Push to test SSH authentication:
+Test the SSH connection without pushing any code:
 
 ```bash
-git push --force-with-lease
+ssh -T git@github.com
+# Should respond: "Hi username! You've successfully authenticated..."
 ```
 
 The first time you connect, you'll be asked to verify GitHub's host key fingerprint.
