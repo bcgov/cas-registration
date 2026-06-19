@@ -47,4 +47,9 @@ class ReportingYearService:
 
     @classmethod
     def get_date_for_reporting_year(cls, reporting_year: int) -> date:
+        """
+        Returns a date (May 1st) of the given reporting year.
+        Used to compare against date fields (like valid_from and valid_to)
+        with the expectation that those dates correspond to the start and end of years.
+        """
         return date(reporting_year, 5, 1)
