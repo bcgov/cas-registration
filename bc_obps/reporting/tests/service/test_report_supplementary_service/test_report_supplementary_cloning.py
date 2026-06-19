@@ -36,6 +36,8 @@ from reporting.models import (
     ReportVersion,
 )
 import common.lib.pgtrigger as pgtrigger
+from django.db.models import Q
+from registration.models import Contact
 
 
 class ReportSupplementaryCloningTests(TestCase):
@@ -229,12 +231,17 @@ class ReportSupplementaryCloningTests(TestCase):
 
     def test_clone_report_version_person_responsible(self):
         """
-        Test that clone_report_version_person_responsible correctly clones the ReportPersonResponsible
-        from the old report version to the new report version by copying all relevant fields.
+        Test that clone_report_version_person_responsible correctly clones the
+        ReportPersonResponsible when the referenced contact still exists.
         """
         # PRE-ACT: Verify that a ReportPersonResponsible exists for the old report version and none for the new version.
         self.assertIsNotNone(ReportPersonResponsible.objects.filter(report_version=self.old_report_version).first())
         self.assertIsNone(ReportPersonResponsible.objects.filter(report_version=self.new_report_version).first())
+        # Create an active Contact with the same email
+        make_recipe(
+            "registration.tests.utils.contact",
+            email=self.old_person.email,
+        )
 
         # ACT: Clone the ReportPersonResponsible.
         clone_report_version_person_responsible(self.old_report_version, self.new_report_version)
@@ -252,6 +259,27 @@ class ReportSupplementaryCloningTests(TestCase):
         self.assertEqual(new_person.municipality, self.old_person.municipality)
         self.assertEqual(new_person.province, self.old_person.province)
         self.assertEqual(new_person.postal_code, self.old_person.postal_code)
+
+    def test_clone_report_version_person_responsible_does_not_clone_when_contact_does_not_exist(
+        self,
+    ):
+        """
+        Test that clone_report_version_person_responsible does not clone the
+        ReportPersonResponsible when the referenced contact no longer exists.
+        """
+        # PRE-ACT: Ensure there is no matching active Contact
+        Contact.objects.filter(Q(id=self.old_person.contact_id) | Q(email=self.old_person.email)).delete()
+
+        self.assertIsNone(ReportPersonResponsible.objects.filter(report_version=self.new_report_version).first())
+
+        # ACT
+        clone_report_version_person_responsible(
+            self.old_report_version,
+            self.new_report_version,
+        )
+
+        # ASSERT
+        self.assertIsNone(ReportPersonResponsible.objects.filter(report_version=self.new_report_version).first())
 
     def test_clone_report_version_additional_data(self):
         """
