@@ -757,8 +757,7 @@ class OperationService:
         cls, operation: Operation, reporting_year: int
     ) -> QuerySet[RegulatedProduct]:
         """
-        Get the regulated products that are valid for the operation, based on the operation's type and activities.
-        This is used to validate that the operation's selected regulated products are valid when registering or updating an operation.
+        Get the operation's regulated products that are valid for a specific reporting year.
         """
         reporting_year_date = ReportingYearService.get_date_for_reporting_year(reporting_year)
         return operation.regulated_products.filter(

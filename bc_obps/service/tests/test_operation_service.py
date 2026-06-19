@@ -9,8 +9,9 @@ pytestmark = pytest.mark.django_db
 class TestOperationService(TestCase):
     def test_get_valid_regulated_products_for_operation(self):
         """
-        Test that the get_valid_regulated_products_for_operation method returns only the regulated products that are valid for the operation's reporting year.
+        Test that the get_valid_operation_regulated_products method returns only the regulated products that are valid for the operation's reporting year.
         """
+
         report_year = 2024
         valid_products = baker.make_recipe(
             "reporting.tests.utils.regulated_product",
