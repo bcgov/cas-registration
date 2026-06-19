@@ -10,7 +10,7 @@ import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { SFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
-import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { assertFieldVisibility, takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 import {
   verifyFormTitle,
   verifyReportHeader,
@@ -346,10 +346,6 @@ test.describe("SFO: create and submit a supplementary report for the current rep
     // ── 2. Create a supplementary report for Bangles SFO from the options menu in the grid ──
     const supplementaryVersionId = await grid.createSupplementaryReportById(13);
     const report = new CurrentReportPOM(page);
-    const facilityReport = new SFOFacilityReportPOM(
-      page,
-      FacilityIDs.BANGLES_SFO,
-    );
 
     // ── 3. Review Operation Information — verify fields are pre-populated with the same values as the original report ──
     await verifyReportHeader(page, OPERATION_NAMES.BANGLES_SFO, "Version 2");
@@ -427,24 +423,44 @@ test.describe("SFO: create and submit a supplementary report for the current rep
       component: "SFO Supplementary Report - Emissions Summary",
       variant: "default",
     });
-    await report.saveAndContinue(
+    await report.continue(
       new RegExp(
-        `/facilities/${FacilityIDs.BANGLES_SFO}/${ReportRoutes.PRODUCTION_DATA}`,
+        `/${supplementaryVersionId}/${ReportRoutes.ADDITIONAL_REPORTING_DATA}`,
       ),
     );
 
-    // ── 8. Production Data — verify Cement equivalent is pre-selected, update annual production ──
-    await verifyFormTitle(page, "Production Data");
+    // ── 8. Additional Reporting Data — verify fields are pre-populated with the same values as the original report ──
+    await verifyFormTitle(page, "Additional Reporting Data");
+    await expect(report.page.getByRole("radio", { name: "Yes" })).toBeChecked();
 
-    // ── 9. Allocation of Emissions — verify same methodology is pre-selected, update allocation data based on updated production data ──
+    // Verify Capture type multi-select has the expected values visible (selected)
+    const expectedCaptureTypes = ["On-site use", "On-site sequestration", "Off-site transfer"];
+    await assertFieldVisibility(
+      report.page,
+      expectedCaptureTypes as unknown as string[],
+      true,
+    );
 
-    // ── 10. Additional Reporting Data — verify fields are pre-populated with the same values as the original report ──
+    await report.page.locator("#root_captured_emissions_section_emissions_on_site_use").fill("120"); // change from 100
 
-    // ── 11. Compliance Summary (read-only) — verify values are updated based on changed activity and allocation data ──
+    await report.saveAndContinue(
+      new RegExp(
+        `/${supplementaryVersionId}/${ReportRoutes.REVIEW_CHANGES}`,
+      ),
+    );
 
-    // ── 12. Review Changes - submit reason for change ──
+    // ── 9. Review Changes - submit reason for change ──
+    await verifyFormTitle(page, "Review Changes");
+
+    // TODO: ticket 4462 for e2e of Review Changes feature
+    await report.page.getByRole("textbox", { name: /Please explain the reason/i }).fill("Lorem ipsum.");
+
+    await report.saveAndContinue(
+        new RegExp(`${supplementaryVersionId}/${ReportRoutes.VALIDATION}`),
+      );
 
     // ── 13. Report Validation (read-only) — confirm no validation warnings/errors detected ──
+    await verifyFormTitle(page, "Report validation");
 
     // ── 14. Final Review (read-only) — verify updated report details are reflected in the summary ──
 
