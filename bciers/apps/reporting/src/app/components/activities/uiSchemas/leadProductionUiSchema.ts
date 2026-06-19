@@ -28,6 +28,7 @@ const uiSchema = {
         "ui:FieldTemplate": FieldTemplate,
         "ui:options": {
           arrayAddLabel: "Add Emission",
+          title: "Emission",
           padding: "p-2",
           label: false,
         },
