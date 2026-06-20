@@ -3,6 +3,7 @@ from registration.models import Activity
 from reporting.models import ActivityJsonSchema
 from reporting.tests.utils.bakers import configuration_baker
 import pytest
+from datetime import date
 
 
 class ActivityJsonSchemaTest(BaseTestCase):
@@ -46,3 +47,19 @@ class ActivityJsonSchemaTest(BaseTestCase):
             valid_to=config,
         )
         valid_record.save()
+
+    def testGetByDate(self):
+        """The custom manager should return the schema valid for the given date"""
+        result = ActivityJsonSchema.objects.get_by_date(
+            activity=self.test_object.activity,
+            date=date(5025, 6, 1),
+        )
+        assert result == self.test_object
+
+    def testGetByDateNoMatch(self):
+        """The custom manager should raise DoesNotExist if no schema matches the date"""
+        with pytest.raises(ActivityJsonSchema.DoesNotExist):
+            ActivityJsonSchema.objects.get_by_date(
+                activity=self.test_object.activity,
+                date=date(5024, 1, 1),
+            )
