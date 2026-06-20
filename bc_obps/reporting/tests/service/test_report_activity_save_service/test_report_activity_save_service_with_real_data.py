@@ -16,6 +16,7 @@ from reporting.tests.service.test_report_activity_save_service.infrastructure im
     get_report_fuel_by_index,
     get_report_unit_by_index,
 )
+from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
 from django.core.exceptions import ValidationError
 
 
@@ -40,6 +41,7 @@ class TestReportActivitySaveService(TestCase):
         This test represents a real-life scenario with complex test data
         """
         test_infrastructure = TestInfrastructure.build_from_real_config()
+        valid_date = get_report_valid_date_from_version_id(test_infrastructure.facility_report.report_version.id)
         service_under_test = ReportActivitySaveService(
             test_infrastructure.facility_report.report_version.id,
             test_infrastructure.facility_report.facility.id,
@@ -66,11 +68,12 @@ class TestReportActivitySaveService(TestCase):
 
         assert report_source_types.count() == 2
 
-        assert report_source_types[0].activity_source_type_base_schema == ActivitySourceTypeJsonSchema.objects.get(
+        assert report_source_types[
+            0
+        ].activity_source_type_base_schema == ActivitySourceTypeJsonSchema.objects.get_by_date(
             activity=Activity.objects.get(slug='gsc_non_compression_non_combustion'),
             source_type=SourceType.objects.get(json_key="gscFuelOrWasteLinearFacilitiesUsefulEnergy"),
-            valid_from__valid_from__lte=test_infrastructure.configuration.valid_from,
-            valid_to__valid_to__gte=test_infrastructure.configuration.valid_to,
+            date=valid_date,
         )
         assert report_source_types[0].source_type == SourceType.objects.get(
             json_key="gscFuelOrWasteLinearFacilitiesUsefulEnergy"
@@ -81,11 +84,12 @@ class TestReportActivitySaveService(TestCase):
             "test_st_str": "st",
         }
 
-        assert report_source_types[1].activity_source_type_base_schema == ActivitySourceTypeJsonSchema.objects.get(
+        assert report_source_types[
+            1
+        ].activity_source_type_base_schema == ActivitySourceTypeJsonSchema.objects.get_by_date(
             activity=Activity.objects.get(slug='gsc_non_compression_non_combustion'),
             source_type=SourceType.objects.get(json_key="fieldProcessVentGasLinearFacilities"),
-            valid_from__valid_from__lte=test_infrastructure.configuration.valid_from,
-            valid_to__valid_to__gte=test_infrastructure.configuration.valid_to,
+            date=valid_date,
         )
         assert report_source_types[1].source_type == SourceType.objects.get(
             json_key="fieldProcessVentGasLinearFacilities"
