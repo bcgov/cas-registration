@@ -74,10 +74,9 @@ class ReportActivitySaveService:
             activity=self.activity,
             create_defaults={
                 "json_data": activity_data,
-                "activity_base_schema": ActivityJsonSchema.objects.get(
+                "activity_base_schema": ActivityJsonSchema.objects.get_by_date(
                     activity=self.activity,
-                    valid_from__valid_from__lte=self.valid_date,
-                    valid_to__valid_to__gte=self.valid_date,
+                    date=self.valid_date,
                 ),
             },
             defaults={"json_data": activity_data},
@@ -106,11 +105,8 @@ class ReportActivitySaveService:
     ) -> ReportSourceType:
         source_type = SourceType.objects.get(json_key=source_type_slug)
         json_data = exclude_keys(source_type_data, ["units", "fuels", "emissions", "id"])
-        json_base_schema = ActivitySourceTypeJsonSchema.objects.get(
-            activity=report_activity.activity,
-            source_type=source_type,
-            valid_from__valid_from__lte=self.valid_date,
-            valid_to__valid_to__gte=self.valid_date,
+        json_base_schema = ActivitySourceTypeJsonSchema.objects.get_by_date(
+            activity=report_activity.activity, source_type=source_type, date=self.valid_date
         )
 
         if json_base_schema.has_unit and "units" not in source_type_data:
