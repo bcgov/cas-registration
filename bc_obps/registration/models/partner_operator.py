@@ -17,7 +17,7 @@ from registration.models.rls_configs.partner_operator import Rls as PartnerOpera
 class PartnerOperator(TimeStampedModel):
     bc_obps_operator = models.ForeignKey(
         Operator,
-        db_comment="The operator that this partner operator is associated with",
+        db_comment="The BC OBPS (Output-Based Pricing System) operator that this partner operator is associated with. Foreign key to erc.operator",
         on_delete=models.DO_NOTHING,
         related_name="partner_operators",
     )
@@ -25,7 +25,7 @@ class PartnerOperator(TimeStampedModel):
     trade_name = models.CharField(max_length=1000, blank=True, null=True, db_comment="The trade name of an operator")
     cra_business_number = models.CharField(
         validators=[RegexValidator(regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE)],
-        db_comment="The CRA business number of an operator",
+        db_comment="The CRA (Canada Revenue Agency) business number of this partner operator, a unique 9-digit identifier",
     )
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of an operator",
@@ -34,7 +34,7 @@ class PartnerOperator(TimeStampedModel):
     business_structure = models.ForeignKey(
         BusinessStructure,
         on_delete=models.DO_NOTHING,
-        db_comment="The business structure of an operator",
+        db_comment="The business structure of this partner operator. Foreign key to erc.business_structure",
         related_name="partner_operators",
     )
 
@@ -44,7 +44,7 @@ class PartnerOperator(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = "Table containing data about operators' partner operators. Partner operators may have a record in the Operator table. If so, that record is controlled by someone who works for that partner operator. The information in this table is controlled by BCOBPS operators who should not have access to other operator's records."
+        db_table_comment = "Table containing data about operators' partner operators. Partner operators may have a record in the Operator table. If so, that record is controlled by someone who works for that partner operator. The information in this table is controlled by BC OBPS (Output-Based Pricing System) operators who should not have access to other operator's records."
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.PARTNER_OPERATOR.value}'
 
     Rls = PartnerOperatorRls

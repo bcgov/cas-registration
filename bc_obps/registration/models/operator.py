@@ -29,10 +29,10 @@ class Operator(TimeStampedModel):
     trade_name = models.CharField(max_length=1000, blank=True, null=True, db_comment="The trade name of an operator")
     cra_business_number = models.CharField(
         validators=[RegexValidator(regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE)],
-        db_comment="The CRA business number of an operator",
+        db_comment="The CRA (Canada Revenue Agency) business number of this operator, a unique 9-digit identifier",
     )
     swrs_organisation_id = models.IntegerField(
-        db_comment="An identifier used in the CIIP/SWRS dataset (in swrs: organisation = operator). This identifier will only be populated for operators that were imported from that dataset.",
+        db_comment="The organisation identifier used in the CIIP (CleanBC Industrial Incentive Program) / SWRS (Single Window Reporting System) dataset. In that system, 'organisation' maps to 'operator'. Populated only for operators imported from that legacy dataset.",
         blank=True,
         null=True,
     )
@@ -47,7 +47,7 @@ class Operator(TimeStampedModel):
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
-        db_comment="The business structure of an operator",
+        db_comment="The business structure of this operator. Foreign key to erc.business_structure",
         related_name="operators",
     )
     physical_address = models.ForeignKey(
@@ -55,13 +55,13 @@ class Operator(TimeStampedModel):
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
-        db_comment="The physical address of an operator (where the operator is physically located)",
+        db_comment="The physical address of this operator (where they are physically located). Foreign key to erc.address",
         related_name="operators_physical",
     )
     mailing_address = models.ForeignKey(
         Address,
         on_delete=models.DO_NOTHING,
-        db_comment="The mailing address of an operator",
+        db_comment="The mailing address of this operator. Foreign key to erc.address",
         related_name="operators_mailing",
         blank=True,
         null=True,
@@ -90,7 +90,7 @@ class Operator(TimeStampedModel):
                 name="cra_business_number_unique_constraint",
             )
         ]
-        db_table_comment = "Table containing operator information. An operator is the person who owns and/or controls and directs industrial operations. An operator can own multiple operations. For more information see definitions in the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1"
+        db_table_comment = "Table containing operator information. An operator is the person who owns and/or controls and directs industrial operations. An operator can own multiple operations. For more information see definitions in the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1"
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.OPERATOR.value}'
 
     Rls = OperatorRls

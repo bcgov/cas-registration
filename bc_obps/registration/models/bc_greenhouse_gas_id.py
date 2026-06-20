@@ -16,26 +16,26 @@ class BcGreenhouseGasId(BaseModel):
     id = models.CharField(
         primary_key=True,
         max_length=255,
-        db_comment="The BCGHG ID of an operation or facility",
+        db_comment="The BCGHG (BC Greenhouse Gas) ID assigned to an operation or facility. Primary key.",
         validators=[
             RegexValidator(regex=BCGHG_ID_REGEX, message="BCGHG ID should be 11 digits, starting with 1 or 2.")
         ],
     )
     issued_at = models.DateTimeField(
         auto_now_add=True,
-        db_comment="The time the BCGHG ID was issued by an IRC user",
+        db_comment="The time the BCGHG (BC Greenhouse Gas) ID was issued by an IRC user",
     )
     issued_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
-        db_comment="The IRC user who issued the BCGHG ID",
+        db_comment="The IRC user who issued the BCGHG (BC Greenhouse Gas) ID. Foreign key to erc.user",
         blank=True,
         null=True,
         related_name="bc_greenhouse_gas_id_issued_by",
     )
     comments = models.TextField(
         blank=True,
-        db_comment="Comments from admins in the case that a BCGHG ID is revoked",
+        db_comment="Comments from admins in the case that a BCGHG (BC Greenhouse Gas) ID is revoked",
     )
     history = HistoricalRecords(
         table_name='erc_history"."bc_greenhouse_gas_id_history',
@@ -43,7 +43,7 @@ class BcGreenhouseGasId(BaseModel):
     )
 
     class Meta:
-        db_table_comment = "Table to store BCGHG ID metadata. Once an operation or facility meets the criteria for an ID, then it is issued one."
+        db_table_comment = "Table to store BCGHG (BC Greenhouse Gas) ID metadata. Once an operation or facility meets the criteria for an ID, then it is issued one."
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.BC_GREENHOUSE_GAS_ID.value}'
 
     Rls = BcGreenhouseGasIdRls

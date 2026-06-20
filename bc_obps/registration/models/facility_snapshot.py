@@ -17,13 +17,13 @@ class FacilitySnapshot(TimeStampedModel):
     facility = models.ForeignKey(
         Facility,
         on_delete=models.PROTECT,
-        db_comment="The facility that this snapshot represents",
+        db_comment="The facility this snapshot represents. Foreign key to erc.facility",
         related_name="facility_snapshot",
     )
     operation = models.ForeignKey(
         Operation,
         on_delete=models.PROTECT,
-        db_comment="The operation that owned the facility at the time of the snapshot",
+        db_comment="The operation that owned the facility at the time of the snapshot. Foreign key to erc.operation",
         related_name="facility_snapshot",
     )
     name = models.CharField(
@@ -68,13 +68,13 @@ class FacilitySnapshot(TimeStampedModel):
         db_comment="Postal code of the facility at snapshot time",
     )
     swrs_facility_id = models.IntegerField(
-        db_comment="The facility's SWRS facility ID at snapshot time",
+        db_comment="The facility's SWRS (Single Window Reporting System) facility ID at snapshot time",
         blank=True,
         null=True,
     )
     bcghg_id = models.CharField(
         max_length=1000,
-        db_comment="The facility's BCGHG identifier at snapshot time",
+        db_comment="The facility's BCGHG (BC Greenhouse Gas) identifier at snapshot time",
         blank=True,
         null=True,
     )

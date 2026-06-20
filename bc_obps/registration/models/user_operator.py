@@ -32,12 +32,12 @@ class UserOperator(TimeStampedModel):
         User,
         on_delete=models.DO_NOTHING,
         related_name="user_operators",
-        db_comment="A user associated with an operator",
+        db_comment="The user requesting or having access to this operator. Foreign key to erc.user",
     )
     operator = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,
-        db_comment="An operator associated with a user",
+        db_comment="The operator this user is requesting or has access to. Foreign key to erc.operator",
         related_name="user_operators",
     )
     role = models.CharField(
@@ -60,7 +60,7 @@ class UserOperator(TimeStampedModel):
     verified_by = models.ForeignKey(
         User,
         on_delete=models.DO_NOTHING,
-        db_comment="The IRC user who verified the user operator",
+        db_comment="The IRC user who verified (approved or declined) this access request. Foreign key to erc.user",
         blank=True,
         null=True,
         related_name="user_operators_verified_by",
@@ -71,7 +71,7 @@ class UserOperator(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = "Through table to connect Users and Operators and track access requests"
+        db_table_comment = "Junction table linking app users to operators and tracking the status of their access requests. An industry user must submit an access request (status=Pending) and be approved by an existing operator admin before they can act on behalf of an operator."
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.USER_OPERATOR.value}'
 
         constraints = [

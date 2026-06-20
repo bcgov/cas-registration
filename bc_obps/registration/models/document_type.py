@@ -17,7 +17,7 @@ class DocumentType(BaseModel):
     )
 
     class Meta:
-        db_table_comment = "Table that contains types of documents."
+        db_table_comment = "Lookup table containing valid document types that can be attached to operations (e.g. boundary map, process flow diagram, new entrant application, opt in signed statutory declaration). Documents are classified by type to allow the system to retrieve specific document kinds."
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.DOCUMENT_TYPE.value}'
 
     Rls = DocumentTypeRls

@@ -17,7 +17,7 @@ from registration.models.rls_configs.parent_operator import Rls as ParentOperato
 class ParentOperator(TimeStampedModel):
     child_operator = models.ForeignKey(
         Operator,
-        db_comment="The operator that this parent operator is associated with",
+        db_comment="The child operator that this parent operator is associated with. Foreign key to erc.operator",
         on_delete=models.DO_NOTHING,
         related_name="parent_operators",
     )
@@ -32,7 +32,7 @@ class ParentOperator(TimeStampedModel):
     )
     cra_business_number = models.CharField(
         validators=[RegexValidator(regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE)],
-        db_comment="The CRA business number of an operator",
+        db_comment="The CRA (Canada Revenue Agency) business number of this parent operator, a unique 9-digit identifier",
         blank=True,
         null=True,
     )
@@ -51,7 +51,7 @@ class ParentOperator(TimeStampedModel):
     business_structure = models.ForeignKey(
         BusinessStructure,
         on_delete=models.DO_NOTHING,
-        db_comment="The business structure of a parent operator",
+        db_comment="The business structure of this parent operator. Foreign key to erc.business_structure",
         related_name="parent_operators",
         blank=True,
         null=True,
@@ -65,7 +65,7 @@ class ParentOperator(TimeStampedModel):
     physical_address = models.ForeignKey(
         Address,
         on_delete=models.DO_NOTHING,
-        db_comment="The physical address of a parent operator (where the operator is physically located)",
+        db_comment="The physical address of this parent operator (where they are physically located). Foreign key to erc.address",
         related_name="parent_operators_physical",
         blank=True,
         null=True,
@@ -73,7 +73,7 @@ class ParentOperator(TimeStampedModel):
     mailing_address = models.ForeignKey(
         Address,
         on_delete=models.DO_NOTHING,
-        db_comment="The mailing address of a parent operator",
+        db_comment="The mailing address of this parent operator. Foreign key to erc.address",
         related_name="parent_operators_mailing",
         blank=True,
         null=True,
