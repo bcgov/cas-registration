@@ -4,6 +4,21 @@ from registration.models import Activity
 from reporting.models import Configuration
 from reporting.models.rls_configs.activity_json_schema import Rls as ActivityJsonSchemaRls
 from reporting.models.triggers import no_overlapping_configuration_records_trigger
+from datetime import date as date_type
+from typing import cast
+
+
+class ActivityJsonSchemaManager(models.Manager):
+    def get_by_date(self, activity: Activity, date: date_type) -> "ActivityJsonSchema":
+        """Return the schema valid for the given activity on the given date"""
+        return cast(
+            "ActivityJsonSchema",
+            self.get(
+                activity=activity,
+                valid_from__valid_from__lte=date,
+                valid_to__valid_to__gte=date,
+            ),
+        )
 
 
 class ActivityJsonSchema(BaseModel):
@@ -16,6 +31,8 @@ class ActivityJsonSchema(BaseModel):
     )
     valid_from = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
     valid_to = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
+
+    objects = ActivityJsonSchemaManager()
 
     class Meta:
         db_table_comment = (
