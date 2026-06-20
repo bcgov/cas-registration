@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0182_update_document_metadata'),
+        ('registration', '0183_V5_14_0'),
         ('reporting', '0197_update_reportattachment_metadata'),
     ]
 
