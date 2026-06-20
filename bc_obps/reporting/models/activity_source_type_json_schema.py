@@ -4,6 +4,24 @@ from registration.models import Activity
 from reporting.models import SourceType, Configuration
 from reporting.models.rls_configs.activity_source_type_json_schema import Rls as ActivitySourceTypeJsonSchemaRls
 from reporting.models.triggers import no_overlapping_configuration_records_trigger
+from typing import cast
+from datetime import date as date_type
+
+
+class ActivitySourceTypeJsonSchemaManager(models.Manager):
+    def get_by_date(
+        self, activity: Activity, source_type: SourceType, date: date_type
+    ) -> "ActivitySourceTypeJsonSchema":
+        """Return the schema valid for the given activity, source type, and date"""
+        return cast(
+            "ActivitySourceTypeJsonSchema",
+            self.get(
+                activity=activity,
+                source_type=source_type,
+                valid_from__valid_from__lte=date,
+                valid_to__valid_to__gte=date,
+            ),
+        )
 
 
 class ActivitySourceTypeJsonSchema(BaseModel):
@@ -25,6 +43,8 @@ class ActivitySourceTypeJsonSchema(BaseModel):
     )
     valid_from = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
     valid_to = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
+
+    objects = ActivitySourceTypeJsonSchemaManager()
 
     class Meta:
         db_table_comment = "Intersection table that assigns a json_schema as valid for a period of time given an activity-sourceType pair"
