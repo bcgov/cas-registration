@@ -2,20 +2,22 @@
 
 import { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { IChangeEvent } from "@rjsf/core";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { actionHandler } from "@bciers/actions";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
-import { FacilityTypes, FrontEndRoles } from "@bciers/utils/src/enums";
-import { FormMode } from "@bciers/utils/src/enums";
+import {
+  FacilityTypes,
+  FrontEndRoles,
+  FormMode,
+} from "@bciers/utils/src/enums";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
-
-export interface FacilityFormData {
-  [key: string]: any;
-}
+import { FacilityFormData } from "./types";
 
 interface Props {
-  schema: any;
-  uiSchema: any;
+  schema: RJSFSchema;
+  uiSchema: UiSchema;
   formData: FacilityFormData;
   isCreating?: boolean;
 }
@@ -26,16 +28,17 @@ export default function FacilityForm({
   uiSchema,
   isCreating,
 }: Readonly<Props>) {
-  // To get the user's role from the session
   const role = useSessionRole();
-  const [error, setError] = useState(undefined);
-  const [formState, setFormState] = useState(formData ?? {});
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [formState, setFormState] = useState(formData);
   const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const queryString = serializeSearchParams(searchParams);
   const isSfo = formState.type === FacilityTypes.SFO;
+  const isCasDirector = role === FrontEndRoles.CAS_DIRECTOR;
+  const canEdit = !role.includes("cas_");
 
   return (
     <SingleStepTaskListForm
@@ -45,12 +48,12 @@ export default function FacilityForm({
       formData={formState}
       formContext={{
         facilityId: formData.id,
-        isCasDirector: role === FrontEndRoles.CAS_DIRECTOR,
+        isCasDirector,
         isSfo,
       }}
-      allowEdit={!role.includes("cas_")}
+      allowEdit={canEdit}
       mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
-      onSubmit={async (data: { formData?: any }) => {
+      onSubmit={async (data: IChangeEvent) => {
         const updatedFormData = { ...formState, ...data.formData };
         setFormState(updatedFormData);
 
@@ -78,9 +81,7 @@ export default function FacilityForm({
         if (response?.error) {
           setError(response.error);
           return { error: response.error };
-        } else {
-          setError(undefined);
-        }
+        } else setError(undefined);
 
         if (isCreatingState) {
           setIsCreatingState(false);

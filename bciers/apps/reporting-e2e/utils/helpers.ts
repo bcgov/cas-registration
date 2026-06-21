@@ -1,4 +1,7 @@
-import { Page, expect } from "@playwright/test";
+import { Locator, Page, expect } from "@playwright/test";
+import { ReportRoutes } from "./enums";
+import { ACTION_BUTTON_TEXT, REPORTING_REPORTS_BASE_PATH } from "./constants";
+import { clickButton } from "@bciers/e2e/utils/helpers";
 
 export async function verifyFormTitle(
   page: Page,
@@ -25,4 +28,30 @@ export async function verifySaveAsPDF(page: Page): Promise<void> {
   );
   await saveAsPDFButton.click();
   await page.waitForFunction("window.waitForPrintDialog");
+}
+
+export async function clickViewReportDetails(
+  page: Page,
+  row: Locator,
+  isExternalUser: boolean = true,
+): Promise<void> {
+  const viewReportRoute = isExternalUser
+    ? ReportRoutes.SUBMITTED_REPORT
+    : ReportRoutes.ANNUAL_REPORT;
+
+  const routeRegex = new RegExp(
+    String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${viewReportRoute}`,
+    "i",
+  );
+  const buttonName = new RegExp(
+    isExternalUser
+      ? ACTION_BUTTON_TEXT.VIEW_DETAILS + "$"
+      : ACTION_BUTTON_TEXT.VIEW_REPORT + "$",
+    "i",
+  );
+
+  await clickButton(page, buttonName, {
+    root: row,
+    waitForUrl: routeRegex,
+  });
 }

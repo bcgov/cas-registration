@@ -6,10 +6,6 @@ export async function getReviewOperationInformationPageData(
 ): Promise<OperationReviewPageData> {
   const endpoint = `reporting/report-version/${reportVersionId}/report-operation-data`;
   const response = await actionHandler(endpoint, "GET");
-  if (response.error) {
-    throw new Error(
-      `Failed to fetch the operation for report version ${reportVersionId}.`,
-    );
-  }
+
   return response as OperationReviewPageData;
 }

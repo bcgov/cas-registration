@@ -60,7 +60,7 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
   // Handle the confirmed delete action.
   const confirmDiscard = async () => {
     setConfirmAction(null);
-    await startTransition(async () => {
+    startTransition(async () => {
       // delete report version
       await deleteReportVersion(reportVersionId);
       // close menu

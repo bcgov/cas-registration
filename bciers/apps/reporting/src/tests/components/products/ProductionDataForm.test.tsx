@@ -2,14 +2,26 @@ import { useRouter } from "next/navigation";
 import { postProductionData } from "@reporting/src/app/utils/productDataForm/postProductionData";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import ProductionDataForm from "@reporting/src/app/components/products/ProductionDataForm";
-import { act, render } from "@testing-library/react";
+import { act, render, waitFor } from "@testing-library/react";
 import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
+import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
+import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
 
+vi.mock(
+  "@reporting/src/app/components/shared/validation/ReportValidationSummary",
+  () => ({
+    default: vi.fn(() => null),
+  }),
+);
+
+const mockReportValidationSummary = ReportValidationSummary as ReturnType<
+  typeof vi.fn
+>;
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
 }));
 vi.mock("@bciers/components/form/MultiStepFormWithTaskList", () => ({
-  default: vi.fn(),
+  default: vi.fn(({ children }) => <div>{children}</div>),
 }));
 vi.mock("@reporting/src/app/utils/productDataForm/postProductionData", () => ({
   postProductionData: vi.fn(),
@@ -23,7 +35,7 @@ const mockRouter = useRouter as ReturnType<typeof vi.fn>;
 
 describe("The ProductionDataForm component", () => {
   beforeEach(() => {
-    vi.resetAllMocks();
+    vi.clearAllMocks();
   });
 
   it("calls the postProductionData method on submit", async () => {
@@ -54,7 +66,13 @@ describe("The ProductionDataForm component", () => {
     );
 
     const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
-    await calledProps.onSubmit({ formData: { production_data: "test" } });
+    await calledProps.onSubmit({
+      formData: {
+        product_selection: ["test"],
+        production_data: "test",
+      },
+    });
+
     expect(mockPostProductionData).toHaveBeenCalledOnce();
   });
 
@@ -111,7 +129,7 @@ describe("The ProductionDataForm component", () => {
 
     expect(mockMultiStepFormWithTaskList).toHaveBeenCalledOnce();
     // error message + disabled buttons
-    expect(calledProps.errors).toEqual(["A product must be selected."]);
+    expect(calledProps.errors).toEqual([]);
     expect(calledProps.saveButtonDisabled).toBe(true);
     expect(calledProps.submitButtonDisabled).toBe(true);
     // error banner
@@ -364,13 +382,19 @@ describe("The ProductionDataForm component", () => {
     });
 
     expect(result).toBe(false);
-    const latestCall =
-      mockMultiStepFormWithTaskList.mock.calls[
-        mockMultiStepFormWithTaskList.mock.calls.length - 1
-      ][0];
-    expect(latestCall.errors).toContain(
-      "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
-    );
+
+    await waitFor(() => {
+      const latestCall =
+        mockMultiStepFormWithTaskList.mock.calls[
+          mockMultiStepFormWithTaskList.mock.calls.length - 1
+        ][0];
+
+      expect(latestCall.errors[0].props.errors).toStrictEqual([
+        createGenericReportValidationError(
+          "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
+        ),
+      ]);
+    });
   });
 
   it("does not show missing product error when isPulpAndPaper is false", async () => {
@@ -416,11 +440,7 @@ describe("The ProductionDataForm component", () => {
     });
 
     expect(result).toBe(true);
-    const latestCall =
-      mockMultiStepFormWithTaskList.mock.calls[
-        mockMultiStepFormWithTaskList.mock.calls.length - 1
-      ][0];
-    expect(latestCall.errors).toBeUndefined();
+    expect(mockReportValidationSummary).not.toHaveBeenCalled();
   });
 
   it("does not show missing product error when overlappingIndustrialProcessEmissions is 0", async () => {
@@ -468,11 +488,7 @@ describe("The ProductionDataForm component", () => {
     });
 
     expect(result).toBe(true);
-    const latestCall =
-      mockMultiStepFormWithTaskList.mock.calls[
-        mockMultiStepFormWithTaskList.mock.calls.length - 1
-      ][0];
-    expect(latestCall.errors).toBeUndefined();
+    expect(mockReportValidationSummary).not.toHaveBeenCalled();
   });
 
   it("does not show missing product error when chemical pulp is selected", async () => {
@@ -522,10 +538,6 @@ describe("The ProductionDataForm component", () => {
     });
 
     expect(result).toBe(true);
-    const latestCall =
-      mockMultiStepFormWithTaskList.mock.calls[
-        mockMultiStepFormWithTaskList.mock.calls.length - 1
-      ][0];
-    expect(latestCall.errors).toBeUndefined();
+    expect(mockReportValidationSummary).not.toHaveBeenCalled();
   });
 });

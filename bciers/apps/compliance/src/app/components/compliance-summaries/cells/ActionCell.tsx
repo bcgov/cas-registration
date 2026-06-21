@@ -7,6 +7,18 @@ import {
   PenaltyStatus,
 } from "@bciers/utils/src/enums";
 
+export const ACTION_CELL_TEXT = {
+  VIEW_DETAILS: "View Details",
+  PENDING_INVOICE_CREATION: "Pending Invoice Creation",
+  MANAGE_OBLIGATION: "Manage Obligation",
+  REVIEW_CREDITS_ISSUANCE_REQUEST: "Review Credits Issuance Request",
+  REQUEST_ISSUANCE_OF_CREDITS: "Request Issuance of Credits",
+  REVIEW_CHANGE_REQUIRED: "Review Change Required",
+  RESOLVE_ISSUE: "Resolve Issue",
+  CONTACT_US: "Contact Us",
+  ISSUE_RESOLVED: "Issue Resolved",
+} as const;
+
 interface ActionCellProps extends GridRenderCellParams<ComplianceSummary> {
   isAllowedCas?: boolean;
 }
@@ -27,42 +39,36 @@ function obligationReportCell(
     if (
       status === ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION
     ) {
-      return {
-        cellText: "Pending Invoice Creation",
-        basePath: "#",
-      };
+      return { cellText: ACTION_CELL_TEXT.PENDING_INVOICE_CREATION };
     } else if (
       status === ComplianceSummaryStatus.OBLIGATION_NOT_MET ||
       (status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET &&
         isPenaltyAccruingOrNotPaid)
     ) {
       return {
-        cellText: "Manage Obligation",
+        cellText: ACTION_CELL_TEXT.MANAGE_OBLIGATION,
         basePath: `${basePath}/review-compliance-obligation-report`,
       };
     } else if (status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET) {
       return {
-        cellText: "View Details",
+        cellText: ACTION_CELL_TEXT.VIEW_DETAILS,
         basePath: `${basePath}/review-compliance-obligation-report`,
       };
     }
   }
   if (status === ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION) {
-    return {
-      cellText: "Pending Invoice Creation",
-      basePath: "#",
-    };
+    return { cellText: ACTION_CELL_TEXT.PENDING_INVOICE_CREATION };
   } else if (
     status === ComplianceSummaryStatus.OBLIGATION_NOT_MET ||
     status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET
   ) {
     return {
-      cellText: "View Details",
+      cellText: ACTION_CELL_TEXT.VIEW_DETAILS,
       basePath: `${basePath}/review-compliance-obligation-report`,
     };
   }
   return {
-    cellText: "View Details",
+    cellText: ACTION_CELL_TEXT.VIEW_DETAILS,
     basePath: `${basePath}/review-compliance-no-obligation-report`,
   };
 }
@@ -72,21 +78,21 @@ function earnedCreditsCell(
   isAllowedCas?: boolean,
   issuanceStatus?: IssuanceStatus,
 ): ActionCellConfig {
-  let cellText = "View Details";
+  let cellText: string = ACTION_CELL_TEXT.VIEW_DETAILS;
   let pathSuffix = "/review-compliance-earned-credits-report";
 
   if (isAllowedCas && issuanceStatus === IssuanceStatus.ISSUANCE_REQUESTED) {
-    cellText = "Review Credits Issuance Request";
+    cellText = ACTION_CELL_TEXT.REVIEW_CREDITS_ISSUANCE_REQUEST;
   } else if (
     !isAllowedCas &&
     issuanceStatus === IssuanceStatus.CREDITS_NOT_ISSUED
   ) {
-    cellText = "Request Issuance of Credits";
+    cellText = ACTION_CELL_TEXT.REQUEST_ISSUANCE_OF_CREDITS;
   } else if (
     !isAllowedCas &&
     issuanceStatus === IssuanceStatus.CHANGES_REQUIRED
   ) {
-    cellText = "Review Change Required";
+    cellText = ACTION_CELL_TEXT.REVIEW_CHANGE_REQUIRED;
     pathSuffix = "/request-issuance-of-earned-credits";
   }
 
@@ -127,15 +133,12 @@ function getActionCellConfig(
     // Resolved manual-handling
     if (isAllowedCas) {
       return {
-        cellText: "View Detail",
+        cellText: ACTION_CELL_TEXT.VIEW_DETAILS,
         basePath: resolveIssuePath,
       };
     }
 
-    return {
-      cellText: "Issue Resolved",
-      // no basePath = not clickable
-    };
+    return { cellText: ACTION_CELL_TEXT.ISSUE_RESOLVED };
   }
 
   if (
@@ -145,15 +148,12 @@ function getActionCellConfig(
     //  Pending manual-handling
     if (isAllowedCas) {
       return {
-        cellText: "Resolve Issue",
+        cellText: ACTION_CELL_TEXT.RESOLVE_ISSUE,
         basePath: resolveIssuePath,
       };
     }
 
-    return {
-      cellText: "Contact Us",
-      // no basePath = not clickable
-    };
+    return { cellText: ACTION_CELL_TEXT.CONTACT_US };
   }
   const isPenaltyAccruingOrNotPaid = [
     PenaltyStatus.ACCRUING,
@@ -177,7 +177,7 @@ function getActionCellConfig(
 
   // Default
   return {
-    cellText: "View Details",
+    cellText: ACTION_CELL_TEXT.VIEW_DETAILS,
     basePath: `${basePath}/review-compliance-no-obligation-report`,
   };
 }

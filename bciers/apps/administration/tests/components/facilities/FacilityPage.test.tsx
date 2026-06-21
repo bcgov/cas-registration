@@ -23,48 +23,6 @@ describe("Facilities component", () => {
     vi.resetAllMocks();
   });
 
-  it("throws an error when given a bad facility id", async () => {
-    getOperation.mockReturnValueOnce({
-      id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-      type: "Single Facility Operation",
-    });
-    getFacility.mockReturnValueOnce({
-      error: "yikes",
-    });
-
-    await expect(async () => {
-      render(
-        await FacilityPage({
-          operationId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
-          facilityId: "garbage-bugs-dump-truck-fire",
-        }),
-      );
-    }).rejects.toThrow(
-      new Error(
-        "We couldn't find your facility information. Please ensure you have been approved for access to this facility.",
-      ),
-    );
-  });
-
-  it("throws an error when given a bad operation id", async () => {
-    getOperation.mockReturnValueOnce({
-      error: "yikes",
-    });
-
-    await expect(async () => {
-      await render(
-        await FacilityPage({
-          operationId: "garbage-bugs-dump-truck-fire",
-          facilityId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
-        }),
-      );
-    }).rejects.toThrow(
-      new Error(
-        "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
-      ),
-    );
-  });
-
   it("renders the SFO create facility form with pre-populated fields", async () => {
     useSessionRole.mockReturnValue("industry_user_admin");
     getOperation.mockReturnValueOnce({

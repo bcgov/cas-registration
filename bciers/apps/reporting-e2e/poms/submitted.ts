@@ -105,7 +105,7 @@ export class SubmittedPOM {
 
     const viewFacilityReportRoute = `${this.urlRegex.source}/facility/${facilityId}`;
     const routeRegex = new RegExp(String.raw`${viewFacilityReportRoute}`, "i");
-    // await this.page.waitForTimeout(500); // Uncomment if want test to pass locally
+    await this.page.waitForTimeout(500); // Uncomment if want test to pass locally
     await clickButton(this.page, ACTION_BUTTON_TEXT.VIEW_DETAILS, {
       root: row,
       waitForUrl: routeRegex,

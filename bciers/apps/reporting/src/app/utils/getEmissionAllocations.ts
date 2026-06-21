@@ -32,10 +32,5 @@ export async function getEmissionAllocationPageData(
   const endpoint = `reporting/v2/report-version/${reportVersionId}/facilities/${facilityId}/forms/emission-allocation-data`;
   const response = await actionHandler(endpoint, "GET", endpoint);
 
-  if (response.error)
-    throw new Error(
-      `Failed to fetch the emission allocations for report version ${reportVersionId}, facility ${facilityId}.`,
-    );
-
   return response as EmissionAllocationFormResponseData;
 }

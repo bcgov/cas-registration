@@ -4,6 +4,8 @@ import { NavigationInformation } from "@reporting/src/app/components/taskList/ty
 import { eioSchema, eioUiSchema } from "@reporting/src/data/jsonSchema/eio";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { actionHandler } from "@bciers/actions";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
 
 interface Props {
   versionId: number;
@@ -17,7 +19,7 @@ const ElectricityInformationForm: React.FC<Props> = ({
   navigationInformation,
 }) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [errors, setErrors] = useState<string[]>();
+  const { setErrors, renderedErrors } = useFormErrors();
   const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${versionId}/electricity-import-data`;
     const method = "POST";
@@ -25,13 +27,7 @@ const ElectricityInformationForm: React.FC<Props> = ({
       body: JSON.stringify(data),
     });
 
-    if (response?.error) {
-      setErrors([response.error]);
-      return false;
-    }
-
-    setErrors(undefined);
-    return true;
+    return handleApiResponse(response, setErrors);
   };
 
   return (
@@ -48,7 +44,7 @@ const ElectricityInformationForm: React.FC<Props> = ({
       }}
       onSubmit={(data: any) => handleSubmit(data.formData)}
       continueUrl={navigationInformation.continueUrl}
-      errors={errors}
+      errors={renderedErrors}
     />
   );
 };

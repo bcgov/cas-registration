@@ -299,9 +299,15 @@ describe("OperationReviewForm Component", () => {
   });
 
   it("shows an error message when no operation representative exists", async () => {
+    const formDataWithOperation = {
+      ...formData,
+      operation_id: "b65a3fbc-c81a-49c0-a43a-67bd3a0b488f",
+      operation_name: "Compliance SFO - Obligation not met",
+    };
+
     render(
       <OperationReviewForm
-        formData={formData}
+        formData={formDataWithOperation}
         version_id={1}
         navigationInformation={dummyNavigationInformation}
         schema={schema}
@@ -309,29 +315,26 @@ describe("OperationReviewForm Component", () => {
         allRegulatedProducts={[]}
         reportType={reportType}
         reportingYear={2024}
-        facilityId={`1234`}
+        facilityId="1234"
         allRepresentatives={[]}
         isSyncAllowed={false}
       />,
     );
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Before you can continue,/, { exact: false }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/add an operation representative for this operation/i),
-      ).toBeInTheDocument();
+    expect(await screen.findByText(/Before you can continue/i)).toBeVisible();
+
+    const link = await screen.findByRole("link", {
+      name: /add an operation representative for this operation/i,
     });
 
-    // The link should point to the admin operations page for the operation
-    const link = screen
-      .getByText(/add an operation representative for this operation/i)
-      .closest("a");
     expect(link).toHaveAttribute(
       "href",
-      expect.stringContaining("/administration/operations/"),
+      expect.stringContaining(
+        "/administration/operations/b65a3fbc-c81a-49c0-a43a-67bd3a0b488f",
+      ),
     );
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
 
   it("updates hasReps state and clears errors when syncing with representatives", async () => {

@@ -20,7 +20,7 @@ class ElicensingClientOperator(TimeStampedModel):
         Operator,
         on_delete=models.PROTECT,
         related_name="+",
-        db_comment="Foreign key to the BCIERS operator object for this record",
+        db_comment="The BCIERS (B.C. Industrial Emissions Reporting System) operator object for this record. Foreign key to erc.operator",
     )
 
     class Meta(TimeStampedModel.Meta):

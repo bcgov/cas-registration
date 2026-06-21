@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import InternalReviewCreditsIssuanceRequestComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/review-credits-issuance-request/InternalReviewCreditsIssuanceRequestComponent";
-import { IssuanceStatus, AnalystSuggestion } from "@bciers/utils/src/enums";
+import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { actionHandler } from "@bciers/actions";
 
@@ -286,10 +286,13 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     expect(actionHandler).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps button enabled and navigates when prior submission has READY_TO_APPROVE", async () => {
+  it("keeps form editable and resubmits when analyst returns after prior READY_TO_APPROVE submission", async () => {
+    // Analyst previously submitted READY_TO_APPROVE but the director hasn't acted yet.
+    // Returning to this page should show an editable form and call the API on Continue.
     const formDataWithPriorSubmission = {
       ...mockFormData,
       analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
+      issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
       analyst_submitted_date: "2023-01-01",
       analyst_submitted_by: "Test User",
     };
@@ -301,12 +304,28 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
       />,
     );
 
+    // Form must be editable
+    expect(
+      screen.getByRole("radio", { name: "Ready to approve" }),
+    ).not.toBeDisabled();
+    expect(screen.getByRole("textbox")).not.toBeDisabled();
+
     const continueButton = screen.getByRole("button", { name: "Continue" });
     expect(continueButton).not.toBeDisabled();
 
     fireEvent.click(continueButton);
     await waitFor(() => {
-      expect(actionHandler).not.toHaveBeenCalled();
+      expect(actionHandler).toHaveBeenCalledWith(
+        "compliance/compliance-report-versions/123/earned-credits",
+        "PUT",
+        "/compliance-administration/compliance-summaries/123/review-by-director",
+        {
+          body: JSON.stringify({
+            analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
+            analyst_comment: "Test comment",
+          }),
+        },
+      );
       expect(mockPush).toHaveBeenCalledWith(
         `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
       );
@@ -357,34 +376,6 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
 
     const continueButton = screen.getByRole("button", { name: "Continue" });
     expect(continueButton).not.toBeDisabled();
-  });
-
-  it("navigates without submitting when CAS analyst has prior final suggestion", async () => {
-    const formDataWithPriorSubmission = {
-      ...mockFormData,
-      analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
-      analyst_submitted_date: "2023-01-01",
-      analyst_submitted_by: "Test User",
-    };
-
-    render(
-      <InternalReviewCreditsIssuanceRequestComponent
-        initialFormData={formDataWithPriorSubmission}
-        complianceReportVersionId={mockComplianceReportVersionId}
-      />,
-    );
-
-    const continueButton = screen.getByRole("button", { name: "Continue" });
-    expect(continueButton).not.toBeDisabled();
-
-    fireEvent.click(continueButton);
-
-    await waitFor(() => {
-      expect(actionHandler).not.toHaveBeenCalled();
-      expect(mockPush).toHaveBeenCalledWith(
-        `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
-      );
-    });
   });
 
   it("keeps form editable when prior submission had non-final suggestion", () => {

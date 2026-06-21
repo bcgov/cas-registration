@@ -76,9 +76,9 @@ class TestReportNewEntrantService(TestCase):
         Test that the service saves or updates the new entrant data correctly.
         """
         data = ReportNewEntrantSchemaIn(
-            authorization_date='2024-01-01',
-            first_shipment_date='2024-02-01',
-            new_entrant_period_start='2024-03-01',
+            authorization_date='2024-01-01T00:00:00Z',
+            first_shipment_date='2024-02-01T00:00:00Z',
+            new_entrant_period_start='2024-03-01T00:00:00Z',
             assertion_statement=True,
             emissions=[
                 {
@@ -148,9 +148,9 @@ class TestReportNewEntrantService(TestCase):
         """
         # Submit empty data for emissions and products
         data = ReportNewEntrantSchemaIn(
-            authorization_date='2024-01-01',
-            first_shipment_date='2024-02-01',
-            new_entrant_period_start='2024-03-01',
+            authorization_date='2024-01-01T00:00:00Z',
+            first_shipment_date='2024-02-01T00:00:00Z',
+            new_entrant_period_start='2024-03-01T00:00:00Z',
             assertion_statement=True,
             emissions=[],
             products=[],

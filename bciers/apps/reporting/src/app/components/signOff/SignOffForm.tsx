@@ -10,14 +10,14 @@ import { useRouter } from "next/navigation";
 import postSubmitReport from "@bciers/actions/api/postSubmitReport";
 import { RJSFSchema } from "@rjsf/utils";
 import { signOffUiSchema } from "@reporting/src/data/jsonSchema/signOff/signOff";
-import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
-import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
 
 interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
   schema: RJSFSchema;
 }
+
 export default function SignOffForm({
   version_id,
   navigationInformation,
@@ -30,8 +30,7 @@ export default function SignOffForm({
     date: "",
     supplementary: {},
   });
-  const [validationErrors, setValidationErrors] =
-    useState<ReportValidationErrors>([]);
+  const { setErrors, renderedErrors } = useFormErrors();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
   const allChecked = (formData: SignOffFormItems) => {
@@ -52,28 +51,25 @@ export default function SignOffForm({
   };
 
   const handleSubmit = async () => {
-    if (!submitButtonDisabled) {
-      setValidationErrors([]);
-      setSubmitButtonDisabled(true);
-
-      const response = await postSubmitReport(version_id, formState);
-      setSubmitButtonDisabled(false);
-
-      if (response?.error || response?.validation) {
-        if (response?.validation) {
-          setValidationErrors(response.validation.errors);
-        } else {
-          setValidationErrors([
-            createGenericReportValidationError(response.error as string),
-          ]);
-        }
-        return false;
-      }
-
-      router.push(navigationInformation.continueUrl);
-      return true;
+    if (submitButtonDisabled) {
+      return false;
     }
-    return false;
+
+    setErrors(undefined);
+    setSubmitButtonDisabled(true);
+
+    const response = await postSubmitReport(version_id, formState);
+
+    setSubmitButtonDisabled(false);
+
+    const isValid = handleApiResponse(response, setErrors);
+
+    if (!isValid) {
+      return false;
+    }
+
+    router.push(navigationInformation.continueUrl);
+    return true;
   };
 
   return (
@@ -91,12 +87,7 @@ export default function SignOffForm({
       submitButtonDisabled={submitButtonDisabled}
       continueUrl={navigationInformation.continueUrl}
       backUrl={navigationInformation.backUrl}
-      errors={[
-        <ReportValidationSummary
-          key="report-validation-summary" // gitleaks:allow
-          errors={validationErrors}
-        />,
-      ]}
+      errors={renderedErrors}
     />
   );
 }

@@ -3,7 +3,7 @@ from django.db import transaction
 from compliance.models import ComplianceEarnedCredit, ComplianceReport, ComplianceReportVersion
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
 from reporting.models import ReportComplianceSummary
-from compliance.service.supplementary_version_service.constants import ONE_DECIMAL, ZERO_DECIMAL
+from compliance.service.supplementary_version_service.constants import ONE_DECIMAL
 from compliance.service.supplementary_version_service.helpers import (
     get_previous_compliance_version_by_report_and_summary,
 )
@@ -22,7 +22,8 @@ class NewEarnedCreditsHandler:
         ).first()
         if previous_earned_credit_record:
             return False
-        return previous_summary.credited_emissions == ZERO_DECIMAL and new_summary.credited_emissions >= ONE_DECIMAL
+        # Credits below ONE_DECIMAL are never issued, so both 0 and 0 < x < 1 mean "no previous earned credits"
+        return previous_summary.credited_emissions < ONE_DECIMAL and new_summary.credited_emissions >= ONE_DECIMAL
 
     @staticmethod
     @transaction.atomic()

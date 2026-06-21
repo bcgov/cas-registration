@@ -1,5 +1,8 @@
+from datetime import datetime, timezone
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
+
+FIXED_TRANSFER_SUBMISSION_TIMESTAMP = datetime(2024, 7, 5, 23, 25, 37, tzinfo=timezone.utc)
 
 
 class Command(BaseCommand):
@@ -56,3 +59,13 @@ class Command(BaseCommand):
         for fixture in fixtures:
             self.stdout.write(self.style.SUCCESS(f"Loading: {fixture}"))
             call_command('loaddata', fixture)
+
+        if any('transfer_event.json' in f for f in fixtures):
+            self._fix_transfer_event_submission_timestamps()
+
+    def _fix_transfer_event_submission_timestamps(self):
+        from common.lib import pgtrigger
+        from registration.models.event.transfer_event import TransferEvent
+
+        with pgtrigger.ignore("registration.TransferEvent:set_updated_audit_columns"):
+            TransferEvent.objects.update(created_at=FIXED_TRANSFER_SUBMISSION_TIMESTAMP)

@@ -23,6 +23,7 @@ export const emissionsFieldsUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:options": {
     arrayAddLabel: "Add Emission",
+    title: "Emission",
     label: false,
     padding: "p-2",
   },

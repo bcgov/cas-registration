@@ -2,7 +2,8 @@
 export enum AppRoutes {
   GRID_REPORTING_CURRENT_REPORTS = "reporting/reports",
   GRID_REPORTING_PAST_REPORTS = "reporting/reports/previous-years",
-  REPORT_HISTORY_GRID = "reporting/reports/report-history",
+  GRID_REPORT_HISTORY = "reporting/reports/report-history",
+  GRID_REPORTING_ATTACHMENTS_LIST = "reporting/reports/attachments",
 }
 
 // Report record ids

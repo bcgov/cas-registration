@@ -7,6 +7,7 @@ from model_bakery import baker
 
 from reporting.schema.facility_report import FacilityReportListInSchema
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from common.tests.utils.helpers import assert_error_response
 
 
 class TestFacilityReportEndpoints(CommonTestSetup):
@@ -21,8 +22,7 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version.id}/facility-report/00000000-0000-0000-0000-000000000000'
         response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', endpoint_under_test)
 
-        assert response.status_code == 404
-        assert response.json()["message"] == "Not Found"
+        assert_error_response(response, 404, "Not Found")
 
     def test_error_if_no_invalid_facility_id(self):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')

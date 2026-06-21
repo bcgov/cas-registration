@@ -10,6 +10,8 @@ import {
 import { actionHandler } from "@bciers/actions";
 import { NavigationInformation } from "../taskList/types";
 import { createVerificationUISchema } from "@reporting/src/app/components/verification/createVerificationUISchema";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
 
 interface Props {
   version_id: number;
@@ -31,7 +33,7 @@ export default function VerificationForm({
   isEIO,
 }: Props) {
   const [formData, setFormData] = useState(initialData);
-  const [errors, setErrors] = useState<string[]>();
+  const { setErrors, renderedErrors } = useFormErrors();
 
   const handleChange = (e: IChangeEvent) => {
     setFormData({ ...e.formData });
@@ -44,21 +46,16 @@ export default function VerificationForm({
   );
 
   const handleSubmit = async () => {
-    const endpoint = `reporting/report-version/${version_id}/report-verification`;
-    const method = "POST";
-    const pathToRevalidate = "reporting/reports/current-reports";
-    const response = await actionHandler(endpoint, method, pathToRevalidate, {
-      body: JSON.stringify(formData),
-    });
+    const response = await actionHandler(
+      `reporting/report-version/${version_id}/report-verification`,
+      "POST",
+      "reporting/reports/current-reports",
+      {
+        body: JSON.stringify(formData),
+      },
+    );
 
-    if (response?.error) {
-      setErrors([response.error]);
-      return false;
-    }
-
-    // ✅ Return Success
-    setErrors(undefined);
-    return true;
+    return handleApiResponse(response, setErrors);
   };
 
   return (
@@ -74,7 +71,7 @@ export default function VerificationForm({
       backUrl={navigationInformation.backUrl}
       onChange={handleChange as (data: object) => void}
       onSubmit={handleSubmit}
-      errors={errors}
+      errors={renderedErrors}
       continueUrl={navigationInformation.continueUrl}
     />
   );

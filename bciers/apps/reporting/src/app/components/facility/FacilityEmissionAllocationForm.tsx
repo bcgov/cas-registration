@@ -11,7 +11,7 @@ import {
 import { IChangeEvent } from "@rjsf/core";
 import { EmissionAllocationData, Product } from "./types";
 import { calculateEmissionData } from "./calculateEmissionsData";
-import { NavigationInformation } from "../taskList/types";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
 import { EmissionAllocationResponse } from "@reporting/src/app/utils/getEmissionAllocations";
 import { validateEmissions } from "./facilityEmissionAllocation/validateEmissions";
@@ -20,8 +20,11 @@ import {
   validateMethodologyOther,
 } from "./facilityEmissionAllocation/validateMethodology";
 import { validatePulpAndPaper } from "./facilityEmissionAllocation/validatePulpAndPaper";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
 
-// 📊 Interface for props passed to the component
+// Interface for props passed to the component
 interface Props {
   version_id: number;
   facility_id: string;
@@ -79,7 +82,7 @@ const validateFormData = (
     );
   }
 
-  return newErrors;
+  return newErrors.map((errMsg) => createGenericReportValidationError(errMsg));
 };
 
 // Helper function
@@ -166,9 +169,9 @@ export default function FacilityEmissionAllocationForm({
         ) || [],
     },
   }));
+  const { setErrors, renderedErrors } = useFormErrors();
   const [shouldReset, setShouldReset] = useState(false);
   // State for submit button disable
-  const [errors, setErrors] = useState<string[] | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
   // 🔄 Check for allocation mismatch on page load to prevent submit
@@ -271,7 +274,7 @@ export default function FacilityEmissionAllocationForm({
       // Update the form data state
       setFormData(updatedFormData);
     },
-    [isPulpAndPaper, overlappingIndustrialProcessEmissions],
+    [isPulpAndPaper, overlappingIndustrialProcessEmissions, setErrors],
   );
 
   // 🛠️ Handle form submit
@@ -321,12 +324,7 @@ export default function FacilityEmissionAllocationForm({
       body: JSON.stringify(payload),
     });
 
-    if (response?.error) {
-      setErrors([response.error]);
-      return false;
-    }
-
-    return true;
+    return handleApiResponse(response, setErrors);
   };
 
   return (
@@ -348,7 +346,7 @@ export default function FacilityEmissionAllocationForm({
         ) => Promise<boolean>
       }
       continueUrl={navigationInformation.continueUrl}
-      errors={errors}
+      errors={renderedErrors}
       formContext={{
         facility_emission_data: formData.basic_emission_allocation_data.concat(
           formData.fuel_excluded_emission_allocation_data,

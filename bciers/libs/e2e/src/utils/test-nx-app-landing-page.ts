@@ -37,11 +37,7 @@ const testNxProjectLandingPage = async (zones: string[]) => {
   zones.forEach((zone) => {
     test.describe(`Test ${zone} landing page`, () => {
       const url = `${process.env.E2E_BASEURL}${zone}`;
-      // Reporting dashboard is broken at the moment
-      const user =
-        zone === "reporting"
-          ? UserRole.CAS_ADMIN
-          : UserRole.INDUSTRY_USER_ADMIN;
+      const user = UserRole.INDUSTRY_USER_ADMIN;
       const testRole = `E2E_${user.toUpperCase()}_STORAGE_STATE`;
 
       const storageState = JSON.parse(process.env[testRole] as string);

@@ -16,9 +16,9 @@ class TestNewEntrantDataApi(CommonTestSetup):
         self.report_new_entrant = baker.make_recipe(
             'reporting.tests.utils.report_new_entrant',
             report_version=self.report_version,
-            authorization_date='2022-01-01',
-            first_shipment_date='4999-01-02',
-            new_entrant_period_start='1999-01-02',
+            authorization_date='2022-01-01T00:00:00Z',
+            first_shipment_date='4999-01-02T00:00:00Z',
+            new_entrant_period_start='1999-01-02T00:00:00Z',
         )
 
         super().setup_method()
@@ -76,10 +76,10 @@ class TestNewEntrantDataApi(CommonTestSetup):
             'naics_code': '486210',
             'new_entrant_data': {
                 'assertion_statement': True,
-                'authorization_date': '2022-01-01T00:00:00',
-                'first_shipment_date': '4999-01-02T00:00:00',
+                'authorization_date': '2022-01-01T00:00:00Z',
+                'first_shipment_date': '4999-01-02T00:00:00Z',
                 'id': self.report_new_entrant.id,
-                'new_entrant_period_start': '1999-01-02T00:00:00',
+                'new_entrant_period_start': '1999-01-02T00:00:00Z',
             },
             'products': [
                 {
@@ -149,10 +149,10 @@ class TestNewEntrantDataApi(CommonTestSetup):
             'naics_code': '486210',
             'new_entrant_data': {
                 'assertion_statement': True,
-                'authorization_date': '2022-01-01T00:00:00',
-                'first_shipment_date': '4999-01-02T00:00:00',
+                'authorization_date': '2022-01-01T00:00:00Z',
+                'first_shipment_date': '4999-01-02T00:00:00Z',
                 'id': self.report_new_entrant.id,
-                'new_entrant_period_start': '1999-01-02T00:00:00',
+                'new_entrant_period_start': '1999-01-02T00:00:00Z',
             },
             'products': [
                 {

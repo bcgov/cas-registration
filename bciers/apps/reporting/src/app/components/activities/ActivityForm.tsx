@@ -20,9 +20,12 @@ import {
   validateEmissionsMethodology,
   validateFuelName,
 } from "@bciers/utils/src/activityFormValidators";
-import { NavigationInformation } from "../taskList/types";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { Dict } from "@bciers/types/dictionary";
 import useKey from "@bciers/utils/src/useKey";
+import { getActivitySchema } from "@reporting/src/app/utils/getActivitySchema";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -64,8 +67,7 @@ export default function ActivityForm({
   reportingYear,
   activityIndex,
 }: Readonly<Props>) {
-  // 🐜 To display errors
-  const [errorList, setErrorList] = useState([] as string[]);
+  const { setErrors, renderedErrors } = useFormErrors();
   const [formState, setFormState] = useState(activityFormData);
   const [key, resetKey] = useKey();
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
@@ -107,10 +109,12 @@ export default function ActivityForm({
     const sourceTypeQueryString = sourceTypeIds.length
       ? `&${sourceTypeIds.map((id) => `source_types[]=${id}`).join("&")}`
       : "";
-    return await actionHandler(
-      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${reportVersionId}&facility_id=${facilityId}${sourceTypeQueryString}`,
-      "GET",
-      "",
+
+    return getActivitySchema(
+      reportVersionId,
+      currentActivity.id,
+      sourceTypeQueryString,
+      facilityId,
     );
   };
 
@@ -124,7 +128,7 @@ export default function ActivityForm({
     if (!arrayEquals(selectedSourceTypes, selectedSourceTypeIds)) {
       const schemaData = await fetchSchemaData(selectedSourceTypes);
       if (schemaData.error) {
-        setErrorList([schemaData.error]);
+        setErrors([createGenericReportValidationError(schemaData.error)]);
         return;
       }
       setJsonSchema(safeJsonParse(schemaData).schema);
@@ -157,15 +161,17 @@ export default function ActivityForm({
       //if the schema is a fallback schema, we just return true
       return true;
     }
-    setErrorList([]);
+    setErrors(undefined);
     const sourceTypeCount = Object.keys(sourceTypeMap).length;
 
     // Ensure we use the filtered formData with omitted extra data
     const filteredData = data.formData;
 
     if (!filteredData.sourceTypes) {
-      setErrorList([
-        "At least one source type must be selected to report for that activity.",
+      setErrors([
+        createGenericReportValidationError(
+          "At least one source type must be selected to report for that activity.",
+        ),
       ]);
       return false;
     }
@@ -200,7 +206,7 @@ export default function ActivityForm({
     });
 
     if (response.error) {
-      setErrorList([response.error]);
+      setErrors([createGenericReportValidationError(response.error)]);
       return false;
     }
     if (response) {
@@ -223,7 +229,7 @@ export default function ActivityForm({
       formData={formState}
       uiSchema={getUiSchema(currentActivity.slug, reportingYear)}
       onChange={debounce(handleFormChange, 200) as (data: object) => void}
-      errors={errorList}
+      errors={renderedErrors}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
       customValidate={customValidate}

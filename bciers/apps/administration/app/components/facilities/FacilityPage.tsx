@@ -8,12 +8,12 @@ import {
 } from "../../data/jsonSchema/facilitiesLfo";
 import { UUID } from "crypto";
 import FacilityForm from "./FacilityForm";
+import { FacilityFormData, Operation } from "./types";
 import getFacility from "./getFacility";
 import { FacilityTypes, OperationTypes } from "@bciers/utils/src/enums";
 import { getOperation } from "@bciers/actions/api";
 import NewTabBanner from "@bciers/components/layout/NewTabBanner";
 
-// 🧩 Main component
 export default async function Facility({
   facilityId,
   operationId,
@@ -21,15 +21,9 @@ export default async function Facility({
   facilityId?: UUID;
   operationId: UUID;
 }) {
-  let facilityFormData: { [key: string]: any } | { error: string } = {};
+  let facilityFormData: FacilityFormData = {};
 
-  const operation = await getOperation(operationId);
-  if (operation.error) {
-    throw new Error(
-      "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
-    );
-  }
-
+  const operation = (await getOperation(operationId)) as Operation;
   const isSfo = operation.type === OperationTypes.SFO;
 
   let isCreating = true;
@@ -37,13 +31,7 @@ export default async function Facility({
   if (facilityId) {
     facilityFormData = await getFacility(facilityId);
     isCreating = Object.keys(facilityFormData).length === 0;
-    if (facilityFormData?.error) {
-      throw new Error(
-        "We couldn't find your facility information. Please ensure you have been approved for access to this facility.",
-      );
-    }
   } else if (isSfo) {
-    // Pre-populate facility name and type for SFO Operations
     facilityFormData = {
       name: operation.name,
       type: FacilityTypes.SFO,

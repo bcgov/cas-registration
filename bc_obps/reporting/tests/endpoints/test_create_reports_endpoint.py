@@ -14,6 +14,7 @@ from reporting.models import Report, ReportVersion
 from reporting.tests.utils.bakers import report_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from common.tests.utils.helpers import assert_error_response
 
 
 class TestReportsEndpoint(CommonTestSetup):
@@ -52,15 +53,14 @@ class TestReportsEndpoint(CommonTestSetup):
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=operation,
             operator=operation.operator,
-            start_date=timezone.datetime(2024, 1, 1).date(),
+            start_date=timezone.make_aware(timezone.datetime(2024, 1, 1)),
             end_date=None,
         )
 
         request_data = {"operation_id": str(operation.id), "reporting_year": 2111}
         response = self.send_authorized_post_request(request_data, operation)
 
-        assert response.status_code == 404
-        assert response.json()["message"] == "Not Found"
+        assert_error_response(response, 404, "Not Found")
 
     def test_error_if_report_exists(self):
         report = report_baker(reporting_year_id=2024)
@@ -68,7 +68,7 @@ class TestReportsEndpoint(CommonTestSetup):
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=report.operation,
             operator=report.operation.operator,
-            start_date=timezone.datetime(2022, 1, 1).date(),
+            start_date=timezone.make_aware(timezone.datetime(2022, 1, 1)),
             end_date=None,
         )
 
@@ -94,7 +94,7 @@ class TestReportsEndpoint(CommonTestSetup):
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=operation,
             operator=user_operator.operator,
-            start_date=timezone.datetime(2022, 1, 1).date(),
+            start_date=timezone.make_aware(timezone.datetime(2022, 1, 1)),
             end_date=None,
         )
 
@@ -149,7 +149,6 @@ class TestReportsEndpoint(CommonTestSetup):
         assert_report_version_ownership_is_validated("get_report_operation_by_version_id")
         assert_report_version_ownership_is_validated("save_report")
         assert_report_version_ownership_is_validated("change_report_version_type", "post")
-        assert_report_version_ownership_is_validated("get_regulated_products_by_version_id")
         assert_report_version_ownership_is_validated("get_report_version")
 
     @patch("service.report_version_service.ReportVersionService.delete_report_version")

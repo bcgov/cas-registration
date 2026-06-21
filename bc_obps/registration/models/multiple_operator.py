@@ -16,7 +16,7 @@ from registration.models.rls_configs.multiple_operator import Rls as MultipleOpe
 class MultipleOperator(TimeStampedModel):
     operation = models.ForeignKey(
         Operation,
-        db_comment="The operation that this multiple operator is associated with",
+        db_comment="The operation this additional operator is associated with. Foreign key to erc.operation",
         on_delete=models.DO_NOTHING,
         related_name="multiple_operators",
     )
@@ -24,7 +24,7 @@ class MultipleOperator(TimeStampedModel):
     trade_name = models.CharField(max_length=1000, db_comment="The trade name of an operator")
     cra_business_number = models.CharField(
         validators=[RegexValidator(regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE)],
-        db_comment="The CRA business number of an operator",
+        db_comment="The CRA (Canada Revenue Agency) business number of this operator, a unique 9-digit identifier",
     )
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of an operator",
@@ -36,7 +36,7 @@ class MultipleOperator(TimeStampedModel):
         BusinessStructure,
         on_delete=models.DO_NOTHING,
         null=True,
-        db_comment="The business structure of an operator",
+        db_comment="The business structure of this operator. Foreign key to erc.business_structure",
         related_name="multiple_operators",
     )
     attorney_address = models.ForeignKey(

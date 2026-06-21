@@ -57,7 +57,7 @@ class ReportEmissionAllocation(TimeStampedModel):
             ),
             models.CheckConstraint(
                 name="allocation_other_methodology_must_have_description",
-                check=~Q(
+                condition=~Q(
                     allocation_methodology="Other",
                     allocation_other_methodology_description__isnull=True,
                 ),

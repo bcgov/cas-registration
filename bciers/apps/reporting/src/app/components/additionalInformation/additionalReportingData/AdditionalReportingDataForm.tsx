@@ -9,7 +9,9 @@ import {
   additionalReportingDataWithElectricityGeneratedSchema,
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { actionHandler } from "@bciers/actions";
-import { NavigationInformation } from "../../taskList/types";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
 
 interface AdditionalReportingDataProps {
   versionId: number;
@@ -39,7 +41,7 @@ export default function AdditionalReportingDataForm({
   navigationInformation,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [errors, setErrors] = useState<string[]>();
+  const { setErrors, renderedErrors } = useFormErrors();
 
   const schema: RJSFSchema = includeElectricityGenerated
     ? additionalReportingDataWithElectricityGeneratedSchema
@@ -58,13 +60,7 @@ export default function AdditionalReportingDataForm({
       body: JSON.stringify(payload),
     });
 
-    if (response?.error) {
-      setErrors([response.error]);
-      return false;
-    }
-
-    setErrors(undefined);
-    return true;
+    return handleApiResponse(response, setErrors);
   };
 
   return (
@@ -81,7 +77,7 @@ export default function AdditionalReportingDataForm({
       }}
       onSubmit={(data: any) => handleSubmit(data.formData)}
       continueUrl={navigationInformation.continueUrl}
-      errors={errors}
+      errors={renderedErrors}
     />
   );
 }

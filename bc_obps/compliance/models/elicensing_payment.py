@@ -15,7 +15,7 @@ class ElicensingPayment(TimeStampedModel):
     elicensing_line_item = models.ForeignKey(
         ElicensingLineItem,
         on_delete=models.CASCADE,
-        db_comment="Foreign key to the line item record this payment relates to",
+        db_comment="The line item record this payment relates to. Foreign key to erc.elicensing_line_item",
         related_name="elicensing_payments",
     )
 
@@ -26,7 +26,7 @@ class ElicensingPayment(TimeStampedModel):
     )
 
     received_date = models.DateField(
-        db_comment="receivedDate of the payment in elicensing. The date when payment is received in the OBPS bank account. Receive Date can be backdated. This is the date that impacts interest calculation.",
+        db_comment="receivedDate of the payment in elicensing. The date when payment is received in the OBPS (Output-Based Pricing System) bank account. Receive Date can be backdated. This is the date that impacts interest calculation",
         null=True,
         blank=True,
     )

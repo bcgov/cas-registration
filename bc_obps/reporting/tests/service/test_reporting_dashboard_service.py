@@ -64,8 +64,8 @@ class TestReportingDashboardService:
             baker.make_recipe(
                 'registration.tests.utils.operation_designated_operator_timeline',
                 operation=operation,
-                start_date="5090-01-01 01:46:20.789146",
-                end_date="5092-12-31 23:59:59.000000",
+                start_date="5090-01-01 01:46:20.789146+00:00",
+                end_date="5092-12-31 23:59:59.000000+00:00",
                 operator=user_operator.operator,
             )
 
@@ -144,7 +144,7 @@ class TestReportingDashboardService:
                 'registration.tests.utils.operation_designated_operator_timeline',
                 operator=uo.operator,
                 operation=operation,
-                start_date="2023-01-01",
+                start_date="2023-01-01T00:00:00Z",
                 end_date=None,
             )
 
@@ -311,8 +311,8 @@ class TestReportingDashboardService:
             baker.make_recipe(
                 'registration.tests.utils.operation_designated_operator_timeline',
                 operation=operation,
-                start_date="5090-01-01 01:46:20.789146",
-                end_date="5092-12-31 23:59:59.000000",
+                start_date="5090-01-01 01:46:20.789146+00:00",
+                end_date="5092-12-31 23:59:59.000000+00:00",
                 operator=user_operator.operator,
             )
         # Change operation names so sorting by name produces consistent results
@@ -425,7 +425,7 @@ class TestReportingDashboardService:
                 'registration.tests.utils.operation_designated_operator_timeline',
                 operator=operation.operator,
                 operation=operation,
-                start_date="2023-01-01",
+                start_date="2023-01-01T00:00:00Z",
                 end_date=None,
             )
 

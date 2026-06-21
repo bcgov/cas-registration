@@ -7,7 +7,7 @@
       "operation": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488e",
       "from_operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "to_operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
-      "effective_date": "2025-01-01T09:00:00Z",
+      "effective_date": "2099-12-31T09:00:00Z",
       "status": "To be transferred"
     }
   },
@@ -60,7 +60,7 @@
       "from_operation": "002d5a9e-32a6-4191-938c-2c02bfec592d",
       "to_operation": "59d95661-c752-489b-9fd1-0c3fa3454dda",
       "status": "To be transferred",
-      "effective_date": "2026-03-01T09:00:00Z"
+      "effective_date": "2099-12-31T09:00:00Z"
     }
   }
 ]

@@ -16,10 +16,6 @@ export default async function getAttachmentsList(
 
   const pageData = await actionHandler(endpoint, "GET", "");
 
-  if (pageData.error) {
-    throw new Error(`Failed to fetch the list of attachments`);
-  }
-
   return {
     rows: pageData?.items,
     row_count: pageData?.count,

@@ -18,17 +18,17 @@ import { BC_GOV_SEMANTICS_RED } from "@bciers/styles";
 
 interface SingleStepTaskListFormProps {
   disabled?: boolean;
-  formData: { [key: string]: any };
+  formData: Record<string, unknown>;
   onCancel: () => void;
   onChange?: (e: IChangeEvent) => void;
-  onSubmit: (e: IChangeEvent) => any;
+  onSubmit: (e: IChangeEvent) => Promise<{ error?: string } | void>;
   schema: RJSFSchema;
   uiSchema: UiSchema;
   error?: string;
   inlineMessage?: React.ReactNode;
   mode?: FormMode;
   allowEdit?: boolean;
-  formContext?: { [key: string]: any };
+  formContext?: Record<string, unknown>;
   showTasklist?: boolean;
   showCancelOrBackButton?: boolean;
   showDeleteButton?: boolean;
@@ -57,8 +57,7 @@ const SingleStepTaskListForm = ({
   deleteButtonText = "Delete",
   customButtonSection,
 }: SingleStepTaskListFormProps) => {
-  const hasFormData = Object.keys(rawFormData).length > 0;
-  const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
+  const formData = createNestedFormData(rawFormData, schema);
   const [formState, setFormState] = useState(formData);
   const [modeState, setModeState] = useState(mode);
   const [isDisabled, setIsDisabled] = useState(

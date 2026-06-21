@@ -1,5 +1,6 @@
 import pytest
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
+from django.utils import timezone
 from decimal import Decimal
 from unittest.mock import patch
 from model_bakery import baker
@@ -157,7 +158,9 @@ class TestPenaltyCalculationService:
         self.obligation.elicensing_invoice = clean_invoice
         compliance_period = self.obligation.compliance_report_version.compliance_report.compliance_period
         compliance_deadline = compliance_period.compliance_deadline
-        self.obligation.created_at = compliance_deadline - timedelta(days=1)
+        self.obligation.created_at = timezone.make_aware(
+            datetime.combine(compliance_deadline - timedelta(days=1), time.min)
+        )
         self.obligation.save()
 
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
@@ -251,7 +254,9 @@ class TestPenaltyCalculationService:
         self.obligation.elicensing_invoice = clean_invoice
         compliance_period = self.obligation.compliance_report_version.compliance_report.compliance_period
         compliance_deadline = compliance_period.compliance_deadline
-        self.obligation.created_at = compliance_deadline - timedelta(days=1)
+        self.obligation.created_at = timezone.make_aware(
+            datetime.combine(compliance_deadline - timedelta(days=1), time.min)
+        )
         self.obligation.save(update_fields=["created_at"])
 
         last_transaction_date = PenaltyCalculationService.determine_last_transaction_date(obligation=self.obligation)

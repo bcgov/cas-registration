@@ -171,8 +171,8 @@ class TestComplianceDashboardService:
         make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=xferred_test_data.operation,
-            start_date="2024-01-01 01:46:20.789146",
-            end_date="2026-02-27 01:46:20.789146",
+            start_date="2024-01-01 01:46:20.789146+00:00",
+            end_date="2026-02-27 01:46:20.789146+00:00",
             operator=previous_operator,
         )
 

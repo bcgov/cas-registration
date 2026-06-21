@@ -166,6 +166,88 @@ class TestNewEarnedCreditsHandler(BaseSupplementaryVersionServiceTest):
         # Assert
         assert result is False
 
+    def test_can_handle_previous_below_one_credited_emissions(self):
+        # 0 < previous.credited_emissions < 1 fell through all handlers.
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('0.5'),
+                report_version=self.report_version_1,
+            )
+        self.new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=0,
+            credited_emissions=Decimal('100'),
+            report_version=self.report_version_2,
+        )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        self.previous_compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=self.previous_summary,
+        )
+
+        result = NewEarnedCreditsHandler.can_handle(self.new_summary, self.previous_summary)
+
+        assert result is True
+
+    def test_service_routes_to_new_earned_credits_handler_when_previous_below_one(
+        self,
+        mock_increased_handler,
+        mock_decreased_handler,
+        mock_no_change_handler,
+        mock_increased_credit_handler,
+        mock_decreased_credit_handler,
+        mock_new_earned_credits_handler,
+        mock_superceded_can_handle,
+    ):
+        # service must route to NewEarnedCreditsHandler
+        # when previous had 0 < credited_emissions < 1 (no earned credit record ever issued).
+        mock_superceded_can_handle.return_value = False
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('0.5'),
+                report_version=self.report_version_1,
+            )
+        self.new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=0,
+            credited_emissions=Decimal('100'),
+            report_version=self.report_version_2,
+        )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        self.previous_compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=self.compliance_report,
+            report_compliance_summary=self.previous_summary,
+            is_supplementary=False,
+        )
+        mock_result = MagicMock(spec=ComplianceReportVersion)
+        mock_new_earned_credits_handler.return_value = mock_result
+
+        result = SupplementaryVersionService().handle_supplementary_version(
+            self.compliance_report, self.report_version_2, 2
+        )
+
+        mock_new_earned_credits_handler.assert_called_once_with(
+            compliance_report=self.compliance_report,
+            new_summary=self.new_summary,
+            previous_summary=self.previous_summary,
+            version_count=2,
+        )
+        assert result == mock_result
+        mock_increased_handler.assert_not_called()
+        mock_decreased_handler.assert_not_called()
+        mock_no_change_handler.assert_not_called()
+        mock_increased_credit_handler.assert_not_called()
+        mock_decreased_credit_handler.assert_not_called()
+
     def test_can_handle_returns_false_when_new_has_no_credited_emissions(self):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):

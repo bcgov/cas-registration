@@ -14,10 +14,12 @@ class ComplianceChargeRate(TimeStampedModel):
         ReportingYear,
         on_delete=models.PROTECT,
         related_name='compliance_charge_rate',
-        db_comment="The associated reporting year for this compliance charge rate",
+        db_comment="The associated reporting year for this compliance charge rate. References erc.reporting_year",
     )
     rate = models.DecimalField(
-        max_digits=10, decimal_places=2, db_comment="The compliance charge rate in CAD dollars per tCO2e"
+        max_digits=10,
+        decimal_places=2,
+        db_comment="The compliance charge rate in CAD dollars per tCO2e (tonnes of carbon dioxide equivalent). These rates are defined by GGIRCA https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01",
     )
 
     class Meta(TimeStampedModel.Meta):

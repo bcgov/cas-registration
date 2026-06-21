@@ -548,7 +548,21 @@ class TestBCCarbonRegistryAPIClient:
     def test_list_all_units_holding_account_success(self, authenticated_client):
         # Arrange
         client, mock_request = authenticated_client
-        mock_response = Mock(
+        base_entity = {
+            "id": MOCK_FIFTEEN_DIGIT_STRING,
+            "entityId": MOCK_FIFTEEN_DIGIT_INT,
+            "standardId": MOCK_FIFTEEN_DIGIT_INT,
+            "standardName": "Test Standard",
+            "accountId": MOCK_FIFTEEN_DIGIT_INT,
+            "accountName": "Test Account",
+            "projectId": MOCK_FIFTEEN_DIGIT_INT,
+            "holdingQuantity": 2.0,
+            "serialNo": "BC-BCO-IN-104000000037027-01032025-30032025-16414-16752-SPG",
+            "unitMeasurementName": "tCO2e",
+            "unitType": "BCO",
+            "className": "BCO",
+        }
+        offset_response = Mock(
             status_code=200,
             json=lambda: {
                 "totalEntities": 1,
@@ -556,30 +570,28 @@ class TestBCCarbonRegistryAPIClient:
                 "numberOfElements": 1,
                 "first": True,
                 "last": True,
-                "entities": [
-                    {
-                        "id": MOCK_FIFTEEN_DIGIT_STRING,
-                        "entityId": MOCK_FIFTEEN_DIGIT_INT,
-                        "standardId": MOCK_FIFTEEN_DIGIT_INT,
-                        "standardName": "Test Standard",
-                        "accountId": MOCK_FIFTEEN_DIGIT_INT,
-                        "accountName": "Test Account",
-                        "projectId": MOCK_FIFTEEN_DIGIT_INT,
-                        "holdingQuantity": 2.0,
-                        "serialNo": "BC-BCE-IN-104000000037027-01032025-30032025-16414-16752-SPG",
-                        "unitMeasurementName": "tCO2e",
-                        "unitType": "BCO",
-                        "className": "BCO",
-                    }
-                ],
+                "entities": [{**base_entity, "unitType": "BCO", "className": "BCO"}],
             },
         )
-        mock_request.return_value = mock_response
+        earned_credit_response = Mock(
+            status_code=200,
+            json=lambda: {
+                "totalEntities": 1,
+                "totalPages": 1,
+                "numberOfElements": 1,
+                "first": True,
+                "last": True,
+                "entities": [{**base_entity, "unitType": "BCE", "className": "BCE"}],
+            },
+        )
+        mock_request.side_effect = [offset_response, earned_credit_response]
         # Act
         result = client.list_all_units(account_id="123", vintage_year=2022, limit=10, start=0)
         # Assert
-        assert result["totalEntities"] == 1
-        assert len(result["entities"]) == 1
+        assert result["totalEntities"] == 2
+        assert result["numberOfElements"] == 2
+        assert len(result["entities"]) == 2
+        assert mock_request.call_count == 2
         assert sorted(list(result["entities"][0].keys())) == sorted(
             [
                 "id",
@@ -596,64 +608,104 @@ class TestBCCarbonRegistryAPIClient:
                 "className",
             ]
         )
-        mock_request.assert_called_once()
-        # Verify the payload uses accountId, accountTypeCode REGULATED_OPERATION, and stateCode ACTIVE
-        call_kwargs = mock_request.call_args
-        payload = call_kwargs.kwargs.get("json") or call_kwargs[1].get("json")
-        filter_model = payload["searchFilter"]["filterModel"]
-        assert "accountId" in filter_model
-        assert "subAccountId" not in filter_model
-        assert filter_model["accountTypeCode"]["columnFilters"][0]["filter"] == "REGULATED_OPERATION"
-        assert filter_model["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE"
-        assert filter_model["stateCode"]["columnFilters"][0]["type"] == "equals"
+        # Verify BCO request: unitType=BCO, vintage>=2019 (2022-3), accountId, REGULATED_OPERATION, ACTIVE
+        offset_payload = mock_request.call_args_list[0].kwargs.get("json") or mock_request.call_args_list[0][1].get(
+            "json"
+        )
+        offset_filter = offset_payload["searchFilter"]["filterModel"]
+        assert "accountId" in offset_filter
+        assert "subAccountId" not in offset_filter
+        assert offset_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "REGULATED_OPERATION"
+        assert offset_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE"
+        assert offset_filter["stateCode"]["columnFilters"][0]["type"] == "equals"
+        assert offset_filter["unitType"]["columnFilters"][0]["filter"] == "BCO"
+        assert offset_filter["vintage"]["columnFilters"][0]["filter"] == 2019
+        assert offset_filter["vintage"]["columnFilters"][0]["type"] == "greaterThanOrEqual"
+        # Verify BCE request: unitType=BCE, no vintage filter, same account/state filters
+        earned_credit_payload = mock_request.call_args_list[1].kwargs.get("json") or mock_request.call_args_list[1][
+            1
+        ].get("json")
+        earned_credit_filter = earned_credit_payload["searchFilter"]["filterModel"]
+        assert "accountId" in earned_credit_filter
+        assert "subAccountId" not in earned_credit_filter
+        assert earned_credit_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "REGULATED_OPERATION"
+        assert earned_credit_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE"
+        assert earned_credit_filter["unitType"]["columnFilters"][0]["filter"] == "BCE"
+        assert "vintage" not in earned_credit_filter
 
     def test_list_all_units_sub_account_success(self, authenticated_client):
         # Arrange
         client, mock_request = authenticated_client
-        mock_response = Mock(
+        base_entity = {
+            "id": MOCK_FIFTEEN_DIGIT_STRING,
+            "entityId": MOCK_FIFTEEN_DIGIT_INT,
+            "standardId": MOCK_FIFTEEN_DIGIT_INT,
+            "standardName": "Test Standard",
+            "accountId": MOCK_FIFTEEN_DIGIT_INT,
+            "accountName": "Test Sub Account",
+            "projectId": MOCK_FIFTEEN_DIGIT_INT,
+            "holdingQuantity": 3.0,
+            "serialNo": "BC-BCE-IN-104000000037027-01032025-30032025-16414-16752-SPG",
+            "unitMeasurementName": "tCO2e",
+            "unitType": "BCO",
+            "className": "BCO",
+        }
+        offset_response = Mock(
             status_code=200,
             json=lambda: {
-                "totalEntities": 2,
+                "totalEntities": 1,
                 "totalPages": 1,
-                "numberOfElements": 2,
+                "numberOfElements": 1,
                 "first": True,
                 "last": True,
-                "entities": [
-                    {
-                        "id": MOCK_FIFTEEN_DIGIT_STRING,
-                        "entityId": MOCK_FIFTEEN_DIGIT_INT,
-                        "standardId": MOCK_FIFTEEN_DIGIT_INT,
-                        "standardName": "Test Standard",
-                        "accountId": MOCK_FIFTEEN_DIGIT_INT,
-                        "accountName": "Test Sub Account",
-                        "projectId": MOCK_FIFTEEN_DIGIT_INT,
-                        "holdingQuantity": 3.0,
-                        "serialNo": "BC-BCE-IN-104000000037027-01032025-30032025-16414-16752-SPG",
-                        "unitMeasurementName": "tCO2e",
-                        "unitType": "BCO",
-                        "className": "BCO",
-                    }
-                ],
+                "entities": [{**base_entity, "unitType": "BCO", "className": "BCO"}],
             },
         )
-        mock_request.return_value = mock_response
+        earned_credit_response = Mock(
+            status_code=200,
+            json=lambda: {
+                "totalEntities": 1,
+                "totalPages": 1,
+                "numberOfElements": 1,
+                "first": True,
+                "last": True,
+                "entities": [{**base_entity, "unitType": "BCE", "className": "BCE"}],
+            },
+        )
+        mock_request.side_effect = [offset_response, earned_credit_response]
         # Act
         result = client.list_all_units(
             account_id="456", vintage_year=2022, limit=10, start=0, account_type="sub_account"
         )
         # Assert
         assert result["totalEntities"] == 2
-        assert len(result["entities"]) == 1
-        mock_request.assert_called_once()
-        # Verify the payload uses subAccountId, accountTypeCode COMPLIANCE_SUB_ACCOUNT, and stateCode ACTIVE,RETIRED
-        call_kwargs = mock_request.call_args
-        payload = call_kwargs.kwargs.get("json") or call_kwargs[1].get("json")
-        filter_model = payload["searchFilter"]["filterModel"]
-        assert "subAccountId" in filter_model
-        assert "accountId" not in filter_model
-        assert filter_model["accountTypeCode"]["columnFilters"][0]["filter"] == "COMPLIANCE_SUB_ACCOUNT"
-        assert filter_model["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE,RETIRED"
-        assert filter_model["stateCode"]["columnFilters"][0]["type"] == "in"
+        assert result["numberOfElements"] == 2
+        assert len(result["entities"]) == 2
+        assert mock_request.call_count == 2
+        # Verify BCO request: subAccountId, COMPLIANCE_SUB_ACCOUNT, ACTIVE,RETIRED, vintage filter, unitType=BCO
+        offset_payload = mock_request.call_args_list[0].kwargs.get("json") or mock_request.call_args_list[0][1].get(
+            "json"
+        )
+        offset_filter = offset_payload["searchFilter"]["filterModel"]
+        assert "subAccountId" in offset_filter
+        assert "accountId" not in offset_filter
+        assert offset_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "COMPLIANCE_SUB_ACCOUNT"
+        assert offset_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE,RETIRED"
+        assert offset_filter["stateCode"]["columnFilters"][0]["type"] == "in"
+        assert offset_filter["unitType"]["columnFilters"][0]["filter"] == "BCO"
+        assert "vintage" in offset_filter
+        # Verify BCE request: subAccountId, COMPLIANCE_SUB_ACCOUNT, ACTIVE,RETIRED, no vintage filter, unitType=BCE
+        earned_credit_payload = mock_request.call_args_list[1].kwargs.get("json") or mock_request.call_args_list[1][
+            1
+        ].get("json")
+        earned_credit_filter = earned_credit_payload["searchFilter"]["filterModel"]
+        assert "subAccountId" in earned_credit_filter
+        assert "accountId" not in earned_credit_filter
+        assert earned_credit_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "COMPLIANCE_SUB_ACCOUNT"
+        assert earned_credit_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE,RETIRED"
+        assert earned_credit_filter["stateCode"]["columnFilters"][0]["type"] == "in"
+        assert earned_credit_filter["unitType"]["columnFilters"][0]["filter"] == "BCE"
+        assert "vintage" not in earned_credit_filter
 
     def test_list_all_units_invalid_params(self, setup, caplog):
         # Arrange
@@ -667,7 +719,7 @@ class TestBCCarbonRegistryAPIClient:
     def test_list_all_units_no_units_in_vintage(self, authenticated_client):
         # Arrange
         client, mock_request = authenticated_client
-        mock_response = Mock(
+        empty_response = Mock(
             status_code=200,
             json=lambda: {
                 "totalEntities": 0,
@@ -678,15 +730,17 @@ class TestBCCarbonRegistryAPIClient:
                 "entities": [],
             },
         )
-        mock_request.return_value = mock_response
+        # Both BCO and BCE requests return empty results
+        mock_request.side_effect = [empty_response, empty_response]
 
         # Act
         result = client.list_all_units(account_id="123", vintage_year=2022, limit=10, start=0)
 
         # Assert
         assert result["totalEntities"] == 0
+        assert result["numberOfElements"] == 0
         assert len(result["entities"]) == 0
-        mock_request.assert_called_once()
+        assert mock_request.call_count == 2
 
     def test_get_project_details_success(self, authenticated_client):
         # Arrange

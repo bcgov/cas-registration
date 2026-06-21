@@ -10,8 +10,11 @@ import {
   FieldTemplate,
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
-import { createFormContext } from "../shared/formContextHelpers";
 import NoRegulatedProductsAlertFieldTemplate from "@reporting/src/data/jsonSchema/facility/NoRegulatedProductsAlertFieldTemplate";
+import { createFormContext } from "@reporting/src/app/components/shared/formContextHelpers";
+import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
 
 interface Props {
   report_version_id: number;
@@ -85,7 +88,7 @@ const ProductionDataForm: React.FC<Props> = ({
   };
 
   const [formData, setFormData] = useState<any>(initialFormData);
-  const [errors, setErrors] = useState<string[]>();
+  const { setErrors, renderedErrors } = useFormErrors();
 
   // No regulated product short circuits
   if (allowedProducts.length < 1) {
@@ -120,7 +123,7 @@ const ProductionDataForm: React.FC<Props> = ({
           continueUrl={navigationInformation.continueUrl}
           steps={navigationInformation.headerSteps}
           initialStep={navigationInformation.headerStepIndex}
-          errors={["A product must be selected."]}
+          errors={[]}
           saveButtonDisabled={true}
           submitButtonDisabled={true}
           formContext={{
@@ -158,7 +161,9 @@ const ProductionDataForm: React.FC<Props> = ({
     if (isPulpAndPaper && overlappingIndustrialProcessEmissions > 0) {
       if (!data.product_selection.includes("Pulp and paper: chemical pulp")) {
         setErrors([
-          "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
+          createGenericReportValidationError(
+            "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
+          ),
         ]);
         return false;
       }
@@ -169,7 +174,9 @@ const ProductionDataForm: React.FC<Props> = ({
       ) &&
       formData.product_selection.length < 1
     ) {
-      setErrors(["A product must be selected."]);
+      setErrors([
+        createGenericReportValidationError("A product must be selected."),
+      ]);
       return false;
     }
     const response = await postProductionData(
@@ -178,13 +185,7 @@ const ProductionDataForm: React.FC<Props> = ({
       data.production_data,
     );
 
-    if (response?.error) {
-      setErrors([response.error]);
-      return false;
-    }
-
-    setErrors(undefined);
-    return true;
+    return handleApiResponse(response, setErrors);
   };
 
   return (
@@ -205,7 +206,8 @@ const ProductionDataForm: React.FC<Props> = ({
       }
       onChange={(data: any) => onChange((data as any).formData)}
       continueUrl={navigationInformation.continueUrl}
-      errors={errors}
+      submitButtonDisabled={formData.product_selection.length <= 0}
+      errors={renderedErrors}
     />
   );
 };

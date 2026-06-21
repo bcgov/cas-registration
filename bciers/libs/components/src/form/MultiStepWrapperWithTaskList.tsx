@@ -24,7 +24,7 @@ interface Props {
   continueUrl: string;
   saveButtonText?: string;
   submittingButtonText?: string;
-  errors?: string[];
+  errors?: (string | React.ReactNode)[];
   isSaving?: boolean;
   isRedirecting?: boolean;
   noFormSave?: () => void;

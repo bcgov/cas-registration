@@ -45,12 +45,12 @@
     schedule: ["every weekend"],
   },
 
-   minimumReleaseAge: "7 days"
   // Waits N days before opening a PR for a newly released version.
   // Prevents chasing packages that publish a bad release and immediately patch it —
   // Renovate will simply wait and open a PR for the stable follow-up version instead.
   // Re-enable if the team finds itself frequently updating to versions that get
   // superseded within days.
+  minimumReleaseAge: "7 days",
 
   packageRules: [
     {

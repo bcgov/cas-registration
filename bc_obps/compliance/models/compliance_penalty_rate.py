@@ -14,12 +14,12 @@ class CompliancePenaltyRate(TimeStampedModel):
         CompliancePeriod,
         on_delete=models.PROTECT,
         related_name='compliance_penalty_rate',
-        db_comment="The associated compliance_period for this compliance penalty rate",
+        db_comment="The associated compliance_period for this compliance penalty rate. Foreign key to erc.compliance_period",
     )
     rate = models.DecimalField(
         max_digits=6,
         decimal_places=6,
-        db_comment="The compliance Penalty rate applied daily if an obligation is not paid on time",
+        db_comment="The compliance penalty rate applied daily if an obligation is not paid on time. The rate is defined by Greenhouse Gas Emission Administrative Penalties and Appeals Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/248_2015",
     )
 
     is_current_rate = models.BooleanField(

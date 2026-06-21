@@ -5,6 +5,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from compliance.dataclass import ObligationData
 from compliance.models import ElicensingPayment
+from common.tests.utils.helpers import assert_error_response
 
 VALIDATE_VERSION_OWNERSHIP_PATH = "compliance.api.permissions._validate_version_ownership_in_url"
 
@@ -171,8 +172,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         )
 
         # Assert
-        assert response.status_code == 404
-        assert response.json() == {'message': 'Not Found'}
+        assert_error_response(response, 404, "Not Found")
 
     @patch(
         "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_obligation_payments_by_compliance_report_version_id"
@@ -202,8 +202,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         )
 
         # Assert
-        assert response.status_code == 404
-        assert response.json() == {'message': 'Not Found'}
+        assert_error_response(response, 404, "Not Found")
 
     @patch(VALIDATE_VERSION_OWNERSHIP_PATH, return_value=True)
     def test_access_to_other_operators_obligation(self, _):
@@ -226,5 +225,4 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         )
 
         # Assert
-        assert response.status_code == 404
-        assert response.json() == {'message': 'Not Found'}
+        assert_error_response(response, 404, "Not Found")
