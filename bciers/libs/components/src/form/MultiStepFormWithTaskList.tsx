@@ -5,6 +5,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import NavigationForm, { NavigationFormProps } from "./NavigationForm";
 import { Box } from "@mui/material";
+import CommentPacificRailway from "@reporting/src/app/components/comments/commentPacificRailway";
 
 interface Props extends NavigationFormProps {
   initialStep: number;
@@ -30,6 +31,13 @@ const MultiStepFormWithTaskList: React.FC<Props> = (props) => {
         </div>
         <div className="w-full">
           <NavigationForm {...props} />
+        </div>
+        <div>
+          <CommentPacificRailway
+            version_id={123}
+            facility_id={456}
+            slug="example-slug"
+          />
         </div>
       </div>
     </Box>
