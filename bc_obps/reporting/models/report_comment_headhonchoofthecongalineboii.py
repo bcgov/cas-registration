@@ -15,10 +15,15 @@ class ReportCommentHeadHonchoOfTheCongaLineBoii(TimeStampedModel):
         related_name="report_comments_head_of_the_conga_line",
         db_comment="The report version this comment belongs to. Foreign key to erc.report_version",
     )
-    page_slug = models.TextField(
+    report_section = models.TextField(
         null=True,
         blank=True,
-        db_comment="The slug of the page this comment is associated with. This is used to display the comment on the correct page in the UI.",
+        db_comment="The section of the page this comment thread is associated with.",
+    )
+    title = models.TextField(
+        null=True,
+        blank=True,
+        db_comment="The title of the comment thread. This is used to differentiate the comments at a glance.",
     )
     facility = ForeignKey(
         Facility,
@@ -26,15 +31,15 @@ class ReportCommentHeadHonchoOfTheCongaLineBoii(TimeStampedModel):
         blank=True,
         on_delete=models.SET_NULL,
         related_name="report_comments_head_of_the_conga_line",
-        db_comment="The facility this comment is associated with, if applicable. Foreign key to registration.facility",
+        db_comment="The facility this comment thread is associated with, if applicable. Foreign key to registration.facility",
     )
     is_resolved = models.BooleanField(
         default=False,
-        db_comment="Whether this comment has been resolved. A comment is considered resolved when the issue it raises has been addressed and no further action is needed.",
+        db_comment="Whether this comment thread has been resolved. A thread is considered resolved when the issue it raises has been addressed and no further action is needed.",
     )
     is_visible_to_industry = models.BooleanField(
         default=False,
-        db_comment="Whether this comment is visible to industry users. This allows for comments to be saved by government users that are not yet ready to be shared with industry.",
+        db_comment="Whether this comment thread is visible to industry users. This allows for threads to be saved by government users that are not yet ready to be shared with industry.",
     )
 
     class Meta(TimeStampedModel.Meta):
