@@ -777,10 +777,43 @@ class OperationService:
         )
 
     @staticmethod
+    def _get_registration_purposes_for_operation_type(
+        operation_type: str,
+    ) -> list[str]:
+        """
+        Returns the registration purposes that may be selected when creating
+        a past report for an operation
+        """
+
+        if operation_type == Operation.Types.SFO:
+            return [
+                Operation.Purposes.OBPS_REGULATED_OPERATION,
+                Operation.Purposes.OPTED_IN_OPERATION,
+                Operation.Purposes.NEW_ENTRANT_OPERATION,
+                Operation.Purposes.REPORTING_OPERATION,
+            ]
+
+        if operation_type == Operation.Types.LFO:
+            return [
+                Operation.Purposes.OBPS_REGULATED_OPERATION,
+                Operation.Purposes.OPTED_IN_OPERATION,
+                Operation.Purposes.NEW_ENTRANT_OPERATION,
+                Operation.Purposes.REPORTING_OPERATION,
+            ]
+
+        if operation_type == Operation.Types.EIO:
+            return [
+                Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+            ]
+
+        raise ValueError(f"Unsupported operation type {operation_type}")
+
+    @classmethod
     def _build_reportable_operation_row(
+        cls,
         timeline: OperationDesignatedOperatorTimeline,
         reporting_year: ReportingYear,
-    ) -> dict[str, UUID | str | int]:
+    ) -> dict[str, UUID | str | int | list[str]]:
         """
         Builds a reportable operation response row
         """
@@ -788,6 +821,9 @@ class OperationService:
             "operation_id": timeline.operation.id,
             "operation_name": timeline.operation.name,
             "reporting_year": reporting_year.reporting_year,
+            "registration_purposes": cls._get_registration_purposes_for_operation_type(
+                timeline.operation.type,
+            ),
         }
 
     @classmethod
@@ -833,10 +869,10 @@ class OperationService:
         existing_reports = set(
             Report.objects.filter(
                 operation_id__in=all_operation_ids,
-                reporting_year_id__in=year_values,
+                reporting_year__reporting_year__in=year_values,
             ).values_list(
                 "operation_id",
-                "reporting_year_id",
+                "reporting_year__reporting_year",
             )
         )
 
@@ -901,7 +937,9 @@ class OperationService:
                         "operation_id": operation.id,
                         "operation_name": operation.name,
                         "reporting_year": reporting_year.reporting_year,
-                        "registration_purpose": operation.registration_purpose,
+                        "registration_purposes": cls._get_registration_purposes_for_operation_type(
+                            operation.type,
+                        ),
                         "is_current_registered_fallback": True,
                     }
                 )

@@ -1,7 +1,6 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import getPreviousReportableOperations from "@reporting/src/app/utils/getPreviousReportableOperations";
-import { getRegistrationPurposes } from "@bciers/actions/api";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 import { infoNote } from "@reporting/src/data/jsonSchema/report/reportableOperationNote";
 
@@ -9,7 +8,7 @@ type ReportableOperation = {
   operation_id: string;
   operation_name: string;
   reporting_year: number;
-  registration_purpose: RegistrationPurposes;
+  registration_purposes: RegistrationPurposes[];
 };
 
 interface CombinedRJSFSchemas {
@@ -21,9 +20,6 @@ export const createStartReportSchemas =
   async (): Promise<CombinedRJSFSchemas> => {
     const reportableOperations: ReportableOperation[] =
       await getPreviousReportableOperations();
-
-    const registrationPurposes: RegistrationPurposes[] =
-      await getRegistrationPurposes();
 
     const reportingYears = Array.from(
       new Set(reportableOperations.map(({ reporting_year }) => reporting_year)),
@@ -54,34 +50,54 @@ export const createStartReportSchemas =
           type: "string",
           title:
             "Select the registration purpose that was applicable in the selected reporting year",
-          anyOf: registrationPurposes.map((purpose) => ({
-            const: purpose,
-            title: purpose,
-          })),
         },
       },
       dependencies: {
         reporting_year: {
-          oneOf: reportingYears.map((reportingYear) => ({
-            properties: {
-              reporting_year: {
-                const: reportingYear,
-              },
-              operation_id: {
-                type: "string",
-                title: "Select operation",
-                description: operationHelpText,
-                anyOf: reportableOperations
-                  .filter(
-                    (operation) => operation.reporting_year === reportingYear,
-                  )
-                  .map((operation) => ({
+          oneOf: reportingYears.map((reportingYear) => {
+            const operationsForYear = reportableOperations.filter(
+              (operation) => operation.reporting_year === reportingYear,
+            );
+
+            return {
+              properties: {
+                reporting_year: {
+                  const: reportingYear,
+                },
+                operation_id: {
+                  type: "string",
+                  title: "Select operation",
+                  description: operationHelpText,
+                  anyOf: operationsForYear.map((operation) => ({
                     const: operation.operation_id,
                     title: operation.operation_name,
                   })),
+                },
               },
-            },
-          })),
+              dependencies: {
+                operation_id: {
+                  oneOf: operationsForYear.map((operation) => ({
+                    properties: {
+                      operation_id: {
+                        const: operation.operation_id,
+                      },
+                      registration_purpose: {
+                        type: "string",
+                        title:
+                          "Select the registration purpose that was applicable in the selected reporting year",
+                        anyOf: operation.registration_purposes.map(
+                          (purpose: RegistrationPurposes) => ({
+                            const: purpose,
+                            title: purpose,
+                          }),
+                        ),
+                      },
+                    },
+                  })),
+                },
+              },
+            };
+          }),
         },
       },
     };

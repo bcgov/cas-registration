@@ -492,15 +492,16 @@ class TestReportService(TestCase):
 
     def test_create_report_for_reporting_year_uses_selected_registration_purpose(self):
         """
-        Test that creating a report for a reporting year updates the operation's
-        registration purpose and snapshots the selected registration purpose
-        into the created ReportOperation.
+        Test that creating a report for a reporting year does not update the
+        operation's registration purpose, but snapshots the selected registration
+        purpose into the created ReportOperation.
         """
         operator = operator_baker()
         operation = operation_baker(
             operator_id=operator.id,
             type=Operation.Types.LFO,
             status=Operation.Statuses.REGISTERED,
+            registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,
             bc_obps_regulated_operation=bc_obps_regulated_operation_baker(),
         )
         make_recipe(
@@ -537,7 +538,10 @@ class TestReportService(TestCase):
 
         operation.refresh_from_db()
 
-        self.assertEqual(operation.registration_purpose, Operation.Purposes.REPORTING_OPERATION)
+        self.assertEqual(
+            operation.registration_purpose,
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+        )
         self.assertEqual(
             report_version.report_operation.registration_purpose,
             Operation.Purposes.REPORTING_OPERATION,
