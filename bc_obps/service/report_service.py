@@ -139,15 +139,17 @@ class ReportService:
             raise UserError("A report already exists for this operation and year, unable to create a new one.")
 
         # BORO ID: validate that OBPS Regulated, Opt-in, and New Entrant operations
-        if operation.is_regulated_operation and operation.bc_obps_regulated_operation_id is None:
+        selected_registration_purpose = data.registration_purpose
+
+        requires_boro_id = selected_registration_purpose in [
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            Operation.Purposes.OPTED_IN_OPERATION,
+            Operation.Purposes.NEW_ENTRANT_OPERATION,
+        ]
+
+        if requires_boro_id and operation.bc_obps_regulated_operation_id is None:
             raise UserError("Regulated operations must have a BORO ID before a report can be created.")
 
-        # Update the operation with the registration purpose selected
-        operation.registration_purpose = data.registration_purpose
-        operation.save(update_fields=["registration_purpose", "updated_at"])
-
-        # Reproduce the existing create_report() creation logic here
-        # to support an additional fallback path that create_report() does not
         report = Report.objects.create(
             operation=operation,
             operator=operator,
@@ -157,6 +159,7 @@ class ReportService:
         report_version = ReportVersionService.create_report_version(
             report,
             use_transferred_operation_handling=use_transferred_operation_handling,
+            registration_purpose=selected_registration_purpose,
         )
 
         return report_version.id

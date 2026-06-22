@@ -8,8 +8,6 @@ from registration.api.router import router
 from common.permissions import authorize
 from registration.constants import OPERATION_TAGS
 
-##### GET #####
-
 
 @router.get(
     "/operations/reportable/previous",

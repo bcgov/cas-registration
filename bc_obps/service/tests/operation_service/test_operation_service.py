@@ -1,3 +1,4 @@
+from unittest import mock
 from datetime import timedelta
 import os
 from unittest.mock import patch, MagicMock
@@ -38,6 +39,7 @@ from registration.models.operation import Operation
 from registration.tests.constants import MOCK_DATA_URL
 from model_bakery import baker
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
+from reporting.models.reporting_year import ReportingYear
 
 pytestmark = pytest.mark.django_db
 email_service = EmailService()
@@ -2021,3 +2023,137 @@ class TestChangeOperationType:
 
         # assert handle_change_of_registration_purpose isn't modifying parts of the payload that should be untouched
         assert returned_payload.name == "Updated Operation"
+
+    @staticmethod
+    def test_get_registration_purposes_for_operation_type():
+        assert OperationService._get_registration_purposes_for_operation_type(Operation.Types.SFO) == [
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            Operation.Purposes.OPTED_IN_OPERATION,
+            Operation.Purposes.NEW_ENTRANT_OPERATION,
+            Operation.Purposes.REPORTING_OPERATION,
+        ]
+
+        assert OperationService._get_registration_purposes_for_operation_type(Operation.Types.LFO) == [
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            Operation.Purposes.OPTED_IN_OPERATION,
+            Operation.Purposes.NEW_ENTRANT_OPERATION,
+            Operation.Purposes.REPORTING_OPERATION,
+        ]
+
+        assert OperationService._get_registration_purposes_for_operation_type(Operation.Types.EIO) == [
+            Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+        ]
+
+    @staticmethod
+    def test_list_previous_reportable_operations_returns_registration_purposes():
+        operator = baker.make_recipe("registration.tests.utils.operator")
+        user_operator = baker.make_recipe(
+            "registration.tests.utils.approved_user_operator",
+            operator=operator,
+        )
+
+        previous_reporting_year = baker.make(
+            ReportingYear,
+            reporting_year=2023,
+        )
+        current_reporting_year = baker.make(
+            ReportingYear,
+            reporting_year=2024,
+        )
+
+        operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            operator=operator,
+            type=Operation.Types.LFO,
+            status=Operation.Statuses.REGISTERED,
+        )
+
+        baker.make_recipe(
+            "registration.tests.utils.operation_designated_operator_timeline",
+            operator=operator,
+            operation=operation,
+            start_date=timezone.datetime(2023, 1, 1).date(),
+            end_date=None,
+        )
+
+        with (
+            mock.patch(
+                "service.operation_service.UserDataAccessService.get_user_operator_by_user",
+                return_value=user_operator,
+            ),
+            mock.patch(
+                "service.operation_service.ReportingYearService.get_current_reporting_year",
+                return_value=current_reporting_year,
+            ),
+        ):
+            result = OperationService.list_previous_reportable_operations(
+                user_operator.user_id,
+            )
+
+        assert len(result) == 1
+
+        assert result[0]["operation_id"] == operation.id
+        assert result[0]["operation_name"] == operation.name
+        assert result[0]["reporting_year"] == previous_reporting_year.reporting_year
+        assert result[0]["registration_purposes"] == [
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            Operation.Purposes.OPTED_IN_OPERATION,
+            Operation.Purposes.NEW_ENTRANT_OPERATION,
+            Operation.Purposes.REPORTING_OPERATION,
+        ]
+        assert result[0]["is_current_registered_fallback"] is False
+
+    @staticmethod
+    def test_list_previous_reportable_operations_returns_eio_registration_purpose():
+        operator = baker.make_recipe("registration.tests.utils.operator")
+        user_operator = baker.make_recipe(
+            "registration.tests.utils.approved_user_operator",
+            operator=operator,
+        )
+
+        previous_reporting_year = baker.make(
+            ReportingYear,
+            reporting_year=2023,
+        )
+        current_reporting_year = baker.make(
+            ReportingYear,
+            reporting_year=2024,
+        )
+
+        operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            operator=operator,
+            type=Operation.Types.EIO,
+            status=Operation.Statuses.REGISTERED,
+        )
+
+        baker.make_recipe(
+            "registration.tests.utils.operation_designated_operator_timeline",
+            operator=operator,
+            operation=operation,
+            start_date=timezone.datetime(2023, 1, 1).date(),
+            end_date=None,
+        )
+
+        with (
+            mock.patch(
+                "service.operation_service.UserDataAccessService.get_user_operator_by_user",
+                return_value=user_operator,
+            ),
+            mock.patch(
+                "service.operation_service.ReportingYearService.get_current_reporting_year",
+                return_value=current_reporting_year,
+            ),
+        ):
+            result = OperationService.list_previous_reportable_operations(
+                user_operator.user_id,
+            )
+
+        assert len(result) == 1
+
+        assert result[0]["operation_id"] == operation.id
+        assert result[0]["operation_name"] == operation.name
+        assert result[0]["reporting_year"] == previous_reporting_year.reporting_year
+        assert result[0]["registration_purposes"] == [
+            Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+        ]

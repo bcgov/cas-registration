@@ -27,13 +27,17 @@ class ReportVersionService:
         report: Report,
         report_type: str = "Annual Report",
         use_transferred_operation_handling: bool = False,
+        registration_purpose: str | None = None,
     ) -> ReportVersion:
         # Creating draft version
         report_version = ReportVersion.objects.create(report=report, report_type=report_type)
         # Pre-populating data to the draft version
         operation = report.operation
         operator = report.operator
-        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION and operation.opted_in_operation:
+        effective_registration_purpose = (
+            registration_purpose or operation.registration_purpose or Operation.Purposes.OBPS_REGULATED_OPERATION
+        )
+        if effective_registration_purpose == Operation.Purposes.OPTED_IN_OPERATION and operation.opted_in_operation:
             operation_opted_out_final_reporting_year = operation.opted_in_operation.final_reporting_year_id
         else:
             operation_opted_out_final_reporting_year = None
@@ -48,7 +52,7 @@ class ReportVersionService:
                 operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
             ),
             report_version=report_version,
-            registration_purpose=operation.registration_purpose or 'OBPS Regulated Operation',
+            registration_purpose=effective_registration_purpose,
             operation_opted_out_final_reporting_year=operation_opted_out_final_reporting_year,
             naics_code=operation.naics_code,
         )

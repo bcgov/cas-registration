@@ -322,3 +322,4 @@ class OperationReportableOut(Schema):
     operation_id: UUID
     operation_name: str
     reporting_year: int
+    registration_purposes: list[str]
