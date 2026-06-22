@@ -12,6 +12,7 @@ import {
 import { ReportDownloadPdfButton } from "../finalReview/templates/ReportDownloadPdfButton";
 import SubmittedAttachmentsSection from "./SubmittedAttachmentsSection";
 import { UploadedAttachment } from "@reporting/src/app/components/attachments/types";
+import CommentPacificRailway from "../comments/commentPacificRailway";
 
 interface Props {
   version_id: number;
@@ -27,6 +28,7 @@ const ReportForm: React.FC<Props> = ({
   origin,
   data,
   attachments,
+  isInternalUser,
 }) => {
   const router = useRouter();
 
@@ -39,6 +41,13 @@ const ReportForm: React.FC<Props> = ({
             : "SFO"
         }
       />
+      <div>
+        <CommentPacificRailway
+          version_id={123}
+          facility_id={456}
+          slug="example-slug"
+        />
+      </div>
       <FinalReviewReportSections
         version_id={version_id}
         data={data}
