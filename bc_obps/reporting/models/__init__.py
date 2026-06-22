@@ -49,6 +49,8 @@ from .report_compliance_summary_product import ReportComplianceSummaryProduct
 from .report_attachment_confirmation import ReportAttachmentConfirmation
 from .expected_value_range_fuel_amount import ExpectedValueRangeFuelAmount
 from .expected_value_range_methodology_field import ExpectedValueRangeMethodologyField
+from .report_comment_bodyofthesnake import ReportCommentBodyOfTheSnake
+from .report_comment_headhonchoofthecongalineboii import ReportCommentHeadHonchoOfTheCongaLineBoii
 
 __all__ = [
     "ReportDataBaseModel",
@@ -99,4 +101,6 @@ __all__ = [
     "ReportAttachmentConfirmation",
     "ExpectedValueRangeFuelAmount",
     "ExpectedValueRangeMethodologyField",
+    "ReportCommentBodyOfTheSnake",
+    "ReportCommentHeadHonchoOfTheCongaLineBoii",
 ]
