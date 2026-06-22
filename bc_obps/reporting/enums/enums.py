@@ -49,7 +49,8 @@ class ReportingTableNames(Enum):
     REPORTING_YEAR = 'reporting_year'
     SOURCE_TYPE = 'source_type'
     REPORT_ELECTRICITY_IMPORT_DATA = 'report_electricity_import_data'
-
+    REPORT_COMMENT_BODYOFTHESNAKE = 'report_comment_bodyofthesnake'
+    REPORT_COMMENT_HEADHONCHOOFTHECONGALINEBOII = 'report_comment_headhonchoofthecongalineboii'
     # M2M tables
     CONFIGURATION_ELEMENT_REPORTING_FIELDS = 'configuration_element_reporting_fields'
     FACILITY_REPORT_ACTIVITIES = 'facility_report_activities'
