@@ -1,6 +1,7 @@
 from unittest import mock
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
+from common.exceptions import UserError
 from model_bakery import baker
 from model_bakery.baker import make_recipe
 
@@ -14,6 +15,7 @@ from reporting.models import ReportingYear, ReportVersion, ReportOperation, Faci
 from reporting.schema.report_operation import ReportOperationIn
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 from service.report_service import ReportService
+from reporting.models.report import Report
 
 
 class TestReportService(TestCase):
@@ -498,8 +500,13 @@ class TestReportService(TestCase):
 
     def test_lfo_does_not_update_activities_for_completed_facility_report(self):
         """
+<<<<<<< HEAD
         Once a facility report is marked as completed, changes to operation-level
         activities must NOT propagate to that facility's activities.
+=======
+        Creating a past report should not mutate Operation.registration_purpose
+        The selected purpose should be stored on the ReportOperation
+>>>>>>> 0674d0bda (chore: add vitests)
         """
         operator = baker.make_recipe('registration.tests.utils.operator')
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
@@ -541,8 +548,7 @@ class TestReportService(TestCase):
 
     def test_create_report_for_reporting_year_boro_validation_uses_selected_registration_purpose(self):
         """
-        Test that BORO validation uses the selected registration purpose,
-        not the operation's current registration purpose.
+        BORO validation should use the selected registration purpose, not the operation's current registration purpose
         """
         operator = operator_baker()
         operation = operation_baker(
@@ -589,7 +595,10 @@ class TestReportService(TestCase):
             Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
         )
 
-    def test_create_report_for_reporting_year_requires_boro_for_selected_regulated_purpose(self):
+    def test_create_report_for_reporting_year_rejects_missing_boro_id_for_regulated_purpose(self):
+        """
+        Selected regulated purposes require a BORO ID before report creation
+        """
         operator = operator_baker()
         operation = operation_baker(
             operator_id=operator.id,
@@ -623,7 +632,7 @@ class TestReportService(TestCase):
             mock_get_user_operator.return_value.operator_id = operator.id
             mock_get_user_operator.return_value.operator = operator
 
-            with self.assertRaises(Exception) as exception_context:
+            with self.assertRaises(UserError) as exception_context:
                 ReportService.create_report_for_reporting_year(
                     user_guid="00000000-0000-0000-0000-000000000000",
                     data=data,
@@ -631,5 +640,90 @@ class TestReportService(TestCase):
 
         self.assertEqual(
             str(exception_context.exception),
-            "Regulated operations must have a BORO ID before a report can be created.",
+            "This operation does not have a BORO ID, please wait for a BORO ID to be issued before starting this report.",
+        )
+
+    def test_create_report_for_reporting_year_fallback_rejects_unregistered_operation(self):
+        """
+        Reject report creation if the operation is not currently registered
+        """
+        operator = operator_baker()
+
+        operation = operation_baker(
+            operator_id=operator.id,
+            type=Operation.Types.LFO,
+            status=Operation.Statuses.DRAFT,
+            registration_purpose=Operation.Purposes.REPORTING_OPERATION,
+        )
+
+        data = mock.Mock()
+        data.operation_id = operation.id
+        data.reporting_year = 2023
+        data.registration_purpose = Operation.Purposes.REPORTING_OPERATION
+
+        with (
+            mock.patch(
+                "service.report_service.OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year",
+                return_value=None,
+            ),
+            mock.patch(
+                "service.data_access_service.user_service.UserDataAccessService.get_user_operator_by_user",
+            ) as mock_get_user_operator,
+        ):
+            mock_get_user_operator.return_value.operator_id = operator.id
+            mock_get_user_operator.return_value.operator = operator
+
+            with self.assertRaises(UserError) as exception_context:
+                ReportService.create_report_for_reporting_year(
+                    user_guid="00000000-0000-0000-0000-000000000000",
+                    data=data,
+                )
+
+        self.assertEqual(
+            str(exception_context.exception),
+            "Only currently registered operations can be used to create a report for this reporting year.",
+        )
+
+    def test_create_report_for_reporting_year_rejects_existing_report(self):
+        """
+        A report cannot be created if one already exists for the same operation and reporting year
+        """
+        operator = operator_baker()
+        operation = operation_baker(
+            operator_id=operator.id,
+            type=Operation.Types.LFO,
+            status=Operation.Statuses.REGISTERED,
+            bc_obps_regulated_operation=bc_obps_regulated_operation_baker(),
+        )
+
+        data = mock.Mock()
+        data.operation_id = operation.id
+        data.reporting_year = 2023
+        data.registration_purpose = Operation.Purposes.REPORTING_OPERATION
+
+        with (
+            mock.patch(
+                "service.data_access_service.report_service.ReportDataAccessService.report_exists",
+                return_value=True,
+            ),
+            mock.patch(
+                "service.report_service.OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year",
+                return_value=None,
+            ),
+            mock.patch(
+                "service.data_access_service.user_service.UserDataAccessService.get_user_operator_by_user",
+            ) as mock_get_user_operator,
+        ):
+            mock_get_user_operator.return_value.operator_id = operator.id
+            mock_get_user_operator.return_value.operator = operator
+
+            with self.assertRaises(UserError) as exception_context:
+                ReportService.create_report_for_reporting_year(
+                    user_guid="00000000-0000-0000-0000-000000000000",
+                    data=data,
+                )
+
+        self.assertEqual(
+            str(exception_context.exception),
+            "A report already exists for this operation and year, unable to create a new one.",
         )

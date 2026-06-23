@@ -21,7 +21,7 @@ interface StartReportFormData {
 export default function StartReportForm({
   schema,
   uiSchema,
-}: StartReportFormProps) {
+}: Readonly<StartReportFormProps>) {
   const router = useRouter();
   const [formData, setFormData] = useState<Partial<StartReportFormData>>({});
   const [errorList, setErrorList] = useState([] as any[]);

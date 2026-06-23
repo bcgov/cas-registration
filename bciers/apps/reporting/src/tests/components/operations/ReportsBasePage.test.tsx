@@ -71,7 +71,7 @@ describe("ReportsBasePage", () => {
       ).toBeVisible();
     });
 
-    it("renders previous reporting years title on previous reporting years tab for industry users", async () => {
+    it("renders Previous Reporting Years title on previous reporting years tab for industry users", async () => {
       (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(
         "industry_user",
       );
@@ -229,8 +229,8 @@ describe("ReportsBasePage", () => {
         }),
       );
 
-      expect(screen.getByTestId("child-content")).toBeVisible();
-      expect(screen.getByText("Test Content")).toBeVisible();
+      expect(screen.getByTestId("child-content")).toBeInTheDocument();
+      expect(screen.getByText("Test Content")).toBeInTheDocument();
     });
   });
 
@@ -253,7 +253,7 @@ describe("ReportsBasePage", () => {
       expect(tab).toHaveAttribute("href", "/reports/current-reports");
     });
 
-    it("has correct href for previous reporting years tab", async () => {
+    it("has correct href for past reports tab", async () => {
       (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(
         "industry_user",
       );

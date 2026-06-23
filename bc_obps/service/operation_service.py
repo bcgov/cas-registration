@@ -54,13 +54,17 @@ from registration.models.operation_designated_operator_timeline import Operation
 from reporting.models.reporting_year import ReportingYear
 from service.reporting_year_service import ReportingYearService
 from django.conf import settings
-from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
+from service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelinePlus,
+    OperationDesignatedOperatorTimelineService,
+)
 from reporting.models.report import Report
 
 
 class OperationService:
 
     OPERATION_DEFAULT_START_DATE = datetime(2024, 1, 1, tzinfo=ZoneInfo("America/Vancouver"))
+    MIN_REPORTING_YEAR = 2024
 
     @classmethod
     def get_if_authorized(
@@ -755,6 +759,7 @@ class OperationService:
 
         return payload
 
+    # list previous reportable operations methods:
     @staticmethod
     def get_valid_operation_regulated_products(operation: Operation, reporting_year: int) -> QuerySet[RegulatedProduct]:
         """
@@ -773,18 +778,30 @@ class OperationService:
         return operation_year not in added_operation_years and operation_year not in existing_reports
 
     @classmethod
+    def _is_designated_to_user_operator(
+        cls,
+        designated_operator_timeline: OperationDesignatedOperatorTimelinePlus | None,
+        user_operator: UserOperator,
+    ) -> bool:
+        return (
+            designated_operator_timeline is not None
+            and designated_operator_timeline.operator.id == user_operator.operator_id
+        )
+
+    @classmethod
     def _get_previous_reporting_years(cls) -> QuerySet[ReportingYear]:
         """
         Returns reporting years that are eligible for the Start Past Report workflow
 
-        Only reporting years prior to the current reporting year are returned
+        Only reporting years from MIN_REPORTING_YEAR up to (but not including) the current
+        reporting year are returned.
         """
-
         current_reporting_year = ReportingYearService.get_current_reporting_year()
 
-        return ReportingYear.objects.filter(reporting_year__lt=current_reporting_year.reporting_year).order_by(
-            "-reporting_year"
-        )
+        return ReportingYear.objects.filter(
+            reporting_year__gte=cls.MIN_REPORTING_YEAR,
+            reporting_year__lt=current_reporting_year.reporting_year,
+        ).order_by("-reporting_year")
 
     @staticmethod
     def _get_registration_purposes_for_operation_type(
@@ -811,6 +828,29 @@ class OperationService:
             ]
 
         raise ValueError(f"Unsupported operation type: {operation_type}")
+
+    @classmethod
+    def _add_reportable_operation(
+        cls,
+        reportable_operations: list[dict],
+        added_operation_years: set[tuple[UUID, int]],
+        operation: Operation,
+        reporting_year: ReportingYear,
+        is_current_registered_fallback: bool,
+    ) -> None:
+        """
+        Adds a reportable operation/reporting year combination to the result set
+        and tracks it to prevent duplicates.
+        """
+        operation_year = (operation.id, reporting_year.reporting_year)
+
+        reportable_operations.append(
+            {
+                **cls._build_reportable_operation_row(operation, reporting_year),
+                "is_current_registered_fallback": is_current_registered_fallback,
+            }
+        )
+        added_operation_years.add(operation_year)
 
     @classmethod
     def _build_reportable_operation_row(
@@ -897,6 +937,7 @@ class OperationService:
                     reporting_year.reporting_year,
                 )
 
+                # Skip combinations that have already have a report
                 if not cls._is_reportable_operation_year(
                     operation_year,
                     added_operation_years,
@@ -906,21 +947,18 @@ class OperationService:
 
                 designated_operator_timeline = designations_lookup.get(operation_year)
 
-                if (
-                    designated_operator_timeline
-                    and designated_operator_timeline.operator.id == user_operator.operator_id
+                # Include operations designated to the user's operator for the reporting year
+                if cls._is_designated_to_user_operator(
+                    designated_operator_timeline,
+                    user_operator,
                 ):
-                    reportable_operations.append(
-                        {
-                            **cls._build_reportable_operation_row(
-                                timeline.operation,
-                                reporting_year,
-                            ),
-                            "is_current_registered_fallback": False,
-                        }
+                    cls._add_reportable_operation(
+                        reportable_operations,
+                        added_operation_years,
+                        timeline.operation,
+                        reporting_year,
+                        False,
                     )
-
-                    added_operation_years.add(operation_year)
 
         for operation in current_registered_operations:
             for reporting_year in reporting_years:
@@ -929,6 +967,7 @@ class OperationService:
                     reporting_year.reporting_year,
                 )
 
+                # Skip combinations that have already have a report
                 if not cls._is_reportable_operation_year(
                     operation_year,
                     added_operation_years,
@@ -936,16 +975,13 @@ class OperationService:
                 ):
                     continue
 
-                reportable_operations.append(
-                    {
-                        **cls._build_reportable_operation_row(
-                            operation,
-                            reporting_year,
-                        ),
-                        "is_current_registered_fallback": True,
-                    }
+                # Fall back to the current registered operator when no historical designation applies
+                cls._add_reportable_operation(
+                    reportable_operations,
+                    added_operation_years,
+                    operation,
+                    reporting_year,
+                    True,
                 )
-
-                added_operation_years.add(operation_year)
 
         return reportable_operations
