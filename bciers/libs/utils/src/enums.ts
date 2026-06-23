@@ -158,3 +158,10 @@ export enum ManualHandlingTypes {
   OBLIGATION = "obligation",
   EARNED_CREDITS = "earned_credits",
 }
+
+export enum TrainStations {
+  REVIEW_OPERATION_INFORMATION = "Review Operation Information",
+  PERSON_RESPONSIBLE = "Person Responsible",
+  REPORT_INFORMATION = "Report Information",
+  ADDITIONAL_REPORTING_DATA = "Additional Reporting Data",
+}

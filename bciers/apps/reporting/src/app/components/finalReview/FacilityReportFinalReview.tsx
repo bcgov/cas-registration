@@ -1,6 +1,8 @@
 import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacilityFinalReviewData";
 import { ReportingOrigin } from "@reporting/src/app/components/taskList/types";
 import FacilityReportFinalReviewContent from "./FacilityReportFinalReviewContent";
+import { pickupPassengers } from "../../utils/pickupPassengers";
+import CommentPacificRailway from "../comments/commentPacificRailway";
 
 export interface OriginSearchParams {
   origin?: ReportingOrigin;
@@ -19,6 +21,12 @@ export default async function FacilityReportFinalReview({
   const backUrl = `/reporting/reports/${version_id}/${origin}#facility-grid`;
 
   const data = await getFacilityFinalReviewData(version_id, facility_id);
+  const threads = await pickupPassengers(version_id, facility_id);
 
-  return <FacilityReportFinalReviewContent data={data} backUrl={backUrl} />;
+  return (
+    <>
+      <FacilityReportFinalReviewContent data={data} backUrl={backUrl} />
+      <CommentPacificRailway threads={threads} />
+    </>
+  );
 }

@@ -19,6 +19,7 @@ interface Props {
   origin: ReportingOrigin.Submitted | ReportingOrigin.AnnualReport;
   data: ReportData;
   attachments?: UploadedAttachment[];
+  //isInternalUser: boolean;
 }
 
 const ReportForm: React.FC<Props> = ({
@@ -27,6 +28,7 @@ const ReportForm: React.FC<Props> = ({
   origin,
   data,
   attachments,
+  // isInternalUser,
 }) => {
   const router = useRouter();
 

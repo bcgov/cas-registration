@@ -4,6 +4,8 @@ import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData"
 import getAttachments from "@reporting/src/app/utils/getAttachments";
 import ReportForm from "@reporting/src/app/components/submitted/ReportForm";
 import { ReportingOrigin } from "@reporting/src/app/components/taskList/types";
+import { pickupPassengers } from "../../utils/pickupPassengers";
+import CommentPacificRailway from "../comments/commentPacificRailway";
 
 export default async function SubmittedPage({ version_id }: HasReportVersion) {
   const [flow, data, attachmentsData] = await Promise.all([
@@ -11,13 +13,17 @@ export default async function SubmittedPage({ version_id }: HasReportVersion) {
     getFinalReviewData(version_id),
     getAttachments(version_id),
   ]);
+  const threads = await pickupPassengers(version_id);
   return (
-    <ReportForm
-      version_id={version_id}
-      flow={flow}
-      origin={ReportingOrigin.Submitted}
-      data={data}
-      attachments={attachmentsData.attachments ?? []}
-    />
+    <>
+      <ReportForm
+        version_id={version_id}
+        flow={flow}
+        origin={ReportingOrigin.Submitted}
+        data={data}
+        attachments={attachmentsData.attachments ?? []}
+      />
+      <CommentPacificRailway threads={threads} />
+    </>
   );
 }

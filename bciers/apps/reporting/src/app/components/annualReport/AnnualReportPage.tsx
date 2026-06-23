@@ -3,6 +3,8 @@ import { getFlowWithNewCases } from "@reporting/src/app/components/taskList/repo
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
 import ReportForm from "@reporting/src/app/components/submitted/ReportForm";
 import { ReportingOrigin } from "@reporting/src/app/components/taskList/types";
+import { pickupPassengers } from "../../utils/pickupPassengers";
+import CommentPacificRailway from "../comments/commentPacificRailway";
 
 export default async function AnnualReportPage({
   version_id,
@@ -11,12 +13,17 @@ export default async function AnnualReportPage({
     getFlowWithNewCases(version_id),
     getFinalReviewData(version_id),
   ]);
+  const threads = await pickupPassengers(version_id);
+
   return (
-    <ReportForm
-      version_id={version_id}
-      flow={flow}
-      origin={ReportingOrigin.AnnualReport}
-      data={data}
-    />
+    <>
+      <ReportForm
+        version_id={version_id}
+        flow={flow}
+        origin={ReportingOrigin.AnnualReport}
+        data={data}
+      />
+      <CommentPacificRailway threads={threads} />
+    </>
   );
 }
