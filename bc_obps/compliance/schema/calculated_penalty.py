@@ -11,6 +11,7 @@ class PenaltyAccrual(Schema):
     accumulated_penalty: Decimal
     accumulated_compounded: Decimal
 
+
 class CalculatedPenaltyOut(Schema):
     """
     Schema for a calculated penalty for an obligation that has not yet been met returned from the API.
