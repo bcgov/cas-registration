@@ -47,9 +47,7 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
     tags=EMISSIONS_REPORT_TAGS,
     description="""
     Creates a report for a given operation and reporting year
-
-    Allows a new report creation for a selected year when the authenticated
-    user's operator owned the operation during any portion of the reporting year
+    Allows a new report creation for a selected year if the authenticated user's operator owned the operation
     """,
     auth=authorize("approved_industry_user"),
 )
