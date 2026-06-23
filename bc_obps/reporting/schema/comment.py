@@ -1,4 +1,4 @@
-from ninja import ModelSchema
+from ninja import ModelSchema, Schema
 from reporting.models import ReportCommentHeadHonchoOfTheCongaLineBoii, ReportCommentBodyOfTheSnake
 
 
@@ -29,3 +29,21 @@ class CommentSchema(ModelSchema):
             "facility",
             "report_version",
         ]
+
+
+class ReportCommentHeadHonchoInSchema(Schema):
+    """
+    Schema for creating a new ReportCommentHeadHonchoOfTheCongaLineBoii instance
+    """
+
+    report_section: str | None = None
+    title: str
+    is_visible_to_industry: bool = False
+
+
+class BodyOfTheSnakeInSchema(Schema):
+    """
+    Schema for creating a new ReportCommentBodyOfTheSnake instance
+    """
+
+    comment: str

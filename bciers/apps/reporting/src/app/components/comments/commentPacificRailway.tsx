@@ -5,12 +5,14 @@ import React, { useState } from "react";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import CommentBoxCar from "./commentBoxCar";
 import { Thread } from "./types";
+import { createCommentThread } from "../../utils/createThread";
 
 interface Props {
   threads: Thread[];
+  version_id: number;
 }
 
-const CommentPacificRailway: React.FC<Props> = ({ threads }) => {
+const CommentPacificRailway: React.FC<Props> = ({ threads, version_id }) => {
   const [open, setOpen] = useState(false);
 
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -20,7 +22,7 @@ const CommentPacificRailway: React.FC<Props> = ({ threads }) => {
   console.log(threads);
 
   const createNewCommentThread = () => {
-    // Implement the logic to create a new comment thread here
+    createCommentThread(version_id, "New Thread");
   };
 
   return (

@@ -23,7 +23,7 @@ export default async function SubmittedPage({ version_id }: HasReportVersion) {
         data={data}
         attachments={attachmentsData.attachments ?? []}
       />
-      <CommentPacificRailway threads={threads} />
+      <CommentPacificRailway threads={threads} version_id={version_id} />
     </>
   );
 }

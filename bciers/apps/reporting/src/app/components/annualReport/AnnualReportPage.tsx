@@ -23,7 +23,7 @@ export default async function AnnualReportPage({
         origin={ReportingOrigin.AnnualReport}
         data={data}
       />
-      <CommentPacificRailway threads={threads} />
+      <CommentPacificRailway threads={threads} version_id={version_id} />
     </>
   );
 }
