@@ -8,6 +8,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import PenaltyAccrualTable from "./PenaltyAccrualTable";
 
 interface Props {
   data: ComplianceSummary;
@@ -29,12 +30,17 @@ export function InternalCalculatePenaltyComponent({
   const [endDate, setEndDate] = useState(today);
   const [penaltyData, setPenaltyData] = useState({});
 
+  useEffect(() => {
+    async function fetchPenaltyData(){
+      const result = await calculatePenalty(1, "Automatic Overdue", endDate)
+      setPenaltyData(result)
+    }
+
+    fetchPenaltyData()
+}, [endDate]);
+
   const handleChange = async (d: Dayjs) => {
     setEndDate(d.utc().format("YYYY-MM-DD"));
-
-    const data = await calculatePenalty(1, "Automatic Overdue", "2026-06-01");
-    console.log(data);
-    setPenaltyData(data);
   };
 
   const {
@@ -59,7 +65,8 @@ export function InternalCalculatePenaltyComponent({
   return (
     <>
       <div>
-        <h1>Calculate the Penalty Holmes! </h1>
+        <h1>PENALTY CALCULATOR</h1>
+        <h4>Pick a date for the last day of the penalty</h4>
       </div>
       <div>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -72,7 +79,14 @@ export function InternalCalculatePenaltyComponent({
       </div>
       <div>
         <p>Penalty Amount: {penaltyData?.total_penalty}</p>
+        <p>Days Late: {penaltyData?.days_late}</p>
       </div>
+      {penaltyData?.daily_accumulated_list && (
+        <div>
+          <h3>Accrual Data</h3>
+        <PenaltyAccrualTable accrualData={penaltyData?.daily_accumulated_list}/>
+        </div>
+      )}
       <ComplianceStepButtons backUrl={backUrl} continueUrl={continueUrl} />
     </>
   );
