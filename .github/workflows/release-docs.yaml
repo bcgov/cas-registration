@@ -27,7 +27,9 @@ jobs:
         uses: withastro/action@v6
         with:
           path: docs-site
-          build-command: node sync-docs.js && yarn astro build
+          node-version: 24
+          package-manager: yarn@4.13.0
+          build-cmd: node sync-docs.js && yarn astro build
 
   deploy:
     name: Deploy documentation pages to GitHub Pages
