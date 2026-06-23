@@ -9,7 +9,7 @@ on:
 
 # Allow this job to clone the repo and create a page deployment
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -36,23 +36,10 @@ jobs:
           package-manager: yarn@4.13.0
           build-cmd: node sync-docs.js && yarn astro build
 
-  deploy:
-    name: Deploy documentation pages to GitHub Pages
-    needs: build-docs
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Grab artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: docs-site
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: "docs-site"
+          folder: docs-site/dist/
           target-folder: docs
           single-commit: true
           token: ${{ secrets.GITHUB_TOKEN }}
