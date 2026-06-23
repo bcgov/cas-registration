@@ -6,6 +6,7 @@ export enum ActivePage {
   ReviewComplianceObligationReport = "ReviewComplianceObligationReport",
   ReviewInterestSummary = "ReviewInterestSummary",
   ReviewPenaltySummary = "ReviewPenaltySummary",
+  CalculateAccruingPenalty = "CalculateAccruingPenalty"
 }
 
 export const generateReviewObligationPenaltyTaskList: (
@@ -33,6 +34,15 @@ export const generateReviewObligationPenaltyTaskList: (
       isActive: activePage === ActivePage.ReviewComplianceObligationReport,
     },
   ];
+
+  if (penaltyStatus == 'accruing') {
+    elements.push({
+      type: "Page" as const,
+      title: "Calculate Accruing Penalty",
+      link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/calculate-accruing-penalty`,
+      isActive: activePage === ActivePage.CalculateAccruingPenalty,
+    });
+  }
 
   if (isObligationFullyPaid && hasLateSubmissionPenalty) {
     elements.push({
