@@ -4,6 +4,7 @@ from model_bakery import baker
 import pytest
 from registration.models import Operation
 from reporting.models.report_version import ReportVersion
+from reporting.models.report_attachment import ReportAttachment
 from service.report_version_service import ReportVersionService
 
 pytestmark = pytest.mark.django_db
@@ -123,3 +124,48 @@ class TestReportVersionService(TestCase):
         )
         result = ReportVersionService.fetch_full_report_version(report_version.id, prefetch_full_facility_report=False)
         self.assertEqual(result.id, report_version.id)
+
+    def test_fetch_full_report_version_prefetches_verification_statement_for_submitted(self):
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version",
+            status=ReportVersion.ReportVersionStatus.Submitted,
+        )
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=report_version,
+            operation_type=Operation.Types.SFO,
+        )
+        baker.make_recipe(
+            "reporting.tests.utils.report_attachment",
+            report_version=report_version,
+            attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
+        )
+
+        result = ReportVersionService.fetch_full_report_version(report_version.id, prefetch_full_facility_report=False)
+
+        self.assertTrue(hasattr(result, "verification_statement"))
+        self.assertEqual(len(result.verification_statement), 1)
+        self.assertEqual(
+            result.verification_statement[0].attachment_type,
+            ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
+        )
+
+    def test_fetch_full_report_version_skips_verification_statement_prefetch_for_draft(self):
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version",
+            status=ReportVersion.ReportVersionStatus.Draft,
+        )
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=report_version,
+            operation_type=Operation.Types.SFO,
+        )
+        baker.make_recipe(
+            "reporting.tests.utils.report_attachment",
+            report_version=report_version,
+            attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
+        )
+
+        result = ReportVersionService.fetch_full_report_version(report_version.id, prefetch_full_facility_report=False)
+
+        self.assertFalse(hasattr(result, "verification_statement"))

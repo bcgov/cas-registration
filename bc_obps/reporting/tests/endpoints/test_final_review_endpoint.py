@@ -5,6 +5,7 @@ from decimal import Decimal
 from reporting.models import (
     ReportEmissionAllocation,
     ProductEmissionIntensity,
+    ReportAttachment,
 )
 from registration.utils import custom_reverse_lazy
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -196,6 +197,37 @@ class TestReportFinalReview(CommonTestSetup):
                     assert "report_product_id" in product
                     assert "product_name" in product
                     assert "allocated_quantity" in product
+
+    def test_get_report_final_review_data_includes_verification_statement_for_submitted(self):
+        self.report_version.status = "Submitted"
+        self.report_version.is_latest_submitted = True
+        self.report_version.save(update_fields=["status", "is_latest_submitted"])
+
+        report_attachment = baker.make_recipe(
+            "reporting.tests.utils.report_attachment",
+            report_version=self.report_version,
+            attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
+            attachment_name="verification-statement.pdf",
+        )
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "get_report_final_review_data",
+                kwargs={"version_id": self.report_version.id},
+            ),
+        )
+
+        assert response.status_code == 200
+        response_data = response.json()
+        assert response_data["verification_statement"] is not None
+        assert response_data["verification_statement"]["id"] == report_attachment.id
+        assert (
+            response_data["verification_statement"]["attachment_type"]
+            == ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT
+        )
+        assert response_data["verification_statement"]["attachment_name"] == "verification-statement.pdf"
 
     def test_get_report_version_facility_report_success(self):
         """

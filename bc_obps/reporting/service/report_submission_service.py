@@ -10,6 +10,12 @@ from common.lib import pgtrigger
 from django.db import transaction
 from reporting.service.compliance_service import ComplianceService
 from reporting.service.report_validation.report_validation_tags import ValidationTags
+from reporting.models.report_attachment import ReportAttachment
+from reporting.service.parse_verification_statement_service import ParseVerificationStatementService
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class ReportSubmissionService:
@@ -51,5 +57,20 @@ class ReportSubmissionService:
 
         # Send a signal that the report has been submitted
         report_submitted.send(sender=ReportSubmissionService, version_id=version_id, user_guid=user_guid)
+
+        # Parse the verification statement once at submit time.
+        verification_statement = ReportAttachment.objects.filter(
+            report_version_id=version_id,
+            attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
+        ).first()
+        if verification_statement:
+            try:
+                ParseVerificationStatementService.read_tables(verification_statement.attachment.path)
+            except Exception:
+                # Parsing failures should not block report submission.
+                logger.exception(
+                    "Failed to parse verification statement for report version %s",
+                    version_id,
+                )
 
         return report_version

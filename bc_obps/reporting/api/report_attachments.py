@@ -16,6 +16,7 @@ from reporting.schema.report_attachment import (
     InternalReportAttachmentOut,
 )
 from reporting.service.report_attachment_service import ReportAttachmentService
+from reporting.service.parse_verification_statement_service import ParseVerificationStatementService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.api.permissions import (
@@ -111,3 +112,26 @@ def get_all_attachments(
 ) -> QuerySet[ReportAttachment]:
 
     return ReportAttachmentService.get_all_attachments(filters, sort_field, sort_order)
+
+
+@router.post(
+    "report-attachment/{attachment_id}/parse-verification-statement",
+    response={200: Message, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="Parse and process a verification statement attachment",
+    auth=approved_authorized_roles_report_version_composite_auth,
+)
+def parse_verification_statement(
+    request: HttpRequest,
+    attachment_id: int,
+) -> Tuple[int, dict]:
+    attachment = ReportAttachment.objects.get(id=attachment_id)
+    
+    if attachment.attachment_type != ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT:
+        return custom_codes_4xx, {"message": "Attachment is not a verification statement"}
+    
+    df_tables = ParseVerificationStatementService.read_tables(attachment)
+
+    print(f"\n\nParsed tables from verification statement: {df_tables}\n\n")  # Debugging output
+    
+    return 200, {"message": "Verification statement parsed successfully"}
