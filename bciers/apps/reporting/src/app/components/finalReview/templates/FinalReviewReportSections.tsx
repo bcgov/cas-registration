@@ -216,6 +216,21 @@ export const FinalReviewReportSections: React.FC<Props> = ({
       fields: (reportData: ReportData) =>
         complianceSummaryFields(reportData.report_compliance_summary?.products),
     },
+    {
+      title: "Report Attachments",
+      condition: (reportData: ReportData) => !!reportData.verification_statement,
+      render: () => {
+        if (!data?.verification_statement) return null;
+        return (
+          <div className="form-group field field-object">
+            <div className="form-heading text-lg font-semibold mb-4">
+              Verification Statement
+            </div>
+            <p className="text-sm">{data.verification_statement.attachment_name}</p>
+          </div>
+        );
+      }
+    }
   ];
   return (
     <>

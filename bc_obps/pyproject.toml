@@ -32,7 +32,8 @@ deepdiff = "^8.6.1"
 brotli = ">=1.2.0"
 time-machine = "^3.0.0"
 camelot = "^12.6.29"
-fitz = "^0.0.1.dev2"
+pymupdf = "^1.27.2.3"
+pandas = "^3.0.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "^26.3.1"
@@ -53,6 +54,7 @@ types-requests = "^2.31.0.20240406"
 pytest-xdist = "^3.8.0"
 django-querycount = "^0.8.3"
 syrupy = "^5.1.0"
+ipykernel = "^7.3.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

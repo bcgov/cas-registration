@@ -18,6 +18,12 @@ export interface ReportOperation {
   naics_code: string | null;
 }
 
+export interface ReportAttachment {
+  id: number;
+  attachment_name: string;
+  attachment_type: string;
+}
+
 export interface ReportPersonResponsible {
   first_name: string;
   last_name: string;
@@ -212,6 +218,7 @@ export interface ReportData {
   report_new_entrant: ReportNewEntrant[];
   report_electricity_import_data: ReportElectricityImportData[];
   reporting_year: number;
+  verification_statement?: ReportAttachment;
 }
 
 export interface ActivitiesViewProps {

@@ -3,6 +3,7 @@ from uuid import UUID
 from common.permissions import authorize
 
 from django.http import HttpRequest
+from django.forms.models import model_to_dict
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message

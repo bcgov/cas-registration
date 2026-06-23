@@ -28,6 +28,7 @@ from reporting.models import (
 from reporting.schema.compliance_data import ComplianceDataSchemaOut
 from reporting.schema.emission_category import EmissionSummarySchemaOut
 from reporting.schema.report_emission_allocation import ReportEmissionAllocationSchemaOut
+from reporting.schema.report_attachment import ReportAttachmentOut
 from reporting.service.compliance_service import ComplianceService
 from reporting.service.compliance_service.compliance_service import ComplianceData
 from reporting.service.emission_category_service import EmissionCategoryService
@@ -443,6 +444,7 @@ class BaseReportVersionSchema(ModelSchema):
     report_additional_data: Optional[ReportAdditionalDataSchema] = None
     report_electricity_import_data: List[ReportElectricityImportDataSchema] = []
     report_new_entrant: List[ReportNewEntrantSchema] = []
+    verification_statement: Optional[ReportAttachmentOut] = None
     operation_emission_summary: Optional[EmissionSummarySchemaOut] = None
     is_supplementary_report: Optional[bool] = None
     reporting_year: int
@@ -457,6 +459,19 @@ class BaseReportVersionSchema(ModelSchema):
             return None
         data = ComplianceService.get_calculated_compliance_data(obj.id)
         return data if data else None
+
+    @staticmethod
+    def resolve_verification_statement(obj: ReportVersion) -> Optional[Any]:
+        if obj.status != ReportVersion.ReportVersionStatus.Submitted:
+            return None
+
+        # Uses the prefetch from ReportVersionService.fetch_full_report_version for submitted versions.
+        # The prefetch stores the single verification statement in a list due to Prefetch behavior.
+        attachments = getattr(obj, "verification_statement", None)
+        if attachments is None:
+            return None
+
+        return attachments[0] if attachments else None
 
     @staticmethod
     def resolve_operation_emission_summary(obj: ReportVersion) -> Optional[dict]:

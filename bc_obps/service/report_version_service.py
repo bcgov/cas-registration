@@ -11,6 +11,7 @@ from django.db.models import Min, F
 from dataclasses import dataclass
 from django.db.models import Prefetch
 from reporting.models import ReportVersion, FacilityReport, ReportActivity, ReportNonAttributableEmissions
+from reporting.models.report_attachment import ReportAttachment
 from typing import Union, List, Any
 
 
@@ -168,9 +169,9 @@ class ReportVersionService:
         """
         # Get operation_type in a single lightweight query
 
-        operation_type = (
+        operation_type, report_status = (
             ReportVersion.objects.select_related("report_operation")
-            .values_list("report_operation__operation_type", flat=True)
+            .values_list("report_operation__operation_type", "status")
             .get(id=version_id)
         )
         # Build prefetches
@@ -192,6 +193,16 @@ class ReportVersionService:
             "report_operation__activities",
             "report_operation__regulated_products",
         ]
+        if report_status == ReportVersion.ReportVersionStatus.Submitted:
+            prefetches.append(
+                Prefetch(
+                    "report_attachments",
+                    queryset=ReportAttachment.objects.filter(
+                        attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT
+                    ),
+                    to_attr="verification_statement",
+                )
+            )
         if operation_type == Operation.Types.LFO and not prefetch_full_facility_report:
             prefetches.append(
                 Prefetch(

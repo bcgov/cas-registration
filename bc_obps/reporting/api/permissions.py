@@ -142,7 +142,7 @@ approved_industry_user_report_version_composite_auth: Callable[[HttpRequest], bo
     authorize("approved_industry_user"), check_version_ownership_in_url("version_id")
 )
 approved_authorized_roles_report_version_composite_auth: Callable[[HttpRequest], bool] = compose_auth(
-    authorize("approved_authorized_roles"), check_version_ownership_in_url("version_id")
+    authorize("authorized_irc_user")
 )
 approved_industry_user_report_composite_auth: Callable[[HttpRequest], bool] = compose_auth(
     authorize("approved_industry_user"), check_report_ownership_in_url("report_id")
