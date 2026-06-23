@@ -31,7 +31,6 @@ types-jsonschema = "^4.23.0.20241208"
 deepdiff = "^8.6.1"
 brotli = ">=1.2.0"
 time-machine = "^3.0.0"
-camelot = "^12.6.29"
 pymupdf = "^1.27.2.3"
 pandas = "^3.0.3"
 
@@ -55,6 +54,8 @@ pytest-xdist = "^3.8.0"
 django-querycount = "^0.8.3"
 syrupy = "^5.1.0"
 ipykernel = "^7.3.0"
+notebook = "^7.6.0"
+camelot-py = "^2.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
