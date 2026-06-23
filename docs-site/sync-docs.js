@@ -19,6 +19,16 @@ const IMAGE_EXTENSIONS = [
 ];
 
 /**
+ * Converts any string (camelCase, snake_case, spaces) into clean kebab-case
+ */
+function toKebabCase(str) {
+  return str
+    .replace(/([a-z])([A-Z])/g, "$1-$2") // Split camelCase
+    .replace(/[\s_]+/g, "-") // Replace spaces and underscores with hyphens
+    .toLowerCase();
+}
+
+/**
  * Dynamically converts GitHub-friendly markdown links to Starlight-friendly routing links
  */
 function transformMarkdownLinks(content) {
@@ -58,7 +68,8 @@ function syncDirectory(source, target) {
     const sourcePath = path.join(source, item.name);
 
     // Core adjustment: If the file is README.md, name it index.md inside Astro
-    const targetName = item.name === "README.md" ? "index.md" : item.name;
+    const cleanName = toKebabCase(path.basename(item.name, ".md")) + ".md";
+    const targetName = item.name === "README.md" ? "index.md" : cleanName;
     const targetPath = path.join(target, targetName);
 
     if (item.isDirectory()) {
