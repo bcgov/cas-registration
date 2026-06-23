@@ -538,3 +538,98 @@ class TestReportService(TestCase):
             Activity.objects.filter(id__in=[1, 2, 3]),
             ordered=False,
         )
+
+    def test_create_report_for_reporting_year_boro_validation_uses_selected_registration_purpose(self):
+        """
+        Test that BORO validation uses the selected registration purpose,
+        not the operation's current registration purpose.
+        """
+        operator = operator_baker()
+        operation = operation_baker(
+            operator_id=operator.id,
+            type=Operation.Types.EIO,
+            status=Operation.Statuses.REGISTERED,
+            registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,
+            bc_obps_regulated_operation=None,
+        )
+        make_recipe(
+            "registration.tests.utils.operation_designated_operator_timeline",
+            operator=operator,
+            operation=operation,
+            start_date="2023-01-01",
+            end_date=None,
+        )
+
+        data = mock.Mock()
+        data.operation_id = operation.id
+        data.reporting_year = 2023
+        data.registration_purpose = Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+
+        with (
+            mock.patch(
+                "service.data_access_service.report_service.ReportDataAccessService.report_exists",
+                return_value=False,
+            ),
+            mock.patch(
+                "service.data_access_service.user_service.UserDataAccessService.get_user_operator_by_user",
+            ) as mock_get_user_operator,
+        ):
+            mock_get_user_operator.return_value.operator_id = operator.id
+            mock_get_user_operator.return_value.operator = operator
+
+            report_version_id = ReportService.create_report_for_reporting_year(
+                user_guid="00000000-0000-0000-0000-000000000000",
+                data=data,
+            )
+
+        report_version = ReportVersion.objects.get(id=report_version_id)
+
+        self.assertEqual(
+            report_version.report_operation.registration_purpose,
+            Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+        )
+
+    def test_create_report_for_reporting_year_requires_boro_for_selected_regulated_purpose(self):
+        operator = operator_baker()
+        operation = operation_baker(
+            operator_id=operator.id,
+            type=Operation.Types.LFO,
+            status=Operation.Statuses.REGISTERED,
+            registration_purpose=Operation.Purposes.REPORTING_OPERATION,
+            bc_obps_regulated_operation=None,
+        )
+        make_recipe(
+            "registration.tests.utils.operation_designated_operator_timeline",
+            operator=operator,
+            operation=operation,
+            start_date="2023-01-01",
+            end_date=None,
+        )
+
+        data = mock.Mock()
+        data.operation_id = operation.id
+        data.reporting_year = 2023
+        data.registration_purpose = Operation.Purposes.OBPS_REGULATED_OPERATION
+
+        with (
+            mock.patch(
+                "service.data_access_service.report_service.ReportDataAccessService.report_exists",
+                return_value=False,
+            ),
+            mock.patch(
+                "service.data_access_service.user_service.UserDataAccessService.get_user_operator_by_user",
+            ) as mock_get_user_operator,
+        ):
+            mock_get_user_operator.return_value.operator_id = operator.id
+            mock_get_user_operator.return_value.operator = operator
+
+            with self.assertRaises(Exception) as exception_context:
+                ReportService.create_report_for_reporting_year(
+                    user_guid="00000000-0000-0000-0000-000000000000",
+                    data=data,
+                )
+
+        self.assertEqual(
+            str(exception_context.exception),
+            "Regulated operations must have a BORO ID before a report can be created.",
+        )

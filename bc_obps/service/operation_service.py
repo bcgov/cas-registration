@@ -795,7 +795,8 @@ class OperationService:
         a past report for an operation
         """
 
-        if operation_type == Operation.Types.SFO:
+        # SFO and LFO
+        if operation_type in (Operation.Types.SFO, Operation.Types.LFO):
             return [
                 Operation.Purposes.OBPS_REGULATED_OPERATION,
                 Operation.Purposes.OPTED_IN_OPERATION,
@@ -803,36 +804,29 @@ class OperationService:
                 Operation.Purposes.REPORTING_OPERATION,
             ]
 
-        if operation_type == Operation.Types.LFO:
-            return [
-                Operation.Purposes.OBPS_REGULATED_OPERATION,
-                Operation.Purposes.OPTED_IN_OPERATION,
-                Operation.Purposes.NEW_ENTRANT_OPERATION,
-                Operation.Purposes.REPORTING_OPERATION,
-            ]
-
+        # EIO
         if operation_type == Operation.Types.EIO:
             return [
                 Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
             ]
 
-        raise ValueError(f"Unsupported operation type {operation_type}")
+        raise ValueError(f"Unsupported operation type: {operation_type}")
 
     @classmethod
     def _build_reportable_operation_row(
         cls,
-        timeline: OperationDesignatedOperatorTimeline,
+        operation: Operation,
         reporting_year: ReportingYear,
     ) -> dict[str, UUID | str | int | list[str]]:
         """
         Builds a reportable operation response row
         """
         return {
-            "operation_id": timeline.operation.id,
-            "operation_name": timeline.operation.name,
+            "operation_id": operation.id,
+            "operation_name": operation.name,
             "reporting_year": reporting_year.reporting_year,
             "registration_purposes": cls._get_registration_purposes_for_operation_type(
-                timeline.operation.type,
+                operation.type,
             ),
         }
 
@@ -919,7 +913,7 @@ class OperationService:
                     reportable_operations.append(
                         {
                             **cls._build_reportable_operation_row(
-                                timeline,
+                                timeline.operation,
                                 reporting_year,
                             ),
                             "is_current_registered_fallback": False,
@@ -944,11 +938,9 @@ class OperationService:
 
                 reportable_operations.append(
                     {
-                        "operation_id": operation.id,
-                        "operation_name": operation.name,
-                        "reporting_year": reporting_year.reporting_year,
-                        "registration_purposes": cls._get_registration_purposes_for_operation_type(
-                            operation.type,
+                        **cls._build_reportable_operation_row(
+                            operation,
+                            reporting_year,
                         ),
                         "is_current_registered_fallback": True,
                     }

@@ -223,3 +223,39 @@ class TestReportsEndpoint(CommonTestSetup):
         # Verify that the service methods were called with the correct arguments
         mock_get_report_by_id.assert_called_once_with(report.id)
         mock_create_report_version.assert_called_once_with(report)
+
+    @patch("service.report_service.ReportService.create_report_for_reporting_year")
+    def test_create_report_for_reporting_year(
+        self,
+        mock_create_report_for_reporting_year: MagicMock,
+    ):
+        # Arrange: create a report version and operation to use in the request
+        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        operation = report_version.report.operation
+
+        # Set up the expected response from the service method
+        mock_create_report_for_reporting_year.return_value = report_version.id
+
+        # Act: make a POST request to the endpoint
+        request_data = {
+            "operation_id": str(operation.id),
+            "reporting_year": 2023,
+            "registration_purpose": Operation.Purposes.REPORTING_OPERATION,
+        }
+
+        response = self.send_authorized_post_request(
+            request_data,
+            operation,
+            custom_reverse_lazy("create_report_for_reporting_year"),
+        )
+
+        # Assert: check the response status and returned report version id
+        assert response.status_code == 201
+        assert response.json() == report_version.id
+
+        # Verify that the service method was called
+        mock_create_report_for_reporting_year.assert_called_once()
+
+        # Verify that the selected registration purpose was passed to the service
+        _, kwargs = mock_create_report_for_reporting_year.call_args
+        assert kwargs["data"].registration_purpose == Operation.Purposes.REPORTING_OPERATION
