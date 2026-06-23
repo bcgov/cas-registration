@@ -19,7 +19,6 @@ import {
 } from "@/registration/app/components/operations/registration/enums";
 import userEvent from "@testing-library/user-event";
 import { createRegistrationOperationInformationSchemas } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
-import { mockDataUri } from "./NewEntrantOperationForm.test";
 import { fillComboboxWidgetField } from "@bciers/testConfig/helpers/helpers";
 import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
 import { Apps } from "@bciers/utils/src/enums";
@@ -168,8 +167,16 @@ describe("the OperationInformationForm component", () => {
         name: "Existing Operation",
         type: "Single Facility Operation",
         naics_code_id: 1,
-        boundary_map: mockDataUri,
-        process_flow_diagram: mockDataUri,
+        boundary_map: JSON.stringify({
+          id: 1,
+          name: "testpdf.pdf",
+          status: "Unscanned",
+        }),
+        process_flow_diagram: JSON.stringify({
+          id: 2,
+          name: "testpdf.pdf",
+          status: "Unscanned",
+        }),
         registration_purpose: "Reporting Operation",
         activities: [1],
       }); // mock the GET from selecting an operation
@@ -240,10 +247,16 @@ describe("the OperationInformationForm component", () => {
               name: "Existing Operation edited",
               type: "Single Facility Operation",
               naics_code_id: 1,
-              process_flow_diagram:
-                "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=",
-              boundary_map:
-                "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=",
+              process_flow_diagram: JSON.stringify({
+                id: 2,
+                name: "testpdf2.pdf",
+                status: "Unscanned",
+              }),
+              boundary_map: JSON.stringify({
+                id: 912,
+                name: "aaaaaaaa.pdf",
+                status: "Clean",
+              }),
               operation_has_multiple_operators: false,
             }),
           },
@@ -399,10 +412,16 @@ describe("the OperationInformationForm component", () => {
               name: "Op Name",
               type: "Single Facility Operation",
               naics_code_id: 1,
-              process_flow_diagram:
-                "data:application/pdf;name=test.pdf;base64,dGVzdA==",
-              boundary_map:
-                "data:application/pdf;name=test.pdf;base64,dGVzdA==",
+              process_flow_diagram: JSON.stringify({
+                id: 1983,
+                name: "ikjai.pdf",
+                status: "Unscanned",
+              }),
+              boundary_map: JSON.stringify({
+                id: 98876,
+                name: "bbbbbb.pdf",
+                status: "Clean",
+              }),
               operation_has_multiple_operators: true,
               multiple_operators_array: [
                 {
@@ -463,20 +482,22 @@ describe("the OperationInformationForm component", () => {
       screen.getByRole("button", { name: /save and continue/i }),
     );
     await waitFor(() => {
-      expect(actionHandler).toHaveBeenLastCalledWith(
-        "registration/operations",
-        "POST",
-        "",
-        {
-          body: JSON.stringify({
-            registration_purpose: "Electricity Import Operation",
-            name: "EIO Op Name",
-            type: "Electricity Import Operation",
-            operation_has_multiple_operators: false,
-          }),
-        },
-      );
+      const lastCall =
+        actionHandler.mock.calls[actionHandler.mock.calls.length - 1];
+      expect(lastCall.length).toBe(4);
+      expect(lastCall[0]).toBe("registration/operations");
+      expect(lastCall[1]).toBe("POST");
+      expect(lastCall[2]).toBe("");
+      expect(Object.fromEntries(lastCall[3].body || [])).toEqual({
+        payload: JSON.stringify({
+          registration_purpose: "Electricity Import Operation",
+          name: "EIO Op Name",
+          type: "Electricity Import Operation",
+          operation_has_multiple_operators: false,
+        }),
+      });
     });
+
     expect(mockPush).toHaveBeenCalledWith(
       "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2?operations_title=EIO%20Op%20Name",
     );

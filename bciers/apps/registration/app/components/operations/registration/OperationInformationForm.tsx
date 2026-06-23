@@ -1,7 +1,6 @@
 "use client";
 
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
-import { actionHandler } from "@bciers/actions";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
@@ -19,6 +18,7 @@ import { eioOperationInformationSchema } from "@/administration/app/data/jsonSch
 import ConfirmChangeOfFieldModal from "@/registration/app/components/operations/registration/ConfirmChangeOfFieldModal";
 import useKey from "@bciers/utils/src/useKey";
 import { Dict } from "@bciers/types/dictionary";
+import { useFileUploadWidget } from "@bciers/components/form/widgets/FileWidget";
 
 interface OperationInformationFormProps {
   rawFormData: Dict;
@@ -56,6 +56,7 @@ const OperationInformationForm = ({
   const searchParams = useSearchParams();
   const continueRegistration =
     searchParams.get("continueRegistration") === "true";
+  const [fileWidgetContext, submitWithFiles] = useFileUploadWidget();
   const [currentUiSchema, setCurrentUiSchema] = useState({
     ...uiSchema,
     section1: {
@@ -149,22 +150,23 @@ const OperationInformationForm = ({
     continueRegistration || !selectedOperation;
 
   const handleSubmit = async (e: IChangeEvent) => {
+    console.error(
+      "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      createUnnestedFormData(e.formData, ["section1", "section2", "section3"]),
+    );
+
     const formData = e.formData;
     const isCreating = !formData?.section1?.operation;
-    const postEndpoint = `registration/operations`;
-    const putEndpoint = `registration/operations/${formData?.section1?.operation}/registration/operation`;
-    const body = JSON.stringify(
+    const creatingEndpoint = `registration/operations`;
+    const updatingEndpoint = `registration/operations/${formData?.section1?.operation}/registration/operation`;
+
+    const response = await submitWithFiles(
       createUnnestedFormData(formData, ["section1", "section2", "section3"]),
-    );
-    const response = await actionHandler(
-      isCreating ? postEndpoint : putEndpoint,
-      isCreating ? "POST" : "PUT",
+      isCreating ? creatingEndpoint : updatingEndpoint,
+      "POST",
       isCreating
         ? ""
         : `/register-an-operation/${formData?.section1?.operation}/${step}`,
-      {
-        body,
-      },
     ).then((resolve) => {
       if (resolve?.error) {
         return { error: resolve.error };
@@ -360,6 +362,7 @@ const OperationInformationForm = ({
         }}
         uiSchema={currentUiSchema}
         customValidate={customValidate}
+        formContext={fileWidgetContext}
       />
     </>
   );
