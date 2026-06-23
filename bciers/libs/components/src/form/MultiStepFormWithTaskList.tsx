@@ -34,8 +34,8 @@ const MultiStepFormWithTaskList: React.FC<Props> = (props) => {
         </div>
         <div>
           <CommentPacificRailway
-            version_id={123}
-            facility_id={456}
+            version_id={13}
+            // facility_id={456}
             slug="example-slug"
           />
         </div>

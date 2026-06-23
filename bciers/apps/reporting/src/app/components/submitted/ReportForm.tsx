@@ -20,6 +20,7 @@ interface Props {
   origin: ReportingOrigin.Submitted | ReportingOrigin.AnnualReport;
   data: ReportData;
   attachments?: UploadedAttachment[];
+  //isInternalUser: boolean;
 }
 
 const ReportForm: React.FC<Props> = ({
@@ -28,7 +29,7 @@ const ReportForm: React.FC<Props> = ({
   origin,
   data,
   attachments,
-  isInternalUser,
+  // isInternalUser,
 }) => {
   const router = useRouter();
 
@@ -41,13 +42,13 @@ const ReportForm: React.FC<Props> = ({
             : "SFO"
         }
       />
-      <div>
+      {/* <div>
         <CommentPacificRailway
-          version_id={123}
-          facility_id={456}
+          version_id={13}
+          // facility_id={456}
           slug="example-slug"
         />
-      </div>
+      </div> */}
       <FinalReviewReportSections
         version_id={version_id}
         data={data}
