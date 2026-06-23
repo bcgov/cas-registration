@@ -39,6 +39,7 @@ class BCCarbonRegistryAPIClient:
     api_url: Optional[str]
     client_id: Optional[str]
     client_secret: Optional[str]
+    _session: requests.Session
     token_expiry: Optional[datetime] = None
     COMPLIANCE_ACCOUNT_TYPE_ID = 14
     OPERATOR_OF_REGULATED_OPERATION_TYPE_ID = 11  # Only master accounts with this ID are allowed to request units
@@ -59,6 +60,7 @@ class BCCarbonRegistryAPIClient:
             cls._instance.api_url = settings.BCCR_API_URL.rstrip("/") if settings.BCCR_API_URL else None
             cls._instance.client_id = settings.BCCR_CLIENT_ID
             cls._instance.client_secret = settings.BCCR_CLIENT_SECRET
+            cls._instance._session = requests.Session()
             logger.info(
                 f'Initializing BCCarbonRegistryAPIClient for clientID {cls._instance.client_id} to connect to {cls._instance.api_url}'
             )
@@ -124,6 +126,7 @@ class BCCarbonRegistryAPIClient:
         data: Optional[BaseModel] = None,
         params: Optional[Dict] = None,
         response_model: Optional[type[BaseModel]] = None,
+        _retried: bool = False,
     ) -> Dict:
         """
         Make an authenticated API request.
@@ -145,7 +148,7 @@ class BCCarbonRegistryAPIClient:
         # exclude_none=True to remove None values (Cause issues when sending None values when filtering)
         data_dict = data.model_dump(exclude_none=True) if data else None
         try:
-            response = requests.request(method=method, url=url, headers=headers, json=data_dict, params=params)
+            response = self._session.request(method=method, url=url, headers=headers, json=data_dict, params=params)
             response.raise_for_status()
             response_json = response.json()
             if response_model:
@@ -156,6 +159,18 @@ class BCCarbonRegistryAPIClient:
         except ValidationError as e:
             logger.error("Invalid response from %s: %s", url, str(e), exc_info=True)
             raise BCCarbonRegistryError(f"Invalid response format: {str(e)}", endpoint=url) from e
+        except HTTPError as e:
+            # The BCCR API uses session-based auth. A 401 does not always mean the token is invalid
+            # it can mean the request landed on a node that has not yet received the session
+            # Force a fresh re-auth and retry once to recover without surfacing the error to the caller
+            if e.response is not None and e.response.status_code == 401 and not _retried:
+                logger.warning("Received 401 from %s, forcing re-authentication and retrying...", url)
+                self.token = None
+                self.token_expiry = None
+                return self._make_request(method, endpoint, data, params, response_model, _retried=True)
+            log_error_message(e)
+            logger.error("Request to %s failed: %s", url, str(e), exc_info=True)
+            raise BCCarbonRegistryError(f"Request failed: {str(e)}", endpoint=url) from e
         except Exception as e:
             log_error_message(e)  # If BCCR API returns a valid error response, this will log it
             logger.error("Request to %s failed: %s", url, str(e), exc_info=True)
