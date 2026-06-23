@@ -53,6 +53,15 @@ function transformMarkdownLinks(content) {
       }
     }
 
+    // Handle image links
+    // e.g., ![alt](./image.png) becomes ![alt](./image.png)
+    if (
+      linkPath.endsWith(".png") ||
+      linkPath.endsWith(".jpg") ||
+      linkPath.endsWith(".jpeg")
+    ) {
+      linkPath = toKebabCase(linkPath);
+    }
     return `[${text}](${linkPath}${hash})`;
   });
 }
@@ -68,8 +77,8 @@ function syncDirectory(source, target) {
     const sourcePath = path.join(source, item.name);
 
     // Core adjustment: If the file is README.md, name it index.md inside Astro
-    const cleanName = toKebabCase(path.basename(item.name, ".md")) + ".md";
-    const targetName = item.name === "README.md" ? "index.md" : cleanName;
+    const targetName =
+      item.name === "README.md" ? "index.md" : toKebabCase(item.name);
     const targetPath = path.join(target, targetName);
 
     if (item.isDirectory()) {
