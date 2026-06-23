@@ -110,7 +110,10 @@ class BCCarbonRegistryAPIClient:
         """
         token = getattr(self, "token", None)
         token_expiry = getattr(self, "token_expiry", None)
-        if token is None or token_expiry is None or timezone.now() >= token_expiry:
+        # Re-authenticate 60 seconds before expiry to avoid the race where the
+        # client considers the token valid but the server rejects it as expired.
+        buffer = timedelta(seconds=60)
+        if token is None or token_expiry is None or timezone.now() >= (token_expiry - buffer):
             logger.warning("Token missing or expired. Re-authenticating...")
             self._authenticate()
 

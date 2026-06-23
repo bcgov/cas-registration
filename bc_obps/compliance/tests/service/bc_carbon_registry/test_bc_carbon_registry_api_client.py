@@ -306,6 +306,28 @@ class TestBCCarbonRegistryAPIClient:
         # Assert
         assert client.token == "new_token"
 
+    def test_ensure_authenticated_within_buffer_window(self, setup, mocker, caplog):
+        """Test re-authentication when token is within the 60-second buffer window"""
+        # Arrange
+        client = setup
+        client.token = "expiring_token"
+        client.token_expiry = timezone.now() + timedelta(seconds=30)  # inside 60s buffer
+        mock_post = mocker.patch("requests.post")
+        mock_post.return_value = Mock(
+            status_code=200,
+            json=lambda: {
+                "access_token": "refreshed_token",
+                "expires_in": 3600,
+                "token_type": "Bearer",
+            },
+        )
+        # Act
+        with caplog.at_level(logging.WARNING):
+            client._ensure_authenticated()
+            assert "Token missing or expired" in caplog.text
+        # Assert
+        assert client.token == "refreshed_token"
+
     def test_make_request_success(self, authenticated_client, mock_success_response):
         # Arrange
         client, mock_request = authenticated_client
