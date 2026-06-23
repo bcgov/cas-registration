@@ -20,6 +20,7 @@ interface MultiStepBaseProps {
   error?: any;
   disabled?: boolean;
   formData?: any;
+  formContext?: { [key: string]: any };
   onChange?: (e: IChangeEvent) => void;
   onSubmit: (e: IChangeEvent) => any;
   schema: RJSFSchema;
@@ -56,6 +57,7 @@ const MultiStepBase = ({
   uiSchema,
   submitButtonDisabled,
   customValidate,
+  formContext,
 }: MultiStepBaseProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -119,6 +121,7 @@ const MultiStepBase = ({
         setErrorReset={setErrorReset}
         customValidate={customValidate}
         omitExtraData={true}
+        formContext={formContext}
       >
         {children}
         <div className="flex flex-col flex-grow justify-end">

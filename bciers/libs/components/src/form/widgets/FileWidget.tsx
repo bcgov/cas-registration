@@ -34,11 +34,10 @@ const showScanStatus = (status: FileScanStatus | undefined | null) => {
   return null;
 };
 
-const useFileUploadWidget = (
-  endpoint: string,
-  method: "PUT" | "PATCH" | "POST",
-  pathToRevalidate?: string,
-): [typeof formContext, typeof submitWithFiles] => {
+const useFileUploadWidget = (): [
+  typeof formContext,
+  typeof submitWithFiles,
+] => {
   const files: Record<string, File> = {};
 
   const formContext = {
@@ -48,7 +47,12 @@ const useFileUploadWidget = (
   };
 
   // Proxy for the actionHandler, using a multipart/form-data encoding instead
-  const submitWithFiles = async (formData: any) => {
+  const submitWithFiles = async (
+    formData: any,
+    endpoint: string,
+    method: "PUT" | "PATCH" | "POST",
+    pathToRevalidate?: string,
+  ) => {
     const formDataWithFiles = new FormData();
 
     formDataWithFiles.append("payload", JSON.stringify(formData));

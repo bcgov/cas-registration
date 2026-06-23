@@ -257,14 +257,11 @@ class OperationRegistrationSubmissionIn(Schema):
 
 
 class OperationNewEntrantApplicationOut(ModelSchema):
-    new_entrant_application: Optional[str] = None
+    new_entrant_application: Optional[DocumentOut] = None
 
     @staticmethod
-    def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
-        new_entrant_application = obj.get_new_entrant_application()
-        if new_entrant_application:
-            return new_entrant_application.file.name  # type: ignore
-        return None
+    def resolve_new_entrant_application(obj: Operation) -> Optional[Document]:
+        return obj.get_new_entrant_application()
 
     class Meta:
         model = Operation

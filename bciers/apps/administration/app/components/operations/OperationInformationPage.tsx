@@ -19,8 +19,6 @@ const OperationInformationPage = async ({
     operation = await getOperationWithDocuments(operationId);
   } else throw new Error(`Invalid operation id: ${operationId}`);
 
-  console.log(operation);
-
   if (operation?.error) throw new Error("Error fetching operation information");
 
   const formSchema = await createAdministrationOperationInformationSchema(

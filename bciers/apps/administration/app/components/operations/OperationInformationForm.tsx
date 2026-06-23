@@ -60,11 +60,7 @@ const OperationInformationForm = ({
   const role = useSessionRole();
   const searchParams = useSearchParams();
 
-  const [fileWidgetContext, submitWithFiles] = useFileUploadWidget(
-    `registration/operations/${operationId}`,
-    "POST",
-    `/operations/${operationId}`,
-  );
+  const [fileWidgetContext, submitWithFiles] = useFileUploadWidget();
 
   const isRedirectedFromContacts = searchParams.get("from_contacts") as string;
 
@@ -105,16 +101,12 @@ const OperationInformationForm = ({
     setError(undefined);
     const pathToRevalidate = `/operations/${operationId}`;
 
-    const response = await submitWithFiles(data.formData);
-
-    // const response = await actionHandler(
-    //   `registration/operations/${operationId}`,
-    //   "PUT",
-    //   pathToRevalidate,
-    //   {
-    //     body: JSON.stringify(data.formData),
-    //   },
-    // );
+    const response = await submitWithFiles(
+      data.formData,
+      `registration/operations/${operationId}`,
+      "POST",
+      `/operations/${operationId}`,
+    );
 
     if (response?.error) {
       // Users get this error when they select a contact that's missing address information. We include a link to the Contacts page because the user has to fix the error from there, not here in the operation form.
