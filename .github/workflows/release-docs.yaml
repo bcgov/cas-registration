@@ -27,7 +27,7 @@ jobs:
         uses: withastro/action@v6
         with:
           path: docs-site
-          node-version: 24
+          node-version: 24.16.0
           package-manager: yarn@4.13.0
           build-cmd: node sync-docs.js && yarn astro build
 
