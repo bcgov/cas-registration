@@ -114,7 +114,11 @@ class ReportService:
             # allow report creation only if the authenticated user's operator was
             # the designated operator for the selected reporting year
             if designated_operator_timeline.operator.id != user_operator.operator_id:
-                raise UserError("You are not authorized to create a report for this operation and reporting year.")
+                raise UserError(
+                    f"This operation was owned by another operation in {reporting_year}, "
+                    "you do not need to report on this operation. "
+                    "If you believe this is incorrect, please contact ghgregulator@gov.bc.ca."
+                )
 
             operator = designated_operator_timeline.operator
             use_transferred_operation_handling = designated_operator_timeline.has_been_transferred
@@ -124,7 +128,11 @@ class ReportService:
             # no historical designation exists for the selected reporting year
             # allow creation only if the operation is currently registered to the authenticated user's operator
             if operation.operator_id != user_operator.operator_id:
-                raise UserError("You are not authorized to create a report for this operation and reporting year.")
+                raise UserError(
+                    f"This operation was owned by another operation in {reporting_year}, "
+                    "you do not need to report on this operation. "
+                    "If you believe this is incorrect, please contact ghgregulator@gov.bc.ca."
+                )
 
             if operation.status != Operation.Statuses.REGISTERED:
                 raise UserError(
@@ -148,7 +156,9 @@ class ReportService:
         ]
 
         if requires_boro_id and operation.bc_obps_regulated_operation_id is None:
-            raise UserError("Regulated operations must have a BORO ID before a report can be created.")
+            raise UserError(
+                "This operation does not have a BORO ID, please wait for a BORO ID to be issued before starting this report."
+            )
 
         report = Report.objects.create(
             operation=operation,
