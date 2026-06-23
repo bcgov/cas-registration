@@ -433,36 +433,6 @@ files = [
 ]
 
 [[package]]
-name = "camelot-py"
-version = "2.0.0"
-description = "PDF Table Extraction for Humans."
-optional = false
-python-versions = ">=3.10"
-groups = ["dev"]
-files = [
-    {file = "camelot_py-2.0.0-py3-none-any.whl", hash = "sha256:c2c6c7e4b0cb422b8050624c1d54026a8b3af1d86b7d7951eddeb18854fbcfb6"},
-    {file = "camelot_py-2.0.0.tar.gz", hash = "sha256:e96891d30707b3e2f1c08cb7ae15eea67abe72485ca92c7025b6308ba37bd3cd"},
-]
-
-[package.dependencies]
-click = ">=8.0.1"
-numpy = ">=1.26.1"
-opencv-python-headless = ">=4.7.0.68"
-openpyxl = ">=3.1.0"
-pandas = ">=2.2.2"
-pillow = ">=10.4.0"
-playa-pdf = ">=0.8.1"
-pypdfium2 = ">=4"
-tabulate = ">=0.9.0"
-
-[package.extras]
-dev = ["Pygments (>=2.10.0)", "build", "coverage[toml] (>=6.2)", "mypy (>=0.930)", "myst-parser (>=2.0.0)", "nox (>=2024.10.9)", "pre-commit (>=2.16.0)", "pre-commit-hooks (>=4.1.0)", "pytest (>=6.2.5)", "pytest-mpl (>=0.17.0)", "ruff (>=0.12.10)", "safety (>=2.2.3)", "sphinx (>=4.3.2)", "sphinx-autobuild (>=2021.3.14)", "sphinx-book-theme (>=1.0.1)", "sphinx-click (>=3.0.2)", "sphinx-copybutton (>=0.5.0)", "sphinx-prompt (>=1.5.0)", "twine", "typeguard (>=2.13.3)", "xdoctest[colors] (>=0.15.10)"]
-ghostscript = ["ghostscript (>=0.7)"]
-ml = ["pillow (>=10.4.0)", "timm (>=0.9)", "torch (>=2.0)", "transformers (>=4.40,<5)"]
-ocr = ["rapidocr-onnxruntime (>=1.3)"]
-plot = ["matplotlib (>=3.7.5) ; python_version < \"3.12\"", "matplotlib (>=3.8.0) ; python_version >= \"3.12\""]
-
-[[package]]
 name = "certifi"
 version = "2025.11.12"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -951,6 +921,18 @@ files = [
 ]
 
 [[package]]
+name = "distro"
+version = "1.9.0"
+description = "Distro - an OS platform information API"
+optional = false
+python-versions = ">=3.6"
+groups = ["dev"]
+files = [
+    {file = "distro-1.9.0-py3-none-any.whl", hash = "sha256:7bffd925d65168f85027d8da9af6bddab658135b840670a223589bc0c8ef02b2"},
+    {file = "distro-1.9.0.tar.gz", hash = "sha256:2fa77c6fd8940f116ee1d6b94a2f90b13b5ea8d019b98bc8bafdcabcdd9bdbed"},
+]
+
+[[package]]
 name = "dj-database-url"
 version = "2.3.0"
 description = "Use Database URLs in your Django Application."
@@ -1212,18 +1194,6 @@ files = [
 [package.dependencies]
 django = "*"
 typing-extensions = "*"
-
-[[package]]
-name = "et-xmlfile"
-version = "2.0.0"
-description = "An implementation of lxml.xmlfile for the standard library"
-optional = false
-python-versions = ">=3.8"
-groups = ["dev"]
-files = [
-    {file = "et_xmlfile-2.0.0-py3-none-any.whl", hash = "sha256:7a91720bc756843502c3b7504c77b8fe44217c85c537d85037f0f536151b2caa"},
-    {file = "et_xmlfile-2.0.0.tar.gz", hash = "sha256:dab3f4764309081ce75662649be815c4c9081e88f0837825f90fd28317d4da54"},
-]
 
 [[package]]
 name = "execnet"
@@ -2630,42 +2600,6 @@ files = [
 ]
 
 [[package]]
-name = "opencv-python-headless"
-version = "4.13.0.92"
-description = "Wrapper package for OpenCV python bindings."
-optional = false
-python-versions = ">=3.6"
-groups = ["dev"]
-files = [
-    {file = "opencv_python_headless-4.13.0.92-cp37-abi3-macosx_13_0_arm64.whl", hash = "sha256:1a7d040ac656c11b8c38677cc8cccdc149f98535089dbe5b081e80a4e5903209"},
-    {file = "opencv_python_headless-4.13.0.92-cp37-abi3-macosx_14_0_x86_64.whl", hash = "sha256:3e0a6f0a37994ec6ce5f59e936be21d5d6384a4556f2d2da9c2f9c5dc948394c"},
-    {file = "opencv_python_headless-4.13.0.92-cp37-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:5c8cfc8e87ed452b5cecb9419473ee5560a989859fe1d10d1ce11ae87b09a2cb"},
-    {file = "opencv_python_headless-4.13.0.92-cp37-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:0525a3d2c0b46c611e2130b5fdebc94cf404845d8fa64d2f3a3b679572a5bd22"},
-    {file = "opencv_python_headless-4.13.0.92-cp37-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:eb60e36b237b1ebd40a912da5384b348df8ed534f6f644d8e0b4f103e272ba7d"},
-    {file = "opencv_python_headless-4.13.0.92-cp37-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:0bd48544f77c68b2941392fcdf9bcd2b9cdf00e98cb8c29b2455d194763cf99e"},
-    {file = "opencv_python_headless-4.13.0.92-cp37-abi3-win32.whl", hash = "sha256:a7cf08e5b191f4ebb530791acc0825a7986e0d0dee2a3c491184bd8599848a4b"},
-    {file = "opencv_python_headless-4.13.0.92-cp37-abi3-win_amd64.whl", hash = "sha256:77a82fe35ddcec0f62c15f2ba8a12ecc2ed4207c17b0902c7a3151ae29f37fb6"},
-]
-
-[package.dependencies]
-numpy = {version = ">=2", markers = "python_version >= \"3.9\""}
-
-[[package]]
-name = "openpyxl"
-version = "3.1.5"
-description = "A Python library to read/write Excel 2010 xlsx/xlsm files"
-optional = false
-python-versions = ">=3.8"
-groups = ["dev"]
-files = [
-    {file = "openpyxl-3.1.5-py2.py3-none-any.whl", hash = "sha256:5282c12b107bffeef825f4617dc029afaf41d0ea60823bbb665ef3079dc79de2"},
-    {file = "openpyxl-3.1.5.tar.gz", hash = "sha256:cf0e3cf56142039133628b5acffe8ef0c12bc902d2aadd3e0fe5878dc08d1050"},
-]
-
-[package.dependencies]
-et-xmlfile = "*"
-
-[[package]]
 name = "orderly-set"
 version = "5.5.0"
 description = "Orderly set"
@@ -2865,7 +2799,7 @@ version = "12.2.0"
 description = "Python Imaging Library (fork)"
 optional = false
 python-versions = ">=3.10"
-groups = ["main", "dev"]
+groups = ["main"]
 files = [
     {file = "pillow-12.2.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:a4e8f36e677d3336f35089648c8955c51c6d386a13cf6ee9c189c5f5bd713a9f"},
     {file = "pillow-12.2.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:2e589959f10d9824d39b350472b92f0ce3b443c0a3442ebf41c40cb8361c5b97"},
@@ -2984,53 +2918,6 @@ files = [
 docs = ["furo (>=2025.9.25)", "proselint (>=0.14)", "sphinx (>=8.2.3)", "sphinx-autodoc-typehints (>=3.2)"]
 test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=8.4.2)", "pytest-cov (>=7)", "pytest-mock (>=3.15.1)"]
 type = ["mypy (>=1.18.2)"]
-
-[[package]]
-name = "playa-pdf"
-version = "1.1.0"
-description = "Parallel and LazY Analyzer for PDFs"
-optional = false
-python-versions = ">=3.8"
-groups = ["dev"]
-files = [
-    {file = "playa_pdf-1.1.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:0f3e250b91f3ac5db60171a66b1f594b1a6582bf71c4e206d6c03a0f8122ced9"},
-    {file = "playa_pdf-1.1.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:0c5adb706ba91137fbe0fbb7204743e60c0e4affb24cbcc138fff50697609cdd"},
-    {file = "playa_pdf-1.1.0-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:55dd02fd50f1e58cc87680f88d56b46d0c6050dec9b2b9d5a6c6746b7a3705f9"},
-    {file = "playa_pdf-1.1.0-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:a788356f0c6d2ac95261ddec44e57761faf4b9cfa47a589113547e716fff846f"},
-    {file = "playa_pdf-1.1.0-cp310-cp310-win_amd64.whl", hash = "sha256:8a06cb9e2abb0e45ba651379604c624b4f645548a68ff41e3395400f9d7c30f0"},
-    {file = "playa_pdf-1.1.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:daf8774b97933ddf8fb9120204ff9db96c56c360dfdecc489be5cec3338d0b5c"},
-    {file = "playa_pdf-1.1.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:0266a682d6c23658481a7f1ad590c9da8c174f4c5a6eac8052827174cfa287bf"},
-    {file = "playa_pdf-1.1.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:78ca09679d78126cac95232e82b51f978f0d3373f2519e09036d87b13fe11d50"},
-    {file = "playa_pdf-1.1.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:499b9e2830faa0e680139b6e0363118cd368e7ab75e31b846d129ce0408640e7"},
-    {file = "playa_pdf-1.1.0-cp311-cp311-win_amd64.whl", hash = "sha256:81c7a18284806e80168adff83e2b0cec54a5fa11a01bde189ddc4fd4a4d3c27c"},
-    {file = "playa_pdf-1.1.0-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:56dbaccca34dfc0613bec658b67ed67fb0fb4efaf49aab86c60236bfd934ec89"},
-    {file = "playa_pdf-1.1.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:4ac45f8ac08f8ec17ac834a189772293bc9d52aadb51c3c5eb839fa1c7e79fcb"},
-    {file = "playa_pdf-1.1.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:0ffa371cfa8e7b8b3f62eb8fa5cd85015095861a20d7d4943971dce7dd15461b"},
-    {file = "playa_pdf-1.1.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:b27df269246e48946870817b3b7727fcc2e7cf12e605abb4df51efb0af12afee"},
-    {file = "playa_pdf-1.1.0-cp312-cp312-win_amd64.whl", hash = "sha256:699799f656757aab1fdd923bbd0c4ae5438efa6458c943524a0b9a8e8f5e076b"},
-    {file = "playa_pdf-1.1.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:c50a79c88e3ed52944f85a694f0d6b5867fbed5d4c9c4a3b84d876858608b854"},
-    {file = "playa_pdf-1.1.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:95335f17b96437d55e8e192e9c13f085db9ca84eef608ac706f177d5ade19a23"},
-    {file = "playa_pdf-1.1.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:8b6eed3179d42a5e2db99c33ff931ca89014c2af2d9104a787f6b9079dab4f71"},
-    {file = "playa_pdf-1.1.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:783b25ed0e5fa435e488ad11551c897d7c622b9ac8a1376ede6860c28eaf2c11"},
-    {file = "playa_pdf-1.1.0-cp313-cp313-win_amd64.whl", hash = "sha256:a786292d382a768ee029ad3461b4ea92df04dea10879ee3f57a11c2388e89746"},
-    {file = "playa_pdf-1.1.0-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:50c5dcb8908c94127ccfde1af6490ecdec3ff2865447e36f178c1bdff77e3e8e"},
-    {file = "playa_pdf-1.1.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:8827714630de811c35fe79f97b9934b411567d3a3b869a3c0df8704fd0850efd"},
-    {file = "playa_pdf-1.1.0-cp314-cp314-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:e43afdc20cde1b77a9b4cb5804d9499d8c6966f34f3348abd4cd0541c591fe83"},
-    {file = "playa_pdf-1.1.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:7afcd077ef47ea86455534ecdf692448ceb1af636d2a38583f8e203d252f2d85"},
-    {file = "playa_pdf-1.1.0-cp314-cp314-win_amd64.whl", hash = "sha256:4cd365fd111b1cb2354a6f6ec8da47e9e5d70c5a768fbe9534eee5247c7cacd2"},
-    {file = "playa_pdf-1.1.0-cp314-cp314t-macosx_10_15_x86_64.whl", hash = "sha256:581a31bdf1bc9961addbd252050d0e9ed38dd1ad223a56c205680e90f7b72575"},
-    {file = "playa_pdf-1.1.0-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:457edd5abb9fc43aadcdd812371705851906b1d532a077a6c04981546cda4260"},
-    {file = "playa_pdf-1.1.0-cp314-cp314t-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:88b7ebf95cd7d02459a26a5a941411258b323f3202e33c13dcc867ae730abc73"},
-    {file = "playa_pdf-1.1.0-cp314-cp314t-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e548a7542036f89a622f1c11c2a9c40b8476090b04f3abc335a8dd20142060aa"},
-    {file = "playa_pdf-1.1.0-cp314-cp314t-win_amd64.whl", hash = "sha256:c52597802d86fdd61a71a6e7f8e4b48fae51cc5ae38fcc727a14b6d4c075f6bd"},
-    {file = "playa_pdf-1.1.0.tar.gz", hash = "sha256:6414a0779fdcc96284588767738c2bd71ed3aa65a1a8fa647a4ab09dce4ff017"},
-]
-
-[package.dependencies]
-mypy-extensions = "*"
-
-[package.extras]
-crypto = ["cryptography (>=36.0.0)"]
 
 [[package]]
 name = "pluggy"
@@ -3514,38 +3401,6 @@ files = [
     {file = "pymupdf-1.27.2.3-cp310-abi3-win_amd64.whl", hash = "sha256:d20f68ef15195e073071dbc4ae7455257c7889af7584e39df490c0a92728526e"},
     {file = "pymupdf-1.27.2.3-cp314-cp314t-manylinux_2_28_x86_64.whl", hash = "sha256:77691604c5d1d0233827139bbcdea61fd57879c84712b8e49b1f45520f7ab9c2"},
     {file = "pymupdf-1.27.2.3.tar.gz", hash = "sha256:7a92faa25129e8bbec5e50eeb9214f187665428c31b05c4ef6e36c58c0b1c6d2"},
-]
-
-[[package]]
-name = "pypdfium2"
-version = "5.10.1"
-description = "Python bindings to PDFium"
-optional = false
-python-versions = ">=3.6"
-groups = ["dev"]
-files = [
-    {file = "pypdfium2-5.10.1-py3-none-android_23_arm64_v8a.whl", hash = "sha256:13abf7a9f5e0ddebc8bbcccea5f13ae5abe8a298ea219e125b0fc24c1d2171b4"},
-    {file = "pypdfium2-5.10.1-py3-none-android_23_armeabi_v7a.whl", hash = "sha256:a0dc52b56631e2f7edcdb22bae3b155aa840bec32c5bd05781e90baaecee88e7"},
-    {file = "pypdfium2-5.10.1-py3-none-macosx_12_0_arm64.whl", hash = "sha256:ebb9e63f92d15fc41b359fe7a187233dfae37548800e1fa09cb2fc466ac89951"},
-    {file = "pypdfium2-5.10.1-py3-none-macosx_12_0_x86_64.whl", hash = "sha256:d04f2050b6b32bb18624688b600543342a4ab3aacf64bf66521a5af72bbc7de1"},
-    {file = "pypdfium2-5.10.1-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0de53d2710ca9509fc2812340acc57c3f043697609068592d87de654f8cabf44"},
-    {file = "pypdfium2-5.10.1-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:10a26ce04795f8ec079e81c707fcb5737061e8a78025babc3d6e36642e9c903a"},
-    {file = "pypdfium2-5.10.1-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:be6d2a8d1bcfd777188e7aa55a25c83f34d54e8350ad8810fb32017787d9b0d9"},
-    {file = "pypdfium2-5.10.1-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:cf4d2527f79f31c550490cc74c9f32e19385a944630a3ef4cd4d9b6f961fbf77"},
-    {file = "pypdfium2-5.10.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3ba127750bc3f4161461538d532d74491cd976f584f1753a6cee9cb821338ec1"},
-    {file = "pypdfium2-5.10.1-py3-none-manylinux_2_27_s390x.manylinux_2_28_s390x.whl", hash = "sha256:80f30517ee089dfbbc6e9de6da365b6e8c0ce8f80c40b7d4025a3b1d3bbd8a70"},
-    {file = "pypdfium2-5.10.1-py3-none-manylinux_2_34_riscv64.manylinux_2_39_riscv64.whl", hash = "sha256:ad5f5de15febb788c6eb3853e58aceda9cd8c5187c92472abaeecf9558deb0cf"},
-    {file = "pypdfium2-5.10.1-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:8947fa3cd808da33960bdf8ff9e5247aa94ccd94f0b09bb3402e99498d83bcc9"},
-    {file = "pypdfium2-5.10.1-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:139a6387a3a2652f288e53164268bb03af4fa221d78484ee18407053a60082a3"},
-    {file = "pypdfium2-5.10.1-py3-none-musllinux_1_2_i686.whl", hash = "sha256:172ff3e10358d66456e27fb0b8b5098e28ec24e51072eb4b5b86077d550e21bb"},
-    {file = "pypdfium2-5.10.1-py3-none-musllinux_1_2_ppc64le.whl", hash = "sha256:09fda0609dc4749c9865a0315c447d6f2583a580693bcabd69980d3fbb22ad51"},
-    {file = "pypdfium2-5.10.1-py3-none-musllinux_1_2_riscv64.whl", hash = "sha256:6b01adcfe9aaf7a635a59bed5687fd4fd7b0da292664f050d4ebd2bfa5c70584"},
-    {file = "pypdfium2-5.10.1-py3-none-musllinux_1_2_s390x.whl", hash = "sha256:610e14c37d2090b826dccc0604fc7e7612c0ce591190780ae228abdb9abb971e"},
-    {file = "pypdfium2-5.10.1-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:f2803020952afa57e1e148adc19369b835154e1fa251a1ca85008ab6466a710f"},
-    {file = "pypdfium2-5.10.1-py3-none-win32.whl", hash = "sha256:8702bb4f01ddfc8e7757b41b4c2c8392ac17c9f0234476e1e69672ea7c6d6aa0"},
-    {file = "pypdfium2-5.10.1-py3-none-win_amd64.whl", hash = "sha256:58da5b51fb7884c7d21a05062ab13edb011d1a08dfd9694f3d5d685df62796b9"},
-    {file = "pypdfium2-5.10.1-py3-none-win_arm64.whl", hash = "sha256:e3301c2f7a66fb8cb57dba857d0c9e90215e178f6602a87c5a306cd98513dab8"},
-    {file = "pypdfium2-5.10.1.tar.gz", hash = "sha256:f257d2011eb43c846b7e9f5a802e28646b29732763e4a35dd6ca76f9be580538"},
 ]
 
 [[package]]
@@ -4433,19 +4288,27 @@ files = [
 pytest = ">=8.0.0"
 
 [[package]]
-name = "tabulate"
-version = "0.10.0"
-description = "Pretty-print tabular data"
+name = "tabula-py"
+version = "2.10.0"
+description = "Simple wrapper for tabula-java, read tables from PDF into DataFrame"
 optional = false
-python-versions = ">=3.10"
+python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "tabulate-0.10.0-py3-none-any.whl", hash = "sha256:f0b0622e567335c8fabaaa659f1b33bcb6ddfe2e496071b743aa113f8774f2d3"},
-    {file = "tabulate-0.10.0.tar.gz", hash = "sha256:e2cfde8f79420f6deeffdeda9aaec3b6bc5abce947655d17ac662b126e48a60d"},
+    {file = "tabula_py-2.10.0-py3-none-any.whl", hash = "sha256:c7596c559fc813e313eb4fbc7aabe7e4290dbd04717c4cbe4aa4a2cafd00ab63"},
+    {file = "tabula_py-2.10.0.tar.gz", hash = "sha256:75968a83fe978e5d56ccf23f0f0255a459c256b7b52db7cabe5ac795bb3b12df"},
 ]
 
+[package.dependencies]
+distro = "*"
+numpy = ">1.24.4"
+pandas = ">=0.25.3"
+
 [package.extras]
-widechars = ["wcwidth"]
+dev = ["Flake8-pyproject", "mypy", "pytest", "ruff"]
+doc = ["Jinja2 (==3.1.2)", "sphinx (==7.1.2)", "sphinx-rtd-theme (==1.3.0)"]
+jpype = ["jpype1"]
+test = ["pytest"]
 
 [[package]]
 name = "terminado"
@@ -4872,4 +4735,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.1"
 python-versions = "~3.12"
-content-hash = "a2ecaae21e8929f7ae2e7991794905589815f08221945f532d4d703afbc4968c"
+content-hash = "48eca8db7cb632450efc7e2a4ad1b64f87dc2b5797593db234e1d87e7d795067"
