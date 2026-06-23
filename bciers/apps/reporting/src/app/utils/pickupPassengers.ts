@@ -2,7 +2,7 @@ import { actionHandler } from "@bciers/actions";
 
 export async function pickupPassengers(
   reportVersionId: number,
-  facilityId?: number,
+  facilityId?: string,
 ) {
   let endpoint = `reporting/comments/version_id/${reportVersionId}`;
 

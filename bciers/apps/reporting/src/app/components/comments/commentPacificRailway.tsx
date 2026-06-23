@@ -17,54 +17,7 @@ const CommentPacificRailway: React.FC<Props> = ({ threads }) => {
     setOpen(newOpen);
   };
 
-  // const threads = await pickupPassengers(version_id, facility_id);
   console.log(threads);
-  // const commentThreads: Thread[] = [
-  //   {
-  //     headHonchoId: 1,
-  //     headHonchoName: "Test Thread 1",
-  //     items: [
-  //       {
-  //         id: 1,
-  //         userName: "Big Ralph",
-  //         userId: 1,
-  //         timestamp: "2023-07-01",
-  //         text: "This is a test comment 1",
-  //         version_id: 17,
-  //       },
-  //       {
-  //         id: 2,
-  //         userName: "Excitable Jurgen",
-  //         userId: 2,
-  //         timestamp: "2023-07-02",
-  //         text: "This is another test comment 2",
-  //         version_id: 17,
-  //       },
-  //     ],
-  //     createdByName: "Big Ralph",
-  //     createdById: 1,
-  //     createdAt: "2023-07-01",
-  //     version_id: 17,
-  //   },
-  //   {
-  //     headHonchoId: 2,
-  //     headHonchoName: "Test Thread 2",
-  //     items: [
-  //       {
-  //         id: 2,
-  //         userName: "Excitable Jurgen",
-  //         userId: 2,
-  //         timestamp: "2023-07-02",
-  //         text: "This is a third test comment 3",
-  //         version_id: 17,
-  //       },
-  //     ],
-  //     createdByName: "Excitable Jurgen",
-  //     createdById: 2,
-  //     createdAt: "2023-07-02",
-  //     version_id: 17,
-  //   },
-  // ];
 
   const createNewCommentThread = () => {
     // Implement the logic to create a new comment thread here
@@ -93,7 +46,7 @@ const CommentPacificRailway: React.FC<Props> = ({ threads }) => {
           __________-----------New Thread-----------__________
         </Button>
         {threads.map((thread) => (
-          <CommentBoxCar key={thread.headHonchoId} thread={thread} />
+          <CommentBoxCar key={thread.created_by} thread={thread} />
         ))}
       </Drawer>
     </>

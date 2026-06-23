@@ -14,6 +14,7 @@ export default async function AnnualReportPage({
     getFinalReviewData(version_id),
   ]);
   const threads = await pickupPassengers(version_id);
+
   return (
     <>
       <ReportForm

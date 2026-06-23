@@ -1,3 +1,4 @@
+from uuid import UUID
 from venv import logger
 from common.permissions import authorize
 
@@ -19,7 +20,7 @@ from .router import router
     auth=authorize("approved_authorized_roles"),
 )
 def pickupPassengers(
-    request: HttpRequest, version_id: int, facility_id: int | None = None
+    request: HttpRequest, version_id: int, facility_id: str | None = None
 ) -> list[ReportCommentHeadHonchoOfTheCongaLineBoii]:
     """
     Fetch the head comment threads for a given report version and facility id.
@@ -29,7 +30,8 @@ def pickupPassengers(
     ).filter(report_version_id=version_id)
 
     if facility_id is not None:
-        query = query.filter(facility_id=facility_id)
+        facility_uuid = UUID(facility_id)
+        query = query.filter(facility_id=facility_uuid)
 
     threads = list(query.all())
 
