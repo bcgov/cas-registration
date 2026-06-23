@@ -61,6 +61,12 @@ export function InternalCalculatePenaltyComponent({
     : showPenalty
       ? `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`
       : undefined;
+  
+  const currencyFormatter = new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
   return (
     <>
@@ -77,10 +83,14 @@ export function InternalCalculatePenaltyComponent({
           />
         </LocalizationProvider>
       </div>
+      <hr/>
       <div>
-        <p>Penalty Amount: {penaltyData?.total_penalty}</p>
-        <p>Days Late: {penaltyData?.days_late}</p>
+        <hr/>
+        <p><strong>Penalty Amount:</strong> ${currencyFormatter.format(penaltyData?.total_penalty)}</p>
+        <p><strong>Days Late:</strong> {penaltyData?.days_late}</p>
+        <hr/>
       </div>
+      <hr/>
       {penaltyData?.daily_accumulated_list && (
         <div>
           <h3>Accrual Data</h3>
