@@ -6,7 +6,7 @@ export enum ActivePage {
   ReviewComplianceObligationReport = "ReviewComplianceObligationReport",
   ReviewInterestSummary = "ReviewInterestSummary",
   ReviewPenaltySummary = "ReviewPenaltySummary",
-  CalculateAccruingPenalty = "CalculateAccruingPenalty"
+  CalculateAccruingPenalty = "CalculateAccruingPenalty",
 }
 
 export const generateReviewObligationPenaltyTaskList: (
@@ -35,7 +35,7 @@ export const generateReviewObligationPenaltyTaskList: (
     },
   ];
 
-  if (penaltyStatus == 'accruing') {
+  if (penaltyStatus == "accruing") {
     elements.push({
       type: "Page" as const,
       title: "Calculate Accruing Penalty",

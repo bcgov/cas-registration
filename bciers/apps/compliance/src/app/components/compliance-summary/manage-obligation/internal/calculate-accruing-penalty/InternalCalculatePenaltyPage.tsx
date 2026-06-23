@@ -17,7 +17,6 @@ export default async function InternalCalculatePenaltyPage({
   const complianceSummaryReviewPageData: ComplianceSummary =
     await getComplianceSummary(complianceReportVersionId);
 
-  
   const {
     reporting_year: reportingYear,
     has_late_submission_penalty: hasLateSubmissionPenalty,
@@ -38,11 +37,22 @@ export default async function InternalCalculatePenaltyPage({
     ActivePage.CalculateAccruingPenalty,
   );
 
-  async function calculatePenalty(obligationId: number, penaltyType: string, endDate: string) {
+  async function calculatePenalty(
+    obligationId: number,
+    penaltyType: string,
+    endDate: string,
+  ) {
     "use server";
-    const params = {obligation_id: obligationId, penalty_type: penaltyType, end_date: endDate};
-    const penaltyCalculation = await getPenaltyAccrualCalculationData(obligationId, params);
-    return penaltyCalculation
+    const params = {
+      obligation_id: obligationId,
+      penalty_type: penaltyType,
+      end_date: endDate,
+    };
+    const penaltyCalculation = await getPenaltyAccrualCalculationData(
+      obligationId,
+      params,
+    );
+    return penaltyCalculation;
   }
 
   return (

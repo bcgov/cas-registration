@@ -12,25 +12,29 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 interface Props {
   data: ComplianceSummary;
   complianceReportVersionId: number;
-  calculatePenalty: (obligationId: number, penaltyType: string, endDate: string) => any;
+  calculatePenalty: (
+    obligationId: number,
+    penaltyType: string,
+    endDate: string,
+  ) => any;
 }
 
 export function InternalCalculatePenaltyComponent({
   data,
   complianceReportVersionId,
-  calculatePenalty
+  calculatePenalty,
 }: Readonly<Props>) {
   const backUrl = "/compliance-administration/compliance-summaries";
-  const today = new Date().toLocaleDateString('en-CA')
+  const today = new Date().toLocaleDateString("en-CA");
   const [endDate, setEndDate] = useState(today);
-  const [penaltyData, setPenaltyData] = useState({})
+  const [penaltyData, setPenaltyData] = useState({});
 
   const handleChange = async (d: Dayjs) => {
-    setEndDate(d.utc().format("YYYY-MM-DD"))
+    setEndDate(d.utc().format("YYYY-MM-DD"));
 
-    const data = await calculatePenalty(1, 'Automatic Overdue', '2026-06-01')
-    console.log(data)
-    setPenaltyData(data)
+    const data = await calculatePenalty(1, "Automatic Overdue", "2026-06-01");
+    console.log(data);
+    setPenaltyData(data);
   };
 
   const {
