@@ -172,3 +172,14 @@ docker-compose.yml
 
 # Local db files
 bc_obps/db.sql
+
+# Verification statement sample PDFs
+VSs/
+**/VSs/
+*verification*statement*.pdf
+*Verification_Report*.pdf
+report_attachments_*.pdf
+
+# Jupyter notebook checkpoints / outputs
+.ipynb_checkpoints/
+*-checkpoint.ipynb
