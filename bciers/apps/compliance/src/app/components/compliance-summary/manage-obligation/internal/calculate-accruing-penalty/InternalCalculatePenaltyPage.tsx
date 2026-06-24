@@ -37,10 +37,7 @@ export default async function InternalCalculatePenaltyPage({
     ActivePage.CalculateAccruingPenalty,
   );
 
-  async function calculatePenalty(
-    penaltyType: string,
-    endDate: string,
-  ) {
+  async function calculatePenalty(penaltyType: string, endDate: string) {
     "use server";
     const params = {
       obligation_id: complianceReportVersionId,
