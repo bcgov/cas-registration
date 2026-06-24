@@ -3,7 +3,7 @@ from venv import logger
 from common.permissions import authorize
 
 
-from django.db.models import Subquery
+from django.db.models import Subquery, Prefetch
 from django.http import HttpRequest
 from reporting.models.report_comment_bodyofthesnake import ReportCommentBodyOfTheSnake
 from reporting.models.report_version import ReportVersion
@@ -31,7 +31,11 @@ def pickupPassengers(
     report_id = ReportVersion.objects.filter(pk=version_id).values("report_id")[:1]
     query = ReportCommentHeadHonchoOfTheCongaLineBoii.objects.filter(
         report_version__report_id=Subquery(report_id)
-    ).prefetch_related("report_comments_bodyofthesnake")
+    ).prefetch_related(
+        Prefetch(
+            "report_comments_bodyofthesnake", queryset=ReportCommentBodyOfTheSnake.objects.select_related("created_by")
+        )
+    )
 
     if facility_id is not None:
         facility_uuid = UUID(facility_id)

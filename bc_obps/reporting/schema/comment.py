@@ -3,9 +3,17 @@ from reporting.models import ReportCommentHeadHonchoOfTheCongaLineBoii, ReportCo
 
 
 class BodyOfTheSnakeSchema(ModelSchema):
+    name: str | None
+
     class Meta:
         model = ReportCommentBodyOfTheSnake
         fields = "__all__"
+
+    @staticmethod
+    def resolve_name(obj: ReportCommentBodyOfTheSnake) -> str | None:
+        if obj.created_by:
+            return f"{obj.created_by.first_name} {obj.created_by.last_name}"
+        return None
 
 
 class CommentSchema(ModelSchema):
