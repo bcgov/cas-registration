@@ -3,7 +3,7 @@ from reporting.models import ReportCommentHeadHonchoOfTheCongaLineBoii, ReportCo
 
 
 class BodyOfTheSnakeSchema(ModelSchema):
-    name: str | None
+    user_name: str | None
 
     class Meta:
         model = ReportCommentBodyOfTheSnake
@@ -12,7 +12,13 @@ class BodyOfTheSnakeSchema(ModelSchema):
     @staticmethod
     def resolve_name(obj: ReportCommentBodyOfTheSnake) -> str | None:
         if obj.created_by:
-            return f"{obj.created_by.first_name} {obj.created_by.last_name}"
+            return obj.created_by.get_full_name()
+        return None
+
+    @staticmethod
+    def resolve_user_name(obj: ReportCommentBodyOfTheSnake) -> str | None:
+        if obj.created_by:
+            return obj.created_by.get_full_name()
         return None
 
 
@@ -22,6 +28,7 @@ class CommentSchema(ModelSchema):
     """
 
     report_comments_bodyofthesnake: list[BodyOfTheSnakeSchema] | None
+    user_name: str | None
 
     class Meta:
         model = ReportCommentHeadHonchoOfTheCongaLineBoii
@@ -37,6 +44,12 @@ class CommentSchema(ModelSchema):
             "facility",
             "report_version",
         ]
+
+    @staticmethod
+    def resolve_user_name(obj: ReportCommentHeadHonchoOfTheCongaLineBoii) -> str | None:
+        if obj.created_by:
+            return obj.created_by.get_full_name()
+        return None
 
 
 class ReportCommentHeadHonchoInSchema(Schema):

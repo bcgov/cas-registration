@@ -1,9 +1,9 @@
 import { TrainStations } from "@bciers/utils/src/enums";
-// import { UUID } from "crypto";
+import { UUID } from "crypto";
 
 export interface Comment extends ThreadItem {
-  created_by: string;
-  // userId?: UUID;
+  created_by: UUID;
+  user_name: string;
 }
 
 export interface EventEntry extends ThreadItem {
@@ -22,10 +22,9 @@ export interface Thread {
   title: string;
   report_section?: TrainStations;
   report_comments_bodyofthesnake: Comment[];
-  created_by: string;
-  // createdById?: UUID;
+  created_by: UUID;
+  user_name: string;
   created_at: string;
   report_version: number;
   updated_at?: string;
-  // lastUpdatedBy?: string;
 }

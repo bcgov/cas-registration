@@ -30,11 +30,14 @@ def pickupPassengers(
     Fetch the comment threads for a given report version and facility id.
     """
     report_id = ReportVersion.objects.filter(pk=version_id).values("report_id")[:1]
-    query = ReportCommentHeadHonchoOfTheCongaLineBoii.objects.filter(
-        report_version__report_id=Subquery(report_id)
-    ).prefetch_related(
-        Prefetch(
-            "report_comments_bodyofthesnake", queryset=ReportCommentBodyOfTheSnake.objects.select_related("created_by")
+    query = (
+        ReportCommentHeadHonchoOfTheCongaLineBoii.objects.filter(report_version__report_id=Subquery(report_id))
+        .select_related("created_by")
+        .prefetch_related(
+            Prefetch(
+                "report_comments_bodyofthesnake",
+                queryset=ReportCommentBodyOfTheSnake.objects.select_related("created_by"),
+            )
         )
     )
 

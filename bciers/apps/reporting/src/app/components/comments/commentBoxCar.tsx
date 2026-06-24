@@ -72,7 +72,7 @@ const CommentBoxCar: React.FC<Props> = ({ thread }) => {
                 {thread.title ?? ""}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                {formattedCreatedAt}
+                {formattedCreatedAt} by {thread.user_name ?? "unkown"}
               </Typography>
             </Box>
           </Stack>
