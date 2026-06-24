@@ -8,6 +8,7 @@ from compliance.api.router import router
 from compliance.schema.calculated_penalty import CalculatedPenaltyOut
 from compliance.models import CompliancePenalty, ComplianceObligation
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
+from compliance.api.permissions import approved_authorized_roles_compliance_report_version_composite_auth
 
 
 @router.get(
@@ -15,7 +16,7 @@ from compliance.service.penalty_calculation_service import PenaltyCalculationSer
     response={200: CalculatedPenaltyOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Calculate the potential penalty for an obligation that is accruing a penalty",
-    # auth=approved_authorized_roles_compliance_report_version_composite_auth,
+    auth=approved_authorized_roles_compliance_report_version_composite_auth,
 )
 def get_calculated_penalty_for_obligation(
     request: HttpRequest, compliance_report_version_id: int, penalty_type: str, end_date: str
