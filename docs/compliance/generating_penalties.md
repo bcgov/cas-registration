@@ -18,7 +18,7 @@ We can generate a penalty quickly when all we care about is seeing the penalty. 
 
 #### Example shell call:
 
-```Python
+```python
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.models.compliance_obligation import ComplianceObligation
 from datetime import date
@@ -47,7 +47,7 @@ If you care about the data being accurate, then use this method. It takes a litt
 
 #### Example shell call:
 
-```Python
+```python
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.models.compliance_obligation import ComplianceObligation
 from datetime import date
