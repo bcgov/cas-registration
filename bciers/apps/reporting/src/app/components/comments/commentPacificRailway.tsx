@@ -1,6 +1,14 @@
 "use client";
 
-import { Button, Drawer, MenuItem, Stack, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Drawer,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useState } from "react";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import CommentBoxCar from "./commentBoxCar";
@@ -43,44 +51,68 @@ const CommentPacificRailway: React.FC<Props> = ({ threads, version_id }) => {
         <QuestionAnswerIcon />
       </Button>
       <Drawer open={open} onClose={toggleDrawer(false)} anchor="right">
-        <h1 className={`w-full text-lg`} style={{ textAlign: "center" }}>
-          Comments
-        </h1>
-        <Stack spacing={2} sx={{ p: 2 }}>
-          <TextField
-            fullWidth
-            label="Thread title"
-            value={newThreadTitle}
-            onChange={(event) => setNewThreadTitle(event.target.value)}
-          />
-          <TextField
-            select
-            fullWidth
-            label="Report section"
-            value={newThreadSection}
-            onChange={(event) =>
-              setNewThreadSection(event.target.value as TrainStations)
-            }
+        <Box
+          sx={{
+            width: { xs: "100vw", sm: 460 },
+            maxWidth: "100vw",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
+          <Typography variant="h6" sx={{ p: 2, textAlign: "center" }}>
+            Comments
+          </Typography>
+          <Stack spacing={2} sx={{ px: 2, pb: 2, flexShrink: 0 }}>
+            <TextField
+              fullWidth
+              label="Thread title"
+              value={newThreadTitle}
+              onChange={(event) => setNewThreadTitle(event.target.value)}
+            />
+            <TextField
+              select
+              fullWidth
+              label="Report section"
+              value={newThreadSection}
+              onChange={(event) =>
+                setNewThreadSection(event.target.value as TrainStations)
+              }
+            >
+              {Object.values(TrainStations).map((section) => (
+                <MenuItem key={section} value={section}>
+                  {section}
+                </MenuItem>
+              ))}
+            </TextField>
+            <Button
+              onClick={createNewCommentThread}
+              variant="outlined"
+              color="primary"
+              fullWidth
+              disabled={!newThreadTitle.trim()}
+            >
+              Create Thread
+            </Button>
+          </Stack>
+          <Box
+            sx={{
+              px: 2,
+              pb: 2,
+              overflowY: "auto",
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "stretch",
+              "& > *": { flex: "0 0 auto" },
+            }}
           >
-            {Object.values(TrainStations).map((section) => (
-              <MenuItem key={section} value={section}>
-                {section}
-              </MenuItem>
+            {threads.map((thread) => (
+              <CommentBoxCar key={thread.id} thread={thread} />
             ))}
-          </TextField>
-          <Button
-            onClick={createNewCommentThread}
-            variant="outlined"
-            color="primary"
-            fullWidth
-            disabled={!newThreadTitle.trim()}
-          >
-            Create Thread
-          </Button>
-        </Stack>
-        {threads.map((thread) => (
-          <CommentBoxCar key={thread.created_by} thread={thread} />
-        ))}
+          </Box>
+        </Box>
       </Drawer>
     </>
   );

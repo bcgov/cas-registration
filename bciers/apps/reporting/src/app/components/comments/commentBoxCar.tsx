@@ -15,21 +15,22 @@ import { Thread } from "./types";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CommentSeat from "./commentSeat";
+import { addCommentToThread } from "../../utils/addComment";
 
 interface Props {
   thread: Thread;
   onSubmitComment?: (commentText: string, thread: Thread) => void;
 }
 
-const CommentBoxCar: React.FC<Props> = ({ thread, onSubmitComment }) => {
+const CommentBoxCar: React.FC<Props> = ({ thread }) => {
   const [commentText, setCommentText] = useState("");
   const [areCommentsCollapsed, setAreCommentsCollapsed] = useState(false);
 
-  const handleSubmitComment = () => {
+  const handleSubmitComment = async () => {
     const trimmedComment = commentText.trim();
     if (!trimmedComment) return;
 
-    onSubmitComment?.(trimmedComment, thread);
+    await addCommentToThread(thread.id, trimmedComment, thread.report_version);
     setCommentText("");
   };
 
@@ -48,6 +49,8 @@ const CommentBoxCar: React.FC<Props> = ({ thread, onSubmitComment }) => {
     <Paper
       elevation={0}
       sx={{
+        height: "fit-content",
+        flex: "0 0 auto",
         mb: 2,
         borderRadius: 3,
         border: "1px solid",
@@ -119,6 +122,7 @@ const CommentBoxCar: React.FC<Props> = ({ thread, onSubmitComment }) => {
         <Collapse in={!areCommentsCollapsed} timeout="auto" unmountOnExit>
           {thread.report_comments_bodyofthesnake.map((comment, index) => (
             <CommentSeat
+              key={comment.id ?? `${thread.id}-${index}`}
               comment={comment}
               isLast={
                 index === thread.report_comments_bodyofthesnake.length - 1
