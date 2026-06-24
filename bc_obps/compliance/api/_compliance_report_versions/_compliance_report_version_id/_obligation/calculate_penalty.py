@@ -11,18 +11,18 @@ from compliance.service.penalty_calculation_service import PenaltyCalculationSer
 
 
 @router.get(
-    "penalties/obligation/{obligation_id}/calculate-penalty",
+    "/compliance-report-versions/{compliance_report_version_id}/obligation/calculate-penalty",
     response={200: CalculatedPenaltyOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Calculate the potential penalty for an obligation that is accruing a penalty",
     # auth=approved_authorized_roles_compliance_report_version_composite_auth,
 )
 def get_calculated_penalty_for_obligation(
-    request: HttpRequest, obligation_id: int, penalty_type: str, end_date: str
+    request: HttpRequest, compliance_report_version_id: int, penalty_type: str, end_date: str
 ) -> Tuple[Literal[200], CalculatedPenaltyOut]:
     date_format_string = "%Y-%m-%d"
     formatted_end_date = datetime.strptime(end_date, date_format_string).date()
-    obligation = ComplianceObligation.objects.get(pk=obligation_id)
+    obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
     compliance_deadline = obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
     start_date = compliance_deadline + timedelta(days=1)
 

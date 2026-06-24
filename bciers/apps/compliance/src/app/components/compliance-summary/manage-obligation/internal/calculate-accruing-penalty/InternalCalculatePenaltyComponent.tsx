@@ -1,7 +1,7 @@
 "use client";
 
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ComplianceSummary } from "@/compliance/src/app/types";
 import { PenaltyStatus } from "@bciers/utils/src/enums";
 import dayjs, { Dayjs } from "dayjs";
@@ -14,7 +14,6 @@ interface Props {
   data: ComplianceSummary;
   complianceReportVersionId: number;
   calculatePenalty: (
-    obligationId: number,
     penaltyType: string,
     endDate: string,
   ) => any;
@@ -32,7 +31,7 @@ export function InternalCalculatePenaltyComponent({
 
   useEffect(() => {
     async function fetchPenaltyData(){
-      const result = await calculatePenalty(1, "Automatic Overdue", endDate)
+      const result = await calculatePenalty("Automatic Overdue", endDate)
       setPenaltyData(result)
     }
 

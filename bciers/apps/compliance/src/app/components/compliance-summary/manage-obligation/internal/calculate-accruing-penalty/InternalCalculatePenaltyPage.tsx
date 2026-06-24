@@ -38,18 +38,17 @@ export default async function InternalCalculatePenaltyPage({
   );
 
   async function calculatePenalty(
-    obligationId: number,
     penaltyType: string,
     endDate: string,
   ) {
     "use server";
     const params = {
-      obligation_id: obligationId,
+      obligation_id: complianceReportVersionId,
       penalty_type: penaltyType,
       end_date: endDate,
     };
     const penaltyCalculation = await getPenaltyAccrualCalculationData(
-      obligationId,
+      complianceReportVersionId,
       params,
     );
     return penaltyCalculation;

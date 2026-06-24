@@ -3,7 +3,7 @@ import { actionHandler } from "@bciers/actions";
 import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 
 export const getPenaltyAccrualCalculationData = async (
-  obligationId: number,
+  complianceReportVersionId: number,
   params: {
     [key: string]: any;
   },
@@ -15,7 +15,7 @@ export const getPenaltyAccrualCalculationData = async (
   console.log(queryParams);
 
   const data = await actionHandler(
-    `compliance/penalties/obligation/${obligationId}/calculate-penalty${queryParams}`,
+    `compliance/compliance-report-versions/${complianceReportVersionId}/obligation/calculate-penalty${queryParams}`,
     "GET",
     "",
   );
