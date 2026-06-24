@@ -57,7 +57,7 @@ interface Data {
 export default function PenaltyAccrualTable(data: any) {
   const {accrualData} = data;
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(100);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -109,7 +109,7 @@ export default function PenaltyAccrualTable(data: any) {
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
+        rowsPerPageOptions={[10, 25, 100, 500]}
         component="div"
         count={accrualData.length}
         rowsPerPage={rowsPerPage}

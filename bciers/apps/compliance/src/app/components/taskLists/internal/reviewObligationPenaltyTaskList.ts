@@ -35,7 +35,7 @@ export const generateReviewObligationPenaltyTaskList: (
     },
   ];
 
-  if (penaltyStatus == "accruing") {
+  if (penaltyStatus == PenaltyStatus.ACCRUING) {
     elements.push({
       type: "Page" as const,
       title: "Calculate Accruing Penalty",
