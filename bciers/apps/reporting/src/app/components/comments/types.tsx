@@ -27,5 +27,5 @@ export interface Thread {
   created_at: string;
   report_version: number;
   updated_at?: string;
-  // lastUpdatedBy?: string;x
+  // lastUpdatedBy?: string;
 }

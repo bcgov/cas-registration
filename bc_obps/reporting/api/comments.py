@@ -1,3 +1,4 @@
+from typing import Literal
 from uuid import UUID
 from venv import logger
 from common.permissions import authorize
@@ -56,13 +57,13 @@ def pickupPassengers(
     description="Create a new comment thread by version ID.",
     auth=authorize("authorized_irc_user"),
 )
-def buildATrain(request: HttpRequest, version_id: int, payload: ReportCommentHeadHonchoInSchema) -> dict:
+def buildATrain(
+    request: HttpRequest, version_id: int, payload: ReportCommentHeadHonchoInSchema
+) -> tuple[Literal[200], int]:
     """
     Create a new comment thread for a given report version.
     """
-    report_version = ReportVersion.objects.filter(pk=version_id).first()
-    if not report_version:
-        return {"error": "Report version not found."}
+    report_version = ReportVersion.objects.get(pk=version_id)
 
     new_thread = ReportCommentHeadHonchoOfTheCongaLineBoii.objects.create(
         report_version=report_version,
@@ -81,7 +82,9 @@ def buildATrain(request: HttpRequest, version_id: int, payload: ReportCommentHea
     description="Add a new comment to an existing thread.",
     auth=authorize("authorized_irc_user"),
 )
-def addToCommentThread(request: HttpRequest, version_id: int, thread_id: int, payload: BodyOfTheSnakeInSchema) -> dict:
+def addToCommentThread(
+    request: HttpRequest, version_id: int, thread_id: int, payload: BodyOfTheSnakeInSchema
+) -> tuple[Literal[200], int]:
     """
     Update an existing comment thread for a given report version and thread ID.
     """

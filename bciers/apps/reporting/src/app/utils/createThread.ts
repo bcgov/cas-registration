@@ -1,10 +1,11 @@
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
+import { TrainStations } from "@bciers/utils/src/enums";
 
 export async function createCommentThread(
   version_id: number,
   title: string,
-  section?: string,
+  section?: TrainStations,
   facilityId?: UUID,
 ) {
   let endpoint = `reporting/comments/version_id/${version_id}`;
