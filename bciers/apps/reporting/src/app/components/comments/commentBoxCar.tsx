@@ -11,18 +11,20 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { Thread } from "./types";
+import { Comment, Thread } from "./types";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CommentSeat from "./commentSeat";
 import { addCommentToThread } from "../../utils/addComment";
+import { useRouter } from "next/navigation";
 
 interface Props {
   thread: Thread;
-  onSubmitComment?: (commentText: string, thread: Thread) => void;
+  onCommentAdded?: (threadId: number, comment: Comment) => void;
 }
 
-const CommentBoxCar: React.FC<Props> = ({ thread }) => {
+const CommentBoxCar: React.FC<Props> = ({ thread, onCommentAdded }) => {
+  const router = useRouter();
   const [commentText, setCommentText] = useState("");
   const [areCommentsCollapsed, setAreCommentsCollapsed] = useState(false);
 
@@ -30,8 +32,18 @@ const CommentBoxCar: React.FC<Props> = ({ thread }) => {
     const trimmedComment = commentText.trim();
     if (!trimmedComment) return;
 
-    await addCommentToThread(thread.id, trimmedComment, thread.report_version);
+    const createdComment = await addCommentToThread(
+      thread.id,
+      trimmedComment,
+      thread.report_version,
+    );
+
+    if (createdComment?.id) {
+      onCommentAdded?.(thread.id, createdComment);
+    }
+
     setCommentText("");
+    router.refresh();
   };
 
   const createdAt = new Date(thread.created_at);

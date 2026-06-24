@@ -13,7 +13,12 @@ from reporting.schema.generic import Message
 from ..models import (
     ReportCommentHeadHonchoOfTheCongaLineBoii,
 )
-from ..schema.comment import BodyOfTheSnakeInSchema, CommentSchema, ReportCommentHeadHonchoInSchema
+from ..schema.comment import (
+    BodyOfTheSnakeInSchema,
+    BodyOfTheSnakeSchema,
+    CommentSchema,
+    ReportCommentHeadHonchoInSchema,
+)
 from .router import router
 
 
@@ -56,13 +61,13 @@ def pickupPassengers(
 
 @router.post(
     "/comments/version_id/{version_id}",
-    response={200: int, custom_codes_4xx: Message},
+    response={200: CommentSchema, custom_codes_4xx: Message},
     description="Create a new comment thread by version ID.",
     auth=authorize("authorized_irc_user"),
 )
 def buildATrain(
     request: HttpRequest, version_id: int, payload: ReportCommentHeadHonchoInSchema
-) -> tuple[Literal[200], int]:
+) -> tuple[Literal[200], ReportCommentHeadHonchoOfTheCongaLineBoii]:
     """
     Create a new comment thread for a given report version.
     """
@@ -76,18 +81,18 @@ def buildATrain(
         is_visible_to_industry=payload.is_visible_to_industry,
     )
 
-    return 200, new_thread.id
+    return 200, new_thread
 
 
 @router.post(
     "/comment/version_id/{version_id}/thread_id/{thread_id}",
-    response={200: int, custom_codes_4xx: Message},
+    response={200: BodyOfTheSnakeSchema, custom_codes_4xx: Message},
     description="Add a new comment to an existing thread.",
     auth=authorize("authorized_irc_user"),
 )
 def addToCommentThread(
     request: HttpRequest, version_id: int, thread_id: int, payload: BodyOfTheSnakeInSchema
-) -> tuple[Literal[200], int]:
+) -> tuple[Literal[200], ReportCommentBodyOfTheSnake]:
     """
     Update an existing comment thread for a given report version and thread ID.
     """
@@ -98,4 +103,4 @@ def addToCommentThread(
         comment=payload.comment,
     )
 
-    return 200, comment.id
+    return 200, comment

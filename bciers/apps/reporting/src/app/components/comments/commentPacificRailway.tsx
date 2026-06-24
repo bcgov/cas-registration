@@ -9,12 +9,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import CommentBoxCar from "./commentBoxCar";
-import { Thread } from "./types";
+import { Comment, Thread } from "./types";
 import { createCommentThread } from "../../utils/createThread";
 import { TrainStations } from "@bciers/utils/src/enums";
+import { useRouter } from "next/navigation";
 
 interface Props {
   threads: Thread[];
@@ -22,11 +23,17 @@ interface Props {
 }
 
 const CommentPacificRailway: React.FC<Props> = ({ threads, version_id }) => {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [newThreadTitle, setNewThreadTitle] = useState("");
   const [newThreadSection, setNewThreadSection] = useState(
     TrainStations.REVIEW_OPERATION_INFORMATION,
   );
+  const [localThreads, setLocalThreads] = useState<Thread[]>(threads);
+
+  useEffect(() => {
+    setLocalThreads(threads);
+  }, [threads]);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
@@ -36,8 +43,34 @@ const CommentPacificRailway: React.FC<Props> = ({ threads, version_id }) => {
     const trimmedTitle = newThreadTitle.trim();
     if (!trimmedTitle) return;
 
-    await createCommentThread(version_id, trimmedTitle, newThreadSection);
+    const createdThread = await createCommentThread(
+      version_id,
+      trimmedTitle,
+      newThreadSection,
+    );
+    if (createdThread?.id) {
+      setLocalThreads((previousThreads) => [createdThread, ...previousThreads]);
+    }
     setNewThreadTitle("");
+    router.refresh();
+  };
+
+  const handleCommentAdded = (threadId: number, comment: Comment) => {
+    setLocalThreads((previousThreads) =>
+      previousThreads.map((thread) => {
+        if (thread.id !== threadId) {
+          return thread;
+        }
+
+        return {
+          ...thread,
+          report_comments_bodyofthesnake: [
+            ...thread.report_comments_bodyofthesnake,
+            comment,
+          ],
+        };
+      }),
+    );
   };
 
   return (
@@ -108,8 +141,12 @@ const CommentPacificRailway: React.FC<Props> = ({ threads, version_id }) => {
               "& > *": { flex: "0 0 auto" },
             }}
           >
-            {threads.map((thread) => (
-              <CommentBoxCar key={thread.id} thread={thread} />
+            {localThreads.map((thread) => (
+              <CommentBoxCar
+                key={thread.id}
+                thread={thread}
+                onCommentAdded={handleCommentAdded}
+              />
             ))}
           </Box>
         </Box>
