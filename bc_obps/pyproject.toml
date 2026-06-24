@@ -51,6 +51,8 @@ types-requests = "^2.31.0.20240406"
 pytest-xdist = "^3.8.0"
 django-querycount = "^0.8.3"
 syrupy = "^5.1.0"
+jupyter = "^1.1.1"
+pdfplumber = "^0.11.10"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
