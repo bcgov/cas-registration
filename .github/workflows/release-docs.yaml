@@ -34,7 +34,7 @@ jobs:
           path: docs-site
           node-version: 24.16.0
           package-manager: yarn@4.13.0
-          build-cmd: node sync-docs.js && yarn astro build
+          build-cmd: node sync-docs.js && yarn astro build && touch dist/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
@@ -42,4 +42,7 @@ jobs:
           folder: docs-site/dist/
           target-folder: docs
           single-commit: true
+          clean: true
+          clean-exclude: |
+            .nojekyll
           token: ${{ secrets.GITHUB_TOKEN }}
