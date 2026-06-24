@@ -30,6 +30,7 @@ import {
   ReportingOrigin,
 } from "@reporting/src/app/components/taskList/types";
 import { flowHelpers } from "@reporting/src/app/components/taskList/flowHelpers";
+import ReviewOperatorInformation from "../spike/ReviewOperatorInformation";
 
 interface Props {
   data: ReportData | null;
@@ -144,6 +145,11 @@ export const FinalReviewReportSections: React.FC<Props> = ({
           key: "reason_for_change",
         },
       ],
+    },
+    {
+      title: "Review Operation Information",
+      getData: (reportData: ReportData) => reportData.report_operation,
+      render: () => <ReviewOperatorInformation data={data} isEio={isEIO} />,
     },
     {
       title: "Review Operation Information",

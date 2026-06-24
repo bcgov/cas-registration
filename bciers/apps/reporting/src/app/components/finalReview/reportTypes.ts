@@ -5,6 +5,7 @@ import {
 
 // types/reportTypes.ts
 export interface ReportOperation {
+  report_type: string;
   activities: string;
   regulated_products: string;
   representatives: string;
