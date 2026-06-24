@@ -12,8 +12,6 @@ export const getPenaltyAccrualCalculationData = async (
 }> => {
   const queryParams = buildQueryParams(params);
 
-  console.log(queryParams);
-
   const data = await actionHandler(
     `compliance/compliance-report-versions/${complianceReportVersionId}/obligation/calculate-penalty${queryParams}`,
     "GET",
