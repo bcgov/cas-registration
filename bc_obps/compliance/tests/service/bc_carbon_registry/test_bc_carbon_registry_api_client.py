@@ -306,12 +306,12 @@ class TestBCCarbonRegistryAPIClient:
         # Assert
         assert client.token == "new_token"
 
-    def test_ensure_authenticated_within_buffer_window(self, setup, mocker, caplog):
-        """Test re-authentication when token is within the 60-second buffer window"""
+    def test_ensure_authenticated_within_reauth_advance_delay(self, setup, mocker, caplog):
+        """Test re-authentication when token is within the 60-second reauth advance delay"""
         # Arrange
         client = setup
         client.token = "expiring_token"
-        client.token_expiry = timezone.now() + timedelta(seconds=30)  # inside 60s buffer
+        client.token_expiry = timezone.now() + timedelta(seconds=30)  # inside 60s reauth advance delay
         mock_post = mocker.patch("requests.post")
         mock_post.return_value = Mock(
             status_code=200,

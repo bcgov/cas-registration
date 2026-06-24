@@ -87,10 +87,10 @@ class BCCarbonRegistryAPIClient:
             self.token = data.access_token
             self.token_expiry = timezone.now() + timedelta(seconds=data.expires_in)
         except Timeout as e:
-            logger.error("Authentication timed out: %s", str(e), exc_info=True)
+            logger.exception("Authentication timed out: %s", str(e))
             raise BCCarbonRegistryError(f"Request timed out: {str(e)}", endpoint=url) from e
         except ConnectionError as e:
-            logger.error("Authentication failed due to connection error: %s", str(e), exc_info=True)
+            logger.exception("Authentication failed due to connection error: %s", str(e))
             raise BCCarbonRegistryError(f"Connection error: {str(e)}", endpoint=url) from e
         except HTTPError as e:
             response_text = (
@@ -98,12 +98,10 @@ class BCCarbonRegistryAPIClient:
                 if hasattr(e, 'response')
                 else 'No response available'
             )
-            logger.error(
-                "Authentication failed with HTTP error: %s, response: %s", str(e), response_text, exc_info=True
-            )
+            logger.exception("Authentication failed with HTTP error: %s, response: %s", str(e), response_text)
             raise BCCarbonRegistryError(f"HTTP error: {str(e)}", endpoint=url) from e
         except (ValidationError, RequestException) as e:
-            logger.error("Authentication failed: %s", str(e), exc_info=True)
+            logger.exception("Authentication failed: %s", str(e))
             raise BCCarbonRegistryError(f"Invalid token response: {str(e)}", endpoint=url) from e
 
     def _ensure_authenticated(self) -> None:
@@ -114,8 +112,8 @@ class BCCarbonRegistryAPIClient:
         token_expiry = getattr(self, "token_expiry", None)
         # Re-authenticate 60 seconds before expiry to avoid the race where the
         # client considers the token valid but the server rejects it as expired.
-        buffer = timedelta(seconds=60)
-        if token is None or token_expiry is None or timezone.now() >= (token_expiry - buffer):
+        reauth_advance_delay = timedelta(seconds=60)
+        if token is None or token_expiry is None or timezone.now() >= (token_expiry - reauth_advance_delay):
             logger.warning("Token missing or expired. Re-authenticating...")
             self._authenticate()
 
@@ -157,7 +155,7 @@ class BCCarbonRegistryAPIClient:
                 validated_response = response_json
             return validated_response
         except ValidationError as e:
-            logger.error("Invalid response from %s: %s", url, str(e), exc_info=True)
+            logger.exception("Invalid response from %s: %s", url, str(e))
             raise BCCarbonRegistryError(f"Invalid response format: {str(e)}", endpoint=url) from e
         except HTTPError as e:
             # The BCCR API uses session-based auth. A 401 does not always mean the token is invalid
@@ -169,11 +167,11 @@ class BCCarbonRegistryAPIClient:
                 self.token_expiry = None
                 return self._make_request(method, endpoint, data, params, response_model, _retried=True)
             log_error_message(e)
-            logger.error("Request to %s failed: %s", url, str(e), exc_info=True)
+            logger.exception("Request to %s failed: %s", url, str(e))
             raise BCCarbonRegistryError(f"Request failed: {str(e)}", endpoint=url) from e
         except Exception as e:
             log_error_message(e)  # If BCCR API returns a valid error response, this will log it
-            logger.error("Request to %s failed: %s", url, str(e), exc_info=True)
+            logger.exception("Request to %s failed: %s", url, str(e))
             raise BCCarbonRegistryError(f"Request failed: {str(e)}", endpoint=url) from e
 
     def _submit_payload(
