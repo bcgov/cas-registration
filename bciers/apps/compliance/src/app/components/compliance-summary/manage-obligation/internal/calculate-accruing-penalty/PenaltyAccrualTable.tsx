@@ -1,47 +1,53 @@
-import * as React from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
+import * as React from "react";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
 
 interface Column {
-  id: 'date' | 'daily_penalty' | 'daily_compounded' | 'accumulated_penalty' | 'accumulated_compounded' | 'interest_rate';
+  id:
+    | "date"
+    | "daily_penalty"
+    | "daily_compounded"
+    | "accumulated_penalty"
+    | "accumulated_compounded"
+    | "interest_rate";
   label: string;
   minWidth?: number;
-  align?: 'right';
+  align?: "right";
   format?: (value: number) => string;
 }
 
 const columns: readonly Column[] = [
-  { id: 'date', label: 'Date', minWidth: 170 },
-  { id: 'daily_penalty', label: 'Daily Penalty', minWidth: 100 },
+  { id: "date", label: "Date", minWidth: 170 },
+  { id: "daily_penalty", label: "Daily Penalty", minWidth: 100 },
   {
-    id: 'daily_compounded',
-    label: 'Daily Compounded',
+    id: "daily_compounded",
+    label: "Daily Compounded",
     minWidth: 170,
-    align: 'right',
+    align: "right",
   },
   {
-    id: 'accumulated_penalty',
-    label: 'Accumulated Penalty',
+    id: "accumulated_penalty",
+    label: "Accumulated Penalty",
     minWidth: 170,
-    align: 'right',
+    align: "right",
   },
   {
-    id: 'accumulated_compounded',
-    label: 'Accumulated Compounded',
+    id: "accumulated_compounded",
+    label: "Accumulated Compounded",
     minWidth: 170,
-    align: 'right',
+    align: "right",
   },
   {
-    id: 'interest_rate',
-    label: 'Interest Rate',
+    id: "interest_rate",
+    label: "Interest Rate",
     minWidth: 170,
-    align: 'right',
+    align: "right",
   },
 ];
 
@@ -55,7 +61,7 @@ interface Data {
 }
 
 export default function PenaltyAccrualTable(data: any) {
-  const {accrualData} = data;
+  const { accrualData } = data;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(100);
 
@@ -63,14 +69,15 @@ export default function PenaltyAccrualTable(data: any) {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-  if (!accrualData || !Array.isArray(accrualData))
-    return null
+  if (!accrualData || !Array.isArray(accrualData)) return null;
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+    <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -96,7 +103,7 @@ export default function PenaltyAccrualTable(data: any) {
                       const value = row[column.id];
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number'
+                          {column.format && typeof value === "number"
                             ? column.format(value)
                             : value}
                         </TableCell>
