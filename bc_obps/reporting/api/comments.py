@@ -6,6 +6,7 @@ from common.permissions import authorize
 
 from django.db.models import Prefetch
 from django.http import HttpRequest
+from registration.models.facility import Facility
 from reporting.models.report_comment import ReportComment
 from reporting.models.report_version import ReportVersion
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -42,7 +43,8 @@ def pickupPassengers(
             Prefetch(
                 "report_comments",
                 queryset=ReportComment.objects.select_related("created_by"),
-            )
+            ),
+            Prefetch("facility", queryset=Facility.objects.only("id", "name")),
         )
     )
 
@@ -66,16 +68,20 @@ def pickupPassengers(
     auth=authorize("authorized_irc_user"),
 )
 def buildATrain(
-    request: HttpRequest, version_id: int, payload: ReportCommentThreadInSchema
+    request: HttpRequest, version_id: int, payload: ReportCommentThreadInSchema, facility_id: str | None = None
 ) -> tuple[Literal[200], ReportCommentThread]:
     """
     Create a new comment thread for a given report version.
     """
     report = ReportVersion.objects.get(pk=version_id).report
+    facility_uuid = None
+    if facility_id is not None:
+        facility_uuid = UUID(facility_id)
 
     new_thread = ReportCommentThread.objects.create(
         report=report,
         report_version_id=version_id,
+        facility_id=facility_uuid,
         report_section=payload.report_section,
         title=payload.title,
         is_resolved=False,

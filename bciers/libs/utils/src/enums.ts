@@ -162,6 +162,14 @@ export enum ManualHandlingTypes {
 export enum TrainStations {
   REVIEW_OPERATION_INFORMATION = "Review Operation Information",
   PERSON_RESPONSIBLE = "Person Responsible",
-  REPORT_INFORMATION = "Report Information",
+  NON_ATTRIBUTABLE_EMISSIONS = "Non-Attributable Emissions",
+  EMISSIONS_SUMMARY = "Emissions Summary (in tCO2e)",
+  OPERATION_EMISSION_SUMMARY = "Operation Emission Summary",
   ADDITIONAL_REPORTING_DATA = "Additional Reporting Data",
+  COMPLIANCE_SUMMARY = "Compliance Summary",
+}
+
+export enum TrainPlatforms {
+  PRODUCTION_DATA = "Production Data",
+  ALLOCATION_OF_EMISSIONS = "Allocation of Emissions",
 }

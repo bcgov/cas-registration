@@ -89,20 +89,34 @@ const CommentBoxCar: React.FC<Props> = ({
                 {thread.title ?? ""}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                {formattedCreatedAt} by {thread.user_name ?? "unkown"}
+                {formattedCreatedAt}
+              </Typography>
+              <br />
+              <Typography variant="caption" color="text.secondary">
+                by {thread.user_name ?? "unknown"}
               </Typography>
             </Box>
           </Stack>
-          <Chip
-            size="small"
-            label={
-              thread.report_version_id
-                ? `Report Version ID:${thread.report_version_id}`
-                : ""
-            }
-            color="primary"
-            variant="outlined"
-          />
+          <Stack direction={"column"} spacing={1} alignItems="right">
+            <Chip
+              size="small"
+              label={
+                thread.report_version_id
+                  ? `Report Version ID: ${thread.report_version_id}`
+                  : ""
+              }
+              color="primary"
+              variant="outlined"
+            />
+            {thread.facility_name && (
+              <Chip
+                size="small"
+                label={`Facility: ${thread.facility_name}`}
+                color="primary"
+                variant="outlined"
+              />
+            )}
+          </Stack>
         </Stack>
 
         {thread.report_section && (

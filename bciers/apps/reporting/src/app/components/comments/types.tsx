@@ -27,4 +27,5 @@ export interface Thread {
   created_at: string;
   report_version_id: number;
   updated_at?: string;
+  facility_name?: string;
 }

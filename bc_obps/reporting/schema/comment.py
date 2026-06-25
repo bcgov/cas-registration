@@ -10,12 +10,6 @@ class CommentSchema(ModelSchema):
         fields = "__all__"
 
     @staticmethod
-    def resolve_name(obj: ReportComment) -> str | None:
-        if obj.created_by:
-            return obj.created_by.get_full_name()
-        return None
-
-    @staticmethod
     def resolve_user_name(obj: ReportComment) -> str | None:
         if obj.created_by:
             return obj.created_by.get_full_name()
@@ -29,6 +23,7 @@ class ThreadSchema(ModelSchema):
 
     report_comments: list[CommentSchema] | None
     user_name: str | None
+    facility_name: str | None
 
     class Meta:
         model = ReportCommentThread
@@ -50,6 +45,12 @@ class ThreadSchema(ModelSchema):
     def resolve_user_name(obj: ReportCommentThread) -> str | None:
         if obj.created_by:
             return obj.created_by.get_full_name()
+        return None
+
+    @staticmethod
+    def resolve_facility_name(obj: ReportCommentThread) -> str | None:
+        if obj.facility:
+            return obj.facility.name
         return None
 
 
