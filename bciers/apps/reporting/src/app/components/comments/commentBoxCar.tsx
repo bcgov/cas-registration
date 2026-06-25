@@ -89,7 +89,11 @@ const CommentBoxCar: React.FC<Props> = ({
                 {thread.title ?? ""}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                {formattedCreatedAt} by {thread.user_name ?? "unkown"}
+                {formattedCreatedAt}
+              </Typography>
+              <br />
+              <Typography variant="caption" color="text.secondary">
+                by {thread.user_name ?? "unknown"}
               </Typography>
             </Box>
           </Stack>
