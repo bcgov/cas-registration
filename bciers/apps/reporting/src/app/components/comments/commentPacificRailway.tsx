@@ -23,6 +23,12 @@ interface Props {
   facility_id?: string;
 }
 
+const normalizeThread = (thread: Thread): Thread => ({
+  ...thread,
+  report_comments: thread.report_comments ?? [],
+  report_events: thread.report_events ?? [],
+});
+
 const CommentPacificRailway: React.FC<Props> = ({
   threads,
   version_id,
@@ -34,10 +40,12 @@ const CommentPacificRailway: React.FC<Props> = ({
   const [newThreadSection, setNewThreadSection] = useState<TrainStations | "">(
     "",
   );
-  const [localThreads, setLocalThreads] = useState<Thread[]>(threads);
+  const [localThreads, setLocalThreads] = useState<Thread[]>(
+    threads.map(normalizeThread),
+  );
 
   useEffect(() => {
-    setLocalThreads(threads);
+    setLocalThreads(threads.map(normalizeThread));
   }, [threads]);
 
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -55,7 +63,10 @@ const CommentPacificRailway: React.FC<Props> = ({
       newThreadSection || undefined,
     );
     if (createdThread?.id) {
-      setLocalThreads((previousThreads) => [createdThread, ...previousThreads]);
+      setLocalThreads((previousThreads) => [
+        normalizeThread(createdThread),
+        ...previousThreads,
+      ]);
     }
     setNewThreadTitle("");
     router.refresh();
@@ -70,7 +81,7 @@ const CommentPacificRailway: React.FC<Props> = ({
 
         return {
           ...thread,
-          report_comments: [...thread.report_comments, comment],
+          report_comments: [...(thread.report_comments ?? []), comment],
         };
       }),
     );

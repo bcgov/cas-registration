@@ -11,10 +11,11 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { Comment, Thread } from "./types";
+import { Comment, Thread, TimelineEntry } from "./types";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CommentSeat from "./commentSeat";
+import EventSeat from "./eventSeat";
 import { addCommentToThread } from "../../utils/addComment";
 import { useRouter } from "next/navigation";
 
@@ -61,6 +62,21 @@ const CommentBoxCar: React.FC<Props> = ({
     minute: "2-digit",
     hour12: true,
   });
+
+  const timelineEntries: TimelineEntry[] = [
+    ...(thread.report_comments ?? []).map((comment) => ({
+      ...comment,
+      entry_type: "comment" as const,
+    })),
+    ...(thread.report_events ?? []).map((event) => ({
+      ...event,
+      entry_type: "event" as const,
+    })),
+  ].sort(
+    (left, right) =>
+      new Date(left.created_at).getTime() -
+      new Date(right.created_at).getTime(),
+  );
 
   return (
     <Paper
@@ -130,7 +146,7 @@ const CommentBoxCar: React.FC<Props> = ({
       </Box>
 
       <Box sx={{ px: 2.5, py: 1.5 }}>
-        {thread.report_comments.length > 0 && (
+        {timelineEntries.length > 0 && (
           <Stack direction="row" justifyContent="flex-end" sx={{ mb: 1 }}>
             <Button
               size="small"
@@ -151,13 +167,27 @@ const CommentBoxCar: React.FC<Props> = ({
 
         {/* comment list */}
         <Collapse in={!areCommentsCollapsed} timeout="auto" unmountOnExit>
-          {thread.report_comments.map((comment, index) => (
-            <CommentSeat
-              key={comment.id ?? `${thread.id}-${index}`}
-              comment={comment}
-              isLast={index === thread.report_comments.length - 1}
-            />
-          ))}
+          {timelineEntries.map((entry, index) => {
+            const isLast = index === timelineEntries.length - 1;
+
+            if (entry.entry_type === "event") {
+              return (
+                <EventSeat
+                  key={entry.id ?? `${thread.id}-event-${index}`}
+                  event={entry}
+                  isLast={isLast}
+                />
+              );
+            }
+
+            return (
+              <CommentSeat
+                key={entry.id ?? `${thread.id}-comment-${index}`}
+                comment={entry}
+                isLast={isLast}
+              />
+            );
+          })}
         </Collapse>
       </Box>
 

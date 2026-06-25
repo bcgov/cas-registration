@@ -9,6 +9,7 @@ from django.http import HttpRequest
 from registration.models.facility import Facility
 from reporting.models.report_comment import ReportComment
 from reporting.models.report_version import ReportVersion
+from reporting.service.report_comment_service import ReportCommentService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.generic import Message
 from ..models import (
@@ -19,19 +20,20 @@ from ..schema.comment import (
     ThreadSchema,
     CommentSchema,
     ReportCommentThreadInSchema,
+    ThreadWithEventsSchema,
 )
 from .router import router
 
 
 @router.get(
     "/comments/version_id/{version_id}",
-    response={200: list[ThreadSchema], custom_codes_4xx: Message},
+    response={200: list[ThreadWithEventsSchema], custom_codes_4xx: Message},
     description="Fetch comments for a given report version.",
     auth=authorize("authorized_irc_user"),
 )
 def pickupPassengers(
     request: HttpRequest, version_id: int, facility_id: str | None = None
-) -> list[ReportCommentThread]:
+) -> list[ThreadWithEventsSchema]:
     """
     Fetch the comment threads for a given report version and facility id.
     """
@@ -42,7 +44,7 @@ def pickupPassengers(
         .prefetch_related(
             Prefetch(
                 "report_comments",
-                queryset=ReportComment.objects.select_related("created_by"),
+                queryset=ReportComment.objects.select_related("created_by").order_by("created_at"),
             ),
             Prefetch("facility", queryset=Facility.objects.only("id", "name")),
         )
@@ -58,7 +60,23 @@ def pickupPassengers(
         logger.warning("No threads found.")
         return []
 
-    return threads
+    thread_created_at_values = [thread.created_at for thread in threads]
+    if any(created_at is None for created_at in thread_created_at_values):
+        raise ValueError("thread.created_at must not be None")
+
+    start_date = min(created_at for created_at in thread_created_at_values if created_at is not None)
+    events = sorted(
+        ReportCommentService.get_report_events(report, start_date),
+        key=lambda event: event.created_at,
+    )
+
+    thread_schemas: list[ThreadWithEventsSchema] = []
+    for thread in threads:
+        thread_schema = ThreadWithEventsSchema.model_validate(thread, from_attributes=True)
+        thread_schema.report_events = list(events)
+        thread_schemas.append(thread_schema)
+
+    return thread_schemas
 
 
 @router.post(
