@@ -6,7 +6,6 @@ from reporting.models import ReportCommentThread, ReportComment
 
 class CommentSchema(ModelSchema):
     user_name: str | None = None
-    report_comment_thread_id: int | None = None
 
     class Meta:
         model = ReportComment
@@ -18,10 +17,6 @@ class CommentSchema(ModelSchema):
             return obj.created_by.get_full_name()
         return None
 
-    @staticmethod
-    def resolve_report_comment_thread_id(obj: ReportComment) -> int | None:
-        return obj.report_comment_thread_id
-
 
 class ThreadSchema(ModelSchema):
     """
@@ -29,7 +24,6 @@ class ThreadSchema(ModelSchema):
     """
 
     report_comments: list[CommentSchema]
-    report_id: int
     user_name: str | None = None
     facility_name: str | None = None
 
@@ -54,10 +48,6 @@ class ThreadSchema(ModelSchema):
         if obj.created_by:
             return obj.created_by.get_full_name()
         return None
-
-    @staticmethod
-    def resolve_report_id(obj: ReportCommentThread) -> int | None:
-        return obj.report_id
 
     @staticmethod
     def resolve_facility_name(obj: ReportCommentThread) -> str | None:
@@ -96,4 +86,29 @@ class ReportCommentEventSchema(Schema):
 
 
 class ThreadWithEventsSchema(ThreadSchema):
+    report_events: list[ReportCommentEventSchema] = []
+
+
+class CommentOutSchema(Schema):
+    id: int
+    comment: str
+    created_at: datetime
+    report_version_id: int | None = None
+    created_by: str | None = None
+    user_name: str | None = None
+
+
+class ThreadWithEventsOutSchema(Schema):
+    id: int
+    created_at: datetime
+    updated_at: datetime | None = None
+    report_section: str | None = None
+    title: str
+    is_resolved: bool
+    is_visible_to_industry: bool
+    created_by: str | None = None
+    report_version_id: int | None = None
+    user_name: str | None = None
+    facility_name: str | None = None
+    report_comments: list[CommentOutSchema]
     report_events: list[ReportCommentEventSchema] = []

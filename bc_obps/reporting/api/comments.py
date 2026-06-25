@@ -16,24 +16,25 @@ from ..models import (
     ReportCommentThread,
 )
 from ..schema.comment import (
+    CommentOutSchema,
     ReportCommentInSchema,
     ThreadSchema,
     CommentSchema,
     ReportCommentThreadInSchema,
-    ThreadWithEventsSchema,
+    ThreadWithEventsOutSchema,
 )
 from .router import router
 
 
 @router.get(
     "/comments/version_id/{version_id}",
-    response={200: list[ThreadWithEventsSchema], custom_codes_4xx: Message},
+    response={200: list[ThreadWithEventsOutSchema], custom_codes_4xx: Message},
     description="Fetch comments for a given report version.",
     auth=authorize("authorized_irc_user"),
 )
 def pickupPassengers(
     request: HttpRequest, version_id: int, facility_id: str | None = None
-) -> list[ThreadWithEventsSchema]:
+) -> list[ThreadWithEventsOutSchema]:
     """
     Fetch the comment threads for a given report version and facility id.
     """
@@ -70,11 +71,37 @@ def pickupPassengers(
         key=lambda event: event.created_at,
     )
 
-    thread_schemas: list[ThreadWithEventsSchema] = []
+    thread_schemas: list[ThreadWithEventsOutSchema] = []
     for thread in threads:
-        thread_schema = ThreadWithEventsSchema.model_validate(thread, from_attributes=True)
-        thread_schema.report_events = list(events)
-        thread_schemas.append(thread_schema)
+        comment_schemas = [
+            CommentOutSchema(
+                id=comment.id,
+                comment=comment.comment,
+                created_at=comment.created_at,
+                report_version_id=comment.report_version_id,
+                created_by=str(comment.created_by_id) if comment.created_by_id else None,
+                user_name=comment.created_by.get_full_name() if comment.created_by else None,
+            )
+            for comment in thread.report_comments.all()
+        ]
+
+        thread_schemas.append(
+            ThreadWithEventsOutSchema(
+                id=thread.id,
+                created_at=thread.created_at,
+                updated_at=thread.updated_at,
+                report_section=thread.report_section,
+                title=thread.title,
+                is_resolved=thread.is_resolved,
+                is_visible_to_industry=thread.is_visible_to_industry,
+                created_by=str(thread.created_by_id) if thread.created_by_id else None,
+                report_version_id=thread.report_version_id,
+                user_name=thread.created_by.get_full_name() if thread.created_by else None,
+                facility_name=thread.facility.name if thread.facility else None,
+                report_comments=comment_schemas,
+                report_events=list(events),
+            )
+        )
 
     return thread_schemas
 
