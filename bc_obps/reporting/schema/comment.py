@@ -70,3 +70,11 @@ class ReportCommentInSchema(Schema):
     """
 
     comment: str
+
+
+class ReportCommentResolveSchema(Schema):
+    """
+    Schema for resolving a ReportCommentThread instance
+    """
+
+    is_resolved: bool = True

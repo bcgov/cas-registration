@@ -17,6 +17,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CommentSeat from "./commentSeat";
 import { addCommentToThread } from "../../utils/addComment";
 import { useRouter } from "next/navigation";
+import { checkTicket } from "../../utils/checkTicket";
 
 interface Props {
   thread: Thread;
@@ -48,6 +49,11 @@ const CommentBoxCar: React.FC<Props> = ({
     }
 
     setCommentText("");
+    router.refresh();
+  };
+
+  const handleCheckTicket = async () => {
+    await checkTicket(thread.id);
     router.refresh();
   };
 
@@ -194,6 +200,12 @@ const CommentBoxCar: React.FC<Props> = ({
           </Stack>
         </Box>
       </Collapse>
+
+      <Box sx={{ pb: 2.5, display: "flex", justifyContent: "center" }}>
+        <Button variant="contained" color="success" onClick={handleCheckTicket}>
+          resolve thread
+        </Button>
+      </Box>
     </Paper>
   );
 };
