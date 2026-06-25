@@ -26,8 +26,8 @@ const CommentPacificRailway: React.FC<Props> = ({ threads, version_id }) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [newThreadTitle, setNewThreadTitle] = useState("");
-  const [newThreadSection, setNewThreadSection] = useState(
-    TrainStations.REVIEW_OPERATION_INFORMATION,
+  const [newThreadSection, setNewThreadSection] = useState<TrainStations | "">(
+    "",
   );
   const [localThreads, setLocalThreads] = useState<Thread[]>(threads);
 
@@ -46,7 +46,7 @@ const CommentPacificRailway: React.FC<Props> = ({ threads, version_id }) => {
     const createdThread = await createCommentThread(
       version_id,
       trimmedTitle,
-      newThreadSection,
+      newThreadSection || undefined,
     );
     if (createdThread?.id) {
       setLocalThreads((previousThreads) => [createdThread, ...previousThreads]);
@@ -110,9 +110,10 @@ const CommentPacificRailway: React.FC<Props> = ({ threads, version_id }) => {
               label="Report section"
               value={newThreadSection}
               onChange={(event) =>
-                setNewThreadSection(event.target.value as TrainStations)
+                setNewThreadSection(event.target.value as TrainStations | "")
               }
             >
+              <MenuItem value="">(Optional) Report Section</MenuItem>
               {Object.values(TrainStations).map((section) => (
                 <MenuItem key={section} value={section}>
                   {section}
