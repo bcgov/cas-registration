@@ -73,7 +73,7 @@ const CommentSeat: React.FC<Props> = ({ comment, isLast }) => {
           sx={{ mb: 0.75 }}
         >
           <Typography variant="subtitle2" fontWeight={700}>
-            {comment.created_by ?? "Event"}
+            {comment.user_name}
           </Typography>
           <Typography variant="caption" color="text.secondary">
             {formattedCreatedAt}

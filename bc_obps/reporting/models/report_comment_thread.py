@@ -2,18 +2,22 @@ from django.db import models
 from django.db.models import ForeignKey
 from registration.models.facility import Facility
 from registration.models.time_stamped_model import TimeStampedModel
-from reporting.models.report_version import ReportVersion
-from reporting.models.rls_configs.report_comment_headhonchoofthecongalineboii import (
-    Rls as ReportCommentHeadHonchoOfTheCongaLineBoiiRls,
+from reporting.models.rls_configs.report_comment_thread import (
+    Rls as ReportCommentThreadRls,
 )
 
 
-class ReportCommentHeadHonchoOfTheCongaLineBoii(TimeStampedModel):
-    report_version = ForeignKey(
-        ReportVersion,
+class ReportCommentThread(TimeStampedModel):
+    report = ForeignKey(
+        "reporting.Report",
         on_delete=models.CASCADE,
-        related_name="report_comments_head_of_the_conga_line",
-        db_comment="The report version this comment belongs to. Foreign key to erc.report_version",
+        related_name="report_comment_threads",
+        db_comment="The report this comment belongs to. Foreign key to erc.report",
+    )
+    report_version_id = models.IntegerField(
+        null=True,
+        blank=True,
+        db_comment="The report version this comment belongs to. Not a foreign key because the report version may be deleted or submitted, but we still want to keep the comment thread.",
     )
     report_section = models.TextField(
         null=True,
@@ -21,16 +25,14 @@ class ReportCommentHeadHonchoOfTheCongaLineBoii(TimeStampedModel):
         db_comment="The section of the page this comment thread is associated with.",
     )
     title = models.TextField(
-        null=True,
-        blank=True,
         db_comment="The title of the comment thread. This is used to differentiate the comments at a glance.",
     )
     facility = ForeignKey(
         Facility,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
-        related_name="report_comments_head_of_the_conga_line",
+        on_delete=models.CASCADE,
+        related_name="report_comment_threads",
         db_comment="The facility this comment thread is associated with, if applicable. Foreign key to registration.facility",
     )
     is_resolved = models.BooleanField(
@@ -43,8 +45,8 @@ class ReportCommentHeadHonchoOfTheCongaLineBoii(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = "Table containing comments from the head of the conga line about a report version"
-        db_table = 'erc"."report_comment_headhonchoofthecongalineboii'
+        db_table_comment = "Table containing comment threads about a report"
+        db_table = 'erc"."report_comment_thread'
         app_label = "reporting"
 
-    Rls = ReportCommentHeadHonchoOfTheCongaLineBoiiRls
+    Rls = ReportCommentThreadRls

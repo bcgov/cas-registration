@@ -11,26 +11,44 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { Thread } from "./types";
+import { Comment, Thread } from "./types";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CommentSeat from "./commentSeat";
+import { addCommentToThread } from "../../utils/addComment";
+import { useRouter } from "next/navigation";
 
 interface Props {
   thread: Thread;
-  onSubmitComment?: (commentText: string, thread: Thread) => void;
+  version_id: number;
+  onCommentAdded?: (threadId: number, comment: Comment) => void;
 }
 
-const CommentBoxCar: React.FC<Props> = ({ thread, onSubmitComment }) => {
+const CommentBoxCar: React.FC<Props> = ({
+  thread,
+  version_id,
+  onCommentAdded,
+}) => {
+  const router = useRouter();
   const [commentText, setCommentText] = useState("");
   const [areCommentsCollapsed, setAreCommentsCollapsed] = useState(false);
 
-  const handleSubmitComment = () => {
+  const handleSubmitComment = async () => {
     const trimmedComment = commentText.trim();
     if (!trimmedComment) return;
 
-    onSubmitComment?.(trimmedComment, thread);
+    const createdComment = await addCommentToThread(
+      thread.id,
+      trimmedComment,
+      version_id,
+    );
+
+    if (createdComment?.id) {
+      onCommentAdded?.(thread.id, createdComment);
+    }
+
     setCommentText("");
+    router.refresh();
   };
 
   const createdAt = new Date(thread.created_at);
@@ -48,6 +66,8 @@ const CommentBoxCar: React.FC<Props> = ({ thread, onSubmitComment }) => {
     <Paper
       elevation={0}
       sx={{
+        height: "fit-content",
+        flex: "0 0 auto",
         mb: 2,
         borderRadius: 3,
         border: "1px solid",
@@ -69,15 +89,15 @@ const CommentBoxCar: React.FC<Props> = ({ thread, onSubmitComment }) => {
                 {thread.title ?? ""}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                {formattedCreatedAt}
+                {formattedCreatedAt} by {thread.user_name ?? "unkown"}
               </Typography>
             </Box>
           </Stack>
           <Chip
             size="small"
             label={
-              thread.report_version
-                ? `Report Version ID:${thread.report_version}`
+              thread.report_version_id
+                ? `Report Version ID:${thread.report_version_id}`
                 : ""
             }
             color="primary"
@@ -96,7 +116,7 @@ const CommentBoxCar: React.FC<Props> = ({ thread, onSubmitComment }) => {
       </Box>
 
       <Box sx={{ px: 2.5, py: 1.5 }}>
-        {thread.report_comments_bodyofthesnake.length > 0 && (
+        {thread.report_comments.length > 0 && (
           <Stack direction="row" justifyContent="flex-end" sx={{ mb: 1 }}>
             <Button
               size="small"
@@ -117,12 +137,11 @@ const CommentBoxCar: React.FC<Props> = ({ thread, onSubmitComment }) => {
 
         {/* comment list */}
         <Collapse in={!areCommentsCollapsed} timeout="auto" unmountOnExit>
-          {thread.report_comments_bodyofthesnake.map((comment, index) => (
+          {thread.report_comments.map((comment, index) => (
             <CommentSeat
+              key={comment.id ?? `${thread.id}-${index}`}
               comment={comment}
-              isLast={
-                index === thread.report_comments_bodyofthesnake.length - 1
-              }
+              isLast={index === thread.report_comments.length - 1}
             />
           ))}
         </Collapse>

@@ -14,6 +14,7 @@ export default async function AnnualReportPage({
     getFinalReviewData(version_id),
   ]);
   const threads = await pickupPassengers(version_id);
+  console.log("***************** AnnualReportPage threads", threads);
 
   return (
     <>
@@ -23,7 +24,7 @@ export default async function AnnualReportPage({
         origin={ReportingOrigin.AnnualReport}
         data={data}
       />
-      <CommentPacificRailway threads={threads} />
+      <CommentPacificRailway threads={threads} version_id={version_id} />
     </>
   );
 }
