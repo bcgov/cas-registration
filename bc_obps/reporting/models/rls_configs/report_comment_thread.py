@@ -28,4 +28,4 @@ class Rls:
             RlsOperations.SELECT,
         ],
     }
-    grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.REPORT_COMMENT_BODYOFTHESNAKE)
+    grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.REPORT_COMMENT_THREAD)

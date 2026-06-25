@@ -64,10 +64,7 @@ const CommentPacificRailway: React.FC<Props> = ({ threads, version_id }) => {
 
         return {
           ...thread,
-          report_comments_bodyofthesnake: [
-            ...thread.report_comments_bodyofthesnake,
-            comment,
-          ],
+          report_comments: [...thread.report_comments, comment],
         };
       }),
     );

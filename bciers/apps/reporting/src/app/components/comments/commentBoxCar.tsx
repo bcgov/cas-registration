@@ -96,8 +96,8 @@ const CommentBoxCar: React.FC<Props> = ({
           <Chip
             size="small"
             label={
-              thread.report_version
-                ? `Report Version ID:${thread.report_version}`
+              thread.report_version_id
+                ? `Report Version ID:${thread.report_version_id}`
                 : ""
             }
             color="primary"
@@ -116,7 +116,7 @@ const CommentBoxCar: React.FC<Props> = ({
       </Box>
 
       <Box sx={{ px: 2.5, py: 1.5 }}>
-        {thread.report_comments_bodyofthesnake.length > 0 && (
+        {thread.report_comments.length > 0 && (
           <Stack direction="row" justifyContent="flex-end" sx={{ mb: 1 }}>
             <Button
               size="small"
@@ -137,13 +137,11 @@ const CommentBoxCar: React.FC<Props> = ({
 
         {/* comment list */}
         <Collapse in={!areCommentsCollapsed} timeout="auto" unmountOnExit>
-          {thread.report_comments_bodyofthesnake.map((comment, index) => (
+          {thread.report_comments.map((comment, index) => (
             <CommentSeat
               key={comment.id ?? `${thread.id}-${index}`}
               comment={comment}
-              isLast={
-                index === thread.report_comments_bodyofthesnake.length - 1
-              }
+              isLast={index === thread.report_comments.length - 1}
             />
           ))}
         </Collapse>

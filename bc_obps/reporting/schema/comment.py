@@ -1,37 +1,37 @@
 from ninja import ModelSchema, Schema
-from reporting.models import ReportCommentHeadHonchoOfTheCongaLineBoii, ReportCommentBodyOfTheSnake
-
-
-class BodyOfTheSnakeSchema(ModelSchema):
-    user_name: str | None
-
-    class Meta:
-        model = ReportCommentBodyOfTheSnake
-        fields = "__all__"
-
-    @staticmethod
-    def resolve_name(obj: ReportCommentBodyOfTheSnake) -> str | None:
-        if obj.created_by:
-            return obj.created_by.get_full_name()
-        return None
-
-    @staticmethod
-    def resolve_user_name(obj: ReportCommentBodyOfTheSnake) -> str | None:
-        if obj.created_by:
-            return obj.created_by.get_full_name()
-        return None
+from reporting.models import ReportCommentThread, ReportComment
 
 
 class CommentSchema(ModelSchema):
-    """
-    Schema for the ReportCommentHeadHonchoOfTheCongaLineBoii model
-    """
-
-    report_comments_bodyofthesnake: list[BodyOfTheSnakeSchema] | None
     user_name: str | None
 
     class Meta:
-        model = ReportCommentHeadHonchoOfTheCongaLineBoii
+        model = ReportComment
+        fields = "__all__"
+
+    @staticmethod
+    def resolve_name(obj: ReportComment) -> str | None:
+        if obj.created_by:
+            return obj.created_by.get_full_name()
+        return None
+
+    @staticmethod
+    def resolve_user_name(obj: ReportComment) -> str | None:
+        if obj.created_by:
+            return obj.created_by.get_full_name()
+        return None
+
+
+class ThreadSchema(ModelSchema):
+    """
+    Schema for the ReportCommentThread model
+    """
+
+    report_comments: list[CommentSchema] | None
+    user_name: str | None
+
+    class Meta:
+        model = ReportCommentThread
         fields = [
             "id",
             "created_at",
@@ -42,19 +42,20 @@ class CommentSchema(ModelSchema):
             "is_visible_to_industry",
             "created_by",
             "facility",
-            "report_version",
+            "report_version_id",
+            "report",
         ]
 
     @staticmethod
-    def resolve_user_name(obj: ReportCommentHeadHonchoOfTheCongaLineBoii) -> str | None:
+    def resolve_user_name(obj: ReportCommentThread) -> str | None:
         if obj.created_by:
             return obj.created_by.get_full_name()
         return None
 
 
-class ReportCommentHeadHonchoInSchema(Schema):
+class ReportCommentThreadInSchema(Schema):
     """
-    Schema for creating a new ReportCommentHeadHonchoOfTheCongaLineBoii instance
+    Schema for creating a new ReportCommentThread instance
     """
 
     report_section: str | None = None
@@ -62,9 +63,9 @@ class ReportCommentHeadHonchoInSchema(Schema):
     is_visible_to_industry: bool = False
 
 
-class BodyOfTheSnakeInSchema(Schema):
+class ReportCommentInSchema(Schema):
     """
-    Schema for creating a new ReportCommentBodyOfTheSnake instance
+    Schema for creating a new ReportComment instance
     """
 
     comment: str

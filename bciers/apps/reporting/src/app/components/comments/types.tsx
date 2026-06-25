@@ -14,17 +14,17 @@ interface ThreadItem {
   id?: number;
   comment: string;
   created_at: string;
-  report_version: number;
+  report_version_id: number;
 }
 
 export interface Thread {
   id: number;
   title: string;
   report_section?: TrainStations;
-  report_comments_bodyofthesnake: Comment[];
+  report_comments: Comment[];
   created_by: UUID;
   user_name: string;
   created_at: string;
-  report_version: number;
+  report_version_id: number;
   updated_at?: string;
 }
