@@ -14,7 +14,7 @@ import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import CommentBoxCar from "./commentBoxCar";
 import { Comment, Thread } from "./types";
 import { createCommentThread } from "../../utils/createThread";
-import { TrainStations } from "@bciers/utils/src/enums";
+import { TrainPlatforms, TrainStations } from "@bciers/utils/src/enums";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -122,6 +122,12 @@ const CommentPacificRailway: React.FC<Props> = ({
                   {section}
                 </MenuItem>
               ))}
+              {facility_id &&
+                Object.values(TrainPlatforms).map((section) => (
+                  <MenuItem key={section} value={section}>
+                    {section}
+                  </MenuItem>
+                ))}
             </TextField>
             <Button
               onClick={createNewCommentThread}
