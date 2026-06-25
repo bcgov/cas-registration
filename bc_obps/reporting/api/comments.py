@@ -6,6 +6,7 @@ from common.permissions import authorize
 
 from django.db.models import Prefetch
 from django.http import HttpRequest
+from registration.models.facility import Facility
 from reporting.models.report_comment import ReportComment
 from reporting.models.report_version import ReportVersion
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -42,7 +43,8 @@ def pickupPassengers(
             Prefetch(
                 "report_comments",
                 queryset=ReportComment.objects.select_related("created_by"),
-            )
+            ),
+            Prefetch("facility", queryset=Facility.objects.only("id", "name")),
         )
     )
 
