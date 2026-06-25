@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FieldDisplay } from "./FieldDisplay";
 import { StatusLabel } from "@bciers/components/form/fields/StatusLabel";
 
-interface Field {
+export interface SectionField {
   label?: string;
   key?: string;
   heading?: string | React.ReactNode;
@@ -15,7 +15,7 @@ interface Field {
 
 interface SectionProps {
   title?: string;
-  fields: Field[];
+  fields: SectionField[];
   data: Record<string, any>;
   expandable?: boolean;
   isAdded?: boolean;

@@ -321,17 +321,19 @@ class FacilityReportSchema(ModelSchema):
 class ReportPersonResponsibleOut(ModelSchema):
     model_config = ConfigDict(populate_by_name=True)
 
+    full_address: str
+
+    @staticmethod
+    def resolve_full_address(obj: ReportPersonResponsible) -> str:
+        return f"{obj.street_address}, {obj.municipality} {obj.province}, {obj.postal_code}"
+
     @staticmethod
     def resolve_phone_number(obj: ReportPersonResponsible) -> str:
-        return str(obj.phone_number)
+        return str(obj.phone_number.as_international)
 
     class Meta:
         model = ReportPersonResponsible
         fields = [
-            'street_address',
-            'municipality',
-            'province',
-            'postal_code',
             'first_name',
             'phone_number',
             'last_name',

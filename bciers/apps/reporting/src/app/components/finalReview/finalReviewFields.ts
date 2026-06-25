@@ -33,7 +33,7 @@ const FIELD_KEYS = {
   // Person responsible
   positionTitle: "position_title",
   phoneNumber: "phone_number",
-  streetAddress: "street_address",
+  fullAddress: "full_address",
 
   // Additional data
   captureEmissions: "capture_emissions",
@@ -147,12 +147,9 @@ export const personResponsibleFields = [
   { label: "First Name", key: "first_name" },
   { label: "Last Name", key: "last_name" },
   { label: "Job Title / Position", key: FIELD_KEYS.positionTitle },
-  { label: "Business Email Address", key: "email" },
-  { label: "Business Telephone Number", key: FIELD_KEYS.phoneNumber },
-  { label: "Business Mailing Address", key: FIELD_KEYS.streetAddress },
-  { label: "Municipality", key: "municipality" },
-  { label: "Province", key: "province" },
-  { label: "Postal Code", key: "postal_code" },
+  { label: "Business Contact", key: "email" },
+  { label: "", key: FIELD_KEYS.phoneNumber },
+  { label: "", key: FIELD_KEYS.fullAddress },
 ];
 
 export const additionalDataFields = (data?: ReportAdditionalData) => {

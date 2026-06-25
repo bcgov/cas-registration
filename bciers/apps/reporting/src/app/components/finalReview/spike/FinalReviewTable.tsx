@@ -1,6 +1,7 @@
 import { Chip, Table, TableBody, TableCell, TableRow } from "@mui/material";
+import { SectionField } from "../templates/SectionReview";
 
-export const PillList: React.FC<{ items: string[] }> = ({ items }) => {
+const PillList: React.FC<{ items: string[] }> = ({ items }) => {
   return (
     <>
       {items.map((item) => (
@@ -37,22 +38,19 @@ export const LabelCell: React.FC<{ label: string }> = ({ label }) => {
   );
 };
 
-export const DataCell: React.FC<{ data: string }> = ({ data }) => {
-  const splitData = data.split("; ");
+export const DataCell: React.FC<{ data?: string }> = ({ data }) => {
+  const splitData = (data || "").split("; ");
 
   return (
-    <TableCell sx={{ borderBottom: "none" }}>
+    <TableCell sx={{ borderBottom: "none", whiteSpace: "pre-line" }}>
       {splitData.length > 1 ? <PillList items={splitData} /> : data}
     </TableCell>
   );
 };
 
 interface FinalReviewTableProps {
-  data: Record<string, string | null>;
-  fields: {
-    label: string;
-    key: string;
-  }[];
+  data: Record<string, string | undefined>;
+  fields: SectionField[];
 }
 
 export const FinalReviewTable: React.FC<FinalReviewTableProps> = ({
@@ -62,10 +60,10 @@ export const FinalReviewTable: React.FC<FinalReviewTableProps> = ({
   return (
     <Table size="small">
       <TableBody>
-        {fields.map(({ label, key }) => (
-          <TableRow key={key}>
-            <LabelCell label={label} />
-            <DataCell data={data[key] ?? ""} />
+        {fields.map((f, index) => (
+          <TableRow key={`${f.key}-${index}`}>
+            <LabelCell label={f.label || ""} />
+            <DataCell data={f.key ? data[f.key] : ""} />
           </TableRow>
         ))}
       </TableBody>

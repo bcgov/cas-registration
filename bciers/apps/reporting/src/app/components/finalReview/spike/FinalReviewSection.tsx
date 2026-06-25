@@ -1,16 +1,21 @@
 import { Card, CardContent, CardHeader, IconButton } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { PropsWithChildren, useState } from "react";
+import { FinalReviewTable } from "./FinalReviewTable";
+import { SectionField } from "../templates/SectionReview";
 
-interface Props extends PropsWithChildren {
+interface FinalReviewCardProps extends PropsWithChildren {
   title: string;
 }
 
-export const FinalReviewCard: React.FC<Props> = ({ title, children }) => {
+export const FinalReviewCard: React.FC<FinalReviewCardProps> = ({
+  title,
+  children,
+}) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <Card sx={{ marginBottom: "2em" }}>
+    <Card sx={{ marginBottom: "2em", whiteSpace: "preserve" }}>
       <CardHeader
         subheader={title}
         sx={{ bgcolor: "#D8D8D8" }}
@@ -30,5 +35,25 @@ export const FinalReviewCard: React.FC<Props> = ({ title, children }) => {
       />
       {isExpanded && <CardContent>{children}</CardContent>}
     </Card>
+  );
+};
+
+export interface FinalReviewSectionProps {
+  title: string;
+  data: Record<string, any>;
+  fields: SectionField[];
+  reportingYear?: number;
+}
+
+export const FinalReviewSection: React.FC<FinalReviewSectionProps> = ({
+  title,
+  data,
+  fields,
+  reportingYear,
+}) => {
+  return (
+    <FinalReviewCard title={title}>
+      <FinalReviewTable data={data} fields={fields} />
+    </FinalReviewCard>
   );
 };

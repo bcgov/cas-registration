@@ -45,6 +45,7 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
   isRemoved = false,
   showWhenNotReportingOnly = true,
 }) => {
+  console.log(facilityData);
   // Process non-attributable emissions to include change type
   const processedEmissions = React.useMemo(() => {
     const emissions: NonAttributableEmissionRecord[] = [];

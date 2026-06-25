@@ -31,6 +31,8 @@ import {
 } from "@reporting/src/app/components/taskList/types";
 import { flowHelpers } from "@reporting/src/app/components/taskList/flowHelpers";
 import ReviewOperatorInformation from "../spike/ReviewOperatorInformation";
+import { FinalReviewSection } from "../spike/FinalReviewSection";
+import { FinalReviewFactilityReport } from "../spike/FacilityReport";
 
 interface Props {
   data: ReportData | null;
@@ -39,14 +41,14 @@ interface Props {
   flow: ReportingFlow;
 }
 
-interface ReportFieldConfig {
+export interface ReportFieldConfig {
   label?: string;
   key?: string;
   heading?: string;
   unit?: string;
 }
 
-interface ReportSectionConfig {
+export interface ReportSectionConfig {
   title: string;
   condition?: (reportData: ReportData) => boolean;
   getData?: (
@@ -122,12 +124,19 @@ export const FinalReviewReportSections: React.FC<Props> = ({
         {facilityReports &&
           Object.entries(facilityReports).map(
             ([facilityKey, facilityReport]: [string, FacilityReport]) => (
-              <FacilityReportSection
-                key={facilityKey}
-                facilityName={facilityReport.facility_name}
-                facilityData={facilityReport}
-                showWhenNotReportingOnly={!isReportingOnly}
-              />
+              <>
+                <FinalReviewFactilityReport
+                  key={"A" + facilityKey + "aaa"}
+                  title={facilityReport.facility_name}
+                  facilityData={facilityReport}
+                />
+                {/* <FacilityReportSection
+                  key={facilityKey}
+                  facilityName={facilityReport.facility_name}
+                  facilityData={facilityReport}
+                  showWhenNotReportingOnly={!isReportingOnly}
+                /> */}
+              </>
             ),
           )}
       </>
@@ -135,22 +144,17 @@ export const FinalReviewReportSections: React.FC<Props> = ({
   };
 
   const sectionConfigs: ReportSectionConfig[] = [
-    {
-      title: "Reason for Change",
-      condition: (reportData: ReportData) => reportData.is_supplementary_report,
-      getData: (reportData: ReportData) => reportData,
-      fields: () => [
-        {
-          label: "Reason for submitting supplementary report",
-          key: "reason_for_change",
-        },
-      ],
-    },
-    {
-      title: "Review Operation Information",
-      getData: (reportData: ReportData) => reportData.report_operation,
-      render: () => <ReviewOperatorInformation data={data} isEio={isEIO} />,
-    },
+    // {
+    //   title: "Reason for Change",
+    //   condition: (reportData: ReportData) => reportData.is_supplementary_report,
+    //   getData: (reportData: ReportData) => reportData,
+    //   fields: () => [
+    //     {
+    //       label: "Reason for submitting supplementary report",
+    //       key: "reason_for_change",
+    //     },
+    //   ],
+    // },
     {
       title: "Review Operation Information",
       getData: (reportData: ReportData) => reportData.report_operation,
@@ -161,14 +165,14 @@ export const FinalReviewReportSections: React.FC<Props> = ({
       getData: (reportData: ReportData) => reportData.report_person_responsible,
       fields: () => personResponsibleFields,
     },
-    {
-      title: "Electricity Import Data",
-      condition: (reportData: ReportData) =>
-        isEIO && !!reportData.report_electricity_import_data,
-      getData: (reportData: ReportData) =>
-        reportData.report_electricity_import_data[0],
-      fields: () => eioFields,
-    },
+    // {
+    //   title: "Electricity Import Data",
+    //   condition: (reportData: ReportData) =>
+    //     isEIO && !!reportData.report_electricity_import_data,
+    //   getData: (reportData: ReportData) =>
+    //     reportData.report_electricity_import_data[0],
+    //   fields: () => eioFields,
+    // },
     {
       title: "Facility Reports",
       condition: (reportData: ReportData) =>
@@ -176,52 +180,52 @@ export const FinalReviewReportSections: React.FC<Props> = ({
       render: renderFacilityReportInformation,
       id: "facility-reports",
     },
-    {
-      title: "Additional Reporting Data",
-      condition: (reportData: ReportData) =>
-        !isEIO && !!reportData.report_additional_data,
-      getData: (reportData: ReportData) => reportData.report_additional_data,
-      fields: (reportData: ReportData) =>
-        additionalDataFields(reportData.report_additional_data),
-    },
-    {
-      title: "Report New Entrant Information",
-      condition: (reportData: ReportData) =>
-        isNewEntrant && reportData.report_new_entrant.length > 0,
-      getData: (reportData: ReportData) => {
-        const newEntrant = reportData.report_new_entrant[0];
-        return {
-          ...newEntrant,
-          productions: Object.values(newEntrant.productions),
-          report_new_entrant_emission: Object.values(
-            newEntrant.report_new_entrant_emission,
-          ),
-        };
-      },
-      fields: (reportData: ReportData) => {
-        const newEntrant = reportData.report_new_entrant[0];
-        return reportNewEntrantFields(
-          Object.values(newEntrant.productions),
-          Object.values(newEntrant.report_new_entrant_emission),
-        );
-      },
-    },
-    {
-      title: "Operation Emission Summary",
-      condition: (reportData: ReportData) =>
-        isLFO && !!reportData.operation_emission_summary,
-      getData: (reportData: ReportData) =>
-        reportData.operation_emission_summary,
-      fields: () => operationEmissionSummaryFields,
-    },
-    {
-      title: "Compliance Summary",
-      condition: (reportData: ReportData) =>
-        !isEIO && !isSFOReportingOnly && !!reportData.report_compliance_summary,
-      getData: (reportData: ReportData) => reportData.report_compliance_summary,
-      fields: (reportData: ReportData) =>
-        complianceSummaryFields(reportData.report_compliance_summary?.products),
-    },
+    // {
+    //   title: "Additional Reporting Data",
+    //   condition: (reportData: ReportData) =>
+    //     !isEIO && !!reportData.report_additional_data,
+    //   getData: (reportData: ReportData) => reportData.report_additional_data,
+    //   fields: (reportData: ReportData) =>
+    //     additionalDataFields(reportData.report_additional_data),
+    // },
+    // {
+    //   title: "Report New Entrant Information",
+    //   condition: (reportData: ReportData) =>
+    //     isNewEntrant && reportData.report_new_entrant.length > 0,
+    //   getData: (reportData: ReportData) => {
+    //     const newEntrant = reportData.report_new_entrant[0];
+    //     return {
+    //       ...newEntrant,
+    //       productions: Object.values(newEntrant.productions),
+    //       report_new_entrant_emission: Object.values(
+    //         newEntrant.report_new_entrant_emission,
+    //       ),
+    //     };
+    //   },
+    //   fields: (reportData: ReportData) => {
+    //     const newEntrant = reportData.report_new_entrant[0];
+    //     return reportNewEntrantFields(
+    //       Object.values(newEntrant.productions),
+    //       Object.values(newEntrant.report_new_entrant_emission),
+    //     );
+    //   },
+    // },
+    // {
+    //   title: "Operation Emission Summary",
+    //   condition: (reportData: ReportData) =>
+    //     isLFO && !!reportData.operation_emission_summary,
+    //   getData: (reportData: ReportData) =>
+    //     reportData.operation_emission_summary,
+    //   fields: () => operationEmissionSummaryFields,
+    // },
+    // {
+    //   title: "Compliance Summary",
+    //   condition: (reportData: ReportData) =>
+    //     !isEIO && !isSFOReportingOnly && !!reportData.report_compliance_summary,
+    //   getData: (reportData: ReportData) => reportData.report_compliance_summary,
+    //   fields: (reportData: ReportData) =>
+    //     complianceSummaryFields(reportData.report_compliance_summary?.products),
+    // },
   ];
   return (
     <>
@@ -245,12 +249,18 @@ export const FinalReviewReportSections: React.FC<Props> = ({
             key={section.title}
             id={section.id ?? section.title.toLowerCase().replace(" ", "-")}
           >
-            <SectionReview
+            <FinalReviewSection
+              data={sectionData}
+              title={section.title}
+              fields={sectionFields}
+              reportingYear={data.reporting_year}
+            />
+            {/* <SectionReview
               title={section.title}
               data={sectionData}
               fields={sectionFields}
               reportingYear={data.reporting_year}
-            />
+            /> */}
           </div>
         );
       })}
