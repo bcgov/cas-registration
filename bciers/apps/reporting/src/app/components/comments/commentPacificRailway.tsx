@@ -20,9 +20,14 @@ import { useRouter } from "next/navigation";
 interface Props {
   threads: Thread[];
   version_id: number;
+  facility_id?: string;
 }
 
-const CommentPacificRailway: React.FC<Props> = ({ threads, version_id }) => {
+const CommentPacificRailway: React.FC<Props> = ({
+  threads,
+  version_id,
+  facility_id,
+}) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [newThreadTitle, setNewThreadTitle] = useState("");
@@ -44,8 +49,9 @@ const CommentPacificRailway: React.FC<Props> = ({ threads, version_id }) => {
     if (!trimmedTitle) return;
 
     const createdThread = await createCommentThread(
-      version_id,
       trimmedTitle,
+      version_id,
+      facility_id,
       newThreadSection || undefined,
     );
     if (createdThread?.id) {

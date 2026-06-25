@@ -66,16 +66,20 @@ def pickupPassengers(
     auth=authorize("authorized_irc_user"),
 )
 def buildATrain(
-    request: HttpRequest, version_id: int, payload: ReportCommentThreadInSchema
+    request: HttpRequest, version_id: int, payload: ReportCommentThreadInSchema, facility_id: str | None = None
 ) -> tuple[Literal[200], ReportCommentThread]:
     """
     Create a new comment thread for a given report version.
     """
     report = ReportVersion.objects.get(pk=version_id).report
+    facility_uuid = None
+    if facility_id is not None:
+        facility_uuid = UUID(facility_id)
 
     new_thread = ReportCommentThread.objects.create(
         report=report,
         report_version_id=version_id,
+        facility_id=facility_uuid,
         report_section=payload.report_section,
         title=payload.title,
         is_resolved=False,

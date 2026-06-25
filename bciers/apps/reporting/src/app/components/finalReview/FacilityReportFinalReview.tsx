@@ -26,7 +26,11 @@ export default async function FacilityReportFinalReview({
   return (
     <>
       <FacilityReportFinalReviewContent data={data} backUrl={backUrl} />
-      <CommentPacificRailway threads={threads} version_id={version_id} />
+      <CommentPacificRailway
+        threads={threads}
+        version_id={version_id}
+        facility_id={facility_id}
+      />
     </>
   );
 }
