@@ -146,6 +146,7 @@ const CommentPacificRailway: React.FC<Props> = ({ threads, version_id }) => {
               <CommentBoxCar
                 key={thread.id}
                 thread={thread}
+                version_id={version_id}
                 onCommentAdded={handleCommentAdded}
               />
             ))}

@@ -20,10 +20,15 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   thread: Thread;
+  version_id: number;
   onCommentAdded?: (threadId: number, comment: Comment) => void;
 }
 
-const CommentBoxCar: React.FC<Props> = ({ thread, onCommentAdded }) => {
+const CommentBoxCar: React.FC<Props> = ({
+  thread,
+  version_id,
+  onCommentAdded,
+}) => {
   const router = useRouter();
   const [commentText, setCommentText] = useState("");
   const [areCommentsCollapsed, setAreCommentsCollapsed] = useState(false);
@@ -35,7 +40,7 @@ const CommentBoxCar: React.FC<Props> = ({ thread, onCommentAdded }) => {
     const createdComment = await addCommentToThread(
       thread.id,
       trimmedComment,
-      thread.report_version,
+      version_id,
     );
 
     if (createdComment?.id) {
