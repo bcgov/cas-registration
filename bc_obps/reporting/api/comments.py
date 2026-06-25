@@ -18,6 +18,7 @@ from ..models import (
 from ..schema.comment import (
     CommentOutSchema,
     ReportCommentInSchema,
+    ReportCommentResolveSchema,
     ThreadSchema,
     CommentSchema,
     ReportCommentThreadInSchema,
@@ -156,3 +157,21 @@ def addToCommentThread(
     )
 
     return 200, comment
+
+
+@router.patch(
+    "/comment/resolve/thread_id/{thread_id}",
+    response={200: ReportCommentResolveSchema, custom_codes_4xx: Message},
+    description="Resolve a thread.",
+    auth=authorize("authorized_irc_user"),
+)
+def checkTicket(request: HttpRequest, thread_id: int) -> Literal[200]:
+    """
+    Resolve an existing comment thread for a given thread ID.
+    """
+
+    thread = ReportCommentThread.objects.get(pk=thread_id)
+    thread.is_resolved = True
+    thread.save()
+
+    return 200

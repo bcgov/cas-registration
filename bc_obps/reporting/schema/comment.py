@@ -112,3 +112,11 @@ class ThreadWithEventsOutSchema(Schema):
     facility_name: str | None = None
     report_comments: list[CommentOutSchema]
     report_events: list[ReportCommentEventSchema] = []
+
+
+class ReportCommentResolveSchema(Schema):
+    """
+    Schema for resolving a ReportCommentThread instance
+    """
+
+    is_resolved: bool = True
