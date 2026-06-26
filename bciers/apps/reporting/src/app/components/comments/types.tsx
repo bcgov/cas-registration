@@ -28,4 +28,5 @@ export interface Thread {
   report_version_id: number;
   updated_at?: string;
   facility_name?: string;
+  is_resolved: boolean;
 }
