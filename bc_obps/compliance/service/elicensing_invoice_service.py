@@ -64,6 +64,22 @@ class ElicensingInvoiceService:
         response["Content-Length"] = str(total_size)
         return response
 
+    @staticmethod
+    def _build_invoice_filename(prefix: str, invoice_number: str) -> str:
+        """
+        Builds a human-readable, searchable invoice filename.
+
+        Example: "OBPS Compliance Invoice OBI706800_20260619.pdf"
+
+        Args:
+            prefix: The descriptive invoice name (e.g. "OBPS Compliance Invoice").
+            invoice_number: The eLicensing invoice number.
+
+        Returns:
+            The filename including the ".pdf" extension.
+        """
+        return f"{prefix} {invoice_number}_{timezone.now().strftime('%Y%m%d')}.pdf"
+
     @classmethod
     def _prepare_partial_invoice_context(
         cls, compliance_report_version_id: int, invoice: ElicensingInvoice, compliance_obligation_id: str
@@ -206,7 +222,7 @@ class ElicensingInvoiceService:
             context.update(last_refresh_metadata)
 
             # Generate filename
-            filename = f"invoice_{context['invoice_number']}_{timezone.now().strftime('%Y%m%d')}.pdf"
+            filename = cls._build_invoice_filename("OBPS Compliance Invoice", context['invoice_number'])
 
             # Generate and return the PDF generator, filename, and size
             return PDFGeneratorService.generate_pdf(
@@ -287,7 +303,7 @@ class ElicensingInvoiceService:
             context.update(last_refresh_metadata)
 
             # Generate filename
-            filename = f"invoice_{context['invoice_number']}_{timezone.now().strftime('%Y%m%d')}.pdf"
+            filename = cls._build_invoice_filename("OBPS Automatic Overdue Penalty Invoice", context['invoice_number'])
 
             # Generate and return the PDF generator, filename, and size
             return PDFGeneratorService.generate_pdf(
@@ -354,7 +370,7 @@ class ElicensingInvoiceService:
             context = context_obj.__dict__
             context.update(last_refresh_metadata)
 
-            filename = f"invoice_{context['invoice_number']}_{timezone.now().strftime('%Y%m%d')}.pdf"
+            filename = cls._build_invoice_filename("OBPS GGEAPAR Penalty Invoice", context['invoice_number'])
 
             return PDFGeneratorService.generate_pdf(
                 template_name="automatic_overdue_penalty_invoice.html",
