@@ -31,6 +31,7 @@ types-jsonschema = "^4.23.0.20241208"
 deepdiff = "^8.6.1"
 brotli = ">=1.2.0"
 time-machine = "^3.0.0"
+pdfplumber = "^0.11.10"
 
 [tool.poetry.group.dev.dependencies]
 black = "^26.3.1"

@@ -29,6 +29,10 @@ export default async function ReportsBasePage({
         { label: "View annual reports", href: "/reports/current-reports" },
         { label: "View past reports", href: "/reports/previous-years" },
         { label: "Download report attachments", href: "/reports/attachments" },
+        {
+          label: "Verification Statement Analysis",
+          href: "/verification-statement-analysis",
+        },
       ];
 
   const CURRENT_REPORTS_TAB_INDEX = 0;
