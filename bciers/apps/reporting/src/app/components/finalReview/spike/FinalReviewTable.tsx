@@ -28,10 +28,10 @@ export const LabelCell: React.FC<{
     <TableCell
       component="th"
       scope="row"
-      align="right"
+      // align="right"
       sx={{
         borderBottom: "none",
-        borderRight: "1px solid #717182",
+        // borderRight: "1px solid #717182",
         fontWeight: "bold",
         whiteSpace: "collapse",
         width: "18em",
@@ -47,7 +47,9 @@ export const DataCell: React.FC<{
   data?: string;
   variant: "default" | "compact";
 }> = ({ data, variant = "default" }) => {
-  const splitData = (data || "").split("; ");
+  const splitData = (
+    (data instanceof String ? data : JSON.stringify(data)) || ""
+  ).split("; ");
 
   return (
     <TableCell
@@ -66,7 +68,7 @@ export const DataCell: React.FC<{
 interface FinalReviewTableProps {
   data: Record<string, string | undefined>;
   fields: SectionField[];
-  variant: "default" | "compact";
+  variant?: "default" | "compact";
 }
 
 export const FinalReviewTable: React.FC<FinalReviewTableProps> = ({
@@ -78,7 +80,10 @@ export const FinalReviewTable: React.FC<FinalReviewTableProps> = ({
     <Table size="small">
       <TableBody>
         {fields.map((f, index) => (
-          <TableRow key={`${f.key}-${index}`}>
+          <TableRow
+            key={`${f.key}-${index}`}
+            sx={{ borderBottom: "1px solid #F2F2F2" }}
+          >
             <LabelCell label={f.label || ""} variant={variant} />
             <DataCell data={f.key ? data[f.key] : ""} variant={variant} />
           </TableRow>

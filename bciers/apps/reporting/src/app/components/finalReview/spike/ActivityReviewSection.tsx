@@ -1,76 +1,12 @@
-import { Table, TableBody, TableRow } from "@mui/material";
 import { FinalReviewCard } from "./FinalReviewSection";
-import { DataCell, LabelCell } from "./FinalReviewTable";
 import React from "react";
 import { activityHeaderStyle } from "./styles";
-
-const mappings: Record<string, string> = {
-  unitName: "Unit Name",
-  gscUnitName: "Unit Name",
-  gscUnitType: "Unit Type",
-  gscUnitDescription: "Unit Description",
-  fuelDescription: "Fuel Description",
-  annualFuelAmount: "Annual Fuel Amount",
-  fuelType: "Fuel Type",
-  fuelClassification: "Fuel Classification",
-};
-const camelToTitleCase = (str: string) => {
-  return (
-    str.charAt(0).toUpperCase() +
-    str
-      .slice(1)
-      .replace(/([A-Z])/g, " $1")
-      .trim()
-  );
-};
-const mapFieldLabel = (fieldLabel: string) => {
-  return mappings[fieldLabel] || camelToTitleCase(fieldLabel);
-};
-const byLabel = (order: string[]) => {
-  const reverseOrder = [...order].reverse();
-  return (a: [string, unknown], b: [string, unknown]) => {
-    const aIndex = reverseOrder.indexOf(a[0]);
-    const bIndex = reverseOrder.indexOf(b[0]);
-    if ((aIndex === -1 && bIndex === -1) || aIndex === bIndex) return 0;
-    if (aIndex > bIndex) return -1;
-    return 1;
-  };
-};
-
-const renderFieldList = (fieldList: [string, unknown][]) => {
-  if (fieldList.length === 0) return null;
-
-  return (
-    <Table size="small">
-      <TableBody>
-        {fieldList.map(([k, v], index) => {
-          if (k === "divider")
-            return (
-              <TableRow
-                key={`actfield-${k}-${index}`}
-                style={{ height: "1em" }}
-              />
-            );
-          return (
-            <TableRow key={`actfield-${k}-${index}`}>
-              <LabelCell variant="compact" label={mapFieldLabel(k) || ""} />
-              <DataCell
-                variant="compact"
-                data={JSON.stringify(v).replace(/(^"|"$)/g, "")}
-              />
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
-  );
-};
-
-const excludeFromEntries = (keys: string[]) => {
-  return (entry: [string, unknown]) => {
-    return !keys.includes(entry[0]);
-  };
-};
+import {
+  byLabel,
+  camelToTitleCase,
+  excludeFromEntries,
+  renderFieldList,
+} from "./fieldLists";
 
 const EmissionView: React.FC<{ index: number; data: any }> = ({
   index,
@@ -95,7 +31,7 @@ const EmissionView: React.FC<{ index: number; data: any }> = ({
   return (
     <div
       style={{
-        margin: "1em 0 1em 4em",
+        margin: "1em 0 1em 3em",
         paddingLeft: "1em",
         border: "1px solid #013366",
         borderLeft: "5px solid #013366",
@@ -133,11 +69,10 @@ const FuelView: React.FC<{ index: number; data: any }> = ({ index, data }) => {
   const emissions = data.emissions || [];
 
   return (
-    <>
+    <div style={{ marginLeft: "2em" }}>
       <h4
         style={{
           ...activityHeaderStyle,
-          marginLeft: "2em",
         }}
       >
         Fuel {index + 1}: {data.fuelType.fuelName}
@@ -150,7 +85,7 @@ const FuelView: React.FC<{ index: number; data: any }> = ({ index, data }) => {
           data={emission}
         />
       ))}
-    </>
+    </div>
   );
 };
 

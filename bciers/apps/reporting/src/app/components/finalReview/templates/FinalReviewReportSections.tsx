@@ -32,7 +32,8 @@ import {
 import { flowHelpers } from "@reporting/src/app/components/taskList/flowHelpers";
 import ReviewOperatorInformation from "../spike/ReviewOperatorInformation";
 import { FinalReviewSection } from "../spike/FinalReviewSection";
-import { FinalReviewFactilityReport } from "../spike/FacilityReport";
+import { FinalReviewFacilityReport } from "../spike/FacilityReport";
+import { ComplianceSummary } from "../spike/ComplianceSummary";
 
 interface Props {
   data: ReportData | null;
@@ -125,7 +126,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
           Object.entries(facilityReports).map(
             ([facilityKey, facilityReport]: [string, FacilityReport]) => (
               <>
-                <FinalReviewFactilityReport
+                <FinalReviewFacilityReport
                   key={"A" + facilityKey + "aaa"}
                   title={facilityReport.facility_name}
                   facilityData={facilityReport}
@@ -218,14 +219,12 @@ export const FinalReviewReportSections: React.FC<Props> = ({
     //     reportData.operation_emission_summary,
     //   fields: () => operationEmissionSummaryFields,
     // },
-    // {
-    //   title: "Compliance Summary",
-    //   condition: (reportData: ReportData) =>
-    //     !isEIO && !isSFOReportingOnly && !!reportData.report_compliance_summary,
-    //   getData: (reportData: ReportData) => reportData.report_compliance_summary,
-    //   fields: (reportData: ReportData) =>
-    //     complianceSummaryFields(reportData.report_compliance_summary?.products),
-    // },
+    {
+      title: "Compliance Summary",
+      condition: (reportData: ReportData) =>
+        !isEIO && !isSFOReportingOnly && !!reportData.report_compliance_summary,
+      render: () => <ComplianceSummary data={data.report_compliance_summary} />,
+    },
   ];
   return (
     <>

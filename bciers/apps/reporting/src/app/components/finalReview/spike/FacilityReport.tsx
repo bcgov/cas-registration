@@ -5,7 +5,7 @@ interface Props {
   facilityData: any;
 }
 
-export const FinalReviewFactilityReport: React.FC<Props> = ({
+export const FinalReviewFacilityReport: React.FC<Props> = ({
   title,
   facilityData,
 }) => {
