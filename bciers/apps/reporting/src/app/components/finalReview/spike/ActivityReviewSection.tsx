@@ -1,6 +1,7 @@
 import { Table, TableBody, TableRow } from "@mui/material";
 import { FinalReviewCard } from "./FinalReviewSection";
 import { DataCell, LabelCell } from "./FinalReviewTable";
+import React from "react";
 
 const renderFieldList = (fieldList: [string, unknown][]) => {
   if (fieldList.length === 0) return null;
@@ -25,6 +26,45 @@ const excludeFromEntries = (keys: string[]) => {
   };
 };
 
+const EmissionView: React.FC<{ index: number; data: any }> = ({
+  index,
+  data,
+}) => {
+  return (
+    <>
+      <h4>Emission {index + 1}</h4>
+      {renderFieldList(Object.entries(data))}
+    </>
+  );
+};
+
+const FuelView: React.FC<{ index: number; data: any }> = ({ index, data }) => {
+  const fuelFields = Object.entries(data).filter(
+    excludeFromEntries(["emissions", "fuelType"]),
+  );
+  fuelFields.push(["fuelType", data.fuelType.fuelName || "Unknown Fuel Type"]);
+  fuelFields.push([
+    "fuelClassification",
+    data.fuelType.fuelClassification || "Unknown Fuel Classification",
+  ]);
+
+  const emissions = data.emissions || [];
+
+  return (
+    <>
+      <h4>Fuel {index + 1}</h4>
+      {renderFieldList(fuelFields)}
+      {emissions.map((emission: any, index: number) => (
+        <EmissionView
+          key={"emissionview" + index}
+          index={index}
+          data={emission}
+        />
+      ))}
+    </>
+  );
+};
+
 const UnitView: React.FC<{ index: number; data: any }> = ({ index, data }) => {
   const unitFields = Object.entries(data).filter(
     excludeFromEntries(["fuels", "emissions"]),
@@ -37,7 +77,16 @@ const UnitView: React.FC<{ index: number; data: any }> = ({ index, data }) => {
     <>
       <h4>Unit {index + 1}</h4>
       {renderFieldList(unitFields)}
-      {JSON.stringify(fuels, null, 2)}
+      {fuels.map((fuel: any, index: number) => (
+        <FuelView key={"fuelview" + index} index={index} data={fuel} />
+      ))}
+      {emissions.map((emission: any, index: number) => (
+        <EmissionView
+          key={"emissionview" + index}
+          index={index}
+          data={emission}
+        />
+      ))}
     </>
   );
 };
@@ -60,6 +109,16 @@ const SourceTypeView: React.FC<{ name: string; data: any }> = ({
       {renderFieldList(sourceTypeFields)}
       {units.map((unit: any, index: number) => (
         <UnitView key={"unitview" + index} index={index} data={unit} />
+      ))}
+      {fuels.map((fuel: any, index: number) => (
+        <FuelView key={"fuelview" + index} index={index} data={fuel} />
+      ))}
+      {emissions.map((emission: any, index: number) => (
+        <EmissionView
+          key={"emissionview" + index}
+          index={index}
+          data={emission}
+        />
       ))}
     </>
   );
