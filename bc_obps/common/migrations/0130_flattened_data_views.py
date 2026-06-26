@@ -226,6 +226,9 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('common', '0129_V5_14_0'),
+        ('registration', '0184_update_registration_metadata'),
+        ('reporting', '0199_alter_facilityreport_archived_at_and_more'),
+        ('compliance', '0052_update_timestamp_metadata'),
     ]
 
     operations = [
