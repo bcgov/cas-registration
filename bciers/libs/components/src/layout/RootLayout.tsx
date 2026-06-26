@@ -21,7 +21,7 @@ import SessionTimeoutHandler from "@bciers/components/auth/SessionTimeoutHandler
 import SentryUserContext from "@bciers/components/sentry/SentryUserContext";
 
 const rootMetadata: Metadata = {
-  title: "CAS OBPS",
+  title: "B.C. OBPS",
   description:
     "The OBPS is designed to ensure there is a price incentive for industrial emitters to reduce their greenhouse gas emissions and spur innovation while maintaining competitiveness and protecting against carbon leakage.",
   icons: {

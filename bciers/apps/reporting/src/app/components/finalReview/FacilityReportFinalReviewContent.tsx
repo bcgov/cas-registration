@@ -25,7 +25,7 @@ export default function FacilityReportFinalReviewContent({
     const originalTitle = document.title;
 
     const handleBeforePrint = () => {
-      document.title = `CAS OBPS_Reporting_${data.facility_name}`;
+      document.title = `OBPS_Reporting_${data.facility_name}`;
     };
 
     const handleAfterPrint = () => {
