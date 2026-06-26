@@ -59,7 +59,7 @@ describe("FacilityReportFinalReviewContent", () => {
     expect(document.title).toBe(originalTitle);
 
     globalThis.dispatchEvent(new Event("beforeprint"));
-    expect(document.title).toBe("CAS OBPS_Reporting_Test Facility");
+    expect(document.title).toBe("OBPS_Reporting_Test Facility");
 
     globalThis.dispatchEvent(new Event("afterprint"));
     expect(document.title).toBe(originalTitle);
