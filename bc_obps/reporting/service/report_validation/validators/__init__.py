@@ -5,7 +5,7 @@ from . import (
     mandatory_verification_statement,
     operation_boroid_presence,
     report_attachments_are_scanned,
-    report_activity_json_validation,
+    # report_activity_json_validation,  # Suspended as part of https://github.com/bcgov/cas-registration/issues/4873
     report_data_by_fuel_type_validator,
     report_emission_allocation_other_excluded_category,
     report_emission_allocation_validator,
@@ -36,7 +36,7 @@ __all__ = [
     "report_attachments_are_scanned",
     "supplementary_report_version_change",
     "supplementary_report_attachments_confirmation",
-    "report_activity_json_validation",
+    # "report_activity_json_validation", # Suspended as part of https://github.com/bcgov/cas-registration/issues/4873
     "report_emission_allocation_validator",
     "report_emission_allocation_other_excluded_category",
     "report_data_by_fuel_type_validator",
