@@ -20,17 +20,22 @@ const PillList: React.FC<{ items: string[] }> = ({ items }) => {
   );
 };
 
-export const LabelCell: React.FC<{ label: string }> = ({ label }) => {
+export const LabelCell: React.FC<{
+  label: string;
+  variant: "default" | "compact";
+}> = ({ label, variant = "default" }) => {
   return (
     <TableCell
       component="th"
       scope="row"
       align="right"
-      width={300}
       sx={{
         borderBottom: "none",
-        borderRight: "1px solid grey",
+        borderRight: "1px solid #717182",
         fontWeight: "bold",
+        whiteSpace: "collapse",
+        width: "18em",
+        padding: variant === "compact" ? "2px 16px" : "6px 16px",
       }}
     >
       {label}
@@ -38,11 +43,21 @@ export const LabelCell: React.FC<{ label: string }> = ({ label }) => {
   );
 };
 
-export const DataCell: React.FC<{ data?: string }> = ({ data }) => {
+export const DataCell: React.FC<{
+  data?: string;
+  variant: "default" | "compact";
+}> = ({ data, variant = "default" }) => {
   const splitData = (data || "").split("; ");
 
   return (
-    <TableCell sx={{ borderBottom: "none", whiteSpace: "pre-line" }}>
+    <TableCell
+      sx={{
+        borderBottom: "none",
+        whiteSpace: "pre-line",
+        maxWidth: "600px",
+        padding: variant === "compact" ? "2px 16px" : "6px 16px",
+      }}
+    >
       {splitData.length > 1 ? <PillList items={splitData} /> : data}
     </TableCell>
   );
@@ -51,19 +66,21 @@ export const DataCell: React.FC<{ data?: string }> = ({ data }) => {
 interface FinalReviewTableProps {
   data: Record<string, string | undefined>;
   fields: SectionField[];
+  variant: "default" | "compact";
 }
 
 export const FinalReviewTable: React.FC<FinalReviewTableProps> = ({
   data,
   fields,
+  variant = "default",
 }) => {
   return (
     <Table size="small">
       <TableBody>
         {fields.map((f, index) => (
           <TableRow key={`${f.key}-${index}`}>
-            <LabelCell label={f.label || ""} />
-            <DataCell data={f.key ? data[f.key] : ""} />
+            <LabelCell label={f.label || ""} variant={variant} />
+            <DataCell data={f.key ? data[f.key] : ""} variant={variant} />
           </TableRow>
         ))}
       </TableBody>
