@@ -62,6 +62,13 @@ class TestElicensingInvoiceService:
             penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
         )
 
+    def test_build_invoice_filename(self):
+        expected_date = timezone.now().strftime("%Y%m%d")
+        assert (
+            ElicensingInvoiceService._build_invoice_filename("OBPS Compliance Invoice", "OBI706800")
+            == f"OBPS Compliance Invoice OBI706800_{expected_date}.pdf"
+        )
+
     @patch("compliance.service.elicensing_invoice_service.PDFGeneratorService.generate_pdf")
     @patch(
         "compliance.service.elicensing_invoice_service.ComplianceReportVersionService.get_report_operation_by_compliance_report_version"
@@ -103,6 +110,11 @@ class TestElicensingInvoiceService:
         assert filename.endswith(".pdf")
         assert size == 2048
         mock_generate_pdf.assert_called_once()
+        expected_date = timezone.now().strftime("%Y%m%d")
+        assert (
+            mock_generate_pdf.call_args.kwargs["filename"]
+            == f"OBPS Compliance Invoice {self.test_data.invoice.invoice_number}_{expected_date}.pdf"
+        )
 
     @patch("compliance.service.elicensing_invoice_service.PDFGeneratorService.generate_pdf")
     @patch(
@@ -161,6 +173,11 @@ class TestElicensingInvoiceService:
         assert filename.endswith(".pdf")
         assert size == 2048
         mock_generate_pdf.assert_called_once()
+        expected_date = timezone.now().strftime("%Y%m%d")
+        assert (
+            mock_generate_pdf.call_args.kwargs["filename"] == f"OBPS GGEAPAR Penalty Invoice "
+            f"{self.test_data.compliance_obligation.elicensing_invoice.invoice_number}_{expected_date}.pdf"
+        )
 
     @pytest.mark.parametrize(
         "fee_amount, payments, adjustments, expected_due, expected_billing_count",
@@ -359,6 +376,11 @@ class TestElicensingInvoiceService:
         assert filename.endswith(".pdf")
         assert size == 2048
         mock_generate_pdf.assert_called_once()
+        expected_date = timezone.now().strftime("%Y%m%d")
+        assert (
+            mock_generate_pdf.call_args.kwargs["filename"] == f"OBPS Automatic Overdue Penalty Invoice "
+            f"{self.test_data.compliance_obligation.elicensing_invoice.invoice_number}_{expected_date}.pdf"
+        )
 
     def test_create_pdf_response_returns_error(self):
         error_payload = {"errors": {"unexpected_error": "Mocked: PDF generation failed"}}
