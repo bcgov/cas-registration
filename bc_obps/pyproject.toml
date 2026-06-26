@@ -36,6 +36,7 @@ pypdf = "^6.14.2"
 openai = "^2.44.0"
 chromadb = "^1.5.9"
 sentence-transformers = "^5.6.0"
+pypdfium2 = "^5.10.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^26.3.1"
@@ -56,6 +57,7 @@ types-requests = "^2.31.0.20240406"
 pytest-xdist = "^3.8.0"
 django-querycount = "^0.8.3"
 syrupy = "^5.1.0"
+jupyter = "^1.1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

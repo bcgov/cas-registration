@@ -32,15 +32,10 @@ def llm_chat(
     try:
         body = json.loads(request.body)
         prompt = body.get("prompt", "").strip()
-        attachment_path = body.get("attachment_path")
-        if isinstance(attachment_path, str):
-            attachment_path = attachment_path.strip()
-        if not attachment_path:
-            attachment_path = DEFAULT_VERIFICATION_STATEMENT_ATTACHMENT_PATH
         if not prompt:
             return 400, Message(message="prompt field is required in request body")
-        logger.info("/llm-chat received prompt_len=%s attachment_path=%s", len(prompt), attachment_path)
-        response_text = LLMService.ask_llm_with_pdf(prompt, attachment_path=attachment_path)
+        logger.info("/llm-chat received prompt_len=%s", len(prompt))
+        response_text = LLMService.ask_llm_with_pdf(prompt)
         logger.info("/llm-chat returning response_len=%s", len(response_text or ""))
         return 200, response_text
     except json.JSONDecodeError:

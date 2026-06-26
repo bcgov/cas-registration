@@ -107,6 +107,12 @@ const SubmittedVerificationStatementSection: React.FC<Props> = ({
           value={response}
           InputProps={{ readOnly: true }}
         />
+        <Alert
+          fullWidth
+          severity="warning"
+          >
+            <i>Disclaimer</i>: AI results are non-deterministic — results may vary. Verify and don't trust.
+        </Alert>
       </div>
     </section>
   );
