@@ -11,6 +11,7 @@ import {
 } from "@reporting/src/app/components/taskList/types";
 import { ReportDownloadPdfButton } from "../finalReview/templates/ReportDownloadPdfButton";
 import SubmittedAttachmentsSection from "./SubmittedAttachmentsSection";
+import SubmittedVerificationStatementSection from "./SubmittedVerificationStatementSection";
 import { UploadedAttachment } from "@reporting/src/app/components/attachments/types";
 
 interface Props {
@@ -20,6 +21,9 @@ interface Props {
   data: ReportData;
   attachments?: UploadedAttachment[];
 }
+
+const VERIFICATION_STATEMENT_FILE_PATH =
+  "/Users/awilliam/Documents/cas-registration/bc_obps/report_attachments_2026_BC-OBPS_Verification_Report__Statement_ISH_Energy_2025RY.pdf";
 
 const ReportForm: React.FC<Props> = ({
   version_id,
@@ -49,6 +53,11 @@ const ReportForm: React.FC<Props> = ({
         <SubmittedAttachmentsSection
           attachments={attachments ?? []}
           version_id={version_id}
+        />
+      )}
+      {origin === ReportingOrigin.AnnualReport && (
+        <SubmittedVerificationStatementSection
+          verificationStatementFilePath={VERIFICATION_STATEMENT_FILE_PATH}
         />
       )}
       <Button

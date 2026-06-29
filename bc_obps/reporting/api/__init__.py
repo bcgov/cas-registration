@@ -39,3 +39,4 @@ from .report_electricity_import_data import save_electricity_import_data, get_el
 from .report_operation import get_update_report, get_report_operation_data
 from .report_final_review import get_report_final_review_data
 from .report_review_changes import get_report_version_diff_data
+from .llm_chat import llm_chat
