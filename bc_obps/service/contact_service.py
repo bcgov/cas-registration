@@ -48,7 +48,7 @@ class ContactService:
         user = UserDataAccessService.get_by_guid(user_guid)
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
-        base_qs = ContactDataAccessService.get_all_contacts_for_user(user)
+        base_qs = ContactDataAccessService.get_all_contacts_for_user(user).select_related("operator")
 
         return filters.filter(base_qs).order_by(sort_by)
 
