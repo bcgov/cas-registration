@@ -23,12 +23,14 @@ interface Props {
   thread: Thread;
   version_id: number;
   onCommentAdded?: (threadId: number, comment: Comment) => void;
+  isAuthoredByCurrentUser?: boolean;
 }
 
 const CommentBoxCar: React.FC<Props> = ({
   thread,
   version_id,
   onCommentAdded,
+  isAuthoredByCurrentUser,
 }) => {
   const router = useRouter();
   const [commentText, setCommentText] = useState("");
@@ -233,7 +235,7 @@ const CommentBoxCar: React.FC<Props> = ({
       </Collapse>
 
       {/* resolve button */}
-      {!thread.is_resolved && (
+      {!thread.is_resolved && isAuthoredByCurrentUser && (
         <Box sx={{ pb: 2.5, display: "flex", justifyContent: "center" }}>
           <Button
             variant="contained"

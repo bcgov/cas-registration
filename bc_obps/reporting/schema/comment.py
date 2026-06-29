@@ -1,3 +1,5 @@
+from uuid import UUID
+from typing import List
 from ninja import ModelSchema, Schema
 from reporting.models import ReportCommentThread, ReportComment
 
@@ -52,6 +54,11 @@ class ThreadSchema(ModelSchema):
         if obj.facility:
             return obj.facility.name
         return None
+
+
+class ThreadSchemaOut(Schema):
+    threads: List[ThreadSchema] | None
+    user_guid: UUID | None
 
 
 class ReportCommentThreadInSchema(Schema):

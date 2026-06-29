@@ -12,13 +12,13 @@ import {
 import React, { useEffect, useState } from "react";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import CommentBoxCar from "./commentBoxCar";
-import { Comment, Thread } from "./types";
+import { Comment, Thread, ThreadWrapper } from "./types";
 import { createCommentThread } from "../../utils/createThread";
 import { TrainPlatforms, TrainStations } from "@bciers/utils/src/enums";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  threads: Thread[];
+  threads: ThreadWrapper;
   version_id: number;
   facility_id?: string;
 }
@@ -34,11 +34,14 @@ const CommentPacificRailway: React.FC<Props> = ({
   const [newThreadSection, setNewThreadSection] = useState<TrainStations | "">(
     "",
   );
-  const [localThreads, setLocalThreads] = useState<Thread[]>(threads);
+  const [localThreads, setLocalThreads] = useState<Thread[]>(
+    threads.threads || [],
+  );
 
   useEffect(() => {
-    setLocalThreads(threads);
-  }, [threads]);
+    setLocalThreads(threads.threads);
+    console.log(threads);
+  }, [threads.threads]);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
@@ -157,6 +160,9 @@ const CommentPacificRailway: React.FC<Props> = ({
                 thread={thread}
                 version_id={version_id}
                 onCommentAdded={handleCommentAdded}
+                isAuthoredByCurrentUser={
+                  thread.created_by === threads.user_guid
+                }
               />
             ))}
           </Box>

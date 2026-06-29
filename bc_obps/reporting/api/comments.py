@@ -1,8 +1,21 @@
-from typing import Literal
+from typing import List, Literal
 from uuid import UUID
-from venv import logger
-from common.permissions import authorize
+import logging
+from .router import router
 
+from common.api.utils.current_user_utils import get_current_user_guid
+from common.permissions import authorize
+from ..schema.comment import (
+    ReportCommentInSchema,
+    ReportCommentResolveSchema,
+    ThreadSchema,
+    CommentSchema,
+    ReportCommentThreadInSchema,
+    ThreadSchemaOut,
+)
+from ..models import (
+    ReportCommentThread,
+)
 
 from django.db.models import Prefetch
 from django.http import HttpRequest
@@ -11,31 +24,23 @@ from reporting.models.report_comment import ReportComment
 from reporting.models.report_version import ReportVersion
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.generic import Message
-from ..models import (
-    ReportCommentThread,
-)
-from ..schema.comment import (
-    ReportCommentInSchema,
-    ReportCommentResolveSchema,
-    ThreadSchema,
-    CommentSchema,
-    ReportCommentThreadInSchema,
-)
-from .router import router
+
+logger = logging.getLogger(__name__)
 
 
 @router.get(
     "/comments/version_id/{version_id}",
-    response={200: list[ThreadSchema], custom_codes_4xx: Message},
+    response={200: ThreadSchemaOut, custom_codes_4xx: Message},
     description="Fetch comments for a given report version.",
     auth=authorize("authorized_irc_user"),
 )
 def pickupPassengers(
     request: HttpRequest, version_id: int, facility_id: str | None = None
-) -> list[ReportCommentThread]:
+) -> dict[List[ReportCommentThread], UUID]:
     """
     Fetch the comment threads for a given report version and facility id.
     """
+    user_guid = get_current_user_guid(request)
     report = ReportVersion.objects.get(pk=version_id).report
     query = (
         ReportCommentThread.objects.filter(report=report)
@@ -57,9 +62,9 @@ def pickupPassengers(
 
     if not threads:
         logger.warning("No threads found.")
-        return []
+        return {"threads": [], user_guid: UUID(int=0)}
 
-    return threads
+    return {"threads": threads, "user_guid": user_guid}
 
 
 @router.post(
