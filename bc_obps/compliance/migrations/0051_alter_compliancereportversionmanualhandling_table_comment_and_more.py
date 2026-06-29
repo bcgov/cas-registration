@@ -117,15 +117,25 @@ class Migration(migrations.Migration):
                 ),
             ],
         ),
-        migrations.AlterField(
-            model_name='complianceearnedcredit',
-            name='compliance_report_version',
-            field=models.OneToOneField(
-                db_comment='The compliance report version this earned_credit record belongs to. Foreign key to erc.compliance_report_version',
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='compliance_earned_credit',
-                to='compliance.compliancereportversion',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.compliance_earned_credit.compliance_report_version_id IS 'The compliance report version this earned_credit record belongs to. Foreign key to erc.compliance_report_version'",
+                    reverse_sql="COMMENT ON COLUMN erc.compliance_earned_credit.compliance_report_version_id IS NULL",
+                ),
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='complianceearnedcredit',
+                    name='compliance_report_version',
+                    field=models.OneToOneField(
+                        db_comment='The compliance report version this earned_credit record belongs to. Foreign key to erc.compliance_report_version',
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='compliance_earned_credit',
+                        to='compliance.compliancereportversion',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='complianceearnedcredit',
@@ -181,15 +191,25 @@ class Migration(migrations.Migration):
                 to='registration.user',
             ),
         ),
-        migrations.AlterField(
-            model_name='complianceobligation',
-            name='compliance_report_version',
-            field=models.OneToOneField(
-                db_comment='The compliance report version this obligation belongs to. Foreign key to erc.compliance_report_version',
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='obligation',
-                to='compliance.compliancereportversion',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.compliance_obligation.compliance_report_version_id IS 'The compliance report version this obligation belongs to. Foreign key to erc.compliance_report_version'",
+                    reverse_sql="COMMENT ON COLUMN erc.compliance_obligation.compliance_report_version_id IS NULL",
+                )
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='complianceobligation',
+                    name='compliance_report_version',
+                    field=models.OneToOneField(
+                        db_comment='The compliance report version this obligation belongs to. Foreign key to erc.compliance_report_version',
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='obligation',
+                        to='compliance.compliancereportversion',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='complianceobligation',
@@ -240,15 +260,25 @@ class Migration(migrations.Migration):
                 null=True,
             ),
         ),
-        migrations.AlterField(
-            model_name='compliancepenalty',
-            name='compliance_obligation',
-            field=models.ForeignKey(
-                db_comment='The compliance obligation that was not paid on time which triggered this penalty. Foreign key to erc.compliance_obligation',
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='compliance_penalties',
-                to='compliance.complianceobligation',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql='COMMENT ON COLUMN erc.compliance_penalty.compliance_obligation_id IS \'The compliance obligation that was not paid on time which triggered this penalty. Foreign key to erc.compliance_obligation\'',
+                    reverse_sql='COMMENT ON COLUMN erc.compliance_penalty.compliance_obligation_id IS NULL',
+                ),
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='compliancepenalty',
+                    name='compliance_obligation',
+                    field=models.ForeignKey(
+                        db_comment='The compliance obligation that was not paid on time which triggered this penalty. Foreign key to erc.compliance_obligation',
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='compliance_penalties',
+                        to='compliance.complianceobligation',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='compliancepenalty',
@@ -290,15 +320,25 @@ class Migration(migrations.Migration):
                 max_length=100,
             ),
         ),
-        migrations.AlterField(
-            model_name='compliancepenaltyaccrual',
-            name='compliance_penalty',
-            field=models.ForeignKey(
-                db_comment='The penalty record that this daily accrual record relates to. Foreign key to erc.compliance_penalty',
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='compliance_penalty_accruals',
-                to='compliance.compliancepenalty',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.compliance_penalty_accrual.compliance_penalty_id IS 'The penalty record that this daily accrual record relates to. Foreign key to erc.compliance_penalty'",
+                    reverse_sql="COMMENT ON COLUMN erc.compliance_penalty_accrual.compliance_penalty_id IS NULL",
+                )
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='compliancepenaltyaccrual',
+                    name='compliance_penalty',
+                    field=models.ForeignKey(
+                        db_comment='The penalty record that this daily accrual record relates to. Foreign key to erc.compliance_penalty',
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='compliance_penalty_accruals',
+                        to='compliance.compliancepenalty',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='compliancepenaltyrate',
@@ -365,25 +405,45 @@ class Migration(migrations.Migration):
                 to='compliance.complianceperiod',
             ),
         ),
-        migrations.AlterField(
-            model_name='compliancereport',
-            name='report',
-            field=models.OneToOneField(
-                db_comment='The emissions report associated with this compliance report. Foreign key to erc.report',
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='compliance_report',
-                to='reporting.report',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.compliance_report.report_id IS 'The emissions report associated with this compliance report. Foreign key to erc.report'",
+                    reverse_sql="COMMENT ON COLUMN erc.compliance_report.report_id IS NULL",
+                )
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='compliancereport',
+                    name='report',
+                    field=models.OneToOneField(
+                        db_comment='The emissions report associated with this compliance report. Foreign key to erc.report',
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='compliance_report',
+                        to='reporting.report',
+                    ),
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='compliancereportversion',
-            name='compliance_report',
-            field=models.ForeignKey(
-                db_comment='The parent compliance report object that this compliance report version belongs to. Foreign key to erc.compliance_report',
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='compliance_report_versions',
-                to='compliance.compliancereport',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.compliance_report_version.compliance_report_id IS 'The parent compliance report object that this compliance report version belongs to. Foreign key to erc.compliance_report'",
+                    reverse_sql="COMMENT ON COLUMN erc.compliance_report_version.compliance_report_id IS NULL",
+                ),
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='compliancereportversion',
+                    name='compliance_report',
+                    field=models.ForeignKey(
+                        db_comment='The parent compliance report object that this compliance report version belongs to. Foreign key to erc.compliance_report',
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='compliance_report_versions',
+                        to='compliance.compliancereport',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='compliancereportversion',
@@ -452,15 +512,25 @@ class Migration(migrations.Migration):
                 to='registration.user',
             ),
         ),
-        migrations.AlterField(
-            model_name='compliancereportversionmanualhandling',
-            name='compliance_report_version',
-            field=models.OneToOneField(
-                db_comment='The Compliance Report Version that requires manual handling. Foreign key to erc.compliance_report_version',
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='manual_handling_record',
-                to='compliance.compliancereportversion',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.compliance_report_version_manual_handling.compliance_report_version_id IS 'The Compliance Report Version that requires manual handling. Foreign key to erc.compliance_report_version'",
+                    reverse_sql="COMMENT ON COLUMN erc.compliance_report_version_manual_handling.compliance_report_version_id IS NULL",
+                ),
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='compliancereportversionmanualhandling',
+                    name='compliance_report_version',
+                    field=models.OneToOneField(
+                        db_comment='The Compliance Report Version that requires manual handling. Foreign key to erc.compliance_report_version',
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='manual_handling_record',
+                        to='compliance.compliancereportversion',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='compliancereportversionmanualhandling',
@@ -537,15 +607,25 @@ class Migration(migrations.Migration):
                 max_digits=20,
             ),
         ),
-        migrations.AlterField(
-            model_name='elicensingadjustment',
-            name='elicensing_line_item',
-            field=models.ForeignKey(
-                db_comment='Line item record this adjustment relates to. Foreign key to erc.elicensing_line_item',
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='elicensing_adjustments',
-                to='compliance.elicensinglineitem',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.elicensing_adjustment.elicensing_line_item_id IS 'Line item record this adjustment relates to. Foreign key to erc.elicensing_line_item'",
+                    reverse_sql="COMMENT ON COLUMN erc.elicensing_adjustment.elicensing_line_item_id IS NULL",
+                ),
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='elicensingadjustment',
+                    name='elicensing_line_item',
+                    field=models.ForeignKey(
+                        db_comment='Line item record this adjustment relates to. Foreign key to erc.elicensing_line_item',
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='elicensing_adjustments',
+                        to='compliance.elicensinglineitem',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='elicensingadjustment',
@@ -566,15 +646,25 @@ class Migration(migrations.Migration):
                 blank=True, db_comment="Type of adjustment in elicensing. (e.g. 'CREDIT')", null=True
             ),
         ),
-        migrations.AlterField(
-            model_name='elicensingclientoperator',
-            name='operator',
-            field=models.ForeignKey(
-                db_comment='The BCIERS (B.C. Industrial Emissions Reporting System) operator object for this record. Foreign key to erc.operator',
-                on_delete=django.db.models.deletion.PROTECT,
-                related_name='+',
-                to='registration.operator',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.elicensing_client_operator.operator_id IS 'The BCIERS (B.C. Industrial Emissions Reporting System) operator object for this record. Foreign key to erc.operator'",
+                    reverse_sql="COMMENT ON COLUMN erc.elicensing_client_operator.operator_id IS NULL",
+                ),
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='elicensingclientoperator',
+                    name='operator',
+                    field=models.ForeignKey(
+                        db_comment='The BCIERS (B.C. Industrial Emissions Reporting System) operator object for this record. Foreign key to erc.operator',
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='+',
+                        to='registration.operator',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='elicensinginterestrate',
@@ -590,15 +680,25 @@ class Migration(migrations.Migration):
                 db_comment='The interest rate pulled from elicensing', decimal_places=6, max_digits=6
             ),
         ),
-        migrations.AlterField(
-            model_name='elicensinginvoice',
-            name='elicensing_client_operator',
-            field=models.ForeignKey(
-                db_comment='The elicensing_client_operator record for the client who this invoice is for. Foreign key to erc.elicensing_client_operator',
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='elicensing_invoices',
-                to='compliance.elicensingclientoperator',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.elicensing_invoice.elicensing_client_operator_id IS 'The elicensing_client_operator record for the client who this invoice is for. Foreign key to erc.elicensing_client_operator'",
+                    reverse_sql="COMMENT ON COLUMN erc.elicensing_invoice.elicensing_client_operator_id IS NULL",
+                ),
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='elicensinginvoice',
+                    name='elicensing_client_operator',
+                    field=models.ForeignKey(
+                        db_comment='The elicensing_client_operator record for the client who this invoice is for. Foreign key to erc.elicensing_client_operator',
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='elicensing_invoices',
+                        to='compliance.elicensingclientoperator',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='elicensinginvoice',
@@ -636,25 +736,45 @@ class Migration(migrations.Migration):
             name='description',
             field=models.CharField(blank=True, db_comment='Description of the line item (fee)', null=True),
         ),
-        migrations.AlterField(
-            model_name='elicensinglineitem',
-            name='elicensing_invoice',
-            field=models.ForeignKey(
-                db_comment='The OBPS (Output-Based Pricing System) elicensing_invoice table. Foreign key to erc.elicensing_invoice',
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='elicensing_line_items',
-                to='compliance.elicensinginvoice',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.elicensing_line_item.elicensing_invoice_id IS 'The OBPS (Output-Based Pricing System) elicensing_invoice table. Foreign key to erc.elicensing_invoice'",
+                    reverse_sql="COMMENT ON COLUMN erc.elicensing_line_item.elicensing_invoice_id IS NULL",
+                ),
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='elicensinglineitem',
+                    name='elicensing_invoice',
+                    field=models.ForeignKey(
+                        db_comment='The OBPS (Output-Based Pricing System) elicensing_invoice table. Foreign key to erc.elicensing_invoice',
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='elicensing_line_items',
+                        to='compliance.elicensinginvoice',
+                    ),
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='elicensingpayment',
-            name='elicensing_line_item',
-            field=models.ForeignKey(
-                db_comment='The line item record this payment relates to. Foreign key to erc.elicensing_line_item',
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='elicensing_payments',
-                to='compliance.elicensinglineitem',
-            ),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql="COMMENT ON COLUMN erc.elicensing_payment.elicensing_line_item_id IS 'The line item record this payment relates to. Foreign key to erc.elicensing_line_item'",
+                    reverse_sql="COMMENT ON COLUMN erc.elicensing_payment.elicensing_line_item_id IS NULL",
+                ),
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='elicensingpayment',
+                    name='elicensing_line_item',
+                    field=models.ForeignKey(
+                        db_comment='The line item record this payment relates to. Foreign key to erc.elicensing_line_item',
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='elicensing_payments',
+                        to='compliance.elicensinglineitem',
+                    ),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='elicensingpayment',
