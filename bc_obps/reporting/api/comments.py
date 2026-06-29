@@ -1,8 +1,21 @@
-from typing import Literal
+from typing import List, Literal
 from uuid import UUID
-from venv import logger
-from common.permissions import authorize
+import logging
+from .router import router
 
+from common.api.utils.current_user_utils import get_current_user_guid
+from common.permissions import authorize
+from ..schema.comment import (
+    ReportCommentInSchema,
+    ReportCommentResolveSchema,
+    ThreadSchema,
+    CommentSchema,
+    ReportCommentThreadInSchema,
+    ThreadSchemaOut,
+)
+from ..models import (
+    ReportCommentThread,
+)
 
 from django.db.models import Prefetch
 from django.http import HttpRequest
@@ -26,19 +39,22 @@ from ..schema.comment import (
 )
 from .router import router
 
+logger = logging.getLogger(__name__)
+
 
 @router.get(
     "/comments/version_id/{version_id}",
-    response={200: list[ThreadWithEventsOutSchema], custom_codes_4xx: Message},
+    response={200: ThreadSchemaOut, custom_codes_4xx: Message},
     description="Fetch comments for a given report version.",
     auth=authorize("authorized_irc_user"),
 )
 def pickupPassengers(
     request: HttpRequest, version_id: int, facility_id: str | None = None
-) -> list[ThreadWithEventsOutSchema]:
+) -> dict[List[ThreadWithEventsOutSchema], UUID]:
     """
     Fetch the comment threads for a given report version and facility id.
     """
+    user_guid = get_current_user_guid(request)
     report = ReportVersion.objects.get(pk=version_id).report
     query = (
         ReportCommentThread.objects.filter(report=report)
@@ -60,7 +76,7 @@ def pickupPassengers(
 
     if not threads:
         logger.warning("No threads found.")
-        return []
+        return {"threads": [], user_guid: UUID(int=0)}
 
     thread_created_at_values = [thread.created_at for thread in threads]
     if any(created_at is None for created_at in thread_created_at_values):
@@ -72,7 +88,7 @@ def pickupPassengers(
         key=lambda event: event.created_at,
     )
 
-    thread_schemas: list[ThreadWithEventsOutSchema] = []
+    thread_schemas: ThreadSchemaOut = {}
     for thread in threads:
         comment_schemas = [
             CommentOutSchema(
@@ -103,6 +119,8 @@ def pickupPassengers(
                 report_events=list(events),
             )
         )
+
+        uuid.append(user_guid)
 
     return thread_schemas
 

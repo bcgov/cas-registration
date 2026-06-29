@@ -35,3 +35,8 @@ export interface Thread {
   facility_name?: string;
   is_resolved: boolean;
 }
+
+export interface ThreadWrapper {
+  threads: Thread[];
+  user_guid: UUID;
+}
