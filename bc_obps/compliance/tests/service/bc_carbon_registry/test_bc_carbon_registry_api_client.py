@@ -72,7 +72,7 @@ def authenticated_client(setup, mocker):
     client = setup
     client.token = TOKEN
     client.token_expiry = VALID_TOKEN_EXPIRY
-    mock_request = mocker.patch("requests.request")
+    mock_request = mocker.patch.object(client._session, "request")
     return client, mock_request
 
 
@@ -306,6 +306,28 @@ class TestBCCarbonRegistryAPIClient:
         # Assert
         assert client.token == "new_token"
 
+    def test_ensure_authenticated_within_reauth_advance_delay(self, setup, mocker, caplog):
+        """Test re-authentication when token is within the 60-second reauth advance delay"""
+        # Arrange
+        client = setup
+        client.token = "expiring_token"
+        client.token_expiry = timezone.now() + timedelta(seconds=30)  # inside 60s reauth advance delay
+        mock_post = mocker.patch("requests.post")
+        mock_post.return_value = Mock(
+            status_code=200,
+            json=lambda: {
+                "access_token": "refreshed_token",
+                "expires_in": 3600,
+                "token_type": "Bearer",
+            },
+        )
+        # Act
+        with caplog.at_level(logging.WARNING):
+            client._ensure_authenticated()
+            assert "Token missing or expired" in caplog.text
+        # Assert
+        assert client.token == "refreshed_token"
+
     def test_make_request_success(self, authenticated_client, mock_success_response):
         # Arrange
         client, mock_request = authenticated_client
@@ -358,6 +380,66 @@ class TestBCCarbonRegistryAPIClient:
             with pytest.raises(BCCarbonRegistryError, match="Request failed"):
                 client._make_request(method="GET", endpoint="/test")
             assert "Request to" in caplog.text
+
+    def test_make_request_retries_once_on_401(self, authenticated_client, mocker, caplog):
+        # Arrange
+        client, mock_request = authenticated_client
+        mock_401 = Mock(status_code=401)
+        mock_401._content = b""
+        http_error = requests.HTTPError("401 Client Error: Unauthorized")
+        http_error.response = mock_401
+        mock_401.raise_for_status.side_effect = http_error
+
+        mock_200 = Mock(status_code=200, json=lambda: {"success": True})
+        mock_200.raise_for_status.return_value = None
+
+        # First call → 401, second call → 200
+        mock_request.side_effect = [mock_401, mock_200]
+
+        mock_post = mocker.patch("requests.post")
+        mock_post.return_value = Mock(
+            status_code=200,
+            json=lambda: {"access_token": "new_token", "expires_in": 3600, "token_type": "Bearer"},
+        )
+
+        # Act
+        with caplog.at_level(logging.WARNING):
+            result = client._make_request(method="POST", endpoint="/test")
+            assert "forcing re-authentication and retrying" in caplog.text
+
+        # Assert: re-authed with new token, retried, returned the 200 body
+        assert result == {"success": True}
+        assert client.token == "new_token"
+        assert mock_request.call_count == 2
+        mock_post.assert_called_once()  # auth was called exactly once
+
+    def test_make_request_raises_after_retry_401(self, authenticated_client, mocker, caplog):
+        # Arrange
+        client, mock_request = authenticated_client
+
+        def make_401():
+            m = Mock(status_code=401)
+            m._content = b""
+            err = requests.HTTPError("401 Client Error: Unauthorized")
+            err.response = m
+            m.raise_for_status.side_effect = err
+            return m
+
+        mock_request.side_effect = [make_401(), make_401()]
+
+        mocker.patch(
+            "requests.post",
+            return_value=Mock(
+                status_code=200,
+                json=lambda: {"access_token": "new_token", "expires_in": 3600, "token_type": "Bearer"},
+            ),
+        )
+
+        # Act & Assert
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(BCCarbonRegistryError, match="Request failed"):
+                client._make_request(method="POST", endpoint="/test")
+        assert mock_request.call_count == 2  # original + one retry, no third attempt
 
     def test_check_pagination_params_invalid(self, setup, caplog):
         # Arrange
