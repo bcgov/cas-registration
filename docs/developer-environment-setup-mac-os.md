@@ -2,17 +2,53 @@
 
 ## Prerequisites
 
-Ensure the following are installed:
+### 1. Install asdf
 
-- [Postgres](https://www.postgresql.org/)
-- [asdf](https://asdf-vm.com/)
+Install [asdf](https://asdf-vm.com/) via Homebrew (recommended):
+
+```bash
+brew install asdf
+```
+
+asdf 0.16+ is a binary distribution — there is no `asdf.sh` to source. Add the following to your `~/.zprofile` to initialize it:
+
+```bash
+export ASDF_DATA_DIR="$HOME/.asdf"
+export PATH="${ASDF_DATA_DIR}/shims:${PATH}"
+```
+
+Then reload your shell: `source ~/.zprofile`.
+
+### 2. Install system dependencies
+
+The postgres and python builds (managed by asdf) require several libraries that are not installed by default on macOS. Install them before running `make install_dev_tools`:
+
+```bash
+brew install pkg-config icu4c libxml2 openssl@3 xz pango
+```
+
+- `pkg-config`, `icu4c`, `libxml2`, `openssl@3`, `xz` — required to build PostgreSQL and Python via asdf
+- `pango` — required by WeasyPrint (PDF generation), which is a Python dependency of the backend
+
+Because `icu4c`, `libxml2`, and `openssl@3` are keg-only (not linked into `/opt/homebrew` by default), add the following to `~/.zprofile` so the build tools can find them:
+
+```bash
+export PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c@78/lib/pkgconfig:/opt/homebrew/opt/libxml2/lib/pkgconfig:/opt/homebrew/opt/openssl@3/lib/pkgconfig:$PKG_CONFIG_PATH"
+export LDFLAGS="-L/opt/homebrew/opt/icu4c@78/lib -L/opt/homebrew/opt/libxml2/lib -L/opt/homebrew/opt/openssl@3/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/icu4c@78/include -I/opt/homebrew/opt/libxml2/include -I/opt/homebrew/opt/openssl@3/include"
+```
+
+> Note: If a newer version of `icu4c` is installed (e.g. `icu4c@80`), update the paths above accordingly. Run `brew list | grep icu4c` to check.
+
+Then reload: `source ~/.zprofile`.
 
 ## Repository and Version Control
 
-- Ensure you have push access (most likely by being added to the **@bcgov/cas-developers** GitHub team) to [bcgov/cas-cif](https://github.com/bcgov/cas-cif).
-- Ensure you have [GPG commit signing](https://docs.github.com/en/github/authenticating-to-github/signing-commits) set up on your local environment.
-  - First, ensure your `git config user.email` is set to the email address you want to use for signing.
-  - You can verify it's working when you commit to a branch and the signature is indicated by `git log --show-signature`. Once pushed, a "Verified" badge appears next to your commits on GitHub.
+- Ensure you have push access (most likely by being added to the **@bcgov/cas-developers** GitHub team) to [bcgov/cas-registration](https://github.com/bcgov/cas-registration).
+- Ensure you have [GPG commit signing](https://docs.github.com/en/github/authenticating-to-github/signing-commits) set up on your local environment. See [gpg-ssh-setup-guide.md](./gpg-ssh-setup-guide.md) for step-by-step instructions.
+  - Ensure your `git config user.email` matches the email used when generating the GPG key.
+  - Verify signing works by running `git log --show-signature` after a commit. Once pushed, a "Verified" badge appears next to your commits on GitHub.
+
 - Clone a local copy of [bcgov/cas-registration](https://github.com/bcgov/cas-registration).
 
 ## App Environment Variables
@@ -29,22 +65,24 @@ In `bciers/apps/registration/e2e` directory, create a `bciers/apps//e2e/.env.loc
 
 ## Backend Environment Setup
 
-1. Navigate to folder: `cas-registration/bc_obps`.
-2. Copy/Paste the `.env.example` file and rename it `.env`.
-3. Complete the .env file values reflecting the 1Password vault document `OBPS backend ENV`.
-4. Download 1Password vault file `OBPS GCS json` and store it in folder location detailed in `.env\GOOGLE_APPLICATION_CREDENTIALS`.
-5. From the terminal, cd into directory `cas-registration/bc_obps`.
-6. Run `make install_dev_tools`. This will install asdf plugins, poetry and activate the poetry virtual environment (to get into the environment again after setup, run `poetry env activate`). To exit the virtual env run `deactivate`.
-7. Run `make install_poetry_deps` to install all python dependencies.
-8. Run `make start_pg` to start the postgres server if it is not already running.
-9. Run `make create_db` to create the database.
-10. Run `make migrate` to run all database migrations.
-11. Run `make run`, which will start running the development server locally (default port is :8000; terminal output will indicate what localhost address to use to access the backend. server).
-    - to test it out, navigate to the `/api/docs` endpoint in your browser, you should see documentation for the /add endpoint
-    - navigate to the `api/add?a=4&b=2` endpoint in your browser, which should return as a result the sum of the specified values for a and b.
+Ensure you have completed the [App Environment Variables](#app-environment-variables) section before continuing.
 
-12. Optional: to test the Django server's connection to your database, run `python3 manage.py check --database default`.
-13. Optional: to load mock data via fixtures, run `make loadfixtures`.
+1. From the terminal, cd into directory `cas-registration/bc_obps`.
+2. Run `make install_dev_tools`. This will install asdf plugins and poetry. To activate the virtual environment after setup, run `eval $(poetry env activate)`. To exit run `deactivate`.
+3. Run `make install_poetry_deps` to install all python dependencies.
+4. Run `make start_pg` to start the postgres server if it is not already running.
+5. Create a PostgreSQL role for your local user matching `DB_USER` in your `.env` (asdf-managed postgres only has the `postgres` superuser by default):
+   ```bash
+   psql -h localhost -U postgres -c "CREATE USER your_db_user WITH SUPERUSER PASSWORD 'your_db_password';"
+   ```
+   Ensure `DB_USER` in your `.env` is **lowercase** — PostgreSQL role names are case-sensitive in connection strings.
+6. Run `make create_db` to create the database.
+7. Run `make migrate` to run all database migrations.
+8. Run `make run`, which will start running the development server locally (default port is :8000; terminal output will indicate what localhost address to use to access the backend server).
+   - to test it out, navigate to the `/api/docs` endpoint in your browser, you should see the API documentation.
+
+9. Optional: to test the Django server's connection to your database, run `python3 manage.py check --database default`.
+10. Optional: to load mock data via fixtures, run `make loadfixtures`.
 
 ## Backend Environment Use
 
@@ -54,18 +92,26 @@ After doing the initial setup, to get the backend re-running:
    - If you want to drop and recreate the database with mock data, run `make reset_db`. (Warning: This will delete superusers and you will have to recreate with `make superuser`.)
    - If you want to keep your existing database and update (e.g. after a rebase)
      - If there are new migrations, run `make migrate`. (Or, because we're pre-production, you can delete the existing migrations, run `make migrations` and then `make migrate`)
-     - If there are new fixtures, `run python manage.py loaddata <path-to-fixture>``
+     - If there are new fixtures, run `python manage.py loaddata <path-to-fixture>`
 2. Run `make run`
 
 ### Troubleshooting
 
-- There might be an error where postgres is only installed with the `postgres` user and not your local user.
-  To address this, in a terminal, enter:
+- If you get `role "your_user" does not exist` when running `make create_db` or `make migrate`, the postgres role for your local user hasn't been created yet. With asdf-managed postgres (unlike a system install), only the `postgres` superuser exists by default. Connect as `postgres` to create your role:
 
 ```bash
-$> sudo -u postgres createuser -s -i -d -r -l -w <<your_local_user>>
-$> sudo -u postgres createdb <<your_local_user>>
+psql -h localhost -U postgres -c "CREATE USER your_db_user WITH SUPERUSER PASSWORD 'your_db_password';"
 ```
+
+This must be run from the `bc_obps` directory so asdf resolves the correct `psql` binary.
+
+- if `make pythontest_parallel` fails with `psycopg.errors.OutOfMemory: out of shared memory`, the default `max_locks_per_transaction` (64) is too low for the number of tables and indexes the test suite creates in parallel. Increase it in `~/.asdf/installs/postgres/16.2/data/postgresql.conf`:
+
+```
+max_locks_per_transaction = 256
+```
+
+Then restart postgres: `make stop_pg && make start_pg`.
 
 - if running poetry commands throws errors about the `_hashlib` library, [try these troubleshooting commands](https://github.com/python-poetry/poetry/issues/7695#issuecomment-1572825140)
 
@@ -79,11 +125,20 @@ $> sudo -u postgres createdb <<your_local_user>>
 
 ### First time setup
 
-In the `bciers` directory:
+First, install the asdf Node.js plugin and the version specified in `.tool-versions` (from the repo root):
+
+```bash
+asdf plugin add nodejs
+asdf install nodejs 24.16.0
+asdf reshim nodejs
+```
+
+Then in the `bciers` directory:
 
 1. To enable [Corepack](https://nodejs.org/docs/latest-v20.x/api/corepack.html), in order to use Yarn Modern: `corepack enable`.
-2. To install all Monorepo dependencies: `yarn install`.
-3. **Optional**: Run `npm add --global nx@18.2.1` to install `nx` globally. This global instance will use to the project version if it differs.
+2. Verify yarn resolves correctly: `yarn --version` (should show 4.x, not 1.x).
+3. To install all Monorepo dependencies: `yarn install`.
+4. **Optional**: Run `npm add --global nx@18.2.1` to install `nx` globally. This global instance will use the project version if it differs.
 
 ### See the [Nx Monorepo](./nx-monorepo.md) readme for more information
 
@@ -117,7 +172,7 @@ In the `bciers` directory:
 
 [prek](https://prek.j178.dev/) runs a variety of formatting and lint checks configured in [`prek.toml`](../prek.toml) which are required for a pull request to pass CI.
 
-Install prek via `pip install -r requirements.txt`, then register the git hooks:
+From the repo root, install prek via `pip install -r requirements.txt`, then register the git hooks:
 
 ```bash
 prek install                          # registers the git hook
@@ -151,4 +206,4 @@ Some developers have had issues when setting up a new environment with yarn mode
 1. remove yarn from your global asdf setup (in ~/.tools-version for example)
 2. run asdf reshim
 3. go to cas-registration/bciers and run corepack enable
-4. yarn --version should return 4.2.0 and not 1.yy.zz
+4. yarn --version should return 4.x and not 1.yy.zz
