@@ -4,10 +4,12 @@ import { WidgetProps } from "@rjsf/utils";
 import { FileElement } from "../FileWidget";
 
 const ReadOnlyFileWidget: React.FC<WidgetProps> = ({ id, options, value }) => {
+  const parsedValue = value ? JSON.parse(value) : undefined;
+
   return (
     <div id={id} className="read-only-widget">
-      {value ? (
-        <FileElement value={value} preview={options?.filePreview} />
+      {parsedValue ? (
+        <FileElement fileInfo={parsedValue} preview={options?.filePreview} />
       ) : (
         <>No attachment was uploaded.</>
       )}
