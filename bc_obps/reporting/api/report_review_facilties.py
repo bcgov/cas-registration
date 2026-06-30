@@ -1,6 +1,6 @@
-from typing import Literal
 from uuid import UUID
 
+from ninja import Status
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
@@ -19,9 +19,9 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
     exclude_none=True,
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_selected_facilities(request: HttpRequest, version_id: int) -> tuple[int, dict]:
+def get_selected_facilities(request: HttpRequest, version_id: int) -> Status:
     response_data = ReportFacilitiesService.get_all_facilities_for_review(version_id)
-    return 200, response_data
+    return Status(200, response_data)
 
 
 @router.post(
@@ -35,10 +35,10 @@ def save_selected_facilities(
     request: HttpRequest,
     version_id: int,
     payload: list[UUID],
-) -> Literal[200]:
+) -> Status:
     ReportFacilitiesService.save_selected_facilities(
         version_id,
         payload,
     )
 
-    return 200
+    return Status(200, 200)

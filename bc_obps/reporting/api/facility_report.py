@@ -1,4 +1,4 @@
-from typing import Literal, Tuple, List, Optional, Union
+from typing import Literal, List, Optional
 from uuid import UUID
 from django.http import HttpRequest
 
@@ -17,10 +17,9 @@ from reporting.schema.facility_report import (
 )
 from reporting.schema.activity import FacilityReportActivityDataOut
 from registration.models import Activity, Operation
-from reporting.models import FacilityReport, ReportVersion, Report
+from reporting.models import ReportVersion, Report
 from ninja.pagination import paginate
-from ninja import Query
-from django.db.models import QuerySet
+from ninja import Query, Status
 
 from ..utils import ReportingCustomPagination
 from reporting.api.permissions import (
@@ -38,11 +37,9 @@ from reporting.service.sync_validation_service import SyncValidationService
     Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",
     auth=approved_authorized_roles_report_version_composite_auth,
 )
-def get_facility_report_form_data(
-    request: HttpRequest, version_id: int, facility_id: UUID
-) -> Tuple[Literal[200], FacilityReport]:
+def get_facility_report_form_data(request: HttpRequest, version_id: int, facility_id: UUID) -> Status:
     facility_report = FacilityReportService.get_facility_report_by_version_and_id(version_id, facility_id)
-    return 200, facility_report
+    return Status(200, facility_report)
 
 
 @router.get(
@@ -52,13 +49,11 @@ def get_facility_report_form_data(
     description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a list of activities that apply to that facility, ordered by weight""",
     auth=approved_authorized_roles_report_version_composite_auth,
 )
-def get_ordered_facility_report_activities(
-    request: HttpRequest, version_id: int, facility_id: UUID
-) -> Tuple[Literal[200], QuerySet[Activity]]:
+def get_ordered_facility_report_activities(request: HttpRequest, version_id: int, facility_id: UUID) -> Status:
     facility_report_activities = FacilityReportService.get_activity_ids_for_facility(version_id, facility_id)
     response = Activity.objects.filter(pk__in=facility_report_activities).order_by("weight", "name")
 
-    return 200, response
+    return Status(200, response)
 
 
 @router.post(
@@ -70,9 +65,7 @@ def get_ordered_facility_report_activities(
     facility object or an error message if the update fails.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def save_facility_report(
-    request: HttpRequest, version_id: int, facility_id: UUID, payload: FacilityReportIn
-) -> Tuple[Literal[201], FacilityReport]:
+def save_facility_report(request: HttpRequest, version_id: int, facility_id: UUID, payload: FacilityReportIn) -> Status:
     """
     Save or update a report facility and its related activities.
 
@@ -89,7 +82,7 @@ def save_facility_report(
     facility_report = FacilityReportService.save_facility_report(version_id, facility_id, payload)
 
     # Prepare the response data
-    return 201, facility_report
+    return Status(201, facility_report)
 
 
 @router.get(
@@ -99,7 +92,7 @@ def save_facility_report(
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
     auth=approved_authorized_roles_report_version_composite_auth,
 )
-def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
+def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> Status:
     facility_report = FacilityReportService.get_facility_report_by_version_id(version_id)
     facility_id = facility_report[0] if isinstance(facility_report, tuple) else facility_report
 
@@ -112,7 +105,7 @@ def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> 
         "operation_type": operation_type,
     }
 
-    return 200, response_data
+    return Status(200, response_data)
 
 
 @router.put(
@@ -122,17 +115,18 @@ def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> 
     description="Updates the facility report details by version_id and facility_id.",
     auth=approved_authorized_roles_report_version_composite_auth,
 )
-def update_facility_report(
-    request: HttpRequest, version_id: int, facility_id: UUID
-) -> Union[Tuple[Literal[200], FacilityReport], Tuple[Literal[403], dict[str, str]]]:
+def update_facility_report(request: HttpRequest, version_id: int, facility_id: UUID) -> Status:
     # Validate that sync is allowed before proceeding
     if not SyncValidationService.is_sync_allowed(version_id):
-        return 403, {
-            "message": "Sync is not allowed for reports from previous reporting years or when operation ownership has been transferred"
-        }
+        return Status(
+            403,
+            {
+                "message": "Sync is not allowed for reports from previous reporting years or when operation ownership has been transferred"
+            },
+        )
 
     facility_report = FacilityReportService.update_facility_report(version_id, facility_id)
-    return 200, facility_report
+    return Status(200, facility_report)
 
 
 @router.get(
@@ -151,8 +145,8 @@ def get_facility_report_list(
     sort_field: Optional[str] = "facility_name",
     sort_order: Optional[Literal["desc", "asc"]] = "asc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
-) -> QuerySet[FacilityReport]:
-    return FacilityReportService.get_facility_report_list(version_id, sort_field, sort_order, filters)
+) -> Status:
+    return Status(200, FacilityReportService.get_facility_report_list(version_id, sort_field, sort_order, filters))
 
 
 @router.patch(
@@ -165,6 +159,6 @@ def get_facility_report_list(
 )
 def save_facility_report_list(
     request: HttpRequest, version_id: int, payload: List[FacilityReportListInSchema]
-) -> Literal[200]:
+) -> Status:
     FacilityReportService.save_facility_report_list(version_id, payload)
-    return 200
+    return Status(200, 200)

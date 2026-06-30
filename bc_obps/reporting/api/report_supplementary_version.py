@@ -1,5 +1,5 @@
-from typing import Literal, Tuple
 from django.http import HttpRequest
+from ninja import Status
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.service.report_supplementary_version_service.report_supplementary_version_service import (
@@ -18,9 +18,9 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
     description="""Checks if this is a supplementary report version or, not the initial version.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def is_supplementary_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], bool]:
+def is_supplementary_report_version(request: HttpRequest, version_id: int) -> Status:
     is_initial = ReportVersionService.is_initial_report_version(version_id)
-    return 200, not is_initial
+    return Status(200, not is_initial)
 
 
 @router.post(
@@ -34,6 +34,6 @@ def is_supplementary_report_version(request: HttpRequest, version_id: int) -> Tu
         the updated purpose.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def create_report_supplementary_version(request: HttpRequest, version_id: int) -> Tuple[Literal[201], int]:
+def create_report_supplementary_version(request: HttpRequest, version_id: int) -> Status:
     new_version = ReportSupplementaryVersionService.create_or_clone_report_version(version_id)
-    return 201, new_version.id
+    return Status(201, new_version.id)

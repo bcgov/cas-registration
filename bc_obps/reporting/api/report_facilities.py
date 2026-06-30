@@ -1,5 +1,5 @@
-from typing import Literal, Tuple
 from django.http import HttpRequest
+from ninja import Status
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -15,6 +15,6 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
     description="""Fetches the facility list for the operation associated with the given report version ID.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_report_facility_list_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
+def get_report_facility_list_by_version_id(request: HttpRequest, version_id: int) -> Status:
     response_data = ReportFacilitiesService.get_report_facility_list_by_version_id(version_id)
-    return 200, response_data
+    return Status(200, response_data)

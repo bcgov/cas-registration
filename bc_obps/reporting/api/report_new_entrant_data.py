@@ -1,7 +1,6 @@
-from typing import Literal, Tuple
-
 from django.http import HttpRequest
 
+from ninja import Status
 from reporting.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
@@ -18,7 +17,7 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
     exclude_none=True,
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_new_entrant_data(request: HttpRequest, version_id: int) -> Tuple[int, dict]:
+def get_new_entrant_data(request: HttpRequest, version_id: int) -> Status:
 
     report_new_entrant = ReportNewEntrantService.get_new_entrant_data(report_version_id=version_id)
     emission_category_data = ReportNewEntrantService.get_emissions_data(report_version_id=version_id)
@@ -27,12 +26,15 @@ def get_new_entrant_data(request: HttpRequest, version_id: int) -> Tuple[int, di
     naics_code_data = report_new_entrant.report_version.report.operation.naics_code if report_new_entrant else None
     naics_code = naics_code_data.naics_code if naics_code_data else None
 
-    return 200, {
-        "new_entrant_data": report_new_entrant,
-        "emissions": emission_category_data,
-        "products": production_data,
-        "naics_code": naics_code,
-    }
+    return Status(
+        200,
+        {
+            "new_entrant_data": report_new_entrant,
+            "emissions": emission_category_data,
+            "products": production_data,
+            "naics_code": naics_code,
+        },
+    )
 
 
 @router.post(
@@ -46,7 +48,7 @@ def save_new_entrant_data(
     request: HttpRequest,
     version_id: int,
     payload: ReportNewEntrantSchemaIn,
-) -> Literal[200]:
+) -> Status:
     ReportNewEntrantService.save_new_entrant_data(version_id, payload)
 
-    return 200
+    return Status(200, 200)

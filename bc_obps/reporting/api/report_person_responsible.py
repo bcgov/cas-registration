@@ -1,11 +1,11 @@
-from typing import Literal, Optional, Tuple
+from typing import Optional
 from django.http import HttpRequest
+from ninja import Status
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.service.report_person_responsible import ReportContactService, ReportPersonResponsibleData
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
-from ..models import ReportPersonResponsible
 from ..schema.report_person_responsible import ReportPersonResponsibleIn, ReportPersonResponsibleOut
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 
@@ -17,11 +17,9 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_report_person_responsible_by_version_id(
-    request: HttpRequest, version_id: int
-) -> Tuple[Literal[200], Optional[ReportPersonResponsible]]:
+def get_report_person_responsible_by_version_id(request: HttpRequest, version_id: int) -> Status:
     report_person_responsible = ReportContactService.get_report_person_responsible_by_version_id(version_id)
-    return 200, report_person_responsible
+    return Status(200, report_person_responsible)
 
 
 @router.post(
@@ -34,11 +32,9 @@ def get_report_person_responsible_by_version_id(
     ),
     auth=approved_industry_user_report_version_composite_auth,
 )
-def save_report_contact(
-    request: HttpRequest, version_id: int, payload: ReportPersonResponsibleIn
-) -> tuple[Literal[201], ReportPersonResponsible]:
+def save_report_contact(request: HttpRequest, version_id: int, payload: ReportPersonResponsibleIn) -> Status:
     report_contact = ReportContactService.save_report_contact(
         version_id,
         ReportPersonResponsibleData(**payload.model_dump()),
     )
-    return 201, report_contact
+    return Status(201, report_contact)
