@@ -1,4 +1,3 @@
-from datetime import date
 from django.db.models import QuerySet
 from django.utils import timezone
 from reporting.models.report import Report
@@ -44,12 +43,3 @@ class ReportingYearService:
     def get_reporting_year_by_version_id(cls, version_id: int) -> ReportingYear:
         report_version = ReportVersion.objects.get(id=version_id)
         return report_version.report.reporting_year
-
-    @classmethod
-    def get_date_for_reporting_year(cls, reporting_year: int) -> date:
-        """
-        Returns a date (May 1st) of the given reporting year.
-        Used to compare against date fields (like valid_from and valid_to)
-        with the expectation that those dates correspond to the start and end of years.
-        """
-        return date(reporting_year, 5, 1)
