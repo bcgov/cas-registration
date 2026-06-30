@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from django.db.models import Prefetch
 from reporting.models import ReportVersion, FacilityReport, ReportActivity, ReportNonAttributableEmissions
 from typing import Union, List, Any
+from service.operation_service import OperationService
 
 
 @dataclass
@@ -66,7 +67,9 @@ class ReportVersionService:
                 selected_for_report=selected_representative_state,
             )
         report_operation.activities.add(*list(operation.activities.all()))
-        report_operation.regulated_products.add(*list(operation.regulated_products.all()))
+        report_operation.regulated_products.add(
+            *OperationService.get_valid_operation_regulated_products(operation, report.reporting_year.reporting_year)
+        )
 
         facilities = FacilityDataAccessService.get_current_facilities_by_operation(operation)
 
