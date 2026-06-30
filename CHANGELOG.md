@@ -1,5 +1,17 @@
 # Changelog
 
+# [5.15.0](https://github.com/bcgov/cas-registration/compare/v5.14.0...v5.15.0) (2026-06-30)
+
+### Bug Fixes
+
+- disable broken JSON schema validator ([b082681](https://github.com/bcgov/cas-registration/commit/b08268188e4bc1e5ebdad236fba2fbfa0ef23517))
+- inline validation on empty facility form ([514303a](https://github.com/bcgov/cas-registration/commit/514303a18cad4c92f6e090939078c44f21573e5a))
+
+### Features
+
+- filter get_regulated_products by year w/ today as default ([9fb0ce3](https://github.com/bcgov/cas-registration/commit/9fb0ce3947e6bdbd0081944eeb2f5f1318ab6934))
+- support fetching and merging BCO and BCE units with vintage filtering ([b38e5b3](https://github.com/bcgov/cas-registration/commit/b38e5b3310180f251ae634f80bb10d78a4e07355))
+
 # [5.14.0](https://github.com/bcgov/cas-registration/compare/v5.13.1...v5.14.0) (2026-06-18)
 
 ### Bug Fixes
