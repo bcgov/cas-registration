@@ -1,5 +1,5 @@
-from typing import Literal, Optional
-from reporting.models.report_verification import ReportVerification
+from typing import Optional
+from ninja import Status
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
@@ -17,10 +17,8 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
     description="""Fetches the Verification data associated with the given report version ID.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_report_verification_by_version_id(
-    request: HttpRequest, version_id: int
-) -> tuple[Literal[200], Optional[ReportVerification]]:
-    return 200, ReportVerificationService.get_report_verification_by_version_id(version_id)
+def get_report_verification_by_version_id(request: HttpRequest, version_id: int) -> Status:
+    return Status(200, ReportVerificationService.get_report_verification_by_version_id(version_id))
 
 
 @router.get(
@@ -30,8 +28,8 @@ def get_report_verification_by_version_id(
     description="""Checks if a report needs verification data based on its purpose and attributable emissions.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_report_verification_status(request: HttpRequest, version_id: int) -> tuple[Literal[200], dict]:
-    return 200, ReportVerificationService.get_report_verification_status(version_id)
+def get_report_verification_status(request: HttpRequest, version_id: int) -> Status:
+    return Status(200, ReportVerificationService.get_report_verification_status(version_id))
 
 
 @router.post(
@@ -41,8 +39,6 @@ def get_report_verification_status(request: HttpRequest, version_id: int) -> tup
     description="""Creates or updates the Verification data for the given report version ID.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def save_report_verification(
-    request: HttpRequest, version_id: int, payload: ReportVerificationIn
-) -> tuple[Literal[200], ReportVerification]:
+def save_report_verification(request: HttpRequest, version_id: int, payload: ReportVerificationIn) -> Status:
     report_verification = ReportVerificationService.save_report_verification(version_id, payload)
-    return 200, report_verification
+    return Status(200, report_verification)

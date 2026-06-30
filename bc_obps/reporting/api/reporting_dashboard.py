@@ -1,5 +1,5 @@
 from typing import List, Optional, Literal
-from ninja import Query
+from ninja import Query, Status
 from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -7,7 +7,6 @@ from django.db.models import QuerySet
 from ninja.pagination import paginate, PageNumberPagination
 
 from common.api.utils import get_current_user_guid
-from registration.models.operation import Operation
 from reporting.models.report import Report
 from reporting.schema.generic import Message
 from reporting.constants import DASHBOARD_TAGS
@@ -41,11 +40,14 @@ def get_dashboard_operations_list(
     sort_field: Optional[str] = "bcghg_id",
     sort_order: Optional[Literal["desc", "asc"]] = "asc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
-) -> QuerySet[Operation]:
+) -> Status:
     user_guid: UUID = get_current_user_guid(request)
     reporting_year: int = ReportingYearService.get_current_reporting_year().reporting_year
-    return ReportingDashboardService.get_operations_for_reporting_dashboard(
-        user_guid, reporting_year, sort_field=sort_field, sort_order=sort_order, filters=filters
+    return Status(
+        200,
+        ReportingDashboardService.get_operations_for_reporting_dashboard(
+            user_guid, reporting_year, sort_field=sort_field, sort_order=sort_order, filters=filters
+        ),
     )
 
 
@@ -64,14 +66,17 @@ def get_dashboard_reports_list(
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
     reports_period: ReportsPeriod = ReportsPeriod.ALL,
-) -> QuerySet[Report]:
+) -> Status[QuerySet[Report]]:
     user_guid: UUID = get_current_user_guid(request)
     reporting_year: int = ReportingYearService.get_current_reporting_year().reporting_year
-    return ReportingDashboardService.get_reports_for_reporting_dashboard(
-        user_guid,
-        reporting_year,
-        reports_period=reports_period,
-        sort_field=sort_field,
-        sort_order=sort_order,
-        filters=filters,
+    return Status(
+        200,
+        ReportingDashboardService.get_reports_for_reporting_dashboard(
+            user_guid,
+            reporting_year,
+            reports_period=reports_period,
+            sort_field=sort_field,
+            sort_order=sort_order,
+            filters=filters,
+        ),
     )

@@ -1,6 +1,6 @@
-from typing import Literal
 from uuid import UUID
 from common.api.utils.current_user_utils import get_current_user_guid
+from ninja import Status
 from reporting.schema.report_emission_allocation import (
     ReportEmissionAllocationSchemaOut,
     ReportEmissionAllocationsSchemaIn,
@@ -11,7 +11,6 @@ from reporting.schema.generic import Message
 from .router import router
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.service.report_emission_allocation_service import (
-    ReportEmissionAllocationData,
     ReportEmissionAllocationService,
 )
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
@@ -25,12 +24,10 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
     exclude_none=True,
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_emission_allocations(
-    request: HttpRequest, version_id: int, facility_id: UUID
-) -> tuple[Literal[200], ReportEmissionAllocationData]:
+def get_emission_allocations(request: HttpRequest, version_id: int, facility_id: UUID) -> Status:
     # Delegate the responsibility to the service
     response_data = ReportEmissionAllocationService.get_emission_allocation_data(version_id, facility_id)
-    return 200, response_data
+    return Status(200, response_data)
 
 
 @router.post(
@@ -45,7 +42,7 @@ def save_emission_allocation_data(
     version_id: int,
     facility_id: UUID,
     payload: ReportEmissionAllocationsSchemaIn,
-) -> Literal[200]:
+) -> Status:
 
     ReportEmissionAllocationService.save_emission_allocation_data(
         version_id,
@@ -54,4 +51,4 @@ def save_emission_allocation_data(
         get_current_user_guid(request),
     )
 
-    return 200
+    return Status(200, 200)

@@ -1,7 +1,8 @@
-from typing import List, Literal
+from typing import List
 from uuid import UUID
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
+from ninja import Status
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.report_product import ReportProductSchemaIn
 from reporting.service.report_product_service import ReportProductService
@@ -23,7 +24,7 @@ def save_production_data(
     version_id: int,
     facility_id: UUID,
     payload: List[ReportProductSchemaIn],
-) -> Literal[200]:
+) -> Status:
 
     product_data_dicts = [item.dict() for item in payload]
 
@@ -31,4 +32,4 @@ def save_production_data(
         version_id, facility_id, product_data_dicts, get_current_user_guid(request)
     )
 
-    return 200
+    return Status(200, 200)

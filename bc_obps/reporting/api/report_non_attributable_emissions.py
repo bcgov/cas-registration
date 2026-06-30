@@ -1,11 +1,11 @@
-from typing import Literal, List
+from typing import List
 from uuid import UUID
 from django.http import HttpRequest
+from ninja import Status
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
-from ..models import ReportNonAttributableEmissions
 from ..schema.report_non_attributable_emissions import (
     ReportNonAttributableOut,
     ReportNonAttributableActivityOut,
@@ -22,13 +22,11 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
     description="""Takes version_id (primary key of Report_Version model) and returns all non-attributable emissions for that report version.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_report_non_attributable_by_version_id(
-    request: HttpRequest, version_id: int, facility_id: UUID
-) -> tuple[Literal[200], dict]:
+def get_report_non_attributable_by_version_id(request: HttpRequest, version_id: int, facility_id: UUID) -> Status:
     emissions = ReportNonAttributableService.get_report_non_attributable_by_version_id(
         version_id, facility_id=facility_id
     )
-    return 200, {"emissions_exceeded": emissions.exists(), "activities": emissions}
+    return Status(200, {"emissions_exceeded": emissions.exists(), "activities": emissions})
 
 
 @router.post(
@@ -43,7 +41,7 @@ def get_report_non_attributable_by_version_id(
 )
 def save_report(
     request: HttpRequest, version_id: int, facility_id: UUID, payload: ReportNonAttributableSchema
-) -> tuple[Literal[201], List[ReportNonAttributableEmissions]]:
+) -> Status:
     saved_reports = []
 
     # If emissions_exceeded is false, delete existing data
@@ -55,4 +53,4 @@ def save_report(
             version_id, facility_id, payload.activities
         )
 
-    return 201, saved_reports
+    return Status(201, saved_reports)

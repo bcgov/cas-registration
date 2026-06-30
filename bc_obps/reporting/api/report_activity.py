@@ -1,7 +1,7 @@
-from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
+from ninja import Status
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report_activity_data import ReportActivityDataIn
@@ -25,7 +25,7 @@ def save_report_activity_data(
     facility_id: UUID,
     activity_id: int,
     payload: ReportActivityDataIn,
-) -> Tuple[Literal[200], dict]:
+) -> Status:
 
     user_guid = get_current_user_guid(request)
 
@@ -47,8 +47,8 @@ def load_report_activity_data(
     version_id: int,
     facility_id: UUID,
     activity_id: int,
-) -> Tuple[Literal[200], dict]:
+) -> Status:
 
     data = ReportActivityLoadService.load(version_id, facility_id, activity_id)
 
-    return 200, data
+    return Status(200, data)

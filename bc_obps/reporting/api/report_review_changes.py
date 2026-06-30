@@ -1,5 +1,6 @@
 from django.http import HttpRequest
 
+from ninja import Status
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
@@ -18,7 +19,7 @@ from reporting.service.review_changes_service.report_review_changes_service impo
     description="Fetch serialized data for the given report version and its latest previous version for the same report_id.",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_report_version_diff_data(request: HttpRequest, version_id: int) -> tuple[int, dict]:
+def get_report_version_diff_data(request: HttpRequest, version_id: int) -> Status:
     """
     Returns the diff data between the given report version and the latest previous version for the same report_id.
     The compare_version_id parameter is removed; this endpoint only compares with the latest previous version.
@@ -33,7 +34,7 @@ def get_report_version_diff_data(request: HttpRequest, version_id: int) -> tuple
     )
 
     if not previous_version_id:
-        return 200, {"message": "No previous report version found for the given report_id."}
+        return Status(200, {"message": "No previous report version found for the given report_id."})
 
     previous_version = ReportVersionService.fetch_full_report_version(
         previous_version_id, prefetch_full_facility_report=True
@@ -43,4 +44,4 @@ def get_report_version_diff_data(request: HttpRequest, version_id: int) -> tuple
 
     changed = ReportReviewChangesService.get_report_version_diff_changes(previous_data, current_data)
 
-    return 200, {"changed": changed}
+    return Status(200, {"changed": changed})

@@ -1,8 +1,6 @@
-from typing import Literal, Tuple, Union
-
 from django.http import HttpRequest
+from ninja import Status
 from reporting.constants import EMISSIONS_REPORT_TAGS
-from reporting.models.report_operation import ReportOperation
 from reporting.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.report_service import ReportService
@@ -33,8 +31,8 @@ GET methods
     description="Returns report operation data for a given report version ID.",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_report_operation_data(request: HttpRequest, version_id: int) -> dict:
-    return ReportOperationService.get_report_operation_data_by_version_id(version_id)
+def get_report_operation_data(request: HttpRequest, version_id: int) -> Status:
+    return Status(200, ReportOperationService.get_report_operation_data_by_version_id(version_id))
 
 
 @router.get(
@@ -44,8 +42,8 @@ def get_report_operation_data(request: HttpRequest, version_id: int) -> dict:
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
     auth=approved_authorized_roles_report_version_composite_auth,
 )
-def get_report_operation_by_version_id(request: HttpRequest, version_id: int) -> dict:
-    return ReportOperationService.get_report_operation_by_version_id(version_id)
+def get_report_operation_by_version_id(request: HttpRequest, version_id: int) -> Status:
+    return Status(200, ReportOperationService.get_report_operation_by_version_id(version_id))
 
 
 """
@@ -60,17 +58,18 @@ PATCH methods
     description="Updates the facility report details by version_id and facility_id.",
     auth=approved_authorized_roles_report_version_composite_auth,
 )
-def get_update_report(
-    request: HttpRequest, version_id: int
-) -> Union[Tuple[Literal[200], dict], Tuple[Literal[403], dict[str, str]]]:
+def get_update_report(request: HttpRequest, version_id: int) -> Status:
     # Validate that sync is allowed before proceeding
     if not SyncValidationService.is_sync_allowed(version_id):
-        return 403, {
-            "message": "Sync is not allowed for reports from previous reporting years or when operation ownership has been transferred"
-        }
+        return Status(
+            403,
+            {
+                "message": "Sync is not allowed for reports from previous reporting years or when operation ownership has been transferred"
+            },
+        )
 
     report_operation = ReportOperationService.update_report_operation(version_id)
-    return 200, report_operation
+    return Status(200, report_operation)
 
 
 """
@@ -86,8 +85,6 @@ POST methods
     Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def save_report(
-    request: HttpRequest, version_id: int, payload: ReportOperationIn
-) -> Tuple[Literal[201], ReportOperation]:
+def save_report(request: HttpRequest, version_id: int, payload: ReportOperationIn) -> Status:
     report_operation = ReportService.save_report_operation(version_id, payload)
-    return 201, report_operation
+    return Status(201, report_operation)

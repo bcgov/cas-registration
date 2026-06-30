@@ -1,11 +1,9 @@
-from typing import List, Literal, Optional, Tuple
-from reporting.models.report_attachment import ReportAttachment
+from typing import List, Literal, Optional
 from common.api.utils.current_user_utils import get_current_user_guid
 from common.permissions import authorize
 from django.db import transaction
-from django.db.models import QuerySet
 from django.http import HttpRequest
-from ninja import File, Form, Query, UploadedFile
+from ninja import File, Form, Query, Status, UploadedFile
 from ninja.pagination import paginate
 from registration.utils import CustomPagination
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -39,7 +37,7 @@ def save_report_attachments(
     files: Optional[List[UploadedFile]] = File(None),
     confirm_supplementary_existing_attachments_relevant: Optional[bool] = Form(None),
     confirm_supplementary_required_attachments_uploaded: Optional[bool] = Form(None),
-) -> Tuple[int, dict]:
+) -> Status:
     # Handle files if they were supplied
     if files is not None:
         if file_types is None or len(file_types) != len(files):
@@ -72,7 +70,7 @@ def save_report_attachments(
 def get_report_attachments(
     request: HttpRequest,
     version_id: int,
-) -> Tuple[int, dict]:
+) -> Status:
     attachments = ReportAttachmentService.get_attachments_by_version(version_id)
     confirmation = ReportAttachmentService.get_attachment_confirmation(version_id)
 
@@ -80,7 +78,7 @@ def get_report_attachments(
         "attachments": attachments,
         "confirmation": confirmation,
     }
-    return 200, response_data
+    return Status(200, response_data)
 
 
 @router.get(
@@ -90,8 +88,8 @@ def get_report_attachments(
     description="""Returns the cloud download URL for a file attachment.""",
     auth=approved_authorized_roles_report_version_composite_auth,
 )
-def get_report_attachment_url(request: HttpRequest, version_id: int, file_id: int) -> Tuple[Literal[200], str]:
-    return 200, ReportAttachmentService.get_attachment(version_id, file_id).get_file_url()
+def get_report_attachment_url(request: HttpRequest, version_id: int, file_id: int) -> Status:
+    return Status(200, ReportAttachmentService.get_attachment(version_id, file_id).get_file_url())
 
 
 @router.get(
@@ -108,6 +106,6 @@ def get_all_attachments(
     sort_field: Optional[str] = "report_version_id",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
-) -> QuerySet[ReportAttachment]:
+) -> Status:
 
-    return ReportAttachmentService.get_all_attachments(filters, sort_field, sort_order)
+    return Status(200, ReportAttachmentService.get_all_attachments(filters, sort_field, sort_order))

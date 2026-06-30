@@ -1,11 +1,10 @@
-from typing import Literal, Optional, Tuple, List
-
-from django.db.models import QuerySet
+from typing import Optional, List
 
 from common.permissions import authorize, compose_auth
 from django.http import HttpRequest
 
 # from registration.models import RegulatedProduct
+from ninja import Status
 from reporting.api.permissions import check_operation_ownership
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
@@ -24,7 +23,7 @@ from reporting.api.permissions import (
     approved_authorized_roles_report_version_composite_auth,
     approved_industry_user_report_composite_auth,
 )
-from reporting.models import ReportingYear, ReportVersion
+from reporting.models import ReportVersion
 
 
 @router.post(
@@ -35,9 +34,9 @@ from reporting.models import ReportingYear, ReportVersion
     This endpoint only allows the creation of a report for an operation / operator to which the current user has access.""",
     auth=compose_auth(authorize("approved_industry_user"), check_operation_ownership()),
 )
-def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
+def start_report(request: HttpRequest, payload: StartReportIn) -> Status:
     report_version_id = ReportService.create_report(payload.operation_id, payload.reporting_year)
-    return 201, report_version_id
+    return Status(201, report_version_id)
 
 
 @router.post(
@@ -48,11 +47,9 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
     and returns the id of a newly initialized report version.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def change_report_version_type(
-    request: HttpRequest, version_id: int, payload: ReportVersionTypeIn
-) -> Tuple[Literal[201], int]:
+def change_report_version_type(request: HttpRequest, version_id: int, payload: ReportVersionTypeIn) -> Status:
     report_version = ReportVersionService.change_report_version_type(version_id, payload.report_type)
-    return 201, report_version.id
+    return Status(201, report_version.id)
 
 
 @router.get(
@@ -62,8 +59,8 @@ def change_report_version_type(
     description="""Returns json object with current reporting year and due date.""",
     auth=authorize("all_roles"),
 )
-def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYear]:
-    return 200, ReportingYearService.get_current_reporting_year()
+def get_reporting_year(request: HttpRequest) -> Status:
+    return Status(200, ReportingYearService.get_current_reporting_year())
 
 
 @router.get(
@@ -74,10 +71,8 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
     Optionally, filter out reporting years that are in the past using ?exclude_past=true.""",
     auth=authorize("all_roles"),
 )
-def get_all_reporting_years(
-    request: HttpRequest, exclude_past: Optional[bool] = None
-) -> Tuple[Literal[200], QuerySet[ReportingYear]]:
-    return 200, ReportingYearService.get_all_reporting_years(exclude_past or False)
+def get_all_reporting_years(request: HttpRequest, exclude_past: Optional[bool] = None) -> Status:
+    return Status(200, ReportingYearService.get_all_reporting_years(exclude_past or False))
 
 
 @router.get(
@@ -88,11 +83,11 @@ def get_all_reporting_years(
     auth=approved_industry_user_report_version_composite_auth,
     exclude_none=True,
 )
-def get_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], ReportVersion]:
+def get_report_version(request: HttpRequest, version_id: int) -> Status:
     report_version = ReportVersion.objects.select_related("report_operation", "report__reporting_year").get(
         id=version_id
     )
-    return 200, report_version
+    return Status(200, report_version)
 
 
 @router.post(
@@ -102,14 +97,12 @@ def get_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[2
     description="Saves report version details: reason_for_change",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def save_report_version(
-    request: HttpRequest, version_id: int, payload: ReportVersionIn
-) -> Tuple[Literal[200], ReportVersion]:
+def save_report_version(request: HttpRequest, version_id: int, payload: ReportVersionIn) -> Status:
     data = ReportVersionData(
         reason_for_change=payload.reason_for_change,
     )
     report_version = ReportVersionService.save_report_version(version_id, data)
-    return 200, report_version
+    return Status(200, report_version)
 
 
 @router.get(
@@ -119,9 +112,9 @@ def save_report_version(
     description="""Fetches the registration purpose for the operation associated with the given report version ID.""",
     auth=authorize("approved_authorized_roles"),
 )
-def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
+def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int) -> Status:
     response_data = ReportService.get_registration_purpose_by_version_id(version_id)
-    return 200, response_data
+    return Status(200, response_data)
 
 
 @router.delete(
@@ -131,9 +124,9 @@ def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int
     description="""Deletes the given report version ID.""",
     auth=approved_authorized_roles_report_version_composite_auth,
 )
-def delete_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
+def delete_report_version(request: HttpRequest, version_id: int) -> Status:
     response_data = ReportVersionService.delete_report_version(version_id)
-    return 200, {"success": response_data}
+    return Status(200, {"success": response_data})
 
 
 @router.post(
@@ -143,9 +136,7 @@ def delete_report_version(request: HttpRequest, version_id: int) -> Tuple[Litera
     description="""Creates a report version for an existing report.""",
     auth=approved_industry_user_report_composite_auth,
 )
-def create_report_version(
-    request: HttpRequest, report_id: int, payload: CreateReportVersionIn
-) -> Tuple[Literal[200], int]:
+def create_report_version(request: HttpRequest, report_id: int, payload: CreateReportVersionIn) -> Status:
     report = ReportService.get_report_by_id(report_id)
     report_version = ReportVersionService.create_report_version(report)
-    return 200, report_version.id
+    return Status(200, report_version.id)

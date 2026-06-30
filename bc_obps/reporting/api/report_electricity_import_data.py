@@ -1,11 +1,11 @@
-from typing import Literal, Optional
+from typing import Optional
 from django.http import HttpRequest
+from ninja import Status
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.generic import Message
 from .router import router
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
-from ..models import ReportElectricityImportData
 from ..schema.report_electricity_import_data import ElectricityImportDataSchema
 from ..service.report_electricity_import_data_service import ElectricityImportDataService, ElectricityImportFormData
 
@@ -22,11 +22,11 @@ def save_electricity_import_data(
     request: HttpRequest,
     version_id: int,
     payload: ElectricityImportDataSchema,
-) -> Literal[200]:
+) -> Status:
     payload_data = ElectricityImportFormData(**payload.dict())
 
     ElectricityImportDataService.save_electricity_import_data(version_id, payload_data)
-    return 200
+    return Status(200, 200)
 
 
 @router.get(
@@ -36,8 +36,6 @@ def save_electricity_import_data(
     description="""Retrieves electricity import data for the specified report version""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_electricity_import_data(
-    request: HttpRequest, version_id: int
-) -> tuple[Literal[200], ReportElectricityImportData | None]:
+def get_electricity_import_data(request: HttpRequest, version_id: int) -> Status:
     electricity_import_data = ElectricityImportDataService.get_electricity_import_data(version_id)
-    return 200, electricity_import_data
+    return Status(200, electricity_import_data)
