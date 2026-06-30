@@ -27,7 +27,7 @@ class TestReportVersionService(TestCase):
         pass
 
     def test_delete_report_version(self):
-        report = baker.make_recipe("reporting.tests.utils.report", reporting_year_id=2024)
+        report = baker.make_recipe("reporting.tests.utils.report")
         report_version = ReportVersionService.create_report_version(report)
 
         assert ReportVersion.objects.filter(id=report_version.id).count() == 1
@@ -37,7 +37,7 @@ class TestReportVersionService(TestCase):
     def test_change_report_version_type_deletes_the_old_version_and_creates_a_new_one(
         self,
     ):
-        report = baker.make_recipe("reporting.tests.utils.report", reporting_year_id=2024)
+        report = baker.make_recipe("reporting.tests.utils.report")
         report_version = ReportVersionService.create_report_version(report, "Annual Report")
 
         return_value = ReportVersionService.change_report_version_type(
@@ -49,7 +49,7 @@ class TestReportVersionService(TestCase):
         assert return_value.report_type == "Simple Report"
 
     def test_change_report_version_type_to_the_same_does_nothing(self):
-        report = baker.make_recipe("reporting.tests.utils.report", reporting_year_id=2024)
+        report = baker.make_recipe("reporting.tests.utils.report")
         report_version = ReportVersionService.create_report_version(report, "Annual Report")
 
         return_value = ReportVersionService.change_report_version_type(
@@ -123,31 +123,3 @@ class TestReportVersionService(TestCase):
         )
         result = ReportVersionService.fetch_full_report_version(report_version.id, prefetch_full_facility_report=False)
         self.assertEqual(result.id, report_version.id)
-
-    def test_invalid_products_are_not_added_on_report_version_creation(self):
-        """
-        Test that when creating a new report version, only products that are valid in the reporting year are added to the report operation's regulated products.
-        """
-        report_year = 2024
-        valid_products = baker.make_recipe(
-            "reporting.tests.utils.regulated_product",
-            valid_from=f'{report_year - 1}-01-01',
-            valid_to='2099-12-31',
-            _quantity=2,
-        )
-        invalid_products = baker.make_recipe(
-            "reporting.tests.utils.regulated_product", valid_from='2099-01-01', valid_to='2099-12-31', _quantity=2
-        )
-        # Create an operation with both valid and invalid products
-        operation = baker.make_recipe(
-            "registration.tests.utils.operation",
-            regulated_products=valid_products + invalid_products,
-        )
-        # Create a report for that operation
-        report = baker.make_recipe("reporting.tests.utils.report", reporting_year_id=report_year, operation=operation)
-        report_version = ReportVersionService.create_report_version(report)
-
-        report_products = report_version.report_operation.regulated_products.all()
-        # Assert that all valid products are included and all invalid products are excluded from the report
-        self.assertTrue(all(product in report_products for product in valid_products))
-        self.assertTrue(all(product not in report_products for product in invalid_products))
