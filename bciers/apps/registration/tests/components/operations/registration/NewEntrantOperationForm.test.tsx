@@ -24,8 +24,6 @@ useRouter.mockReturnValue({
   push: mockPush,
 });
 
-export const mockDataUri =
-  "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=";
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
 
 describe("the NewEntrantOperationForm component", () => {
@@ -63,7 +61,11 @@ describe("the NewEntrantOperationForm component", () => {
     render(
       <NewEntrantOperationForm
         formData={{
-          new_entrant_application: mockDataUri,
+          new_entrant_application: {
+            id: 1,
+            name: "test_file.pdf",
+            status: "Unscanned",
+          },
         }}
         operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
         schema={newEntrantOperationSchema}
