@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, Optional, Tuple, Callable, Generator, Union
 from zoneinfo import ZoneInfo
 from django.db.models import QuerySet
@@ -14,7 +14,6 @@ from service.data_access_service.document_service import DocumentDataAccessServi
 from service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
-from service.reporting_year_service import ReportingYearService
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.document_type import DocumentType
@@ -752,14 +751,13 @@ class OperationService:
 
         return payload
 
-    @classmethod
-    def get_valid_operation_regulated_products(
-        cls, operation: Operation, reporting_year: int
-    ) -> QuerySet[RegulatedProduct]:
+    @staticmethod
+    def get_valid_operation_regulated_products(operation: Operation, reporting_year: int) -> QuerySet[RegulatedProduct]:
         """
         Get the operation's regulated products that are valid for a specific reporting year.
+        Uses May 1st of the reporting year as the date to check against the regulated product's valid_from and valid_to dates.
         """
-        reporting_year_date = ReportingYearService.get_date_for_reporting_year(reporting_year)
+        reporting_year_date = date(reporting_year, 5, 1)
         return operation.regulated_products.filter(
             valid_from__lte=reporting_year_date, valid_to__gte=reporting_year_date
         )
