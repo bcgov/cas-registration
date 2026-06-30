@@ -1,13 +1,11 @@
 import base64
 import logging
 import os
-import re
 from typing import Any, Dict, Iterable, Optional, TypeVar, Union
 
 import requests
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.files.base import ContentFile
 from django.db import IntegrityError, models
 from django.db.models import QuerySet
 from django.http import HttpRequest
@@ -117,19 +115,6 @@ def file_to_data_url(document: Document) -> Optional[str]:  # type: ignore[retur
         except requests.exceptions.RequestException as e:
             # Handle other types of exceptions (e.g., connection error)
             logger.exception(f"An error occurred: {e}")
-
-
-def data_url_to_file(data_url: str) -> ContentFile:
-    """
-    Transforms a data url into a ContentFile that Django can insert into the db and add to google cloud storage
-    """
-    name_pattern = re.search(r'name=([^;]+)', data_url)
-    file_name = name_pattern.group(1) if name_pattern else None
-    _, encoded_data = data_url.split(',')
-
-    # Decode the base64-encoded data
-    file_data = base64.b64decode(encoded_data)
-    return ContentFile(file_data, file_name)
 
 
 def custom_reverse_lazy(view_name: str, *args: Any, **kwargs: Any) -> Union[str, Any]:

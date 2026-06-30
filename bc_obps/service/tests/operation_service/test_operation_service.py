@@ -20,24 +20,20 @@ from registration.models.address import Address
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.schema import (
     FacilityIn,
-    OperationInformationInUpdate,
     OperationRepresentativeIn,
-    OperationNewEntrantApplicationIn,
-    OperationRepresentativeRemove,
     OperationTimelineFilterSchema,
-    MultipleOperatorIn,
-    OperationInformationIn,
 )
 from registration.enums.enums import EmailTemplateNames
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
+from service.data_types.operation_service_data_types import MultipleOperatorData, OperationData, UpdateOperationData
 from service.operation_service import OperationService
 from service.email.email_service import EmailService
 from registration.models.multiple_operator import MultipleOperator
 from registration.models.operation import Operation
-from registration.tests.constants import MOCK_DATA_URL
 from model_bakery import baker
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
+from tests.test_files import create_test_file
 
 pytestmark = pytest.mark.django_db
 email_service = EmailService()
@@ -92,7 +88,8 @@ def set_up_valid_mock_operation(purpose: Operation.Purposes, document_scan_statu
         # opt in record
         opted_in_operation_detail = baker.make_recipe('registration.tests.utils.opted_in_operation_detail')
         operation.opted_in_operation = opted_in_operation_detail
-        operation.save()
+
+    operation.save()
     return operation
 
 
@@ -105,14 +102,14 @@ class TestOperationService:
             operator=approved_user_operator.operator,
             registration_purpose='Potential Reporting Operation',
         )
-        payload = OperationInformationIn(
+        payload = OperationData(
             registration_purpose='Reporting Operation',
             name="string",
             type=Operation.Types.SFO,
             naics_code_id=1,
             activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("process.pdf"),
+            boundary_map=create_test_file("boundary.pdf"),
         )
         OperationService.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
 
@@ -476,7 +473,9 @@ class TestOperationService:
         )
         operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            OperationService.update_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id, {})
+            OperationService.update_opted_in_operation_detail(
+                approved_user_operator.user.user_guid, operation.id, MagicMock()
+            )
 
     @staticmethod
     def test_create_or_replace_new_entrant_application():
@@ -486,9 +485,7 @@ class TestOperationService:
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
         )
-        payload = OperationNewEntrantApplicationIn(
-            new_entrant_application=MOCK_DATA_URL,
-        )
+        payload = create_test_file("new_entrant_application.pdf")
         operation = OperationService.create_or_replace_new_entrant_application(
             approved_user_operator.user.user_guid, users_operation.id, payload
         )
@@ -501,7 +498,7 @@ class TestRegisterOperationInformation:
     @staticmethod
     def test_register_operation_information_new_eio():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        payload = OperationInformationIn(
+        payload = OperationData(
             registration_purpose='Electricity Import Operation',
             name="TestEIO",
             type=Operation.Types.EIO,
@@ -531,7 +528,7 @@ class TestRegisterOperationInformation:
             type=Operation.Types.EIO,
             registration_purpose='Electricity Import Operation',
         )
-        payload = OperationInformationIn(
+        payload = OperationData(
             registration_purpose='Electricity Import Operation',
             name="UpdatedEIO",
             type=Operation.Types.EIO,
@@ -555,14 +552,14 @@ class TestRegisterOperationInformation:
     def test_register_operation_information_new_operation():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
-        payload = OperationInformationIn(
+        payload = OperationData(
             registration_purpose='Reporting Operation',
             name="string",
             type=Operation.Types.SFO,
             naics_code_id=1,
             activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
         )
         operation = OperationService.register_operation_information(
             approved_user_operator.user.user_guid, None, payload
@@ -584,7 +581,7 @@ class TestRegisterOperationInformation:
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
         )
-        payload = OperationInformationIn(
+        payload = OperationData(
             registration_purpose='Potential Reporting Operation',
             name="string",
             type=Operation.Types.SFO,
@@ -592,8 +589,8 @@ class TestRegisterOperationInformation:
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
             activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
         )
         # check operation updates
         operation = OperationService.register_operation_information(
@@ -658,7 +655,7 @@ class TestOperationServiceV2CreateOperation:
     @staticmethod
     def test_create_operation_without_multiple_operators():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        payload = OperationInformationIn(
+        payload = OperationData(
             registration_purpose='Reporting Operation',
             regulated_products=[1, 2],
             name="string",
@@ -667,8 +664,8 @@ class TestOperationServiceV2CreateOperation:
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
             activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
         )
         operation = OperationService._create_operation(approved_user_operator.user.user_guid, payload)
         operation.refresh_from_db()
@@ -688,7 +685,7 @@ class TestOperationServiceV2CreateOperation:
     @staticmethod
     def test_create_operation_with_multiple_operators():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        payload = OperationInformationIn(
+        payload = OperationData(
             registration_purpose='Reporting Operation',
             name="string",
             type=Operation.Types.SFO,
@@ -696,30 +693,30 @@ class TestOperationServiceV2CreateOperation:
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
             activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
         )
         payload.multiple_operators_array = [
-            MultipleOperatorIn(
-                mo_legal_name='i am new',
-                mo_trade_name='new',
-                mo_cra_business_number='111111111',
-                mo_business_structure='General Partnership',
-                mo_bc_corporate_registry_number='ghj1234567',
-                mo_attorney_street_address='Seahorses St',
-                mo_municipality='Ocean Town',
-                mo_province='BC',
-                mo_postal_code='H0H0H0',
+            MultipleOperatorData(
+                legal_name='i am new',
+                trade_name='new',
+                cra_business_number='111111111',
+                business_structure_id='General Partnership',
+                bc_corporate_registry_number='ghj1234567',
+                street_address='Seahorses St',
+                municipality='Ocean Town',
+                province='BC',
+                postal_code='H0H0H0',
             ),
-            MultipleOperatorIn(
-                mo_legal_name='i am new 2',
-                mo_trade_name='new 2',
-                mo_cra_business_number='111111111',
-                mo_business_structure='General Partnership',
-                mo_attorney_street_address='Lion St',
-                mo_municipality='Zebra Town',
-                mo_province='MB',
-                mo_postal_code='H0H0H0',
+            MultipleOperatorData(
+                legal_name='i am new 2',
+                trade_name='new 2',
+                cra_business_number='111111111',
+                business_structure_id='General Partnership',
+                street_address='Lion St',
+                municipality='Zebra Town',
+                province='MB',
+                postal_code='H0H0H0',
             ),
         ]
         operation = OperationService._create_operation(approved_user_operator.user.user_guid, payload)
@@ -733,14 +730,14 @@ class TestOperationServiceV2CreateOperation:
     @staticmethod
     def test_assigning_opted_in_operation_will_create_and_opted_in_operation_detail():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        payload = OperationInformationIn(
+        payload = OperationData(
             registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
             name="string",
             type=Operation.Types.SFO,
             naics_code_id=1,
             activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
         )
         operation = OperationService._create_operation(approved_user_operator.user.user_guid, payload)
 
@@ -751,7 +748,7 @@ class TestOperationServiceV2CreateOperation:
     @staticmethod
     def test_create_makes_eio_facility():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        payload = OperationInformationIn(
+        payload = OperationData(
             registration_purpose='Electricity Import Operation',
             name="TestEIO",
             type=Operation.Types.EIO,
@@ -786,14 +783,14 @@ class TestOperationServiceV2UpdateOperation:
             registration_purpose='Potential Reporting Operation',
         )
 
-        payload = OperationInformationIn(
+        payload = OperationData(
             registration_purpose='Reporting Operation',
             name="string",
             type=Operation.Types.SFO,
             naics_code_id=1,
             activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
         )
         with pytest.raises(Exception):
             OperationService.update_operation(user.user_guid, payload)
@@ -807,7 +804,7 @@ class TestOperationServiceV2UpdateOperation:
             created_by=approved_user_operator.user,
             status=Operation.Statuses.REGISTERED,
         )
-        payload = OperationInformationInUpdate(
+        payload = UpdateOperationData(
             registration_purpose='Potential Reporting Operation',
             name="Test Update Operation Name",
             type=Operation.Types.SFO,
@@ -815,8 +812,8 @@ class TestOperationServiceV2UpdateOperation:
             secondary_naics_code_id=1,
             tertiary_naics_code_id=2,
             activities=[2],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
         operation = OperationService.update_operation(
@@ -837,7 +834,7 @@ class TestOperationServiceV2UpdateOperation:
             created_by=approved_user_operator.user,
             status=Operation.Statuses.REGISTERED,
         )
-        payload = OperationInformationInUpdate(
+        payload = UpdateOperationData(
             registration_purpose='OBPS Regulated Operation',
             name="Test Update Operation Name",
             type=Operation.Types.SFO,
@@ -845,8 +842,8 @@ class TestOperationServiceV2UpdateOperation:
             secondary_naics_code_id=3,
             tertiary_naics_code_id=4,
             activities=[3],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
         operation = OperationService.update_operation(
@@ -868,7 +865,7 @@ class TestOperationServiceV2UpdateOperation:
             created_by=approved_user_operator.user,
             status=Operation.Statuses.REGISTERED,
         )
-        payload = OperationInformationInUpdate(
+        payload = UpdateOperationData(
             registration_purpose='New Entrant Operation',
             name="Test Update Operation Name",
             type=Operation.Types.SFO,
@@ -876,9 +873,9 @@ class TestOperationServiceV2UpdateOperation:
             secondary_naics_code_id=3,
             tertiary_naics_code_id=4,
             activities=[3],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
-            new_entrant_application=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
+            new_entrant_application=create_test_file("new_entrant.pdf"),
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
         operation = OperationService.update_operation(
@@ -902,7 +899,7 @@ class TestOperationServiceV2UpdateOperation:
         )
         existing_operation.multiple_operators.set(multiple_operators)
 
-        payload = OperationInformationInUpdate(
+        payload = UpdateOperationData(
             registration_purpose='Reporting Operation',
             regulated_products=[1],
             name="I am updated",
@@ -911,31 +908,31 @@ class TestOperationServiceV2UpdateOperation:
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
             activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
         payload.multiple_operators_array = [
-            MultipleOperatorIn(
-                mo_legal_name='i am new',
-                mo_trade_name='new',
-                mo_cra_business_number='111111111',
-                mo_business_structure='General Partnership',
-                mo_bc_corporate_registry_number='ghj1234567',
-                mo_attorney_street_address='Seahorses St',
-                mo_municipality='Ocean Town',
-                mo_province='BC',
-                mo_postal_code='H0H0H0',
+            MultipleOperatorData(
+                legal_name='i am new',
+                trade_name='new',
+                cra_business_number='111111111',
+                business_structure_id='General Partnership',
+                bc_corporate_registry_number='ghj1234567',
+                street_address='Seahorses St',
+                municipality='Ocean Town',
+                province='BC',
+                postal_code='H0H0H0',
             ),
-            MultipleOperatorIn(
-                mo_legal_name='i am new 2',
-                mo_trade_name='new 2',
-                mo_cra_business_number='111111111',
-                mo_business_structure='General Partnership',
-                mo_attorney_street_address='Lion St',
-                mo_municipality='Zebra Town',
-                mo_province='MB',
-                mo_postal_code='H0H0H0',
+            MultipleOperatorData(
+                legal_name='i am new 2',
+                trade_name='new 2',
+                cra_business_number='111111111',
+                business_structure_id='General Partnership',
+                street_address='Lion St',
+                municipality='Zebra Town',
+                province='MB',
+                postal_code='H0H0H0',
             ),
         ]
         operation = OperationService.update_operation(
@@ -965,7 +962,7 @@ class TestOperationServiceV2UpdateOperation:
         )
         existing_operation.multiple_operators.set(multiple_operators)
 
-        payload = OperationInformationInUpdate(
+        payload = UpdateOperationData(
             registration_purpose='Reporting Operation',
             regulated_products=[1],
             name="I am updated",
@@ -974,8 +971,8 @@ class TestOperationServiceV2UpdateOperation:
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
             activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
 
@@ -1003,7 +1000,7 @@ class TestOperationServiceV2UpdateOperation:
             _quantity=3,
         )
 
-        payload = OperationInformationInUpdate(
+        payload = UpdateOperationData(
             registration_purpose='Reporting Operation',
             regulated_products=[1],
             name="I am updated",
@@ -1012,8 +1009,8 @@ class TestOperationServiceV2UpdateOperation:
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
             activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
             operation_representatives=[contact.id for contact in contacts],
         )
 
@@ -1051,7 +1048,7 @@ class TestOperationServiceV2UpdateOperation:
             _quantity=3,
         )
 
-        payload = OperationInformationInUpdate(
+        payload = UpdateOperationData(
             registration_purpose='Electricity Import Operation',
             regulated_products=[1],
             name="I am updated",
@@ -1060,8 +1057,8 @@ class TestOperationServiceV2UpdateOperation:
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
             activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
             operation_representatives=[contact.id for contact in contacts],
         )
         operation = OperationService.update_operation(
@@ -1094,7 +1091,7 @@ class TestOperationServiceV2UpdateOperation:
             _quantity=3,
         )
 
-        payload = OperationInformationInUpdate(
+        payload = UpdateOperationData(
             registration_purpose='Opted-in Operation',
             regulated_products=[1],
             name="I am updated",
@@ -1103,8 +1100,8 @@ class TestOperationServiceV2UpdateOperation:
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
             activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
             operation_representatives=[contact.id for contact in contacts],
         )
 
@@ -1133,7 +1130,7 @@ class TestOperationServiceV2UpdateOperation:
             created_by=approved_user_operator.user,
             status=Operation.Statuses.DRAFT,
         )
-        payload = OperationInformationInUpdate(
+        payload = UpdateOperationData(
             registration_purpose='Potential Reporting Operation',
             name="Test Update Operation Name",
             type=Operation.Types.LFO,
@@ -1141,8 +1138,8 @@ class TestOperationServiceV2UpdateOperation:
             secondary_naics_code_id=1,
             tertiary_naics_code_id=2,
             activities=[2],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
         operation = OperationService.update_operation(
@@ -1169,7 +1166,7 @@ class TestOperationServiceV2UpdateOperation:
             created_by=approved_user_operator.user,
             status=Operation.Statuses.REGISTERED,
         )
-        payload = OperationInformationInUpdate(
+        payload = UpdateOperationData(
             registration_purpose='Potential Reporting Operation',
             name="Test Update Operation Name",
             type=Operation.Types.LFO,
@@ -1177,8 +1174,8 @@ class TestOperationServiceV2UpdateOperation:
             secondary_naics_code_id=1,
             tertiary_naics_code_id=2,
             activities=[2],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
         with pytest.raises(Exception, match="Cannot change the type of an operation that has already been registered."):
@@ -1196,7 +1193,7 @@ class TestOperationServiceV2UpdateOperation:
             created_by=approved_user_operator.user,
             status=Operation.Statuses.REGISTERED,
         )
-        payload = OperationInformationInUpdate(
+        payload = UpdateOperationData(
             registration_purpose='Potential Reporting Operation',
             name="Test Update Operation Name",
             type=Operation.Types.SFO,
@@ -1204,8 +1201,8 @@ class TestOperationServiceV2UpdateOperation:
             secondary_naics_code_id=1,
             tertiary_naics_code_id=2,
             activities=[2],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
+            process_flow_diagram=create_test_file("test.pdf"),
+            boundary_map=create_test_file("test1.pdf"),
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
 
@@ -1633,7 +1630,7 @@ class TestHandleChangeOfRegistrationPurpose:
 
         assert OptedInOperationDetail.objects.count() == 1
 
-        submitted_payload = OperationInformationIn(
+        submitted_payload = OperationData(
             registration_purpose=Operation.Purposes.REPORTING_OPERATION,
             name='Updated Operation',
             type=Operation.Types.SFO,
@@ -1671,7 +1668,7 @@ class TestHandleChangeOfRegistrationPurpose:
         assert Document.objects.count() == 3
         assert operation.documents.count() == 3
 
-        submitted_payload = OperationInformationIn(
+        submitted_payload = OperationData(
             registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,
             name="Updated Operation",
             type=Operation.Types.SFO,
@@ -1697,7 +1694,7 @@ class TestHandleChangeOfRegistrationPurpose:
             registration_purpose=Operation.Purposes.REPORTING_OPERATION,
         )
 
-        submitted_payload = OperationInformationIn(
+        submitted_payload = OperationData(
             registration_purpose=Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
             name="Updated Operation",
             type=Operation.Types.EIO,
@@ -1706,8 +1703,8 @@ class TestHandleChangeOfRegistrationPurpose:
             regulated_products=[1, 2, 3],
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
-            boundary_map=MOCK_DATA_URL,
-            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=create_test_file("test.pdf"),
+            process_flow_diagram=create_test_file("test1.pdf"),
         )
         returned_payload = OperationService.handle_change_of_registration_purpose(
             approved_user_operator.user.user_guid, operation, submitted_payload
@@ -1735,7 +1732,7 @@ class TestHandleChangeOfRegistrationPurpose:
             regulated_products=products,
         )
 
-        submitted_payload = OperationInformationIn(
+        submitted_payload = OperationData(
             registration_purpose=Operation.Purposes.REPORTING_OPERATION,
             name="Updated Operation",
             type=Operation.Types.SFO,
@@ -1828,7 +1825,7 @@ class TestRemoveOperationRepresentative:
         operation.contacts.add(contact1, contact2)
         operation.save()
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            OperationService.remove_operation_representative(user.user_guid, operation.id, {id: contact1.id})
+            OperationService.remove_operation_representative(user.user_guid, operation.id, contact1.id)
 
     @staticmethod
     def test_removes_operation_representative():
@@ -1840,7 +1837,7 @@ class TestRemoveOperationRepresentative:
         operation.save()
 
         OperationService.remove_operation_representative(
-            approved_user_operator.user.user_guid, operation.id, OperationRepresentativeRemove(id=contact2.id)
+            approved_user_operator.user.user_guid, operation.id, contact2.id
         )
         operation.refresh_from_db()
 
@@ -1975,7 +1972,7 @@ class TestChangeOperationType:
             type=Operation.Types.SFO,
         )
 
-        submitted_payload = OperationInformationIn(
+        submitted_payload = OperationData(
             registration_purpose=Operation.Purposes.REPORTING_OPERATION,
             name='Updated Operation',
             type=Operation.Types.LFO,

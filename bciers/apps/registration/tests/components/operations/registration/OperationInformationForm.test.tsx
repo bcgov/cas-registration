@@ -19,7 +19,6 @@ import {
 } from "@/registration/app/components/operations/registration/enums";
 import userEvent from "@testing-library/user-event";
 import { createRegistrationOperationInformationSchemas } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
-import { mockDataUri } from "./NewEntrantOperationForm.test";
 import { fillComboboxWidgetField } from "@bciers/testConfig/helpers/helpers";
 import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
 import { Apps } from "@bciers/utils/src/enums";
@@ -168,8 +167,12 @@ describe("the OperationInformationForm component", () => {
         name: "Existing Operation",
         type: "Single Facility Operation",
         naics_code_id: 1,
-        boundary_map: mockDataUri,
-        process_flow_diagram: mockDataUri,
+        boundary_map: { id: 1, name: "testpdf.pdf", status: "Unscanned" },
+        process_flow_diagram: {
+          id: 2,
+          name: "testpdf2.pdf",
+          status: "Unscanned",
+        },
         registration_purpose: "Reporting Operation",
         activities: [1],
       }); // mock the GET from selecting an operation
@@ -240,10 +243,12 @@ describe("the OperationInformationForm component", () => {
               name: "Existing Operation edited",
               type: "Single Facility Operation",
               naics_code_id: 1,
-              process_flow_diagram:
-                "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=",
-              boundary_map:
-                "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=",
+              process_flow_diagram: {
+                id: 2,
+                name: "testpdf2.pdf",
+                status: "Unscanned",
+              },
+              boundary_map: { id: 912, name: "aaaaaaaa.pdf", status: "Clean" },
               operation_has_multiple_operators: false,
             }),
           },
@@ -399,10 +404,12 @@ describe("the OperationInformationForm component", () => {
               name: "Op Name",
               type: "Single Facility Operation",
               naics_code_id: 1,
-              process_flow_diagram:
-                "data:application/pdf;name=test.pdf;base64,dGVzdA==",
-              boundary_map:
-                "data:application/pdf;name=test.pdf;base64,dGVzdA==",
+              process_flow_diagram: {
+                id: 1983,
+                name: "ikjai.pdf",
+                status: "Unscanned",
+              },
+              boundary_map: { id: 98876, name: "bbbbbb.pdf", status: "Clean" },
               operation_has_multiple_operators: true,
               multiple_operators_array: [
                 {

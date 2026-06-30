@@ -1,17 +1,26 @@
+import json
 from uuid import UUID
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from typing import List, Optional
 from registration.models.contact import Contact
+from registration.models.document import Document
 from registration.schema import OperatorForOperationOut, MultipleOperatorIn, MultipleOperatorOut
 from ninja import Field, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from pydantic import field_validator, ConfigDict
-from django.core.files.base import ContentFile
-from registration.utils import data_url_to_file
-from registration.utils import file_to_data_url
+from pydantic import ConfigDict
 from registration.models import Operator, User
 from ninja.types import DictStrAny
+
+
+def serialize_document(doc: Document | None) -> Optional[str]:
+    # Something similar to dataURL to allow passing metadata along with the filename.
+    # Required because RJSF expects a string for a file field.
+    if doc:
+        name = doc.file.name.split('/')[-1]
+        return json.dumps({"name": name, "id": doc.id, "status": doc.status})
+    return None
+
 
 #### Operation schemas
 
@@ -28,17 +37,11 @@ class OperationRegistrationOut(ModelSchema):
 
     @staticmethod
     def resolve_boundary_map(obj: Operation) -> Optional[str]:
-        boundary_map = obj.get_boundary_map()
-        if boundary_map:
-            return file_to_data_url(boundary_map)
-        return None
+        return serialize_document(obj.get_boundary_map())
 
     @staticmethod
     def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
-        process_flow_diagram = obj.get_process_flow_diagram()
-        if process_flow_diagram:
-            return file_to_data_url(process_flow_diagram)
-        return None
+        return serialize_document(obj.get_process_flow_diagram())
 
     @staticmethod
     def resolve_operation_has_multiple_operators(obj: Operation) -> bool:
@@ -77,41 +80,17 @@ class OperationRepresentativeRemove(ModelSchema):
         fields = ['id']
 
 
-class OperationInformationIn(ModelSchema):
+class OperationInformationIn(Schema):
     name: str
     type: str
     registration_purpose: Optional[Operation.Purposes] = None
     regulated_products: Optional[List[int]] = None
     activities: Optional[List[int]] = None
-    boundary_map: Optional[str] = None
-    process_flow_diagram: Optional[str] = None
     naics_code_id: Optional[int] = None
     secondary_naics_code_id: Optional[int] = None
     tertiary_naics_code_id: Optional[int] = None
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
-    date_of_first_shipment: Optional[str] = Field(None, alias="date_of_first_shipment")
-    new_entrant_application: Optional[str] = None
-
-    @field_validator("boundary_map")
-    @classmethod
-    def validate_boundary_map(cls, value: str) -> ContentFile:
-        return data_url_to_file(value)
-
-    @field_validator("process_flow_diagram")
-    @classmethod
-    def validate_process_flow_diagram(cls, value: str) -> ContentFile:
-        return data_url_to_file(value)
-
-    @field_validator("new_entrant_application")
-    @classmethod
-    def validate_new_entrant_application(cls, value: Optional[str]) -> Optional[ContentFile]:
-        if value:
-            return data_url_to_file(value)
-        return None
-
-    class Meta:
-        model = Operation
-        fields = ["name", 'type']
+    date_of_first_shipment: Optional[str] = None
 
 
 class OperationInformationInUpdate(OperationInformationIn):
@@ -166,15 +145,12 @@ class OperationOut(ModelSchema):
     tertiary_naics_code_id: Optional[int] = Field(None, alias="tertiary_naics_code.id")
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
     operator: Optional[OperatorForOperationOut] = None
-    boundary_map: Optional[str] = None
-    process_flow_diagram: Optional[str] = None
     registration_purpose: Optional[str] = None
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
     opted_in_operation: Optional[OptedInOperationDetailOut] = None
     opted_out_operation: Optional[int] = None
     date_of_first_shipment: Optional[str] = None
-    new_entrant_application: Optional[str] = None
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
     operation_representatives: Optional[List[int]] = []
 
@@ -226,26 +202,21 @@ class OperationOut(ModelSchema):
 
 
 class OperationOutWithDocuments(OperationOut):
+    boundary_map: Optional[str] = None
+    process_flow_diagram: Optional[str] = None
+    new_entrant_application: Optional[str] = None
+
     @staticmethod
     def resolve_boundary_map(obj: Operation) -> Optional[str]:
-        boundary_map = obj.get_boundary_map()
-        if boundary_map:
-            return file_to_data_url(boundary_map)
-        return None
+        return serialize_document(obj.get_boundary_map())
 
     @staticmethod
     def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
-        process_flow_diagram = obj.get_process_flow_diagram()
-        if process_flow_diagram:
-            return file_to_data_url(process_flow_diagram)
-        return None
+        return serialize_document(obj.get_process_flow_diagram())
 
     @staticmethod
     def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
-        new_entrant_application = obj.get_new_entrant_application()
-        if new_entrant_application:
-            return file_to_data_url(new_entrant_application)
-        return None
+        return serialize_document(obj.get_new_entrant_application())
 
 
 class OperationCreateOut(ModelSchema):
@@ -276,24 +247,12 @@ class OperationRegistrationSubmissionIn(Schema):
     acknowledgement_of_information: bool
 
 
-class OperationNewEntrantApplicationIn(Schema):
-    new_entrant_application: str
-
-    @field_validator("new_entrant_application")
-    @classmethod
-    def validate_new_entrant_application(cls, value: str) -> ContentFile:
-        return data_url_to_file(value)
-
-
 class OperationNewEntrantApplicationOut(ModelSchema):
     new_entrant_application: Optional[str] = None
 
     @staticmethod
     def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
-        new_entrant_application = obj.get_new_entrant_application()
-        if new_entrant_application:
-            return file_to_data_url(new_entrant_application)
-        return None
+        return serialize_document(obj.get_new_entrant_application())
 
     class Meta:
         model = Operation

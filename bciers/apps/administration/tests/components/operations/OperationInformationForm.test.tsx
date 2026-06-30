@@ -51,11 +51,6 @@ vi.mock("@bciers/actions/api", () => ({
   getBusinessStructures: vi.fn(),
 }));
 
-const mockDataUri =
-  "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=";
-const mockDataUri2 =
-  "data:application/pdf;name=testpdf2.pdf;scanstatus=Clean;base64,ZHVtbXk=";
-
 // Just using a simple schema for testing purposes
 const testSchema: RJSFSchema = {
   type: "object",
@@ -151,8 +146,8 @@ const formData = {
   secondary_naics_code_id: 2,
   operation_has_multiple_operators: true,
   activities: [1, 2],
-  boundary_map: mockDataUri,
-  process_flow_diagram: mockDataUri2,
+  boundary_map: { id: 1, name: "testboundary.pdf", status: "Clean" },
+  process_flow_diagram: { id: 2, name: "processflow.pdf", status: "Clean" },
   multiple_operators_array: [
     {
       mo_is_extraprovincial_company: false,
@@ -940,8 +935,12 @@ describe("the OperationInformationForm component", () => {
         registration_purpose: RegistrationPurposes.REPORTING_OPERATION,
         regulated_products: [1],
         operation_representatives: [1],
-        boundary_map: mockDataUri,
-        process_flow_diagram: mockDataUri,
+        boundary_map: { id: 1, name: "testboundary.pdf", status: "Clean" },
+        process_flow_diagram: {
+          id: 2,
+          name: "processflow.pdf",
+          status: "Clean",
+        },
       };
       useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
 
@@ -991,8 +990,12 @@ describe("the OperationInformationForm component", () => {
             type: "Single Facility Operation",
             naics_code_id: 1,
             secondary_naics_code_id: 2,
-            process_flow_diagram: mockDataUri,
-            boundary_map: mockDataUri,
+            process_flow_diagram: {
+              id: 2,
+              name: "processflow.pdf",
+              status: "Clean",
+            },
+            boundary_map: { id: 1, name: "testboundary.pdf", status: "Clean" },
             operation_has_multiple_operators: false,
             registration_purpose: "Reporting Operation",
             operation_representatives: [2],
@@ -1042,8 +1045,8 @@ describe("the OperationInformationForm component", () => {
       registration_purpose: RegistrationPurposes.REPORTING_OPERATION,
       regulated_products: [1],
       operation_representatives: [],
-      boundary_map: mockDataUri,
-      process_flow_diagram: mockDataUri,
+      boundary_map: { id: 1, name: "testboundary.pdf", status: "Clean" },
+      process_flow_diagram: { id: 2, name: "processflow.pdf", status: "Clean" },
       status: OperationStatus.REGISTERED,
     };
     useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
