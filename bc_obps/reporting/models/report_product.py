@@ -26,21 +26,21 @@ class ReportProduct(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_products",
-        db_comment="The report this production information relates to",
+        db_comment="The report this production information relates to. Foreign key to the erc.report_version table",
     )
 
     facility_report = models.ForeignKey(
         FacilityReport,
         on_delete=models.CASCADE,
         related_name="report_products",
-        db_comment="The facility report this production information belongs to",
+        db_comment="The facility report this production information belongs to. Foreign key to the erc.facility_report table",
     )
 
     product = models.ForeignKey(
         RegulatedProduct,
         on_delete=models.PROTECT,
         related_name="report_products",
-        db_comment="The product this production information is about",
+        db_comment="The product this production information is about. Foreign key to the erc.regulated_product table",
     )
     annual_production = models.FloatField(
         db_comment="The total annual production for the product, expressed in the unit of this same model."
@@ -59,7 +59,7 @@ class ReportProduct(TimeStampedModel):
         max_length=10000,
         choices=ProductionMethodologyChoices.choices,
         default=ProductionMethodologyChoices.OBPS_CALCULATOR,
-        db_comment="The production methodoogy used to make this product",
+        db_comment="The production methodoogy used to make this product. Defaulted to OBPS_CALCULATOR",
     )
     production_methodology_description = models.CharField(
         max_length=10000,

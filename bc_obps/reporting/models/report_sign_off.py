@@ -14,7 +14,7 @@ class ReportSignOff(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_sign_off",
-        db_comment="The report this sign-off information relates to",
+        db_comment="The report this sign-off information relates to. Foreign key to the erc.report_version table",
     )
 
     acknowledgement_of_review = models.BooleanField(

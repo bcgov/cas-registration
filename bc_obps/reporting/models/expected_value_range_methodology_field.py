@@ -13,19 +13,19 @@ class ExpectedValueRangeMethodologyField(BaseModel):
         FuelType,
         on_delete=models.CASCADE,
         related_name="expected_value_range_methodology_field",
-        db_comment="The fuel_type record that this value range applies to for the methodolgy field value",
+        db_comment="The fuel_type record that this value range applies to for the methodology field value. Foreign key to erc.fuel_type table",
     )
     methodology = models.ForeignKey(
         Methodology,
         on_delete=models.CASCADE,
         related_name="expected_value_range_methodology_field",
-        db_comment="The methodology record that this value range applies to for the methodology field value",
+        db_comment="The methodology record that this value range applies to for the methodology field value. Foreign key to erc.methodology table",
     )
     reporting_field = models.ForeignKey(
         ReportingField,
         on_delete=models.CASCADE,
         related_name="expected_value_range_methodology_field",
-        db_comment="The reporting_field record that this value range applies to for the methodology field value",
+        db_comment="The reporting_field record that this value range applies to for the methodology field value. Foreign key to erc.reporting_field table",
     )
     lower_bound = models.DecimalField(
         max_digits=10,

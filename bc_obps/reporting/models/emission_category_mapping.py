@@ -9,10 +9,23 @@ class EmissionCategoryMapping(BaseModel):
     """Emission Category Mapping model"""
 
     emission_category = models.ForeignKey(
-        EmissionCategory, on_delete=models.DO_NOTHING, related_name="emission_category_mappings"
+        EmissionCategory,
+        on_delete=models.DO_NOTHING,
+        related_name="emission_category_mappings",
+        db_comment="Emission category that defines a reported emission. Foreign key to erc.emission_category table",
     )
-    activity = models.ForeignKey(Activity, on_delete=models.DO_NOTHING, related_name="emission_category_mappings")
-    source_type = models.ForeignKey(SourceType, on_delete=models.DO_NOTHING, related_name="emission_category_mappings")
+    activity = models.ForeignKey(
+        Activity,
+        on_delete=models.DO_NOTHING,
+        related_name="emission_category_mappings",
+        db_comment="Activity that this emission is reported under. Foreign key to erc.activity table",
+    )
+    source_type = models.ForeignKey(
+        SourceType,
+        on_delete=models.DO_NOTHING,
+        related_name="emission_category_mappings",
+        db_comment="Source type that this emission is reported under. Foreign key to erc.source_type table",
+    )
 
     class Meta:
         db_table_comment = "This table contains the set of rules for applying an emission category to an emission based on the activity & source type the emission was reported under."

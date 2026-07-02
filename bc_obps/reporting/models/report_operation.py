@@ -16,7 +16,7 @@ class ReportOperation(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_operation",
-        db_comment="The report this operation information relates to",
+        db_comment="The report this operation information relates to. Foreign key to the erc.report_version table",
     )
 
     operator_legal_name = models.CharField(
@@ -35,11 +35,11 @@ class ReportOperation(TimeStampedModel):
     )
     operation_type = models.CharField(
         max_length=1000,
-        db_comment="The type of the operation, LFO or SFO",
+        db_comment="The type of the operation, LFO or SFO (Linear Facilities Operation or Single Facility Operation)",
     )
     operation_bcghgid = models.CharField(
         max_length=1000,
-        db_comment="The BCGHG ID of the operation",
+        db_comment="The BC Greenhouse Gas ID of the operation",
         blank=True,
         null=True,
     )
@@ -60,7 +60,7 @@ class ReportOperation(TimeStampedModel):
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        db_comment="The NAICS code of the operation at the time the report was created.",
+        db_comment="The North American Industry Classification System (NAICS) code of the operation at the time the report was created. Foreign key to the erc.naics_code table",
         related_name="+",
     )
 

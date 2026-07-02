@@ -13,7 +13,7 @@ class ReportVersion(TimeStampedModel):
     report = models.ForeignKey(
         Report,
         on_delete=models.CASCADE,
-        db_comment="The report to which this version applied.",
+        db_comment="The report to which this version applied. Foreign key to the erc.report table",
         related_name="report_versions",
     )
 
@@ -24,7 +24,7 @@ class ReportVersion(TimeStampedModel):
 
     report_type = models.CharField(
         max_length=1000,
-        db_comment="Report type",
+        db_comment="Report type for this Report Version. Annual Report or Simple Report",
         default=ReportType.ANNUAL_REPORT,
         choices=ReportType.choices,
     )

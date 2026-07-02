@@ -18,7 +18,9 @@ class TsTzRange(models.Func):
 class Configuration(BaseModel):
     """Reporting configuration for a year/program state"""
 
-    slug = models.CharField(max_length=1000, db_comment="Unique identifier for a configuration", unique=True)
+    slug = models.CharField(
+        max_length=1000, db_comment="Unique identifier for a configuration, based on reporting year", unique=True
+    )
     valid_from = models.DateField(blank=True, null=True, db_comment="Date from which the configuration is applicable")
     valid_to = models.DateField(blank=True, null=True, db_comment="Date until which the configuration is applicable")
 

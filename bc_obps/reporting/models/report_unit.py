@@ -14,7 +14,7 @@ class ReportUnit(ReportDataBaseModel):
         ReportSourceType,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The source type data this unit data belongs to",
+        db_comment="The source type data this unit data belongs to. Foreign key to the erc.report_source_type table",
     )
 
     type = models.CharField(

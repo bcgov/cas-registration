@@ -12,20 +12,20 @@ class ReportActivity(ReportDataBaseModel):
         FacilityReport,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The facility report this activity data belongs to",
+        db_comment="The facility report this activity data belongs to. Foreign key to the erc.facility_report table",
     )
 
     activity_base_schema = models.ForeignKey(
         ActivityJsonSchema,
         on_delete=models.PROTECT,
         related_name="%(class)s_records",
-        db_comment="The activity base schema used to render the form that collected this data",
+        db_comment="The activity base schema used to render the form that collected this data. Foreign key to the erc.activity_json_schema table",
     )
     activity = models.ForeignKey(
         Activity,
         on_delete=models.PROTECT,
         related_name="%(class)s_records",
-        db_comment="The reporting activity this data applies to",
+        db_comment="The reporting activity this data applies to. Foreign key to the erc.activity table",
     )
 
     class Meta(ReportDataBaseModel.Meta):

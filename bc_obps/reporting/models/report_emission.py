@@ -32,13 +32,13 @@ class ReportEmission(ReportDataBaseModel):
         GasType,
         on_delete=models.PROTECT,
         related_name="%(class)s_records",
-        db_comment="The gas type this emission data applies to",
+        db_comment="The gas type this emission data applies to. Foreign key to the erc.gas_type table",
     )
     report_source_type = models.ForeignKey(
         ReportSourceType,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The source type data this emission data belongs to",
+        db_comment="The source type data this emission data belongs to. Foreign key to the erc.report_source_type table",
     )
     report_unit = models.ForeignKey(
         ReportUnit,
@@ -46,7 +46,7 @@ class ReportEmission(ReportDataBaseModel):
         null=True,
         blank=True,
         related_name="%(class)s_records",
-        db_comment="The unit/source sub-type this emission data belongs to, if applicable",
+        db_comment="The unit/source sub-type this emission data belongs to, if applicable. Foreign key to the erc.report_unit table",
     )
     report_fuel = models.ForeignKey(
         ReportFuel,
@@ -54,7 +54,7 @@ class ReportEmission(ReportDataBaseModel):
         blank=True,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The fuel data this emission data belongs to, if applicable",
+        db_comment="The fuel data this emission data belongs to, if applicable. Foreign key to the erc.report_fuel table",
     )
     emission_categories = models.ManyToManyField(
         EmissionCategory,

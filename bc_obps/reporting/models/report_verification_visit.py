@@ -15,7 +15,7 @@ class ReportVerificationVisit(TimeStampedModel):
         ReportVerification,
         on_delete=models.CASCADE,
         related_name="report_verification_visits",
-        db_comment="The report verification associated with this visit",
+        db_comment="The report verification associated with this visit. Foreign key to the erc.report_verification table",
     )
 
     visit_name = models.CharField(
@@ -39,7 +39,7 @@ class ReportVerificationVisit(TimeStampedModel):
         max_length=100,
         null=True,
         blank=True,
-        db_comment="Geographic location of an other facility visited",
+        db_comment="Geographic location of an other facility visited. (Latitude, Longitude. e.g. (10.0, 20.0))",
     )
 
     is_other_visit = models.BooleanField(

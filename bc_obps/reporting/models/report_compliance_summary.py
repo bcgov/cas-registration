@@ -12,7 +12,7 @@ class ReportComplianceSummary(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_compliance_summary",
-        db_comment="The version of the report this compliance summary data relates to",
+        db_comment="The version of the report this compliance summary data relates to. Foreign key to the erc.report_version table",
     )
     emissions_attributable_for_reporting = models.DecimalField(
         db_comment="Total emissions in tCO2e that are considered attributable for reporting. This is the sum of all emissions reported from 'basic' emission categories",
