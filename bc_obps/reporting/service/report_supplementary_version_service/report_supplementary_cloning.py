@@ -31,6 +31,9 @@ from reporting.models import (
     ReportVersion,
 )
 
+from django.db.models import Q
+from registration.models import Contact
+
 
 def clone_report_version_operation(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
     # Retrieve the original operation from the old report version
@@ -62,18 +65,32 @@ def clone_report_version_representatives(old_report_version: ReportVersion, new_
 
 
 def clone_report_version_person_responsible(
-    old_report_version: ReportVersion, new_report_version: ReportVersion
+    old_report_version: ReportVersion,
+    new_report_version: ReportVersion,
 ) -> None:
     # Retrieve the ReportPersonResponsible instance associated with the old report version
     report_person_responsible_to_clone = ReportPersonResponsible.objects.filter(
         report_version=old_report_version
     ).first()
 
-    if report_person_responsible_to_clone:
-        # Clone the instance by resetting the primary key and updating the report version
-        report_person_responsible_to_clone.pk = None
-        report_person_responsible_to_clone.report_version = new_report_version
-        report_person_responsible_to_clone.save()
+    # Do not clone if the report version has no Person Responsible
+    if not report_person_responsible_to_clone:
+        return
+
+    # Check if the PersonResponsible referenced contact still exists
+    contact_exists = Contact.objects.filter(
+        Q(id=report_person_responsible_to_clone.contact_id) | Q(email=report_person_responsible_to_clone.email),
+        archived_at__isnull=True,
+    ).exists()
+
+    # Do not clone if the contact no longer exists
+    if not contact_exists:
+        return
+
+    # Clone the instance by resetting the primary key and updating the report version
+    report_person_responsible_to_clone.pk = None
+    report_person_responsible_to_clone.report_version = new_report_version
+    report_person_responsible_to_clone.save()
 
 
 def clone_report_version_additional_data(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
