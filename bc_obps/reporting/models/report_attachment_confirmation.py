@@ -14,20 +14,19 @@ class ReportAttachmentConfirmation(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_attachment_confirmation",
-        db_comment="The supplementary report this attachment confirmation information relates to",
+        db_comment="The supplementary report this attachment confirmation information relates to. Foreign key to the erc.report_version table",
     )
 
     confirm_supplementary_required_attachments_uploaded = models.BooleanField(
         default=False,
         db_comment=(
-            "Whether the user confirmed that any attachments required " "for the supplementary report were uploaded."
+            "Whether the user confirmed that any attachments required for the supplementary report were uploaded."
         ),
     )
     confirm_supplementary_existing_attachments_relevant = models.BooleanField(
         default=False,
         db_comment=(
-            "Whether the user confirmed that previously uploaded attachments "
-            "that have not been updated are still relevant to the supplementary report."
+            "Whether the user confirmed that previously uploaded attachments that have not been updated are still relevant to the supplementary report."
         ),
     )
 

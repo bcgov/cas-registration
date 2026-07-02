@@ -10,7 +10,7 @@ class ReportAdditionalData(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_additional_data",
-        db_comment="The report version this report additional data applies to",
+        db_comment="The report version this report additional data applies to. Foreign key to the erc.report_version table",
     )
     capture_emissions = models.BooleanField(
         db_comment="Whether or not capture emissions was selected",
@@ -18,22 +18,22 @@ class ReportAdditionalData(TimeStampedModel):
     )
     emissions_on_site_use = models.IntegerField(
         blank=True,
-        db_comment="Emissions on site use",
+        db_comment="Emissions captured for on-site use, measured in tonnes (t)",
         null=True,
     )
     emissions_on_site_sequestration = models.IntegerField(
         blank=True,
-        db_comment="Emissions on site sequestration",
+        db_comment="Emissions captured for on-site sequestration, measured in tonnes (t)",
         null=True,
     )
     emissions_off_site_transfer = models.IntegerField(
         blank=True,
-        db_comment="Emissions off-site transfer",
+        db_comment="Emissions captured for off-site transfer, measured in tonnes (t)",
         null=True,
     )
     electricity_generated = models.IntegerField(
         blank=True,
-        db_comment="Electricity generated",
+        db_comment="Electricity generated, measured in gigawatt hours (GWh)",
         null=True,
     )
 

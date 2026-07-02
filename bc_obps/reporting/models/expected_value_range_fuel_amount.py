@@ -11,7 +11,7 @@ class ExpectedValueRangeFuelAmount(BaseModel):
         FuelType,
         on_delete=models.CASCADE,
         related_name="expected_value_range_fuel_amount",
-        db_comment="The fuel type record that this value range applies to for the fuel_amount value",
+        db_comment="The fuel type record that this value range applies to for the fuel_amount value. Foreign key to erc.fuel_type table",
     )
     lower_bound = models.DecimalField(
         max_digits=10,

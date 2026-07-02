@@ -10,10 +10,20 @@ class ActivitySourceTypeJsonSchema(BaseModel):
     """Intersection table for Activity-SourceType-JsonSchema"""
 
     # No history needed, these elements are immutable
-    activity = models.ForeignKey(Activity, on_delete=models.DO_NOTHING, related_name="+")
-    source_type = models.ForeignKey(SourceType, on_delete=models.DO_NOTHING, related_name="+")
+    activity = models.ForeignKey(
+        Activity,
+        on_delete=models.DO_NOTHING,
+        related_name="+",
+        db_comment="The identifier for the activity type the schema is referencing. Foreign key to the erc.activity table",
+    )
+    source_type = models.ForeignKey(
+        SourceType,
+        on_delete=models.DO_NOTHING,
+        related_name="+",
+        db_comment="The identifier for the source type the schema is referencing. Foreign key to the erc.source_type table",
+    )
     json_schema = models.JSONField(
-        db_comment="The json schema for a specific activity-source type pair. This defines the shape of the data collected for the source type",
+        db_comment="The json schema for a specific activity-source type pair. This defines the shape of the data collected for the source type. Each table with the prefix report_* captures a related subsection of this schema. Greenhouse Gas Emission Reporting Regulation is the initial basis for this data collection",
     )
     has_unit = models.BooleanField(
         db_comment="Whether or not this source type should collect unit data. If true, add a unit schema when buidling the form object",
@@ -23,8 +33,18 @@ class ActivitySourceTypeJsonSchema(BaseModel):
         db_comment="Whether or not this source type should collect fuel data. If true, add a fuel schema when buidling the form object",
         default=True,
     )
-    valid_from = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
-    valid_to = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
+    valid_from = models.ForeignKey(
+        Configuration,
+        on_delete=models.DO_NOTHING,
+        related_name="+",
+        db_comment="The configuration record that defines the start of the valid period for the corresponding reporting year. Foreign key to the erc.configuration table",
+    )
+    valid_to = models.ForeignKey(
+        Configuration,
+        on_delete=models.DO_NOTHING,
+        related_name="+",
+        db_comment="The configuration record that defines the end of the valid period for the corresponding reporting year. Foreign key to the erc.configuration table",
+    )
 
     class Meta:
         db_table_comment = "Intersection table that assigns a json_schema as valid for a period of time given an activity-sourceType pair"

@@ -10,12 +10,27 @@ class ActivityJsonSchema(BaseModel):
     """Intersection table for Activity-JsonSchema"""
 
     # No history needed, these elements are immutable
-    activity = models.ForeignKey(Activity, on_delete=models.DO_NOTHING, related_name="+")
+    activity = models.ForeignKey(
+        Activity,
+        on_delete=models.DO_NOTHING,
+        related_name="+",
+        db_comment="The identifier for the activity type the schema is referencing. Foreign key to the erc.activity table",
+    )
     json_schema = models.JSONField(
         db_comment="The json schema for a specific activity. This defines the shape of the data collected for the related activity",
     )
-    valid_from = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
-    valid_to = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
+    valid_from = models.ForeignKey(
+        Configuration,
+        on_delete=models.DO_NOTHING,
+        related_name="+",
+        db_comment="The configuration record that defines the start of the valid period for the corresponding reporting year. Foreign key to the erc.configuration table",
+    )
+    valid_to = models.ForeignKey(
+        Configuration,
+        on_delete=models.DO_NOTHING,
+        related_name="+",
+        db_comment="The configuration record that defines the end of the valid period for the corresponding reporting year. Foreign key to the erc.configuration table",
+    )
 
     class Meta:
         db_table_comment = (

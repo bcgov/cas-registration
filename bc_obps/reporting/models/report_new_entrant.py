@@ -10,7 +10,7 @@ class ReportNewEntrant(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_new_entrant",
-        db_comment="The associated report version for this new entrant record",
+        db_comment="The associated report version for this new entrant record. Foreign key to the erc.report_version table",
     )
     authorization_date = models.DateTimeField(
         db_comment="Date of authorization for emission reporting",

@@ -12,19 +12,19 @@ class ReportNewEntrantProduction(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_new_entrant_productions",
-        db_comment="The report version this new entrant production record belongs to",
+        db_comment="The report version this new entrant production record belongs to. Foreign key to the erc.report_version table",
     )
     product = models.ForeignKey(
         RegulatedProduct,
         on_delete=models.PROTECT,
         related_name="new_entrant_productions",
-        db_comment="The regulated product associated with this production record",
+        db_comment="The regulated product associated with this production record. Foreign key to the erc.regulated_product table",
     )
     report_new_entrant = models.ForeignKey(
         ReportNewEntrant,
         on_delete=models.CASCADE,
         related_name="productions",
-        db_comment="The new entrant report to which this production record belongs",
+        db_comment="The new entrant report to which this production record belongs. Foreign key to the erc.report_new_entrant table",
     )
     production_amount = models.DecimalField(
         blank=True,

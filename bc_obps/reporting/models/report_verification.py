@@ -14,7 +14,7 @@ class ReportVerification(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_verification",
-        db_comment="The report version of this report verification",
+        db_comment="The report version of this report verification. Foreign key to the erc.report_version table",
     )
 
     verification_body_name = models.CharField(
@@ -33,7 +33,7 @@ class ReportVerification(TimeStampedModel):
         null=True,
         blank=True,
         choices=AccreditedBy.choices,
-        db_comment="The verification accreditation body",
+        db_comment="The verification accreditation body (ANAB or SCC)",
     )
 
     class ScopeOfVerification(models.TextChoices):

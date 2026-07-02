@@ -14,11 +14,15 @@ class Report(TimeStampedModel):
     # This is needed in case the operation changes hands and doesn't belong to the operator.
     # The report still belongs to the operator which filed it.
     operator = models.ForeignKey(
-        Operator, on_delete=models.PROTECT, db_comment="The operator to which this report belongs"
+        Operator,
+        on_delete=models.PROTECT,
+        db_comment="The operator to which this report belongs. Foreign key to the erc.operator table",
     )
 
     operation = models.ForeignKey(
-        Operation, on_delete=models.PROTECT, db_comment="The operation for which this report was filed"
+        Operation,
+        on_delete=models.PROTECT,
+        db_comment="The operation for which this report was filed. Foreign key to the erc.operation table",
     )
 
     reporting_year = models.ForeignKey(
@@ -26,7 +30,7 @@ class Report(TimeStampedModel):
         on_delete=models.PROTECT,
         blank=False,
         null=False,
-        db_comment="The reporting year, for which this report is filled",
+        db_comment="The reporting year, for which this report is filled. Foreign key to the erc.reporting_year table",
     )
 
     class Meta(TimeStampedModel.Meta):

@@ -12,7 +12,7 @@ class ReportFuel(ReportDataBaseModel):
         ReportSourceType,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The source type data this unit data belongs to",
+        db_comment="The source type data this unit data belongs to. Foreign key to the erc.report_source_type table",
     )
     report_unit = models.ForeignKey(
         ReportUnit,
@@ -20,13 +20,13 @@ class ReportFuel(ReportDataBaseModel):
         blank=True,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The unit form data this fuel data belongs to, if applicable",
+        db_comment="The unit form data this fuel data belongs to, if applicable. Foreign key to the erc.report_unit table",
     )
     fuel_type = models.ForeignKey(
         FuelType,
         on_delete=models.PROTECT,
         related_name="%(class)s_records",
-        db_comment="The fuel type this data applies to",
+        db_comment="The fuel type this data applies to. Foreign key to the erc.fuel_type table",
     )
 
     class Meta(ReportDataBaseModel.Meta):

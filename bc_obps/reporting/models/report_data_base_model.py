@@ -17,7 +17,7 @@ class ReportDataBaseModel(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name='%(class)s_records',
-        db_comment="The report version this data belongs to",
+        db_comment="The report version this data belongs to. Foreign key to the erc.report_version table",
     )
 
     class Meta(TimeStampedModel.Meta):

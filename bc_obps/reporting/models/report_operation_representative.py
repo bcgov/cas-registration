@@ -14,7 +14,7 @@ class ReportOperationRepresentative(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_operation_representatives",
-        db_comment="The report version associated with this operation representative.",
+        db_comment="The report version associated with this operation representative. Foreign key to the erc.report_version table",
     )
     representative_name = models.CharField(
         max_length=1000,
