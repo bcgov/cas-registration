@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>report_source_type - default.erc</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.erc</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>report_source_type</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>A table to store the reported source type-specific data, in a JSON format</p>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="id">id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title='Automatically updated by the database'>√</td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="report_emission.report_source_type_id references report_source_type.id via report_emission_report_source_type_i_b0bcf9b2_fk_report_so"><a href='report_emission.html'>report_emission</a><span class='relatedKey'>.report_source_type_id</span></td>
+                                                <td class="constraint detail">report_emission_report_source_type_i_b0bcf9b2_fk_report_so</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_fuel.report_source_type_id references report_source_type.id via report_fuel_report_source_type_i_19c2488a_fk_report_so"><a href='report_fuel.html'>report_fuel</a><span class='relatedKey'>.report_source_type_id</span></td>
+                                                <td class="constraint detail">report_fuel_report_source_type_i_19c2488a_fk_report_so</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_unit.report_source_type_id references report_source_type.id via report_unit_report_source_type_i_2bfe5193_fk_report_so"><a href='report_unit.html'>report_unit</a><span class='relatedKey'>.report_source_type_id</span></td>
+                                                <td class="constraint detail">report_unit_report_source_type_i_2bfe5193_fk_report_so</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="created_at">created_at</span></td>
+                                    <td>timestamptz</td>
+                                    <td>35,6</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Timestamp with timezone of when the record was created</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="updated_at">updated_at</span></td>
+                                    <td>timestamptz</td>
+                                    <td>35,6</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Timestamp with timezone of when the record was last updated</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="archived_at">archived_at</span></td>
+                                    <td>timestamptz</td>
+                                    <td>35,6</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Timestamp with timezone of when the record was archived (soft-deleted). Null if the record is active</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="json_data">json_data</span></td>
+                                    <td>jsonb</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>A flat JSON object representing the data collected for this model</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="activity_source_type_base_schema_id">activity_source_type_base_schema_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="report_source_type.activity_source_type_base_schema_id references activity_source_type_json_schema.id via report_source_type_activity_source_type_a5907d1b_fk_activity_"><a href='activity_source_type_json_schema.html'>activity_source_type_json_schema</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">report_source_type_activity_source_type_a5907d1b_fk_activity_</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The activity-source-type base schema used to render the form that collected this data</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="archived_by_id">archived_by_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="report_source_type.archived_by_id references user.user_guid via report_source_type_archived_by_id_e356358d_fk_user_user_guid"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
+                                                <td class="constraint detail">report_source_type_archived_by_id_e356358d_fk_user_user_guid</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>ID of the user who archived (soft-deleted) the record. Null if the record is active. Foreign key to erc.user</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="created_by_id">created_by_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="report_source_type.created_by_id references user.user_guid via report_source_type_created_by_id_de48d8c6_fk_user_user_guid"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
+                                                <td class="constraint detail">report_source_type_created_by_id_de48d8c6_fk_user_user_guid</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>ID of the user who created the record. Foreign key to erc.user</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="report_activity_id">report_activity_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="report_source_type.report_activity_id references report_activity.id via report_source_type_report_activity_id_226f7f58_fk_report_ac"><a href='report_activity.html'>report_activity</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">report_source_type_report_activity_id_226f7f58_fk_report_ac</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The activity data record this source type data belongs to</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="updated_by_id">updated_by_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="report_source_type.updated_by_id references user.user_guid via report_source_type_updated_by_id_89d39c34_fk_user_user_guid"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
+                                                <td class="constraint detail">report_source_type_updated_by_id_89d39c34_fk_user_user_guid</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>ID of the user who last updated the record. Foreign key to erc.user</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="report_version_id">report_version_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="report_source_type.report_version_id references report_version.id via report_source_type_report_version_id_8bdee43c_fk_report_ve"><a href='report_version.html'>report_version</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">report_source_type_report_version_id_8bdee43c_fk_report_ve</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The report version this data belongs to</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="source_type_id">source_type_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="report_source_type.source_type_id references source_type.id via report_source_type_source_type_id_b4a5207c_fk_source_type_id"><a href='source_type.html'>source_type</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">report_source_type_source_type_id_b4a5207c_fk_source_type_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The source type this data applies to</p></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 id="Indexes" class="box-title">Indexes</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="indexes_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Type</th>
+                                    <th>Sort</th>
+                                    <th>Column(s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> report_source_type_pkey</td>
+                                    <td>Primary key</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>report_source_type_activity_source_type_base_schema_id_a5907d1b</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>activity_source_type_base_schema_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>report_source_type_archived_by_id_e356358d</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>archived_by_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>report_source_type_created_by_id_de48d8c6</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>created_by_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>report_source_type_report_activity_id_226f7f58</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>report_activity_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>report_source_type_report_version_id_8bdee43c</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>report_version_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>report_source_type_source_type_id_b4a5207c</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>source_type_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>report_source_type_updated_by_id_89d39c34</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>updated_by_id</td>
+                                </tr>
+                                <tr>
+                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> unique_source_type_report_per_activity_report_and_source_type</td>
+                                    <td>Must be unique</td>
+                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
+                                    <td>report_activity_id + source_type_id</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="activity_source_type_json_schema.html" target="_top" title="activity_source_type_json_schema" alt="" coords="515,296,864,531">
+<area shape="rect" id="node2" href="source_type.html" target="_top" title="source_type" alt="" coords="282,379,457,531">
+<area shape="rect" id="node3" href="report_activity.html" target="_top" title="report_activity" alt="" coords="569,620,810,943">
+<area shape="rect" id="node4" href="user.html" target="_top" title="user" alt="" coords="5,665,224,1017">
+<area shape="rect" id="node5" href="report_version.html" target="_top" title="report_version" alt="" coords="268,901,471,1136">
+<area shape="rect" id="node6" href="report_emission.html" target="_top" title="report_emission" alt="" coords="1972,5,2195,357">
+<area shape="rect" id="node7" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="1705,152,1928,475">
+<area shape="rect" id="node8" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="908,341,1395,763">
+<area shape="rect" id="node9" href="report_unit.html" target="_top" title="report_unit" alt="" coords="1439,1104,1661,1368">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/report_source_type.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
+<area shape="rect" id="node1" href="activity_json_schema.html" target="_top" title="activity_json_schema" alt="" coords="1974,318,2221,406">
+<area shape="rect" id="node2" href="activity.html" target="_top" title="activity" alt="" coords="1615,601,1754,689">
+<area shape="rect" id="node3" href="configuration.html" target="_top" title="configuration" alt="" coords="1591,274,1779,362">
+<area shape="rect" id="node4" href="activity_source_type_json_schema.html" target="_top" title="activity_source_type_json_schema" alt="" coords="1923,423,2272,511">
+<area shape="rect" id="node5" href="source_type.html" target="_top" title="source_type" alt="" coords="1597,494,1772,582">
+<area shape="rect" id="node6" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="385,2631,639,2719">
+<area shape="rect" id="node7" href="user.html" target="_top" title="user" alt="" coords="197,2954,312,3042">
+<area shape="rect" id="node75" href="app_role.html" target="_top" title="app_role" alt="" coords="5,2951,153,3039">
+<area shape="rect" id="node8" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="356,2458,668,2546">
+<area shape="rect" id="node9" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1151,467,1340,555">
+<area shape="rect" id="node10" href="operation.html" target="_top" title="operation" alt="" coords="777,2451,935,2539">
+<area shape="rect" id="node28" href="operator.html" target="_top" title="operator" alt="" coords="437,2247,587,2335">
+<area shape="rect" id="node41" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="369,2353,655,2441">
+<area shape="rect" id="node11" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="376,745,648,833">
+<area shape="rect" id="node12" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="2839,1362,3127,1450">
+<area shape="rect" id="node13" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2359,2645,2653,2733">
+<area shape="rect" id="node20" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="1571,1786,1799,1874">
+<area shape="rect" id="node22" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="1942,1467,2253,1555">
+<area shape="rect" id="node14" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="2854,3786,3113,3874">
+<area shape="rect" id="node15" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="1134,3598,1357,3686">
+<area shape="rect" id="node32" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="712,3102,1000,3190">
+<area shape="rect" id="node16" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="3271,4261,3509,4349">
+<area shape="rect" id="node17" href="compliance_penalty_accrual.html" target="_top" title="compliance_penalty_accrual" alt="" coords="3553,4329,3856,4417">
+<area shape="rect" id="node18" href="compliance_penalty_rate.html" target="_top" title="compliance_penalty_rate" alt="" coords="717,1126,995,1214">
+<area shape="rect" id="node19" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="397,1194,627,1282">
+<area shape="rect" id="node21" href="report.html" target="_top" title="report" alt="" coords="1180,2793,1311,2881">
+<area shape="rect" id="node38" href="report_version.html" target="_top" title="report_version" alt="" coords="1587,3251,1783,3339">
+<area shape="rect" id="node23" href="compliance_report_version_manua_f4e36670.html" target="_top" title="compliance_report_version_manual_handling" alt="" coords="2764,1635,3203,1723">
+<area shape="rect" id="node24" href="configuration_element.html" target="_top" title="configuration_element" alt="" coords="2375,171,2637,259">
+<area shape="rect" id="node25" href="custom_methodology_schema.html" target="_top" title="custom_methodology_schema" alt="" coords="1938,213,2257,301">
+<area shape="rect" id="node26" href="gas_type.html" target="_top" title="gas_type" alt="" coords="1611,125,1759,213">
+<area shape="rect" id="node27" href="contact.html" target="_top" title="contact" alt="" coords="786,3751,926,3839">
+<area shape="rect" id="node29" href="document.html" target="_top" title="document" alt="" coords="1165,677,1326,765">
+<area shape="rect" id="node30" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="2854,2729,3113,2817">
+<area shape="rect" id="node31" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="1565,3357,1804,3445">
+<area shape="rect" id="node33" href="elicensing_payment.html" target="_top" title="elicensing_payment" alt="" coords="1979,3702,2216,3790">
+<area shape="rect" id="node34" href="emission_category_mapping.html" target="_top" title="emission_category_mapping" alt="" coords="1945,601,2249,689">
+<area shape="rect" id="node35" href="facility.html" target="_top" title="facility" alt="" coords="1178,2635,1313,2723">
+<area shape="rect" id="node36" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1491,1891,1879,1979">
+<area shape="rect" id="node37" href="facility_report.html" target="_top" title="facility_report" alt="" coords="2001,1741,2193,1829">
+<area shape="rect" id="node39" href="facility_snapshot.html" target="_top" title="facility_snapshot" alt="" coords="1577,3010,1792,3098">
+<area shape="rect" id="node40" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1133,1943,1357,2031">
+<area shape="rect" id="node42" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1044,2049,1447,2137">
+<area shape="rect" id="node43" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="751,2079,961,2167">
+<area shape="rect" id="node44" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="747,2185,965,2273">
+<area shape="rect" id="node45" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2408,858,2604,946">
+<area shape="rect" id="node46" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="1967,3875,2228,3963">
+<area shape="rect" id="node47" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="1981,3981,2213,4069">
+<area shape="rect" id="node48" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="1926,4087,2269,4175">
+<area shape="rect" id="node49" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="2316,1262,2696,1350">
+<area shape="rect" id="node50" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="1937,4193,2258,4281">
+<area shape="rect" id="node51" href="report_emission.html" target="_top" title="report_emission" alt="" coords="3900,3279,4108,3367">
+<area shape="rect" id="node52" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3621,1086,3789,1174">
+<area shape="rect" id="node53" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="2740,615,3227,1037">
+<area shape="rect" id="node54" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3305,623,3475,711">
+<area shape="rect" id="node57" href="fuel_type.html" target="_top" title="fuel_type" alt="" coords="3314,999,3466,1087">
+<area shape="rect" id="node55" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="2359,2973,2653,3061">
+<area shape="rect" id="node56" href="report_emission_emission_categories.html" target="_top" title="report_emission_emission_categories" alt="" coords="4152,3277,4528,3365">
+<area shape="rect" id="node58" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="4219,4413,4461,4501">
+<area shape="rect" id="node59" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="1978,4675,2217,4763">
+<area shape="rect" id="node60" href="report_new_entrant_emission.html" target="_top" title="report_new_entrant_emission" alt="" coords="2348,4586,2664,4674">
+<area shape="rect" id="node61" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="2339,5075,2673,5163">
+<area shape="rect" id="node62" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2327,1535,2685,1623">
+<area shape="rect" id="node63" href="report_operation.html" target="_top" title="report_operation" alt="" coords="1989,4781,2205,4869">
+<area shape="rect" id="node64" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="1927,4886,2267,4974">
+<area shape="rect" id="node65" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="1952,4502,2243,4590">
+<area shape="rect" id="node66" href="report_product.html" target="_top" title="report_product" alt="" coords="2406,3394,2606,3482">
+<area shape="rect" id="node67" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2801,2903,3165,2991">
+<area shape="rect" id="node68" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2367,999,2645,1087">
+<area shape="rect" id="node69" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="1998,4991,2197,5079">
+<area shape="rect" id="node70" href="report_verification.html" target="_top" title="report_verification" alt="" coords="1983,5165,2212,5253">
+<area shape="rect" id="node71" href="report_verification_visit.html" target="_top" title="report_verification_visit" alt="" coords="2371,5249,2641,5337">
+<area shape="rect" id="node72" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1152,4011,1339,4099">
+<area shape="rect" id="node73" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1093,4185,1397,4273">
+<area shape="rect" id="node74" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1147,2365,1343,2453">
+<area shape="rect" id="node76" href="user_operator.html" target="_top" title="user_operator" alt="" coords="760,2657,952,2745">
+<area shape="rect" id="node77" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="363,5310,661,5398">
+</map>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/report_source_type.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="activity_source_type_json_schema.html" target="_top" title="activity_source_type_json_schema" alt="" coords="515,296,864,531">
+<area shape="rect" id="node2" href="source_type.html" target="_top" title="source_type" alt="" coords="282,379,457,531">
+<area shape="rect" id="node3" href="report_activity.html" target="_top" title="report_activity" alt="" coords="569,620,810,943">
+<area shape="rect" id="node4" href="user.html" target="_top" title="user" alt="" coords="5,665,224,1017">
+<area shape="rect" id="node5" href="report_version.html" target="_top" title="report_version" alt="" coords="268,901,471,1136">
+<area shape="rect" id="node6" href="report_emission.html" target="_top" title="report_emission" alt="" coords="1972,5,2195,357">
+<area shape="rect" id="node7" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="1705,152,1928,475">
+<area shape="rect" id="node8" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="908,341,1395,763">
+<area shape="rect" id="node9" href="report_unit.html" target="_top" title="report_unit" alt="" coords="1439,1104,1661,1368">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/report_source_type.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="activity.html" target="_top" title="activity" alt="" coords="1730,337,1879,425">
+<area shape="rect" id="node2" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,633,236,721">
+<area shape="rect" id="node3" href="activity_json_schema.html" target="_top" title="activity_json_schema" alt="" coords="2094,508,2341,596">
+<area shape="rect" id="node4" href="configuration.html" target="_top" title="configuration" alt="" coords="1711,232,1899,320">
+<area shape="rect" id="node5" href="activity_source_type_json_schema.html" target="_top" title="activity_source_type_json_schema" alt="" coords="2043,403,2392,491">
+<area shape="rect" id="node6" href="source_type.html" target="_top" title="source_type" alt="" coords="1717,127,1892,215">
+<area shape="rect" id="node7" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="505,2352,759,2440">
+<area shape="rect" id="node8" href="user.html" target="_top" title="user" alt="" coords="299,3436,413,3524">
+<area shape="rect" id="node76" href="app_role.html" target="_top" title="app_role" alt="" coords="47,3433,195,3521">
+<area shape="rect" id="node9" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="476,2525,788,2613">
+<area shape="rect" id="node10" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1271,4204,1460,4292">
+<area shape="rect" id="node11" href="operation.html" target="_top" title="operation" alt="" coords="897,2436,1055,2524">
+<area shape="rect" id="node29" href="operator.html" target="_top" title="operator" alt="" coords="557,1635,707,1723">
+<area shape="rect" id="node43" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="489,2631,775,2719">
+<area shape="rect" id="node12" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="496,2872,768,2960">
+<area shape="rect" id="node13" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="2959,4823,3247,4911">
+<area shape="rect" id="node14" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2479,5064,2773,5152">
+<area shape="rect" id="node21" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="1691,4619,1919,4707">
+<area shape="rect" id="node23" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="2062,4136,2373,4224">
+<area shape="rect" id="node15" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="2974,5237,3233,5325">
+<area shape="rect" id="node16" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="1254,4551,1477,4639">
+<area shape="rect" id="node33" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="832,3281,1120,3369">
+<area shape="rect" id="node17" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="3391,5148,3629,5236">
+<area shape="rect" id="node18" href="compliance_penalty_accrual.html" target="_top" title="compliance_penalty_accrual" alt="" coords="3673,5347,3976,5435">
+<area shape="rect" id="node19" href="compliance_penalty_rate.html" target="_top" title="compliance_penalty_rate" alt="" coords="837,1876,1115,1964">
+<area shape="rect" id="node20" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="517,2977,747,3065">
+<area shape="rect" id="node22" href="report.html" target="_top" title="report" alt="" coords="1300,2964,1431,3052">
+<area shape="rect" id="node39" href="report_version.html" target="_top" title="report_version" alt="" coords="1707,3233,1903,3321">
+<area shape="rect" id="node24" href="compliance_report_version_manua_f4e36670.html" target="_top" title="compliance_report_version_manual_handling" alt="" coords="2884,5604,3323,5692">
+<area shape="rect" id="node25" href="configuration_element.html" target="_top" title="configuration_element" alt="" coords="2495,177,2757,265">
+<area shape="rect" id="node26" href="custom_methodology_schema.html" target="_top" title="custom_methodology_schema" alt="" coords="2058,140,2377,228">
+<area shape="rect" id="node27" href="gas_type.html" target="_top" title="gas_type" alt="" coords="1731,16,1879,104">
+<area shape="rect" id="node28" href="contact.html" target="_top" title="contact" alt="" coords="906,1203,1046,1291">
+<area shape="rect" id="node30" href="document.html" target="_top" title="document" alt="" coords="1285,4309,1446,4397">
+<area shape="rect" id="node31" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="2974,5499,3233,5587">
+<area shape="rect" id="node32" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="1685,5300,1924,5388">
+<area shape="rect" id="node34" href="elicensing_payment.html" target="_top" title="elicensing_payment" alt="" coords="2099,5436,2336,5524">
+<area shape="rect" id="node35" href="emission_category_mapping.html" target="_top" title="emission_category_mapping" alt="" coords="2065,297,2369,385">
+<area shape="rect" id="node36" href="facility.html" target="_top" title="facility" alt="" coords="1298,1805,1433,1893">
+<area shape="rect" id="node37" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1611,1480,1999,1568">
+<area shape="rect" id="node38" href="facility_report.html" target="_top" title="facility_report" alt="" coords="2121,2324,2313,2412">
+<area shape="rect" id="node40" href="facility_snapshot.html" target="_top" title="facility_snapshot" alt="" coords="1697,1959,1912,2047">
+<area shape="rect" id="node41" href="fuel_type.html" target="_top" title="fuel_type" alt="" coords="280,249,432,337">
+<area shape="rect" id="node42" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1253,1700,1477,1788">
+<area shape="rect" id="node44" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1164,3313,1567,3401">
+<area shape="rect" id="node45" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="871,805,1081,893">
+<area shape="rect" id="node46" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="867,925,1085,1013">
+<area shape="rect" id="node47" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2528,979,2724,1067">
+<area shape="rect" id="node48" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="2087,1517,2348,1605">
+<area shape="rect" id="node49" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="2101,1623,2333,1711">
+<area shape="rect" id="node50" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="2046,3548,2389,3636">
+<area shape="rect" id="node51" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="2436,3632,2816,3720">
+<area shape="rect" id="node52" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="2057,3721,2378,3809">
+<area shape="rect" id="node53" href="report_emission.html" target="_top" title="report_emission" alt="" coords="4020,3496,4228,3584">
+<area shape="rect" id="node54" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3741,3425,3909,3513">
+<area shape="rect" id="node55" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="2860,736,3347,1157">
+<area shape="rect" id="node56" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3425,3425,3595,3513">
+<area shape="rect" id="node57" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="2479,2251,2773,2339">
+<area shape="rect" id="node58" href="report_emission_emission_categories.html" target="_top" title="report_emission_emission_categories" alt="" coords="4272,3493,4648,3581">
+<area shape="rect" id="node59" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="4339,4047,4581,4135">
+<area shape="rect" id="node60" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="2098,4441,2337,4529">
+<area shape="rect" id="node61" href="report_new_entrant_emission.html" target="_top" title="report_new_entrant_emission" alt="" coords="2468,4352,2784,4440">
+<area shape="rect" id="node62" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="2459,4723,2793,4811">
+<area shape="rect" id="node63" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2447,1323,2805,1411">
+<area shape="rect" id="node64" href="report_operation.html" target="_top" title="report_operation" alt="" coords="2109,2803,2325,2891">
+<area shape="rect" id="node65" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="2047,3827,2387,3915">
+<area shape="rect" id="node66" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="2072,1412,2363,1500">
+<area shape="rect" id="node67" href="report_product.html" target="_top" title="report_product" alt="" coords="2526,2408,2726,2496">
+<area shape="rect" id="node68" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2921,3285,3285,3373">
+<area shape="rect" id="node69" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2487,2713,2765,2801">
+<area shape="rect" id="node70" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="2118,4928,2317,5016">
+<area shape="rect" id="node71" href="report_verification.html" target="_top" title="report_verification" alt="" coords="2103,4619,2332,4707">
+<area shape="rect" id="node72" href="report_verification_visit.html" target="_top" title="report_verification_visit" alt="" coords="2491,4959,2761,5047">
+<area shape="rect" id="node73" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1272,2699,1459,2787">
+<area shape="rect" id="node74" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1213,3487,1517,3575">
+<area shape="rect" id="node75" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1267,2048,1463,2136">
+<area shape="rect" id="node77" href="user_operator.html" target="_top" title="user_operator" alt="" coords="880,3040,1072,3128">
+<area shape="rect" id="node78" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="483,5709,781,5797">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/report_source_type.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 6.2.4</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>
