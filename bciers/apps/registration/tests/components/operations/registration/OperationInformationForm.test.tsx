@@ -170,12 +170,12 @@ describe("the OperationInformationForm component", () => {
         boundary_map: JSON.stringify({
           id: 1,
           name: "testpdf.pdf",
-          status: "Unscanned",
+          status: "Clean",
         }),
         process_flow_diagram: JSON.stringify({
           id: 2,
-          name: "testpdf.pdf",
-          status: "Unscanned",
+          name: "testpdf2.pdf",
+          status: "Clean",
         }),
         registration_purpose: "Reporting Operation",
         activities: [1],
@@ -212,9 +212,10 @@ describe("the OperationInformationForm component", () => {
           "211110 - Oil and gas extraction (except oil sands)",
         );
 
-        expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(2);
+        expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(1);
+        expect(screen.getAllByText(/testpdf2.pdf/i)).toHaveLength(1);
         expect(
-          screen.getAllByRole("link", {
+          screen.getAllByRole("button", {
             name: /preview/i,
           }),
         ).toHaveLength(2);
@@ -235,32 +236,37 @@ describe("the OperationInformationForm component", () => {
 
       await waitFor(() => {
         // LastCalledWith because we mock the actionHandler multiple times to populate the dropdown options and operation info
-        expect(actionHandler).toHaveBeenLastCalledWith(
+        const lastCall =
+          actionHandler.mock.calls[actionHandler.mock.calls.length - 1];
+        expect(lastCall.length).toBe(4);
+        expect(lastCall[0]).toBe(
           "registration/operations/b974a7fc-ff63-41aa-9d57-509ebe2553a4/registration/operation",
-          "PUT",
-          "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/1",
-          {
-            body: JSON.stringify({
-              registration_purpose: "Reporting Operation",
-              operation: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
-              activities: [1],
-              name: "Existing Operation edited",
-              type: "Single Facility Operation",
-              naics_code_id: 1,
-              process_flow_diagram: JSON.stringify({
-                id: 2,
-                name: "testpdf2.pdf",
-                status: "Unscanned",
-              }),
-              boundary_map: JSON.stringify({
-                id: 912,
-                name: "aaaaaaaa.pdf",
-                status: "Clean",
-              }),
-              operation_has_multiple_operators: false,
-            }),
-          },
         );
+        expect(lastCall[1]).toBe("POST");
+        expect(lastCall[2]).toBe(
+          "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/1",
+        );
+        expect(Object.fromEntries(lastCall[3].body || [])).toEqual({
+          payload: JSON.stringify({
+            registration_purpose: "Reporting Operation",
+            operation: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+            activities: [1],
+            name: "Existing Operation edited",
+            type: "Single Facility Operation",
+            naics_code_id: 1,
+            process_flow_diagram: JSON.stringify({
+              id: 2,
+              name: "testpdf2.pdf",
+              status: "Clean",
+            }),
+            boundary_map: JSON.stringify({
+              id: 1,
+              name: "testpdf.pdf",
+              status: "Clean",
+            }),
+            operation_has_multiple_operators: false,
+          }),
+        });
 
         expect(mockPush).toHaveBeenCalledWith(
           `/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2?operations_title=${encodeURIComponent(

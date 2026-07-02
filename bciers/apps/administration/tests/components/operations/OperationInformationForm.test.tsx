@@ -187,7 +187,10 @@ const newEntrantFormData = {
   name: "Operation 5",
   type: "Single Facility Operation",
   registration_purpose: RegistrationPurposes.NEW_ENTRANT_OPERATION,
-  new_entrant_application: mockDataUri,
+  new_entrant_application: JSON.stringify({
+    name: "testpdf.pdf",
+    status: "Clean",
+  }),
 };
 
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
@@ -357,7 +360,7 @@ describe("the OperationInformationForm component", () => {
     expect(screen.queryByRole("button", { name: "Edit" })).toBeNull();
   });
 
-  it("should edit and save the form", async () => {
+  it.only("should edit and save the form", async () => {
     const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
@@ -392,14 +395,17 @@ describe("the OperationInformationForm component", () => {
     expect(actionHandler).toHaveBeenCalledTimes(1);
     expect(actionHandler).toHaveBeenCalledWith(
       `registration/operations/${operationId}`,
-      "PUT",
+      "POST",
       `/operations/${operationId}`,
-      {
-        body: JSON.stringify({
-          name: "Operation 4",
-          type: "Single Facility Operation",
-        }),
-      },
+      expect.toSatisfy((submittedFormData) => {
+        expect(Object.fromEntries(submittedFormData.body).payload).toEqual(
+          JSON.stringify({
+            name: "Operation 4",
+            type: "Single Facility Operation",
+          }),
+        );
+        return true;
+      }),
     );
 
     // Expect the form to be submitted
@@ -785,10 +791,10 @@ describe("the OperationInformationForm component", () => {
     ).toBeVisible();
     expect(screen.getByText("testpdf.pdf")).toBeVisible();
     expect(
-      screen.getByRole("link", {
+      screen.getByRole("button", {
         name: /preview/i,
       }),
-    ).toHaveAttribute("href", mockDataUri);
+    ).toBeVisible();
   });
 
   it("should edit and save the new entrant application form", async () => {

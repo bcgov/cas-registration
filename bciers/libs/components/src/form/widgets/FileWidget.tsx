@@ -50,8 +50,9 @@ const useFileUploadWidget = (): [
   const files: Record<string, File> = {};
 
   const formContext = {
-    onFileSelected: (file: File, propName: string) => {
-      files[propName] = file;
+    onFileSelected: (file: File | undefined, propName: string) => {
+      if (!file) delete files[propName];
+      else files[propName] = file;
     },
   };
 
@@ -92,14 +93,16 @@ export function FileElement({
 
     if (localFile) {
       const anchorTag = document.createElement("a");
+      const urlObject = URL.createObjectURL(localFile);
       Object.assign(anchorTag, {
         target: "_blank",
         rel: "noopener noreferrer",
-        href: URL.createObjectURL(localFile),
+        href: urlObject,
         download: localFile.name,
       });
       anchorTag.click();
       anchorTag.remove();
+      URL.revokeObjectURL(urlObject);
       return;
     }
 
@@ -210,6 +213,7 @@ const FileWidget: React.FC<WidgetProps> = (props) => {
         disabled={disabled || readonly}
         value=""
         accept={options.accept ? String(options.accept) : undefined}
+        multiple={false}
       />
       {parsedValue ? (
         <FileElement

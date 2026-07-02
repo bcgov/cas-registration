@@ -64,7 +64,7 @@ describe("the NewEntrantOperationForm component", () => {
           new_entrant_application: JSON.stringify({
             id: 1,
             name: "test_file.pdf",
-            status: "Unscanned",
+            status: "Clean",
           }),
         }}
         operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
@@ -74,7 +74,7 @@ describe("the NewEntrantOperationForm component", () => {
       />,
     );
 
-    expect(screen.getByText("testpdf.pdf")).toBeVisible();
+    expect(screen.getByText("test_file.pdf")).toBeVisible();
   });
 
   it("should display the correct url and message for new entrant operations", () => {
@@ -178,8 +178,17 @@ describe("the NewEntrantOperationForm component", () => {
     );
 
     const submittedFormData = Object.fromEntries(callArgs[3].body);
-    expect(submittedFormData.payload).toEqual("123");
-    expect(typeof submittedFormData.new_entrant_application).toBe("File");
+    expect(submittedFormData.payload).toEqual(
+      JSON.stringify({
+        new_entrant_application: JSON.stringify({
+          name: "test.pdf",
+          status: "Unscanned",
+        }),
+      }),
+    );
+    expect(submittedFormData.new_entrant_application instanceof File).toBe(
+      true,
+    );
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(

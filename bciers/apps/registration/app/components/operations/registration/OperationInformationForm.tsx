@@ -150,11 +150,6 @@ const OperationInformationForm = ({
     continueRegistration || !selectedOperation;
 
   const handleSubmit = async (e: IChangeEvent) => {
-    console.error(
-      "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-      createUnnestedFormData(e.formData, ["section1", "section2", "section3"]),
-    );
-
     const formData = e.formData;
     const isCreating = !formData?.section1?.operation;
     const creatingEndpoint = `registration/operations`;
