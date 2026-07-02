@@ -50,7 +50,11 @@ from registration.schema import (
 from django.db.models import Q
 from django.utils import timezone
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
+from reporting.models.reporting_year import ReportingYear
+from service.reporting_year_service import ReportingYearService
 from django.conf import settings
+from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
+from reporting.models.report import Report
 
 
 class OperationService:
@@ -749,3 +753,189 @@ class OperationService:
             payload.regulated_products = []
 
         return payload
+
+    @staticmethod
+    def _is_reportable_operation_year(
+        operation_year: tuple[UUID, int],
+        added_operation_years: set[tuple[UUID, int]],
+        existing_reports: set[tuple[UUID, int]],
+    ) -> bool:
+        return operation_year not in added_operation_years and operation_year not in existing_reports
+
+    @classmethod
+    def _get_previous_reporting_years(cls) -> QuerySet[ReportingYear]:
+        """
+        Returns reporting years that are eligible for the Start Past Report workflow
+
+        Only reporting years prior to the current reporting year are returned
+        """
+
+        current_reporting_year = ReportingYearService.get_current_reporting_year()
+
+        return ReportingYear.objects.filter(reporting_year__lt=current_reporting_year.reporting_year).order_by(
+            "-reporting_year"
+        )
+
+    @staticmethod
+    def _get_registration_purposes_for_operation_type(
+        operation_type: str,
+    ) -> list[str]:
+        """
+        Returns the registration purposes that may be selected when creating
+        a past report for an operation
+        """
+
+        # SFO and LFO
+        if operation_type in (Operation.Types.SFO, Operation.Types.LFO):
+            return [
+                Operation.Purposes.OBPS_REGULATED_OPERATION,
+                Operation.Purposes.OPTED_IN_OPERATION,
+                Operation.Purposes.NEW_ENTRANT_OPERATION,
+                Operation.Purposes.REPORTING_OPERATION,
+            ]
+
+        # EIO
+        if operation_type == Operation.Types.EIO:
+            return [
+                Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+            ]
+
+        raise ValueError(f"Unsupported operation type: {operation_type}")
+
+    @classmethod
+    def _build_reportable_operation_row(
+        cls,
+        operation: Operation,
+        reporting_year: ReportingYear,
+    ) -> dict[str, UUID | str | int | list[str]]:
+        """
+        Builds a reportable operation response row
+        """
+        return {
+            "operation_id": operation.id,
+            "operation_name": operation.name,
+            "reporting_year": reporting_year.reporting_year,
+            "registration_purposes": cls._get_registration_purposes_for_operation_type(
+                operation.type,
+            ),
+        }
+
+    @classmethod
+    def list_previous_reportable_operations(
+        cls,
+        user_guid: UUID,
+    ) -> list[dict]:
+        """
+        Returns the reporting year/operation combinations for which the current user is eligible to create a report
+
+        An reporting year/operation combination is eligible if:
+        1. The operation was designated to the user's operator for that reporting year, or
+        2. The operation is currently registered to the user's operator as a fallback
+
+        Existing reports are excluded
+        """
+
+        user_operator = UserDataAccessService.get_user_operator_by_user(user_guid)
+
+        reporting_years = cls._get_previous_reporting_years()
+        year_values = {reporting_year.reporting_year for reporting_year in reporting_years}
+
+        timelines = list(
+            OperationDesignatedOperatorTimeline.objects.select_related("operation")
+            .filter(
+                operator_id=user_operator.operator_id,
+                operation__status=Operation.Statuses.REGISTERED,
+            )
+            .order_by("operation__name", "start_date")
+        )
+
+        current_registered_operations = list(
+            Operation.objects.filter(
+                operator_id=user_operator.operator_id,
+                status=Operation.Statuses.REGISTERED,
+            ).order_by("name")
+        )
+
+        all_operation_ids = {timeline.operation.id for timeline in timelines} | {
+            operation.id for operation in current_registered_operations
+        }
+
+        existing_reports = set(
+            Report.objects.filter(
+                operation_id__in=all_operation_ids,
+                reporting_year__reporting_year__in=year_values,
+            ).values_list(
+                "operation_id",
+                "reporting_year__reporting_year",
+            )
+        )
+
+        designations_lookup = (
+            OperationDesignatedOperatorTimelineService.get_operation_designated_operators_for_reporting_years(
+                operation_ids=all_operation_ids,
+                reporting_years=year_values,
+            )
+        )
+
+        reportable_operations: list[dict] = []
+        added_operation_years: set[tuple[UUID, int]] = set()
+
+        for timeline in timelines:
+            for reporting_year in reporting_years:
+                operation_year = (
+                    timeline.operation.id,
+                    reporting_year.reporting_year,
+                )
+
+                if not cls._is_reportable_operation_year(
+                    operation_year,
+                    added_operation_years,
+                    existing_reports,
+                ):
+                    continue
+
+                designated_operator_timeline = designations_lookup.get(operation_year)
+
+                if (
+                    designated_operator_timeline
+                    and designated_operator_timeline.operator.id == user_operator.operator_id
+                ):
+                    reportable_operations.append(
+                        {
+                            **cls._build_reportable_operation_row(
+                                timeline.operation,
+                                reporting_year,
+                            ),
+                            "is_current_registered_fallback": False,
+                        }
+                    )
+
+                    added_operation_years.add(operation_year)
+
+        for operation in current_registered_operations:
+            for reporting_year in reporting_years:
+                operation_year = (
+                    operation.id,
+                    reporting_year.reporting_year,
+                )
+
+                if not cls._is_reportable_operation_year(
+                    operation_year,
+                    added_operation_years,
+                    existing_reports,
+                ):
+                    continue
+
+                reportable_operations.append(
+                    {
+                        **cls._build_reportable_operation_row(
+                            operation,
+                            reporting_year,
+                        ),
+                        "is_current_registered_fallback": True,
+                    }
+                )
+
+                added_operation_years.add(operation_year)
+
+        return reportable_operations

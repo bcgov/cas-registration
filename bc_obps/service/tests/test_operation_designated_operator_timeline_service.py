@@ -92,3 +92,61 @@ class TestOperationDesignatedOperatorTimelineService:
             operation.id, 2023
         )
         assert result_none is None
+
+    @staticmethod
+    def test_get_operation_designated_operators_for_reporting_years():
+        operation = baker.make_recipe('registration.tests.utils.operation')
+        operator1 = baker.make_recipe('registration.tests.utils.operator')
+        operator2 = baker.make_recipe('registration.tests.utils.operator')
+
+        timeline1 = baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=operator1,
+            start_date=timezone.datetime(2024, 6, 1).date(),
+            end_date=timezone.datetime(2025, 5, 31).date(),
+        )
+        timeline2 = baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            operator=operator2,
+            start_date=timezone.datetime(2025, 5, 31).date(),
+            end_date=None,
+        )
+
+        result = OperationDesignatedOperatorTimelineService.get_operation_designated_operators_for_reporting_years(
+            operation_ids={operation.id},
+            reporting_years={2023, 2024, 2025},
+        )
+
+        assert (operation.id, 2023) not in result
+
+        result_2024 = result[(operation.id, 2024)]
+        assert result_2024.operation == timeline1.operation
+        assert result_2024.operator == timeline1.operator
+        assert result_2024.start_date == timeline1.start_date
+        assert result_2024.end_date == timeline1.end_date
+        assert result_2024.has_been_transferred is True
+
+        result_2025 = result[(operation.id, 2025)]
+        assert result_2025.operation == timeline2.operation
+        assert result_2025.operator == timeline2.operator
+        assert result_2025.start_date == timeline2.start_date
+        assert result_2025.end_date == timeline2.end_date
+        assert result_2025.has_been_transferred is False
+
+        empty_result = (
+            OperationDesignatedOperatorTimelineService.get_operation_designated_operators_for_reporting_years(
+                operation_ids=set(),
+                reporting_years={2024, 2025},
+            )
+        )
+        assert empty_result == {}
+
+        empty_result = (
+            OperationDesignatedOperatorTimelineService.get_operation_designated_operators_for_reporting_years(
+                operation_ids={operation.id},
+                reporting_years=set(),
+            )
+        )
+        assert empty_result == {}

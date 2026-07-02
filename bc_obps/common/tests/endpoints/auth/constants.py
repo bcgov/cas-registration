@@ -41,6 +41,7 @@ ENDPOINTS = {
             "kwargs": {"operation_id": MOCK_UUID},
         },
         {"method": "get", "endpoint_name": "list_current_users_operations"},
+        {"method": "get", "endpoint_name": "list_previous_reportable_operations"},
         {
             "method": "get",
             "endpoint_name": "get_initial_activity_data",
@@ -169,6 +170,7 @@ ENDPOINTS = {
             "endpoint_name": "register_create_operation_information",
         },
         {"method": "post", "endpoint_name": "start_report"},
+        {"method": "post", "endpoint_name": "create_report_for_reporting_year"},
         {
             "method": "post",
             "endpoint_name": "save_report",

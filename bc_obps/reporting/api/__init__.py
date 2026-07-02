@@ -1,6 +1,7 @@
 # ruff: noqa: F401
 from .router import router
 from .reports import start_report
+from .reports import create_report_for_reporting_year
 from .build_form_schema import build_form_schema
 from .reporting_dashboard import get_dashboard_operations_list
 from .activity_data import get_initial_activity_data
