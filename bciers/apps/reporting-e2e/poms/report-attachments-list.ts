@@ -65,11 +65,11 @@ export class ReportAttachmentsListPOM {
     ).toHaveCount(0);
   }
 
-  // 2021 = oldest submitted year, 2025 = newest (from fixture data).
+  // 2024 = oldest submitted year, 2025 = newest (from load fixture data)
   async assertSortedByReportingYear(order: "asc" | "desc"): Promise<void> {
     const dataRows = this.page.getByRole("row").filter({ hasText: /20\d\d/ });
     const [expectedFirst, expectedLast] =
-      order === "asc" ? ["2021", "2025"] : ["2025", "2021"];
+      order === "asc" ? ["2024", "2025"] : ["2025", "2024"];
 
     await expect(dataRows.first()).toContainText(expectedFirst);
     await expect(dataRows.last()).toContainText(expectedLast);

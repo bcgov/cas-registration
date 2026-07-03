@@ -9,6 +9,7 @@ import { ReportOperationPOM } from "@/reporting-e2e/poms/report-operation";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 const internalTest = setupBeforeAllTest(UserRole.CAS_ANALYST);
+const reportVersion = 10;
 
 test.describe.configure({ mode: "serial" });
 
@@ -18,7 +19,9 @@ test.describe("View Report History", () => {
     happoScreenshot,
   }) => {
     const grid = new ReportHistoryPOM(page);
-    await grid.route(8); // Navigate directly to the report history page for Banana LFO's 2023 report with id 8
+    // Navigate directly to the report history page for id reportVersion
+
+    await grid.route(reportVersion);
     await grid.validatePageElements(OPERATION_NAMES.BANANA_LFO);
 
     await takeStabilizedScreenshot(happoScreenshot, page, {
@@ -34,10 +37,10 @@ test.describe("View Report History", () => {
       true,
     );
 
-    await grid.route(8); // Navigate back to the report history page
+    await grid.route(reportVersion); // Navigate back to the report history page
 
     // Click "Continue" for the report history — navigates to the 'Review Operation Information' page for the selected version
-    await grid.continueReportFromHistory(16); // Continue from the draft report from the Report History page
+    await grid.continueReportFromHistory(12); // Continue from the draft report from the Report History page
     const operationInformation = new ReportOperationPOM(page);
     await operationInformation.verifyFieldVisibility();
   });
@@ -48,7 +51,7 @@ internalTest.describe("View Report History", () => {
     "CAS analyst views the report history for a submitted report",
     async ({ page, happoScreenshot }) => {
       const grid = new ReportHistoryPOM(page);
-      await grid.route(8); // Navigate directly to the report history page for Banana LFO's 2023 report with id 8
+      await grid.route(reportVersion); // Navigate directly to the report history page for id reportVersion
 
       await takeStabilizedScreenshot(happoScreenshot, page, {
         component: "Report History Grid",
