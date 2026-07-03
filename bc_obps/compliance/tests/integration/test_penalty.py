@@ -355,8 +355,9 @@ class TestPenalty(ComplianceIntegrationTestBase):
     ):
         """Non-supplementary report paid in full on the fee, but FAA interest is still outstanding.
 
-        Expected: unpaid FAA interest must not block the obligation from being considered met,
-        and the automatic overdue penalty must still be generated.
+        Expected: unpaid FAA interest must not block the fee obligation from being considered met
+        (status becomes OBLIGATION_MET_INTEREST_NOT_PAID rather than blocking the transition), and the
+        automatic overdue penalty must still be generated.
         """
         mock_elicensing.side_effect = self.fake_handle_obligation_post_invoice
         mock_refresh.side_effect = self.fake_refresh
@@ -385,9 +386,10 @@ class TestPenalty(ComplianceIntegrationTestBase):
         manager = ComplianceHandlerManager()
         manager.process_compliance_updates(self.initial_obligation.elicensing_invoice)
 
-        # Obligation is considered met despite outstanding interest
+        # Fee obligation is considered met despite outstanding interest, but the status reflects
+        # that FAA interest is still unpaid rather than jumping straight to fully met.
         self.initial_crv.refresh_from_db()
-        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
 
         # Automatic overdue penalty was still generated
         auto_penalty = CompliancePenalty.objects.get(

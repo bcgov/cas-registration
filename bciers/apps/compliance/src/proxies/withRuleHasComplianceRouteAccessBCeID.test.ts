@@ -236,6 +236,18 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
       },
     );
 
+    it.each(moNonPenaltyPaths)(
+      "allows when status === OBLIGATION_MET_INTEREST_NOT_PAID and route is /%s",
+      async (path) => {
+        mockComplianceStatus(
+          ComplianceSummaryStatus.OBLIGATION_MET_INTEREST_NOT_PAID,
+        );
+        const { next, res } = await runProxy(pathForSeg(path));
+        expect(next).toHaveBeenCalledOnce();
+        expect(res!.status).toBe(200);
+      },
+    );
+
     // can_apply gate
     it("redirects from apply-compliance-units when can_apply=false", async () => {
       mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);

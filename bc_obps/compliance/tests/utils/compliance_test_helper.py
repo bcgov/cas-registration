@@ -208,6 +208,23 @@ class ComplianceTestHelper:
                     cls.generate_invoice_data(t)
                     t.invoice.outstanding_balance = Decimal('0')
 
+            case ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID:
+                if previous_data:
+                    t = SupplementaryComplianceObligation(previous_data)
+                else:
+                    t = InitialComplianceObligation(reporting_year)
+                t.compliance_report_version.status = (
+                    ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
+                )
+                t.compliance_report_version.save()
+                t.report_compliance_summary.excess_emissions = Decimal('100')
+                t.report_compliance_summary.save()
+                if create_invoice_data:
+                    cls.generate_invoice_data(t)
+                    t.invoice.invoice_fee_balance = Decimal('0')
+                    t.invoice.invoice_interest_balance = Decimal('50')
+                    t.invoice.outstanding_balance = Decimal('50')
+
             case ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION:
                 if previous_data:
                     t = SupplementaryComplianceObligation(previous_data)
