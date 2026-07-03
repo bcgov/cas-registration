@@ -6,8 +6,8 @@
   "author": "ggircs@gov.bc.ca",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@release-it/conventional-changelog": "^10.0.6",
-    "release-it": "^20.0.1"
+    "@release-it/conventional-changelog": "^11.0.1",
+    "release-it": "^20.2.1"
   },
   "release-it": {
     "npm": {
