@@ -298,6 +298,10 @@ class ComplianceDashboardService:
                     then=Value("Obligation - not met"),
                 ),
                 When(
+                    status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID.value,
+                    then=Value("Obligation Met - Interest not paid"),
+                ),
+                When(
                     status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET.value,
                     then=Value("Obligation - met"),
                 ),

@@ -42,6 +42,7 @@ function obligationReportCell(
       return { cellText: ACTION_CELL_TEXT.PENDING_INVOICE_CREATION };
     } else if (
       status === ComplianceSummaryStatus.OBLIGATION_NOT_MET ||
+      status === ComplianceSummaryStatus.OBLIGATION_MET_INTEREST_NOT_PAID ||
       (status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET &&
         isPenaltyAccruingOrNotPaid)
     ) {
@@ -60,6 +61,7 @@ function obligationReportCell(
     return { cellText: ACTION_CELL_TEXT.PENDING_INVOICE_CREATION };
   } else if (
     status === ComplianceSummaryStatus.OBLIGATION_NOT_MET ||
+    status === ComplianceSummaryStatus.OBLIGATION_MET_INTEREST_NOT_PAID ||
     status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET
   ) {
     return {

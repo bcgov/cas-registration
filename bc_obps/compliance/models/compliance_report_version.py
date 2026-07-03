@@ -10,6 +10,7 @@ class ComplianceReportVersion(TimeStampedModel):
 
     class ComplianceStatus(models.TextChoices):
         OBLIGATION_NOT_MET = "Obligation not met"
+        OBLIGATION_MET_INTEREST_NOT_PAID = "Obligation Met - Interest not paid"
         OBLIGATION_FULLY_MET = "Obligation fully met"
         OBLIGATION_PENDING_INVOICE_CREATION = "Obligation pending invoice creation"
         EARNED_CREDITS = "Earned credits"
@@ -48,7 +49,7 @@ class ComplianceReportVersion(TimeStampedModel):
     status = models.CharField(
         max_length=100,
         choices=ComplianceStatus.choices,
-        db_comment="The status of this compliance report version. Options: [Obligation not met, Obligation fully met, Earned credits, No obligation or earned credits, Requires manual handling]",
+        db_comment="The status of this compliance report version. Options: [Obligation not met, Obligation Met - Interest not paid, Obligation fully met, Earned credits, No obligation or earned credits, Requires manual handling]",
     )
 
     is_supplementary = models.BooleanField(
