@@ -38,27 +38,6 @@ class Command(BaseCommand):
         workflow = options.get('workflow')
         self.load_reports(workflow)
 
-        # Load any additional fixtures you need *after* reports exist
-        extra = [
-            f'{self.fixture_base_dir}/report_person_responsible.json',
-            f'{self.fixture_base_dir}/report_raw_activity_data.json',
-            f'{self.fixture_base_dir}/report_activity.json',
-            f'{self.fixture_base_dir}/report_source_type.json',
-            f'{self.fixture_base_dir}/report_unit.json',
-            f'{self.fixture_base_dir}/report_fuel.json',
-            f'{self.fixture_base_dir}/report_emission.json',
-            f'{self.fixture_base_dir}/report_methodology.json',
-            f'{self.fixture_base_dir}/report_product.json',
-            f'{self.fixture_base_dir}/report_emission_allocation.json',
-            f'{self.fixture_base_dir}/report_product_emission_allocation.json',
-            f'{self.fixture_base_dir}/report_additional_data.json',
-            f'{self.fixture_base_dir}/report_verification.json',
-            f'{self.fixture_base_dir}/report_attachment.json',
-        ]
-        for fixture in extra:
-            self.stdout.write(self.style.SUCCESS(f"Loading additional report fixture: {fixture}"))
-            call_command('loaddata', fixture)
-
     def load_reports(self, workflow):
         reports_fixture = f'{self.fixture_base_dir}/report.json'
         with open(reports_fixture) as f:
@@ -78,6 +57,27 @@ class Command(BaseCommand):
                 ro.operation_name = _strip_admin_suffix(ro.operation_name)
                 ro.save()
 
+            # Load fixtures before submission to preserve fixture state
+            extra = [
+                f'{self.fixture_base_dir}/report_person_responsible.json',
+                f'{self.fixture_base_dir}/report_raw_activity_data.json',
+                f'{self.fixture_base_dir}/report_activity.json',
+                f'{self.fixture_base_dir}/report_source_type.json',
+                f'{self.fixture_base_dir}/report_unit.json',
+                f'{self.fixture_base_dir}/report_fuel.json',
+                f'{self.fixture_base_dir}/report_emission.json',
+                f'{self.fixture_base_dir}/report_methodology.json',
+                f'{self.fixture_base_dir}/report_product.json',
+                f'{self.fixture_base_dir}/report_emission_allocation.json',
+                f'{self.fixture_base_dir}/report_product_emission_allocation.json',
+                f'{self.fixture_base_dir}/report_additional_data.json',
+                f'{self.fixture_base_dir}/report_verification.json',
+                f'{self.fixture_base_dir}/report_attachment.json',
+            ]
+            for fixture in extra:
+                self.stdout.write(self.style.SUCCESS(f"Loading additional report fixture: {fixture}"))
+                call_command('loaddata', fixture)
+
             # submit reports
             operation_ids_to_submit = [
                 UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
@@ -92,8 +92,8 @@ class Command(BaseCommand):
                 )
 
                 for report_version in report_versions:
-
                     submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
+
             # create supplementary report
             for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
                 ReportVersionService.create_report_version(report)
