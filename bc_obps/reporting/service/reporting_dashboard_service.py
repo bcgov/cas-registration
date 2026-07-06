@@ -72,7 +72,7 @@ class ReportingDashboardService:
         the operation has since been transferred to another operator.
         """
         user = UserDataAccessService.get_by_guid(user_guid)
-        operator_id = UserOperatorService.get_current_user_approved_user_operator_or_raise(user).operator.id
+        operator_id = UserOperatorService.get_current_user_approved_user_operator_or_raise(user).operator_id
 
         # Related docs: https://docs.djangoproject.com/en/5.1/ref/models/expressions/#subquery-expressions
         report_queryset = Report.objects.filter(

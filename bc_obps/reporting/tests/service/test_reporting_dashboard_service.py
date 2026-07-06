@@ -621,7 +621,7 @@ class TestReportingDashboardService:
         assert queryset_2025_new_user.count() == 1
 
     def test_current_reports_visible_after_declined_then_approved_access_on_different_operators(self):
-        reporting_year = ReportingYear.objects.filter(reporting_year=2025).first()
+        reporting_year = ReportingYear.objects.get(reporting_year=2025)
 
         user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         delta_operator = operator_baker({"id": "aaa11149-e303-4788-9ba9-806232a5f711", "legal_name": "Delta"})
