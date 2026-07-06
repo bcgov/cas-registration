@@ -10,7 +10,7 @@ from reporting.api.permissions import check_operation_ownership
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report import StartReportIn, CreateReportVersionIn, CreateReportForReportingYearIn
-from service.report_service import ReportService
+from service.report_service import CreateReportForReportingYearData, ReportService
 from service.report_version_service import ReportVersionService, ReportVersionData
 from service.reporting_year_service import ReportingYearService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -55,9 +55,14 @@ def create_report_for_reporting_year(
     request: HttpRequest,
     payload: CreateReportForReportingYearIn,
 ) -> Tuple[Literal[201], int]:
+    data = CreateReportForReportingYearData(
+        operation_id=payload.operation_id,
+        reporting_year=payload.reporting_year,
+        registration_purpose=payload.registration_purpose,
+    )
     report_version_id = ReportService.create_report_for_reporting_year(
         user_guid=get_current_user_guid(request),
-        data=payload,
+        data=data,
     )
 
     return 201, report_version_id

@@ -64,7 +64,6 @@ from reporting.models.report import Report
 class OperationService:
 
     OPERATION_DEFAULT_START_DATE = datetime(2024, 1, 1, tzinfo=ZoneInfo("America/Vancouver"))
-    MIN_REPORTING_YEAR = 2024
 
     @classmethod
     def get_if_authorized(
@@ -770,6 +769,8 @@ class OperationService:
         return operation.regulated_products.filter(
             valid_from__lte=reporting_year_date, valid_to__gte=reporting_year_date
         )
+
+    @staticmethod
     def _is_reportable_operation_year(
         operation_year: tuple[UUID, int],
         added_operation_years: set[tuple[UUID, int]],
@@ -787,21 +788,6 @@ class OperationService:
             designated_operator_timeline is not None
             and designated_operator_timeline.operator.id == user_operator.operator_id
         )
-
-    @classmethod
-    def _get_previous_reporting_years(cls) -> QuerySet[ReportingYear]:
-        """
-        Returns reporting years that are eligible for the Start Past Report workflow
-
-        Only reporting years from MIN_REPORTING_YEAR up to (but not including) the current
-        reporting year are returned.
-        """
-        current_reporting_year = ReportingYearService.get_current_reporting_year()
-
-        return ReportingYear.objects.filter(
-            reporting_year__gte=cls.MIN_REPORTING_YEAR,
-            reporting_year__lt=current_reporting_year.reporting_year,
-        ).order_by("-reporting_year")
 
     @staticmethod
     def _get_registration_purposes_for_operation_type(
@@ -887,7 +873,7 @@ class OperationService:
 
         user_operator = UserDataAccessService.get_user_operator_by_user(user_guid)
 
-        reporting_years = cls._get_previous_reporting_years()
+        reporting_years = ReportingYearService.get_previous_reporting_years()
         year_values = {reporting_year.reporting_year for reporting_year in reporting_years}
 
         timelines = list(

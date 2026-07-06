@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Alert, Button } from "@mui/material";
+import { IChangeEvent } from "@rjsf/core";
+import { Button } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import FormBase from "@bciers/components/form/FormBase";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { useRouter } from "next/navigation";
+import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
+import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
 
 interface StartReportFormProps {
   schema: RJSFSchema;
@@ -18,15 +21,25 @@ interface StartReportFormData {
   registration_purpose: string;
 }
 
+interface CreateReportResponse {
+  error?: string;
+  validation?: {
+    errors?: ReportValidationErrors;
+  };
+}
+
 export default function StartReportForm({
   schema,
   uiSchema,
 }: Readonly<StartReportFormProps>) {
   const router = useRouter();
-  const [formData, setFormData] = useState<Partial<StartReportFormData>>({});
-  const [errorList, setErrorList] = useState([] as any[]);
 
-  const handleSubmit = async (data: { formData?: StartReportFormData }) => {
+  const [formData, setFormData] = useState<Partial<StartReportFormData>>({});
+  const [errorList, setErrorList] = useState<ReportValidationErrors>([]);
+
+  const handleSubmit = async (
+    data: IChangeEvent<StartReportFormData>,
+  ): Promise<void> => {
     setErrorList([]);
 
     const payload = {
@@ -35,17 +48,27 @@ export default function StartReportForm({
       registration_purpose: data.formData?.registration_purpose,
     };
 
-    const response = await actionHandler(
+    const response = (await actionHandler(
       "reporting/create-report-for-reporting-year",
       "POST",
       "/reports/previous-years",
       {
         body: JSON.stringify(payload),
       },
-    );
+    )) as CreateReportResponse | number;
 
-    if (response.error) {
-      setErrorList([{ message: response.error }]);
+    if (typeof response === "object" && response.error) {
+      setErrorList(
+        response.validation?.errors ?? [
+          {
+            key: "generic_error",
+            error: {
+              severity: "Error",
+              message: response.error,
+            },
+          },
+        ],
+      );
       return;
     }
 
@@ -57,15 +80,12 @@ export default function StartReportForm({
       formData={formData}
       schema={schema}
       uiSchema={uiSchema}
-      onChange={(data: any) => setFormData(data.formData)}
+      onChange={(data: IChangeEvent<StartReportFormData>) =>
+        setFormData(data.formData ?? {})
+      }
       onSubmit={handleSubmit}
     >
-      {errorList.length > 0 &&
-        errorList.map((e: any) => (
-          <Alert key={e.message} severity="error">
-            {e?.stack ?? e.message}
-          </Alert>
-        ))}
+      <ReportValidationSummary errors={errorList} />
 
       <div className="flex justify-start gap-3 pt-6">
         <Button

@@ -38,3 +38,27 @@ class TestReportingYearService:
         report_version = make_recipe('reporting.tests.utils.report_version', report=report)
         reporting_year = ReportingYearService.get_reporting_year_by_version_id(report_version.id)
         assert reporting_year == self.reporting_year
+
+    @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    def test_get_previous_reporting_years(self, mock_get_current_reporting_year):
+        # Arrange
+        for year in [2023, 2024, 2025]:
+            ReportingYear.objects.get_or_create(
+                reporting_year=year,
+                defaults={
+                    "reporting_window_start": f"{year + 1}-01-01T00:00:00.000Z",
+                    "reporting_window_end": f"{year + 1}-12-31T23:59:59.999Z",
+                    "report_due_date": f"{year + 1}-05-31T23:59:59.999Z",
+                    "description": f"{year} reporting year",
+                },
+            )
+
+        mock_get_current_reporting_year.return_value = ReportingYear(
+            reporting_year=2025,
+        )
+
+        # Act
+        reporting_years = ReportingYearService.get_previous_reporting_years()
+
+        # Assert
+        assert list(reporting_years.values_list("reporting_year", flat=True)) == [2024]

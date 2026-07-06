@@ -6,6 +6,8 @@ from reporting.models.reporting_year import ReportingYear
 
 
 class ReportingYearService:
+    MIN_REPORTING_YEAR = 2024
+
     @classmethod
     def get_current_reporting_year(cls) -> ReportingYear:
         now = timezone.now()
@@ -43,3 +45,18 @@ class ReportingYearService:
     def get_reporting_year_by_version_id(cls, version_id: int) -> ReportingYear:
         report_version = ReportVersion.objects.get(id=version_id)
         return report_version.report.reporting_year
+
+    @classmethod
+    def get_previous_reporting_years(cls) -> QuerySet[ReportingYear]:
+        """
+        Returns reporting years that are eligible for the Start Past Report workflow
+
+        Only reporting years from MIN_REPORTING_YEAR up to (but not including) the current
+        reporting year are returned.
+        """
+        current_reporting_year = cls.get_current_reporting_year()
+
+        return ReportingYear.objects.filter(
+            reporting_year__gte=cls.MIN_REPORTING_YEAR,
+            reporting_year__lt=current_reporting_year.reporting_year,
+        ).order_by("-reporting_year")

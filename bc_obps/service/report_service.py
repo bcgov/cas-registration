@@ -18,6 +18,14 @@ from service.report_version_service import ReportVersionService
 from service.facility_report_service import FacilityReportService, SaveFacilityReportData
 from typing import Any, List, Optional
 from service.data_access_service.user_service import UserDataAccessService
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class CreateReportForReportingYearData:
+    operation_id: UUID
+    reporting_year: int
+    registration_purpose: str
 
 
 class SaveReportOperationData:
@@ -89,7 +97,7 @@ class ReportService:
     def create_report_for_reporting_year(
         cls,
         user_guid: UUID,
-        data: Any,
+        data: CreateReportForReportingYearData,
     ) -> int:
         operation_id = data.operation_id
         reporting_year = data.reporting_year
@@ -115,7 +123,7 @@ class ReportService:
             # the designated operator for the selected reporting year
             if designated_operator_timeline.operator.id != user_operator.operator_id:
                 raise UserError(
-                    f"This operation was owned by another operation in {reporting_year}, "
+                    f"This operation was owned by another operator in {reporting_year}, "
                     "you do not need to report on this operation. "
                     "If you believe this is incorrect, please contact ghgregulator@gov.bc.ca."
                 )

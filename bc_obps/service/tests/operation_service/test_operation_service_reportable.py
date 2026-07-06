@@ -19,26 +19,6 @@ class TestOperationServiceReportable:
         assert OperationService._is_reportable_operation_year(operation_year, set(), {operation_year}) is False
 
     @staticmethod
-    @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
-    def test_get_previous_reporting_years(mock_get_current_reporting_year: MagicMock):
-        baker.make_recipe("reporting.tests.utils.reporting_year", reporting_year=2091)
-        baker.make_recipe("reporting.tests.utils.reporting_year", reporting_year=2092)
-        current_year = baker.make_recipe(
-            "reporting.tests.utils.reporting_year",
-            reporting_year=2093,
-        )
-
-        mock_get_current_reporting_year.return_value = current_year
-
-        results = OperationService._get_previous_reporting_years().filter(
-            reporting_year__in=[2091, 2092, 2093],
-        )
-
-        assert results.count() == 2
-        assert results[0].reporting_year == 2092
-        assert results[1].reporting_year == 2091
-
-    @staticmethod
     def test_get_registration_purposes_for_operation_type_sfo_lfo():
         expected_purposes = [
             Operation.Purposes.OBPS_REGULATED_OPERATION,
@@ -90,7 +70,7 @@ class TestOperationServiceReportable:
         "service.operation_designated_operator_timeline_service."
         "OperationDesignatedOperatorTimelineService.get_operation_designated_operators_for_reporting_years"
     )
-    @patch.object(OperationService, "_get_previous_reporting_years")
+    @patch("service.reporting_year_service.ReportingYearService.get_previous_reporting_years")
     def test_list_previous_reportable_operations(
         mock_get_previous_reporting_years: MagicMock,
         mock_get_designations: MagicMock,

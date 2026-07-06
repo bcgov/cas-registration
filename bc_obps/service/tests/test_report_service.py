@@ -500,13 +500,8 @@ class TestReportService(TestCase):
 
     def test_lfo_does_not_update_activities_for_completed_facility_report(self):
         """
-<<<<<<< HEAD
         Once a facility report is marked as completed, changes to operation-level
         activities must NOT propagate to that facility's activities.
-=======
-        Creating a past report should not mutate Operation.registration_purpose
-        The selected purpose should be stored on the ReportOperation
->>>>>>> 0674d0bda (chore: add vitests)
         """
         operator = baker.make_recipe('registration.tests.utils.operator')
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
