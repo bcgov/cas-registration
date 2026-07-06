@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock, patch, MagicMock
 import pytest
 from registration.models.operation import Operation
 from registration.models.naics_code import NaicsCode
+from registration.models.user_operator import UserOperator
 from model_bakery.baker import make_recipe
 from reporting.models.report_operation import ReportOperation
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
@@ -618,3 +619,73 @@ class TestReportingDashboardService:
         assert operation.id in list(queryset_2025_new_user.values_list("id", flat=True))
         # assert new_user doesn't get results for operations from other operators
         assert queryset_2025_new_user.count() == 1
+
+    def test_current_reports_visible_after_declined_then_approved_access_on_different_operators(self):
+        reporting_year = ReportingYear.objects.filter(reporting_year=2025).first()
+
+        user = baker.make_recipe('registration.tests.utils.industry_operator_user')
+        delta_operator = operator_baker({"id": "aaa11149-e303-4788-9ba9-806232a5f711", "legal_name": "Delta"})
+        bravo_operator = operator_baker({"id": "fafabd03-b7b8-47f1-a3b0-b80761697e45", "legal_name": "Bravo"})
+
+        baker.make(
+            UserOperator,
+            user=user,
+            operator=delta_operator,
+            role=UserOperator.Roles.PENDING,
+            status=UserOperator.Statuses.DECLINED,
+        )
+        baker.make(
+            UserOperator,
+            user=user,
+            operator=bravo_operator,
+            role=UserOperator.Roles.REPORTER,
+            status=UserOperator.Statuses.APPROVED,
+        )
+
+        bravo_operation = operation_baker(
+            operator_id=bravo_operator.id,
+            status=Operation.Statuses.REGISTERED,
+            name="Bravo Operation",
+        )
+        delta_operation = operation_baker(
+            operator_id=delta_operator.id,
+            status=Operation.Statuses.REGISTERED,
+            name="Delta Operation",
+        )
+
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operator=bravo_operator,
+            operation=bravo_operation,
+            start_date="2024-01-01T00:00:00Z",
+            end_date=None,
+        )
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operator=delta_operator,
+            operation=delta_operation,
+            start_date="2024-01-01T00:00:00Z",
+            end_date=None,
+        )
+
+        # create a report for Delta Operation, but it shouldn't appear in user's results
+        ReportService.create_report(delta_operation.id, reporting_year.reporting_year)
+        bravo_report_version_id = ReportService.create_report(bravo_operation.id, reporting_year.reporting_year)
+        bravo_report_version = ReportVersion.objects.get(id=bravo_report_version_id)
+        bravo_report_version.status = "Submitted"
+        bravo_report_version.is_latest_submitted = True
+        bravo_report_version.save(update_fields=["status", "is_latest_submitted"])
+
+        result = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            user.user_guid,
+            reporting_year.reporting_year,
+            filters=ReportingDashboardOperationFilterSchema(),
+        ).values()
+        # user only has access to Bravo Operator's operation, so they should only see that report in the results
+        result_list = list(result)
+        assert len(result_list) == 1
+        assert result_list[0]["id"] == bravo_operation.id
+        assert result_list[0]["report_id"] == bravo_report_version.report.id
+        assert result_list[0]["report_version_id"] == bravo_report_version.id
+        assert result_list[0]["report_status"] == "Submitted"
+        assert result_list[0]["operation_name"] == bravo_report_version.report_operation.operation_name

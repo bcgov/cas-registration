@@ -4,7 +4,6 @@ from django.db.models import OuterRef, QuerySet, Value, F, Subquery, Case, When,
 from django.db.models.functions import Concat, Coalesce
 from ninja import Query
 from registration.models.operation import Operation
-from registration.models.user_operator import UserOperator
 from reporting.models import ReportOperation
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
@@ -73,8 +72,7 @@ class ReportingDashboardService:
         the operation has since been transferred to another operator.
         """
         user = UserDataAccessService.get_by_guid(user_guid)
-        user_operator: Optional[UserOperator] = user.user_operators.first()
-        operator_id: Optional[UUID] = user_operator.operator_id if user_operator else None
+        operator_id = UserOperatorService.get_current_user_approved_user_operator_or_raise(user).operator.id
 
         # Related docs: https://docs.djangoproject.com/en/5.1/ref/models/expressions/#subquery-expressions
         report_queryset = Report.objects.filter(
