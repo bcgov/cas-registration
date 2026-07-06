@@ -27,7 +27,7 @@ class TestReportVersionService(TestCase):
         pass
 
     def test_delete_report_version(self):
-        report = baker.make_recipe("reporting.tests.utils.report")
+        report = baker.make_recipe("reporting.tests.utils.report", reporting_year_id=2024)
         report_version = ReportVersionService.create_report_version(report)
 
         assert ReportVersion.objects.filter(id=report_version.id).count() == 1
@@ -37,7 +37,7 @@ class TestReportVersionService(TestCase):
     def test_change_report_version_type_deletes_the_old_version_and_creates_a_new_one(
         self,
     ):
-        report = baker.make_recipe("reporting.tests.utils.report")
+        report = baker.make_recipe("reporting.tests.utils.report", reporting_year_id=2024)
         report_version = ReportVersionService.create_report_version(report, "Annual Report")
 
         return_value = ReportVersionService.change_report_version_type(
@@ -49,7 +49,7 @@ class TestReportVersionService(TestCase):
         assert return_value.report_type == "Simple Report"
 
     def test_change_report_version_type_to_the_same_does_nothing(self):
-        report = baker.make_recipe("reporting.tests.utils.report")
+        report = baker.make_recipe("reporting.tests.utils.report", reporting_year_id=2024)
         report_version = ReportVersionService.create_report_version(report, "Annual Report")
 
         return_value = ReportVersionService.change_report_version_type(

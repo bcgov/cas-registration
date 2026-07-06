@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, Optional, Tuple, Callable, Generator, Union
 from zoneinfo import ZoneInfo
 from django.db.models import QuerySet
@@ -6,6 +6,7 @@ from common.exceptions import UserError
 from registration.emails import send_registration_and_boro_id_email
 from registration.enums.enums import EmailTemplateNames
 from registration.models.facility import Facility
+from registration.models.regulated_product import RegulatedProduct
 from registration.signals.signals import operation_registration_purpose_changed
 from registration.utils import is_document_scan_complete
 from service.contact_service import ContactService
@@ -749,3 +750,14 @@ class OperationService:
             payload.regulated_products = []
 
         return payload
+
+    @staticmethod
+    def get_valid_operation_regulated_products(operation: Operation, reporting_year: int) -> QuerySet[RegulatedProduct]:
+        """
+        Get the operation's regulated products that are valid for a specific reporting year.
+        Uses May 1st of the reporting year as the date to check against the regulated product's valid_from and valid_to dates.
+        """
+        reporting_year_date = date(reporting_year, 5, 1)
+        return operation.regulated_products.filter(
+            valid_from__lte=reporting_year_date, valid_to__gte=reporting_year_date
+        )
