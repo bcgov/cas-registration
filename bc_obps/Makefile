@@ -100,6 +100,7 @@ loadfixtures: ## add fixtures to the database
 loadfixtures:
 	$(POETRY_RUN) python $(MANAGE_PY) load_fixtures $(ARGS)
 	$(POETRY_RUN) python $(MANAGE_PY) load_reporting_fixtures $(ARGS)
+	$(POETRY_RUN) python $(MANAGE_PY) load_compliance_fixtures $(ARGS)
 
 .PHONY: reset_db
 reset_db: ## drop and recreate the db

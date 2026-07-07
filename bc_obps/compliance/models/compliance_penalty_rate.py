@@ -1,4 +1,5 @@
 from django.db import models
+from common.lib.pgtrigger.core import Q
 from registration.models.time_stamped_model import TimeStampedModel
 from compliance.models import CompliancePeriod
 from .rls_configs.compliance_penalty_rate import Rls as CompliancePenaltyRateRls
@@ -32,5 +33,12 @@ class CompliancePenaltyRate(TimeStampedModel):
         db_table_comment = "A table to store compliance penalty rates by reporting year"
         db_table = 'erc"."compliance_penalty_rate'
         ordering = ['compliance_period']
+        constraints = [
+            models.UniqueConstraint(
+                fields=["is_current_rate"],
+                condition=Q(is_current_rate=True),
+                name="unique_is_current_rate_true_per_compliance_penalty_rate",
+            )
+        ]
 
     Rls = CompliancePenaltyRateRls
