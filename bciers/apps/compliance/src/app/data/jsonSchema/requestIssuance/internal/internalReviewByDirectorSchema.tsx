@@ -21,7 +21,7 @@ export const internalReviewByDirectorSchema: RJSFSchema = {
     bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
     bccr_holding_account_id: readOnlyStringField("BCCR Holding Account ID:"),
     analyst_header: readOnlyObjectField("Reviewed by Analyst"),
-    analyst_comment: readOnlyStringField("Analyst's Comment:"),
+    analyst_comment: readOnlyStringField("Analyst's Comment (Internal):"),
     analyst_suggestion: {
       type: "string",
       default: "",
@@ -29,7 +29,7 @@ export const internalReviewByDirectorSchema: RJSFSchema = {
     director_header: readOnlyObjectField("Review by Director"),
     director_comment: {
       type: "string",
-      title: "Director's Comment:",
+      title: "Director's Comment (Shown to Operator):",
     },
   },
   dependencies: {
@@ -52,7 +52,9 @@ export const internalReviewByDirectorSchema: RJSFSchema = {
         {
           properties: {
             issuance_status: { enum: [IssuanceStatus.DECLINED] },
-            director_comment: readOnlyStringField("Director's Comment:"),
+            director_comment: readOnlyStringField(
+              "Director's Comment (Shown to Operator):",
+            ),
             declined_note: readOnlyStringField(),
           },
         },

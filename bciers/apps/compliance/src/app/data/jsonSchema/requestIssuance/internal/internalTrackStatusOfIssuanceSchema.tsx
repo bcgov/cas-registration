@@ -33,7 +33,9 @@ export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
               enum: [IssuanceStatus.APPROVED],
             },
             approved_note: readOnlyStringField(),
-            director_comment: readOnlyStringField("Director's Comment:"),
+            director_comment: readOnlyStringField(
+              "Director's Comment (Shown to Operator):",
+            ),
           },
         },
         {
@@ -55,12 +57,16 @@ export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
               },
               then: {
                 properties: {
-                  analyst_comment: readOnlyStringField("Analyst's Comment:"),
+                  analyst_comment: readOnlyStringField(
+                    "Analyst's Comment (Internal):",
+                  ),
                 },
               },
               else: {
                 properties: {
-                  director_comment: readOnlyStringField("Director's Comment:"),
+                  director_comment: readOnlyStringField(
+                    "Director's Comment (Shown to Operator):",
+                  ),
                 },
               },
             },
