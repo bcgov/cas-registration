@@ -2,6 +2,7 @@ from datetime import date
 import calendar
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Dict, Any
+from compliance.service.compliance_penalty_rate_service import CompliancePenaltyRateService
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
     ElicensingInvoice,
@@ -62,8 +63,6 @@ class PenaltyCalculationService:
     starting the day after the November 30 deadline until the obligation is fully paid.
     """
 
-    DAILY_PENALTY_RATE = Decimal('0.0038')
-
     @classmethod
     def get_automatic_overdue_penalty_data(cls, compliance_report_version_id: int) -> Dict[str, Any]:
         """
@@ -78,6 +77,8 @@ class PenaltyCalculationService:
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id
         )
+        current_compliance_penalty_rate = CompliancePenaltyRateService.get_current_compliance_penalty_rate()
+        daily_penalty_rate = current_compliance_penalty_rate.rate
         obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
         penalty = CompliancePenalty.objects.get(
             compliance_obligation=obligation, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
@@ -88,7 +89,7 @@ class PenaltyCalculationService:
         return {
             "penalty_status": penalty.status,
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            "penalty_charge_rate": (cls.DAILY_PENALTY_RATE * 100).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+            "penalty_charge_rate": (daily_penalty_rate * 100).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
             "total_penalty": penalty.penalty_amount,
             "faa_interest": faa_interest,
             "total_amount": total_amount,
@@ -261,6 +262,8 @@ class PenaltyCalculationService:
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
+        current_compliance_penalty_rate = CompliancePenaltyRateService.get_current_compliance_penalty_rate()
+        daily_penalty_rate = current_compliance_penalty_rate.rate
 
         invoice = refresh_result.invoice
 
@@ -280,9 +283,9 @@ class PenaltyCalculationService:
             payments = cls.sum_payments_before_date(invoice, current_date)
             adjustments = cls.sum_adjustments_before_date(invoice, current_date)
             penalty_amount = max(
-                Decimal('0'), (base - payments + adjustments) * cls.DAILY_PENALTY_RATE
+                Decimal('0'), (base - payments + adjustments) * daily_penalty_rate
             )  # max of 0 to prevent negative penalty accrual edge case
-            daily_compounding = (accumulated_penalty + accumulated_compounding) * cls.DAILY_PENALTY_RATE
+            daily_compounding = (accumulated_penalty + accumulated_compounding) * daily_penalty_rate
             accumulated_penalty += penalty_amount
             accumulated_compounding += daily_compounding
             total_penalty = accumulated_penalty + accumulated_compounding
@@ -290,7 +293,7 @@ class PenaltyCalculationService:
             accumulated_penalty_list.append(
                 CalculatedPenaltyAccrualData(
                     date=current_date.strftime("%Y-%m-%d"),
-                    interest_rate=cls.DAILY_PENALTY_RATE,
+                    interest_rate=daily_penalty_rate,
                     daily_penalty=penalty_amount.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
                     daily_compounded=daily_compounding.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
                     accumulated_penalty=accumulated_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
@@ -310,7 +313,7 @@ class PenaltyCalculationService:
 
         result = CalculatedPenaltyData(
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            penalty_charge_rate=cls.DAILY_PENALTY_RATE * 100,
+            penalty_charge_rate=daily_penalty_rate * 100,
             days_late=days_late,
             accumulated_penalty=accumulated_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
             accumulated_compounding=accumulated_compounding.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
