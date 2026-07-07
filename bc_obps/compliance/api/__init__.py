@@ -29,3 +29,4 @@ from ._elicensing._compliance_report_versions._compliance_report_version_id impo
 from .elicensing_invoices import get_elicensing_invoice_list
 from .compliance_period import get_compliance_period_for_year
 from . import e2e_integration_stub
+from .compliance_penalty_rate import get_current_compliance_penalty_rate
