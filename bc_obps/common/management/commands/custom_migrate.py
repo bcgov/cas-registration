@@ -80,4 +80,4 @@ class Command(BaseCommand):
             call_command('load_fixtures')
             call_command('load_reporting_fixtures')
         elif environment == 'test' or (environment == 'dev' and settings.CI != 'true'):
-            self._load_fixtures_with_triggers_disabled(['load_fixtures', 'load_reporting_fixtures'])
+            self._load_fixtures_with_triggers_disabled(['load_fixtures', 'load_reporting_fixtures', 'load_compliance_fixtures'])
