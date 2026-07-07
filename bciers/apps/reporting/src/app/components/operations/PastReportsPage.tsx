@@ -15,7 +15,7 @@ export default async function PastReportsPage({
     <div className="flex w-full justify-end pb-6">
       <Link
         className="link-button-blue"
-        href="../reports/previous-years/report-on-a-previous-year"
+        href="/reporting/reports/previous-years/report-on-a-previous-year"
       >
         File previous years report
       </Link>

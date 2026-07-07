@@ -3,6 +3,7 @@ import {
   assertFieldVisibility,
   checkFormFieldsReadOnly,
 } from "@bciers/e2e/utils/helpers";
+import { ReportPageTitles, ReportRoutes } from "@/reporting-e2e/utils/enums";
 
 const OPERATION_INFO_FIELDS = {
   // Field labels
@@ -40,6 +41,19 @@ export class ReportOperationPOM {
 
   constructor(page: Page) {
     this.page = page;
+  }
+
+  async isLoaded(): Promise<void> {
+    await expect(this.page).toHaveURL(
+      new RegExp(`/reports/\\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`),
+      { timeout: 30_000 },
+    );
+
+    await expect(
+      this.page.getByRole("heading", {
+        name: ReportPageTitles.REVIEW_OPERATION_INFORMATION,
+      }),
+    ).toBeVisible();
   }
 
   async verifyBugleSfoFields(): Promise<void> {

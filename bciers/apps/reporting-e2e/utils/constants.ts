@@ -29,10 +29,12 @@ export const DIALOG_BUTTON_TEXT = {
 
 // Form submit / navigation buttons
 export const FORM_BUTTON_TEXT = {
+  START: "Start",
   SAVE_AND_CONTINUE: "Save & Continue",
   SAVE: "Save",
   BACK: "Back",
   CONTINUE: "Continue",
+  CANCEL: "Cancel",
   RETURN_TO_FACILITY_REPORTS: "Return To All Facility Reports",
 } as const;
 
@@ -47,4 +49,8 @@ export const ACTION_BUTTON_TEXT = {
   VIEW_DETAILS: "View Details",
   VIEW_REPORT: "View Report",
   REPORT_HISTORY: "Report history",
+} as const;
+
+export const GRID_BUTTON_TEXT = {
+  FILE_PREVIOUS_YEARS_REPORT: "File previous years report",
 } as const;

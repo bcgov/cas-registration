@@ -2,6 +2,7 @@
 export enum AppRoutes {
   GRID_REPORTING_CURRENT_REPORTS = "reporting/reports",
   GRID_REPORTING_PAST_REPORTS = "reporting/reports/previous-years",
+  PAGE_START_PAST_REPORT = "reporting/reports/previous-years/report-on-a-previous-year",
   GRID_REPORT_HISTORY = "reporting/reports/report-history",
   GRID_REPORTING_ATTACHMENTS_LIST = "reporting/reports/attachments",
 }
@@ -49,6 +50,22 @@ export enum ReportRoutes {
   SUBMITTED_REPORT = "submitted",
   ANNUAL_REPORT = "annual-report",
 }
+
+export const ReportPageTitles = {
+  REVIEW_OPERATION_INFORMATION: "Review Operation Information",
+  PERSON_RESPONSIBLE: "Person Responsible for Submitting Report",
+  REVIEW_FACILITIES: "Review Facilities",
+  REVIEW_FACILITY_INFORMATION: "Review Facility Information",
+  FACILITY_GRID: "Facilities",
+  ADDITIONAL_REPORTING_DATA: "Additional Reporting Data",
+  EMISSION_SUMMARY: "Emission Summary",
+  COMPLIANCE_SUMMARY: "Compliance Summary",
+  REPORT_VALIDATION: "Report validation",
+  FINAL_REVIEW: "Final Review",
+  VERIFICATION: "Verification",
+  ATTACHMENTS: "Attachments",
+  SUBMISSION: "Submission",
+} as const;
 
 // Attachment checkboxes
 export enum AttachmentCheckboxLabel {
