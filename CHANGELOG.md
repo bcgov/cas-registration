@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.15.1](https://github.com/bcgov/cas-registration/compare/v5.15.0...v5.15.1) (2026-07-07)
+
+### Bug Fixes
+
+- added correct operator filtering in ReportingDashboardService ([914ec24](https://github.com/bcgov/cas-registration/commit/914ec24dacc85af589c24d577e000854c1c47728))
+
 # [5.15.0](https://github.com/bcgov/cas-registration/compare/v5.14.0...v5.15.0) (2026-06-30)
 
 ### Bug Fixes
