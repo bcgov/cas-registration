@@ -9,6 +9,11 @@
     "@release-it/conventional-changelog": "^11.0.1",
     "release-it": "^20.2.1"
   },
+  "scripts": {
+    "docs:move": "node docs-site/sync-docs.js",
+    "docs:dev": "node docs-site/sync-docs.js && yarn --cwd docs-site astro dev",
+    "docs:build": "node docs-site/sync-docs.js && yarn --cwd docs-site astro build"
+  },
   "release-it": {
     "npm": {
       "publish": false
