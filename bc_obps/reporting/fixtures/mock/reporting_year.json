@@ -2,6 +2,16 @@
   {
     "model": "reporting.reportingyear",
     "fields": {
+      "reporting_year": 2023,
+      "reporting_window_start": "2024-01-01T00:00:00.000-08",
+      "reporting_window_end": "2024-12-31T23:59:59.999-08",
+      "report_due_date": "2024-05-31T23:59:59.999-07",
+      "report_open_date": "2024-02-29T16:00:00.000-08"
+    }
+  },
+  {
+    "model": "reporting.reportingyear",
+    "fields": {
       "reporting_year": 2022,
       "reporting_window_start": "2023-01-01T00:00:00.000Z",
       "reporting_window_end": "2023-12-31T23:59:59.999Z",
