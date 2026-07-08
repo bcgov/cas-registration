@@ -36,8 +36,6 @@ const OperationInformationPage = async ({
 
   const uiSchema = await createAdministrationOperationInformationUiSchema();
 
-  console.log(operation);
-
   return (
     <>
       <NewTabBanner />

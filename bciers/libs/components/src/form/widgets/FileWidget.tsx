@@ -43,10 +43,17 @@ const showScanStatus = (
   return null;
 };
 
-const useFileUploadWidget = (): [
-  typeof formContext,
-  typeof submitWithFiles,
-] => {
+type FileUploadWidgetContext = {
+  onFileSelected: (file: File | undefined, propName: string) => void;
+};
+type SubmitWithFiles = (
+  formData: any,
+  endpoint: string,
+  method: "POST",
+  pathToRevalidate?: string,
+) => Promise<any>;
+
+const useFileUploadWidget = (): [FileUploadWidgetContext, SubmitWithFiles] => {
   const files: Record<string, File> = {};
 
   const formContext = {
@@ -60,7 +67,7 @@ const useFileUploadWidget = (): [
   const submitWithFiles = async (
     formData: any,
     endpoint: string,
-    method: "PUT" | "PATCH" | "POST",
+    method: "POST",
     pathToRevalidate?: string,
   ) => {
     const formDataWithFiles = new FormData();
