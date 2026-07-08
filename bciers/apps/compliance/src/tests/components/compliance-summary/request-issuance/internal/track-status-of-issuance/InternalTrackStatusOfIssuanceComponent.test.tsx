@@ -76,13 +76,15 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     );
 
     // Analyst's Comment should be shown for internal analyst
-    expect(screen.getByText("Analyst's Comment:")).toBeVisible();
+    expect(screen.getByText("Analyst's Comment (Internal):")).toBeVisible();
     expect(
       screen.getByText("Analyst explains supplementary report requirement"),
     ).toBeVisible();
 
     // Director's Comment should be hidden in this context
-    expect(screen.queryByText("Director's Comment:")).toBeNull();
+    expect(
+      screen.queryByText("Director's Comment (Shown to Operator):"),
+    ).toBeNull();
     expect(
       screen.queryByText("Director's comment should be hidden"),
     ).toBeNull();
@@ -107,7 +109,7 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     );
 
     // Analyst's Comment should be hidden for non-internal role
-    expect(screen.queryByText("Analyst's Comment:")).toBeNull();
+    expect(screen.queryByText("Analyst's Comment (Internal):")).toBeNull();
     expect(
       screen.queryByText("Analyst explains supplementary report requirement"),
     ).toBeNull();
@@ -133,13 +135,15 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     );
 
     // Analyst's Comment should be shown
-    expect(screen.getByText("Analyst's Comment:")).toBeVisible();
+    expect(screen.getByText("Analyst's Comment (Internal):")).toBeVisible();
     expect(
       screen.getByText("Analyst explains supplementary report requirement"),
     ).toBeVisible();
 
     // Director's Comment should be hidden
-    expect(screen.queryByText("Director's Comment:")).toBeNull();
+    expect(
+      screen.queryByText("Director's Comment (Shown to Operator):"),
+    ).toBeNull();
     expect(
       screen.queryByText("Director's comment should be hidden"),
     ).toBeNull();
@@ -164,7 +168,9 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     expect(screen.getByText("Status of Issuance:")).toBeVisible();
     expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
     expect(screen.getByText("BCCR Holding Account ID:")).toBeVisible();
-    expect(screen.getByText("Director's Comment:")).toBeVisible();
+    expect(
+      screen.getByText("Director's Comment (Shown to Operator):"),
+    ).toBeVisible();
 
     // Check field values
     expect(screen.getByText("100")).toBeVisible();

@@ -68,7 +68,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
     expect(screen.getByText("BCCR Holding Account ID:")).toBeVisible();
     expect(screen.getByText("Analyst's Suggestion:")).toBeVisible();
-    expect(screen.getByText("Analyst's Comment:")).toBeVisible();
+    expect(screen.getByText("Analyst's Comment (Internal):")).toBeVisible();
 
     // Check field values
     expect(screen.getByText("100")).toBeVisible();

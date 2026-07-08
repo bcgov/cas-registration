@@ -34,7 +34,7 @@ export const internalReviewCreditsIssuanceRequestSchema = (
     },
     analyst_comment: {
       type: "string",
-      title: "Analyst's Comment:",
+      title: "Analyst's Comment (Internal):",
     },
   },
 });

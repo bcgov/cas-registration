@@ -61,8 +61,10 @@ describe("InternalReviewByDirectorComponent", () => {
     expect(screen.getByText("Status of Issuance:")).toBeVisible();
     expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
     expect(screen.getByText("BCCR Holding Account ID:")).toBeVisible();
-    expect(screen.getByText("Analyst's Comment:")).toBeVisible();
-    expect(screen.getByText("Director's Comment:")).toBeVisible();
+    expect(screen.getByText("Analyst's Comment (Internal):")).toBeVisible();
+    expect(
+      screen.getByText("Director's Comment (Shown to Operator):"),
+    ).toBeVisible();
     expect(screen.getByText("100")).toBeVisible(); // earned_credits_amount
     expect(screen.getByText("Test Trading Co")).toBeVisible(); // bccr_trading_name
     expect(screen.getByText("123456789012345")).toBeVisible(); // bccr_holding_account_id
