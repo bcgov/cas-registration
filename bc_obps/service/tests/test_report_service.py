@@ -398,11 +398,14 @@ class TestReportService(TestCase):
         assert not ReportProduct.objects.filter(id=report_product_2.id).exists()
         assert not ReportProduct.objects.filter(id=report_product_3.id).exists()
 
-    def test_lfo_does_not_update_facility_activities_if_facility_already_has_activities(self):
+    def test_lfo_adds_newly_selected_operation_activities_to_existing_facility(self):
         """
-        Test that for LFOs, when a facility already has activities,
-        updating operation-level activities does NOT modify the facility's activities.
-        This prevents overwriting user-selected activities at the facility level.
+        For LFOs, when a facility already has activities and the user adds new
+        activities at the operation level, those newly-selected operation activities
+        are added to the facility report (so they appear pre-selected in the
+        operation list on the Review Facility Information page). Activities removed
+        from the operation are NOT removed from the facility, so any user-made
+        facility-level selections are preserved.
         """
         operator = baker.make_recipe('registration.tests.utils.operator')
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
@@ -425,6 +428,7 @@ class TestReportService(TestCase):
             operation_type="Linear Facilities Operation",
             operation_bcghgid="Updated BC GHID",
             bc_obps_regulated_operation_id="Updated Regulated Operation ID",
+            # Operation activities change: keep 1, drop 2 & 3, add 18 & 14
             activities=[1, 18, 14],
             regulated_products=[1],
             operation_representative_name=[1, 2],
@@ -436,13 +440,15 @@ class TestReportService(TestCase):
 
         facility_report.refresh_from_db()
 
-        # Activities should NOT be updated since facility already had activities
-        assert facility_report.activities.count() == 3
+        # Newly-selected operation activities (18, 14) are added.
+        # Existing facility activities (1, 2, 3) are preserved -- including 2 & 3
+        # which were deselected at the operation level (user choice is not lost).
         self.assertQuerySetEqual(
             facility_report.activities.all(),
-            Activity.objects.filter(id__in=[1, 2, 3]),
+            Activity.objects.filter(id__in=[1, 2, 3, 18, 14]),
             ordered=False,
         )
+        # Existing report activity rows for kept activities are preserved.
         self.assertQuerySetEqual(
             facility_report.reportactivity_records.all(),
             [report_activity],
@@ -487,5 +493,48 @@ class TestReportService(TestCase):
         self.assertQuerySetEqual(
             facility_report.activities.all(),
             Activity.objects.filter(id__in=[18, 14]),
+            ordered=False,
+        )
+
+    def test_lfo_does_not_update_activities_for_completed_facility_report(self):
+        """
+        Once a facility report is marked as completed, changes to operation-level
+        activities must NOT propagate to that facility's activities.
+        """
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
+        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
+        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report_operation.activities.set([1, 2, 3])
+        facility_report = baker.make_recipe(
+            'reporting.tests.utils.facility_report',
+            report_version=report_version,
+            is_completed=True,
+        )
+        facility_report.activities.set([1, 2, 3])
+
+        data = ReportOperationIn(
+            operator_legal_name="Updated Legal Name",
+            operator_trade_name="Updated Trade Name",
+            operation_name="Updated Operation Name",
+            operation_type="Linear Facilities Operation",
+            operation_bcghgid="Updated BC GHID",
+            bc_obps_regulated_operation_id="Updated Regulated Operation ID",
+            activities=[1, 18, 14],
+            regulated_products=[1],
+            operation_representative_name=[1, 2],
+            operation_report_type="New Report Type",
+            registration_purpose="OBPS Regulated Operation",
+        )
+
+        ReportService.save_report_operation(report_version.id, data)
+
+        facility_report.refresh_from_db()
+
+        # The completed facility's activities are unchanged.
+        self.assertQuerySetEqual(
+            facility_report.activities.all(),
+            Activity.objects.filter(id__in=[1, 2, 3]),
             ordered=False,
         )

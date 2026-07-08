@@ -121,13 +121,11 @@ class ReportService:
             facility_reports: QuerySet[FacilityReport] = FacilityReport.objects.filter(
                 report_version__id=report_version_id
             )
-            for f in facility_reports:
-                # For LFOs, only set activities if the facility doesn't have any yet (initial setup)
-                # This prevents overwriting user-selected activities at the facility level
-                if not f.activities.exists():
-                    FacilityReportService.add_activities_to_facility_report(
-                        facility_report=f, activities=data.activities
-                    )
+            # For facility reports that haven't yet been marked Completed,
+            # add all operation-level activities as defaults (without removing any existing facility-level selections the user may have made)
+            uncompleted_reports = (f for f in facility_reports if not f.is_completed)
+            for f in uncompleted_reports:
+                FacilityReportService.add_activities_to_facility_report(facility_report=f, activities=data.activities)
                 # Always update regulated products
                 FacilityReportService.prune_report_product_data_for_facility_report(
                     facility_report=f, regulated_products=data.regulated_products

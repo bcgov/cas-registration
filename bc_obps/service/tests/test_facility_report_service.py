@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
+from registration.models.activity import Activity
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.tests.utils.bakers import activity_baker
@@ -32,6 +33,30 @@ class TestFacilityReportService(TestCase):
         assert facility_report == FacilityReportService.get_facility_report_by_version_and_id(
             report_version_id=facility_report.report_version_id, facility_id=facility_report.facility_id
         )
+
+    @staticmethod
+    def test_returns_facility_report_with_split_activity_lists():
+        """The facility report response splits activities into those selected on the
+        related ReportOperation and the remaining "other" activities."""
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
+        a1 = activity_baker()
+        a2 = activity_baker()
+        report_operation = baker.make_recipe(
+            'reporting.tests.utils.report_operation',
+            report_version=facility_report.report_version,
+        )
+        report_operation.activities.add(a1, a2)
+
+        result = FacilityReportService.get_facility_report_by_version_and_id(
+            report_version_id=facility_report.report_version_id,
+            facility_id=facility_report.facility_id,
+        )
+
+        facility_activity_ids = {a['id'] for a in result.facility_activities}
+        other_activity_ids = {a['id'] for a in result.other_activities}
+
+        assert facility_activity_ids == {a1.id, a2.id}
+        assert other_activity_ids == {a.id for a in Activity.objects.exclude(id__in=[a1.id, a2.id])}
 
     def test_get_activities_throws_if_facility_report_does_not_exist(self):
         with self.assertRaises(ObjectDoesNotExist) as exception_context:
