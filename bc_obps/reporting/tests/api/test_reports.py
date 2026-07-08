@@ -258,4 +258,6 @@ class TestReportsEndpoint(CommonTestSetup):
 
         # Verify that the selected registration purpose was passed to the service
         _, kwargs = mock_create_report_for_reporting_year.call_args
+        assert kwargs["data"].operation_id == operation.id
+        assert kwargs["data"].reporting_year == 2023
         assert kwargs["data"].registration_purpose == Operation.Purposes.REPORTING_OPERATION

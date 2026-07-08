@@ -67,22 +67,21 @@ class OperationDesignatedOperatorTimelineService:
     def get_operation_designated_operators_for_reporting_years(
         cls,
         operation_ids: set[UUID],
-        reporting_years: set[int],
+        min_year: int,
+        max_year: int,
     ) -> dict[tuple[UUID, int], OperationDesignatedOperatorTimelinePlus]:
         """
-        Bulk version of get_operation_designated_operator_for_reporting_year
+        Bulk version of get_operation_designated_operator_for_reporting_year.
 
-        It is intended for scenarios where many operation/reporting year
-        combinations need to be evaluated, such as determining the list of reportable operations
+        Returns designated operator timelines for every operation/year combination
+        between min_year and max_year, inclusive.
 
-        Returns a lookup keyed by (operation_id, reporting_year)
+        Returns a lookup keyed by (operation_id, reporting_year).
         """
-
-        if not operation_ids or not reporting_years:
+        if not operation_ids:
             return {}
 
-        min_year = min(reporting_years)
-        max_year = max(reporting_years)
+        reporting_years = range(min_year, max_year + 1)
 
         timelines = (
             OperationDesignatedOperatorTimeline.objects.select_related(
@@ -100,24 +99,24 @@ class OperationDesignatedOperatorTimelineService:
         lookup: dict[tuple[UUID, int], OperationDesignatedOperatorTimelinePlus] = {}
 
         for timeline in timelines:
-            start_date = timeline.start_date
-            end_date = timeline.end_date
-
-            if start_date is None:
+            if timeline.start_date is None:
                 continue
 
+            start_year = timeline.start_date.year
+            end_year = timeline.end_date.year if timeline.end_date else None
+
             for reporting_year in reporting_years:
-                if start_date.year > reporting_year:
+                if start_year > reporting_year:
                     continue
 
-                if end_date is not None and end_date.year <= reporting_year:
+                if end_year is not None and end_year <= reporting_year:
                     continue
 
                 lookup[(timeline.operation_id, reporting_year)] = OperationDesignatedOperatorTimelinePlus(
                     operation=timeline.operation,
                     operator=timeline.operator,
-                    start_date=start_date,
-                    end_date=end_date,
+                    start_date=timeline.start_date,
+                    end_date=timeline.end_date,
                 )
 
         return lookup

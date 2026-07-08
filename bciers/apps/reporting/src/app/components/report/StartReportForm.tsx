@@ -21,7 +21,7 @@ interface StartReportFormData {
   registration_purpose: string;
 }
 
-interface CreateReportResponse {
+interface CreateReportErrorResponse {
   error?: string;
   validation?: {
     errors?: ReportValidationErrors;
@@ -55,7 +55,7 @@ export default function StartReportForm({
       {
         body: JSON.stringify(payload),
       },
-    )) as CreateReportResponse | number;
+    )) as CreateReportErrorResponse | number;
 
     if (typeof response === "object" && response.error) {
       setErrorList(
@@ -90,7 +90,7 @@ export default function StartReportForm({
       <div className="flex justify-start gap-3 pt-6">
         <Button
           variant="outlined"
-          onClick={() => router.back()}
+          onClick={() => router.push(`/reports/previous-years`)}
           className="min-w-[82px] border-bc-blue px-6 py-2.5 text-bc-links hover:border-bc-primary-blue"
         >
           Cancel

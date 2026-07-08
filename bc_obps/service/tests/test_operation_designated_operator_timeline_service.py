@@ -1,7 +1,10 @@
 import pytest
 from django.utils import timezone
 from model_bakery import baker
-from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
+from service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelinePlus,
+    OperationDesignatedOperatorTimelineService,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -94,59 +97,67 @@ class TestOperationDesignatedOperatorTimelineService:
         assert result_none is None
 
     @staticmethod
-    def test_get_operation_designated_operators_for_reporting_years():
-        operation = baker.make_recipe('registration.tests.utils.operation')
-        operator1 = baker.make_recipe('registration.tests.utils.operator')
-        operator2 = baker.make_recipe('registration.tests.utils.operator')
+    def test_get_operation_designated_operators_for_reporting_years_returns_matching_timelines():
+        operation = baker.make_recipe("registration.tests.utils.operation")
+        operator1 = baker.make_recipe("registration.tests.utils.operator")
+        operator2 = baker.make_recipe("registration.tests.utils.operator")
 
         timeline1 = baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             operation=operation,
             operator=operator1,
-            start_date=timezone.datetime(2024, 6, 1).date(),
-            end_date=timezone.datetime(2025, 5, 31).date(),
+            start_date=timezone.make_aware(timezone.datetime(2024, 6, 1)),
+            end_date=timezone.make_aware(timezone.datetime(2025, 5, 31)),
         )
         timeline2 = baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             operation=operation,
             operator=operator2,
-            start_date=timezone.datetime(2025, 5, 31).date(),
+            start_date=timezone.make_aware(timezone.datetime(2025, 5, 31)),
             end_date=None,
         )
 
         result = OperationDesignatedOperatorTimelineService.get_operation_designated_operators_for_reporting_years(
             operation_ids={operation.id},
-            reporting_years={2023, 2024, 2025},
+            min_year=2023,
+            max_year=2025,
         )
 
+        assert len(result) == 2
         assert (operation.id, 2023) not in result
 
-        result_2024 = result[(operation.id, 2024)]
-        assert result_2024.operation == timeline1.operation
-        assert result_2024.operator == timeline1.operator
-        assert result_2024.start_date == timeline1.start_date
-        assert result_2024.end_date == timeline1.end_date
-        assert result_2024.has_been_transferred is True
-
-        result_2025 = result[(operation.id, 2025)]
-        assert result_2025.operation == timeline2.operation
-        assert result_2025.operator == timeline2.operator
-        assert result_2025.start_date == timeline2.start_date
-        assert result_2025.end_date == timeline2.end_date
-        assert result_2025.has_been_transferred is False
-
-        empty_result = (
-            OperationDesignatedOperatorTimelineService.get_operation_designated_operators_for_reporting_years(
-                operation_ids=set(),
-                reporting_years={2024, 2025},
-            )
+        assert result[(operation.id, 2024)] == OperationDesignatedOperatorTimelinePlus(
+            operation=timeline1.operation,
+            operator=timeline1.operator,
+            start_date=timeline1.start_date,
+            end_date=timeline1.end_date,
         )
-        assert empty_result == {}
 
-        empty_result = (
-            OperationDesignatedOperatorTimelineService.get_operation_designated_operators_for_reporting_years(
-                operation_ids={operation.id},
-                reporting_years=set(),
-            )
+        assert result[(operation.id, 2025)] == OperationDesignatedOperatorTimelinePlus(
+            operation=timeline2.operation,
+            operator=timeline2.operator,
+            start_date=timeline2.start_date,
+            end_date=timeline2.end_date,
         )
-        assert empty_result == {}
+
+    @staticmethod
+    def test_get_operation_designated_operators_for_reporting_years_returns_empty_when_operation_ids_empty():
+        result = OperationDesignatedOperatorTimelineService.get_operation_designated_operators_for_reporting_years(
+            operation_ids=set(),
+            min_year=2024,
+            max_year=2025,
+        )
+
+        assert result == {}
+
+    @staticmethod
+    def test_get_operation_designated_operators_for_reporting_years_returns_empty_when_year_range_is_empty():
+        operation = baker.make_recipe("registration.tests.utils.operation")
+
+        result = OperationDesignatedOperatorTimelineService.get_operation_designated_operators_for_reporting_years(
+            operation_ids={operation.id},
+            min_year=2025,
+            max_year=2024,
+        )
+
+        assert result == {}

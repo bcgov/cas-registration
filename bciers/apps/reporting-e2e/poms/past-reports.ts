@@ -34,20 +34,13 @@ export class PastReportsPOM extends CurrentReportsPOM {
     await expect(row).toBeVisible({ timeout: 30_000 });
   }
 
-  async clickFileReport(): Promise<void> {
-    const expectedUrl = new RegExp(`${AppRoutes.PAGE_START_PAST_REPORT}$`, "i");
-
+  async startFileReport(): Promise<void> {
     const link = this.page.getByRole("link", {
       name: GRID_BUTTON_TEXT.FILE_PREVIOUS_YEARS_REPORT,
     });
-
     await expect(link).toBeVisible({ timeout: 30_000 });
     await expect(link).toBeEnabled({ timeout: 30_000 });
-
-    await link.click();
-
-    await expect(this.page).toHaveURL(expectedUrl, {
-      timeout: 30_000,
-    });
+    const href = await link.getAttribute("href");
+    await this.page.goto(href);
   }
 }

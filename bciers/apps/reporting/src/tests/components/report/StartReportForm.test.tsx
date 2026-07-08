@@ -1,11 +1,12 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import StartReportForm from "@reporting/src/app/components/report/StartReportForm";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 import expectComboBox from "@bciers/testConfig/helpers/expectComboBox";
 import { selectComboboxOption } from "@bciers/testConfig/helpers/selectComboboxOption";
+import { createStartReportSchemas } from "@reporting/src/data/jsonSchema/report/startReport";
+import getPreviousReportableOperations from "@reporting/src/app/utils/getPreviousReportableOperations";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -15,53 +16,41 @@ vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
 }));
 
+vi.mock("@reporting/src/app/utils/getPreviousReportableOperations", () => ({
+  default: vi.fn(),
+}));
+
 const mockPush = vi.fn();
 const mockBack = vi.fn();
 
 const mockActionHandler = vi.mocked(actionHandler);
 const mockUseRouter = vi.mocked(useRouter);
+const mockGetPreviousReportableOperations = vi.mocked(
+  getPreviousReportableOperations,
+);
 
-const schema: RJSFSchema = {
-  type: "object",
-  required: ["reporting_year", "operation_id", "registration_purpose"],
-  properties: {
-    reporting_year: {
-      type: "number",
-      title: "Reporting year",
-      enum: [2023],
-    },
-    operation_id: {
-      type: "string",
-      title: "Operation",
-      enum: ["operation-1"],
-    },
-    registration_purpose: {
-      type: "string",
-      title: "Registration purpose",
-      enum: ["Reporting Operation"],
-    },
-  },
-};
+const renderForm = async () => {
+  const { schema, uiSchema } = await createStartReportSchemas();
 
-const uiSchema: UiSchema = {};
-
-const renderForm = () => {
   render(<StartReportForm schema={schema} uiSchema={uiSchema} />);
 };
 
 const expectForm = () => {
-  expectComboBox(/Reporting year/i);
-  expectComboBox(/Operation/i);
-  expectComboBox(/Registration purpose/i);
+  expectComboBox(/Select reporting year/i);
+  expectComboBox(/Select operation/i);
+  expectComboBox(/Select the registration purpose/i);
 
   expect(screen.getByRole("button", { name: /start/i })).toBeVisible();
   expect(screen.getByRole("button", { name: /cancel/i })).toBeVisible();
 };
 
 const fillForm = async () => {
-  await selectComboboxOption(/Reporting year/i, "2023");
-  await selectComboboxOption(/Operation/i, "operation-1");
-  await selectComboboxOption(/Registration purpose/i, "Reporting Operation");
+  await selectComboboxOption(/Select reporting year/i, "2023");
+  await selectComboboxOption(/Select operation/i, "Operation 1");
+  await selectComboboxOption(
+    /Select the registration purpose/i,
+    "Reporting Operation",
+  );
 };
 
 describe("StartReportForm", () => {
@@ -70,12 +59,20 @@ describe("StartReportForm", () => {
 
     mockUseRouter.mockReturnValue({
       push: mockPush,
-      back: mockBack,
     } as unknown as ReturnType<typeof useRouter>);
+
+    mockGetPreviousReportableOperations.mockResolvedValue([
+      {
+        reporting_year: 2023,
+        operation_id: "operation-1",
+        operation_name: "Operation 1",
+        registration_purposes: ["Reporting Operation"],
+      },
+    ]);
   });
 
-  it("renders the form", () => {
-    renderForm();
+  it("renders the generated start report form", async () => {
+    await renderForm();
 
     expectForm();
   });
@@ -83,8 +80,7 @@ describe("StartReportForm", () => {
   it("submits the selected report data and redirects to review operation information", async () => {
     mockActionHandler.mockResolvedValue(123);
 
-    renderForm();
-
+    await renderForm();
     await fillForm();
 
     await userEvent.click(screen.getByRole("button", { name: /start/i }));
@@ -125,14 +121,12 @@ describe("StartReportForm", () => {
       },
     });
 
-    renderForm();
-
+    await renderForm();
     await fillForm();
 
     await userEvent.click(screen.getByRole("button", { name: /start/i }));
 
     expect(await screen.findByText("Unable to create report.")).toBeVisible();
-
     expect(mockPush).not.toHaveBeenCalled();
   });
 
@@ -141,22 +135,21 @@ describe("StartReportForm", () => {
       error: "Unable to create report.",
     });
 
-    renderForm();
-
+    await renderForm();
     await fillForm();
 
     await userEvent.click(screen.getByRole("button", { name: /start/i }));
 
     expect(await screen.findByText("Unable to create report.")).toBeVisible();
-
     expect(mockPush).not.toHaveBeenCalled();
   });
 
-  it("goes back when Cancel is clicked", async () => {
-    renderForm();
+  it("returns to the previous reports page when Cancel is clicked", async () => {
+    await renderForm();
 
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(mockBack).toHaveBeenCalledOnce();
+    expect(mockPush).toHaveBeenCalledWith("/reports/previous-years");
+    expect(mockBack).not.toHaveBeenCalled();
   });
 });

@@ -21,22 +21,22 @@ test.describe("Start Past Report", () => {
     // Navigate to the past reports grid
     await pastReports.route();
 
-    // Click button File previous years report
-    await pastReports.clickFileReport();
+    // Route to File previous years report
+    await pastReports.startFileReport();
 
-    // Assert Report on a previous year page displays
+    // Assert page displays - Report on a previous year
     await startPastReport.isLoaded();
 
     // Complete form
     await startPastReport.selectReportingYear("2024");
-    await startPastReport.selectOperation(OPERATION_NAMES.BUGLE_SFO);
+    await startPastReport.selectOperation(OPERATION_NAMES.BEES_LFO);
     await startPastReport.selectRegistrationPurpose(
       REGULATED_OPERATION_REGISTRATION_PURPOSE,
     );
     //  Submit form
     await startPastReport.clickStart();
 
-    // Assert Review Operation Information page displays
+    // Assert page displays - Review Operation Information
     await reportOperation.isLoaded();
   });
 });

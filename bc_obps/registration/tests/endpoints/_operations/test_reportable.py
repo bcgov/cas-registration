@@ -7,7 +7,7 @@ from model_bakery.baker import make_recipe
 
 class TestOperationsPreviousReportableEndpoint(CommonTestSetup):
     @patch("service.operation_service.OperationService.list_previous_reportable_operations")
-    def test_list_previous_reportable_operations(
+    def test_calls_and_returns_the_service_method_output(
         self,
         mock_list_previous_reportable_operations,
     ):
@@ -40,11 +40,15 @@ class TestOperationsPreviousReportableEndpoint(CommonTestSetup):
 
         assert response.status_code == 200
         assert len(response.json()) == 1
-        assert response.json()[0].get("operation_name") == operation.name
-        assert response.json()[0].get("operation_id") == str(operation.id)
-        assert response.json()[0].get("reporting_year") == 2023
-        assert response.json()[0].get("registration_purposes") == [
-            Operation.Purposes.REPORTING_OPERATION,
+        assert response.json() == [
+            {
+                "operation_id": str(operation.id),
+                "operation_name": operation.name,
+                "reporting_year": 2023,
+                "registration_purposes": [
+                    str(Operation.Purposes.REPORTING_OPERATION),
+                ],
+            }
         ]
 
         mock_list_previous_reportable_operations.assert_called_once()

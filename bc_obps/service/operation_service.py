@@ -816,27 +816,16 @@ class OperationService:
         raise ValueError(f"Unsupported operation type: {operation_type}")
 
     @classmethod
-    def _add_reportable_operation(
+    def _build_previous_reportable_operation_row(
         cls,
-        reportable_operations: list[dict],
-        added_operation_years: set[tuple[UUID, int]],
         operation: Operation,
         reporting_year: ReportingYear,
         is_current_registered_fallback: bool,
-    ) -> None:
-        """
-        Adds a reportable operation/reporting year combination to the result set
-        and tracks it to prevent duplicates.
-        """
-        operation_year = (operation.id, reporting_year.reporting_year)
-
-        reportable_operations.append(
-            {
-                **cls._build_reportable_operation_row(operation, reporting_year),
-                "is_current_registered_fallback": is_current_registered_fallback,
-            }
-        )
-        added_operation_years.add(operation_year)
+    ) -> dict:
+        return {
+            **cls._build_reportable_operation_row(operation, reporting_year),
+            "is_current_registered_fallback": is_current_registered_fallback,
+        }
 
     @classmethod
     def _build_reportable_operation_row(
@@ -909,7 +898,8 @@ class OperationService:
         designations_lookup = (
             OperationDesignatedOperatorTimelineService.get_operation_designated_operators_for_reporting_years(
                 operation_ids=all_operation_ids,
-                reporting_years=year_values,
+                min_year=min(year_values),
+                max_year=max(year_values),
             )
         )
 
@@ -923,7 +913,6 @@ class OperationService:
                     reporting_year.reporting_year,
                 )
 
-                # Skip combinations that have already have a report
                 if not cls._is_reportable_operation_year(
                     operation_year,
                     added_operation_years,
@@ -933,18 +922,21 @@ class OperationService:
 
                 designated_operator_timeline = designations_lookup.get(operation_year)
 
-                # Include operations designated to the user's operator for the reporting year
-                if cls._is_designated_to_user_operator(
+                if not cls._is_designated_to_user_operator(
                     designated_operator_timeline,
                     user_operator,
                 ):
-                    cls._add_reportable_operation(
-                        reportable_operations,
-                        added_operation_years,
+                    continue
+
+                reportable_operations = [
+                    *reportable_operations,
+                    cls._build_previous_reportable_operation_row(
                         timeline.operation,
                         reporting_year,
                         False,
-                    )
+                    ),
+                ]
+            added_operation_years = {*added_operation_years, operation_year}
 
         for operation in current_registered_operations:
             for reporting_year in reporting_years:
@@ -953,7 +945,6 @@ class OperationService:
                     reporting_year.reporting_year,
                 )
 
-                # Skip combinations that have already have a report
                 if not cls._is_reportable_operation_year(
                     operation_year,
                     added_operation_years,
@@ -961,13 +952,14 @@ class OperationService:
                 ):
                     continue
 
-                # Fall back to the current registered operator when no historical designation applies
-                cls._add_reportable_operation(
-                    reportable_operations,
-                    added_operation_years,
-                    operation,
-                    reporting_year,
-                    True,
-                )
+                reportable_operations = [
+                    *reportable_operations,
+                    cls._build_previous_reportable_operation_row(
+                        operation,
+                        reporting_year,
+                        True,
+                    ),
+                ]
+            added_operation_years = {*added_operation_years, operation_year}
 
         return reportable_operations
