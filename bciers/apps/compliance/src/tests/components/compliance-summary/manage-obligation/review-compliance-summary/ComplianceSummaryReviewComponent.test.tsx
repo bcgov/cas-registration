@@ -7,6 +7,9 @@ import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
 const mockWindowOpen = vi.fn();
 window.open = mockWindowOpen;
 
+// A fake browser tab returned by window.open that the util navigates to the PDF.
+let fakeTab: { location: { href: string }; close: ReturnType<typeof vi.fn> };
+
 vi.mock(
   "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsGrid",
   () => ({
@@ -69,14 +72,9 @@ const getGenerateButton = () =>
 describe("ComplianceSummaryReviewComponent", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
-    mockWindowOpen.mockClear();
-
-    if (!("createObjectURL" in URL)) {
-      // @ts-expect-error - URL.createObjectURL is not defined in the type system
-      URL.createObjectURL = vi.fn();
-    }
-
-    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:fake-invoice-url");
+    fakeTab = { location: { href: "" }, close: vi.fn() };
+    mockWindowOpen.mockReset();
+    mockWindowOpen.mockReturnValue(fakeTab);
     vi.stubGlobal("open", mockWindowOpen);
   });
 
@@ -95,13 +93,11 @@ describe("ComplianceSummaryReviewComponent", () => {
   it("handles invoice generation correctly", async () => {
     const user = userEvent.setup();
 
-    const mockBlob = new Blob(["dummy PDF"], { type: "application/pdf" });
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        blob: async () => mockBlob,
         headers: new Headers(),
       }),
     );
@@ -118,13 +114,13 @@ describe("ComplianceSummaryReviewComponent", () => {
       },
     );
 
-    expect(URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
-
-    expect(mockWindowOpen).toHaveBeenCalledWith(
-      "blob:fake-invoice-url",
-      "_blank",
-      "noopener,noreferrer",
+    // A preview tab is opened synchronously, then navigated directly to the
+    // route URL so the browser honours the Content-Disposition filename.
+    expect(mockWindowOpen).toHaveBeenCalledWith("", "_blank");
+    expect(fakeTab.location.href).toBe(
+      "/compliance/api/invoice/123/obligation",
     );
+    expect(fakeTab.close).not.toHaveBeenCalled();
 
     expect(getGenerateButton()).toBeEnabled();
   });
@@ -156,7 +152,10 @@ describe("ComplianceSummaryReviewComponent", () => {
       },
     );
 
-    expect(mockWindowOpen).not.toHaveBeenCalled();
+    // The placeholder tab is opened, then closed on error (never navigated).
+    expect(mockWindowOpen).toHaveBeenCalledWith("", "_blank");
+    expect(fakeTab.close).toHaveBeenCalled();
+    expect(fakeTab.location.href).toBe("");
 
     const alerts = await screen.findAllByRole("alert");
     const hasErrorText = alerts.some((el) =>
