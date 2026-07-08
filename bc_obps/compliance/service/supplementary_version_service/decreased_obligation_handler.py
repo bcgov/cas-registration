@@ -641,7 +641,8 @@ class DecreasedObligationHandler:
         already posted the fee adjustment and force-refreshed the invoice's balances from eLicensing.
         """
         invoice = ElicensingInvoice.objects.get(compliance_obligation__compliance_report_version_id=previous_version_id)
-        interest_not_paid = (invoice.invoice_interest_balance or ZERO_DECIMAL) > ZERO_DECIMAL
+        # invoice_interest_balance should never be None here; fail loudly
+        interest_not_paid = invoice.invoice_interest_balance > ZERO_DECIMAL  # type: ignore[operator]
         status = (
             ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
             if interest_not_paid

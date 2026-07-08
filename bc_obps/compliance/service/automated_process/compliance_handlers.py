@@ -15,8 +15,10 @@ logger = logging.getLogger(__name__)
 ZERO_DECIMAL = Decimal('0.00')
 
 
-def _invoice_has_penalty(invoice: ElicensingInvoice) -> bool:
-    """Check if the invoice is a penalty invoice"""
+def _is_penalty_invoice(invoice: ElicensingInvoice) -> bool:
+    """
+    Check whether this invoice is itself a penalty's own invoice (as opposed to an obligation's invoice)
+    """
     return bool(hasattr(invoice, 'compliance_penalty') and getattr(invoice, 'compliance_penalty', None))
 
 
@@ -37,8 +39,7 @@ class PenaltyPaidHandler(ComplianceUpdateHandler):
 
     def can_handle(self, invoice: ElicensingInvoice) -> bool:
         """Check if the invoice has a penalty and the penalty invoice is fully paid."""
-        has_penalty = _invoice_has_penalty(invoice)
-        if not has_penalty:
+        if not _is_penalty_invoice(invoice):
             return False
 
         penalty = invoice.compliance_penalty
@@ -84,8 +85,7 @@ class PenaltyAccruingHandler(ComplianceUpdateHandler):
         """Check if obligation should start accruing penalties."""
 
         # Only run for obligation invoices; skip penalty invoices
-        has_penalty = _invoice_has_penalty(invoice)
-        if has_penalty:
+        if _is_penalty_invoice(invoice):
             return False
 
         obligation = invoice.compliance_obligation
@@ -116,8 +116,7 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         """Check if the obligation's fee balance is paid and should be updated to OBLIGATION_FULLY_MET or OBLIGATION_MET_INTEREST_NOT_PAID."""
 
         # Ensure this is an obligation invoice, not a penalty invoice
-        has_penalty = _invoice_has_penalty(invoice)
-        if has_penalty:
+        if _is_penalty_invoice(invoice):
             return False
         # Only consider the fee balance (the tCO2e obligation) when deciding if the obligation is met.
         # Unpaid FAA interest (part of outstanding_balance) must not block the obligation from being
@@ -140,7 +139,8 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
 
         obligation = invoice.compliance_obligation
         compliance_report_version = obligation.compliance_report_version
-        interest_not_paid = (invoice.invoice_interest_balance or ZERO_DECIMAL) > ZERO_DECIMAL
+        # invoice_interest_balance should never be None here; fail loudly
+        interest_not_paid = invoice.invoice_interest_balance > ZERO_DECIMAL  # type: ignore[operator]
         compliance_report_version.status = (
             ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
             if interest_not_paid
@@ -188,14 +188,13 @@ class InterestPaidHandler(ComplianceUpdateHandler):
     def can_handle(self, invoice: ElicensingInvoice) -> bool:
         """Check if the obligation is OBLIGATION_MET_INTEREST_NOT_PAID and FAA interest has now been paid."""
 
-        has_penalty = _invoice_has_penalty(invoice)
-        if has_penalty:
+        if _is_penalty_invoice(invoice):
             return False
 
         return (
             invoice.compliance_obligation.compliance_report_version.status
             == ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
-            and (invoice.invoice_interest_balance or ZERO_DECIMAL) == ZERO_DECIMAL
+            and invoice.invoice_interest_balance == ZERO_DECIMAL
         )
 
     def handle(self, invoice: ElicensingInvoice) -> None:
