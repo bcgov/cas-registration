@@ -6,7 +6,7 @@ from django.test import TestCase
 
 class TestInitialData(TestCase):
     def test_reporting_year_initial_data(self):
-        expected_reporting_years = sorted([2023, 2024, 2025, 2026])
+        expected_reporting_years = sorted([2024, 2025, 2026])
         existing_reporting_years = sorted(ReportingYear.objects.values_list('reporting_year', flat=True))
 
         self.assertEqual(len(existing_reporting_years), len(expected_reporting_years))
