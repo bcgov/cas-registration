@@ -144,6 +144,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
   );
 
   const columns = useMemo(
+    // eslint-disable-next-line react-hooks/refs
     () => getFacilityColumns(handleCheckboxChange, version_id),
     [handleCheckboxChange, version_id],
   );

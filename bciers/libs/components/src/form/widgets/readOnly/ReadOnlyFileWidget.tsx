@@ -19,6 +19,7 @@ const ReadOnlyFileWidget: React.FC<WidgetProps> = ({
   useEffect(() => {
     // Fix for window not being defined on page load
     if (fileValue.length) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFileInfo(fileValue);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

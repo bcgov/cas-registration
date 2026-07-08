@@ -28,11 +28,13 @@ const Accordion = ({
     // as well as to allow the user to control the expanded state
     const isExpandAll = expandedOptions?.isExpandAll;
     if (isExpandAll !== undefined) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsExpanded(isExpandAll);
     }
   }, [expandedOptions]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsExpanded(expanded);
   }, [expanded]);
 

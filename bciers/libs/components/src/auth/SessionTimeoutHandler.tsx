@@ -180,6 +180,7 @@ const SessionTimeoutHandler: React.FC = () => {
         .then()
         .catch((e) => console.error("Error logging out:", e));
     else if (sessionTimeout > MODAL_DISPLAY_SECONDS) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowModal(false);
       modalTimeoutId = setTimeout(
         () => {
