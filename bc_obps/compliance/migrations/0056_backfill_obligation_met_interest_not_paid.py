@@ -28,7 +28,7 @@ def revert_to_obligation_fully_met(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("compliance", "0054_alter_compliancereportversion_status"),
+        ("compliance", "0055_alter_compliancereportversion_status"),
     ]
 
     operations = [
