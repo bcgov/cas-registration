@@ -58,11 +58,6 @@ class ThreadSchema(ModelSchema):
         return None
 
 
-class ThreadSchemaOut(Schema):
-    threads: List[ThreadWithEventsOutSchema] | None
-    user_guid: UUID | None
-
-
 class ReportCommentThreadInSchema(Schema):
     """
     Schema for creating a new ReportCommentThread instance
@@ -127,3 +122,8 @@ class ReportCommentResolveSchema(Schema):
     """
 
     is_resolved: bool = True
+
+
+class ThreadSchemaOut(Schema):
+    threads: List[ThreadWithEventsOutSchema] = []
+    user_guid: UUID | None

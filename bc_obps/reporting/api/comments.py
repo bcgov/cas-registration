@@ -76,7 +76,7 @@ def pickupPassengers(
 
     if not threads:
         logger.warning("No threads found.")
-        return {"threads": [], user_guid: UUID(int=0)}
+        return {"threads": [], "user_guid": user_guid}
 
     thread_created_at_values = [thread.created_at for thread in threads]
     if any(created_at is None for created_at in thread_created_at_values):
@@ -88,7 +88,7 @@ def pickupPassengers(
         key=lambda event: event.created_at,
     )
 
-    thread_schemas: ThreadSchemaOut = {}
+    thread_schemas: List[ThreadWithEventsOutSchema] = []
     for thread in threads:
         comment_schemas = [
             CommentOutSchema(
@@ -120,9 +120,7 @@ def pickupPassengers(
             )
         )
 
-        uuid.append(user_guid)
-
-    return thread_schemas
+    return {"threads": thread_schemas, "user_guid": user_guid}
 
 
 @router.post(
