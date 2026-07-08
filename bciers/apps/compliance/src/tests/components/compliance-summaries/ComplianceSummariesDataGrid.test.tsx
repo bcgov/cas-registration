@@ -153,7 +153,7 @@ describe("ComplianceSummariesDataGrid component", () => {
 
     // Verify data displays
     const summaryRows = screen.getAllByRole("row");
-    expect(summaryRows.length).toBe(11); // header + search cell + 9 data rows
+    expect(summaryRows).toHaveLength(11); // header + search cell + 9 data rows
 
     // Check first row - Obligation not met (Operation 1)
     const firstRow = summaryRows.find((row) =>

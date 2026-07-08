@@ -1,11 +1,16 @@
 {% extends "admin/change_list.html" %}
+{% load admin_list %}
 
-{% block object-tools-items %}
-  <li>
-    <form method="post" action="{% url 'admin:compliance_elicensinginterestrate_sync' %}">
-      {% csrf_token %}
-      <input type="submit" value="Sync interest rates from eLicensing" class="button">
-    </form>
-  </li>
-  {{ block.super }}
+{% block object-tools %}
+  <ul class="object-tools">
+    <li>
+      <form method="post" action="{% url 'admin:compliance_elicensinginterestrate_sync' %}">
+        {% csrf_token %}
+        <input type="submit" value="Sync interest rates from eLicensing" class="button">
+      </form>
+    </li>
+    {% block object-tools-items %}
+      {% change_list_object_tools %}
+    {% endblock %}
+  </ul>
 {% endblock %}
