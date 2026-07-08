@@ -1,8 +1,21 @@
-from typing import Literal
+from typing import List, Literal
 from uuid import UUID
-from venv import logger
-from common.permissions import authorize
+import logging
+from .router import router
 
+from common.api.utils.current_user_utils import get_current_user_guid
+from common.permissions import authorize
+from ..schema.comment import (
+    ReportCommentInSchema,
+    ReportCommentResolveSchema,
+    ThreadSchema,
+    CommentSchema,
+    ReportCommentThreadInSchema,
+    ThreadSchemaOut,
+)
+from ..models import (
+    ReportCommentThread,
+)
 
 from django.db.models import Prefetch
 from django.http import HttpRequest
@@ -18,6 +31,7 @@ from ..models import (
 from ..schema.comment import (
     CommentOutSchema,
     ReportCommentInSchema,
+    ReportCommentResolveSchema,
     ThreadSchema,
     CommentSchema,
     ReportCommentThreadInSchema,
@@ -25,19 +39,22 @@ from ..schema.comment import (
 )
 from .router import router
 
+logger = logging.getLogger(__name__)
+
 
 @router.get(
     "/comments/version_id/{version_id}",
-    response={200: list[ThreadWithEventsOutSchema], custom_codes_4xx: Message},
+    response={200: ThreadSchemaOut, custom_codes_4xx: Message},
     description="Fetch comments for a given report version.",
     auth=authorize("authorized_irc_user"),
 )
 def pickupPassengers(
     request: HttpRequest, version_id: int, facility_id: str | None = None
-) -> list[ThreadWithEventsOutSchema]:
+) -> dict[List[ThreadWithEventsOutSchema], UUID]:
     """
     Fetch the comment threads for a given report version and facility id.
     """
+    user_guid = get_current_user_guid(request)
     report = ReportVersion.objects.get(pk=version_id).report
     query = (
         ReportCommentThread.objects.filter(report=report)
@@ -59,7 +76,7 @@ def pickupPassengers(
 
     if not threads:
         logger.warning("No threads found.")
-        return []
+        return {"threads": [], "user_guid": user_guid}
 
     thread_created_at_values = [thread.created_at for thread in threads]
     if any(created_at is None for created_at in thread_created_at_values):
@@ -71,7 +88,7 @@ def pickupPassengers(
         key=lambda event: event.created_at,
     )
 
-    thread_schemas: list[ThreadWithEventsOutSchema] = []
+    thread_schemas: List[ThreadWithEventsOutSchema] = []
     for thread in threads:
         comment_schemas = [
             CommentOutSchema(
@@ -103,7 +120,7 @@ def pickupPassengers(
             )
         )
 
-    return thread_schemas
+    return {"threads": thread_schemas, "user_guid": user_guid}
 
 
 @router.post(
@@ -156,3 +173,21 @@ def addToCommentThread(
     )
 
     return 200, comment
+
+
+@router.patch(
+    "/comment/resolve/thread_id/{thread_id}",
+    response={200: ReportCommentResolveSchema, custom_codes_4xx: Message},
+    description="Resolve a thread.",
+    auth=authorize("authorized_irc_user"),
+)
+def checkTicket(request: HttpRequest, thread_id: int) -> Literal[200]:
+    """
+    Resolve an existing comment thread for a given thread ID.
+    """
+
+    thread = ReportCommentThread.objects.get(pk=thread_id)
+    thread.is_resolved = True
+    thread.save()
+
+    return 200

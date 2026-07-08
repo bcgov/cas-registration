@@ -18,21 +18,26 @@ import CommentSeat from "./commentSeat";
 import EventSeat from "./eventSeat";
 import { addCommentToThread } from "../../utils/addComment";
 import { useRouter } from "next/navigation";
+import { checkTicket } from "../../utils/checkTicket";
 
 interface Props {
   thread: Thread;
   version_id: number;
   onCommentAdded?: (threadId: number, comment: Comment) => void;
+  isAuthoredByCurrentUser?: boolean;
 }
 
 const CommentBoxCar: React.FC<Props> = ({
   thread,
   version_id,
   onCommentAdded,
+  isAuthoredByCurrentUser,
 }) => {
   const router = useRouter();
   const [commentText, setCommentText] = useState("");
-  const [areCommentsCollapsed, setAreCommentsCollapsed] = useState(false);
+  const [areCommentsCollapsed, setAreCommentsCollapsed] = useState(
+    thread.is_resolved,
+  );
 
   const handleSubmitComment = async () => {
     const trimmedComment = commentText.trim();
@@ -49,6 +54,11 @@ const CommentBoxCar: React.FC<Props> = ({
     }
 
     setCommentText("");
+    router.refresh();
+  };
+
+  const handleCheckTicket = async () => {
+    await checkTicket(thread.id);
     router.refresh();
   };
 
@@ -90,8 +100,28 @@ const CommentBoxCar: React.FC<Props> = ({
         borderColor: "divider",
         overflow: "hidden",
         background: "linear-gradient(180deg, #f8fbff 0%, #ffffff 45%)",
+        opacity: thread.is_resolved ? 0.5 : 1,
+        filter: thread.is_resolved ? "grayscale(100%)" : "none",
       }}
     >
+      {thread.is_resolved && (
+        <Typography
+          variant="h4"
+          sx={{
+            position: "absolute",
+            color: "rgba(0, 0, 0, 0.1)",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%) rotate(-15deg)",
+            fontWeight: "bold",
+            userSelect: "none",
+            pointerEvents: "none",
+            zIndex: 999,
+          }}
+        >
+          resolved
+        </Typography>
+      )}
       <Box sx={{ p: 2.5, borderBottom: "1px solid", borderColor: "divider" }}>
         <Stack
           direction="row"
@@ -147,7 +177,7 @@ const CommentBoxCar: React.FC<Props> = ({
 
       <Box sx={{ px: 2.5, py: 1.5 }}>
         {timelineEntries.length > 0 && (
-          <Stack direction="row" justifyContent="flex-end" sx={{ mb: 1 }}>
+          <Stack direction="row" justifyContent="flex-end" sx={{ mb: 1, filter: "none", opacity: 1 }}>
             <Button
               size="small"
               onClick={() => setAreCommentsCollapsed((prev) => !prev)}
@@ -193,37 +223,55 @@ const CommentBoxCar: React.FC<Props> = ({
 
       {/* reply */}
       <Collapse in={!areCommentsCollapsed} timeout="auto" unmountOnExit>
-        <Box sx={{ px: 2.5, pb: 2.5 }}>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={1.5}
-            alignItems="flex-start"
-          >
-            <TextField
-              fullWidth
-              multiline
-              minRows={2}
-              label="Add a comment"
-              value={commentText}
-              onChange={(event) => setCommentText(event.target.value)}
-              onKeyDown={(event) => {
-                if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
-                  event.preventDefault();
-                  handleSubmitComment();
-                }
-              }}
-            />
-            <Button
-              variant="contained"
-              onClick={handleSubmitComment}
-              disabled={!commentText.trim()}
-              sx={{ minWidth: { xs: "100%", sm: 120 }, mt: { sm: 0.5 } }}
+        {!thread.is_resolved && (
+          <Box sx={{ px: 2.5, pb: 2.5 }}>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={1.5}
+              alignItems="flex-start"
             >
-              Submit
-            </Button>
-          </Stack>
-        </Box>
+              <TextField
+                fullWidth
+                multiline
+                minRows={2}
+                label="Add a comment"
+                value={commentText}
+                onChange={(event) => setCommentText(event.target.value)}
+                onKeyDown={(event) => {
+                  if (
+                    (event.metaKey || event.ctrlKey) &&
+                    event.key === "Enter"
+                  ) {
+                    event.preventDefault();
+                    handleSubmitComment();
+                  }
+                }}
+              />
+              <Button
+                variant="contained"
+                onClick={handleSubmitComment}
+                disabled={!commentText.trim()}
+                sx={{ minWidth: { xs: "100%", sm: 120 }, mt: { sm: 0.5 } }}
+              >
+                Submit
+              </Button>
+            </Stack>
+          </Box>
+        )}
       </Collapse>
+
+      {/* resolve button */}
+      {!thread.is_resolved && isAuthoredByCurrentUser && (
+        <Box sx={{ pb: 2.5, display: "flex", justifyContent: "center" }}>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleCheckTicket}
+          >
+            resolve thread
+          </Button>
+        </Box>
+      )}
     </Paper>
   );
 };

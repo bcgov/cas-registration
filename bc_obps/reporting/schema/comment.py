@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from uuid import UUID
+from typing import List
 from ninja import ModelSchema, Schema
 from reporting.models import ReportCommentThread, ReportComment
 
@@ -112,3 +114,16 @@ class ThreadWithEventsOutSchema(Schema):
     facility_name: str | None = None
     report_comments: list[CommentOutSchema]
     report_events: list[ReportCommentEventSchema] = []
+
+
+class ReportCommentResolveSchema(Schema):
+    """
+    Schema for resolving a ReportCommentThread instance
+    """
+
+    is_resolved: bool = True
+
+
+class ThreadSchemaOut(Schema):
+    threads: List[ThreadWithEventsOutSchema] = []
+    user_guid: UUID | None
