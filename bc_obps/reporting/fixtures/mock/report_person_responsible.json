@@ -52,23 +52,5 @@
       "business_role": "Operation Representative",
       "report_version": 5
     }
-  },
-  {
-    "model": "reporting.reportpersonresponsible",
-    "pk": 4,
-    "fields": {
-      "contact_id": 4,
-      "first_name": "Bob",
-      "last_name": "Brown",
-      "position_title": "Manager",
-      "email": "bob.brown@example.com",
-      "phone_number": "+16044011236",
-      "street_address": "789 Oak St",
-      "municipality": "Village",
-      "province": "BC",
-      "postal_code": "M2N 3P4",
-      "business_role": "Operation Representative",
-      "report_version": 13
-    }
   }
 ]
