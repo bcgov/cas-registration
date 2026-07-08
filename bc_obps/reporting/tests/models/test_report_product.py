@@ -115,7 +115,7 @@ class ReportProductModelTest(BaseTestCase):
             "reporting.tests.utils.facility_report", report_version__report__reporting_year_id=2024
         )
         facility_report = make_recipe(
-            "reporting.tests.utils.facility_report", report_version__report__reporting_year_id=2023
+            "reporting.tests.utils.facility_report", report_version__report__reporting_year__reporting_year=2023
         )
 
         product = make_recipe("registration.tests.utils.regulated_product")
