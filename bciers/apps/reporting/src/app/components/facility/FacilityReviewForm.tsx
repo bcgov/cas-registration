@@ -61,7 +61,10 @@ export const FacilityReview: React.FC<Props> = ({
     ];
     if (selectedActivityNames.length === 0) {
       setErrors([
-        createGenericReportValidationError("You must select at least one activity."),]);
+        createGenericReportValidationError(
+          "You must select at least one activity.",
+        ),
+      ]);
       return false;
     }
 
