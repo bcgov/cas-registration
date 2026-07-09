@@ -44,7 +44,7 @@ export const LabelCell: React.FC<{
 };
 
 export const DataCell: React.FC<{
-  data?: string;
+  data?: string | any;
   variant: "default" | "compact";
 }> = ({ data, variant = "default" }) => {
   const splitData = (

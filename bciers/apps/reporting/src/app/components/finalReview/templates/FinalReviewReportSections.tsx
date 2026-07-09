@@ -30,7 +30,6 @@ import {
   ReportingOrigin,
 } from "@reporting/src/app/components/taskList/types";
 import { flowHelpers } from "@reporting/src/app/components/taskList/flowHelpers";
-import ReviewOperatorInformation from "../spike/ReviewOperatorInformation";
 import { FinalReviewSection } from "../spike/FinalReviewSection";
 import { FinalReviewFacilityReport } from "../spike/FacilityReport";
 import { ComplianceSummary } from "../spike/ComplianceSummary";
