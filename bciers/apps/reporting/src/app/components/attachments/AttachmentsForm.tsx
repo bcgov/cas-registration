@@ -10,12 +10,12 @@ import { ATTACHMENT_TYPE_LABELS } from "./constants";
 import { useRouter } from "next/navigation";
 import { getDictFromAttachmentArray } from "./AttachmentsPage";
 import { Checkbox } from "@mui/material";
-import Alert from "@mui/material/Alert";
-import AlertIcon from "@bciers/components/icons/AlertIcon";
+import AlertNote from "@bciers/components/form/components/AlertNote";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
 import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 interface Props extends HasReportVersion {
   initialUploadedAttachments: {
@@ -25,6 +25,7 @@ interface Props extends HasReportVersion {
   isVerificationStatementMandatory: boolean;
   isSupplementaryReport: boolean;
   initialSupplementaryConfirmation?: SupplementaryConfirmation;
+  operationType?: OperationTypes;
 }
 
 const AttachmentsForm: React.FC<Props> = ({
@@ -34,8 +35,10 @@ const AttachmentsForm: React.FC<Props> = ({
   isVerificationStatementMandatory,
   isSupplementaryReport,
   initialSupplementaryConfirmation,
+  operationType,
 }) => {
   const router = useRouter();
+  const isLFO = operationType === OperationTypes.LFO;
 
   // That information needs to be part of state for when the user saves
   const [uploadedAttachments, setUplodadedAttachments] = useState(
@@ -205,13 +208,18 @@ const AttachmentsForm: React.FC<Props> = ({
         <div className="form-heading">Attachments</div>
       </div>
       {isSupplementaryReport && (
-        <Alert severity="warning" icon={<AlertIcon fill="#635231" />}>
+        <AlertNote alertType="ALERT">
           Review your attachments and replace any that are no longer applicable
           to this report.
-        </Alert>
+        </AlertNote>
+      )}
+      {isLFO && (
+        <AlertNote alertType="ALERT">
+          An attachment for WCI.352(i) or 362(g) is required.
+        </AlertNote>
       )}
       <p>
-        Please upload any of the documents below that is applicable to your
+        Please upload any of the documents below that are applicable to your
         report:
       </p>
       {buildAttachmentElement(
@@ -235,7 +243,7 @@ const AttachmentsForm: React.FC<Props> = ({
         "confidentiality_request",
       )}
       <p>
-        <b>Note:</b>
+        <b>Notes on Confidentiality Requests:</b>
       </p>
       <ul>
         <li>

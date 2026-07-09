@@ -5,6 +5,7 @@ import { getNavigationInformation } from "@reporting/src/app/components/taskList
 import getAttachments from "@reporting/src/app/utils/getAttachments";
 import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
+import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 
 vi.mock("@reporting/src/app/components/attachments/AttachmentsForm", () => ({
   default: vi.fn(),
@@ -17,6 +18,9 @@ vi.mock("@reporting/src/app/utils/getReportVerificationStatus", () => ({
 }));
 vi.mock("@reporting/src/app/utils/getIsSupplementaryReport", () => ({
   getIsSupplementaryReport: vi.fn(),
+}));
+vi.mock("@reporting/src/app/utils/getReportingOperation", () => ({
+  getReportingOperation: vi.fn(),
 }));
 vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
   getNavigationInformation: vi.fn(),
@@ -32,6 +36,8 @@ const mockGetReportVerificationStatus =
   getReportVerificationStatus as unknown as ReturnType<typeof vi.fn>;
 const mockGetIsSupplementaryReport =
   getIsSupplementaryReport as unknown as ReturnType<typeof vi.fn>;
+const mockGetReportingOperation =
+  getReportingOperation as unknown as ReturnType<typeof vi.fn>;
 const mockGetNavigationInformation =
   getNavigationInformation as unknown as ReturnType<typeof vi.fn>;
 
@@ -64,6 +70,9 @@ describe("AttachmentsPage", () => {
       verification_required: true,
     });
     mockGetIsSupplementaryReport.mockResolvedValue(false);
+    mockGetReportingOperation.mockResolvedValue({
+      operation_type: "Linear Facilities Operation",
+    });
     mockGetNavigationInformation.mockResolvedValue("navinfo");
 
     // await the async page component…
@@ -84,6 +93,7 @@ describe("AttachmentsPage", () => {
           confirm_supplementary_required_attachments_uploaded: false,
           confirm_supplementary_existing_attachments_relevant: true,
         },
+        operationType: "Linear Facilities Operation",
       },
       undefined,
     );
