@@ -18,7 +18,5 @@ export const selectComboboxOption = async (
   await userEvent.click(screen.getByText(optionText));
 
   // Assert the combobox reflects the selected option
-  expect(screen.getByRole("combobox", { name: label })).toHaveTextContent(
-    optionText,
-  );
+  expect(screen.getByRole("combobox", { name: label })).toHaveValue(optionText);
 };

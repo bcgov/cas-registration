@@ -177,11 +177,11 @@
             ],
             "links": [
               {
-                "title": "View Annual Reports",
+                "title": "Current Reporting Year",
                 "href": "/reporting/reports/current-reports"
               },
               {
-                "title": "View Past Reports",
+                "title": "Previous Reporting Years",
                 "href": "/reporting/reports/previous-years"
               }
             ]

@@ -17,6 +17,15 @@ from service.operation_designated_operator_timeline_service import OperationDesi
 from service.report_version_service import ReportVersionService
 from service.facility_report_service import FacilityReportService, SaveFacilityReportData
 from typing import Any, List, Optional
+from service.data_access_service.user_service import UserDataAccessService
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class CreateReportForReportingYearData:
+    operation_id: UUID
+    reporting_year: int
+    registration_purpose: str
 
 
 class SaveReportOperationData:
@@ -79,6 +88,96 @@ class ReportService:
 
         report_version = ReportVersionService.create_report_version(
             report, use_transferred_operation_handling=designated_operator_timeline.has_been_transferred
+        )
+
+        return report_version.id
+
+    @classmethod
+    @transaction.atomic()
+    def create_report_for_reporting_year(
+        cls,
+        user_guid: UUID,
+        data: CreateReportForReportingYearData,
+    ) -> int:
+        operation_id = data.operation_id
+        reporting_year = data.reporting_year
+
+        user_operator = UserDataAccessService.get_user_operator_by_user(user_guid)
+        operation = Operation.objects.prefetch_related(
+            "activities",
+            "regulated_products",
+            "opted_in_operation",
+        ).get(id=operation_id)
+
+        # Check whether the operation had a designated operator during the selected reporting year
+        designated_operator_timeline = (
+            OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
+                operation_id=operation_id,
+                reporting_year=reporting_year,
+            )
+        )
+
+        if designated_operator_timeline:
+            # Historical designation path:
+            # allow report creation only if the authenticated user's operator was
+            # the designated operator for the selected reporting year
+            if designated_operator_timeline.operator.id != user_operator.operator_id:
+                raise UserError(
+                    f"This operation was owned by another operator in {reporting_year}, "
+                    "you do not need to report on this operation. "
+                    "If you believe this is incorrect, please contact ghgregulator@gov.bc.ca."
+                )
+
+            operator = designated_operator_timeline.operator
+            use_transferred_operation_handling = designated_operator_timeline.has_been_transferred
+
+        else:
+            # Fallback path:
+            # no historical designation exists for the selected reporting year
+            # allow creation only if the operation is currently registered to the authenticated user's operator
+            if operation.operator_id != user_operator.operator_id:
+                raise UserError(
+                    f"This operation was owned by another operation in {reporting_year}, "
+                    "you do not need to report on this operation. "
+                    "If you believe this is incorrect, please contact ghgregulator@gov.bc.ca."
+                )
+
+            if operation.status != Operation.Statuses.REGISTERED:
+                raise UserError(
+                    "Only currently registered operations can be used to create a report for this reporting year."
+                )
+
+            operator = user_operator.operator
+            use_transferred_operation_handling = False
+
+        # A report cannot be created if one already exists for the same operation and reporting year
+        if ReportDataAccessService.report_exists(operation_id, reporting_year):
+            raise UserError("A report already exists for this operation and year, unable to create a new one.")
+
+        # BORO ID: validate that OBPS Regulated, Opt-in, and New Entrant operations
+        selected_registration_purpose = data.registration_purpose
+
+        requires_boro_id = selected_registration_purpose in [
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            Operation.Purposes.OPTED_IN_OPERATION,
+            Operation.Purposes.NEW_ENTRANT_OPERATION,
+        ]
+
+        if requires_boro_id and operation.bc_obps_regulated_operation_id is None:
+            raise UserError(
+                "This operation does not have a BORO ID, please wait for a BORO ID to be issued before starting this report."
+            )
+
+        report = Report.objects.create(
+            operation=operation,
+            operator=operator,
+            reporting_year=ReportingYearDataAccessService.get_by_year(reporting_year),
+        )
+
+        report_version = ReportVersionService.create_report_version(
+            report,
+            use_transferred_operation_handling=use_transferred_operation_handling,
+            registration_purpose=selected_registration_purpose,
         )
 
         return report_version.id

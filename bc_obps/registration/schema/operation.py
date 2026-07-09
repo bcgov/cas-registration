@@ -316,3 +316,10 @@ class OperationUpdateStatusOut(ModelSchema):
     class Meta:
         model = Operation
         fields = ["id", "status"]
+
+
+class OperationReportableOut(Schema):
+    operation_id: UUID
+    operation_name: str
+    reporting_year: int
+    registration_purposes: list[str]

@@ -1,6 +1,7 @@
 import { Page, expect } from "@playwright/test";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
-import { AppRoutes } from "../utils/enums";
+import { AppRoutes } from "@/reporting-e2e/utils/enums";
+import { GRID_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
 import { waitForGridReady } from "@bciers/e2e/utils/helpers";
 
 export class PastReportsPOM extends CurrentReportsPOM {
@@ -31,5 +32,15 @@ export class PastReportsPOM extends CurrentReportsPOM {
     const row = this.page.getByRole("row").filter({ hasText: year }).first();
 
     await expect(row).toBeVisible({ timeout: 30_000 });
+  }
+
+  async startFileReport(): Promise<void> {
+    const link = this.page.getByRole("link", {
+      name: GRID_BUTTON_TEXT.FILE_PREVIOUS_YEARS_REPORT,
+    });
+    await expect(link).toBeVisible({ timeout: 30_000 });
+    await expect(link).toBeEnabled({ timeout: 30_000 });
+    const href = await link.getAttribute("href");
+    await this.page.goto(href);
   }
 }
