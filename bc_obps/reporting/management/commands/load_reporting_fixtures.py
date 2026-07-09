@@ -58,9 +58,8 @@ class Command(BaseCommand):
                 ro.save()
 
             # Load fixtures before submission to preserve fixture state
+            # Order matters! Fixtures must be loaded in dependency order
             extra = [
-                f'{self.fixture_base_dir}/report_person_responsible.json',
-                f'{self.fixture_base_dir}/report_raw_activity_data.json',
                 f'{self.fixture_base_dir}/report_activity.json',
                 f'{self.fixture_base_dir}/report_source_type.json',
                 f'{self.fixture_base_dir}/report_unit.json',
@@ -70,9 +69,11 @@ class Command(BaseCommand):
                 f'{self.fixture_base_dir}/report_product.json',
                 f'{self.fixture_base_dir}/report_emission_allocation.json',
                 f'{self.fixture_base_dir}/report_product_emission_allocation.json',
+                f'{self.fixture_base_dir}/report_raw_activity_data.json',
+                f'{self.fixture_base_dir}/report_person_responsible.json',
                 f'{self.fixture_base_dir}/report_additional_data.json',
-                f'{self.fixture_base_dir}/report_verification.json',
                 f'{self.fixture_base_dir}/report_attachment.json',
+                f'{self.fixture_base_dir}/report_verification.json',
             ]
             for fixture in extra:
                 self.stdout.write(self.style.SUCCESS(f"Loading additional report fixture: {fixture}"))
