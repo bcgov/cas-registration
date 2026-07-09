@@ -63,6 +63,10 @@ class TestPenaltyCalculationService:
             amount=Decimal("-30000.00"),
             adjustment_date=date(2025, 12, 8),
         )
+        self.compliance_penalty_rate = baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty_rate",
+            is_current_rate=True,
+        )
 
     def test_sum_payments_and_adjustments(self):
         """Test sum_payments_before_date and sum_adjustments_before_date"""
@@ -104,7 +108,7 @@ class TestPenaltyCalculationService:
         result = PenaltyCalculationService.calculate_penalty(self.obligation, date(2025, 12, 1), date(2025, 12, 10))
 
         assert result.penalty_type == CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
-        assert result.penalty_charge_rate == PenaltyCalculationService.DAILY_PENALTY_RATE * 100
+        assert result.penalty_charge_rate == self.compliance_penalty_rate.rate * 100
         assert result.total_penalty == Decimal('38656.43')
         assert result.faa_interest == Decimal('0.00')
         assert result.total_amount == result.total_penalty
@@ -282,7 +286,7 @@ class TestPenaltyCalculationService:
         assert result == {
             "penalty_status": compliance_penalty.status,
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            "penalty_charge_rate": PenaltyCalculationService.DAILY_PENALTY_RATE * 100,
+            "penalty_charge_rate": self.compliance_penalty_rate.rate * 100,
             "total_penalty": Decimal("1000000.00"),
             "faa_interest": Decimal("0"),
             "total_amount": Decimal("1000000.00"),

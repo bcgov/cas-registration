@@ -16,6 +16,7 @@ from compliance.models import (
     ElicensingInvoice,
     ElicensingLineItem,
     ElicensingPayment,
+    CompliancePenaltyRate,
 )
 from compliance.service.automated_process.compliance_handlers import ComplianceHandlerManager
 from compliance.signals.consumers import handle_report_submission
@@ -73,6 +74,11 @@ class TestPenalty(ComplianceIntegrationTestBase):
             interest_rate=Decimal("0.080000"),
             start_date=date(2025, 12, 15),
             end_date=date(2026, 12, 31),
+            is_current_rate=True,
+        )
+        CompliancePenaltyRate.objects.create(
+            compliance_period=self.compliance_period,
+            rate=Decimal("0.0038"),  # 0.38%
             is_current_rate=True,
         )
 

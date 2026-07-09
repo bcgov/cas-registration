@@ -41,6 +41,14 @@ compliance_period = Recipe(
     max_credit_usage_percentage=Decimal("0.50"),
 )
 
+# CompliancePenaltyRate recipe
+compliance_penalty_rate = Recipe(
+    CompliancePenaltyRate,
+    compliance_period=foreign_key(compliance_period),
+    rate=Decimal('0.0038'),
+    is_current_rate=False,
+)
+
 # ComplianceReport recipe
 compliance_report = Recipe(
     ComplianceReport, report=foreign_key(report), compliance_period=foreign_key(compliance_period)
