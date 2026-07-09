@@ -101,6 +101,42 @@ describe("ActionCell", () => {
         );
       });
 
+      it("displays 'Manage Obligation' when status is 'Obligation Met - Interest not paid'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              false,
+              "24-0001-1-1",
+              ComplianceSummaryStatus.OBLIGATION_MET_INTEREST_NOT_PAID,
+            ),
+          ),
+        );
+        expectLink(
+          "Manage Obligation",
+          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+        );
+      });
+
+      it("displays 'Manage Obligation' when status is 'Obligation Met - Interest not paid' even if the penalty itself has been paid", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              false,
+              "24-0001-1-1",
+              ComplianceSummaryStatus.OBLIGATION_MET_INTEREST_NOT_PAID,
+              undefined,
+              PenaltyStatus.PAID,
+            ),
+          ),
+        );
+        expectLink(
+          "Manage Obligation",
+          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+        );
+      });
+
       it("displays non-clickable 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
         render(
           ActionCell(
@@ -140,6 +176,24 @@ describe("ActionCell", () => {
         render(
           ActionCell(
             createMockParams(123, true, "24-0001-1-1", "Obligation fully met"),
+          ),
+        );
+
+        expectLink(
+          "View Details",
+          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+        );
+      });
+
+      it("displays 'View Details' when status is 'Obligation Met - Interest not paid'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              true,
+              "24-0001-1-1",
+              ComplianceSummaryStatus.OBLIGATION_MET_INTEREST_NOT_PAID,
+            ),
           ),
         );
 

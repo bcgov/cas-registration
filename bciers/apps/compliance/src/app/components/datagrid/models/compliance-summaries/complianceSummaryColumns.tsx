@@ -69,7 +69,7 @@ const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
     {
       field: "display_status",
       headerName: "Compliance Status",
-      width: getColumnWidth(200, 160),
+      width: getColumnWidth(220, 180),
       renderCell: ComplianceStatusCell,
     },
     {

@@ -450,6 +450,7 @@ class TestComplianceDashboardService:
 
         # Obligation statuses
         td_not_met = build(ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET)
+        td_interest_not_paid = build(ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID)
         td_fully_met = build(ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET)
         td_pending_invoice = build(ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION)
 
@@ -484,6 +485,7 @@ class TestComplianceDashboardService:
 
         expected = [
             (td_not_met, "Obligation - not met"),
+            (td_interest_not_paid, "Obligation Met - Interest not paid"),
             (td_fully_met, "Obligation - met"),
             (td_pending_invoice, "Obligation - pending invoice creation"),
             *zip(earned_credit_data, [status for _, status in earned_credit_cases]),

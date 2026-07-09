@@ -231,7 +231,7 @@ const permissionRules: PermissionRule[] = [
    *
    * Access Criteria:
    *   - Applies to any route path in (manage-obligation)
-   *   - User must have a compliance report with status: OBLIGATION_NOT_MET | OBLIGATION_FULLY_MET.
+   *   - User must have a compliance report with status: OBLIGATION_NOT_MET | OBLIGATION_MET_INTEREST_NOT_PAID | OBLIGATION_FULLY_MET.
    *   - If the route is MO_APPLY_COMPLIANCE_UNITS (/apply-compliance-units):
    *       • The user must also pass `getComplianceAppliedUnits(id)`.
    *   - If the route is MO_DOWNLOAD_PAYMENT_INSTRUCTIONS (/download-payment-instructions) | MO_PAY_PENALTY_TRACK_PAYMENTS (/pay-obligation-track-payments)
@@ -273,6 +273,7 @@ const permissionRules: PermissionRule[] = [
     validate: async (id, request, context) => {
       const statusOk = await checkAccess(context!, id, [
         ComplianceSummaryStatus.OBLIGATION_NOT_MET,
+        ComplianceSummaryStatus.OBLIGATION_MET_INTEREST_NOT_PAID,
         ComplianceSummaryStatus.OBLIGATION_FULLY_MET,
       ]);
       if (!statusOk) return false;

@@ -9,6 +9,7 @@ from compliance.service.automated_process.compliance_handlers import (
     PenaltyPaidHandler,
     PenaltyAccruingHandler,
     ObligationPaidHandler,
+    InterestPaidHandler,
     ComplianceHandlerManager,
 )
 from compliance.models import ComplianceObligation, ComplianceReportVersion, CompliancePenalty
@@ -299,6 +300,28 @@ class TestObligationPaidHandler:
 
     @patch('compliance.tasks.retryable_create_penalty')
     @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    def test_handle_sets_interest_not_paid_status_when_faa_interest_outstanding(
+        self,
+        mock_retryable_notice_of_obligation_met_email,
+        mock_create_penalty,
+    ):
+        # Fee is paid but FAA interest remains outstanding
+        self.invoice.invoice_interest_balance = Decimal("50.00")
+        self.invoice.outstanding_balance = Decimal("50.00")
+        self.invoice.save()
+
+        self.handler.handle(self.invoice)
+
+        self.compliance_report_version.refresh_from_db()
+        assert (
+            self.compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
+        )
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+        mock_create_penalty.execute.assert_called_once()
+
+    @patch('compliance.tasks.retryable_create_penalty')
+    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
     def test_handle_updates_compliance_status_but_does_not_create_penalty_when_not_overdue(
         self,
         mock_retryable_notice_of_obligation_met_email,
@@ -422,6 +445,64 @@ class TestObligationPaidHandler:
         mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
 
 
+class TestInterestPaidHandler:
+    def setup_method(self):
+        self.compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID,
+        )
+        self.obligation = baker.make_recipe(
+            "compliance.tests.utils.compliance_obligation",
+            compliance_report_version=self.compliance_report_version,
+        )
+        self.invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            compliance_obligation=self.obligation,
+            outstanding_balance=Decimal("0.00"),
+            invoice_fee_balance=Decimal("0.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+            self.obligation.elicensing_invoice = self.invoice
+            self.obligation.save()
+        self.handler = InterestPaidHandler()
+
+    def test_can_handle_when_interest_not_paid_status_and_interest_now_zero(self):
+        result = self.handler.can_handle(self.invoice)
+        assert result is True
+
+    def test_can_not_handle_when_interest_still_outstanding(self):
+        self.invoice.invoice_interest_balance = Decimal("25.00")
+        self.invoice.outstanding_balance = Decimal("25.00")
+        self.invoice.save()
+
+        result = self.handler.can_handle(self.invoice)
+        assert result is False
+
+    def test_can_not_handle_when_status_is_not_interest_not_paid(self):
+        self.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        self.compliance_report_version.save()
+
+        result = self.handler.can_handle(self.invoice)
+        assert result is False
+
+    def test_can_not_handle_with_penalty_invoice(self):
+        baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            compliance_obligation=self.obligation,
+            elicensing_invoice=self.invoice,
+        )
+
+        result = self.handler.can_handle(self.invoice)
+        assert result is False
+
+    def test_handle_updates_status_to_fully_met(self):
+        self.handler.handle(self.invoice)
+
+        self.compliance_report_version.refresh_from_db()
+        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+
+
 class TestComplianceHandlerManager:
     def setup_method(self):
         self.manager = ComplianceHandlerManager()
@@ -440,10 +521,11 @@ class TestComplianceHandlerManager:
             self.obligation.save()
 
     def test_initialization(self):
-        assert len(self.manager.handlers) == 3
+        assert len(self.manager.handlers) == 4
         assert any(isinstance(h, PenaltyPaidHandler) for h in self.manager.handlers)
         assert any(isinstance(h, PenaltyAccruingHandler) for h in self.manager.handlers)
         assert any(isinstance(h, ObligationPaidHandler) for h in self.manager.handlers)
+        assert any(isinstance(h, InterestPaidHandler) for h in self.manager.handlers)
 
     def test_process_compliance_updates_no_handlers_match(self):
         invoice = baker.make_recipe(
@@ -547,3 +629,49 @@ class TestComplianceHandlerManager:
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             effective_deadline=compliance_period.compliance_deadline,
         )
+
+    @patch('compliance.tasks.retryable_create_penalty')
+    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    def test_process_compliance_updates_interest_paid_handler_matches(
+        self, mock_retryable_notice_of_obligation_met_email, mock_create_penalty
+    ):
+        self.compliance_report_version.status = (
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
+        )
+        self.compliance_report_version.save()
+
+        invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            compliance_obligation=self.obligation,
+            outstanding_balance=Decimal("0.00"),
+            invoice_fee_balance=Decimal("0.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+
+        # Spy on all handlers to verify which one is called
+        with (
+            patch.object(self.manager.handlers[0], 'handle', wraps=self.manager.handlers[0].handle) as spy_penalty_paid,
+            patch.object(
+                self.manager.handlers[1], 'handle', wraps=self.manager.handlers[1].handle
+            ) as spy_penalty_accruing,
+            patch.object(
+                self.manager.handlers[2], 'handle', wraps=self.manager.handlers[2].handle
+            ) as spy_obligation_paid,
+            patch.object(
+                self.manager.handlers[3], 'handle', wraps=self.manager.handlers[3].handle
+            ) as spy_interest_paid,
+        ):
+
+            self.manager.process_compliance_updates(invoice)
+
+            spy_penalty_paid.assert_not_called()
+            spy_penalty_accruing.assert_not_called()
+            spy_obligation_paid.assert_not_called()
+            spy_interest_paid.assert_called_once_with(invoice)
+
+        # Verify no obligation-met side effects re-fire on the interest-paid transition
+        mock_retryable_notice_of_obligation_met_email.execute.assert_not_called()
+        mock_create_penalty.execute.assert_not_called()
+
+        self.compliance_report_version.refresh_from_db()
+        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET

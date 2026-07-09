@@ -634,11 +634,21 @@ class DecreasedObligationHandler:
     @staticmethod
     def _mark_previous_version_fully_met(previous_version_id: int) -> None:
         """
-        Set the previous CRV's status to OBLIGATION_FULLY_MET when its invoice reaches $0 outstanding.
+        Set the previous CRV's status to OBLIGATION_FULLY_MET or OBLIGATION_MET_INTEREST_NOT_PAID if FAA
+        interest is still outstanding, once its invoice's fee balance reaches $0.
+
+        Reads the invoice fresh from the DB: by this point `create_adjustment_for_target_version` has
+        already posted the fee adjustment and force-refreshed the invoice's balances from eLicensing.
         """
-        ComplianceReportVersion.objects.filter(id=previous_version_id).update(
-            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        invoice = ElicensingInvoice.objects.get(compliance_obligation__compliance_report_version_id=previous_version_id)
+        # invoice_interest_balance should never be None here; fail loudly
+        interest_not_paid = invoice.invoice_interest_balance > ZERO_DECIMAL  # type: ignore[operator]
+        status = (
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
+            if interest_not_paid
+            else ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         )
+        ComplianceReportVersion.objects.filter(id=previous_version_id).update(status=status)
 
     @staticmethod
     def _record_manual_handling(

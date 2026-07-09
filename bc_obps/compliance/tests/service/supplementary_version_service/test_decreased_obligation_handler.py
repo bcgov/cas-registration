@@ -1553,3 +1553,47 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
 
         # Assert
         assert result.first() == self.invoice_2
+
+
+class TestMarkPreviousVersionFullyMet:
+    """
+    Direct unit tests for _mark_previous_version_fully_met
+    """
+
+    def setup_method(self):
+        self.compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+        self.obligation = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=self.compliance_report_version,
+        )
+        self.invoice = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+            outstanding_balance=ZERO_DECIMAL,
+            invoice_fee_balance=ZERO_DECIMAL,
+            invoice_interest_balance=ZERO_DECIMAL,
+        )
+        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+            self.obligation.elicensing_invoice = self.invoice
+            self.obligation.save()
+
+    def test_marks_fully_met_when_no_interest_outstanding(self):
+        DecreasedObligationHandler._mark_previous_version_fully_met(self.compliance_report_version.id)
+
+        self.compliance_report_version.refresh_from_db()
+        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+
+    def test_marks_interest_not_paid_when_interest_still_outstanding(self):
+        self.invoice.invoice_interest_balance = Decimal("25.00")
+        self.invoice.outstanding_balance = Decimal("25.00")
+        self.invoice.save()
+
+        DecreasedObligationHandler._mark_previous_version_fully_met(self.compliance_report_version.id)
+
+        self.compliance_report_version.refresh_from_db()
+        assert (
+            self.compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
+        )

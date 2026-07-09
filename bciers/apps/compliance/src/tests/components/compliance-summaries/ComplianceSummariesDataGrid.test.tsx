@@ -101,8 +101,19 @@ const mockResponse = {
       penalty_status: "NONE",
       obligation_id: null,
     },
+    {
+      id: 9,
+      operation_name: "Operation 9",
+      reporting_year: 2024,
+      excess_emissions: 1000,
+      outstanding_balance_tco2e: 0,
+      status: "Obligation Met - Interest not paid",
+      display_status: "Obligation Met - Interest not paid",
+      penalty_status: "PAID",
+      obligation_id: "24-0001-1-9",
+    },
   ] as ComplianceSummary[],
-  row_count: 8,
+  row_count: 9,
 };
 
 describe("ComplianceSummariesDataGrid component", () => {
@@ -142,7 +153,7 @@ describe("ComplianceSummariesDataGrid component", () => {
 
     // Verify data displays
     const summaryRows = screen.getAllByRole("row");
-    expect(summaryRows.length).toBe(10); // header + search cell + 8 data rows
+    expect(summaryRows).toHaveLength(11); // header + search cell + 9 data rows
 
     // Check first row - Obligation not met (Operation 1)
     const firstRow = summaryRows.find((row) =>
@@ -306,6 +317,24 @@ describe("ComplianceSummariesDataGrid component", () => {
     expect(eighthRow).toBeTruthy();
     expect(within(eighthRow!).getAllByRole("gridcell")[5]).toHaveTextContent(
       "N/A",
+    );
+
+    // Check ninth row - Obligation Met - Interest not paid, penalty already PAID (Operation 9)
+    const ninthRow = summaryRows.find((row) =>
+      within(row).queryByText("Operation 9"),
+    );
+    expect(ninthRow).toBeTruthy();
+    expect(
+      within(ninthRow!).getByText("Obligation Met - Interest not paid"),
+    ).toBeVisible();
+    expect(
+      within(ninthRow!).getByRole("link", { name: "Manage Obligation" }),
+    ).toBeVisible();
+    expect(
+      within(ninthRow!).getByRole("link", { name: "Manage Obligation" }),
+    ).toHaveAttribute(
+      "href",
+      "/compliance-administration/compliance-summaries/9/review-compliance-obligation-report",
     );
   });
 
