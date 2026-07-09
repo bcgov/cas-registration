@@ -99,13 +99,13 @@ const OperationInformationForm = ({
     formData?: OperationInformationFormData;
   }) => {
     setError(undefined);
-    const pathToRevalidate = `/operations/${operationId}`;
+    const pathToRevalidate = "";
 
     const response = await submitWithFiles(
       data.formData,
       `registration/operations/${operationId}`,
       "POST",
-      `/operations/${operationId}`,
+      pathToRevalidate,
     );
 
     if (response?.error) {
@@ -205,6 +205,8 @@ const OperationInformationForm = ({
         formData={confirmedFormData ?? {}}
         onSubmit={handleSubmit}
         onChange={(e: IChangeEvent) => {
+          console.log("change", e.formData);
+
           const newSelectedPurpose = e.formData?.section3?.registration_purpose;
           if (newSelectedPurpose !== confirmedFormData.registration_purpose) {
             handleSelectedPurposeChange(newSelectedPurpose);

@@ -10,6 +10,7 @@ interface FileInfo {
   name: string;
   status?: FileScanStatus;
   id?: number;
+  file?: File;
 }
 
 // Show a different message depending on the fileScanStatus
@@ -54,12 +55,18 @@ type SubmitWithFiles = (
 ) => Promise<any>;
 
 const useFileUploadWidget = (): [FileUploadWidgetContext, SubmitWithFiles] => {
-  const files: Record<string, File> = {};
+  const [files, setFiles] = useState<Record<string, File>>({});
 
   const formContext = {
     onFileSelected: (file: File | undefined, propName: string) => {
-      if (!file) delete files[propName];
-      else files[propName] = file;
+      setFiles((prevFiles) => {
+        if (!file) {
+          const { [propName]: _, ...rest } = prevFiles;
+          return rest;
+        } else {
+          return { ...prevFiles, [propName]: file };
+        }
+      });
     },
   };
 
@@ -89,23 +96,21 @@ const useFileUploadWidget = (): [FileUploadWidgetContext, SubmitWithFiles] => {
 export function FileElement({
   fileInfo,
   preview,
-  localFile,
 }: {
   readonly fileInfo: FileInfo;
   readonly preview?: boolean;
-  readonly localFile?: File;
 }) {
   const handlePreview = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (localFile) {
+    if (fileInfo.file) {
       const anchorTag = document.createElement("a");
-      const urlObject = URL.createObjectURL(localFile);
+      const urlObject = URL.createObjectURL(fileInfo.file);
       Object.assign(anchorTag, {
         target: "_blank",
         rel: "noopener noreferrer",
         href: urlObject,
-        download: localFile.name,
+        download: fileInfo.name,
       });
       anchorTag.click();
       anchorTag.remove();
@@ -151,15 +156,17 @@ const FileWidget: React.FC<WidgetProps> = (props) => {
     );
   }
 
-  const [localFile, setLocalFile] = useState<File | undefined>(undefined);
   const parsedValue: FileInfo | undefined = value
     ? JSON.parse(value)
     : undefined;
+  const [localFile, setLocalFile] = useState<FileInfo | undefined>(parsedValue);
 
   const role = useSessionRole();
   const isCasInternal = role?.includes("cas") && !role?.includes("pending");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+
     const file = event.target.files?.[0];
     if (!file) {
       setLocalFile(undefined);
@@ -169,13 +176,14 @@ const FileWidget: React.FC<WidgetProps> = (props) => {
 
     if (file.size > MAX_FILE_SIZE) {
       alert("File size must be less than 20MB");
+      onChange(undefined);
       return;
     }
-    setLocalFile(file);
+
+    setLocalFile({ name: file.name, status: "Unscanned", file: file });
     registry.formContext.onFileSelected(file, name);
 
     // From the RJSF perspective this will just be a string with the file name.
-
     onChange(JSON.stringify({ name: file.name, status: "Unscanned" }));
   };
 
@@ -222,12 +230,8 @@ const FileWidget: React.FC<WidgetProps> = (props) => {
         accept={options.accept ? String(options.accept) : undefined}
         multiple={false}
       />
-      {parsedValue ? (
-        <FileElement
-          fileInfo={parsedValue}
-          preview={options.filePreview}
-          localFile={localFile}
-        />
+      {localFile ? (
+        <FileElement fileInfo={localFile} preview={options.filePreview} />
       ) : (
         <span className="text-base md:text-lg flex-shrink-0">
           No attachment was uploaded.

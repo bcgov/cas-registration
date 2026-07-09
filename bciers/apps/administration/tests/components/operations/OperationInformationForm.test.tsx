@@ -196,7 +196,7 @@ const newEntrantFormData = {
   type: "Single Facility Operation",
   registration_purpose: RegistrationPurposes.NEW_ENTRANT_OPERATION,
   new_entrant_application: JSON.stringify({
-    name: "testpdf.pdf",
+    name: "newEntrantApp.pdf",
     status: "Clean",
   }),
 };

@@ -79,6 +79,10 @@ const SingleStepTaskListForm = ({
 
   // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
   const submitHandler = async (e: IChangeEvent) => {
+    console.log("submit", e.formData);
+    console.log("formState", formState);
+    console.log("refData", formRef.current?.state.formData);
+
     setIsSubmitting(true);
     // Update the form state with the new data so we don't use stale data on edit
     setFormState(e.formData);
@@ -100,6 +104,8 @@ const SingleStepTaskListForm = ({
   };
 
   const isFormDisabled = disabled || isDisabled || isSubmitting;
+
+  console.log("render", formState);
 
   return (
     <div className="w-full flex flex-row mt-8">
