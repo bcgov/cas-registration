@@ -32,6 +32,7 @@ export const PaymentInstructionsDetails = ({
         <li>Exact payment date</li>
         <li>Payment amount</li>
         <li>Invoice number</li>
+        <li>Person(s) to contact regarding payments</li>
       </ul>
       <h3>Pay by electronic funds transfer (EFT) or by wire transfer</h3>
       <ul>
@@ -39,7 +40,10 @@ export const PaymentInstructionsDetails = ({
         {!isPenalty && (
           <li>
             Plan to make your payment at least five business days before the
-            compliance obligation deadline to allow for payment processing
+            compliance obligation deadline to allow for payment processing. The
+            payment date determines compliance with the deadline. Important
+            note: Payment date is the date when payment is deposited into the
+            B.C. OBPS bank account.
           </li>
         )}
       </ul>
@@ -48,10 +52,11 @@ export const PaymentInstructionsDetails = ({
         Failure to provide accurate payment information will result in delays in
         payment processing and possible interest and/or penalty charges.
       </p>
+      <h3>Requesting additional payment information</h3>
       <p>
-        Contact{" "}
-        <a href="mailto:OBPSPayments@gov.bc.ca">OBPSPayments@gov.bc.ca</a> for
-        any questions.
+        To request voice authorization, additional payment information, to
+        obtain a bank letter, or for any questions, please contact
+        <a href="mailto:OBPSPayments@gov.bc.ca">OBPSPayments@gov.bc.ca</a>.
       </p>
     </div>
   );
@@ -62,7 +67,8 @@ export const PaymentRemarks = () => {
     <div className="w-full">
       <ul>
         <li>
-          Pay by the due date to avoid{" "}
+          Pay 5 business days in advance of the due date to allow for processing
+          to avoid{" "}
           <Tooltip title="Link opens in a new tab" placement="top" arrow>
             <a
               href={penaltiesRegulationLink}
