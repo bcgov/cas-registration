@@ -118,5 +118,4 @@ type AsyncTaskListPageFactory = (
   context?: TaskListPageFactoryContext,
 ) => Promise<TaskListPageFactoryData>;
 export type TaskListPageFactory =
-  | SyncTaskListPageFactory
-  | AsyncTaskListPageFactory;
+  SyncTaskListPageFactory | AsyncTaskListPageFactory;

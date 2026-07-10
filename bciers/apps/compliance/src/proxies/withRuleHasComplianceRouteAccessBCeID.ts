@@ -100,8 +100,7 @@ export const createRuleContext = (): RuleContext => {
       if (getComplianceAccessCache === undefined) {
         const result = await getUserComplianceAccessStatus(id);
         getComplianceAccessCache = result?.status as
-          | ComplianceStatus
-          | undefined;
+          ComplianceStatus | undefined;
       }
       return getComplianceAccessCache;
     },
@@ -300,8 +299,7 @@ const permissionRules: PermissionRule[] = [
           summaryData?.outstanding_balance_tco2e ?? 0,
         );
         const penaltyStatus = summaryData?.penalty_status as
-          | PenaltyStatus
-          | undefined;
+          PenaltyStatus | undefined;
 
         // Redirect if the balance is not 0 OR the penalty status is not one of NOT_PAID or PAID
         const allowAccess =

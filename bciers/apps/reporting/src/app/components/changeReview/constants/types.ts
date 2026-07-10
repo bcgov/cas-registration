@@ -3,11 +3,7 @@
 export type ChangeType = "added" | "deleted" | "modified" | "removed";
 
 export type ChangeItemValue =
-  | string
-  | Record<string, any>
-  | any[]
-  | null
-  | number;
+  string | Record<string, any> | any[] | null | number;
 export interface ChangeItem {
   field: string;
   field_display_title?: string;

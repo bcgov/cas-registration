@@ -46,9 +46,7 @@ export type ReportValidationErrors = ReportValidationItem[];
 
 // Determines the layout strategy for rendering validation feedback in the UI
 export type ValidationRenderMode =
-  | "message_only"
-  | "label_then_message"
-  | "inline_link";
+  "message_only" | "label_then_message" | "inline_link";
 
 // Arguments used when formatting validation messages
 export type ValidationTextArgs = {
