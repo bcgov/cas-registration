@@ -213,6 +213,7 @@ export default function OperationReviewForm({
             },
           }),
         }}
+        formContext={{ reportingYear }}
         formData={formDataState}
         saveButtonDisabled={!hasReps}
         submitButtonDisabled={!hasReps}
