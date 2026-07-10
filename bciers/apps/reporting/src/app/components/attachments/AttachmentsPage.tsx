@@ -1,6 +1,7 @@
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import getAttachments from "@reporting/src/app/utils/getAttachments";
 import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
+import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import {
   HeaderStep,
@@ -27,6 +28,9 @@ const AttachmentsPage: React.FC<HasReportVersion> = async ({ version_id }) => {
   //🔍 Check if is a supplementary report
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);
 
+  // Get operation type to determine whether the WCI attachment warning applies
+  const reportOperationData = await getReportingOperation(version_id);
+
   //🔍 Check if reports need verification
   const {
     show_verification_page: showVerificationPage,
@@ -52,6 +56,7 @@ const AttachmentsPage: React.FC<HasReportVersion> = async ({ version_id }) => {
       isVerificationStatementMandatory={verificationRequired}
       isSupplementaryReport={isSupplementaryReport}
       initialSupplementaryConfirmation={initialSupplementaryConfirmation}
+      operationType={reportOperationData.operation_type}
     />
   );
 };

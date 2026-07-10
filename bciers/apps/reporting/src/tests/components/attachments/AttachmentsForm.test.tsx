@@ -5,6 +5,7 @@ import postAttachments from "@reporting/src/app/utils/postAttachments";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import { dummyNavigationInformation } from "../taskList/utils";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 vi.mock("@reporting/src/app/components/attachments/AttachmentElement", () => ({
   default: vi.fn(),
@@ -41,10 +42,50 @@ describe("The attachments form", () => {
 
     expect(
       screen.getByText(
-        "Please upload any of the documents below that is applicable to your report:",
+        "Please upload any of the documents below that are applicable to your report:",
       ),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Note:")).toBeInTheDocument();
+    ).toBeVisible();
+    expect(
+      screen.getByText("Notes on Confidentiality Requests:"),
+    ).toBeVisible();
+  });
+
+  it("shows the WCI warning banner for LFO operations", () => {
+    render(
+      <AttachmentsForm
+        navigationInformation={dummyNavigationInformation}
+        version_id={1}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
+        operationType={OperationTypes.LFO}
+      />,
+    );
+
+    expect(
+      screen.getByText("An attachment for WCI.352(i) or 362(g) is required."),
+    ).toBeVisible();
+  });
+
+  it("does not show the WCI warning banner for non-LFO operations", () => {
+    render(
+      <AttachmentsForm
+        navigationInformation={dummyNavigationInformation}
+        version_id={1}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
+        operationType={OperationTypes.SFO}
+      />,
+    );
+
+    expect(
+      screen.queryByText("An attachment for WCI.352(i) or 362(g) is required."),
+    ).not.toBeInTheDocument();
+    expect(mockAttachmentElement).toHaveBeenCalledWith(
+      expect.objectContaining({ title: "WCI.352 and WCI.362" }),
+      undefined,
+    );
   });
 
   it("renders an attachment element for each attachment type, and populates with initial data if it exists", () => {
@@ -139,7 +180,7 @@ describe("The attachments form", () => {
 
     mockAttachmentElement.mockClear();
 
-    await act(() => {
+    act(() => {
       fireEvent.click(screen.getByText("Save & Continue"));
     });
 
@@ -175,7 +216,7 @@ describe("The attachments form", () => {
       />,
     );
 
-    await act(() => {
+    act(() => {
       fireEvent.click(screen.getByText("Save & Continue"));
     });
 
@@ -205,11 +246,11 @@ describe("The attachments form", () => {
       type: "application/pdf",
     });
 
-    await act(() => {
+    await act(async () => {
       onChangeVerificationStatement(file);
     });
 
-    await act(() => {
+    await act(async () => {
       fireEvent.click(screen.getByText("Save & Continue"));
     });
 
@@ -243,14 +284,14 @@ describe("The attachments form", () => {
     mockAttachmentElement.mockClear();
 
     // Make sure the supplementary report checkboxes are checked so we can submit
-    await act(() => {
+    act(() => {
       fireEvent.click(
         screen.getByRole("checkbox", {
           name: /i confirm that I have uploaded any attachments that are required/i,
         }),
       );
     });
-    await act(() => {
+    act(() => {
       fireEvent.click(
         screen.getByRole("checkbox", {
           name: /i confirm that any previously uploaded attachments/i,
@@ -260,7 +301,7 @@ describe("The attachments form", () => {
     mockAttachmentElement.mockClear();
 
     // Click the save button
-    await act(() => {
+    act(() => {
       fireEvent.click(screen.getByText("Save & Continue"));
     });
 
@@ -345,6 +386,6 @@ describe("The attachments form", () => {
         isSupplementaryReport={false}
       />,
     );
-    expect(screen.getByText("Attachments")).toBeInTheDocument();
+    expect(screen.getByText("Attachments")).toBeVisible();
   });
 });

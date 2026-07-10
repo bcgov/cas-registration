@@ -3,7 +3,7 @@ import { assertFieldVisibility, uploadFile } from "@bciers/e2e/utils/helpers";
 
 const ATTACHMENTS = {
   UPLOAD_NOTE:
-    "Please upload any of the documents below that is applicable to your report:",
+    "Please upload any of the documents below that are applicable to your report:",
 
   ATTACHMENT_LABELS: [
     "Verification Statement",
