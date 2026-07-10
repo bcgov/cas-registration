@@ -7,10 +7,16 @@ import { WidgetProps } from "@rjsf/utils";
 
 export const CHEMICAL_PULP_NAME = "Pulp and paper: chemical pulp";
 export const LIME_RECOVERED_NAME = "Pulp and paper: lime recovered by kiln";
+interface RegulatedProductFormContext {
+  reportingYear?: number;
+}
 
-const RegulatedProductMultiSelectWidget = (props: WidgetProps) => {
-  const value = Array.isArray(props.value) ? props.value : [];
-  const selectedIds = value.map((item) => Number(item));
+const RegulatedProductMultiSelectWidget = ({
+  value,
+  registry,
+  ...props
+}: WidgetProps) => {
+  const selectedIds = Array.isArray(value) ? value.map(Number) : [];
 
   const fieldSchema = props.schema?.items as FieldSchemaWithTooltip;
   const enumIds = fieldSchema?.enum ?? [];
@@ -29,10 +35,11 @@ const RegulatedProductMultiSelectWidget = (props: WidgetProps) => {
     limeRecoveredByKilnProductId !== undefined &&
     selectedIds.includes(Number(limeRecoveredByKilnProductId));
 
+  // Show the warning only for > 2024 reports when exactly one of the
+  // Chemical Pulp or Lime Recovered by Kiln products is selected.
+  const { reportingYear } = registry.formContext as RegulatedProductFormContext;
   const showPulpPaperHelp =
-    (hasChemicalPulp && !hasLimeRecovered) ||
-    (!hasChemicalPulp && hasLimeRecovered);
-
+    Number(reportingYear) > 2024 && hasChemicalPulp !== hasLimeRecovered;
   const helpText = showPulpPaperHelp ? (
     <>
       <strong>Note: </strong>If this is a chemical pulp mill that recovered lime
@@ -45,9 +52,11 @@ const RegulatedProductMultiSelectWidget = (props: WidgetProps) => {
   return (
     <MultiSelectWidgetWithTooltip
       {...props}
+      value={value}
+      registry={registry}
       uiSchema={{
         ...props.uiSchema,
-        "ui:help": helpText as any, // must be cast as any to satisfy uiSchema which wants a string, but the underlying TextField supports a ReactNode
+        "ui:help": helpText as any,
       }}
     />
   );
