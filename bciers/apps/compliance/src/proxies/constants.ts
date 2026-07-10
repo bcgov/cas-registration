@@ -51,9 +51,7 @@ export enum AppRoutes {
 }
 
 export type ComplianceStatus =
-  | "Invalid"
-  | "Registered"
-  | ComplianceSummaryStatus;
+  "Invalid" | "Registered" | ComplianceSummaryStatus;
 
 // App routes restricted to compliance report version status "No obligation or earned credits"
 export const routesNoObligation = [AppRoutes.NO_REVIEW_SUMMARY];

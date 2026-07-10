@@ -15,9 +15,8 @@ const NewEntrantOperationPage = async ({
   steps: string[];
 }) => {
   let formData:
-    | NewEntrantOperationFormData
-    | { error: string }
-    | Record<string, never> = {};
+    NewEntrantOperationFormData | { error: string } | Record<string, never> =
+    {};
   if (operation && isValidUUID(operation))
     formData = await getOperationNewEntrantApplication(operation);
 

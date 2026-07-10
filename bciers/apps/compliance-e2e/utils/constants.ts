@@ -36,8 +36,7 @@ export const APPROVE_BUTTON_TEXT = "Approve";
 export const DECLINE_BUTTON_TEXT = "Decline";
 
 export type DirectorDecision =
-  | IssuanceStatus.APPROVED
-  | IssuanceStatus.DECLINED;
+  IssuanceStatus.APPROVED | IssuanceStatus.DECLINED;
 
 export const DECISION_TO_BUTTON: Record<DirectorDecision, string> = {
   [IssuanceStatus.APPROVED]: APPROVE_BUTTON_TEXT,
@@ -90,9 +89,7 @@ export const EARNED_CREDITS_DIRECTOR_APPROVE_SCENARIO =
 // --- Invoice API ---
 export const COMPLIANCE_INVOICE_API_BASE = "/compliance/api/invoice";
 export type ComplianceInvoiceType =
-  | "obligation"
-  | "automatic-overdue-penalty"
-  | "late-submission-penalty";
+  "obligation" | "automatic-overdue-penalty" | "late-submission-penalty";
 
 // --- Invoice PDF content
 export const INVOICE_VOID_WATERMARK = /VOID/i;
