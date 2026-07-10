@@ -67,7 +67,41 @@ describe("PaymentInstructionsDownloadComponent", () => {
     expect(
       screen.getByText("Provide correct information for timely processing"),
     ).toBeVisible();
+    expect(
+      screen.getByText("Requesting additional payment information"),
+    ).toBeVisible();
+    expect(
+      screen.getByText(/Person\(s\) to contact regarding payments/i),
+    ).toBeVisible();
+    expect(
+      screen.getByText(
+        /Payment date is the date when payment is deposited into the B\.C\. OBPS bank account/i,
+      ),
+    ).toBeVisible();
     expect(downloadPDFButton()).toBeEnabled();
+  });
+
+  it("renders the payment remarks", () => {
+    setupComponent();
+    expect(
+      screen.getByText(
+        /Pay 5 business days in advance of the due date to allow for processing to avoid/i,
+      ),
+    ).toBeVisible();
+    expect(screen.getByText("penalties").closest("a")).toHaveAttribute(
+      "href",
+      expect.stringContaining("statreg/248_2015"),
+    );
+    expect(screen.getByText("interests").closest("a")).toHaveAttribute(
+      "href",
+      expect.stringContaining("statreg/214_83"),
+    );
+    expect(
+      screen.getByText(
+        "Do not include other charges with your payment for this invoice",
+      ),
+    ).toBeVisible();
+    expect(screen.getByText("Do not mail cash")).toBeVisible();
   });
 
   it("validates button text, and navigation", async () => {
