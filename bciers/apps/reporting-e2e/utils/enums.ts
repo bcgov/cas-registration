@@ -22,6 +22,7 @@ export enum FacilityIDs {
   BUGLE_SFO = "f486f2fb-62ed-438d-bb3e-0819b51e3aff",
   BEES_LFO = "d477f3d9-2917-4f36-b5ae-166d47dc8172",
   BANANA_LFO_1 = "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
+  BANGLES_SFO = "9f7b0848-021e-4d08-9852-10524c4e5456",
 }
 
 // Report workflow routes

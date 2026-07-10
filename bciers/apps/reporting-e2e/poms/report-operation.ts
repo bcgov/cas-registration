@@ -19,6 +19,7 @@ const OPERATION_INFO_FIELDS = {
   BCGHG_ID_LABEL: "BCGHG ID",
   BORO_ID_LABEL: "BORO ID",
   REPORTING_ACTIVITIES_LABEL: "Reporting activities",
+  NAICS_CODE_LABEL: "NAICS code",
 };
 const BUGLE_SFO_VALUES = {
   // Bugle SFO expected values
@@ -35,6 +36,23 @@ const BUGLE_SFO_VALUES = {
   BUGLE_SFO_REPORTING_ACTIVITIES: [
     "General stationary combustion excluding line tracing",
   ],
+};
+
+const BANGLES_SFO_VALUES = {
+  // Bangles SFO expected values
+  BANGLES_SFO_REPORT_TYPE: "Annual Report",
+  BANGLES_SFO_OPERATION_NAME:
+    "Bangles SFO - Registered - has Multiple Operators",
+  BANGLES_SFO_OPERATOR_LEGAL_NAME: "Bravo Technologies - has parTNER operator",
+  BANGLES_SFO_OPERATOR_TRADE_NAME: "Bravo Technologies",
+  BANGLES_SFO_OPERATION_TYPE: "Single Facility Operation",
+  BANGLES_SFO_REGISTRATION_PURPOSE: "Reporting Operation",
+  BANGLES_SFO_BCGHG_ID: "23219990001",
+  BANGLES_SFO_OPERATION_REPRESENTATIVES: ["Bill Blue"],
+  BANGLES_SFO_REPORTING_ACTIVITIES: [
+    "General stationary combustion excluding line tracing (at SFO)",
+  ],
+  BANGLES_SFO_NAICS_CODE: "325181 - Alkali and chlorine manufacturing",
 };
 
 export class ReportOperationPOM {
@@ -125,6 +143,79 @@ export class ReportOperationPOM {
     await assertFieldVisibility(
       this.page,
       BUGLE_SFO_VALUES.BUGLE_SFO_REPORTING_ACTIVITIES as unknown as string[],
+      true,
+    );
+  }
+
+  async verifyBanglesSfoFields(): Promise<void> {
+    // 1. Report type - combobox
+    await expect(
+      this.page.getByRole("combobox", {
+        name: /Select what type of report/i,
+      }),
+    ).toHaveValue(BANGLES_SFO_VALUES.BANGLES_SFO_REPORT_TYPE);
+
+    // 2. Operation representatives - multi-select
+    await assertFieldVisibility(
+      this.page,
+      BANGLES_SFO_VALUES.BANGLES_SFO_OPERATION_REPRESENTATIVES as unknown as string[],
+      true,
+    );
+
+    // 3-5. Editable text inputs - verify pre-populated values
+    const operatorLegalName = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.OPERATOR_LEGAL_NAME_LABEL, "i"),
+    );
+    const operatorTradeName = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.OPERATOR_TRADE_NAME_LABEL, "i"),
+    );
+    const operationName = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.OPERATION_NAME_LABEL, "i"),
+    );
+    await expect(operatorLegalName).toHaveValue(
+      BANGLES_SFO_VALUES.BANGLES_SFO_OPERATOR_LEGAL_NAME,
+    );
+    await expect(operatorTradeName).toHaveValue(
+      BANGLES_SFO_VALUES.BANGLES_SFO_OPERATOR_TRADE_NAME,
+    );
+    await expect(operationName).toHaveValue(
+      BANGLES_SFO_VALUES.BANGLES_SFO_OPERATION_NAME,
+    );
+
+    // 6-9. Read-only fields - verify values and disabled state
+    const operationType = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.OPERATION_TYPE_LABEL, "i"),
+    );
+    const registrationPurpose = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.REGISTRATION_PURPOSE_LABEL, "i"),
+    );
+    const bcghgId = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.BCGHG_ID_LABEL, "i"),
+    );
+    const naicsCode = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.NAICS_CODE_LABEL, "i"),
+    );
+    await expect(operationType).toHaveValue(
+      BANGLES_SFO_VALUES.BANGLES_SFO_OPERATION_TYPE,
+    );
+    await expect(registrationPurpose).toHaveValue(
+      BANGLES_SFO_VALUES.BANGLES_SFO_REGISTRATION_PURPOSE,
+    );
+    await expect(bcghgId).toHaveValue(BANGLES_SFO_VALUES.BANGLES_SFO_BCGHG_ID);
+    await expect(naicsCode).toHaveValue(
+      BANGLES_SFO_VALUES.BANGLES_SFO_NAICS_CODE,
+    );
+    await checkFormFieldsReadOnly([
+      operationType,
+      registrationPurpose,
+      bcghgId,
+      naicsCode,
+    ]);
+
+    // 10. Reporting activities
+    await assertFieldVisibility(
+      this.page,
+      BANGLES_SFO_VALUES.BANGLES_SFO_REPORTING_ACTIVITIES as unknown as string[],
       true,
     );
   }
