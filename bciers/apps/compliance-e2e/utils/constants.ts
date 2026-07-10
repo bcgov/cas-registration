@@ -20,8 +20,6 @@ export const ISSUANCE_STATUS_FIELD =
 // --- Request Issuance form ---
 export const BCCR_HOLDING_ACCOUNT_INPUT_VALUE = "000000000000000";
 export const BCCR_TRADING_NAME_FIELD_VALUE = "Mock Trading Name Inc.";
-export const REQUEST_ISSUANCE_BUTTON_TEXT =
-  "Request Issuance of Earned Credits";
 
 // --- Review Request Issuance form ---
 export const ANALYST_SUGGESTION_INPUT = "#root_analyst_suggestion";
@@ -60,6 +58,9 @@ export const REVIEW_OBLIGATION_URL_PATTERN = new RegExp(
 export const DOWNLOAD_PAYMENT_INSTRUCTIONS_URL_PATTERN = new RegExp(
   `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/download-payment-instructions$`,
 );
+export const PAY_OBLIGATION_TRACK_PAYMENTS_URL_PATTERN = new RegExp(
+  `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/pay-obligation-track-payments$`,
+);
 
 // Industry / earned credits / request issuance of earned credits url
 export const REQUEST_ISSUANCE_CREDITS_URL_PATTERN = new RegExp(
@@ -69,6 +70,9 @@ export const REQUEST_ISSUANCE_CREDITS_URL_PATTERN = new RegExp(
 // Industry: scenario name used by the Django stub
 export const EARNED_CREDITS_REQUEST_ISSUANCE_SCENARIO =
   "earned_credits_request_issuance";
+
+// Industry: scenario that marks an obligation as fully paid (creates a payment record)
+export const PAY_OBLIGATION_SCENARIO = "pay_obligation";
 
 // Analyst: review credits issuance request url
 export const REVIEW_REQUEST_ISSUANCE_CREDITS_URL_PATTERN = new RegExp(
