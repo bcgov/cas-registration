@@ -55,7 +55,7 @@ export const PaymentInstructionsDetails = ({
       <h3>Requesting additional payment information</h3>
       <p>
         To request voice authorization, additional payment information, to
-        obtain a bank letter, or for any questions, please contact
+        obtain a bank letter, or for any questions, please contact{" "}
         <a href="mailto:OBPSPayments@gov.bc.ca">OBPSPayments@gov.bc.ca</a>.
       </p>
     </div>
