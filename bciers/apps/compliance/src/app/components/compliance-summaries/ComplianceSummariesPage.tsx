@@ -36,7 +36,9 @@ export default async function ComplianceSummariesPage({
   );
   const dueDay = dueDate.getDate();
   const currentCompliancePenaltyRate = await getCurrentCompliancePenaltyRate();
-  const dailyPenaltyRate = currentCompliancePenaltyRate.rate * 100;
+  const dailyPenaltyRate = currentCompliancePenaltyRate
+    ? currentCompliancePenaltyRate.rate * 100
+    : 0;
 
   const isAllowedCas = [
     FrontEndRoles.CAS_DIRECTOR,
