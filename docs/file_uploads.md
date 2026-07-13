@@ -1,5 +1,3 @@
-TODO: Update docs
-
 # File uploads in BCIERS app
 
 #### Connection with GCS
@@ -48,13 +46,17 @@ const ComponentWithForm = (props) => {
 
   return <Form
     schema={schema}
-    formContext={...fileWidgetContext}
+    formContext={{...otherContext, ...fileWidgetContext}
     onSubmit={handleSubmit}
   />
 
 }
 
 ```
+
+> [!NOTE]
+> The `FileWidget` sets the string value to a serialized JSON string: '{"status": "Clean", "name": "FileName.pdf", "id": 1234}'
+> The backend is expected to follow that schema when passing form data
 
 ### Backend considerations
 

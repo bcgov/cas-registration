@@ -26,14 +26,14 @@ from registration.schema import (
 from registration.enums.enums import EmailTemplateNames
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
-from service.data_types.operation_service_data_types import MultipleOperatorData, OperationData, UpdateOperationData
+from service.data_types.operation_service import MultipleOperatorData, OperationData, UpdateOperationData
 from service.operation_service import OperationService
 from service.email.email_service import EmailService
 from registration.models.multiple_operator import MultipleOperator
 from registration.models.operation import Operation
 from model_bakery import baker
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
-from tests.test_files import create_test_file
+from common.tests.utils.test_files import create_test_file
 
 pytestmark = pytest.mark.django_db
 email_service = EmailService()

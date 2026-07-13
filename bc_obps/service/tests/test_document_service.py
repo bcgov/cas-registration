@@ -5,7 +5,7 @@ from service.document_service import DocumentService
 import pytest
 
 from model_bakery import baker
-from tests.test_files import create_test_file
+from common.tests.utils.test_files import create_test_file
 
 pytestmark = pytest.mark.django_db
 

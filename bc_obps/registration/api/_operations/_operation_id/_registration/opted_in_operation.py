@@ -3,7 +3,7 @@ from uuid import UUID
 from django.http import HttpRequest
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.schema import OptedInOperationDetailIn, OptedInOperationDetailOut, OptedOutOperationDetailIn, Message
-from service.data_types.operation_service_data_types import OptedInOperationDetailData
+from service.data_types.operation_service import OptedInOperationDetailData
 from service.operation_service import OperationService
 from registration.constants import OPERATION_TAGS
 from common.permissions import authorize

@@ -9,7 +9,7 @@ from registration.schema import (
     OperationTimelineFilterSchema,
     OperationTimelineListOut,
 )
-from service.data_types.operation_service_data_types import OperationData
+from service.data_types.operation_service import OperationData
 from service.operation_service import OperationService
 from common.permissions import authorize
 from django.http import HttpRequest

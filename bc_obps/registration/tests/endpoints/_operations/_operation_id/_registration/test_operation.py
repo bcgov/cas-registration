@@ -4,7 +4,7 @@ from registration.utils import custom_reverse_lazy
 from model_bakery import baker
 import json
 
-from tests.test_files import create_test_file
+from common.tests.utils.test_files import create_test_file
 
 
 class TestPostOperationRegistrationInformationEndpoint(CommonTestSetup):

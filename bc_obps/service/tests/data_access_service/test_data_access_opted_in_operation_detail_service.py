@@ -3,7 +3,7 @@ from service.data_access_service.opted_in_operation_detail_service import OptedI
 from registration.models.operation import Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from model_bakery import baker
-from service.data_types.operation_service_data_types import OptedInOperationDetailData
+from service.data_types.operation_service import OptedInOperationDetailData
 
 pytestmark = pytest.mark.django_db
 

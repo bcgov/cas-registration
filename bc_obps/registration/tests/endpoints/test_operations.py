@@ -7,7 +7,7 @@ from registration.utils import custom_reverse_lazy
 from registration.models import Operation
 from unittest.mock import patch, MagicMock
 from model_bakery.baker import make_recipe
-from tests.test_files import create_test_file
+from common.tests.utils.test_files import create_test_file
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
@@ -73,7 +73,6 @@ class TestPostOperationsEndpoint(CommonTestSetup):
         "activities": [1],
     }
 
-    # GET
     def test_user_can_post_operation_success(self):
         baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
 
@@ -91,3 +90,6 @@ class TestPostOperationsEndpoint(CommonTestSetup):
         assert response.status_code == 201
         assert response.json().get('name') == "op name"
         assert response.json().get('id') is not None
+
+    def test_user_can_post_with_multiple_operators(self):
+        raise

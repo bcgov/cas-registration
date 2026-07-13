@@ -36,7 +36,7 @@ from service.data_access_service.user_service import UserDataAccessService
 from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
-from service.data_types.operation_service_data_types import (
+from service.data_types.operation_service import (
     MultipleOperatorData,
     OperationData,
     OptedInOperationDetailData,

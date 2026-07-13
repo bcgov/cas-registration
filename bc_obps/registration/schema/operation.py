@@ -73,16 +73,12 @@ class OperationRepresentativeIn(ModelSchema):
 
 
 class OperationRepresentativeRemove(ModelSchema):
-    id: int
-
     class Meta:
         model = Contact
         fields = ['id']
 
 
-class OperationInformationIn(Schema):
-    name: str
-    type: str
+class OperationInformationIn(ModelSchema):
     registration_purpose: Optional[Operation.Purposes] = None
     regulated_products: Optional[List[int]] = None
     activities: Optional[List[int]] = None
@@ -91,6 +87,10 @@ class OperationInformationIn(Schema):
     tertiary_naics_code_id: Optional[int] = None
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
     date_of_first_shipment: Optional[str] = None
+
+    class Meta:
+        model = Operation
+        fields = ['name', 'type']
 
 
 class OperationInformationInUpdate(OperationInformationIn):

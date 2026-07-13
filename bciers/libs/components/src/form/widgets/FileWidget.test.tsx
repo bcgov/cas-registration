@@ -427,7 +427,7 @@ describe("RJSF FileWidget", () => {
     await checkNoValidationErrorIsTriggered();
   });
 
-  it.only("submits the uploaded files with the form", async () => {
+  it("submits the uploaded files with the form", async () => {
     actionHandler.mockResolvedValueOnce({});
 
     const TestComponent = () => {

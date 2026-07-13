@@ -8,7 +8,7 @@ from registration.tests.utils.bakers import operation_baker, operator_baker
 from registration.utils import custom_reverse_lazy
 import json
 
-from tests.test_files import create_test_file
+from common.tests.utils.test_files import create_test_file
 
 
 class TestOperationIdEndpoint(CommonTestSetup):
