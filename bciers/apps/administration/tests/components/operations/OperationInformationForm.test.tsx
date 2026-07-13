@@ -797,7 +797,7 @@ describe("the OperationInformationForm component", () => {
     expect(
       screen.getByText(/new entrant application and statutory declaration/i),
     ).toBeVisible();
-    expect(screen.getByText("testpdf.pdf")).toBeVisible();
+    expect(screen.getByText("newEntrantApp.pdf")).toBeVisible();
     expect(
       screen.getByRole("button", {
         name: /preview/i,

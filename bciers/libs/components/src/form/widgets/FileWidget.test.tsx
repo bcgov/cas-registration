@@ -36,7 +36,7 @@ export const fileFieldUiSchema = {
 
 // an out-of-context context for when we don't test the submission
 // eslint-disable-next-line react-hooks/rules-of-hooks
-const [formContext, _] = useFileUploadWidget();
+const formContext = { onFileSelected: vi.fn() };
 
 describe("RJSF FileWidget", () => {
   beforeEach(() => {
@@ -427,22 +427,24 @@ describe("RJSF FileWidget", () => {
     await checkNoValidationErrorIsTriggered();
   });
 
-  it("submits the uploaded files with the form", async () => {
-    actionHandler.mockResolvedValue({});
+  it.only("submits the uploaded files with the form", async () => {
+    actionHandler.mockResolvedValueOnce({});
 
-    const [formContext, submitWithFiles] = useFileUploadWidget();
+    const TestComponent = () => {
+      const [formContext, submitWithFiles] = useFileUploadWidget();
+      return (
+        <FormBase
+          schema={fileFieldSchema}
+          uiSchema={fileFieldUiSchema}
+          formContext={formContext}
+          onSubmit={async (data) => {
+            await submitWithFiles(data.formData, "/testapi/submit", "POST");
+          }}
+        />
+      );
+    };
 
-    render(
-      <FormBase
-        schema={fileFieldSchema}
-        uiSchema={fileFieldUiSchema}
-        formContext={formContext}
-        onSubmit={async (data) => {
-          await submitWithFiles(data.formData, "/testapi/submit", "POST");
-        }}
-      />,
-    );
-
+    render(<TestComponent />);
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(
       input,
@@ -458,14 +460,17 @@ describe("RJSF FileWidget", () => {
     });
 
     const submitButton = screen.getByRole("button", { name: "Submit" });
+
     await userEvent.click(submitButton);
 
+    expect(actionHandler).toHaveBeenCalledTimes(1);
     expect(actionHandler.mock.calls[0]).toEqual([
       "/testapi/submit",
       "POST",
       undefined,
       expect.toSatisfy((submitted) => {
         const entries = Object.fromEntries(submitted.body);
+
         expect(entries.fileTestField).toBeInstanceOf(File);
         expect(entries.payload).toEqual(
           JSON.stringify({

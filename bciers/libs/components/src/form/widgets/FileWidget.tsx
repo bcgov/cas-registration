@@ -165,8 +165,6 @@ const FileWidget: React.FC<WidgetProps> = (props) => {
   const isCasInternal = role?.includes("cas") && !role?.includes("pending");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-
     const file = event.target.files?.[0];
     if (!file) {
       setLocalFile(undefined);
