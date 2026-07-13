@@ -125,6 +125,11 @@ export default function ActivityForm({
     for (const [k, v] of Object.entries(sourceTypeMap)) {
       if (newFormData[`${v}`]) selectedSourceTypes.push(k);
     }
+
+    if (selectedSourceTypes.length > 0) {
+      setErrors(undefined);
+    }
+
     if (!arrayEquals(selectedSourceTypes, selectedSourceTypeIds)) {
       const schemaData = await fetchSchemaData(selectedSourceTypes);
       if (schemaData.error) {
@@ -167,7 +172,16 @@ export default function ActivityForm({
     // Ensure we use the filtered formData with omitted extra data
     const filteredData = data.formData;
 
-    if (!filteredData.sourceTypes) {
+    const selectedSourceTypeData = Object.keys(filteredData.sourceTypes ?? {});
+
+    // Only filter the keys where the checkBox for that source type is checked IF there is more than one source type
+    const selectedSourceTypeDataFiltered =
+      sourceTypeCount > 1
+        ? selectedSourceTypeData.filter((slug) => filteredData[slug])
+        : selectedSourceTypeData;
+
+    // Validate that at least one source type is selected
+    if (selectedSourceTypeDataFiltered.length === 0) {
       setErrors([
         createGenericReportValidationError(
           "At least one source type must be selected to report for that activity.",
@@ -175,14 +189,6 @@ export default function ActivityForm({
       ]);
       return false;
     }
-
-    const selectedSourceTypeData = Object.keys(filteredData.sourceTypes);
-
-    // Only filter the keys where the checkBox for that source type is checked IF there is more than one source type
-    const selectedSourceTypeDataFiltered =
-      sourceTypeCount > 1
-        ? selectedSourceTypeData.filter((slug) => filteredData[slug])
-        : selectedSourceTypeData;
 
     // Only for selected source types we grab the form data
     const selectedSourceTypeDataReduced = selectedSourceTypeDataFiltered.reduce(
