@@ -23,7 +23,7 @@ class FacilityReport(TimeStampedModel):
     report_version = models.ForeignKey(
         ReportVersion,
         on_delete=models.CASCADE,
-        db_comment="The report this facility information is related to. Foreign key to the erc.report_version table",
+        db_comment="The report_version record this facility report information is related to. Foreign key to the erc.report_version table",
         related_name="facility_reports",
     )
 

@@ -26,7 +26,7 @@ class ReportAttachment(TimeStampedModel, ScannedFileStorageMixin):
     )
     attachment = FileField(
         upload_to=FOLDER_NAME,
-        db_comment="A pdf file uploaded as an attachment to a report",
+        db_comment="A file containing supplementary report information uploaded as an attachment to a report",
         max_length=1000,
     )
     attachment_type = CharField(

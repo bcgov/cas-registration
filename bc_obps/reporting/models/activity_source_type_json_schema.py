@@ -23,7 +23,7 @@ class ActivitySourceTypeJsonSchema(BaseModel):
         db_comment="The identifier for the source type the schema is referencing. Foreign key to the erc.source_type table",
     )
     json_schema = models.JSONField(
-        db_comment="The json schema for a specific activity-source type pair. This defines the shape of the data collected for the source type. Each table with the prefix report_* captures a related subsection of this schema. Greenhouse Gas Emission Reporting Regulation is the initial basis for this data collection",
+        db_comment="The json schema for a specific activity-source type pair. This defines the shape of the data collected for the source type. Each table with the prefix report_* and json_data captures a related subsection of this schema. Refer to the Greenhouse Gas Emission Reporting Regulation(https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#section14) Schedule A, Tables 1&2 for the emission's relationships & reporting requirements.",
     )
     has_unit = models.BooleanField(
         db_comment="Whether or not this source type should collect unit data. If true, add a unit schema when buidling the form object",
