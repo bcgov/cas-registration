@@ -11,6 +11,7 @@ import {
 import { PaymentStatusNoteWidget } from "@/compliance/src/app/components/compliance-summary/manage-obligation/pay-obligation-track-payments/PaymentStatusNoteWidget";
 import { AutomaticOverduePenaltyNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/pay-obligation-track-payments/AutomaticOverduePenaltyNote";
 import { WidgetProps } from "@rjsf/utils";
+import { ArrayFieldItemTemplate } from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 // Custom widget for payment headers
 const PaymentHeaderWidget = (props: WidgetProps) => {
@@ -97,6 +98,7 @@ export const payObligationTrackPaymentsUiSchema: UiSchema = {
 
   // Payments Section
   payments: {
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       orderable: false,

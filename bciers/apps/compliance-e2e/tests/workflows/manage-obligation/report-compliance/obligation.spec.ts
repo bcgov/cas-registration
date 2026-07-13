@@ -11,6 +11,7 @@ import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summaries";
 import { ManageObligationTaskListPOM } from "@/compliance-e2e/poms/manage-obligation/tasklist";
 import { PaymentInstructionsPOM } from "@/compliance-e2e/poms/manage-obligation/payment-instructions";
+import { TrackPaymentsPOM } from "@/compliance-e2e/poms/manage-obligation/track-payments";
 
 import { ComplianceSetupPOM } from "@/compliance-e2e/poms/compliance-setup";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
@@ -68,6 +69,22 @@ test.describe("Test report version to compliance report version manage obligatio
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "Compliance obligation not met",
       variant: "payment instructions invoice number",
+    });
+
+    // Record two partial payments so the track-payments page renders the
+    // Payments section while leaving a balance owing (obligation stays not met).
+    const trackPayments = new TrackPaymentsPOM(page);
+    await trackPayments.recordObligationPayments(request);
+
+    // Continue to the Pay Obligation and Track Payment(s) page
+    await trackPayments.continueToTrackPayments();
+    await trackPayments.assertPageLoaded();
+    await trackPayments.assertHasPayments();
+
+    // happo screenshot
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "Compliance obligation not met",
+      variant: "pay obligation and track payments - partially paid",
     });
   });
 
