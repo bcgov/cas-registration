@@ -12,7 +12,7 @@ class EmissionCategoryMapping(BaseModel):
         EmissionCategory,
         on_delete=models.DO_NOTHING,
         related_name="emission_category_mappings",
-        db_comment="Emission category that defines a reported emission. Foreign key to erc.emission_category table",
+        db_comment="Emission category that defines a reported emission as defined in the Greenhouse Gas Reporting Regulation Schedule A. Foreign key to erc.emission_category table",
     )
     activity = models.ForeignKey(
         Activity,

@@ -26,7 +26,7 @@ class ReportProduct(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_products",
-        db_comment="The report this production information relates to. Foreign key to the erc.report_version table",
+        db_comment="The report version this production information relates to. Foreign key to the erc.report_version table",
     )
 
     facility_report = models.ForeignKey(

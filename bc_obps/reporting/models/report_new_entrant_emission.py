@@ -23,7 +23,7 @@ class ReportNewEntrantEmission(TimeStampedModel):
         EmissionCategory,
         on_delete=models.PROTECT,
         related_name="report_new_entrant_emission",
-        db_comment="The emission category (e.g. On-site transportation emissions, Stationary fuel combustion emissions, etc..). Foreign key to the erc.emission_category table",
+        db_comment="The emission category record this emission belongs to as defined in Schedule A of the Greenhouse Gas Reporing Regulation. Foreign key to the erc.emission_category table",
     )
 
     emission = models.DecimalField(

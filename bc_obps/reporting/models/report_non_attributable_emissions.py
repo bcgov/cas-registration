@@ -12,7 +12,7 @@ class ReportNonAttributableEmissions(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_non_attributable_emissions",
-        db_comment="The report this operation information relates to. Foreign key to the erc.report_version table",
+        db_comment="The report version this operation information relates to. Foreign key to the erc.report_version table",
     )
     facility_report = models.ForeignKey(
         FacilityReport,
