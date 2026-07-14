@@ -11,3 +11,7 @@ A web app for Registration in OBPS under the Clean Growth branch.
 ## Documentation
 
 - [Developer and Application Documentation](./docs/README.md)
+
+## Contributions
+
+Notice: This project is open-source but closed to external contributions. Pull requests and contribution issues will be automatically closed.
