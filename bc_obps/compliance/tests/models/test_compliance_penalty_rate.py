@@ -10,7 +10,6 @@ class CompliancePenaltyRateTest(BaseTestCase):
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
-            ("compliance_period", "compliance period", None, None),
             ("rate", "rate", None, None),
             ("is_current_rate", "is current rate", None, None),
         ]

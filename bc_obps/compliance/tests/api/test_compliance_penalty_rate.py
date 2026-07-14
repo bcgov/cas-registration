@@ -1,5 +1,4 @@
-from decimal import Decimal
-
+from compliance.models.compliance_penalty_rate import CompliancePenaltyRate
 from model_bakery.baker import make_recipe
 
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -14,27 +13,6 @@ class TestCompliancePenaltyRateEndpoint(CommonTestSetup):
         self,
     ):
         """Happy-path: service returns current compliance penalty rate."""
-        # Arrange
-        compliance_period = make_recipe(
-            "compliance.tests.utils.compliance_period",
-            start_date="2024-01-01",
-            end_date="2024-12-31",
-            compliance_deadline="2025-06-30",
-            invoice_generation_date="2025-11-01",
-            max_credit_usage_percentage=Decimal("0.50"),
-        )
-        make_recipe(
-            "compliance.tests.utils.compliance_penalty_rate",
-            rate="0.0014",
-            is_current_rate=False,
-        )
-        make_recipe(
-            "compliance.tests.utils.compliance_penalty_rate",
-            compliance_period=compliance_period,
-            rate="0.0038",
-            is_current_rate=True,
-        )
-
         # Mock authorization
         operator = make_recipe('registration.tests.utils.operator')
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
@@ -51,7 +29,6 @@ class TestCompliancePenaltyRateEndpoint(CommonTestSetup):
         # Assert
         assert response.status_code == 200
         data = response.json()
-        assert data["compliance_period"] == compliance_period.id
         assert data["rate"] == "0.003800"
         assert data["is_current_rate"]
 
@@ -59,6 +36,8 @@ class TestCompliancePenaltyRateEndpoint(CommonTestSetup):
         """Endpoint should return 404 for non-existent compliance_penalty_rate."""
         operator = make_recipe("registration.tests.utils.operator")
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        CompliancePenaltyRate.objects.get(is_current_rate=True).delete()
 
         response = TestUtils.mock_get_with_auth_role(
             self,
