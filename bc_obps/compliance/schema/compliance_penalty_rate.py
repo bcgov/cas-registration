@@ -9,4 +9,4 @@ class CompliancePenaltyRateOut(ModelSchema):
 
     class Meta:
         model = CompliancePenaltyRate
-        fields = ['compliance_period', 'rate', 'is_current_rate']
+        fields = ['rate', 'is_current_rate']

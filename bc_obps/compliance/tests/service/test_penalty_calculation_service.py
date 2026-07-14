@@ -1,3 +1,4 @@
+from compliance.models.compliance_penalty_rate import CompliancePenaltyRate
 import pytest
 from datetime import date, datetime, time, timedelta
 from django.utils import timezone
@@ -63,6 +64,7 @@ class TestPenaltyCalculationService:
             amount=Decimal("-30000.00"),
             adjustment_date=date(2025, 12, 8),
         )
+        CompliancePenaltyRate.objects.get(is_current_rate=True).delete()
         self.compliance_penalty_rate = baker.make_recipe(
             "compliance.tests.utils.compliance_penalty_rate",
             is_current_rate=True,

@@ -44,7 +44,6 @@ compliance_period = Recipe(
 # CompliancePenaltyRate recipe
 compliance_penalty_rate = Recipe(
     CompliancePenaltyRate,
-    compliance_period=foreign_key(compliance_period),
     rate=Decimal('0.0038'),
     is_current_rate=False,
 )
@@ -108,14 +107,6 @@ elicensing_payment = Recipe(
 # ElicensingPayment recipe
 elicensing_adjustment = Recipe(
     ElicensingAdjustment, elicensing_line_item=foreign_key(elicensing_line_item), amount=Decimal('100.00')
-)
-
-# CompliancePenaltyRate recipe
-compliance_penalty_rate = Recipe(
-    CompliancePenaltyRate,
-    compliance_period=foreign_key(compliance_period),
-    rate=Decimal('0.0038'),
-    is_current_rate=True,
 )
 
 # CompliancePenalty recipe
