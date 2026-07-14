@@ -238,6 +238,7 @@ class TestComplianceAdjustmentService:
             adjustment_total=amount,
             supplementary_compliance_report_version_id=test_supp_data.compliance_report_version.id,
             reason=reason,
+            adjustment_date=None,
         )
 
     def test_create_adjustment_for_target_version_does_not_trigger_on_rollback(
