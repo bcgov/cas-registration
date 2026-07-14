@@ -172,6 +172,10 @@ const AttachmentsForm: React.FC<Props> = ({
       : uploadedAttachments && uploadedAttachments[fileType]?.attachment_name;
   };
 
+  const isWciMissing =
+    !("wci_352_362" in pendingUploadFiles) &&
+    !("wci_352_362" in uploadedAttachments);
+
   const buildAttachmentElement = (
     title: string,
     fileType: string,
@@ -213,7 +217,7 @@ const AttachmentsForm: React.FC<Props> = ({
           to this report.
         </AlertNote>
       )}
-      {isLFO && (
+      {isLFO && isWciMissing && (
         <AlertNote alertType="ALERT">
           An attachment for WCI.352(i) or 362(g) is required.
         </AlertNote>

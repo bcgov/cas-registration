@@ -50,7 +50,7 @@ describe("The attachments form", () => {
     ).toBeVisible();
   });
 
-  it("shows the WCI warning banner for LFO operations", () => {
+  it("shows the WCI warning banner for LFO operations with no WCI attachment", () => {
     render(
       <AttachmentsForm
         navigationInformation={dummyNavigationInformation}
@@ -65,6 +65,62 @@ describe("The attachments form", () => {
     expect(
       screen.getByText("An attachment for WCI.352(i) or 362(g) is required."),
     ).toBeVisible();
+  });
+
+  it("does not show the WCI warning banner for LFO operations that already have a WCI attachment", () => {
+    render(
+      <AttachmentsForm
+        navigationInformation={dummyNavigationInformation}
+        version_id={1}
+        initialUploadedAttachments={{
+          wci_352_362: {
+            id: 1,
+            attachment_name: "test_name",
+            attachment_type: "wci_352_362",
+          },
+        }}
+        isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
+        operationType={OperationTypes.LFO}
+      />,
+    );
+
+    expect(
+      screen.queryByText("An attachment for WCI.352(i) or 362(g) is required."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides the WCI warning banner as soon as a WCI attachment is selected, before saving", () => {
+    render(
+      <AttachmentsForm
+        navigationInformation={dummyNavigationInformation}
+        version_id={1}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
+        operationType={OperationTypes.LFO}
+      />,
+    );
+
+    expect(
+      screen.getByText("An attachment for WCI.352(i) or 362(g) is required."),
+    ).toBeVisible();
+
+    const onChangeWci = mockAttachmentElement.mock.calls.find(
+      (call) => call[0].title === "WCI.352 and WCI.362",
+    )[0].onFileChange;
+
+    const file = new File(["test content"], "wci.pdf", {
+      type: "application/pdf",
+    });
+
+    act(() => {
+      onChangeWci(file);
+    });
+
+    expect(
+      screen.queryByText("An attachment for WCI.352(i) or 362(g) is required."),
+    ).not.toBeInTheDocument();
   });
 
   it("does not show the WCI warning banner for non-LFO operations", () => {
