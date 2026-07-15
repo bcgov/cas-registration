@@ -54,19 +54,5 @@
       "phone_number": "+16044015432",
       "app_role": "cas_director"
     }
-  },
-  {
-    "model": "registration.user",
-    "fields": {
-      "user_guid": "c3cd84a8-e261-4814-93e1-5bd4a7ccd638",
-      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "bceid_business_name": "Bravo Technologies - has parTNER operator",
-      "first_name": "bc-cas-dev-three",
-      "last_name": "Industry User",
-      "position_title": "Code Monkey",
-      "email": "test3@email.com",
-      "phone_number": "+16044015432",
-      "app_role": "industry_user"
-    }
   }
 ]
