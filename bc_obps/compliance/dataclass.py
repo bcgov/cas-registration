@@ -182,13 +182,13 @@ class AdjustmentStrategy:
     Immutable, normalized contract consumed by `DecreasedObligationHandler._process_adjustment_after_commit(...)`
 
     - invoices: invoice-level adjustments to apply
-    - should_record_manual_handling: flag to create manual-handling record
+    - manual_handling_context: the manual-handling context to record, or None if manual handling is not required
     - earned_credits_tonnes: earned credits to create on the NEW CRV (tonnes)
     - should_create_earned_credits: whether to create an earned-credits record
     """
 
     invoices: List["InvoiceAdjustment"] = field(default_factory=list)
-    should_record_manual_handling: bool = False
+    manual_handling_context: Optional[str] = None
 
     earned_credits_tonnes: Decimal = Decimal("0")
     should_create_earned_credits: bool = False

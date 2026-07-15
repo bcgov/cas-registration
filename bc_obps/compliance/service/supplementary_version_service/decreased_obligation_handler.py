@@ -98,7 +98,7 @@ class DecreasedObligationHandler:
         # 3) Build a normalized strategy dict
         # The strategy object returned by the determination functions is the single contract used _process_adjustment_after_commit
         # invoices: list of InvoiceAdjustment entries, each with `version_id`, `applied`, `net_outstanding_after`, `mark_fully_met`, `should_void_invoice`.
-        # should_record_manual_handling: boolean flag.
+        # manual_handling_context: the manual-handling context to record, or None.
         # earned_credits_tonnes: earned credits to create on the NEW CRV
         # should_create_earned_credits: whether to create an earned-credits record
 
@@ -146,41 +146,45 @@ class DecreasedObligationHandler:
         """
         Execute the "strategy" produced in handle():
 
-        For each invoice in strategy["invoices"]:
+        For each invoice in strategy.invoices:
           - Post a signed negative adjustment (reduces outstanding).
           - If net outstanding hits zero, mark that previous CRV as FULLY_MET.
           - If fully met AND no prior CASH payments, void the invoice.
-          - If fully met AND no prior CASH payments AND credited emissions, create earned credits
+
+        Then act on the single outcome of the strategy already decided for the new supplementary CRV:
+        record manual handling (with the strategy's context) or create earned credits.
 
         Args:
             adjustment_date: Optional ISO date string ("YYYY-MM-DD") to back-date the adjustments so
                 the penalty recalculates on the lower obligation.
         """
-        for entry in strategy.invoices:
-            applied = entry.applied
+        for invoice in strategy.invoices:
+            applied = invoice.applied
             if applied != ZERO_DECIMAL:
                 reason = (
                     ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT_TO_VOID_INVOICE
-                    if entry.should_void_invoice
+                    if invoice.should_void_invoice
                     else ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT
                 )
                 ComplianceAdjustmentService.create_adjustment_for_target_version(
-                    target_compliance_report_version_id=entry.version_id,
+                    target_compliance_report_version_id=invoice.version_id,
                     adjustment_total=applied,
                     supplementary_compliance_report_version_id=compliance_report_version_id,
                     reason=reason,
                     adjustment_date=adjustment_date,
                 )
 
-            if entry.mark_fully_met:
-                DecreasedObligationHandler._mark_previous_version_fully_met(entry.version_id)
-            if entry.should_void_invoice:
-                DecreasedObligationHandler._void_unpaid_invoices(entry.version_id)
+            if invoice.mark_fully_met:
+                DecreasedObligationHandler._mark_previous_version_fully_met(invoice.version_id)
+            if invoice.should_void_invoice:
+                DecreasedObligationHandler._void_unpaid_invoices(invoice.version_id)
 
-        if strategy.should_record_manual_handling:
-            DecreasedObligationHandler._record_manual_handling(compliance_report_version_id)
-
-        if strategy.should_create_earned_credits and strategy.earned_credits_tonnes > ZERO_DECIMAL:
+        # Act on the single outcome decided by the strategy builder.
+        if strategy.manual_handling_context:
+            DecreasedObligationHandler._record_manual_handling(
+                compliance_report_version_id, context=strategy.manual_handling_context
+            )
+        elif strategy.should_create_earned_credits and strategy.earned_credits_tonnes > ZERO_DECIMAL:
             DecreasedObligationHandler._create_earned_credits(
                 compliance_report_version_id,
                 strategy.earned_credits_tonnes,
@@ -287,18 +291,17 @@ class DecreasedObligationHandler:
             total_refund_vs_anchor, invoices, anchor_crv_id
         )
 
-        per_invoice, refund_pool = DecreasedObligationHandler._adjust_refund_to_invoices(invoices, refund_pool)
+        invoice_adjustments, refund_pool = DecreasedObligationHandler._adjust_refund_to_invoices(invoices, refund_pool)
 
         # --- Manual handling decision -------------------------------------------
         # Fully paid if no invoices OR all tracked invoices end at $0.
-        fully_paid_obligation = (len(per_invoice) == 0) or all(
-            e.net_outstanding_after == ZERO_DECIMAL for e in per_invoice
+        fully_paid_obligation = (len(invoice_adjustments) == 0) or all(
+            invoice_adjustment.net_outstanding_after == ZERO_DECIMAL for invoice_adjustment in invoice_adjustments
         )
 
         has_cash = DecreasedObligationHandler._determine_if_has_cash(
             fully_paid_obligation, refund_pool, over_corrected_tonnes, invoices, anchor_crv_id
         )
-        should_record_manual_handling = has_cash
 
         # --- Earned credits decision -------------------------------------------
         # If the decrease over-corrects past zero AND there were no cash payments,
@@ -311,9 +314,22 @@ class DecreasedObligationHandler:
             should_create_earned_credits = True
             earned_credits_tonnes = over_corrected_tonnes
 
+        # --- Manual handling decision -------------------------------------------
+        # Two situations require manual handling, differing only by the context:
+        #   - a refundable cash pool, or
+        #   - a decrease that pushed applied credits over the cap
+        # An over-correction into earned credits takes precedence over the over-cap case.
+        manual_handling_context: Optional[str] = None
+        if has_cash:
+            manual_handling_context = ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH
+        elif not should_create_earned_credits and DecreasedObligationHandler._has_credit_usage_over_cap(
+            invoice_adjustments
+        ):
+            manual_handling_context = ComplianceReportVersionManualHandling.Context.CREDITS_OVER_ALLOWED_PERCENTAGE
+
         return AdjustmentStrategy(
-            invoices=per_invoice,
-            should_record_manual_handling=should_record_manual_handling,
+            invoices=invoice_adjustments,
+            manual_handling_context=manual_handling_context,
             should_create_earned_credits=should_create_earned_credits,
             earned_credits_tonnes=earned_credits_tonnes,
         )
@@ -669,6 +685,7 @@ class DecreasedObligationHandler:
     @staticmethod
     def _record_manual_handling(
         compliance_report_version_id: int,
+        context: str = ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
     ) -> None:
         """
         Create a related ComplianceReportVersionManualHandling record and set the
@@ -680,11 +697,30 @@ class DecreasedObligationHandler:
         ComplianceReportVersionManualHandling.objects.create(
             compliance_report_version=crv,
             handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
-            context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
+            context=context,
         )
 
         crv.status = ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING
         crv.save(update_fields=['status'])
+
+    @staticmethod
+    def _has_credit_usage_over_cap(invoice_adjustments: List[InvoiceAdjustment]) -> bool:
+        """
+        Return True if the decrease pushes the compliance units already applied to any target obligation
+        over the allowed cap (the decrease shrinks the cap). The invoice_adjustments decrease amount is passed as
+        the pending supplementary adjustment, so the cap reflects the decrease before it is posted
+        """
+        from compliance.service.bc_carbon_registry.apply_compliance_units_service import ApplyComplianceUnitsService
+
+        return any(
+            ApplyComplianceUnitsService.is_credit_usage_over_cap(
+                invoice_adjustment.version_id,
+                pending_supplementary_adjustment=(
+                    ZERO_DECIMAL if invoice_adjustment.should_void_invoice else invoice_adjustment.applied
+                ),
+            )
+            for invoice_adjustment in invoice_adjustments
+        )
 
     @staticmethod
     def _create_earned_credits(compliance_report_version_id: int, tonnes: Decimal) -> None:
