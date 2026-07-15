@@ -9,7 +9,7 @@ import {
   AccessRequestGridRenderCellParams,
   AccessRequestStatusAction,
 } from "@/administration/app/components/userOperators/types";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useTransition } from "react";
 import handleAccessRequestStatus from "./handleAccessRequestStatus";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import LoadingSpinner from "@bciers/components/loading/LoadingSpinner";
@@ -18,7 +18,7 @@ import { BC_GOV_COMPONENTS_GREY } from "@bciers/styles";
 const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const {
     status: userOperatorStatus,
@@ -62,32 +62,29 @@ const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
     [],
   );
 
-  const handleButtonClick = async (item: AccessRequestStatusAction) => {
-    setIsLoading(true);
+  const handleButtonClick = (item: AccessRequestStatusAction) => {
+    // Wrapped in startTransition to automatically catch throws and trigger the Error Boundary
+    startTransition(async () => {
+      const res = await handleAccessRequestStatus(
+        userOperatorId,
+        item.statusTo,
+        userOperatorRole as UserOperatorRoles,
+      );
 
-    const res = await handleAccessRequestStatus(
-      userOperatorId,
-      item.statusTo,
-      userOperatorRole as UserOperatorRoles,
-    );
-
-    if (!res?.error) {
       setSnackbarMessage(
         `${res.first_name} ${res.last_name} is now ${res.status.toLowerCase()}`,
       );
       setIsSnackbarOpen(true);
-    }
 
-    params.api.updateRows([
-      {
-        ...params.row,
-        userRole:
-          item.statusTo === Status.PENDING ? "reporter" : userOperatorRole,
-        status: res.status,
-      },
-    ]);
-
-    setIsLoading(false);
+      params.api.updateRows([
+        {
+          ...params.row,
+          userRole:
+            item.statusTo === Status.PENDING ? "reporter" : userOperatorRole,
+          status: res.status,
+        },
+      ]);
+    });
   };
 
   return (
@@ -100,13 +97,13 @@ const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
             onClick={() => handleButtonClick(item)}
             color={item.color}
             endIcon={
-              isLoading ? (
+              isPending ? (
                 <LoadingSpinner color={BC_GOV_COMPONENTS_GREY} />
               ) : (
                 item.icon
               )
             }
-            disabled={isLoading}
+            disabled={isPending}
           >
             {item.title}
           </Button>

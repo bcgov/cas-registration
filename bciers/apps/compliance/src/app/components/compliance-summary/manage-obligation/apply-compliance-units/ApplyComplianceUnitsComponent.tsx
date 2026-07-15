@@ -19,7 +19,8 @@ import {
 import FormAlerts from "@bciers/components/form/FormAlerts";
 import { ApplyComplianceUnitsAlertNote } from "./ApplyComplianceUnitsAlertNote";
 import { IChangeEvent } from "@rjsf/core";
-import { actionHandler, safeClientGet } from "@bciers/actions";
+import { safeClientRequest } from "@bciers/actions/safeClientRequest";
+import { actionHandler } from "@bciers/actions";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 import getReportOperationByComplianceReportVersionId from "@/compliance/src/app/utils/getReportOperationByComplianceReportVersionId";
 
@@ -164,9 +165,11 @@ export default function ApplyComplianceUnitsComponent({
     setStatus("submitting");
 
     // Call client-side GET with safeClientGet
-    const { data, error } = await safeClientGet<ApplyComplianceUnitsFormData>(
-      `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
-    );
+    const { data, error } =
+      await safeClientRequest<ApplyComplianceUnitsFormData>(
+        `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
+        "GET",
+      );
 
     // Handle the error path
     if (error || !data) {

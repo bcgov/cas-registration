@@ -1,11 +1,11 @@
 "use client";
 
+import { useState, useTransition } from "react";
 import Button from "@mui/material/Button";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { Stack } from "@mui/system";
 import { InternalFrontEndRoles, Status } from "@bciers/utils/src/enums";
-import { useState } from "react";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import LoadingSpinner from "@bciers/components/loading/LoadingSpinner";
 import { BC_GOV_COMPONENTS_GREY } from "@bciers/styles";
@@ -47,7 +47,8 @@ const ActionColumnCell = (
 
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [isPending, startTransition] = useTransition();
 
   const { id, role, archived_at: archivedAt } = params.row;
   const [status, setStatus] = useState(
@@ -62,40 +63,40 @@ const ActionColumnCell = (
     DECLINE = "Decline",
   }
 
-  const handleButtonClick = async (action: Actions) => {
-    setIsLoading(true);
+  const handleButtonClick = (action: Actions) => {
+    // Wrapped in startTransition to automatically catch throws and trigger the Error Boundary
+    startTransition(async () => {
+      const res = await handleInternalAccessRequest(
+        id,
+        // if we're editing or declining, we set the role to pending
+        action !== Actions.APPROVE ? InternalFrontEndRoles.CAS_PENDING : role,
+        action === Actions.DECLINE,
+      );
 
-    const res = await handleInternalAccessRequest(
-      id,
-      // if we're editing or declining, we set the role to pending
-      action !== Actions.APPROVE ? InternalFrontEndRoles.CAS_PENDING : role,
-      action === Actions.DECLINE,
-    );
+      if (res?.error) {
+        throw new Error(`Failed to update user`);
+      }
 
-    if (res?.error) {
-      throw new Error(`Failed to update user`);
-    }
+      const newStatus = inferStatus(res.app_role, res.archived_at);
+      const newRole = res.app_role;
 
-    const newStatus = inferStatus(res.app_role, res.archived_at);
-    const newRole = res.app_role;
+      setSnackbarMessage(
+        `${res.first_name} ${res.last_name} is now ${
+          res.archived_at ? "declined" : formatRole(newRole)
+        }`,
+      );
+      setIsSnackbarOpen(true);
 
-    setSnackbarMessage(
-      `${res.first_name} ${res.last_name} is now ${
-        res.archived_at ? "declined" : formatRole(newRole)
-      }`,
-    );
-    setIsSnackbarOpen(true);
-
-    params.api.updateRows([
-      {
-        ...params.row,
-        status: res.archived_at ? Status.DECLINED : newStatus,
-        role: newRole,
-      },
-    ]);
-    setIsDeclined(res.archived_at);
-    setStatus(newStatus);
-    setIsLoading(false);
+      params.api.updateRows([
+        {
+          ...params.row,
+          status: res.archived_at ? Status.DECLINED : newStatus,
+          role: newRole,
+        },
+      ]);
+      setIsDeclined(res.archived_at);
+      setStatus(newStatus);
+    });
   };
 
   const editButton = (
@@ -104,11 +105,11 @@ const ActionColumnCell = (
       onClick={() => handleButtonClick(Actions.EDIT)}
       color={"primary"}
       endIcon={
-        isLoading ? (
+        isPending ? (
           <LoadingSpinner color={BC_GOV_COMPONENTS_GREY} />
         ) : undefined
       }
-      disabled={isLoading}
+      disabled={isPending}
     >
       Edit
     </Button>
@@ -120,13 +121,13 @@ const ActionColumnCell = (
         onClick={() => handleButtonClick(Actions.APPROVE)}
         color={"success"}
         endIcon={
-          isLoading ? (
+          isPending ? (
             <LoadingSpinner color={BC_GOV_COMPONENTS_GREY} />
           ) : (
             <ThumbUpIcon />
           )
         }
-        disabled={isLoading}
+        disabled={isPending}
       >
         Approve
       </Button>
@@ -136,13 +137,13 @@ const ActionColumnCell = (
         onClick={() => handleButtonClick(Actions.DECLINE)}
         color={"error"}
         endIcon={
-          isLoading ? (
+          isPending ? (
             <LoadingSpinner color={BC_GOV_COMPONENTS_GREY} />
           ) : (
             <DoNotDisturbIcon />
           )
         }
-        disabled={isLoading || isDeclined}
+        disabled={isPending || isDeclined}
       >
         Decline
       </Button>

@@ -1,13 +1,12 @@
 import { UUID } from "crypto";
-import { actionHandler } from "@bciers/actions";
+import { safeClientRequest } from "@bciers/actions/safeClientRequest";
 
 export default async function cancelAccessRequest(
   userOperatorId: UUID,
-): Promise<boolean | { error: string }> {
-  const response = await actionHandler(
+): Promise<{ data: any; error: string | null }> {
+  return await safeClientRequest(
     `registration/user-operators/${userOperatorId}`,
     "DELETE",
     "",
   );
-  return response;
 }

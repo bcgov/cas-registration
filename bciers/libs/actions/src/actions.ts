@@ -229,30 +229,3 @@ export async function fetchDashboardData(url: string) {
     return {};
   }
 }
-/**
- * A safe wrapper around actionHandler for client-side GET requests.
- * Catches any thrown errors and returns a standardized { data, error } object.
- */
-export async function safeClientGet<T>(
-  endpoint: string,
-  options?: RequestInit,
-): Promise<{ data: T | null; error: string | null }> {
-  try {
-    // Hardcode "GET" and pass an empty path to revalidate since GETs don't revalidate paths
-    const response = await actionHandler(endpoint, "GET", "", options);
-
-    // In case actionHandler returns an inline error
-    if (response && response.error) {
-      return { data: null, error: response.error };
-    }
-
-    return { data: response as T, error: null };
-  } catch (error: any) {
-    // Intercept the thrown error
-    return {
-      data: null,
-      error:
-        error?.message || "An unexpected error occurred while fetching data.",
-    };
-  }
-}
