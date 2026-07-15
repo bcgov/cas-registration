@@ -21,15 +21,24 @@ export default function CancelAccessRequest({
 
   const handleCancelAccessRequest = async () => {
     setIsSubmitting(true);
-    const response = await cancelAccessRequest(userOperatorId);
+    try {
+      const response = await cancelAccessRequest(userOperatorId);
 
-    if (typeof response !== "boolean" && response?.error) {
-      setError(response.error as any);
+      if (typeof response !== "boolean" && response?.error) {
+        setError(response.error as any);
+        setModalOpen(false);
+        setIsSubmitting(false);
+        return;
+      }
+      router.push("/select-operator");
+    } catch (err: any) {
+      setError(
+        err?.message || "An unexpected error occurred. Please try again.",
+      );
       setModalOpen(false);
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-    router.push("/select-operator");
   };
 
   return (

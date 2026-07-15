@@ -1,10 +1,4 @@
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import {
   handleInternalAccessRequest,
   useSearchParams,
@@ -15,6 +9,7 @@ import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 import InternalAccessRequestDataGrid from "@/administration/app/components/users/InternalAccessRequestDataGrid";
 import { FrontEndRoles, InternalFrontEndRoles } from "@bciers/utils/src/enums";
+import { TestErrorBoundary } from "@bciers/testConfig/helpers/TestErrorBoundary";
 
 const mockInitialData = {
   rows: [
@@ -154,10 +149,12 @@ describe("Access Requests DataGrid", () => {
       last_name: "Deborah",
       archived_at: null,
     });
+
     render(<InternalAccessRequestDataGrid initialData={mockInitialData} />);
     const deborahRow = screen.getAllByRole("row")[4];
+
     await userEvent.click(
-      within(deborahRow).getByRole("button", { name: "Edit" }),
+      within(deborahRow).getByRole("button", { name: /edit/i }),
     );
 
     expect(handleInternalAccessRequest).toHaveBeenCalledWith(
@@ -165,18 +162,22 @@ describe("Access Requests DataGrid", () => {
       "cas_pending",
       false,
     );
-    // Check grid updated
-    expect(within(deborahRow).getByText("Pending")).toBeVisible();
-    expect(
-      within(deborahRow).getByDisplayValue("cas_pending"),
-    ).toBeInTheDocument(); // we expect this to be in the document but not be visible because pending isn't a dropdown option
-    expect(
-      within(deborahRow).getByRole("button", { name: "Approve" }),
-    ).toBeVisible();
-    expect(
-      within(deborahRow).getByRole("button", { name: "Decline" }),
-    ).toBeVisible();
-    // check snackbar
+
+    // Wait for the async state updates & UI transition to settle
+    await waitFor(() => {
+      expect(within(deborahRow).getByText("Pending")).toBeVisible();
+      expect(
+        within(deborahRow).getByDisplayValue("cas_pending"),
+      ).toBeInTheDocument();
+      expect(
+        within(deborahRow).getByRole("button", { name: /approve/i }),
+      ).toBeVisible();
+      expect(
+        within(deborahRow).getByRole("button", { name: /decline/i }),
+      ).toBeVisible();
+    });
+
+    // Check snackbar
     expect(screen.getByText(/Declined Deborah is now Pending/i)).toBeVisible();
   });
 
@@ -193,7 +194,9 @@ describe("Access Requests DataGrid", () => {
     await userEvent.click(within(pollyRow).getByLabelText("User Role"));
     await userEvent.click(screen.getByRole("option", { name: /Admin/i }));
 
-    const approveButton = screen.getByRole("button", { name: "Approve" });
+    const approveButton = within(pollyRow).getByRole("button", {
+      name: "Approve",
+    });
     await userEvent.click(approveButton);
     expect(handleInternalAccessRequest).toHaveBeenCalledWith(
       "58f255ed-8d46-44ee-b2fe-9f8d3d92c684",
@@ -201,10 +204,12 @@ describe("Access Requests DataGrid", () => {
       false,
     );
     // Check grid updated
-    expect(within(pollyRow).getByText("Approved")).toBeVisible();
-    expect(
-      within(pollyRow).getByRole("button", { name: "Edit" }),
-    ).toBeVisible();
+    await waitFor(() => {
+      expect(within(pollyRow).getByText("Approved")).toBeVisible();
+      expect(
+        within(pollyRow).getByRole("button", { name: /edit/i }),
+      ).toBeEnabled();
+    });
     // check snackbar
     expect(screen.getByText(/Pending Polly is now Admin/i)).toBeVisible();
   });
@@ -212,26 +217,31 @@ describe("Access Requests DataGrid", () => {
   it("user can DECLINE the request", async () => {
     handleInternalAccessRequest.mockResolvedValue({
       app_role: "cas_pending",
-
       first_name: "Pending",
       last_name: "Polly",
       archived_at: Date.now(),
     });
     render(<InternalAccessRequestDataGrid initialData={mockInitialData} />);
     const pollyRow = screen.getAllByRole("row")[3];
-
-    const declineButton = screen.getByRole("button", { name: "Decline" });
+    const declineButton = within(pollyRow).getByRole("button", {
+      name: "Decline",
+    });
     await userEvent.click(declineButton);
+
     expect(handleInternalAccessRequest).toHaveBeenCalledWith(
       "58f255ed-8d46-44ee-b2fe-9f8d3d92c684",
       "cas_pending",
       true,
     );
-    // Check grid updated
-    expect(within(pollyRow).getByText("Declined")).toBeVisible();
-    expect(
-      within(pollyRow).getByRole("button", { name: "Edit" }),
-    ).toBeVisible();
+
+    // Wait for async state updates & UI transition to complete
+    await waitFor(() => {
+      expect(within(pollyRow).getByText("Declined")).toBeVisible();
+      expect(
+        within(pollyRow).getByRole("button", { name: /edit/i }),
+      ).toBeEnabled();
+    });
+
     // check snackbar
     expect(screen.getByText(/Pending Polly is now declined/i)).toBeVisible();
   });
@@ -265,31 +275,83 @@ describe("Access Requests DataGrid", () => {
   });
 
   it("displays a spinner and disables the button while loading", async () => {
-    handleInternalAccessRequest.mockResolvedValue({
-      app_role: "cas_pending",
-      first_name: "Declined",
-      last_name: "Deborah",
-      archived_at: null,
-    });
+    const user = userEvent.setup();
+
+    let resolveAction: (value: any) => void;
+    handleInternalAccessRequest.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveAction = resolve;
+        }),
+    );
+
     render(<InternalAccessRequestDataGrid initialData={mockInitialData} />);
-    const deborahRow = screen.getAllByRole("row")[4];
-    const editButton = within(deborahRow).getByRole("button", { name: "Edit" });
+
+    // Target the specific row and button
+    const initialRow = screen.getAllByRole("row")[4];
+    const editButton = within(initialRow).getByRole("button", { name: "Edit" });
     expect(editButton).toBeEnabled();
-    await userEvent.click(editButton);
-    fireEvent.click(editButton);
-    expect(editButton).toBeDisabled();
-    expect(
-      editButton.querySelector("span svg[aria-label='loading']"),
-    ).toBeVisible();
-    expect(handleInternalAccessRequest).toHaveBeenCalled();
+
+    await user.click(editButton);
+
+    // Assert loading state while promise is unresolved
     await waitFor(() => {
-      // Make sure that buttons are visible and enabled again
+      expect(editButton).toBeDisabled();
       expect(
-        within(deborahRow).getByRole("button", { name: "Approve" }),
+        editButton.querySelector("span svg[aria-label='loading']"),
       ).toBeVisible();
-      expect(
-        within(deborahRow).getByRole("button", { name: "Decline" }),
-      ).toBeEnabled();
     });
+    expect(handleInternalAccessRequest).toHaveBeenCalled();
+
+    // Resolve promise inside act() to flush state updates
+    await act(async () => {
+      resolveAction({
+        app_role: "cas_pending",
+        first_name: "Declined",
+        last_name: "Deborah",
+        archived_at: null,
+      });
+    });
+
+    // Re-query the updated row node to scope the button search
+    await waitFor(() => {
+      const updatedRow = screen.getAllByRole("row")[4];
+      const approveBtn = within(updatedRow).getByRole("button", {
+        name: "Approve",
+      });
+      const declineBtn = within(updatedRow).getByRole("button", {
+        name: "Decline",
+      });
+
+      expect(approveBtn).toBeVisible();
+      expect(approveBtn).toBeEnabled();
+      expect(declineBtn).toBeVisible();
+      expect(declineBtn).toBeEnabled();
+    });
+  });
+
+  it("triggers the error boundary when handleInternalAccessRequest throws an exception", async () => {
+    handleInternalAccessRequest.mockRejectedValueOnce(
+      new Error("Internal API connection timeout"),
+    );
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    render(
+      <TestErrorBoundary>
+        <InternalAccessRequestDataGrid initialData={mockInitialData} />
+      </TestErrorBoundary>,
+    );
+
+    const pollyRow = screen.getAllByRole("row")[3];
+    const approveButton = within(pollyRow).getByRole("button", {
+      name: "Approve",
+    });
+    await userEvent.click(approveButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("error-boundary")).toBeVisible();
+    });
+
+    consoleSpy.mockRestore();
   });
 });

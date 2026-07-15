@@ -24,6 +24,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   const { formContext } = registry;
   const [options, setOptions] = useState<string[]>([]);
   const [isSearchAttempted, setIsSearchAttempted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSelect = (_e: SyntheticEvent, option: string | null) => {
     onChange(option);
@@ -37,22 +38,43 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       if (!val) {
         setIsSearchAttempted(false);
         setOptions([]);
+        setError(null);
         return;
       }
 
       const endpoint = formContext?.endpoint ?? "registration/operators/search";
       const url = `${endpoint}?legal_name=${encodeURIComponent(val)}`;
 
-      const response = await actionHandler(url, "GET");
+      try {
+        setError(null); // Clear previous errors on new fetch
+        const response = await actionHandler(url, "GET");
 
-      if (!response || response?.error) return;
+        // Handle returned API errors (e.g. { error: "..." })
+        if (!response || response?.error) {
+          setError(
+            response?.error ||
+              "An internal server error has occurred. Please contact support.",
+          );
+          setOptions([]);
+          setIsSearchAttempted(true);
+          return;
+        }
 
-      const results = (response as Array<{ legal_name: string }>).map(
-        (item) => item.legal_name,
-      );
+        const results = (response as Array<{ legal_name: string }>).map(
+          (item) => item.legal_name,
+        );
 
-      setOptions(results);
-      setIsSearchAttempted(true);
+        setOptions(results);
+        setIsSearchAttempted(true);
+      } catch (err: any) {
+        // Handle caught rejections/exceptions
+        setError(
+          err?.message ||
+            "An internal server error has occurred. Please contact support.",
+        );
+        setOptions([]);
+        setIsSearchAttempted(true);
+      }
     },
     [formContext],
   );
@@ -90,8 +112,11 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       autoHighlight
       options={options}
       sx={styles}
-      noOptionsText="No results found. Retry or create an operator."
+      noOptionsText={
+        error ? `${error}` : "No results found. Retry or create an operator."
+      }
       open={
+        Boolean(error) ||
         (options.length > 0 && !options.includes(value as string)) ||
         (options.length === 0 && isSearchAttempted)
       }

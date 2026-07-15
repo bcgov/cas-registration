@@ -156,6 +156,9 @@ describe("pastReportsColumns function", () => {
   it("navigates to the matching report page when clicking the 'Continue' button", async () => {
     const user = userEvent.setup();
 
+    delete (window as any).location;
+    window.location = { href: "" } as any;
+
     const columns = pastReportsColumns();
 
     const row = {
@@ -181,6 +184,7 @@ describe("pastReportsColumns function", () => {
     render(<WrapperComponent />);
     await user.click(screen.getByText("Continue"));
 
-    expect(mockPush).toHaveBeenCalledWith(`15/review-operation-information`);
+    // Assert against window.location.href instead of mockPush
+    expect(window.location.href).toBe("15/review-operation-information");
   });
 });
