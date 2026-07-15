@@ -12,6 +12,8 @@ export enum ReportIDs {
   OBLIGATION_NOT_MET = "3",
   EARNED_CREDITS = "4",
   NO_OBLIGATION = "5",
+  BANGLES_SFO = "13",
+  BUGLE_SFO = "18",
 }
 
 // Matching facility ids for report record ids
@@ -105,7 +107,7 @@ export const OPERATION_NAMES = {
   NO_OBLIGATION: "Compliance SFO - No obligation",
   BANANA_LFO: "Banana LFO - Registered",
   BANGLES_SFO: "Bangles SFO - Registered - has Multiple Operators",
-  BUGLE_SFO: "Bugle SFO - Registered",
+  BUGLE_SFO: "Bugle SFO - Registered - name from admin",
   BEES_LFO: "Bees LFO - Registered - name from admin",
 } as const;
 
@@ -113,6 +115,8 @@ export const REPORT_ID_TO_OPERATION_NAME: Record<ReportIDs, string> = {
   [ReportIDs.OBLIGATION_NOT_MET]: OPERATION_NAMES.OBLIGATION_NOT_MET,
   [ReportIDs.EARNED_CREDITS]: OPERATION_NAMES.EARNED_CREDITS,
   [ReportIDs.NO_OBLIGATION]: OPERATION_NAMES.NO_OBLIGATION,
+  [ReportIDs.BANGLES_SFO]: OPERATION_NAMES.BANGLES_SFO,
+  [ReportIDs.BUGLE_SFO]: OPERATION_NAMES.BUGLE_SFO,
 };
 
 export enum REPORT_STATUS {
