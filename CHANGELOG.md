@@ -1,5 +1,20 @@
 # Changelog
 
+# [5.16.0](https://github.com/bcgov/cas-registration/compare/v5.15.1...v5.16.0) (2026-07-15)
+
+### Bug Fixes
+
+- **deps:** update node dependencies ([37bbd73](https://github.com/bcgov/cas-registration/commit/37bbd73c8f8089b4692f942d3e26c8b81c2bdc60))
+- **deps:** update node dependencies ([0dd612b](https://github.com/bcgov/cas-registration/commit/0dd612b2dc26785b0fcea278a82dc63396480363))
+- fix broken format in pay obligation and track payment page ([c00e875](https://github.com/bcgov/cas-registration/commit/c00e875eaabc49fc7f7410d229c8e0c338564744))
+- use human-readable invoice PDF filenames on download ([5173d97](https://github.com/bcgov/cas-registration/commit/5173d97a1461837765b300ab5919e43a1b599133))
+
+### Features
+
+- add warning to WCI upload for LFOs ([528a8e2](https://github.com/bcgov/cas-registration/commit/528a8e287287ad9931d2b3fd1219875c8f28eea3))
+- **compliance:** add new obligation status - interest not paid ([c3ef69e](https://github.com/bcgov/cas-registration/commit/c3ef69ee9e571cd412bd106435056241bab9daea))
+- operation-level activities appear at top of list on Review Facility Information page ([31237f4](https://github.com/bcgov/cas-registration/commit/31237f4603c90d0987ba3633579e62e84e76ccea))
+
 ## [5.15.1](https://github.com/bcgov/cas-registration/compare/v5.15.0...v5.15.1) (2026-07-07)
 
 ### Bug Fixes
