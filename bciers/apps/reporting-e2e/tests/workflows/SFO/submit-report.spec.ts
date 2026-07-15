@@ -4,6 +4,7 @@ import {
   FacilityIDs,
   OPERATION_NAMES,
   REPORT_STATUS,
+  ReportIDs,
   ReportRoutes,
 } from "@/reporting-e2e/utils/enums";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
@@ -11,7 +12,7 @@ import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { SFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
-import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
+import { verifyFormTitle, verifyReportHeader } from "@/reporting-e2e/utils/helpers";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
@@ -213,4 +214,62 @@ test.describe("SFO: create and submit a new report for the current reporting yea
       variant: "submitted",
     });
   });
+});
+
+test.describe("SFO: create and submit a new supplementary report for the current reporting year", () => {
+  test("Industry user starts, fills, and submits a new supplementary report for Bangles SFO", async ({
+    page,
+    request,
+    happoScreenshot,
+  }) => {
+    // ── 0. Open the current reporting year so the "Start" button is available ──
+    const setup = new ReportSetUpPOM(page);
+    await setup.primeReportingYear("open");
+
+    // ── 1. Navigate to the current reports grid ──
+    const grid = new CurrentReportsPOM(page);
+    await grid.route();
+
+    // ── 2. Click "Create supplementary report" for Bangles SFO
+    const supplementaryVersionId = await grid.createSupplementaryReportById(ReportIDs.BANGLES_SFO);
+    const report = new CurrentReportPOM(page);
+    const facilityReport = new SFOFacilityReportPOM(
+      page,
+      FacilityIDs.BANGLES_SFO,
+    );
+
+    // ── 3. Review Operation Information ──
+    await verifyReportHeader(page, OPERATION_NAMES.BANGLES_SFO, "Version 2");
+    await verifyFormTitle(page, "Review Operation Information");
+    await report.verifyBanglesSfoOperationInfo();
+    await report.saveAndContinue(
+      new RegExp(report.personResponsibleUrl(supplementaryVersionId), "i"),
+    );
+
+    // -- 4. Person Responsible — change from "Bill Blue" to "Bob Brown" ──
+    await verifyFormTitle(page, "Person Responsible for Submitting Report");
+    await report.fillPersonResponsible("Bob Brown");
+    await report.saveAndContinue(
+      new RegExp(report.activitiesUrl(supplementaryVersionId, FacilityIDs.BANGLES_SFO), "i"),
+    );
+
+    // -- 5. Activities — verify GSC activity is pre-populated. Update annual fuel amount and emissions quantity ──
+    await verifyFormTitle(page, "General stationary combustion excluding line tracing (at SFO)");
+    await expect(report.page.locator("#root_gscWithProductionOfUsefulEnergy")).toBeChecked();
+    await expect(report.page.locator("#root_gscWithoutProductionOfUsefulEnergy")).not.toBeChecked();
+
+    const annualFuelLocator = report.page.locator("#root_sourceTypes_gscWithProductionOfUsefulEnergy_units_0_fuels_0_annualFuelAmount");
+    await expect(annualFuelLocator).toHaveValue("12,000");
+    annualFuelLocator.clear();
+    await annualFuelLocator.fill("12600");
+
+    const emissionsQuantityLocator = report.page.locator("#root_sourceTypes_gscWithProductionOfUsefulEnergy_units_0_fuels_0_emissions_0_emission");
+    await expect(emissionsQuantityLocator).toHaveValue("11,000");
+    emissionsQuantityLocator.clear();
+    await emissionsQuantityLocator.fill("11800");
+
+    await report.saveAndContinue(
+      new RegExp(`/facilities/${FacilityIDs.BANGLES_SFO}/${ReportRoutes.NON_ATTRIBUTABLE}`),
+    );
+  })
 });
