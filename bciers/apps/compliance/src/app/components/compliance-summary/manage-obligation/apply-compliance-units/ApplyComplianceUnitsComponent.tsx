@@ -19,7 +19,7 @@ import {
 import FormAlerts from "@bciers/components/form/FormAlerts";
 import { ApplyComplianceUnitsAlertNote } from "./ApplyComplianceUnitsAlertNote";
 import { IChangeEvent } from "@rjsf/core";
-import { actionHandler } from "@bciers/actions";
+import { actionHandler, safeClientGet } from "@bciers/actions";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 import getReportOperationByComplianceReportVersionId from "@/compliance/src/app/utils/getReportOperationByComplianceReportVersionId";
 
@@ -162,37 +162,40 @@ export default function ApplyComplianceUnitsComponent({
     e: IChangeEvent<ApplyComplianceUnitsFormData>,
   ) => {
     setStatus("submitting");
-    const response = await actionHandler(
+
+    // Call client-side GET with safeClientGet
+    const { data, error } = await safeClientGet<ApplyComplianceUnitsFormData>(
       `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
-      "GET",
-      "",
     );
-    if (!response || response.error) {
+
+    // Handle the error path
+    if (error || !data) {
       setStatus("idle");
-      setErrors([response?.error || "Failed to get compliance units data."]);
-    } else {
-      // Set the remaining cap from the response (what’s left to apply)
-      setRemainingCap(Number(response.compliance_unit_cap_remaining));
-
-      // Set the outstanding balance from the response
-      setInitialOutstandingBalance(response.outstanding_balance || 0);
-
-      // Update form data with the full compliance data from the response
-      setFormData((prev: Partial<ApplyComplianceUnitsFormData>) => {
-        // Create a clean data object for the compliance phase
-        const cleanFormData = {
-          bccr_holding_account_id: prev.bccr_holding_account_id,
-          bccr_trading_name: prev.bccr_trading_name,
-          ...response,
-        };
-
-        setCurrentPhase("compliance_data");
-        return cleanFormData;
-      });
-
-      setStatus("submitted");
-      setErrors(undefined);
+      setErrors([error || "Failed to get compliance units data."]);
+      return;
     }
+
+    // Set the remaining cap from the response (what’s left to apply)
+    setRemainingCap(Number(data.compliance_unit_cap_remaining));
+
+    // Set the outstanding balance from the response
+    setInitialOutstandingBalance(data.outstanding_balance || 0);
+
+    // Update form data with the full compliance data from the response
+    setFormData((prev: Partial<ApplyComplianceUnitsFormData>) => {
+      // Create a clean data object for the compliance phase
+      const cleanFormData = {
+        bccr_holding_account_id: prev.bccr_holding_account_id,
+        bccr_trading_name: prev.bccr_trading_name,
+        ...data,
+      };
+
+      setCurrentPhase("compliance_data");
+      return cleanFormData;
+    });
+
+    setStatus("submitted");
+    setErrors(undefined);
   };
 
   // Second submission: Apply the compliance units

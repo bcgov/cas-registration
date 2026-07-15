@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ApplyComplianceUnitsComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
 import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import { actionHandler } from "@bciers/actions";
+import { actionHandler, safeClientGet } from "@bciers/actions";
 
 useSearchParams.mockReturnValue({
   get: vi.fn(),
@@ -21,6 +21,7 @@ vi.mock("@/compliance/src/app/utils/bccrAccountHandlers", () => ({
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
+  safeClientGet: vi.fn(),
 }));
 
 vi.mock(
@@ -60,19 +61,23 @@ const MOCK_UNITS = [
     equivalent_value: 0,
   },
 ];
+
 const setupMocks = () => {
   (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValue({
     bccr_trading_name: MOCK_TRADING_NAME,
   });
 
-  (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValue({
-    bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
-    bccr_units: MOCK_UNITS,
-    charge_rate: MOCK_CHARGE_RATE,
-    outstanding_balance: MOCK_OUTSTANDING_BALANCE,
-    compliance_unit_cap_limit: MOCK_CAP_LIMIT,
-    compliance_unit_cap_remaining: MOCK_CAP_REMAINING,
-    max_credit_usage_percentage: 0.5,
+  (safeClientGet as ReturnType<typeof vi.fn>).mockResolvedValue({
+    data: {
+      bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
+      bccr_units: MOCK_UNITS,
+      charge_rate: MOCK_CHARGE_RATE,
+      outstanding_balance: MOCK_OUTSTANDING_BALANCE,
+      compliance_unit_cap_limit: MOCK_CAP_LIMIT,
+      compliance_unit_cap_remaining: MOCK_CAP_REMAINING,
+      max_credit_usage_percentage: 0.5,
+    },
+    error: null,
   });
 };
 
@@ -129,6 +134,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     // Reset all mock implementations to ensure clean state
     (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockReset();
     (actionHandler as ReturnType<typeof vi.fn>).mockReset();
+    (safeClientGet as ReturnType<typeof vi.fn>).mockReset();
   });
 
   it("displays form title and BCCR account section and input field", () => {
@@ -163,10 +169,8 @@ describe("ApplyComplianceUnitsComponent", () => {
   it("validates account and displays compliance details on success", async () => {
     await setupValidAccountAndSubmit();
 
-    expect(actionHandler).toHaveBeenCalledWith(
+    expect(safeClientGet).toHaveBeenCalledWith(
       `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_REPORT_VERSION_ID}/compliance-units`,
-      "GET",
-      "",
     );
     expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
     expect(screen.getByText(MOCK_TRADING_NAME)).toBeVisible();
@@ -328,16 +332,19 @@ describe("ApplyComplianceUnitsComponent", () => {
     });
   });
 
-  it("submits form and calls GET API to fetch compliance data", async () => {
+  it("submits form and calls safeClientGet API to fetch compliance data", async () => {
     (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       bccr_trading_name: MOCK_TRADING_NAME,
     });
 
-    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
-      bccr_units: MOCK_UNITS,
-      charge_rate: MOCK_CHARGE_RATE,
-      outstanding_balance: MOCK_OUTSTANDING_BALANCE,
+    (safeClientGet as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: {
+        bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
+        bccr_units: MOCK_UNITS,
+        charge_rate: MOCK_CHARGE_RATE,
+        outstanding_balance: MOCK_OUTSTANDING_BALANCE,
+      },
+      error: null,
     });
 
     render(
@@ -379,10 +386,8 @@ describe("ApplyComplianceUnitsComponent", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledWith(
+      expect(safeClientGet).toHaveBeenCalledWith(
         `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_REPORT_VERSION_ID}/compliance-units`,
-        "GET",
-        "",
       );
     });
   });
@@ -497,15 +502,20 @@ describe("ApplyComplianceUnitsComponent", () => {
   });
 
   it("calls POST API when Apply button is clicked", async () => {
-    // Mock successful apply response
-    (actionHandler as ReturnType<typeof vi.fn>)
-      .mockResolvedValueOnce({
+    // Mock successful apply response (1st call: GET setup, 2nd call: POST handler)
+    (safeClientGet as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: {
         bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
         bccr_units: MOCK_UNITS,
         charge_rate: MOCK_CHARGE_RATE,
         outstanding_balance: MOCK_OUTSTANDING_BALANCE,
-      })
-      .mockResolvedValueOnce({ success: true });
+      },
+      error: null,
+    });
+
+    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      success: true,
+    });
 
     await setupValidAccountAndSubmit();
 
@@ -535,14 +545,19 @@ describe("ApplyComplianceUnitsComponent", () => {
 
   it("shows success message and hides Apply button after successful application", async () => {
     // Mock successful apply response
-    (actionHandler as ReturnType<typeof vi.fn>)
-      .mockResolvedValueOnce({
+    (safeClientGet as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: {
         bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
         bccr_units: MOCK_UNITS,
         charge_rate: MOCK_CHARGE_RATE,
         outstanding_balance: MOCK_OUTSTANDING_BALANCE,
-      })
-      .mockResolvedValueOnce({ success: true });
+      },
+      error: null,
+    });
+
+    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      success: true,
+    });
 
     await setupValidAccountAndSubmit();
 
@@ -569,15 +584,20 @@ describe("ApplyComplianceUnitsComponent", () => {
   });
 
   it("handles Apply button submission errors correctly", async () => {
-    // Mock successful response for initial setup, then error for apply
-    (actionHandler as ReturnType<typeof vi.fn>)
-      .mockResolvedValueOnce({
+    // Mock successful response for initial setup, then error for POST apply action
+    (safeClientGet as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: {
         bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
         bccr_units: MOCK_UNITS,
         charge_rate: MOCK_CHARGE_RATE,
         outstanding_balance: MOCK_OUTSTANDING_BALANCE,
-      })
-      .mockResolvedValueOnce({ error: "Failed to apply compliance units" });
+      },
+      error: null,
+    });
+
+    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      error: "Failed to apply compliance units",
+    });
 
     await setupValidAccountAndSubmit();
 
@@ -596,17 +616,19 @@ describe("ApplyComplianceUnitsComponent", () => {
   });
 
   it("shows loading state when applying compliance units", async () => {
-    // Mock delayed apply response
-    (actionHandler as ReturnType<typeof vi.fn>)
-      .mockResolvedValueOnce({
+    (safeClientGet as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: {
         bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
         bccr_units: MOCK_UNITS,
         charge_rate: MOCK_CHARGE_RATE,
         outstanding_balance: MOCK_OUTSTANDING_BALANCE,
-      })
-      .mockImplementationOnce(
-        () => new Promise((resolve) => setTimeout(() => resolve({}), 100)),
-      );
+      },
+      error: null,
+    });
+
+    (actionHandler as ReturnType<typeof vi.fn>).mockImplementationOnce(
+      () => new Promise((resolve) => setTimeout(() => resolve({}), 100)),
+    );
 
     await setupValidAccountAndSubmit();
 
@@ -658,7 +680,9 @@ describe("ApplyComplianceUnitsComponent", () => {
       bccr_trading_name: MOCK_TRADING_NAME,
     });
 
-    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+    // Mock safeClientGet error scenario
+    (safeClientGet as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: null,
       error: "API Error",
     });
 
@@ -759,9 +783,12 @@ describe("ApplyComplianceUnitsComponent", () => {
       bccr_trading_name: MOCK_TRADING_NAME,
     });
 
-    // Mock a delayed response
-    (actionHandler as ReturnType<typeof vi.fn>).mockImplementationOnce(
-      () => new Promise((resolve) => setTimeout(() => resolve({}), 100)),
+    // Mock safeClientGet delayed execution
+    (safeClientGet as ReturnType<typeof vi.fn>).mockImplementationOnce(
+      () =>
+        new Promise((resolve) =>
+          setTimeout(() => resolve({ data: {}, error: null }), 100),
+        ),
     );
 
     render(
@@ -871,8 +898,8 @@ describe("ApplyComplianceUnitsComponent", () => {
       expect(
         document.getElementById("root_total_equivalent_emission_reduced"),
       ).toHaveTextContent("75 tCO2e");
-      expect(screen.getByText("$3,750.00")).toBeVisible(); // Total value
-      expect(screen.getByText("$12,250.00")).toBeVisible(); // Outstanding balance
+      expect(screen.getByText("$3,750.00")).toBeVisible();
+      expect(screen.getByText("$12,250.00")).toBeVisible();
     });
   });
 
