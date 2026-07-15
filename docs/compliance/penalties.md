@@ -2,17 +2,17 @@
 
 This document describes penalties as defined in the [Greenhouse Gas Emission Administrative Penalties and Appeals Regulation](https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/248_2015) and how BCIERS handles / applies these penalties. If there is any drift or discrepancy between this document and the penalties regulation, the penalties regulation should be considered the source of truth.
 
+## Accruing vs Existing
+
+Penalties begin _ACCRUING_ as soon as an obligation owes a balance beyond the due date.
+However, a penalty data object in the BCIERS system and a related invoice in eLicensing will not be created until the obligation triggering the penalty has been paid in full (elicensing_invoice.fee_amount_balance == $0.00).
+As far as BCIERS is concerned, A penalty does not _EXIST_ while it is _ACCRUING_. It only becomes data in the system and has an invoice once the triggering obligation is paid in full.
+
 ## Types of Penalties
 
 - Imposed
 - Automatic Overdue
 - GGEAPAR Interest
-
-## Accruing vs Existing
-
-Penalties begin _ACCRUING_ as soon as an obligation owes a balance beyond the due date.
-However, a penalty data object in the BCIERS system and a related invoice in eLicensing will not be created until the obligation triggering the penalty has been paid in full (elicensing_invoice.fee_amount_balance == $0.00).
-As far as BCIERS is concerned, A penalty does not _EXIST_ while it is _ACCRUING_. It only becomes data in the system with an invoice once the triggering obligation is paid in full.
 
 ## Imposed Penalties
 
@@ -47,7 +47,7 @@ Supplementary Obligation (created March 1 2027) - due 30 days from March 1 2027
 
 ### When is it applied
 
-GGEAPAR Interest is applied to any supplementary obligation that was created after the compliance deadline.
+GGEAPAR Interest is applied to any supplementary obligation created after the compliance deadline.
 It can _only_ apply to supplementary obligations.
 GGEAPAR Interest is calculated from the day after the compliance deadline until the date that the supplementary obligation is met, using Prime + 3% as the base for each day it is considered late.
 
@@ -64,10 +64,11 @@ GGEAPAR Interest will generate a penalty invoice calculated from Dec 1 2026 to M
 ## How does BCIERS calculate penalties
 
 - During our overnight processes, each obligation invoice is inspected by the system to see if it has recently been paid (elicensing_invoice.fee_amount_balance == $0.00) and if a penalty or penalties should be applied.
-- If, after looking at the type of obligation (supplementary vs initial), the related due dates & the balance owing on the obligation the system determines that a penalty should be created; the overnight process will call the [PenaltyCalculationService.create_penalty()](../../bc_obps/compliance/service/penalty_calculation_service.py) with the appropriate function & parameters for the penalty type.
-- The PenaltyCalculationService will create one CompliancePenalty record & several CompliancePenaltyAccrual records for each day that the calculation ran.
+- If, after looking at the type of obligation (supplementary vs initial), the related due dates & the balance owing on the obligation, the system determines that a penalty should be created; the overnight process will call [PenaltyCalculationService.create_penalty()](../../bc_obps/compliance/service/penalty_calculation_service.py) with the appropriate parameters for the penalty type.
+- The PenaltyCalculationService will create one CompliancePenalty record & several CompliancePenaltyAccrual records (one accrual record for each day that the calculation ran).
 - The PenaltyCalculationService will make an API call to eLicensing to create an invoice for the total penalty amount owing
 - The BCIERS system will then ingest the penalty invoice data from eLicensing and mirror that data to its own ElicensingInvoice table record
+- The penalty invoice is due 30 days from the date it was created
 
 Example:
 
