@@ -92,7 +92,7 @@ class Command(BaseCommand):
                 )
 
                 for report_version in report_versions:
-                    submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
+                    submit_report_from_fixture(report_version, UUID('00000000-0000-0000-0000-000000000005'))
 
             # create supplementary report
             for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):

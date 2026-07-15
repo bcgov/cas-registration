@@ -79,7 +79,5 @@ class Command(BaseCommand):
         if environment == 'local':
             call_command('load_fixtures')
             call_command('load_reporting_fixtures')
-        elif environment == 'dev' and settings.CI != 'true':
+        elif environment == 'test' or (environment == 'dev' and settings.CI != 'true'):
             self._load_fixtures_with_triggers_disabled(['load_fixtures', 'load_reporting_fixtures'])
-        elif environment == 'test':
-            self._load_fixtures_with_triggers_disabled(['load_test_data', 'load_reporting_test_data'])

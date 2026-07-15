@@ -1,0 +1,72 @@
+[
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "ba2ba62a121842e0942aab9e92ce8822",
+      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
+      "first_name": "bc-cas-dev",
+      "last_name": "Industry User",
+      "position_title": "Code Monkey",
+      "email": "bc-cas-dev@email.com",
+      "phone_number": "+16044015432",
+      "app_role": "industry_user"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "279c80cf57814c28872740a133d17c0d",
+      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
+      "first_name": "bc-cas-dev-secondary",
+      "last_name": "Industry User",
+      "position_title": "Code Monkey",
+      "email": "email2@email.com",
+      "phone_number": "+16044015432",
+      "app_role": "industry_user"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "58f255ed-8d46-44ee-b2fe-9f8d3d92c684",
+      "business_guid": "00000000-0000-0000-0000-000000000000",
+      "bceid_business_name": "BCGOV",
+      "first_name": "E2E",
+      "last_name": "StorageState",
+      "position_title": "Code Monkey",
+      "email": "test2@email.com",
+      "phone_number": "+16044015432",
+      "app_role": "cas_admin"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "e2774213-4c41-4cda-8d10-cf2c216fe292",
+      "business_guid": "00000000-0000-0000-0000-000000000000",
+      "bceid_business_name": "BCGOV",
+      "first_name": "E2E",
+      "last_name": "StorageState",
+      "position_title": "Code Monkey",
+      "email": "test3@email.com",
+      "phone_number": "+16044015432",
+      "app_role": "cas_director"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "c3cd84a8-e261-4814-93e1-5bd4a7ccd638",
+      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
+      "first_name": "bc-cas-dev-three",
+      "last_name": "Industry User",
+      "position_title": "Code Monkey",
+      "email": "test3@email.com",
+      "phone_number": "+16044015432",
+      "app_role": "industry_user"
+    }
+  }
+]
