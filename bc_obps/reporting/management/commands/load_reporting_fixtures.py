@@ -94,6 +94,6 @@ class Command(BaseCommand):
                 for report_version in report_versions:
                     submit_report_from_fixture(report_version, UUID('00000000-0000-0000-0000-000000000005'))
 
-            # create supplementary report
-            for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
+            # create supplementary reports (Banana LFO only)
+            for report in Report.objects.filter(operation_id=UUID('002d5a9e-32a6-4191-938c-2c02bfec592d')):
                 ReportVersionService.create_report_version(report)

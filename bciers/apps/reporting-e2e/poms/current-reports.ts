@@ -562,7 +562,9 @@ export class CurrentReportsPOM {
   async createSupplementaryReportById(
     reportId: string | number,
   ): Promise<number> {
-    const operationName = REPORT_ID_TO_OPERATION_NAME[reportId as ReportIDs] as string;
+    const operationName = REPORT_ID_TO_OPERATION_NAME[
+      reportId as ReportIDs
+    ] as string;
 
     // find row
     const row = this.page
