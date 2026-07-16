@@ -43,7 +43,7 @@ class TransferEventService:
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
         queryset = (
-            filters.filter(TransferEvent.objects.order_by(sort_by))
+            filters.filter(TransferEvent.objects.order_by(sort_by, "id"))
             .values(
                 'id',
                 'effective_date',
