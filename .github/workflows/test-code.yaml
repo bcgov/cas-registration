@@ -78,7 +78,7 @@ jobs:
           else
               touch .git/COMMIT_EDITMSG
           fi
-      - uses: j178/prek-action@bdca6f102f98e2b4c7029491a53dfd366469e33d # v2
+      - uses: j178/prek-action@e98a699c41eb69ab013a45817a0406469a748f8d # v2
 
   check-migrations:
     runs-on: ubuntu-latest
