@@ -498,7 +498,10 @@ export class CurrentReportsPOM {
       () => ({
         scenario: SIGN_OFF_REPORT_SCENARIO,
         compliance_report_version_id: reportVersionId,
-        payload: payload,
+        payload: {
+          ...payload,
+          report_version_id: reportVersionId,
+        },
       }),
       SIGN_OFF_REPORT_SCENARIO,
     );

@@ -45,7 +45,9 @@ export class AttachmentsPOM {
     ).toBeVisible();
   }
 
-  async verifyVerificationStatementUploaded(expectedFilename: string): Promise<void> {
+  async verifyVerificationStatementUploaded(
+    expectedFilename: string,
+  ): Promise<void> {
     await assertFieldVisibility(
       this.page,
       [
@@ -55,10 +57,7 @@ export class AttachmentsPOM {
       ],
       true,
     );
-    await expect(
-      this.page.getByText(`${expectedFilename}.pdf`),
-    ).toBeVisible();
-    await expect(
-      this.page.getByText("Reupload attachment")).toBeVisible();
+    await expect(this.page.getByText(`${expectedFilename}.pdf`)).toBeVisible();
+    await expect(this.page.getByText("Reupload attachment")).toBeVisible();
   }
 }

@@ -56,7 +56,7 @@
       "report_version_id": 5
     }
   },
-    {
+  {
     "model": "reporting.reportactivity",
     "pk": 4,
     "fields": {

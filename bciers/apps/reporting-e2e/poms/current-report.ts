@@ -135,7 +135,9 @@ export class CurrentReportPOM {
     await attachments.uploadVerificationStatement();
   }
 
-  async verifyVerificationStatementUploaded(expectedFilename: string): Promise<void> {
+  async verifyVerificationStatementUploaded(
+    expectedFilename: string,
+  ): Promise<void> {
     const attachments = new AttachmentsPOM(this.page);
     await attachments.verifyVerificationStatementUploaded(expectedFilename);
   }
