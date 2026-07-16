@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0056_backfill_obligation_met_interest_not_paid'),
+        ('compliance', '0057_V5_16_0'),
     ]
 
     operations = [
