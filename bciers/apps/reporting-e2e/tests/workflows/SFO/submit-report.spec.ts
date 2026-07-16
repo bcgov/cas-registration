@@ -1,5 +1,5 @@
 import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
-import { expect } from '@playwright/test';
+import { expect } from "@playwright/test";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   FacilityIDs,
@@ -12,7 +12,10 @@ import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { SFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
-import { assertFieldVisibility, takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import {
+  assertFieldVisibility,
+  takeStabilizedScreenshot,
+} from "@bciers/e2e/utils/helpers";
 import {
   verifyFormTitle,
   verifyReportHeader,
@@ -267,9 +270,13 @@ test.describe("SFO: create and submit a new supplementary report for the current
       page,
       "General stationary combustion excluding line tracing (at SFO)",
     );
-    const gscWithEnergyCheckbox = page.locator("#root_gscWithProductionOfUsefulEnergy");
+    const gscWithEnergyCheckbox = page.locator(
+      "#root_gscWithProductionOfUsefulEnergy",
+    );
     await expect(gscWithEnergyCheckbox).toBeChecked();
-    const gscWithoutEnergyCheckbox = page.locator("#root_gscWithoutProductionOfUsefulEnergy");
+    const gscWithoutEnergyCheckbox = page.locator(
+      "#root_gscWithoutProductionOfUsefulEnergy",
+    );
     await expect(gscWithoutEnergyCheckbox).not.toBeChecked();
 
     const annualFuelLocator = report.page.locator(
@@ -303,14 +310,16 @@ test.describe("SFO: create and submit a new supplementary report for the current
 
     // -- 7. Emission Summary (read-only) ──
     await verifyFormTitle(page, "Emissions Summary (in tCO2e)");
-    const emissionsAttributableForReportingLocator = report.page.locator("#root_attributable_for_reporting");
-    await expect(emissionsAttributableForReportingLocator).toHaveValue("11,800");
+    const emissionsAttributableForReportingLocator = report.page.locator(
+      "#root_attributable_for_reporting",
+    );
+    await expect(emissionsAttributableForReportingLocator).toHaveValue(
+      "11,800",
+    );
     await expect(emissionsAttributableForReportingLocator).toBeDisabled();
-    
+
     await report.continue(
-      new RegExp(
-        report.additionalReportingDataUrl(supplementaryVersionId),
-      ),
+      new RegExp(report.additionalReportingDataUrl(supplementaryVersionId)),
     );
 
     // -- 8. Additional Reporting Data ──
@@ -322,7 +331,7 @@ test.describe("SFO: create and submit a new supplementary report for the current
       "On-site use",
       "On-site sequestration",
       "Off-site transfer",
-    ]
+    ];
     await assertFieldVisibility(
       report.page,
       expectedCaptureTypes as unknown as string[],
@@ -330,7 +339,9 @@ test.describe("SFO: create and submit a new supplementary report for the current
     );
 
     // change value from 100 to 120 for "On-site use"
-    await report.page.locator("#root_captured_emissions_section_emissions_on_site_use").fill("120");
+    await report.page
+      .locator("#root_captured_emissions_section_emissions_on_site_use")
+      .fill("120");
 
     await report.saveAndContinue(
       new RegExp(report.reviewChangesUrl(supplementaryVersionId)),
@@ -340,14 +351,16 @@ test.describe("SFO: create and submit a new supplementary report for the current
     await verifyFormTitle(page, "Reason for change");
 
     // TODO: ticket 4462 for e2e of Review Changes feature
-    await report.page.getByRole("textbox", { name: /Reason for change/i }).fill("Lorem ipsum.");
+    await report.page
+      .getByRole("textbox", { name: /Reason for change/i })
+      .fill("Lorem ipsum.");
 
     // the Review Changes page is built differently to all other pages, so the standard
     // saveAndContinue() method doesn't work here. Instead, click the button and wait for navigation.
     await report.page.getByRole("button", { name: /Save & Continue/i }).click();
     await report.page.waitForURL(
       new RegExp(`${supplementaryVersionId}/${ReportRoutes.VALIDATION}`),
-      { waitUntil: "domcontentloaded" }
+      { waitUntil: "domcontentloaded" },
     );
 
     // -- 10. Report Validation (read-only) ──
@@ -368,14 +381,24 @@ test.describe("SFO: create and submit a new supplementary report for the current
     await verifyFormTitle(page, "Attachments");
 
     // assert warning message appears (unique to supplementary report submissions)
-    await expect(report.page.getByText(/Review your attachments and replace any/i)).toBeVisible();
+    await expect(
+      report.page.getByText(/Review your attachments and replace any/i),
+    ).toBeVisible();
 
     // assert previously uploaded verification statement is still present
     await report.verifyVerificationStatementUploaded("file1");
 
     // click required checkboxes
-    await report.page.getByRole("checkbox", { name: /I confirm that I have uploaded any attachments/i }).check();
-    await report.page.getByRole("checkbox", { name: /I confirm that any previously uploaded attachments/i }).check();
+    await report.page
+      .getByRole("checkbox", {
+        name: /I confirm that I have uploaded any attachments/i,
+      })
+      .check();
+    await report.page
+      .getByRole("checkbox", {
+        name: /I confirm that any previously uploaded attachments/i,
+      })
+      .check();
 
     // locator in saveAndContinue() failing on Attachments page too
     await report.saveAndContinue(
@@ -385,6 +408,12 @@ test.describe("SFO: create and submit a new supplementary report for the current
 
     // -- 13. Sign-off and submit (submission stubbed to avoid external calls) ──
     await verifyFormTitle(page, "Sign-off");
-    await grid.submitReportById(request, supplementaryVersionId, false, true, false);
+    await grid.submitReportById(
+      request,
+      supplementaryVersionId,
+      false,
+      true,
+      false,
+    );
   });
 });

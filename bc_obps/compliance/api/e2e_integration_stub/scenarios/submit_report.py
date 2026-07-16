@@ -67,6 +67,7 @@ class SubmitReportScenario(ScenarioHandler):
         # Pin updated_at to a fixed value so screenshot diffs are deterministic
         from common.lib import pgtrigger
         from reporting.models.report_version import ReportVersion
+        from reporting.models.report import Report
 
         with pgtrigger.ignore(
             "reporting.ReportVersion:immutable_report_version",
@@ -74,6 +75,25 @@ class SubmitReportScenario(ScenarioHandler):
         ):
             ReportVersion.objects.filter(id=report_version.id).update(updated_at=FIXED_SNAPSHOT_TIMESTAMP)
 
+        # Check if the operation is regulated; non-regulated operations don't have compliance reports
+        report = Report.objects.filter(id=report_version.report_id).first()
+        if report is None:
+            raise RuntimeError(f"Report with ID {report_version.report_id} not found")
+
+        is_regulated = report.operation.is_regulated_operation
+
+        if not is_regulated:
+            # Non-regulated operations (e.g., reporting operations) don't create compliance reports
+            return {
+                "report_version_id": report_version.id,
+                "report_status": report_version.status,
+                "compliance_report_id": None,
+                "compliance_report_version_id": None,
+                "compliance_status": None,
+                "invoice_number": None,
+            }
+
+        # For regulated operations, fetch compliance report and version
         compliance_report = ComplianceReport.objects.filter(report_id=report_version.report_id).first()
         if compliance_report is None:
             raise RuntimeError("ComplianceReport was not created after report submission")
