@@ -59,11 +59,13 @@ class Command(BaseCommand):
 
         environment = settings.ENVIRONMENT
         env_user = (
-            f'{fixture_base_dir}/user_dev.json' if environment == 'local' else f'{fixture_base_dir}/user_test.json'
+            f'{fixture_base_dir}/user_dev.json'
+            if environment in ('local', 'dev')
+            else f'{fixture_base_dir}/user_test.json'
         )
         env_user_operator = (
             f'{fixture_base_dir}/user_operator_dev.json'
-            if environment == 'local'
+            if environment in ('local', 'dev')
             else f'{fixture_base_dir}/user_operator_test.json'
         )
         fixtures.append(env_user)
