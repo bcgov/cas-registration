@@ -44,4 +44,21 @@ export class AttachmentsPOM {
       this.page.getByText("test.pdf- will upload on save"),
     ).toBeVisible();
   }
+
+  async verifyVerificationStatementUploaded(expectedFilename: string): Promise<void> {
+    await assertFieldVisibility(
+      this.page,
+      [
+        ATTACHMENTS.UPLOAD_NOTE,
+        ...ATTACHMENTS.ATTACHMENT_LABELS,
+        ...ATTACHMENTS.FOIPPA_NOTE_ITEMS,
+      ],
+      true,
+    );
+    await expect(
+      this.page.getByText(`${expectedFilename}.pdf`),
+    ).toBeVisible();
+    await expect(
+      this.page.getByText("Reupload attachment")).toBeVisible();
+  }
 }

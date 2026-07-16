@@ -37,6 +37,38 @@ export class CurrentReportPOM {
     return `/reports/${versionId}/${ReportRoutes.FACILITIES}/${facilityId}/${ReportRoutes.ACTIVITIES}`;
   }
 
+  additionalReportingDataUrl(versionId: number): string {
+    return `/reports/${versionId}/${ReportRoutes.ADDITIONAL_REPORTING_DATA}`;
+  }
+
+  reviewChangesUrl(versionId: number): string {
+    return `/reports/${versionId}/${ReportRoutes.REVIEW_CHANGES}`;
+  }
+
+  validationUrl(versionId: number): string {
+    return `/reports/${versionId}/${ReportRoutes.VALIDATION}`;
+  }
+
+  finalReviewUrl(versionId: number): string {
+    return `/reports/${versionId}/${ReportRoutes.FINAL_REVIEW}`;
+  }
+
+  verificationUrl(versionId: number): string {
+    return `/reports/${versionId}/${ReportRoutes.VERIFICATION}`;
+  }
+
+  attachmentsUrl(versionId: number): string {
+    return `/reports/${versionId}/${ReportRoutes.ATTACHMENTS}`;
+  }
+
+  signOffUrl(versionId: number): string {
+    return `/reports/${versionId}/${ReportRoutes.SIGN_OFF}`;
+  }
+
+  submissionUrl(versionId: number): string {
+    return `/reports/${versionId}/${ReportRoutes.SUBMISSION}`;
+  }
+
   // -----------------
   // Shared helpers
   // -----------------
@@ -101,5 +133,10 @@ export class CurrentReportPOM {
   async uploadVerificationStatement(): Promise<void> {
     const attachments = new AttachmentsPOM(this.page);
     await attachments.uploadVerificationStatement();
+  }
+
+  async verifyVerificationStatementUploaded(expectedFilename: string): Promise<void> {
+    const attachments = new AttachmentsPOM(this.page);
+    await attachments.verifyVerificationStatementUploaded(expectedFilename);
   }
 }
