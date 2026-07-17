@@ -3,7 +3,7 @@ from uuid import UUID
 from django.http import HttpRequest
 from ninja import File, UploadedFile
 from registration.schema import OperationInformationIn, OperationUpdateOut, OperationRegistrationOut, Message
-from service.operation_service import OperationData, OperationService
+from service.operation_service import OperationData, OperationService, MultipleOperatorData
 from registration.constants import OPERATION_TAGS
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
@@ -48,7 +48,15 @@ def register_edit_operation_information(
         boundary_map=boundary_map,
         process_flow_diagram=process_flow_diagram,
         new_entrant_application=new_entrant_application,
-        **payload.model_dump(),
+        **payload.model_dump(exclude={'multiple_operators_array'}),
+        multiple_operators_array=(
+            [
+                MultipleOperatorData(
+                    **op.model_dump(exclude={'business_structure'}), business_structure_id=op.business_structure.name  # type: ignore
+                )
+                for op in payload.multiple_operators_array or []
+            ]
+        ),
     )
     operation = OperationService.register_operation_information(get_current_user_guid(request), operation_id, data)
 

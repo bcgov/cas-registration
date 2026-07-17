@@ -44,7 +44,7 @@ def remove_operation_representative(
     removed_id = OperationService.remove_operation_representative(
         get_current_user_guid(request),
         operation_id,
-        payload.id,
+        payload.id,  # type: ignore
     )
 
     return 200, OperationRepresentativeRemove(id=removed_id)

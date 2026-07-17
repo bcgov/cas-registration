@@ -19,6 +19,20 @@ class TestPostOperationRegistrationInformationEndpoint(CommonTestSetup):
                 "secondary_naics_code_id": 2,
                 "tertiary_naics_code_id": 3,
                 "activities": [1],
+                "multiple_operators_array": [
+                    {
+                        "legal_name": "test legal name",
+                        "trade_name": "test trade name",
+                        "business_structure": "BC Corporation",
+                        "cra_business_number": "123456789",
+                    },
+                    {
+                        "legal_name": "test legal name2",
+                        "trade_name": "test trade name2",
+                        "business_structure": "Sole Proprietorship",
+                        "cra_business_number": "111222333",
+                    },
+                ],
             }
         ),
         "boundary_map": create_test_file("boundary_map.pdf"),

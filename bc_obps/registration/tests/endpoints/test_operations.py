@@ -92,4 +92,37 @@ class TestPostOperationsEndpoint(CommonTestSetup):
         assert response.json().get('id') is not None
 
     def test_user_can_post_with_multiple_operators(self):
-        raise
+        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+
+        payload = {
+            **self.mock_payload,
+            "multiple_operators_array": [
+                {
+                    "legal_name": "test legal name",
+                    "trade_name": "test trade name",
+                    "business_structure": "BC Corporation",
+                    "cra_business_number": "123456789",
+                },
+                {
+                    "legal_name": "test legal name2",
+                    "trade_name": "test trade name2",
+                    "business_structure": "Sole Proprietorship",
+                    "cra_business_number": "111222333",
+                },
+            ],
+        }
+
+        response = TestUtils.client.post(
+            path=custom_reverse_lazy("register_create_operation_information"),
+            data={
+                "payload": json.dumps(payload),
+                "boundary_map": create_test_file("boundary_map.pdf"),
+                "process_flow_diagram": create_test_file("process_flow_diagram.pdf"),
+            },
+            format="multipart",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
+
+        assert response.status_code == 201
+        assert response.json().get('name') == "op name"
+        assert response.json().get('id') is not None

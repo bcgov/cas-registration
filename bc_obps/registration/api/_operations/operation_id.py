@@ -6,7 +6,7 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.operation_service import OperationService, UpdateOperationData
+from service.operation_service import OperationService, UpdateOperationData, MultipleOperatorData
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from registration.models import Operation
@@ -66,7 +66,15 @@ def update_operation(
         boundary_map=boundary_map,
         process_flow_diagram=process_flow_diagram,
         new_entrant_application=new_entrant_application,
-        **payload.model_dump(),
+        **payload.model_dump(exclude={'multiple_operators_array'}),
+        multiple_operators_array=(
+            [
+                MultipleOperatorData(
+                    **op.model_dump(exclude={'business_structure'}), business_structure_id=op.business_structure.name  # type: ignore
+                )
+                for op in payload.multiple_operators_array or []
+            ]
+        ),
     )
 
     operation = OperationService.update_operation(get_current_user_guid(request), data, operation_id)

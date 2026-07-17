@@ -9,7 +9,7 @@ from registration.schema import (
     OperationTimelineFilterSchema,
     OperationTimelineListOut,
 )
-from service.data_types.operation_service import OperationData
+from service.data_types.operation_service import OperationData, MultipleOperatorData
 from service.operation_service import OperationService
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -83,7 +83,15 @@ def register_create_operation_information(
 ) -> Tuple[Literal[201], Operation]:
 
     operation_data = OperationData(
-        **payload.model_dump(),
+        **payload.model_dump(exclude={'multiple_operators_array'}),
+        multiple_operators_array=(
+            [
+                MultipleOperatorData(
+                    **op.model_dump(exclude={'business_structure'}), business_structure_id=op.business_structure.name  # type: ignore
+                )
+                for op in payload.multiple_operators_array or []
+            ]
+        ),
         boundary_map=boundary_map,
         process_flow_diagram=process_flow_diagram,
         new_entrant_application=new_entrant_application,
