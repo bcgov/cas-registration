@@ -89,4 +89,44 @@ Result: Decline the previous earned_credit record, create a new one and mark the
 
 ### Decreased Obligation Handler
 
-The Decreased Obligation Handler is the most complicated handler in the set because it can potentially have to traverse multiple versions to apply the decrease or may result in complicated scenarios where credits need to be returned or a dollar amount refund issued.
+The Decreased Obligation Handler is the most complicated handler in the set because it can potentially have to traverse multiple versions to apply the decrease or may result in complicated scenarios where credits need to be returned due to beging over the allowed usage cap or a dollar amount refund issued.
+
+#### What can it handle
+
+This `can_handle()` function will return true if the excess_emission value resulting from the new emissions report is less than the previous version's excess_emission value.
+
+#### What does it do
+
+This `handle()` function determines what action to take based on the state of the latest compliance report version and obligation record.
+
+```
+Case: Single unpaid ancestor obligation, amount owing > delta of difference
+
+Result: Pushes an adjustment to the related invoice for the delta of difference between the previous version and the new one.
+```
+
+```
+Case: Single unpaid ancestor obligation, amount owing < delta of difference
+
+Result: Pushes an adjustment to the related invoice for the delta of difference between the previous version and the new one. Because the difference is greater than the amount owing, it will mark the previous version as `Obligation Met`. Marks the new version for manual handling for someone to issue a refund for outside of BCIERS.
+```
+
+```
+Case: Single paid ancestor obligation
+
+Result: Marks the new version for manual handling for someone to issue a refund outside of BCIERS.
+```
+
+```
+Case: Multiple ancestors
+
+Result: This handler can traverse several versions and apply the above logic to each previous version if necessary until the delta of decrease is spent.
+
+Example:
+Decrease amount: 500
+previous obligation (unpaid): 200
+previous-1 obligation (unpaid): 200
+previous-2 obligation (paid): 400
+
+In this example, the handler will mark the previous & previous-1 obligations as met, see that it still has leftover decrease to apply, hit previous-2, see that it is paid & stop. At this point it will mark the new compliance report version for manual handling to issue a refund for the difference of 100.
+```
