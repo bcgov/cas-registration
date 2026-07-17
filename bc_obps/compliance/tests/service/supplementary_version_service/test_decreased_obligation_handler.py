@@ -1,4 +1,3 @@
-from datetime import date
 from decimal import Decimal
 import pytest
 import common.lib.pgtrigger as pgtrigger
@@ -1529,14 +1528,8 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         refreshed = ComplianceReportVersion.objects.get(id=res.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
 
-    # back-dating tests
-    def _make_report_with_deadline(self, compliance_deadline: date):
-        period = baker.make_recipe('compliance.tests.utils.compliance_period', compliance_deadline=compliance_deadline)
-        return baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period=period
-        )
-
-    def test_handle__decrease_past_deadline__back_dates_adjustment_to_deadline_minus_one_day(
+    # adjustment-dating test
+    def test_handle__decrease_dates_adjustment_to_fee_date(
         self,
         mock_find_newest_unpaid_anchor,
         mock_get_rate,
@@ -1545,7 +1538,9 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         run_on_commit_immediately,
     ):
         mock_get_rate.return_value = Decimal("80.00")  # $80/t
-        compliance_report = self._make_report_with_deadline(date(2020, 11, 30))
+        compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
 
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             prev_summary = baker.make_recipe(
@@ -1583,56 +1578,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Assert
         mock_create_adjustment.assert_called_once()
         _, adj_kwargs = mock_create_adjustment.call_args
-        assert adj_kwargs["adjustment_date"] == "2020-11-29"
-
-    def test_handle__decrease_before_deadline__does_not_back_date_adjustment(
-        self,
-        mock_find_newest_unpaid_anchor,
-        mock_get_rate,
-        mock_create_adjustment,
-        mock_collect_unpaid,
-        run_on_commit_immediately,
-    ):
-        mock_get_rate.return_value = Decimal("80.00")
-        compliance_report = self._make_report_with_deadline(date(2999, 11, 30))
-
-        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
-            prev_summary = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=Decimal('800.0000'),
-                credited_emissions=Decimal('0'),
-                report_version=self.report_version_1,
-            )
-        new_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary',
-            excess_emissions=Decimal('700.0000'),
-            credited_emissions=Decimal('0'),
-            report_version=self.report_version_2,
-        )
-
-        prev_crv = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=prev_summary,
-        )
-        mock_find_newest_unpaid_anchor.return_value = prev_crv
-        mock_collect_unpaid.return_value = [
-            {
-                "version_id": prev_crv.id,
-                "invoice_id": 9999,
-                "outstanding": Decimal("12000.00"),
-                "paid": Decimal("0.00"),
-                "prev_excess_emissions": Decimal("800.0000"),
-            }
-        ]
-
-        # Act
-        DecreasedObligationHandler.handle(compliance_report, new_summary, prev_summary, version_count=2)
-
-        # Assert
-        mock_create_adjustment.assert_called_once()
-        _, adj_kwargs = mock_create_adjustment.call_args
-        assert adj_kwargs["adjustment_date"] is None
+        assert adj_kwargs["date_adjustment_to_fee_date"] is True
 
     # -------------------------------------------------------------------
     # helper tests

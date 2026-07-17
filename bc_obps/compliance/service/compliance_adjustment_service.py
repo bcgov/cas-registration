@@ -53,7 +53,7 @@ class ComplianceAdjustmentService:
         adjustment_total: Decimal,
         supplementary_compliance_report_version_id: int,
         reason: Optional[ElicensingAdjustment.Reason] = None,
-        adjustment_date: Optional[str] = None,
+        date_adjustment_to_fee_date: bool = False,
     ) -> None:
         """
         Creates fee adjustment for a target compliance report version when triggered by a supplementary version.
@@ -63,8 +63,9 @@ class ComplianceAdjustmentService:
             adjustment_total: Total amount of the adjustment to be applied
             supplementary_compliance_report_version_id: ID of the supplementary compliance report version that triggered this adjustment
             reason: Reason for the adjustment
-            adjustment_date: Optional ISO date string ("YYYY-MM-DD") to stamp on the adjustment; defaults to
-                today. Used to back-date decrease adjustments so the penalty recalculates on the lower obligation.
+            date_adjustment_to_fee_date: When True, date the adjustment to the target fee's date instead of
+                today, so a supplementary decrease applies from the start of the fee's accrual window (and
+                eLicensing accepts it, since the adjustment is never dated before the fee it adjusts).
         """
         from compliance.tasks import retryable_create_adjustment
 
@@ -74,7 +75,7 @@ class ComplianceAdjustmentService:
                 adjustment_total=adjustment_total,
                 supplementary_compliance_report_version_id=supplementary_compliance_report_version_id,
                 reason=reason,
-                adjustment_date=adjustment_date,
+                date_adjustment_to_fee_date=date_adjustment_to_fee_date,
             )
         )
 
@@ -85,7 +86,7 @@ class ComplianceAdjustmentService:
         adjustment_total: Decimal,
         supplementary_compliance_report_version_id: int | None = None,
         reason: Optional[ElicensingAdjustment.Reason] = None,
-        adjustment_date: Optional[str] = None,
+        date_adjustment_to_fee_date: bool = False,
     ) -> None:
         """
         Creates fee adjustment connecting with elicensing service.
@@ -95,8 +96,7 @@ class ComplianceAdjustmentService:
             adjustment_total: Total amount of the adjustment to be applied
             supplementary_compliance_report_version_id: ID of the supplementary compliance report version that triggered this adjustment
             reason: Reason for the adjustment
-            adjustment_date: Optional ISO date string ("YYYY-MM-DD") to stamp on the adjustment. When omitted,
-                the adjustment is dated today.
+            date_adjustment_to_fee_date: When True, date the adjustment to the fee's date instead of today.
         """
 
         # Get the compliance obligation from the compliance report version
@@ -130,7 +130,11 @@ class ComplianceAdjustmentService:
                 "feeObjectId": elicensing_line_item.object_id,
                 "adjustmentGUID": str(uuid.uuid4()),
                 "adjustmentTotal": float(adjustment_total),
-                "date": adjustment_date or timezone.now().strftime("%Y-%m-%d"),
+                "date": (
+                    elicensing_line_item.fee_date.strftime("%Y-%m-%d")
+                    if date_adjustment_to_fee_date
+                    else timezone.now().strftime("%Y-%m-%d")
+                ),
                 "reason": reason,
                 "type": "Adjustment",
             }

@@ -1,8 +1,6 @@
-from datetime import timedelta
 from decimal import Decimal
 from typing import Dict, List, Optional, cast
 from django.db import transaction
-from django.utils import timezone
 from django.db.models import Case, IntegerField, Prefetch, QuerySet, Sum, Value, When
 from django.db.models.functions import Coalesce
 from compliance.dataclass import AdjustmentStrategy, InvoiceAdjustment
@@ -59,14 +57,6 @@ class DecreasedObligationHandler:
 
         # Charge rate for the applicable reporting year (used for $ conversions)
         charge_rate = ComplianceChargeRateService.get_rate_for_year(new_summary.report_version.report.reporting_year)
-
-        # Back-date the decrease adjustment to the day before the deadline so the penalty recalculates
-        # on the lower obligation. Only when the deadline has passed, otherwise back-dating would stamp
-        # a future date.
-        compliance_deadline = compliance_report.compliance_period.compliance_deadline
-        back_dated_adjustment_date: Optional[str] = None
-        if compliance_deadline < timezone.now().date():
-            back_dated_adjustment_date = (compliance_deadline - timedelta(days=1)).strftime("%Y-%m-%d")
 
         # Previous CRV in this chain used to link our new supplementary version
         previous_compliance_version = get_previous_compliance_version_by_report_and_summary(
@@ -127,7 +117,6 @@ class DecreasedObligationHandler:
             lambda: DecreasedObligationHandler._process_adjustment_after_commit(
                 compliance_report_version_id=compliance_report_version.id,
                 strategy=strategy,
-                adjustment_date=back_dated_adjustment_date,
             )
         )
 
@@ -141,22 +130,19 @@ class DecreasedObligationHandler:
     def _process_adjustment_after_commit(
         compliance_report_version_id: int,
         strategy: AdjustmentStrategy,
-        adjustment_date: Optional[str] = None,
     ) -> None:
         """
         Execute the "strategy" produced in handle():
 
         For each invoice in strategy.invoices:
-          - Post a signed negative adjustment (reduces outstanding).
+          - Post a signed negative adjustment (reduces outstanding), dated to the fee's date so the
+            reduction applies from the start of the fee's accrual window (works for regular and
+            supplementary obligations, and eLicensing accepts it since it is never dated before the fee).
           - If net outstanding hits zero, mark that previous CRV as FULLY_MET.
           - If fully met AND no prior CASH payments, void the invoice.
 
         Then act on the single outcome of the strategy already decided for the new supplementary CRV:
         record manual handling (with the strategy's context) or create earned credits.
-
-        Args:
-            adjustment_date: Optional ISO date string ("YYYY-MM-DD") to back-date the adjustments so
-                the penalty recalculates on the lower obligation.
         """
         for invoice in strategy.invoices:
             applied = invoice.applied
@@ -171,7 +157,7 @@ class DecreasedObligationHandler:
                     adjustment_total=applied,
                     supplementary_compliance_report_version_id=compliance_report_version_id,
                     reason=reason,
-                    adjustment_date=adjustment_date,
+                    date_adjustment_to_fee_date=True,
                 )
 
             if invoice.mark_fully_met:
