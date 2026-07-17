@@ -114,6 +114,30 @@ class TestComplianceAdjustmentService:
             supplementary_compliance_report_version_id=None,
         )
 
+    def test_create_adjustment_dates_to_fee_date(self, mock_adjust_fees, mock_refresh_data_wrapper):
+        """When date_adjustment_to_fee_date=True, the adjustment is dated to the fee's date (not today)."""
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+        )
+        client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
+        test_data.invoice.elicensing_client_operator_id = client_operator.id
+        test_data.invoice.save()
+
+        mock_adjust_fees.return_value = {
+            'adjustments': [{'adjustmentGUID': '60196767-2433-4f19-a526-65097d5b324e', 'feeObjectId': 9999}],
+            'clientObjectId': client_operator.client_object_id,
+        }
+
+        ComplianceAdjustmentService.create_adjustment(
+            compliance_report_version_id=test_data.compliance_report_version.id,
+            adjustment_total=Decimal('-160'),
+            date_adjustment_to_fee_date=True,
+        )
+
+        adjustment = mock_adjust_fees.call_args[0][1]["adjustments"][0]
+        assert adjustment["date"] == test_data.fee.fee_date.strftime("%Y-%m-%d")
+
     def test_create_adjustment_api_failure(self, mock_adjust_fees):
         """Test handling of API failure when creating adjustment"""
         test_data = ComplianceTestHelper.build_test_data(
@@ -238,6 +262,7 @@ class TestComplianceAdjustmentService:
             adjustment_total=amount,
             supplementary_compliance_report_version_id=test_supp_data.compliance_report_version.id,
             reason=reason,
+            date_adjustment_to_fee_date=False,
         )
 
     def test_create_adjustment_for_target_version_does_not_trigger_on_rollback(

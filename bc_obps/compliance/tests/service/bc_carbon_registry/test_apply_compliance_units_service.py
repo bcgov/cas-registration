@@ -700,6 +700,81 @@ class TestApplyComplianceUnitsService:
         )
         assert result == (Decimal("200.00"), Decimal("100.00"))
 
+    @patch(
+        "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
+    )
+    @patch('compliance.service.compliance_charge_rate_service.ComplianceChargeRateService.get_rate_for_year')
+    def test_is_credit_usage_over_cap(self, mock_get_charge_rate, mock_refresh):
+        mock_get_charge_rate.return_value = Decimal('80.00')
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
+        )
+        test_data.compliance_obligation.fee_amount_dollars = Decimal("1000")
+        test_data.compliance_obligation.save()
+
+        test_supplementary_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+            previous_data=test_data,
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
+            supplementary_compliance_report_version=test_supplementary_data.compliance_report_version,
+            elicensing_line_item=test_data.invoice.elicensing_line_items.first(),
+            amount=Decimal('-500'),
+        )
+        mock_refresh.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=test_data.invoice)
+
+        # $300 applied -> over the $200 cap.
+        over = baker.make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            reason='Compliance Units Applied',
+            elicensing_line_item=test_data.invoice.elicensing_line_items.first(),
+            amount=Decimal('-300'),
+        )
+        assert ApplyComplianceUnitsService.is_credit_usage_over_cap(test_data.compliance_report_version.id) is True
+
+        # Reduce applied units to $150 total -> within the $200 cap -> not over.
+        over.amount = Decimal('-150')
+        over.save()
+        assert ApplyComplianceUnitsService.is_credit_usage_over_cap(test_data.compliance_report_version.id) is False
+
+    def test_is_credit_usage_over_cap_no_obligation_raises(self):
+        crv = baker.make_recipe('compliance.tests.utils.compliance_report_version')
+        with pytest.raises(UserError, match="missing obligation or fee amount"):
+            ApplyComplianceUnitsService.is_credit_usage_over_cap(crv.id)
+
+    @patch(
+        "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
+    )
+    @patch('compliance.service.compliance_charge_rate_service.ComplianceChargeRateService.get_rate_for_year')
+    def test_is_credit_usage_over_cap_with_pending_adjustment(self, mock_get_charge_rate, mock_refresh):
+        mock_get_charge_rate.return_value = Decimal('80.00')
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
+        )
+        test_data.compliance_obligation.fee_amount_dollars = Decimal("1000")
+        test_data.compliance_obligation.save()
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            reason='Compliance Units Applied',
+            elicensing_line_item=test_data.invoice.elicensing_line_items.first(),
+            amount=Decimal('-300'),
+        )
+        mock_refresh.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=test_data.invoice)
+
+        crv_id = test_data.compliance_report_version.id
+        # No decrease yet -> within cap.
+        assert ApplyComplianceUnitsService.is_credit_usage_over_cap(crv_id) is False
+        # Fold in the pending decrease -> over cap, without any posted supplementary adjustment row.
+        assert (
+            ApplyComplianceUnitsService.is_credit_usage_over_cap(
+                crv_id, pending_supplementary_adjustment=Decimal('-500')
+            )
+            is True
+        )
+
     def test_get_apply_compliance_units_page_data_invalid_ownership(
         self,
         mock_compute_compliance_unit_caps,

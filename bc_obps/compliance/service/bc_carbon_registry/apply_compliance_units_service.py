@@ -2,6 +2,7 @@ from dataclasses import asdict
 from typing import Dict, List, Optional, Any
 from common.exceptions import UserError
 from compliance.dataclass import ComplianceUnitsPageData, BCCRUnit, TransferComplianceUnitsPayload, MixedUnit
+from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
@@ -43,11 +44,19 @@ class ApplyComplianceUnitsService:
         return total_adjustments
 
     @classmethod
-    def _calculate_apply_units_cap(cls, compliance_report_version_id: int) -> Decimal:
+    def _calculate_apply_units_cap(
+        cls, compliance_report_version_id: int, pending_supplementary_adjustment: Decimal = Decimal("0")
+    ) -> Decimal:
         """
         Retrieves the obligation for the given compliance report version ID and calculates the maximum
         allowable value for applied compliance units based on the max_credit_usage_percentage
         configured on the associated CompliancePeriod.
+
+        Args:
+            compliance_report_version_id: The ID of the compliance report version for which the credit usage cap is being checked
+            pending_supplementary_adjustment: A supplementary decrease that has not yet been posted to
+                eLicensing (signed, negative reduces the obligation). Lets callers compute the cap that
+                will apply *after* the decrease, before its adjustment row exists.
 
         Raises:
             UserError: If the obligation is missing or the fee_amount_dollars is not available.
@@ -55,9 +64,12 @@ class ApplyComplianceUnitsService:
         obligation = ComplianceObligationService.get_obligation_for_report_version(compliance_report_version_id)
         if not obligation or not obligation.fee_amount_dollars:
             raise UserError("Unable to calculate unit cap: missing obligation or fee amount.")
-        total_supplementary_report_adjustments = cls._get_total_adjustments_for_report_version_by_reason(
-            compliance_report_version_id=compliance_report_version_id,
-            reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
+        total_supplementary_report_adjustments = (
+            cls._get_total_adjustments_for_report_version_by_reason(
+                compliance_report_version_id=compliance_report_version_id,
+                reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
+            )
+            + pending_supplementary_adjustment
         )
         crv = ComplianceReportVersion.objects.select_related('compliance_report__compliance_period').get(
             id=compliance_report_version_id
@@ -86,6 +98,37 @@ class ApplyComplianceUnitsService:
         compliance_unit_cap_remaining = max(Decimal("0"), compliance_unit_cap_limit + total_compliance_unit_adjustments)
 
         return compliance_unit_cap_limit, compliance_unit_cap_remaining
+
+    @classmethod
+    def is_credit_usage_over_cap(
+        cls, compliance_report_version_id: int, pending_supplementary_adjustment: Decimal = Decimal("0")
+    ) -> bool:
+        """
+        Returns True if the compliance units already applied to this report version now exceed the
+        allowed cap. This happens when a supplementary report decreases the obligation, shrinking the
+        cap (max_credit_usage_percentage of the reduced obligation) below the units already applied.
+
+        Args:
+            compliance_report_version_id: The ID of the compliance report version for which the credit usage cap is being checked
+            pending_supplementary_adjustment: A not-yet-posted supplementary decrease (signed, negative
+                reduces the obligation) to fold into the cap, so the check reflects the reduced obligation
+                before the adjustment row exists.
+
+        Raises:
+            UserError: If the obligation is missing or the fee_amount_dollars is not available.
+        """
+        obligation = ComplianceObligation.objects.filter(
+            compliance_report_version_id=compliance_report_version_id
+        ).first()
+        if not obligation or not obligation.fee_amount_dollars:
+            raise UserError("Unable to calculate unit cap: missing obligation or fee amount.")
+
+        cap_limit = cls._calculate_apply_units_cap(compliance_report_version_id, pending_supplementary_adjustment)
+        # Negative value (applications reduce the balance)
+        total_compliance_unit_adjustments = cls._get_total_adjustments_for_report_version_by_reason(
+            compliance_report_version_id=compliance_report_version_id, reason='Compliance Units Applied'
+        )
+        return (cap_limit + total_compliance_unit_adjustments) < Decimal("0")
 
     @classmethod
     def can_apply_compliance_units(cls, compliance_report_version_id: int) -> bool:

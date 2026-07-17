@@ -3,6 +3,7 @@ import pytest
 import common.lib.pgtrigger as pgtrigger
 from model_bakery import baker
 from compliance.models import ComplianceReportVersion, ElicensingInvoice
+from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
 from unittest.mock import MagicMock, patch
 from compliance.service.supplementary_version_service.decreased_obligation_handler import DecreasedObligationHandler
@@ -106,6 +107,15 @@ def mock_create_earned_credits():
         yield mock
 
 
+@pytest.fixture(autouse=True)
+def mock_is_credit_usage_over_cap():
+    with patch(
+        "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.is_credit_usage_over_cap",
+        return_value=False,
+    ) as mock:
+        yield mock
+
+
 class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
     """
     Unit tests for DecreasedObligationHandler.
@@ -189,6 +199,69 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
     # -------------------------------------------------------------------
     # handle tests
     # -------------------------------------------------------------------
+
+    # over-cap manual handling test
+    def test_handle__decrease_pushes_credits_over_cap__flags_manual_handling(
+        self,
+        mock_find_newest_unpaid_anchor,
+        mock_get_rate,
+        mock_create_adjustment,
+        mock_record_manual_handling,
+        mock_collect_unpaid,
+        mock_void_invoices,
+        mock_mark_fully_met,
+        mock_create_earned_credits,
+        mock_is_credit_usage_over_cap,
+        run_on_commit_immediately,
+    ):
+        """
+        A decrease that leaves the applied compliance units over the (now-smaller) cap flags the
+        supplementary CRV for manual handling with the CREDITS_OVER_ALLOWED_PERCENTAGE context.
+        """
+        mock_get_rate.return_value = Decimal("80.00")
+        mock_is_credit_usage_over_cap.return_value = True
+
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            prev_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('800.0000'),
+                credited_emissions=Decimal('0'),
+                report_version=self.report_version_1,
+            )
+        new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('700.0000'),  # ↓ 100 t -> partial refund, not fully met
+            credited_emissions=Decimal('0'),
+            report_version=self.report_version_2,
+        )
+        compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        prev_crv = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=prev_summary,
+        )
+        mock_find_newest_unpaid_anchor.return_value = prev_crv
+        mock_collect_unpaid.return_value = [
+            {
+                "version_id": prev_crv.id,
+                "invoice_id": 9999,
+                "outstanding": Decimal("12000.00"),
+                "paid": Decimal("0.00"),
+                "prev_excess_emissions": Decimal("800.0000"),
+            }
+        ]
+
+        # Act
+        res = DecreasedObligationHandler.handle(compliance_report, new_summary, prev_summary, version_count=2)
+
+        # Over cap -> manual handling flagged with the credits-over-cap context.
+        mock_record_manual_handling.assert_called_once_with(
+            res.id,
+            context=ComplianceReportVersionManualHandling.Context.CREDITS_OVER_ALLOWED_PERCENTAGE,
+        )
+        mock_create_earned_credits.assert_not_called()
 
     # manual handling tests
     def test_handle__over_refund__invoices_with_cash__flags_manual_handling(
@@ -286,7 +359,9 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         assert mock_void_invoices.call_count == 0
 
         # Leftover refund dollars AND cash present across invoices → record manual handling
-        mock_record_manual_handling.assert_called_once_with(res.id)
+        mock_record_manual_handling.assert_called_once_with(
+            res.id, context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH
+        )
 
         # Placeholder status remains and no credits created
         mock_create_earned_credits.assert_not_called()
@@ -547,7 +622,9 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # ▶▶ UPDATED: chain must point to prev_crv (since anchor=None)
         assert res.previous_version_id == prev_crv.id
 
-        mock_record_manual_handling.assert_called_once_with(res.id)
+        mock_record_manual_handling.assert_called_once_with(
+            res.id, context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH
+        )
         mock_create_adjustment.assert_not_called()
         mock_void_invoices.assert_not_called()
         mock_mark_fully_met.assert_not_called()
@@ -1450,6 +1527,58 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_create_earned_credits.assert_not_called()
         refreshed = ComplianceReportVersion.objects.get(id=res.id)
         assert refreshed.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+
+    # adjustment-dating test
+    def test_handle__decrease_dates_adjustment_to_fee_date(
+        self,
+        mock_find_newest_unpaid_anchor,
+        mock_get_rate,
+        mock_create_adjustment,
+        mock_collect_unpaid,
+        run_on_commit_immediately,
+    ):
+        mock_get_rate.return_value = Decimal("80.00")  # $80/t
+        compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            prev_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('800.0000'),
+                credited_emissions=Decimal('0'),
+                report_version=self.report_version_1,
+            )
+        new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('700.0000'),  # ↓ 100 t -> refund $8,000
+            credited_emissions=Decimal('0'),
+            report_version=self.report_version_2,
+        )
+
+        prev_crv = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=prev_summary,
+        )
+        mock_find_newest_unpaid_anchor.return_value = prev_crv
+        mock_collect_unpaid.return_value = [
+            {
+                "version_id": prev_crv.id,
+                "invoice_id": 9999,
+                "outstanding": Decimal("12000.00"),
+                "paid": Decimal("0.00"),
+                "prev_excess_emissions": Decimal("800.0000"),
+            }
+        ]
+
+        # Act
+        DecreasedObligationHandler.handle(compliance_report, new_summary, prev_summary, version_count=2)
+
+        # Assert
+        mock_create_adjustment.assert_called_once()
+        _, adj_kwargs = mock_create_adjustment.call_args
+        assert adj_kwargs["date_adjustment_to_fee_date"] is True
 
     # -------------------------------------------------------------------
     # helper tests

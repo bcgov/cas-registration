@@ -29,6 +29,10 @@ class ComplianceReportVersionManualHandling(TimeStampedModel):
             "earned_credits_previously_approved",
             "Earned credits have been previously approved.",
         )
+        CREDITS_OVER_ALLOWED_PERCENTAGE = (
+            "credits_over_allowed_percentage",
+            "A supplementary decrease pushed the applied compliance units over the allowed percentage.",
+        )
 
     compliance_report_version = models.OneToOneField(
         ComplianceReportVersion,
