@@ -73,7 +73,7 @@ Ensure you have completed the [App Environment Variables](#app-environment-varia
 4. Run `make start_pg` to start the postgres server if it is not already running.
 5. Create a PostgreSQL role for your local user matching `DB_USER` in your `.env` (asdf-managed postgres only has the `postgres` superuser by default):
    ```bash
-   psql -h localhost -U postgres -c "CREATE USER your_db_user WITH SUPERUSER PASSWORD 'your_db_password';"
+   psql -h localhost -U postgres -c "CREATE USER <your_shell_user> WITH SUPERUSER; CREATE DATABASE <your_shell_user>;"
    ```
    Ensure `DB_USER` in your `.env` is **lowercase** — PostgreSQL role names are case-sensitive in connection strings.
 6. Run `make create_db` to create the database.
@@ -100,7 +100,7 @@ After doing the initial setup, to get the backend re-running:
 - If you get `role "your_user" does not exist` when running `make create_db` or `make migrate`, the postgres role for your local user hasn't been created yet. With asdf-managed postgres (unlike a system install), only the `postgres` superuser exists by default. Connect as `postgres` to create your role:
 
 ```bash
-psql -h localhost -U postgres -c "CREATE USER your_db_user WITH SUPERUSER PASSWORD 'your_db_password';"
+psql -h localhost -U postgres -c "CREATE USER <your_shell_user> WITH SUPERUSER; CREATE DATABASE <your_shell_user>;"
 ```
 
 This must be run from the `bc_obps` directory so asdf resolves the correct `psql` binary.

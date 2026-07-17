@@ -72,7 +72,7 @@ In `bciers` directory, create a `bciers/.env.local` file from the `bciers/.env.l
 5. Create a PostgreSQL role for your local user matching `DB_USER` in your `.env` (asdf-managed postgres only has the `postgres` superuser by default):
 
 ```bash
-psql -h localhost -U postgres -c "CREATE USER your_db_user WITH SUPERUSER PASSWORD 'your_db_password';"
+psql -h localhost -U postgres -c "CREATE USER <your_shell_user> WITH SUPERUSER; CREATE DATABASE <your_shell_user>;"
 ```
 
 Ensure `DB_USER` in your `.env` is **lowercase** — PostgreSQL role names are case-sensitive in connection strings.
