@@ -153,16 +153,6 @@ mypy: ## run mypy static type checker with explicit package bases(useful in the 
 mypy: ## We can use --show-traceback to show the full traceback in case of an error
 	$(POETRY_RUN) mypy . --explicit-package-bases $(ARGS)
 
-.PHONY: load_test_data
-load_test_data: ## Load test data into the database
-load_test_data:
-	$(POETRY_RUN) python $(MANAGE_PY) load_test_data
-
-.PHONY: load_reporting_test_data
-load_reporting_test_data: ## Load reporting test data into the database
-load_reporting_test_data:
-	$(POETRY_RUN) python $(MANAGE_PY) load_reporting_test_data
-
 .PHONY: prepare_backend
 prepare_backend: ## Install dependencies, reset the database, and run the server
 prepare_backend: install_poetry_deps reset_db run

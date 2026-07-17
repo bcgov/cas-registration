@@ -1,0 +1,44 @@
+[
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "59038013-a0c1-4c70-b025-a8312062d4c9",
+      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
+      "first_name": "Tammie",
+      "last_name": "Test",
+      "position_title": "UATC",
+      "email": "email@email.com",
+      "phone_number": "+12502222222",
+      "app_role": "industry_user"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "b52343e2-2699-40d8-8fac-b4dbb52446e9",
+      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
+      "first_name": "bc-cas-test",
+      "last_name": "Industry user",
+      "position_title": "test",
+      "email": "ggircs@gov.bc.ca",
+      "phone_number": "+12345678900",
+      "app_role": "industry_user"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "eba0da56-1758-4c5b-a2ae-99dc665258ef",
+      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
+      "first_name": "bc-cas-test-two",
+      "last_name": "Industry user",
+      "position_title": "test",
+      "email": "ggircs2@gov.bc.ca",
+      "phone_number": "+12345678900",
+      "app_role": "industry_user"
+    }
+  }
+]

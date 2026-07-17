@@ -17,8 +17,8 @@
       "quantity_sold_during_period": 5000,
       "quantity_throughput_during_period": 5000,
       "archived_by_id": null,
-      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "updated_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822"
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": "00000000-0000-0000-0000-000000000005"
     }
   },
   {
@@ -39,7 +39,7 @@
       "quantity_sold_during_period": 250,
       "quantity_throughput_during_period": 250,
       "archived_by_id": null,
-      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
       "updated_by_id": null
     }
   },
@@ -61,8 +61,8 @@
       "quantity_sold_during_period": 50000,
       "quantity_throughput_during_period": 50000,
       "archived_by_id": null,
-      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "updated_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822"
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": "00000000-0000-0000-0000-000000000005"
     }
   },
   {
@@ -83,7 +83,7 @@
       "quantity_sold_during_period": 50000,
       "quantity_throughput_during_period": 50000,
       "archived_by_id": null,
-      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
       "updated_by_id": null
     }
   },
@@ -105,8 +105,8 @@
       "quantity_sold_during_period": 100,
       "quantity_throughput_during_period": 100,
       "archived_by_id": null,
-      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "updated_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822"
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": "00000000-0000-0000-0000-000000000005"
     }
   }
 ]

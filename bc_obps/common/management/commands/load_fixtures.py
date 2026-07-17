@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 
@@ -55,6 +56,20 @@ class Command(BaseCommand):
             # If no workflow specified, load all fixtures
 
             fixtures = fixtures_base
+
+        environment = settings.ENVIRONMENT
+        env_user = (
+            f'{fixture_base_dir}/user_dev.json'
+            if environment in ('local', 'dev')
+            else f'{fixture_base_dir}/user_test.json'
+        )
+        env_user_operator = (
+            f'{fixture_base_dir}/user_operator_dev.json'
+            if environment in ('local', 'dev')
+            else f'{fixture_base_dir}/user_operator_test.json'
+        )
+        fixtures.append(env_user)
+        fixtures.append(env_user_operator)
 
         for fixture in fixtures:
             self.stdout.write(self.style.SUCCESS(f"Loading: {fixture}"))
