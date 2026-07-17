@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import sys
 from google.oauth2 import service_account
 from pathlib import Path
 import dj_database_url
@@ -59,6 +60,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == "True"
+IS_PYTEST_ENV = 'pytest' in sys.argv
 BYPASS_ROLE_ASSIGNMENT = os.environ.get("BYPASS_ROLE_ASSIGNMENT", False) == "True"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")
@@ -310,8 +312,8 @@ LOGGING = {
     },
 }
 
-# Add Silk logger only when DEBUG is True (local development)
-if DEBUG:
+# Add Silk logger only when DEBUG is True (local development) and not when running pytest
+if DEBUG and not IS_PYTEST_ENV:
     LOGGING['loggers']['silk'] = {  # type: ignore[index]
         'handlers': ['console'],
         'level': 'WARNING',  # Only show WARNING and above from Silk
