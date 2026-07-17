@@ -4,13 +4,15 @@
 
 ## Prerequisites
 
-The following development packages are required:
+### System packages
+
+The following packages are required before running `make install_dev_tools`:
 
 ```bash
 # Build essentials and core development tools
 sudo apt-get install -y build-essential pkg-config
 
-# ICU support
+# ICU support (required for PostgreSQL build)
 sudo apt-get install -y libicu-dev
 
 # UUID support
@@ -18,30 +20,68 @@ sudo apt-get install -y uuid-dev
 
 # Python development libraries
 sudo apt-get install -y libbz2-dev libsqlite3-dev tk-dev liblzma-dev
+
+# WeasyPrint dependencies (required by the backend PDF generation)
+sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libcairo2
 ```
 
-## Installation Steps
+### Install asdf
 
-1. Install development tools using make:
+Install [asdf](https://asdf-vm.com/) (0.16+) and add the following to your `~/.bashrc`:
 
 ```bash
-make install_dev_tools
+export ASDF_DATA_DIR="$HOME/.asdf"
+export PATH="${ASDF_DATA_DIR}/shims:${PATH}"
 ```
 
-This command will:
+Then reload: `source ~/.bashrc`.
 
-- Install Python via asdf
-- Install Poetry
-- Install and configure PostgreSQL
+---
 
-2. Create PostgreSQL user:
+## Repository and Version Control
 
-````bash
+- Ensure you have push access (most likely by being added to the **@bcgov/cas-developers** GitHub team) to [bcgov/cas-registration](https://github.com/bcgov/cas-registration).
+- Ensure you have [GPG commit signing](https://docs.github.com/en/github/authenticating-to-github/signing-commits) set up on your local environment. See [gpg-ssh-setup-guide.md](./gpg-ssh-setup-guide.md) for step-by-step instructions.
+  - Ensure your `git config user.email` matches the email used when generating the GPG key.
+  - Verify signing works by running `git log --show-signature` after a commit. Once pushed, a "Verified" badge appears next to your commits on GitHub.
 
-Note: If you get a "role YourUserName does not exist" error, you might need to first create the YourUserName superuser:
+- Clone a local copy of [bcgov/cas-registration](https://github.com/bcgov/cas-registration).
+
+---
+
+## App Environment Variables
+
+In `bc_obps` directory, create a `bc_obps/.env` file from the `bc_obps/.env.example` file. See the 1Password `Clean Growth Digital Services Team` vault for the `bc_obps/.env` values in document `OBPS backend ENV`.
+
+In `bciers` directory, create a `bciers/.env` file from the `bciers/.env.example` file. See the 1Password `Clean Growth Digital Services Team` vault for the `bciers/.env` values in document `OBPS FE env`.
+
+In `bciers` directory, create a `bciers/.env.local` file from the `bciers/.env.local.example` file. See the 1Password `Clean Growth Digital Services Team` vault for the `bciers/.env.local` values in document `OBPS FE env.local`.
+
+---
+
+## Backend Installation Steps
+
+1. From the terminal, cd into directory `cas-registration/bc_obps`.
+
+2. Run `make install_dev_tools`. This will install asdf plugins and poetry. To activate the virtual environment after setup, run `eval $(poetry env activate)`. To exit run `deactivate`.
+
+3. Run `make install_poetry_deps` to install all Python dependencies.
+
+4. Run `make start_pg` to start the postgres server.
+
+5. Create a PostgreSQL role for your local user matching `DB_USER` in your `.env` (asdf-managed postgres only has the `postgres` superuser by default):
+
 ```bash
-psql -h localhost -p 5432 -c "CREATE USER YourUserName WITH SUPERUSER;"
-````
+psql -h localhost -U postgres -c "CREATE USER <your_shell_user> WITH SUPERUSER; CREATE DATABASE <your_shell_user>;"
+```
+
+Ensure `DB_USER` in your `.env` is **lowercase** — PostgreSQL role names are case-sensitive in connection strings.
+
+6. Run `make create_db` to create the database.
+
+7. Run `make migrate` to run all database migrations.
+
+8. Run `make run` to start the development server (default port :8000). Navigate to `/api/docs` in your browser to verify.
 
 ## Common Issues and Solutions
 
@@ -61,7 +101,7 @@ make start_pg
 
 ### PostgreSQL User Errors
 
-If you see "role your_username does not exist" when running database commands, make sure you've completed step 2 of the Installation Steps to create your PostgreSQL user.
+If you see "role your_username does not exist" when running database commands, make sure you've completed step 5 of the Backend Installation Steps to create your PostgreSQL user.
 
 ## Managing the Development Environment
 
@@ -73,17 +113,13 @@ You can activate the virtual environment in two ways:
 1. Using Poetry (recommended):
 
 ```bash
-poetry env activate
+eval $(poetry env activate)
 ```
 
-> **Note**: If you're using Poetry 2.0+, the `shell` command was removed. In that case, use these alternatives:
+> **Note**: Poetry 2.0+ removed the `shell` command. `poetry env activate` now prints the activation script rather than spawning a shell — use `eval $(poetry env activate)` to activate it. Alternatively, prefix individual commands with `poetry run`:
 >
 > ```bash
-> # Run a single command
 > poetry run python manage.py [command]
->
-> # Or start a new shell with the environment activated
-> poetry run bash
 > ```
 
 2. Direct activation (alternative):
@@ -134,7 +170,7 @@ After system restart, you'll need to:
 
    ```bash
    # Using Poetry (via asdf)
-   poetry env activate
+   eval $(poetry env activate)
 
    # Or alternatively, activate directly:
    source $(poetry env info --path)/bin/activate
@@ -203,31 +239,14 @@ This guide will help you set up the frontend development environment for the CAS
 
 ### Using asdf (Recommended Method)
 
-1. **Install asdf** (if not already installed)
+1. **Install asdf** (if not already installed — see [Prerequisites](#prerequisites) above for setup)
 
-   ```bash
-   git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.15.0
-   echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
-   echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.bashrc
-   ```
-
-2. **Install Node.js plugin**
+2. **Install Node.js plugin and version**
 
    ```bash
    asdf plugin add nodejs
-   ```
-
-3. **Install Node.js**
-
-   ```bash
    asdf install nodejs 24.16.0
-   ```
-
-4. **Set Node.js version globally or locally**
-   ```bash
-   asdf global nodejs 24.16.0  # for global setting
-   # OR
-   asdf local nodejs 24.16.0   # for project-specific setting
+   asdf reshim nodejs
    ```
 
 ### Alternative Method (Without asdf)
@@ -262,9 +281,9 @@ This guide will help you set up the frontend development environment for the CAS
 
 3. **Set up environment variables**
    ```bash
-   cp .env.local
+   cp .env.local.example .env.local
    ```
-   Edit `.env.local` with your local configuration values
+   Edit `.env.local` with your local configuration values (see 1Password vault `OBPS FE env.local`)
 
 ## Project Structure
 
@@ -470,4 +489,30 @@ yarn nx run coam:test   # Run tests
 
 ---
 
-_Last updated: February 10, 2026_
+## Git Hooks (prek)
+
+[prek](https://prek.j178.dev/) runs formatting and lint checks required for PRs to pass CI.
+
+From the repo root, install prek and register the git hooks:
+
+```bash
+pip install -r requirements.txt
+prek install                          # registers the pre-commit hook
+prek install --hook-type commit-msg   # also enables commit message linting
+```
+
+Alternatively, run all hooks manually without installing:
+
+```bash
+prek run --all-files
+```
+
+## Commit Message Conventions
+
+This project follows [Conventional Commits](https://www.conventionalcommits.org/). Common types: **feat**, **fix**, **test**, **docs**, **chore**, **refactor**. See [.gitlint](../.gitlint) for configuration details.
+
+Branch names follow the same convention, e.g. `docs/#123-add-readme` or `feat/#456-some-feature`.
+
+---
+
+_Last updated: June 19, 2026_
