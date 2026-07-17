@@ -1,4 +1,5 @@
 // 🧪 Suite to test the administration industry_user workflow
+import { expect } from "@playwright/test";
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 // 🪄 Page Object Models
 import { OperatorPOM } from "@/administration-e2e/poms/operator";
@@ -26,6 +27,7 @@ const test = setupBeforeEachTest(UserRole.INDUSTRY_USER);
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
+
 test.describe("Test select operator paths", () => {
   // 👤 run test using the storageState for this role
   test("Select by legal name existing operator with existing admin", async ({
@@ -68,6 +70,7 @@ test.describe("Test select operator paths", () => {
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
+
   test("Select by CRA number existing operator with no admin", async ({
     page,
     happoScreenshot,
@@ -98,12 +101,15 @@ test.describe("Test select operator paths", () => {
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
+
   test("Add new operator", async ({ page, happoScreenshot }) => {
     // 🛸 Navigates to add operator
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_ADD);
-    // 👉 Action fill all operator form fields
+    // 👉 Action fill all operator form fields, including the parent company
     await selectOperatorPage.fillRequiredInformation();
+    await selectOperatorPage.fillParentInformation();
+    await expect(selectOperatorPage.headerOperatorParent).toBeVisible();
     const pageContent = page.locator("html");
     await happoScreenshot(pageContent, {
       component: "Add operator form",
