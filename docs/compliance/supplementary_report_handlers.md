@@ -1,6 +1,6 @@
 # Supplementary Report Handlers
 
-This document describes the supplementery report handlers used in the Compliance module of BCIERS. When a supplementary emissions report is submitted, these handlers make decisions based on the compliance impact of the supplementary report & adjust or generate objects based on the results of those decisions.
+This document describes the supplementery report handlers used in the Compliance module of BCIERS. When a supplementary emissions report is submitted, these handlers make decisions based on the compliance impact of the supplementary report on the previous version & adjust or generate objects based on the results of those decisions. The decisions inside each handler are based on the state in which the previous compliance report version is in.
 
 ## The base service
 
@@ -20,11 +20,73 @@ Service:
 
 ## The handlers
 
+- Supercede Version Handler
+- Manual Handler
 - Decreased Credit Handler
 - Decreased Obligation Handler
 - Increased Credit Handler
 - Increased Obligation Handler
-- Manual Handler
 - New Earned Credits Handler
 - No Change Handler
-- Supercede Version Handler
+
+### Supercede Version Handler
+
+The supercede handler is a short circuit that runs before other handlers. The simplest way to handle the results of a supplementary emissions report is to replace the previous compliance report version with the new one as the single source of truth & the only version that requires any action. This can only be done when nothing has yet happened to the previous version that requires action.
+
+#### What can it handle
+
+This `can_handle()` function will return true if all ancestor versions (all previous versions except the latest version) have been superceded and if the previous compliance report version has an obligation that has not yet generated an invoice or if the previous compliance report version has earned credits that have not yet been requested.
+
+#### What does it do
+
+This `handle()` function will delete previous obligation or earned_credit records, set the previous compliance report version's status to `SUPERCEDED` (which we filter out of all views) and creates new obligation or earned_credit records attached to the new compliance report version. This effectively replaces the previous version leaving a single compliance report version that requires attention.
+
+### Manual Handler
+
+The manual handler is a short circuit that runs before other handlers. Once a compliance report version has been marked as needing manual handling, all subsequent versions will require manual handling as BCIERS has lost the context of how to resolve them since the previous resolution was done outside the app. Other handlers have logic to mark a compliance report version as requiring manual handling if their context is triggered, but cannot resolve it.
+
+#### What can it handle
+
+This `can_handle()` function will return true if the previous compliance report version was marked for manual handling.
+
+#### What does it do
+
+This `handle()` function will create the new compliance report version and mark it for manual handling.
+
+### Decreased Credit Handler
+
+#### What can it handle
+
+This `can_handle()` function will return true if the credited_emission value resulting from the new emissions report is less than the previous version's credited_emission value.
+
+#### What does it do
+
+This `handle()` function determines what action to take based on the state of the latest compliance report version and earned credit record.
+
+```
+Case: Issuance has been approved (credits issued)
+
+Result: Mark for manual handling. This will have to be resolved with the operation outside the app to determine how to return the delta of credits issued.
+```
+
+```
+Case: Issuance has not yet been requested
+
+Result: Reduce the original earned_credit record by the delta & mark the new version as `No Obligation or Earned Credits`
+```
+
+```
+Case: Issuance has not yet been requested
+
+Result: Reduce the previous earned_credit record by the delta & mark the new version as `No Obligation or Earned Credits`
+```
+
+```
+Case: Issuance requested, pending decision
+
+Result: Decline the previous earned_credit record, create a new one and mark the new version as `Earned Credits`
+```
+
+### Decreased Obligation Handler
+
+The Decreased Obligation Handler is the most complicated handler in the set because it can potentially have to traverse multiple versions to apply the decrease or may result in complicated scenarios where credits need to be returned or a dollar amount refund issued.
