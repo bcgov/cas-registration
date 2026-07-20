@@ -130,3 +130,31 @@ previous-2 obligation (paid): 400
 
 In this example, the handler will mark the previous & previous-1 obligations as met, see that it still has leftover decrease to apply, hit previous-2, see that it is paid & stop. At this point it will mark the new compliance report version for manual handling to issue a refund for the difference of 100.
 ```
+
+### Increased Credit Handler
+
+#### What can it handle
+
+This `can_handle()` function will return true if the credited_emission value resulting from the new emissions report is greater than the previous version's credited_emission value.
+
+#### What does it do
+
+This `handle()` function determines what action to take based on the state of the latest compliance report version and earned credit record.
+
+```
+Case: Previous earned credit record's issuance status is Credits Not Issued
+
+Result: Adjusts the original earned credit record with the increase and sets the latest compliance report version to the No Obligation or Earned Credits status. Note: This case is unlikely to be hit, this flow was written before the Supercede Handler & except in very rare cases this will be scooped up by that handler before ever getting here.
+```
+
+```
+Case: Previous earned credit record's issuance status is Approved (ie: credits have been issued)
+
+Result: Creates a new earned credit record.
+```
+
+```
+Case: Previous earned credit record's issuance status is Declined, Issuance Requested or Changes Requested
+
+Result: Set the previous earned credit record's status to Declined & create a new earned credit record with the increased amount.
+```
