@@ -10,6 +10,14 @@ deploy:
   override:
     - ./deploy.sh:
         timeout: 1800
+  variables:
+    -
+      name: TERRAFORM_PROVISION
+      title: Run Terraform provisioning for storage buckets
+      default: false
+      select:
+        - true
+        - false
 
 ci:
   allow_failures:

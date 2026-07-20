@@ -12,6 +12,7 @@ DR_AUTO_CONFIRM ?= false
 # Provide defaults so helm --set flags are not empty when prefixes are not provided
 AIRFLOW_NAMESPACE_PREFIX ?= airflow
 GGIRCS_NAMESPACE_PREFIX ?= ggircs
+TERRAFORM_PROVISION ?= false
 
 help: ## Show this help.
 	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
@@ -68,6 +69,7 @@ install: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESP
                                --values $(CHART_DIR)/values-$(ENVIRONMENT).yaml \
                                --set airflowNamespace="$(AIRFLOW_NAMESPACE_PREFIX)-$(ENVIRONMENT)" \
                                --set cas-logging-sidecar.host=elasticsearch.$(GGIRCS_NAMESPACE_PREFIX)-tools.svc.cluster.local
+                               --set terraform-bucket-provision.enabled=$(TERRAFORM_PROVISION) \
 install:
 	@set -euo pipefail; \
 	dagConfig=$$(echo '{"org": "bcgov", "repo": "cas-registration", "ref": "$(GIT_SHA1)", "path": "dags/cas_bciers_dags.py"}' | base64 -w0); \
