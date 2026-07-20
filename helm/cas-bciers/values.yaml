@@ -223,6 +223,7 @@ checkDocumentFileStatus:
       memory: 256Mi
 
 terraform-bucket-provision:
+  enabled: false
   terraform:
     namespace_apps: '["bciers-attach"]' # Maximum of 13 characters
     workspace: bciers # This value is OPTIONAL, only set if required
