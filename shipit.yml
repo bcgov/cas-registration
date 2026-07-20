@@ -2,7 +2,9 @@ dependencies:
   override: []
 
 review:
-  checklist: []
+  checklist:
+    - In the "test" namespace, did you check for orphan migration test resources?
+
 
 deploy:
   override:
