@@ -168,3 +168,25 @@ This `can_handle()` function will return true if the excess_emission value resul
 #### What does it do
 
 This `handle()` function will create a new compliance obligation record & related eLicensing invoice from the delta of difference between the previous and new version's tCO2e amounts.
+
+### New Earned Credits Handler
+
+This handler was created to handle a missed edge case where no action would be taken if there was no earned_credit record to compare the new version's amount against in the case of an increase. Unlikely scenario.
+
+#### What can it handle
+
+This `can_handle()` function will return true if the credited_emission value resulting from the new emissions report is greater than the previous version's excess_emission value and the previous compliance report version did not have an obligation or an earned credit record.
+
+#### What does it do
+
+This `handle()` function will create a new earned credits record using the new emission report version's credit_emissions amount.
+
+### No Change Handler
+
+#### What can it handle
+
+This `can_handle()` function will return true if the credited_emission values and the excess_emission values from the previous and new emission report version are equal. For example, if a supplementary report was created to update some incorrect admin data that had no bearing on the outcome for compliance.
+
+#### What does it do
+
+This `handle()` function will create a compliance report version with the No Obligation or Earned Credits status. No related obligation or earned credit record will be created in this case.
