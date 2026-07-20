@@ -33,6 +33,7 @@ class RegistrationTableNames(Enum):
     CONTACT = "contact"
     DOCUMENT = "document"
     DOCUMENT_TYPE = "document_type"
+    PDF_DOCUMENT_CONTENTS = "pdf_document_contents"
     FACILITY = "facility"
     FACILITY_SNAPSHOT = "facility_snapshot"
     FACILITY_DESIGNATED_OPERATION_TIMELINE = "facility_designated_operation_timeline"

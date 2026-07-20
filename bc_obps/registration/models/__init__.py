@@ -27,6 +27,7 @@ from .operation_designated_operator_timeline import OperationDesignatedOperatorT
 from .well_authorization_number import WellAuthorizationNumber
 from .event import ClosureEvent, TemporaryShutdownEvent, TransferEvent, RestartEvent
 from .bc_greenhouse_gas_id import BcGreenhouseGasId
+from .pdf_document_contents import PDFDocumentContents
 
 __all__ = [
     "Address",
@@ -60,4 +61,5 @@ __all__ = [
     "WellAuthorizationNumber",
     "OptedInOperationDetail",
     "BcGreenhouseGasId",
+    "PDFDocumentContents",
 ]

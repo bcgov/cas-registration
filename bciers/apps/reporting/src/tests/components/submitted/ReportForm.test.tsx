@@ -35,6 +35,17 @@ vi.mock(
   }),
 );
 
+vi.mock(
+  "@reporting/src/app/components/submitted/SubmittedVerificationStatementSection",
+  () => ({
+    default: () => (
+      <div data-testid="verification-statement-section">
+        Verification Statement Section
+      </div>
+    ),
+  }),
+);
+
 const minimalData = {
   report_operation: { operation_name: "Test Op", operation_type: "SFO" },
   report_person_responsible: { first_name: "John", last_name: "Doe" },
@@ -123,5 +134,33 @@ describe("The ReportForm component", () => {
       />,
     );
     expect(screen.queryByTestId("attachments-section")).not.toBeInTheDocument();
+  });
+
+  it("renders the verification statement section when origin is annual-report", () => {
+    render(
+      <ReportForm
+        version_id={5}
+        flow={ReportingFlow.SFO}
+        origin={ReportingOrigin.AnnualReport}
+        data={minimalData as any}
+      />,
+    );
+
+    expect(screen.getByTestId("verification-statement-section")).toBeVisible();
+  });
+
+  it("does not render the verification statement section for submitted reports", () => {
+    render(
+      <ReportForm
+        version_id={5}
+        flow={ReportingFlow.SFO}
+        origin={ReportingOrigin.Submitted}
+        data={minimalData as any}
+      />,
+    );
+
+    expect(
+      screen.queryByTestId("verification-statement-section"),
+    ).not.toBeInTheDocument();
   });
 });
