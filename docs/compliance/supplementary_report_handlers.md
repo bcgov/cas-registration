@@ -156,5 +156,15 @@ Result: Creates a new earned credit record.
 ```
 Case: Previous earned credit record's issuance status is Declined, Issuance Requested or Changes Requested
 
-Result: Set the previous earned credit record's status to Declined & create a new earned credit record with the increased amount.
+Result: Set the previous earned credit record's status to Declined & create a new earned credit record with the larger amount of credits.
 ```
+
+### Increased Obligation Handler
+
+#### What can it handle
+
+This `can_handle()` function will return true if the excess_emission value resulting from the new emissions report is greater than the previous version's excess_emission value.
+
+#### What does it do
+
+This `handle()` function will create a new compliance obligation record & related eLicensing invoice from the delta of difference between the previous and new version's tCO2e amounts.
