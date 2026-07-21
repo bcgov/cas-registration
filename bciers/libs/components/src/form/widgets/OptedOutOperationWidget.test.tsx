@@ -54,7 +54,6 @@ const baseProps: any = {
   id: "opted-out",
   value: { final_reporting_year: 2024 },
   onChange: vi.fn(),
-  registry: {},
   schema: {
     properties: {
       final_reporting_year: {},
@@ -70,7 +69,7 @@ const baseProps: any = {
 
 function renderWidget(formContext: FormContext) {
   return render(
-    <OptedOutOperationWidget {...baseProps} formContext={formContext} />,
+    <OptedOutOperationWidget {...baseProps} registry={{ formContext }} />,
   );
 }
 
