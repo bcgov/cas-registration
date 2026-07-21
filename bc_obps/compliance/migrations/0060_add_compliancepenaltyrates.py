@@ -18,7 +18,7 @@ def reverse_add_compliance_penalty_rates(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0057_alter_compliancepenaltyrate_options_and_more'),
+        ('compliance', '0059_alter_compliancepenaltyrate_options_and_more'),
     ]
 
     operations = [
