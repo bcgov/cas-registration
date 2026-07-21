@@ -23,7 +23,7 @@ const PaymentHeaderWidget = (props: WidgetProps) => {
   return <span>{`Payment ${paymentIndex + 1}`}</span>;
 };
 
-export const createPayObligationTrackPaymentsSchema = (): RJSFSchema => ({
+export const createPayObligationTrackPaymentsSchema: RJSFSchema = {
   type: "object",
   title: "Pay Obligation and Track Payment(s)",
   properties: {
@@ -73,7 +73,7 @@ export const createPayObligationTrackPaymentsSchema = (): RJSFSchema => ({
       },
     },
   ],
-});
+};
 
 export const payObligationTrackPaymentsUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
