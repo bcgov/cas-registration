@@ -595,6 +595,20 @@
   },
   {
     "model": "registration.facility",
+    "pk": "f8183141-2fa8-4d99-997c-49c1eddd3791",
+    "fields": {
+      "operation": "aeeb781e-a97b-4ab2-9a6e-02e4522add1a",
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Bark HQ",
+      "type": "Large Facility",
+      "swrs_facility_id": 1042,
+      "latitude_of_largest_emissions": 44.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
     "pk": "f6f58bf4-2dd1-4669-b432-50281c6fdff6",
     "fields": {
       "operation": "02a3ab84-26c6-4a79-bf89-72f877ceef8e",

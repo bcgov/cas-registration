@@ -425,6 +425,16 @@
     "fields": {
       "created_by": "00000000-0000-0000-0000-000000000001",
       "created_at": "2024-06-20T23:20:02Z",
+      "facility": "f8183141-2fa8-4d99-997c-49c1eddd3791",
+      "operation": "aeeb781e-a97b-4ab2-9a6e-02e4522add1a",
+      "start_date": "2024-06-28T23:20:02Z"
+    }
+  },
+  {
+    "model": "registration.facilitydesignatedoperationtimeline",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-06-20T23:20:02Z",
       "facility": "f6f58bf4-2dd1-4669-b432-50281c6fdff6",
       "operation": "02a3ab84-26c6-4a79-bf89-72f877ceef8e",
       "start_date": "2024-06-28T23:20:02Z"

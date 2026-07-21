@@ -266,4 +266,23 @@ test.describe("LFO: create and submit a new report for the current reporting yea
       variant: "submitted",
     });
   });
+
+  test("Industry user starts, fills, and submits a supplementary report for an LFO", async ({
+    page,
+    request,
+    happoScreenshot,
+  }) => {
+    // -- 0. Open the current reporting year so the "Start" button is available
+    const setup = new ReportSetUpPOM(page);
+    await setup.primeReportingYear("open");
+
+    // -- 1. Navigate to the current reports grid
+    const grid = new CurrentReportsPOM(page);
+    await grid.route();
+
+    // -- 2. Create a supplementary report for Bees LFO
+    const reportId = await grid.createSupplementaryReportById(
+      FacilityIDs.BEES_LFO,
+    );
+  })
 });
