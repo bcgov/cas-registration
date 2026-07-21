@@ -1,6 +1,6 @@
 # Supplementary Report Handlers
 
-This document describes the supplementery report handlers used in the Compliance module of BCIERS. When a supplementary emissions report is submitted, these handlers make decisions based on the compliance impact of the supplementary report on the previous version & adjust or generate objects based on the results of those decisions. The decisions inside each handler are based on the state in which the previous compliance report version is in.
+This document describes the supplementary report handlers used in the Compliance module of BCIERS. When a supplementary emissions report is submitted, these handlers make decisions based on the compliance impact of the supplementary report on the previous version & adjust or generate objects based on the results of those decisions. The decisions inside each handler are based on the state in which the previous compliance report version is in.
 
 ## The base service
 
