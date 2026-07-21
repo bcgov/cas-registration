@@ -8,18 +8,24 @@ import {
 import { AnalystSuggestion } from "@bciers/utils/src/enums";
 
 type Props = {
-  formContext?: {
-    analystSuggestion?: AnalystSuggestion;
-    latestComplianceReportVersionId?: number;
-    supplementaryDeclined?: boolean;
+  registry: {
+    formContext: {
+      analystSuggestion?: AnalystSuggestion;
+      latestComplianceReportVersionId?: number;
+      supplementaryDeclined?: boolean;
+    };
   };
 };
 
-export const IssuanceStatusDeclinedNote = (props: Props) => {
-  const analystSuggestion = props.formContext?.analystSuggestion;
-  const latestComplianceReportVersionId =
-    props.formContext?.latestComplianceReportVersionId;
-  const supplementaryDeclined = props.formContext?.supplementaryDeclined;
+export const IssuanceStatusDeclinedNote = ({
+  registry: {
+    formContext: {
+      analystSuggestion,
+      latestComplianceReportVersionId,
+      supplementaryDeclined,
+    },
+  },
+}: Props) => {
   const path = `/compliance/compliance-administration/compliance-summaries/${latestComplianceReportVersionId}/review-compliance-earned-credits-report`;
 
   return (

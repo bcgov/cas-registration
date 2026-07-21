@@ -1,16 +1,19 @@
-import { WidgetProps } from "@rjsf/utils";
 import { PaymentStatusNote } from "./PaymentStatusNote";
 
-interface PaymentStatusNoteWidgetProps extends WidgetProps {
-  outstandingBalance: number;
+interface PaymentStatusNoteWidgetProps {
+  registry: {
+    formContext: {
+      outstanding_balance: number;
+    };
+  };
 }
 
-export const PaymentStatusNoteWidget = (
-  props: PaymentStatusNoteWidgetProps,
-) => {
+export const PaymentStatusNoteWidget = ({
+  registry,
+}: PaymentStatusNoteWidgetProps) => {
   return (
     <PaymentStatusNote
-      outstandingBalance={props.formContext?.outstanding_balance}
+      outstandingBalance={registry.formContext?.outstanding_balance}
     />
   );
 };

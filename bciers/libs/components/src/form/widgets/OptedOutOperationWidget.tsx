@@ -31,11 +31,11 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   id,
   value,
   onChange,
-  formContext,
   schema,
   uiSchema,
   registry,
 }) => {
+  const { formContext } = registry;
   // Handle both object format ({ final_reporting_year: number }) and direct number format
   let finalReportingYear: number | undefined;
   if (typeof value === "object" && value !== null) {
