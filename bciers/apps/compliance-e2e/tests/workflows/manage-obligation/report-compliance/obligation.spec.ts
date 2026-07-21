@@ -11,7 +11,10 @@ import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summaries";
 import { ManageObligationTaskListPOM } from "@/compliance-e2e/poms/manage-obligation/tasklist";
 import { PaymentInstructionsPOM } from "@/compliance-e2e/poms/manage-obligation/payment-instructions";
-import { TrackPaymentsPOM } from "@/compliance-e2e/poms/manage-obligation/track-payments";
+import {
+  TrackPaymentsPOM,
+  FULL_OBLIGATION_PAYMENTS,
+} from "@/compliance-e2e/poms/manage-obligation/track-payments";
 
 import { ComplianceSetupPOM } from "@/compliance-e2e/poms/compliance-setup";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
@@ -80,11 +83,27 @@ test.describe("Test report version to compliance report version manage obligatio
     await trackPayments.continueToTrackPayments();
     await trackPayments.assertPageLoaded();
     await trackPayments.assertHasPayments();
+    await trackPayments.assertShowsOutstandingBalanceStatus();
 
     // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "Compliance obligation not met",
       variant: "pay obligation and track payments - partially paid",
+    });
+
+    // Record a third payment that covers the remaining balance, so the
+    // PaymentStatusNote's another branch (fully paid) is also exercised
+    await trackPayments.recordObligationPayments(
+      request,
+      FULL_OBLIGATION_PAYMENTS,
+    );
+    await page.reload();
+    await trackPayments.assertPageLoaded();
+    await trackPayments.assertShowsFullyPaidStatus();
+
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "Compliance obligation not met",
+      variant: "pay obligation and track payments - fully paid",
     });
   });
 
