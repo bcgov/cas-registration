@@ -186,5 +186,196 @@
       "report_version_id": 9,
       "updated_by_id": null
     }
+  },
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "sourceTypes": {
+          "gscWithProductionOfUsefulEnergy": {
+            "units": [
+              {
+                "fuels": [
+                  {
+                    "fuelType": {
+                      "fuelName": "Hydrogen",
+                      "fuelClassification": "Non-biomass"
+                    },
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 1563,
+                        "methodology": {
+                          "methodology": "Replacement Methodology"
+                        },
+                        "equivalentEmission": 1563
+                      }
+                    ],
+                    "annualFuelAmount": 345
+                  }
+                ],
+                "gscUnitType": "Kiln"
+              }
+            ]
+          },
+          "gscWithoutProductionOfUsefulEnergy": {
+            "units": [
+              {
+                "fuels": [
+                  {
+                    "fuelType": {
+                      "fuelName": "Carpet fibre",
+                      "fuelClassification": "Exempted Non-biomass"
+                    },
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 13,
+                        "methodology": {
+                          "methodology": "Replacement Methodology"
+                        },
+                        "equivalentEmission": 13
+                      }
+                    ],
+                    "annualFuelAmount": 6
+                  }
+                ],
+                "gscUnitType": "Other",
+                "gscUnitDescription": "something else"
+              }
+            ]
+          }
+        },
+        "gscWithProductionOfUsefulEnergy": true,
+        "gscWithoutProductionOfUsefulEnergy": true
+      },
+      "activity_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility_report_id": 50,
+      "report_version_id": 11,
+      "updated_by_id": null
+    }
+  },
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "sourceTypes": {
+          "calcinationUsedToProductClinker": {
+            "emissions": [
+              {
+                "gasType": "CO2",
+                "emission": 9462,
+                "methodology": {
+                  "methodology": "Oxidation Emissions"
+                },
+                "equivalentEmission": 9462,
+                "timesMissingDataProceduresWereFollowed": 2
+              }
+            ]
+          }
+        }
+      },
+      "activity_id": 6,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility_report_id": 50,
+      "report_version_id": 11,
+      "updated_by_id": null
+    }
+  },
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "sourceTypes": {
+          "gscWithoutProductionOfUsefulEnergy": {
+            "units": [
+              {
+                "fuels": [
+                  {
+                    "fuelType": {
+                      "fuelName": "Natural Gas",
+                      "fuelClassification": "Non-biomass"
+                    },
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 13951,
+                        "methodology": {
+                          "methodology": "Replacement Methodology"
+                        },
+                        "equivalentEmission": 13951
+                      },
+                      {
+                        "gasType": "CH4",
+                        "emission": 436,
+                        "methodology": {
+                          "methodology": "Replacement Methodology"
+                        },
+                        "equivalentEmission": 12208
+                      }
+                    ],
+                    "annualFuelAmount": 7326
+                  }
+                ],
+                "gscUnitType": "Kiln"
+              }
+            ]
+          }
+        },
+        "gscWithoutProductionOfUsefulEnergy": true
+      },
+      "activity_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility_report_id": 49,
+      "report_version_id": 11,
+      "updated_by_id": null
+    }
+  },
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "sourceTypes": {
+          "calcinationUsedToProductClinker": {
+            "emissions": [
+              {
+                "gasType": "CO2",
+                "emission": 24380,
+                "methodology": {
+                  "methodology": "Oxidation Emissions"
+                },
+                "equivalentEmission": 24380
+              }
+            ]
+          }
+        }
+      },
+      "activity_id": 6,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility_report_id": 49,
+      "report_version_id": 11,
+      "updated_by_id": null
+    }
   }
 ]

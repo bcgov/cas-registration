@@ -373,9 +373,10 @@
       "bcghg_id": "13219990021",
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0018",
-      "registration_purpose": "Reporting Operation",
-      "activities": [1, 5],
-      "contacts": [4]
+      "registration_purpose": "OBPS Regulated Operation",
+      "activities": [1, 6],
+      "contacts": [4],
+      "regulated_products": [2, 6, 24]
     }
   },
   {

@@ -83,5 +83,209 @@
       "updated_by_id": null,
       "report_emission_allocation": 3
     }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 8000.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 3,
+      "report_product": 48,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 46
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 1000.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 3,
+      "report_product": 49,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 46
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 462.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 3,
+      "report_product": 50,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 46
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 540.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 5,
+      "report_product": 48,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 46
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 10,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 1000.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 5,
+      "report_product": 49,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 46
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 11,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 23.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 5,
+      "report_product": 50,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 46
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 12,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 13.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 8,
+      "report_product": 49,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 46
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 13,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 13.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 12,
+      "report_product": 49,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 46
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 14,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 20000.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 3,
+      "report_product": 51,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 47
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 15,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 4380.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 3,
+      "report_product": 52,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 47
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 16,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 18000.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 8,
+      "report_product": 51,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 47
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 17,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 8159.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 8,
+      "report_product": 52,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 47
+    }
   }
 ]

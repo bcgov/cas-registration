@@ -74,5 +74,77 @@
       "updated_by_id": null,
       "report_version_id": 9
     }
+  },
+  {
+    "model": "reporting.reportactivity",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data":
+        {"gscWithProductionOfUsefulEnergy":true,"gscWithoutProductionOfUsefulEnergy":true},
+      "activity_id": 1,
+      "activity_base_schema_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility_report_id": 50,
+      "updated_by_id": null,
+      "report_version_id": 11
+    }
+  },
+  {
+    "model": "reporting.reportactivity",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data":
+        {},
+      "activity_id": 6,
+      "activity_base_schema_id": 20,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility_report_id": 50,
+      "updated_by_id": null,
+      "report_version_id": 11
+    }
+  },
+  {
+    "model": "reporting.reportactivity",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data":
+        {"gscWithoutProductionOfUsefulEnergy":true},
+      "activity_id": 1,
+      "activity_base_schema_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility_report_id": 49,
+      "updated_by_id": null,
+      "report_version_id": 11
+    }
+  },
+  {
+    "model": "reporting.reportactivity",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data":
+        {},
+      "activity_id": 6,
+      "activity_base_schema_id": 20,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility_report_id": 49,
+      "updated_by_id": null,
+      "report_version_id": 11
+    }
   }
 ]
