@@ -44,9 +44,7 @@ class ElicensingAdjustment(TimeStampedModel):
 
     adjustment_date = models.DateField(db_comment="date of the adjustment in elicensing", null=True, blank=True)
 
-    reason = models.CharField(
-        db_comment="Reason for adjustment in elicensing", choices=Reason.choices, null=True, blank=True
-    )
+    reason = models.CharField(db_comment="Reason for adjustment in elicensing", null=True, blank=True)
 
     type = models.CharField(db_comment="Type of adjustment in elicensing. (e.g. 'CREDIT')", null=True, blank=True)
 
@@ -60,15 +58,17 @@ class ElicensingAdjustment(TimeStampedModel):
             models.CheckConstraint(
                 name="supp_reasons_require_supp_version",
                 condition=(
-                    Q(reason__isnull=True)
-                    | ~Q(
-                        reason__in=[
-                            'Supplementary Report Adjustment',
-                            'Supplementary Report Adjustment to Void Invoice',
-                        ]
+                    ~(
+                        Q(
+                            reason__in=[
+                                'Supplementary Report Adjustment',
+                                'Supplementary Report Adjustment to Void Invoice',
+                            ]
+                        )
+                        & Q(supplementary_compliance_report_version__isnull=True)
                     )
-                    | Q(supplementary_compliance_report_version__isnull=False)
                 ),
+                violation_error_message="An adjustment with a supplementary report reason requires a supplementary report version",
             ),
         ]
 

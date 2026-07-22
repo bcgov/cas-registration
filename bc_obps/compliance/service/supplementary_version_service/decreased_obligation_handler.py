@@ -599,18 +599,19 @@ class DecreasedObligationHandler:
             ElicensingAdjustment.objects.filter(
                 elicensing_line_item__elicensing_invoice_id__in=invoice_ids,
                 elicensing_line_item__line_item_type=ElicensingLineItem.LineItemType.FEE,
-                reason__in=(
-                    ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
-                    ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT_TO_VOID_INVOICE,
-                ),
                 supplementary_compliance_report_version__id__gte=anchor_crv_id,
-                amount__isnull=False,
             )
+            .exclude(reason=ElicensingAdjustment.Reason.COMPLIANCE_UNITS_APPLIED)
             .aggregate(total=Coalesce(Sum("amount"), ZERO_DECIMAL))
             .get("total", ZERO_DECIMAL)
         )
 
-        already_applied = max(-total_signed, ZERO_DECIMAL).quantize(MONEY)
+        if total_signed > ZERO_DECIMAL:
+            raise ValueError(
+                f"Unexpected positive supplementary adjustment total {total_signed} for invoices {invoice_ids} since anchor CRV {anchor_crv_id}"
+            )
+
+        already_applied = (-total_signed).quantize(MONEY)
         return already_applied
 
     @staticmethod

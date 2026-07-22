@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.core.exceptions import ValidationError
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
 from common.tests.utils.helpers import BaseTestCase
@@ -23,6 +24,17 @@ class ElicensingAdjustmentTest(BaseTestCase):
             ("type", "type", None, None),
             ("comment", "comment", None, None),
             ("supplementary_compliance_report_version", "supplementary compliance report version", None, None),
+        ]
+
+    def test_constraint_supp_reasons_require_supp_version(self):
+        with self.assertRaises(ValidationError) as exc:
+            make_recipe(
+                'compliance.tests.utils.elicensing_adjustment',
+                reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
+                supplementary_compliance_report_version=None,
+            )
+        assert exc.exception.messages == [
+            "An adjustment with a supplementary report reason requires a supplementary report version"
         ]
 
 
