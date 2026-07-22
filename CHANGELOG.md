@@ -1,5 +1,17 @@
 # Changelog
 
+# [5.17.0](https://github.com/bcgov/cas-registration/compare/v5.16.0...v5.17.0) (2026-07-22)
+
+### Bug Fixes
+
+- reason for an elicensing adjustment now allows any message ([f69505d](https://github.com/bcgov/cas-registration/commit/f69505d075a3b14b5c200c82ff9a3044b1d17cd1))
+
+### Features
+
+- add back-dating logic for decreased compliance obligations ([66b9998](https://github.com/bcgov/cas-registration/commit/66b99980da82ccec84f3a3d8905da87fe7542516))
+- add manual handling context for over-cap compliance units and improve handling logic ([5ebb366](https://github.com/bcgov/cas-registration/commit/5ebb366dc96ac96a19434900f505d81f8281511b))
+- hide WCI banner when a file is uploaded ([a1ff2d3](https://github.com/bcgov/cas-registration/commit/a1ff2d34db1a64ec80cc793f2e92ff876e422885))
+
 # [5.16.0](https://github.com/bcgov/cas-registration/compare/v5.15.1...v5.16.0) (2026-07-15)
 
 ### Bug Fixes
