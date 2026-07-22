@@ -50,7 +50,7 @@ compliance_report = Recipe(
 compliance_report_version = Recipe(
     ComplianceReportVersion,
     compliance_report=foreign_key(compliance_report),
-    report_compliance_summary=foreign_key(report_compliance_summary),
+    report_compliance_summary=foreign_key(report_compliance_summary, one_to_one=True),
     is_supplementary=False,
     status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
 )
