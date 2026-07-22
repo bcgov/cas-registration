@@ -9,12 +9,12 @@ If the request from e-licensing is unsucessful, the data is returned from the BC
 ## Model Architecture
 
 BCIERS has its own models that mirror the objects returned by the eLicensing API:
-[`eLicensing_invoice`, `eLicensing_line_item` (fee), `eLicensing_payment`, `eLicensing_adjustment`]
-Along with the model `eLicensing_client_operator`, which defines the link between an Operator in BCIERS and a "client" in eLicensing.
+[`elicensinginvoice`, `elicensingline_item` (fee), `elicensingpayment`, `elicensingadjustment`]
+Along with the model `elicensingclient_operator`, which defines the link between an Operator in BCIERS and a "client" in eLicensing.
 
 ## Refresh Function & Wrapper(s)
 
-The e-licensing refresh service (bc_obps/compliance/service/eLicensing/eLicensing_data_refresh_service) contains the main function `refresh_data_by_invoice` which performs the query to the eLicensing API & updates the BCIERS data from the response. The service also contains a wrapper `refresh_data_wrapper_by_compliance_report_version_id` that uses the compliance_report_version_id to fetch the correct invoice, attempt the communication with the e-licensing API, update records if successful and returns the BCIERS invoice record & a flag if unsuccessful.
+The e-licensing refresh service (bc_obps/compliance/service/elicensingelicensingdata_refresh_service) contains the main function `refresh_data_by_invoice` which performs the query to the eLicensing API & updates the BCIERS data from the response. The service also contains a wrapper `refresh_data_wrapper_by_compliance_report_version_id` that uses the compliance_report_version_id to fetch the correct invoice, attempt the communication with the e-licensing API, update records if successful and returns the BCIERS invoice record & a flag if unsuccessful.
 
 ## Example Usage
 
@@ -30,7 +30,7 @@ def get_compliance_obligation_payments_by_compliance_report_version_id(
         refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id
         )
-        return ElicensingPayment.objects.select_related('eLicensing_line_item').filter(
-            eLicensing_line_item__eLicensing_invoice=refreshed_data.invoice
+        return ElicensingPayment.objects.select_related('elicensingline_item').filter(
+            elicensingline_item_elicensing_invoice=refreshed_data.invoice
         )
 ```
