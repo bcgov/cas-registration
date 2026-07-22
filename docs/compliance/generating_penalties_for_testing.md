@@ -7,10 +7,10 @@ This document describes how to generate penalties for manual testing/QA. Because
 ### Steps:
 
 - Submit the obligation not met report
-- In the elicensing test environment, make a payment (or payments) that fully meet the obligation
-- Refresh the elicensing data in bciers
+- In the eLicensing test environment, make a payment (or payments) that fully meet the obligation
+- Refresh the eLicensing data in bciers
 - Note: If you want to test multiple payments over a period, update the received_date(s) of your payment records accordingly
-- Manually update elicensing_invoice.due_date to a date in the past (note that the refresh service will overwrite this change with data from elicensing after 15 minutes on the next refresh, so make sure to do the next step immediately after changing the date)
+- Manually update eLicensing_invoice.due_date to a date in the past (note that the refresh service will overwrite this change with data from eLicensing after 15 minutes on the next refresh, so make sure to do the next step immediately after changing the date)
 - Call PenaltyCalculationService.create_penalty() with the related obligation & the effective deadline (the last date the obligation can be paid before it is considered overdue)
 
 #### Example shell call:

@@ -2,13 +2,13 @@
 
 This document describes the automated processes that run overnight for compliance and the compliance handlers that are run on each invoice.
 
-## The automated process service
+## The Automated Process Service
 
 [bc_obps/compliance/service/automated_process/automated_process_service.py](../../bc_obps/compliance/service/automated_process/automated_process_service.py)
 
-This service file iterates over every BCIERS invoice that exists in elicensing, refreshing the invoice data to ensure that it is working with current information & runs a series of handlers that determine what actions if any the system should take. These processes are run overnight at 4am.
+This service file iterates over every BCIERS invoice that exists in eLicensing, refreshing the invoice data to ensure that it is working with current information & runs a series of handlers that determine what actions if any the system should take. These processes are run overnight at 4am.
 
-## The compliance handlers
+## The Compliance Handlers
 
 - PenaltyPaidHandler,
 - PenaltyAccruingHandler,
@@ -50,10 +50,10 @@ This `handle()` function does the following:
    - otherwise, it sets the status to `Obligation Met`
 
 2. Determines whether the ComplianceObligation should be charged GGEAPAR Interest (Was the obligation the result of a supplementary report submitted beyond the compliance deadline)
-   - if it does, it will call the PenaltyCalculationService with the appropriate parameters to create a GGEAPAR Interest penalty & invoice in elicensing
+   - if it does, it will call the PenaltyCalculationService with the appropriate parameters to create a GGEAPAR Interest penalty & invoice in eLicensing
 
 3. Determines whether the ComplianceObligation should be charged an Automatic Overdue Penalty (Original obligation paid past the deadline, or supplementary obligation paid after custom due date)
-   - if it does, it will call the PenaltyCalculationService with the appropriate parameters to create a Automatic Overdue penalty & invoice in elicensing
+   - if it does, it will call the PenaltyCalculationService with the appropriate parameters to create a Automatic Overdue penalty & invoice in eLicensing
 
 ### Interest Paid Handler
 
