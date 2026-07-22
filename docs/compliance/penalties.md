@@ -5,7 +5,7 @@ This document describes penalties as defined in the [Greenhouse Gas Emission Adm
 ## Accruing vs Existing
 
 Penalties begin _ACCRUING_ as soon as an obligation owes a balance beyond the due date.
-However, a penalty data object in the BCIERS system and a related invoice in eLicensing will not be created until the obligation triggering the penalty has been paid in full (elicensing_invoice.fee_amount_balance == $0.00).
+However, a penalty data object in the BCIERS system and a related invoice in eLicensing will not be created until the obligation triggering the penalty has been paid in full (eLicensing_invoice.fee_amount_balance == $0.00).
 As far as BCIERS is concerned, A penalty does not _EXIST_ while it is _ACCRUING_. It only becomes data in the system and has an invoice once the triggering obligation is paid in full.
 
 ## Types of Penalties
@@ -61,9 +61,9 @@ Supplementary Obligation is paid March 15 2027
 GGEAPAR Interest will generate a penalty invoice calculated from Dec 1 2026 to March 15 2027 @ Prime + 3%
 ```
 
-## How does BCIERS calculate penalties
+## How Does BCIERS Calculate Penalties
 
-- During our overnight processes, each obligation invoice is inspected by the system to see if it has recently been paid (elicensing_invoice.fee_amount_balance == $0.00) and if a penalty or penalties should be applied.
+- During our overnight processes, each obligation invoice is inspected by the system to see if it has recently been paid (eLicensing_invoice.fee_amount_balance == $0.00) and if a penalty or penalties should be applied.
 - If, after looking at the type of obligation (supplementary vs initial), the related due dates & the balance owing on the obligation, the system determines that a penalty should be created; the overnight process will call [PenaltyCalculationService.create_penalty()](../../bc_obps/compliance/service/penalty_calculation_service.py) with the appropriate parameters for the penalty type.
 - The PenaltyCalculationService will create one CompliancePenalty record & several CompliancePenaltyAccrual records (one accrual record for each day that the calculation ran).
 - The PenaltyCalculationService will make an API call to eLicensing to create an invoice for the total penalty amount owing

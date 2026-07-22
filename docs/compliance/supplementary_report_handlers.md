@@ -2,7 +2,7 @@
 
 This document describes the supplementary report handlers used in the Compliance module of BCIERS. When a supplementary emissions report is submitted, these handlers make decisions based on the compliance impact of the supplementary report on the previous version & adjust or generate objects based on the results of those decisions. The decisions inside each handler are based on the state in which the previous compliance report version is in.
 
-## The base service
+## The Base Service
 
 [bc_obps/compliance/service/supplementary_report_version_service/service.py](../../bc_obps/compliance/service/supplementary_version_service/service.py)
 
@@ -18,7 +18,7 @@ Service:
 - contains logic that iterates through all the `can_handle()` functions of each handler and when it arrives at one that can process the change, stops and executes that handler's `handle()` function.
 - has a couple early exits when it determines that the new compliance report version either requires `Manual Handling` or if the previous compliance report version can just be `Superceded` & the new version can become the source of truth by itself.
 
-## The handlers
+## The Handlers
 
 - Supercede Version Handler
 - Manual Handler
