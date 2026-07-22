@@ -218,6 +218,31 @@ describe("RJSF OperatorSearchWidget", () => {
     await checkNoValidationErrorIsTriggered();
   });
 
+  it("should use the endpoint provided via formContext instead of the default", async () => {
+    render(
+      <FormBase
+        schema={operatorSearchFieldSchema}
+        uiSchema={operatorSearchFieldUiSchema}
+        formContext={{ endpoint: "custom/search/endpoint" }}
+      />,
+    );
+
+    const searchField = screen.getByRole("combobox");
+
+    await act(async () => {
+      await userEvent.type(searchField, "Operator");
+    });
+
+    actionHandler.mockResolvedValueOnce([]);
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        expect.stringContaining("custom/search/endpoint?legal_name="),
+        "GET",
+      );
+    });
+  });
+
   it("should show the validation error message when the search field is required", async () => {
     render(
       <FormBase

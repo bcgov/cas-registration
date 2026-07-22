@@ -12,13 +12,6 @@ vi.mock(
 );
 
 vi.mock(
-  "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusDeclinedNote",
-  () => ({
-    IssuanceStatusDeclinedNote: () => <div>Declined Note</div>,
-  }),
-);
-
-vi.mock(
   "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusAwaitingNote",
   () => ({
     IssuanceStatusAwaitingNote: () => <div>Awaiting Note</div>,
@@ -181,7 +174,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
     expect(screen.getByText("Approved Note")).toBeVisible();
   });
 
-  it("displays declined note for declined status", () => {
+  it("displays declined note for declined status, wired up with the real formContext values", () => {
     const declinedData = {
       ...mockData,
       issuance_status: IssuanceStatus.DECLINED,
@@ -194,7 +187,10 @@ describe("TrackStatusOfIssuanceComponent", () => {
       />,
     );
 
-    expect(screen.getByText("Declined Note")).toBeVisible();
+    expect(screen.getByText(/your request is declined/i)).toBeVisible();
+    expect(
+      screen.getByRole("link", { name: /B\.C\. Carbon Registry/i }),
+    ).toBeVisible();
   });
 
   it("displays awaiting note for issuance requested status", () => {

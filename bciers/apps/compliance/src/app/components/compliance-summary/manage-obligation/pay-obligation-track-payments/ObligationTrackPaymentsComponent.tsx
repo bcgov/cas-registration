@@ -45,7 +45,7 @@ export function ObligationTrackPaymentsComponent({
 
   return (
     <FormBase
-      schema={createPayObligationTrackPaymentsSchema()}
+      schema={createPayObligationTrackPaymentsSchema}
       uiSchema={payObligationTrackPaymentsUiSchema}
       formData={data}
       formContext={data}

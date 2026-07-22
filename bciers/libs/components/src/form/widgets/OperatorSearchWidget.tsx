@@ -19,8 +19,9 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   value,
   readonly,
   uiSchema,
-  formContext,
+  registry,
 }) => {
+  const { formContext } = registry;
   const [options, setOptions] = useState<string[]>([]);
   const [isSearchAttempted, setIsSearchAttempted] = useState(false);
 

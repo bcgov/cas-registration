@@ -19,7 +19,7 @@ vi.mock("@bciers/components/icons/AlertIcon", () => ({
 
 describe("IssuanceStatusDeclinedNote", () => {
   it("displays the correct text content", () => {
-    render(<IssuanceStatusDeclinedNote />);
+    render(<IssuanceStatusDeclinedNote registry={{ formContext: {} }} />);
 
     const declinedNoteTextPatterns = [
       /your request is declined/i,
@@ -51,8 +51,10 @@ describe("IssuanceStatusDeclinedNote", () => {
   it("shows GHGRegulator email and supplementary instructions when analyst suggests supplementary report", () => {
     render(
       <IssuanceStatusDeclinedNote
-        formContext={{
-          analystSuggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+        registry={{
+          formContext: {
+            analystSuggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+          },
         }}
       />,
     );
@@ -82,9 +84,11 @@ describe("IssuanceStatusDeclinedNote", () => {
   it("displays the correct text content", () => {
     render(
       <IssuanceStatusDeclinedNote
-        formContext={{
-          latestComplianceReportVersionId: 2,
-          supplementaryDeclined: true,
+        registry={{
+          formContext: {
+            latestComplianceReportVersionId: 2,
+            supplementaryDeclined: true,
+          },
         }}
       />,
     );

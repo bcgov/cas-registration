@@ -82,6 +82,27 @@ describe("ObligationTrackPaymentsComponent", () => {
 
     // Check the payment received date from mockData
     expect(screen.getByText("Dec 06, 2025")).toBeVisible();
+
+    expect(
+      screen.getByText(/your compliance obligation has been fully met/i),
+    ).toBeVisible();
+  });
+
+  it("shows the unpaid PaymentStatusNote when outstanding_balance is non-zero", () => {
+    const mockDataWithBalance = { ...mockData, outstanding_balance: 500 };
+
+    render(
+      <ObligationTrackPaymentsComponent
+        data={mockDataWithBalance}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        /please pay the outstanding compliance obligation following the payment instructions/i,
+      ),
+    ).toBeVisible();
   });
 
   it("renders step buttons with correct URLs when outstanding_balance is 0", () => {

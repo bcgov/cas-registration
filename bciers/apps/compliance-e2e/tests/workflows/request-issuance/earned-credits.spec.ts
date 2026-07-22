@@ -9,13 +9,17 @@ import {
   ComplianceDisplayStatus,
   GridActionText,
 } from "@/compliance-e2e/utils/enums";
-import { DirectorDecision } from "@/compliance-e2e/utils/constants";
+import {
+  DirectorDecision,
+  TRACK_ISSUANCE_URL_PATTERN,
+} from "@/compliance-e2e/utils/constants";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summaries";
 import { ReviewComplianceEarnedCreditsPOM } from "@/compliance-e2e/poms/request-issuance/review-compliance-earned-credits";
 import { RequestIssuanceTaskListPOM } from "@/compliance-e2e/poms/request-issuance/tasklist";
 import { InternalRequestIssuanceTaskListPOM } from "@/compliance-e2e/poms/request-issuance/internal/tasklist";
 import { InternalReviewComplianceEarnedCreditsPOM } from "@/compliance-e2e/poms/request-issuance/internal/internal-review-compliance-earned-credits";
+import { TrackStatusOfIssuancePOM } from "@/compliance-e2e/poms/request-issuance/track-status-of-issuance";
 import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
 
 // Seed environment once; each flow case re-seeds via its own beforeAll
@@ -300,6 +304,25 @@ test.describe("Test earned credits request issuance flow", () => {
             component: "Compliance earned credits - request issuance",
             variant: `Director decision - industry compliance summaries: ${title}`,
           });
+
+          // For the declined case, also open industry's own Track Status of
+          // Issuance detail page (not just the grid badge)
+          if (c.directorDecision === IssuanceStatus.DECLINED) {
+            await industrySummaries.openActionForOperation({
+              operationName: ComplianceOperations.EARNED_CREDITS,
+              linkName: GridActionText.VIEW_DETAILS,
+              urlPattern: TRACK_ISSUANCE_URL_PATTERN,
+            });
+
+            const trackStatusOfIssuance = new TrackStatusOfIssuancePOM(page);
+            await trackStatusOfIssuance.assertShowsDeclinedNote();
+
+            // happo screenshot - industry-facing declined issuance detail page
+            await takeStabilizedScreenshot(happoScreenshot, page, {
+              component: "Compliance earned credits - request issuance",
+              variant: "Industry - track status of issuance (declined)",
+            });
+          }
         });
       }
     });
