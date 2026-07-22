@@ -1,5 +1,5 @@
 import { Page, expect } from "@playwright/test";
-import { AppRoutes, ReportRoutes } from "../utils/enums";
+import { AppRoutes, FacilityIDs, ReportRoutes } from "../utils/enums";
 import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { FORM_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
 import { ProductionDataPOM } from "@/reporting-e2e/poms/production-data";
@@ -263,6 +263,28 @@ export class LFOFacilityReportPOM extends SFOFacilityReportPOM {
         name: "Ammonia",
       })
       .setChecked(false);
+
+    expect(
+      await this.page.getByRole("checkbox", { checked: true }).count(),
+    ).toBe(1);
+  }
+
+  async verifyReviewFacilityInformation(facilityID: FacilityIDs): Promise<void> {
+    await expect(
+      this.page.getByRole("combobox", { name: "Facility type" }),
+    ).toHaveValue("Medium Facility");
+
+    await expect(
+      this.page.getByRole("checkbox", {
+        name: "General stationary combustion excluding line tracing (at SFO) General",
+      }),
+    ).toBeChecked();
+
+    await expect(
+      this.page.getByRole("checkbox", {
+        name: "Ammonia",
+      }),
+    ).not.toBeChecked();
 
     expect(
       await this.page.getByRole("checkbox", { checked: true }).count(),

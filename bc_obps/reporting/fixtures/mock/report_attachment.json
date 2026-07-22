@@ -49,39 +49,5 @@
       "updated_by_id": null,
       "status": "Clean"
     }
-  },
-    {
-    "model": "reporting.reportattachment",
-    "pk": 8,
-    "fields": {
-      "created_at": "2025-05-26T11:20:58.144081-04:00",
-      "updated_at": null,
-      "archived_at": null,
-      "attachment": "report_attachments/2025/VERIFICATION_ATTACHMENT_3.pdf",
-      "attachment_type": "verification_statement",
-      "attachment_name": "VERIFICATION_ATTACHMENT.pdf",
-      "archived_by_id": null,
-      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "report_version": 11,
-      "updated_by_id": null,
-      "status": "Clean"
-    }
-  },
-  {
-    "model": "reporting.reportattachment",
-    "pk": 0,
-    "fields": {
-      "created_at": "2025-05-26T11:20:58.144081-04:00",
-      "updated_at": null,
-      "archived_at": null,
-      "attachment": "report_attachments/2025/VERIFICATION_ATTACHMENT_4.pdf",
-      "attachment_type": "wci_352_362",
-      "attachment_name": "WCI.pdf",
-      "archived_by_id": null,
-      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "report_version": 11,
-      "updated_by_id": null,
-      "status": "Clean"
-    }
   }
 ]

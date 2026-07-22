@@ -82,6 +82,7 @@ class Command(BaseCommand):
             operation_ids_to_submit = [
                 UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
                 UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
+                UUID('aeeb781e-a97b-4ab2-9a6e-02e4522add1a'),  # Bark LFO
             ]
 
             for operation_id in operation_ids_to_submit:

@@ -14,6 +14,7 @@ export enum ReportIDs {
   NO_OBLIGATION = "5",
   BANGLES_SFO = "13",
   BUGLE_SFO = "18",
+  BARK_LFO = "11",
 }
 
 // Matching facility ids for report record ids
@@ -25,6 +26,8 @@ export enum FacilityIDs {
   BEES_LFO = "d477f3d9-2917-4f36-b5ae-166d47dc8172",
   BANANA_LFO_1 = "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
   BANGLES_SFO = "9f7b0848-021e-4d08-9852-10524c4e5456",
+  BARK_LFO_BARK_HQ = "f8183141-2fa8-4d99-997c-49c1eddd3791",
+  BARK_LFO_FACILITY_42 = "a4ffa43d-3f47-4f0f-a423-fde5d91e9d87",
 }
 
 // Report workflow routes
@@ -109,6 +112,7 @@ export const OPERATION_NAMES = {
   BANGLES_SFO: "Bangles SFO - Registered - has Multiple Operators",
   BUGLE_SFO: "Bugle SFO - Registered - name from admin",
   BEES_LFO: "Bees LFO - Registered - name from admin",
+  BARK_LFO: "Bark LFO - Registered",
 } as const;
 
 export const REPORT_ID_TO_OPERATION_NAME: Record<ReportIDs, string> = {
@@ -117,6 +121,7 @@ export const REPORT_ID_TO_OPERATION_NAME: Record<ReportIDs, string> = {
   [ReportIDs.NO_OBLIGATION]: OPERATION_NAMES.NO_OBLIGATION,
   [ReportIDs.BANGLES_SFO]: OPERATION_NAMES.BANGLES_SFO,
   [ReportIDs.BUGLE_SFO]: OPERATION_NAMES.BUGLE_SFO,
+  [ReportIDs.BARK_LFO]: OPERATION_NAMES.BARK_LFO,
 };
 
 export enum REPORT_STATUS {

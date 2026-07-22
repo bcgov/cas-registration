@@ -52,23 +52,5 @@
       "report_version": 5,
       "updated_by_id": null
     }
-  },
-  {
-    "model": "reporting.reportadditionaldata",
-    "pk": 4,
-    "fields": {
-      "created_at": "2025-05-26T11:13:29.610286-04:00",
-      "updated_at": null,
-      "archived_at": null,
-      "capture_emissions": false,
-      "emissions_on_site_use": null,
-      "emissions_on_site_sequestration": null,
-      "emissions_off_site_transfer": null,
-      "electricity_generated": 0,
-      "archived_by_id": null,
-      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "report_version": 11,
-      "updated_by_id": null
-    }
   }
 ]

@@ -220,6 +220,74 @@ export class ReportOperationPOM {
     );
   }
 
+  async verifyBarkLfoFields(): Promise<void> {
+    // 1. Report type - combobox
+    await expect(
+      this.page.getByRole("combobox", {
+        name: /Select what type of report/i,
+      }),
+    ).toHaveValue("Annual Report");
+
+    // 2. Operation representatives - multi-select
+    await assertFieldVisibility(
+      this.page,
+      ["Bob Brown"],
+      true,
+    );
+
+    // 3-5. Editable text inputs - verify pre-populated values
+    const operatorLegalName = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.OPERATOR_LEGAL_NAME_LABEL, "i"),
+    );
+    const operatorTradeName = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.OPERATOR_TRADE_NAME_LABEL, "i"),
+    );
+    const operationName = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.OPERATION_NAME_LABEL, "i"),
+    );
+    await expect(operatorLegalName).toHaveValue ("Bravo Technologies - has parTNER operator");
+    await expect(operatorTradeName).toHaveValue ("Bravo Technologies");
+    await expect(operationName).toHaveValue ("Bark LFO - Registered");
+
+    // 6-9. Read-only fields - verify values and disabled state
+    const operationType = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.OPERATION_TYPE_LABEL, "i"),
+    );
+    const registrationPurpose = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.REGISTRATION_PURPOSE_LABEL, "i"),
+    );
+    const bcghgId = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.BCGHG_ID_LABEL, "i"),
+    );
+    const boroId = this.page.getByLabel(
+      new RegExp(OPERATION_INFO_FIELDS.BORO_ID_LABEL, "i"),
+    );
+    await expect(operationType).toHaveValue("Linear Facilities Operation");
+    await expect(registrationPurpose).toHaveValue("OBPS Regulated Operation");
+    await expect(bcghgId).toHaveValue("13219990021");
+    await expect(boroId).toHaveValue("24-0018");
+    await checkFormFieldsReadOnly([
+      operationType,
+      registrationPurpose,
+      bcghgId,
+      boroId,
+    ]);
+
+    // 10. Reporting activities
+    await assertFieldVisibility(
+      this.page,
+      ["Cement production", "General stationary combustion excluding line tracing (at SFO)"],
+      true,
+    );
+
+    // 11. Regulated products
+    await assertFieldVisibility(
+      this.page,
+      ["Cement equivalent", "Gypsum wallboard", "Sold electricity"],
+      true,
+    );
+  }
+
   async verifyFieldVisibility(): Promise<void> {
     await assertFieldVisibility(
       this.page,
