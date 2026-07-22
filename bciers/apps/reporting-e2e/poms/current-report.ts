@@ -100,9 +100,20 @@ export class CurrentReportPOM {
     await operationReview.verifyBanglesSfoFields();
   }
 
+  async verifyBarkLfoOperationInfo(): Promise<void> {
+    const operationReview = new ReportOperationPOM(this.page);
+    await operationReview.verifyBarkLfoFields();
+  }
+
   async fillPersonResponsible(contactName: string): Promise<void> {
     const personResponsible = new PersonResponsiblePOM(this.page);
     await personResponsible.selectContact(contactName);
+  }
+
+  async verifyPersonResponsible(contactName: string): Promise<void> {
+    await expect(
+      this.page.getByRole("combobox", { name: contactName }),
+    ).toHaveValue(contactName);
   }
 
   async fillAdditionalData(): Promise<void> {

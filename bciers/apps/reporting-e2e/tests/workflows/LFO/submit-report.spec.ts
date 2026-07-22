@@ -4,6 +4,7 @@ import {
   FacilityIDs,
   OPERATION_NAMES,
   REPORT_STATUS,
+  ReportIDs,
   ReportRoutes,
 } from "@/reporting-e2e/utils/enums";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
@@ -13,7 +14,7 @@ import { LFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReviewFacilitiesPOM } from "@/reporting-e2e/poms/LFO/review-facilities";
 import { FacilityGridPOM } from "@/reporting-e2e/poms/LFO/facility-grid";
 import { OperationEmissionSummaryPOM } from "@/reporting-e2e/poms/LFO/operation-emissions-summary";
-import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
+import { verifyFormTitle, verifyReportHeader } from "@/reporting-e2e/utils/helpers";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
@@ -280,9 +281,48 @@ test.describe("LFO: create and submit a new report for the current reporting yea
     const grid = new CurrentReportsPOM(page);
     await grid.route();
 
-    // -- 2. Create a supplementary report for Bees LFO
-    const reportId = await grid.createSupplementaryReportById(
-      FacilityIDs.BEES_LFO,
+    // -- 2. Create a supplementary report for Bark LFO
+    const supplementaryReportId = await grid.createSupplementaryReportById(
+      ReportIDs.BARK_LFO,
     );
+    const report = new CurrentReportPOM(page);
+
+    // -- 3. Review Operation Information
+    await verifyReportHeader(page, OPERATION_NAMES.BARK_LFO, "Version 2");
+    await verifyFormTitle(page, "Review Operation Information");
+    await report.verifyBarkLfoOperationInfo();
+    await report.saveAndContinue(
+      new RegExp(report.personResponsibleUrl(supplementaryReportId), "i"),
+    );
+
+    // -- 4. Person Responsible — confirm Bob Brown selected
+    await verifyFormTitle(page, "Person Responsible for Submitting Report");
+    await report.verifyPersonResponsible("Bob Brown");
+    await report.saveAndContinue(
+      new RegExp(report.reviewFacilitiesUrl(supplementaryReportId), "i"),
+    );
+
+    // -- 5. Review Facilities
+    const reviewFacilities = new ReviewFacilitiesPOM(page);
+    await reviewFacilities.verifyFacilitiesSelected(["Bark HQ", "Facility 42"]);
+    await report.saveAndContinue(
+      new RegExp(report.facilitiesGridUrl(supplementaryReportId)),
+    );
+
+    // -- 6. Facility Grid
+    const facilityGrid = new FacilityGridPOM(page, supplementaryReportId);
+    await facilityGrid.waitForReady();
+    const barkHQFacilityId =
+      await facilityGrid.continueReportForFacility("Bark HQ");
+
+    // -- 7. Facility report for Bark HQ
+    const facilityReport = new LFOFacilityReportPOM(page, barkHQFacilityId);
+    await verifyFormTitle(page, "Review Facility Information");
+    await facilityReport.verifyBarkHQFacilityInformation();
+    await facilityReport.saveAndContinue(
+      new RegExp(report.activitiesUrl(supplementaryReportId, barkHQFacilityId)),
+    );
+
+
   })
 });
