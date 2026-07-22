@@ -1,0 +1,90 @@
+# yaml-language-server: $schema=https://www.schemastore.org/github-issue-forms.json
+
+name: Tech Debt
+description: Tech debt issue
+title: "Tech debt: "
+labels: ["tech-debt"]
+projects:
+  - bcgov/123
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the tech debt issue
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        #### Tech debt triage
+
+        The purpose of our technical debt triage process is to analyze technical debt to determine risk level of the technical debt and the value in tackling that technical debt.
+
+        #### Risk value scoring
+
+        | Level  | Value                 |
+        | ------ | --------------------- |
+        | High   | <div align="center">3 |
+        | Medium | <div align="center">2 |
+        | Low    | <div align="center">1 |
+  - type: dropdown
+    id: businessrisk
+    attributes:
+      label: Business Area Risk
+      description: Risk of business area visibility / damage to user experience
+      options:
+        - High 3
+        - Medium 2
+        - Low 1
+  - type: dropdown
+    id: developerrisk
+    attributes:
+      label: Developer Fault Risk
+      description: How likely will this tech debt cause a future error related to coding on top of it
+      options:
+        - High 3
+        - Medium 2
+        - Low 1
+  - type: dropdown
+    id: systemrisk
+    attributes:
+      label: System Fault Risk
+      description: Risk of system errors or application downtime
+      options:
+        - High 3
+        - Medium 2
+        - Low 1
+  - type: dropdown
+    id: timescalerisk
+    attributes:
+      label: Time Scale Risk
+      description: Compound risk effect if left alone. How much more difficult to fix or dangerous will this become over time?
+      options:
+        - High 3
+        - Medium 2
+        - Low 1
+  - type: dropdown
+    id: timesinkrisk
+    attributes:
+      label: Time Sink Risk
+      description: How much will this tech debt slow the development process down
+      options:
+        - High 3
+        - Medium 2
+        - Low 1
+  - type: input
+    id: totalrisk
+    attributes:
+      label: Total Risk
+      description: Total risk score
+  - type: textarea
+    id: dev_checklist
+    attributes:
+      label: Development Checklist
+      value: |
+        - [ ] Checklist item
+      placeholder: |
+        - [ ] Checklist item
+        - [ ] Checklist item
+        - [ ] Checklist item
