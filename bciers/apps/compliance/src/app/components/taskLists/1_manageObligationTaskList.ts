@@ -23,18 +23,6 @@ const compliancePages = [
   ActivePage.PayObligationTrackPayments,
 ];
 
-export const penaltyPages = [
-  ActivePage.ReviewPenaltySummary,
-  ActivePage.DownloadPaymentPenaltyInstruction,
-  ActivePage.PayPenaltyTrackPayments,
-];
-
-export const interestPages = [
-  ActivePage.ReviewInterestSummary,
-  ActivePage.DownloadInterestPaymentInstructions,
-  ActivePage.PayInterestPenaltyTrackPayments,
-];
-
 export const generateManageObligationTaskList: (
   complianceReportVersionId: number,
   tasklistData: ObligationTasklistData,

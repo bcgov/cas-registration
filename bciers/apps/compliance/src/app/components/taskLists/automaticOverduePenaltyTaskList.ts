@@ -1,5 +1,5 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { ActivePage, penaltyPages } from "./1_manageObligationTaskList";
+import { ActivePage } from "./1_manageObligationTaskList";
 
 export const generateAutomaticOverduePenaltyTaskList: (
   complianceReportVersionId: number,
@@ -30,9 +30,7 @@ export const generateAutomaticOverduePenaltyTaskList: (
     {
       type: "Section",
       title: `Automatic Overdue Penalty`,
-      isExpanded: Object.values(penaltyPages).includes(
-        activePage as ActivePage,
-      ),
+      isExpanded: true,
       elements: taskItems,
     },
   ];
