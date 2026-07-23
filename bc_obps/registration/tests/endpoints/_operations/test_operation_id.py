@@ -3,28 +3,16 @@ from registration.models import (
     UserOperator,
 )
 from registration.models.operation import Operation
-from registration.tests.constants import MOCK_DATA_URL
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.tests.utils.bakers import operation_baker, operator_baker
 from registration.utils import custom_reverse_lazy
 import json
 
+from common.tests.utils.test_files import create_test_file
+
 
 class TestOperationIdEndpoint(CommonTestSetup):
     endpoint = CommonTestSetup.base_endpoint + "operations"
-
-    test_payload = {
-        "registration_purpose": "Reporting Operation",
-        "regulated_products": [1],
-        "name": "op name",
-        "type": Operation.Types.SFO,
-        "naics_code_id": 1,
-        "secondary_naics_code_id": 2,
-        "tertiary_naics_code_id": 3,
-        "activities": [1],
-        "boundary_map": MOCK_DATA_URL,
-        "process_flow_diagram": MOCK_DATA_URL,
-    }
 
     def test_industry_users_can_only_get_their_own_operations(self):
         random_operator = operator_baker()
@@ -109,7 +97,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         response_data = response.json()
         assert response_data.get("id") == str(operation.id)
 
-    def test_operations_endpoint_put_success(self):
+    def test_operations_endpoint_post_success(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe(
             'registration.tests.utils.operation',
@@ -117,14 +105,46 @@ class TestOperationIdEndpoint(CommonTestSetup):
             status=Operation.Statuses.REGISTERED,
         )
         contact = baker.make_recipe('registration.tests.utils.contact')
-        self.test_payload["operation_representatives"] = [contact.id]
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            json.dumps(self.test_payload),
-            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id}),
+
+        test_payload = {
+            "payload": json.dumps(
+                {
+                    "registration_purpose": "Reporting Operation",
+                    "regulated_products": [1],
+                    "name": "op name",
+                    "type": Operation.Types.SFO,
+                    "naics_code_id": 1,
+                    "secondary_naics_code_id": 2,
+                    "tertiary_naics_code_id": 3,
+                    "activities": [1],
+                    "operation_representatives": [contact.id],
+                    "multiple_operators_array": [
+                        {
+                            "legal_name": "test legal name",
+                            "trade_name": "test trade name",
+                            "business_structure": "BC Corporation",
+                            "cra_business_number": "123456789",
+                        },
+                        {
+                            "legal_name": "test legal name2",
+                            "trade_name": "test trade name2",
+                            "business_structure": "Sole Proprietorship",
+                            "cra_business_number": "111222333",
+                        },
+                    ],
+                }
+            ),
+            "boundary_map": create_test_file("test_boundary_map.docx"),
+            "process_flow_diagram": create_test_file("test_process_flow_diagram.pdf"),
+        }
+
+        response = TestUtils.client.post(
+            path=custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id}),
+            data=test_payload,
+            format="multipart",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
+
         assert response.status_code == 200
         response_data = response.json()
         assert response_data.get("id") == str(operation.id)

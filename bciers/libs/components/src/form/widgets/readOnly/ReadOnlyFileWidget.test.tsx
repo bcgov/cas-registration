@@ -1,21 +1,21 @@
 import { render } from "@testing-library/react";
 import FormBase from "@bciers/components/form/FormBase";
-import {
-  testDataUriClean,
-  testDataUriUnscanned,
-  testDataUriQuarantined,
-  fileFieldSchema,
-  fileFieldUiSchema,
-} from "../FileWidget.test";
+import { fileFieldSchema, fileFieldUiSchema } from "../FileWidget.test";
 
 describe("RJSF ReadOnlyFileWidget", () => {
   it("should render a file field with correct message when scanStatus is Unscanned", async () => {
     const { container } = render(
       <FormBase
         disabled
+        readonly
         schema={fileFieldSchema}
         uiSchema={fileFieldUiSchema}
-        formData={{ fileTestField: testDataUriUnscanned }}
+        formData={{
+          fileTestField: JSON.stringify({
+            name: "test.pdf",
+            status: "Unscanned",
+          }),
+        }}
       />,
     );
 
@@ -31,38 +31,50 @@ describe("RJSF ReadOnlyFileWidget", () => {
     const { container } = render(
       <FormBase
         disabled
+        readonly
         schema={fileFieldSchema}
         uiSchema={fileFieldUiSchema}
-        formData={{ fileTestField: testDataUriQuarantined }}
+        formData={{
+          fileTestField: JSON.stringify({
+            name: "test.pdf",
+            status: "Quarantined",
+          }),
+        }}
       />,
     );
 
     const readOnlyFileWidget = container.querySelector("#root_fileTestField");
 
     expect(readOnlyFileWidget).toBeVisible();
-    expect(readOnlyFileWidget).toHaveTextContent("Security risk found.");
+    expect(readOnlyFileWidget).toHaveTextContent(
+      'Security risk found in "test.pdf". Check for malware or upload a different file.',
+    );
   });
 
   it("should render a file field with correct message when scanStatus is Clean", async () => {
     const { container } = render(
       <FormBase
         disabled
+        readonly
         schema={fileFieldSchema}
         uiSchema={fileFieldUiSchema}
-        formData={{ fileTestField: testDataUriClean }}
+        formData={{
+          fileTestField: JSON.stringify({ name: "test.pdf", status: "Clean" }),
+        }}
       />,
     );
 
     const readOnlyFileWidget = container.querySelector("#root_fileTestField");
 
     expect(readOnlyFileWidget).toBeVisible();
-    expect(readOnlyFileWidget).toHaveTextContent("testpdf.pdf");
+    expect(readOnlyFileWidget).toHaveTextContent("test.pdf");
   });
 
   it("should be have the correct message when no value is provided", async () => {
     const { container } = render(
       <FormBase
         disabled
+        readonly
         schema={fileFieldSchema}
         uiSchema={fileFieldUiSchema}
       />,

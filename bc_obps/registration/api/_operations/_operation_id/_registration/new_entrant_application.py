@@ -1,11 +1,11 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
+from ninja import File, UploadedFile
 from registration.constants import OPERATION_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema import (
     OperationUpdateOut,
-    OperationNewEntrantApplicationIn,
     OperationNewEntrantApplicationOut,
     Message,
 )
@@ -14,7 +14,6 @@ from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from registration.models import Operation
 from registration.api.router import router
-
 
 ##### GET #####
 
@@ -32,7 +31,7 @@ def get_operation_new_entrant_application(request: HttpRequest, operation_id: UU
     return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id, ['id', 'operator_id'])
 
 
-@router.put(
+@router.post(
     "/operations/{uuid:operation_id}/registration/new-entrant-application",
     response={200: OperationUpdateOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
@@ -40,8 +39,10 @@ def get_operation_new_entrant_application(request: HttpRequest, operation_id: UU
     auth=authorize("approved_industry_user"),
 )
 def create_or_replace_new_entrant_application(
-    request: HttpRequest, operation_id: UUID, payload: OperationNewEntrantApplicationIn
+    request: HttpRequest,
+    operation_id: UUID,
+    new_entrant_application: File[UploadedFile],
 ) -> Tuple[Literal[200], Operation]:
     return 200, OperationService.create_or_replace_new_entrant_application(
-        get_current_user_guid(request), operation_id, payload
+        get_current_user_guid(request), operation_id, new_entrant_application
     )

@@ -1,100 +1,73 @@
 # File uploads in BCIERS app
 
-Could use some optimization: https://github.com/bcgov/cas-registration/issues/2123
-
-Two methods are available:
-
-- with RJSF
-- without RJSF using `FormData`
-
-## With RJSF (using data-urls)
-
-### Frontend
-
-- RJSF supports file with data-urls: https://rjsf-team.github.io/react-jsonschema-form/docs/usage/widgets/#file-widgets
-- `FileWidget`: this started as a copy/paste from RJSF's [FileWidget](https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/core/src/components/widgets/FileWidget.tsx) and @marcelmueller did some styling to match the designs. It now additionally includes a check for max file size, and possibly other stuff including state mgt.
-
-In the rjsf schema:
-
-```ts
-# schema
-statutory_declaration: {
-  type: "string",
-  title: "Statutory Declaration",
-  format: "data-url",
-}
-
-# uiSchema
-statutory_declaration: {
-  "ui:widget": "FileWidget",
-  "ui:options": {
-    filePreview: true,
-    accept: ".pdf",
-  }
-}
-```
-
-### Backend
-
-#### Ninja field validator
-
-The field is declared as a string, and we validate that we can convert it to a file
-
-`In` schema:
-
-```python
-...
-  boundary_map: str
-
-  @field_validator("boundary_map")
-  @classmethod
-  def validate_boundary_map(cls, value: str) -> ContentFile:
-    return data_url_to_file(value)
-```
-
-The reverse can be done for the `Out` schema if needed:
-
-```python
-  boundary_map: Optional[str] = None
-
-  @staticmethod
-  def resolve_boundary_map(obj: Operation) -> Optional[str]:
-    boundary_map = obj.get_boundary_map()
-    if boundary_map:
-      return file_to_data_url(boundary_map)
-
-    return None
-```
-
-#### Service
-
-```python
-  DocumentService.create_or_replace_operation_document(
-    user_guid,
-    operation.id,
-    payload.boundary_map, # type: ignore # mypy is not aware of the schema validator
-    'boundary_map',
-  ),
-```
-
-#### Model
-
-The `FileField` is where django does the magic, along with the `STORAGES` configuration in settings.py.
-More documentation [here](https://docs.djangoproject.com/en/5.1/ref/models/fields/#filefield)
-
-```python
-  class Document(TimeStampedModel):
-    file = models.FileField(upload_to="documents", db_comment="The file format, metadata, etc.")
-```
-
 #### Connection with GCS
 
 - Some setup is done in cas-registration/bc_obps/bc_obps/settings.py, will need env variables
 - GCS is not set up in CI so we skip endpoint tests related to files, and we don't have any file stuff in our mock data
 
+## With RJSF
+
+### A frontend file widget that splits data and file content
+
+example: [OperationInformationForm.tsx](../apps/registration/app/components/operations/registration/OperationInformationForm.tsx)
+
+### Usage
+
+The `FileWidget.tsx` exposes a hook that wraps the form submission, providing:
+
+- A context object to pass to the form, to link file field with submitted data
+  (it contains a callback to store the selected file within a closure, to submit along with the form)
+- A `submitWithFiles` method wrapping the actionHandler method, building the FormData object and submitting it with the right mime types
+
+The RJSF schema should expose the property as a `string`, the widget does the rest.
+
+```ts
+
+const schema: {
+  "properties" : {
+    "file_prop": {
+      "type":"string"
+    }
+  }
+}
+
+const ComponentWithForm = (props) => {
+
+  const [fileWidgetContext, submitWithFiles] = useFileUploadWidget();
+
+  const handleSubmit = ({data}) => {
+    const response = await submitWithFiles(
+      data.formData,
+      URL,
+      "POST",
+      pathToRevalidate
+    )
+  }
+
+  return <Form
+    schema={schema}
+    formContext={{...otherContext, ...fileWidgetContext}
+    onSubmit={handleSubmit}
+  />
+
+}
+
+```
+
+> [!NOTE]
+> The `FileWidget` sets the string value to a serialized JSON string: '{"status": "Clean", "name": "FileName.pdf", "id": 1234}'
+> The backend is expected to follow that schema when passing form data
+
+### Backend considerations
+
+- The payload will contain a serialized `{id: <id | undefined>, name: <name>, status: <"unscanned"|"clean"|...>}` object that will be part of the form data. Parsing that form data on the backend can be useful
+- The `GET` API endpoint is expected to provide that same structure to the frontend form to display the initial file parameters, if a file is present already.
+
+example ninja schema: [operation.py](../bc_obps/registration/schema/operation.py:19)
+
 ## Without RJSF
 
-### Frontend
+### Manual frontend handling
 
 example: [AttachmentForm.tsx](../bciers/apps/reporting/src/app/components/attachments/AttachmentForm.tsx)
 
@@ -114,7 +87,7 @@ const response = await postAttachments(version_id, formData);
 
 The `actionHandler` will automatically attach the proper `application/www-form-urlencoded` type to the request, there is no need to set this up.
 
-### Backend
+## Backend
 
 #### API
 
@@ -125,6 +98,17 @@ Django-ninja [does this for us](https://django-ninja.dev/guides/input/file-param
 def save_files(request: HttpRequest, files: List[UploadedFiles] = File(...)):
     ... here goes processing ...
 ```
+
+or for multiple files along with a payload
+
+```python
+@router.post(...)
+def save_files(request: HttpRequest, payload: SomeSchema, my_file: File[UploadedFile], my_optional_file: File[UploadedFile] = None):
+  ... stuff
+```
+
+[!Warning]: only POST requests are supported at this point by Django
+[!Warning]: using the Optional[File] type breaks ninja
 
 #### Service & Model
 

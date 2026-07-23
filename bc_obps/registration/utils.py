@@ -1,13 +1,8 @@
-import base64
 import logging
-import os
-import re
 from typing import Any, Dict, Iterable, Optional, TypeVar, Union
 
-import requests
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.files.base import ContentFile
 from django.db import IntegrityError, models
 from django.db.models import QuerySet
 from django.http import HttpRequest
@@ -89,47 +84,6 @@ def generate_useful_error(error: Union[ValidationError, NinjaValidationError]) -
         return None
     messages = error.messages
     return messages[0] if messages else None
-
-
-# File helpers
-def file_to_data_url(document: Document) -> Optional[str]:  # type: ignore[return] # we dont break the function if something goes wrong in this function
-    """
-    Transforms a Django FieldField record into a data url that RJSF can process.
-    """
-    timeout_seconds = 10
-    # Handles local storage when running in CI
-    if os.environ.get("CI", None) == "true" or os.environ.get("ENVIRONMENT", None) == "local":
-        encoded_content = base64.b64encode(document.get_file_content().read()).decode("utf-8")
-        return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";scanstatus=" + document.status + ";base64," + encoded_content  # type: ignore[no-any-return]
-    else:
-        try:
-            response = requests.get(document.get_file_url(), timeout=timeout_seconds)
-            if response.status_code == 200:
-                document_content = response.content
-                encoded_content = base64.b64encode(document_content).decode("utf-8")
-                # only pdf format is allowed
-                return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";scanstatus=" + document.status + ";base64," + encoded_content  # type: ignore[no-any-return]
-            else:
-                logger.error(f"Request to retrieve file failed with status code {response.status_code}")
-        except requests.exceptions.Timeout:
-            # Handle the timeout exception
-            logger.exception(f"Request timed out after {timeout_seconds} seconds")
-        except requests.exceptions.RequestException as e:
-            # Handle other types of exceptions (e.g., connection error)
-            logger.exception(f"An error occurred: {e}")
-
-
-def data_url_to_file(data_url: str) -> ContentFile:
-    """
-    Transforms a data url into a ContentFile that Django can insert into the db and add to google cloud storage
-    """
-    name_pattern = re.search(r'name=([^;]+)', data_url)
-    file_name = name_pattern.group(1) if name_pattern else None
-    _, encoded_data = data_url.split(',')
-
-    # Decode the base64-encoded data
-    file_data = base64.b64decode(encoded_data)
-    return ContentFile(file_data, file_name)
 
 
 def custom_reverse_lazy(view_name: str, *args: Any, **kwargs: Any) -> Union[str, Any]:

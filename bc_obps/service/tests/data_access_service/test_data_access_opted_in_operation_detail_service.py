@@ -3,7 +3,7 @@ from service.data_access_service.opted_in_operation_detail_service import OptedI
 from registration.models.operation import Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from model_bakery import baker
-from registration.schema import OptedInOperationDetailIn
+from service.data_types.operation_service import OptedInOperationDetailData
 
 pytestmark = pytest.mark.django_db
 
@@ -19,7 +19,7 @@ class TestDataAccessOptedInOperationService:
             operator=approved_user_operator.operator,
         )
 
-        opted_in_operation_detail_payload = OptedInOperationDetailIn(
+        opted_in_operation_detail_payload = OptedInOperationDetailData(
             meets_section_3_emissions_requirements=False,
             meets_electricity_import_operation_criteria=True,
             meets_entire_operation_requirements=True,

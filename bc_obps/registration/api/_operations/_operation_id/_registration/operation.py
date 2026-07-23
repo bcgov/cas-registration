@@ -1,8 +1,9 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
+from ninja import File, UploadedFile
 from registration.schema import OperationInformationIn, OperationUpdateOut, OperationRegistrationOut, Message
-from service.operation_service import OperationService
+from service.operation_service import OperationData, OperationService, MultipleOperatorData
 from registration.constants import OPERATION_TAGS
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
@@ -25,10 +26,7 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
     return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
 
 
-##### PUT #####
-
-
-@router.put(
+@router.post(
     "/operations/{uuid:operation_id}/registration/operation",
     response={200: OperationUpdateOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
@@ -37,6 +35,29 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
     auth=authorize('approved_industry_user'),
 )
 def register_edit_operation_information(
-    request: HttpRequest, operation_id: UUID, payload: OperationInformationIn
+    request: HttpRequest,
+    operation_id: UUID,
+    payload: OperationInformationIn,
+    # django-ninja doesn't parse multipart requests properly if the type is marked Optional
+    boundary_map: File[UploadedFile] = None,  # type: ignore
+    process_flow_diagram: File[UploadedFile] = None,  # type: ignore
+    new_entrant_application: File[UploadedFile] = None,  # type: ignore
 ) -> Tuple[Literal[200], Operation]:
-    return 200, OperationService.register_operation_information(get_current_user_guid(request), operation_id, payload)
+
+    data = OperationData(
+        boundary_map=boundary_map,
+        process_flow_diagram=process_flow_diagram,
+        new_entrant_application=new_entrant_application,
+        **payload.model_dump(exclude={'multiple_operators_array'}),
+        multiple_operators_array=(
+            [
+                MultipleOperatorData(
+                    **op.model_dump(exclude={'business_structure'}), business_structure_id=op.business_structure.name  # type: ignore
+                )
+                for op in payload.multiple_operators_array or []
+            ]
+        ),
+    )
+    operation = OperationService.register_operation_information(get_current_user_guid(request), operation_id, data)
+
+    return 200, operation

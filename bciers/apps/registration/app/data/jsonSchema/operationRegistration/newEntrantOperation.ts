@@ -17,7 +17,6 @@ export const newEntrantOperationSchema: RJSFSchema = {
     new_entrant_application: {
       type: "string",
       title: "Upload application and statutory declaration",
-      format: "data-url",
     },
   },
 };

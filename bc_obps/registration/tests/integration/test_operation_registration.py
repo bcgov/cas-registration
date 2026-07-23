@@ -1,3 +1,6 @@
+import json
+
+from django.core.files.base import ContentFile
 import pytest
 from django.db.models import Q
 from model_bakery import baker
@@ -5,7 +8,6 @@ from common.lib import pgtrigger
 
 from registration.models import FacilityDesignatedOperationTimeline, Operation
 from registration.models.document import Document
-from registration.tests.constants import MOCK_DATA_URL
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
@@ -43,31 +45,43 @@ class TestOperationRegistration(CommonTestSetup):
 
     def _set_operation_information(self, purpose: Operation.Purposes, operation_type: Operation.Types):
         if operation_type == Operation.Types.EIO:
-            operation_information_payload = {
-                "registration_purpose": purpose,
-                "name": f"{purpose} name",
-                "type": operation_type.value,
+            form = {
+                "payload": json.dumps(
+                    {
+                        "registration_purpose": purpose,
+                        "name": f"{purpose} name",
+                        "type": operation_type.value,
+                    }
+                )
             }
         else:
-            operation_information_payload = {
-                "registration_purpose": purpose,
-                "regulated_products": [] if purpose in self.purposes_with_no_regulated_products else [1, 2],
-                "name": f"{purpose} name",
-                "type": operation_type,
-                "naics_code_id": 1,
-                "secondary_naics_code_id": 2,
-                "tertiary_naics_code_id": 3,
-                "activities": [1, 2],
-                "boundary_map": MOCK_DATA_URL,
-                "process_flow_diagram": MOCK_DATA_URL,
+            form = {
+                "payload": json.dumps(
+                    {
+                        "registration_purpose": purpose,
+                        "regulated_products": [] if purpose in self.purposes_with_no_regulated_products else [1, 2],
+                        "name": f"{purpose} name",
+                        "type": operation_type,
+                        "naics_code_id": 1,
+                        "secondary_naics_code_id": 2,
+                        "tertiary_naics_code_id": 3,
+                        "activities": [1, 2],
+                        "boundary_map": "file1.pdf",
+                        "process_flow_diagram": "file2.txt",
+                    }
+                ),
+                "boundary_map": ContentFile(b"data1", "file1.pdf"),
+                "process_flow_diagram": ContentFile(b"data2", "file2.txt"),
             }
-
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            operation_information_payload,
-            custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': self.operation.id}),
+        TestUtils.save_app_role(self, "industry_user")
+        endpoint = custom_reverse_lazy(
+            "register_edit_operation_information", kwargs={'operation_id': self.operation.id}
+        )
+        response = TestUtils.client.post(
+            path=endpoint,
+            data=form,
+            format='multipart',
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
         if response.status_code != 200:
@@ -101,17 +115,18 @@ class TestOperationRegistration(CommonTestSetup):
         self.operation.refresh_from_db()
 
     def _set_new_entrant_application(self):
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            {
-                'new_entrant_application': MOCK_DATA_URL,
-            },
+        TestUtils.save_app_role(self, "industry_user")
+        response = TestUtils.client.post(
             custom_reverse_lazy(
                 "create_or_replace_new_entrant_application", kwargs={'operation_id': self.operation.id}
             ),
+            data={
+                "new_entrant_application": ContentFile(b"stuff", "new_entrant_application.pdf"),
+            },
+            format='multipart',
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
+
         if response.status_code != 200:
             raise Exception(response.json())
         self.operation.refresh_from_db()

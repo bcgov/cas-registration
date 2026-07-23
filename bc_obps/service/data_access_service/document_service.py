@@ -1,7 +1,7 @@
 from typing import Optional
 from uuid import UUID
+from django.core.files import File
 from registration.models import Document, DocumentType
-from django.core.files.base import ContentFile
 
 
 class DocumentDataAccessService:
@@ -20,7 +20,7 @@ class DocumentDataAccessService:
     def create_document(
         cls,
         user_guid: UUID,
-        file_data: Optional[ContentFile],
+        file_data: Optional[File],
         document_type_name: str,
         operation_id: UUID,
     ) -> Document:

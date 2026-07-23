@@ -1,8 +1,8 @@
 from typing import Tuple
 from uuid import UUID
+from django.core.files import File
 from service.data_access_service.document_service import DocumentDataAccessService
 from registration.models import Document, Operation
-from django.core.files.base import ContentFile
 from service.data_access_service.operation_service import OperationDataAccessService
 
 
@@ -18,7 +18,7 @@ class DocumentService:
 
     @classmethod
     def create_or_replace_operation_document(
-        cls, user_guid: UUID, operation_id: UUID, file_data: ContentFile, document_type: str
+        cls, user_guid: UUID, operation_id: UUID, file_data: File, document_type: str
     ) -> Tuple[Document, bool]:
         """
         This function receives a document and operation id.

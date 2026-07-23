@@ -1,4 +1,4 @@
-from registration.tests.constants import MOCK_DATA_URL
+import json
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -7,6 +7,7 @@ from registration.utils import custom_reverse_lazy
 from registration.models import Operation
 from unittest.mock import patch, MagicMock
 from model_bakery.baker import make_recipe
+from common.tests.utils.test_files import create_test_file
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
@@ -70,19 +71,56 @@ class TestPostOperationsEndpoint(CommonTestSetup):
         "secondary_naics_code_id": 2,
         "tertiary_naics_code_id": 3,
         "activities": [1],
-        "boundary_map": MOCK_DATA_URL,
-        "process_flow_diagram": MOCK_DATA_URL,
     }
 
-    # GET
     def test_user_can_post_operation_success(self):
         baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            self.mock_payload,
-            custom_reverse_lazy("register_create_operation_information"),
+
+        response = TestUtils.client.post(
+            path=custom_reverse_lazy("register_create_operation_information"),
+            data={
+                "payload": json.dumps(self.mock_payload),
+                "boundary_map": create_test_file("boundary_map.pdf"),
+                "process_flow_diagram": create_test_file("process_flow_diagram.pdf"),
+            },
+            format="multipart",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
+
+        assert response.status_code == 201
+        assert response.json().get('name') == "op name"
+        assert response.json().get('id') is not None
+
+    def test_user_can_post_with_multiple_operators(self):
+        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+
+        payload = {
+            **self.mock_payload,
+            "multiple_operators_array": [
+                {
+                    "legal_name": "test legal name",
+                    "trade_name": "test trade name",
+                    "business_structure": "BC Corporation",
+                    "cra_business_number": "123456789",
+                },
+                {
+                    "legal_name": "test legal name2",
+                    "trade_name": "test trade name2",
+                    "business_structure": "Sole Proprietorship",
+                    "cra_business_number": "111222333",
+                },
+            ],
+        }
+
+        response = TestUtils.client.post(
+            path=custom_reverse_lazy("register_create_operation_information"),
+            data={
+                "payload": json.dumps(payload),
+                "boundary_map": create_test_file("boundary_map.pdf"),
+                "process_flow_diagram": create_test_file("process_flow_diagram.pdf"),
+            },
+            format="multipart",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
         assert response.status_code == 201

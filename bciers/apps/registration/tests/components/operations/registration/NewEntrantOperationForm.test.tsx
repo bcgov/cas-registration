@@ -24,8 +24,6 @@ useRouter.mockReturnValue({
   push: mockPush,
 });
 
-export const mockDataUri =
-  "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=";
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
 
 describe("the NewEntrantOperationForm component", () => {
@@ -63,7 +61,11 @@ describe("the NewEntrantOperationForm component", () => {
     render(
       <NewEntrantOperationForm
         formData={{
-          new_entrant_application: mockDataUri,
+          new_entrant_application: JSON.stringify({
+            id: 1,
+            name: "test_file.pdf",
+            status: "Clean",
+          }),
         }}
         operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
         schema={newEntrantOperationSchema}
@@ -72,7 +74,7 @@ describe("the NewEntrantOperationForm component", () => {
       />,
     );
 
-    expect(screen.getByText("testpdf.pdf")).toBeVisible();
+    expect(screen.getByText("test_file.pdf")).toBeVisible();
   });
 
   it("should display the correct url and message for new entrant operations", () => {
@@ -166,14 +168,28 @@ describe("the NewEntrantOperationForm component", () => {
     expect(actionHandler).toHaveBeenCalledTimes(1);
 
     // date_of_first_shipment is no longer sent in the request body for 2025+ registrations
-    expect(actionHandler).toHaveBeenCalledWith(
+    const callArgs = actionHandler.mock.calls[0];
+    expect(callArgs[0]).toBe(
       "registration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/new-entrant-application",
-      "PUT",
-      "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d",
-      {
-        body: '{"new_entrant_application":"data:application/pdf;name=test.pdf;base64,dGVzdA=="}',
-      },
     );
+    expect(callArgs[1]).toBe("POST");
+    expect(callArgs[2]).toBe(
+      "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d",
+    );
+
+    const submittedFormData = Object.fromEntries(callArgs[3].body);
+    expect(submittedFormData.payload).toEqual(
+      JSON.stringify({
+        new_entrant_application: JSON.stringify({
+          name: "test.pdf",
+          status: "Unscanned",
+        }),
+      }),
+    );
+    expect(submittedFormData.new_entrant_application instanceof File).toBe(
+      true,
+    );
+
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
         "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d/5",

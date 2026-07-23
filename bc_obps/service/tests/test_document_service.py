@@ -1,12 +1,11 @@
 from service.data_access_service.document_service import DocumentDataAccessService
-from registration.utils import data_url_to_file
 from registration.models.document import Document
 from registration.models.operation import Operation
-from registration.tests.constants import MOCK_DATA_URL, MOCK_DATA_URL_2
 from service.document_service import DocumentService
 import pytest
 
 from model_bakery import baker
+from common.tests.utils.test_files import create_test_file
 
 pytestmark = pytest.mark.django_db
 
@@ -33,7 +32,7 @@ class TestDocumentService:
     @staticmethod
     def test_create_operation_document():
         # the value received by the service is a File (transformed into this in the django ninja schema)
-        file = data_url_to_file(MOCK_DATA_URL)
+        file = create_test_file("test.pdf")
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         document, created = DocumentService.create_or_replace_operation_document(
@@ -49,18 +48,19 @@ class TestDocumentService:
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         DocumentDataAccessService.create_document(
-            approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map', operation.id
+            approved_user_operator.user_id, create_test_file("test.pdf"), 'boundary_map', operation.id
         )
 
-        updated_file = data_url_to_file(MOCK_DATA_URL_2)
+        updated_file = create_test_file("updated.pdf")
         document, created = DocumentService.create_or_replace_operation_document(
             approved_user_operator.user_id, operation.id, updated_file, 'boundary_map'
         )
 
         assert Document.objects.count() == 1
         assert document.type.name == 'boundary_map'
-        # MOCK_DATA_URL's filename is test.pdf
-        assert document.file.name.find("test") != -1
+
+        assert document.file.name.find("test") == -1
+        assert document.file.name.find("updated") != -1
         assert created is True
 
     @pytest.mark.parametrize("registration_status", [Operation.Statuses.REGISTERED, Operation.Statuses.DRAFT])
@@ -71,11 +71,11 @@ class TestDocumentService:
         )
         # boundary map
         b_map = DocumentDataAccessService.create_document(
-            approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map', operation.id
+            approved_user_operator.user_id, create_test_file("test.pdf"), 'boundary_map', operation.id
         )
         # process flow diagram
         DocumentDataAccessService.create_document(
-            approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'process_flow_diagram', operation.id
+            approved_user_operator.user_id, create_test_file("test.pdf"), 'process_flow_diagram', operation.id
         )
 
         assert Document.objects.count() == 2
