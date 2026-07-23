@@ -1,6 +1,4 @@
 import re
-from common.enums import Schemas
-from rls.utils.policy import RlsPolicy
 from reporting.enums.enums import ReportingTableNames
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.helpers import generate_report_policy_mapping_from_grants, generate_rls_grants, generate_rls_policies

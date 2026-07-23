@@ -2,17 +2,14 @@ from common.tests.utils.helpers import BaseTestCase
 from django.db import ProgrammingError
 import pytest
 from django.core.exceptions import ValidationError
-from registration.models import facility
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from reporting.models.report import Report
 from reporting.models.report_product import ReportProduct
 from model_bakery.baker import make_recipe, make
-from reporting.tests.utils.bakers import report_baker
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
 from reporting.tests.utils.rls_test_recipe import ReportRlsSetup
-from rls.tests.helpers import test_policies_for_cas_roles, test_policies_for_industry_user
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 
 
 class ReportProductModelTest(BaseTestCase):
@@ -157,6 +154,7 @@ class ReportProductModelTest(BaseTestCase):
     def test_immutable_after_report_version_submitted(self):
         assert_immutable_report_version("reporting.tests.utils.report_product")
 
+
 class ReportProductRlsTest(BaseTestCase):
 
     def test_report_product_rls_industry_user(self):
@@ -185,13 +183,12 @@ class ReportProductRlsTest(BaseTestCase):
         def select_function(cursor):
             assert ReportProduct.objects.count() < number_of_total_records
             assert ReportProduct.objects.count() == number_of_accesible_records
-            assert ReportProduct.objects.filter(
-                facility_report=test.facility_report
-            ).count() == number_of_accesible_records
+            assert (
+                ReportProduct.objects.filter(facility_report=test.facility_report).count()
+                == number_of_accesible_records
+            )
             # Ensure the random report product cannot be selected
-            assert ReportProduct.objects.filter(
-                facility_report=random.facility_report
-            ).count() == 0
+            assert ReportProduct.objects.filter(facility_report=random.facility_report).count() == 0
 
         def insert_function(cursor):
             new_report_product = make(
@@ -207,7 +204,8 @@ class ReportProductRlsTest(BaseTestCase):
             with pytest.raises(
                 ProgrammingError, match='new row violates row-level security policy for table "report_product'
             ):
-                cursor.execute("""
+                cursor.execute(
+                    """
                     INSERT INTO "erc"."report_product" (
                         "report_version_id", "facility_report_id", "product_id",
                         "annual_production", "production_data_apr_dec",
@@ -217,8 +215,15 @@ class ReportProductRlsTest(BaseTestCase):
 
 
                 """,
-                    (random.report_version.id, random.facility_report.id, product.id,
-                     1000, 500, ReportProduct.ProductionMethodologyChoices.OBPS_CALCULATOR, None)
+                    (
+                        random.report_version.id,
+                        random.facility_report.id,
+                        product.id,
+                        1000,
+                        500,
+                        ReportProduct.ProductionMethodologyChoices.OBPS_CALCULATOR,
+                        None,
+                    ),
                 )
             # Ensure the count remains the same after an unsuccessful insert
             # assert ReportProduct.objects.count() == number_of_accesible_records_after_insert
@@ -230,29 +235,34 @@ class ReportProductRlsTest(BaseTestCase):
             assert ReportProduct.objects.get(id=test_report_product.id).annual_production == 2000
 
             # Attempt to update a report product that the user should not have access to
-            cursor.execute("""
+            cursor.execute(
+                """
                 UPDATE "erc"."report_product"
                 SET "annual_production" = %s
                 WHERE "report_version_id" = %s AND "facility_report_id" = %s
-            """, (3000, random.report_version.id, random.facility_report.id))
+            """,
+                (3000, random.report_version.id, random.facility_report.id),
+            )
             assert cursor.rowcount == 0  # No rows should be updated
 
         def delete_function(cursor):
-            assert ReportProduct.objects.filter(
-                facility_report=test.facility_report
-            ).count() == number_of_accesible_records
+            assert (
+                ReportProduct.objects.filter(facility_report=test.facility_report).count()
+                == number_of_accesible_records
+            )
             # Delete the report product for the approved user operator
             number_of_deleted_report_products, _ = test_report_product.delete()
 
             assert number_of_deleted_report_products > 0
-            assert ReportProduct.objects.filter(
-                facility_report=test.facility_report
-            ).count() == number_of_accesible_records - number_of_deleted_report_products
+            assert (
+                ReportProduct.objects.filter(facility_report=test.facility_report).count()
+                == number_of_accesible_records - number_of_deleted_report_products
+            )
             # Attempt to delete a report product that the user should not have access to
             number_of_deleted_report_products, _ = random_report_product.delete()
             assert number_of_deleted_report_products == 0
 
-        test_policies_for_industry_user(
+        assert_policies_for_industry_user(
             ReportProduct,
             test.approved_user_operator.user,
             select_function,
@@ -278,7 +288,7 @@ class ReportProductRlsTest(BaseTestCase):
         def select_function(cursor, i):
             assert ReportProduct.objects.count() == test_quantity
 
-        test_policies_for_cas_roles(
+        assert_policies_for_cas_roles(
             ReportProduct,
             select_function=select_function,
         )
