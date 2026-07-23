@@ -16,6 +16,10 @@ BACKEND_DEPLOYMENT_NAME = "cas-bciers-backend"
 K8S_IMAGE = "alpine/k8s:1.29.15"
 BCIERS_NAMESPACE = os.getenv("BCIERS_NAMESPACE")
 
+# Define which environments this Dag loads in to
+CURRENT_ENV = os.environ.get("ENVIRONMENT")
+ALLOWED_ENVIRONMENTS = ["dev", "test"]
+
 default_args = {**default_dag_args}
 
 RESET_DAG_DOC = """
@@ -90,5 +94,6 @@ def wait_for_backend_rollout():
     wait_for_backend_rollout_task  # NOSONAR
 
 
-reset_data()  # NOSONAR
-wait_for_backend_rollout()  # NOSONAR
+if CURRENT_ENV in ALLOWED_ENVIRONMENTS:
+    reset_data()  # NOSONAR
+    wait_for_backend_rollout()  # NOSONAR

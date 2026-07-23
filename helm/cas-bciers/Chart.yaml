@@ -12,21 +12,6 @@ dependencies:
   - name: cas-airflow-dag-trigger
     version: 1.2.2
     repository: https://bcgov.github.io/cas-airflow
-    alias: download-dags
-    condition: download-dags.enabled
-  - name: cas-airflow-dag-trigger
-    version: 1.2.2
-    repository: https://bcgov.github.io/cas-airflow
-    alias: download-migration-test-dags
-    condition: download-migration-test-dags.enabled
-  - name: cas-airflow-dag-trigger
-    version: 1.2.2
-    repository: https://bcgov.github.io/cas-airflow
-    alias: download-database-reset-dag
-    condition: download-database-reset-dag.enabled
-  - name: cas-airflow-dag-trigger
-    version: 1.2.2
-    repository: https://bcgov.github.io/cas-airflow
     alias: run-reset-data-dag-on-upgrade
     condition: run-reset-data-dag-on-upgrade.enabled
   - name: cas-logging-sidecar
