@@ -16,6 +16,5 @@ class CompliancePeriodTest(BaseTestCase):
             ("invoice_generation_date", "invoice generation date", None, None),
             ("reporting_year", "reporting year", None, None),
             ("compliance_reports", "compliance report", None, None),
-            ("compliance_penalty_rate", "compliance penalty rate", None, None),
             ("max_credit_usage_percentage", "max credit usage percentage", None, None),
         ]

@@ -1,0 +1,16 @@
+[
+  {
+    "model": "compliance.compliancepenaltyrate",
+    "pk": 1,
+    "fields": {
+      "created_at": "2026-07-06T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": null,
+      "updated_by_id": null,
+      "rate": 0.0038,
+      "is_current_rate": true
+    }
+  }
+]
