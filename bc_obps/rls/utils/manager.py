@@ -120,6 +120,9 @@ class RlsManager:
                 if hasattr(rls, 'policies'):
                     for policy in rls.policies:
                         policy.drop_policy(cursor)
+                for m2m_rls in getattr(rls, 'm2m_rls_list', []):
+                    for policy in getattr(m2m_rls, 'policies', []):
+                        policy.drop_policy(cursor)
 
     @classmethod
     def apply_m2m_rls(cls, cursor: CursorWrapper, m2m_rls: M2mRls) -> None:
