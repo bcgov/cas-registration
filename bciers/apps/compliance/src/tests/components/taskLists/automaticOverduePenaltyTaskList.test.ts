@@ -12,7 +12,7 @@ describe("generateAutomaticOverduePenaltyTaskList", () => {
     // Check the section
     expect(taskList[0].type).toBe("Section");
     expect(taskList[0].title).toBe("Automatic Overdue Penalty");
-    expect(taskList[0].isExpanded).toBe(false);
+    expect(taskList[0].isExpanded).toBe(true);
 
     // Check task items in the automatic penalty section
     const taskItems = taskList[0].elements;
@@ -93,6 +93,6 @@ describe("generateAutomaticOverduePenaltyTaskList", () => {
     expect(taskItems?.[1].isActive).toBe(false);
     expect(taskItems?.[2].isActive).toBe(false);
 
-    expect(taskList[0].isExpanded).toBe(false);
+    expect(taskList[0].isExpanded).toBe(true);
   });
 });
