@@ -314,6 +314,7 @@ export const operatorUiSchema = {
     parent_operators_array: {
       "ui:FieldTemplate": FieldTemplate,
       "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+      "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
       "ui:options": {
         label: false,
         arrayAddLabel: "Add another parent company",
