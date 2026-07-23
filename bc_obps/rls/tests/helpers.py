@@ -1,20 +1,13 @@
 from django.apps import apps
 from django.conf import settings
-from django.db import Error, connection
-from registration.models.app_role import AppRole
-from registration.models.user import User
-from model_bakery import baker
-from rls.enums import RlsOperations, RlsRoles
-from rls.middleware.rls import RlsMiddleware
-from django.db import transaction
 from django.db import connection
-import pytest
 from registration.models.app_role import AppRole
 from registration.models.user import User
+from model_bakery import baker
 from rls.enums import RlsOperations, RlsRoles
 from rls.middleware.rls import RlsMiddleware
 from django.db import transaction
-from model_bakery import baker
+import pytest
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import ProgrammingError
 
