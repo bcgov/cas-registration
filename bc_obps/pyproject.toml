@@ -3,13 +3,13 @@ name = "bc_obps"
 version = "0.1.0"
 description = ""
 authors = [{name = "Andrea Williams", email = "andrea.williams@gov.bc.ca"}]
-requires-python = "~=3.14"
+requires-python = "~=3.14.0"
 dynamic = ["dependencies"]
 
 [tool.poetry]
 [tool.poetry.dependencies]
 python = "~3.14"
-Django = "~5.2.0"
+Django = "~5.2.8"
 python-dotenv = "^1.2.2"
 django-ninja = "~1.6.2"
 psycopg = "^3.1.10"
