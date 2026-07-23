@@ -17,12 +17,14 @@ Including another URLconf
 
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, URLPattern, URLResolver
+from django.conf.urls.static import static
 from .api import api
 
 
-urlpatterns = [path("api/", api.urls)]
+urlpatterns: list[URLPattern | URLResolver] = [path("api/", api.urls)]
 if settings.NON_PROD_ENVIRONMENT:
     urlpatterns += [path("admin/", admin.site.urls)]
 if settings.DEBUG:
     urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
