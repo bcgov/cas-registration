@@ -540,4 +540,67 @@ describe("The ProductionDataForm component", () => {
     expect(result).toBe(true);
     expect(mockReportValidationSummary).not.toHaveBeenCalled();
   });
+  it("clears the no product selected error when a product is selected", async () => {
+    render(
+      <ProductionDataForm
+        allowedProducts={[
+          { product_id: 16, product_name: "Pulp and paper: chemical pulp" },
+          { product_id: 1, product_name: "Other Product" },
+        ]}
+        initialData={[]}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={""}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
+      />,
+    );
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+    mockPostProductionData.mockResolvedValue({});
+
+    const formData = {
+      formData: {
+        product_selection: [],
+        production_data: [],
+      },
+    };
+    // Act: Trigger submit with no products selected to generate the error
+    await act(async () => {
+      await calledProps.onSubmit(formData);
+    });
+
+    const updatedProps =
+      mockMultiStepFormWithTaskList.mock.calls[
+        mockMultiStepFormWithTaskList.mock.calls.length - 1
+      ][0];
+    // Assert: Verify that the missing selection error is present
+    expect(updatedProps.errors).toHaveLength(1);
+    expect(updatedProps.errors[0].props.errors).toEqual([
+      createGenericReportValidationError("A product must be selected."),
+    ]);
+
+    const newFormData = {
+      formData: {
+        product_selection: ["Other Product"],
+        production_data: [{ product_id: 1, product_name: "Other Product" }],
+      },
+    };
+    // Act: Trigger onChange with a product selected to clear the error
+    await act(async () => {
+      await updatedProps.onChange(newFormData);
+    });
+
+    const finalProps =
+      mockMultiStepFormWithTaskList.mock.calls[
+        mockMultiStepFormWithTaskList.mock.calls.length - 1
+      ][0];
+
+    // Assert: Verify that the error is cleared when a product is selected
+    expect(finalProps.errors).toBeUndefined();
+  });
 });

@@ -146,6 +146,9 @@ const ProductionDataForm: React.FC<Props> = ({
           (item) => item.product_name === product_name,
         ) ?? allowedProducts.find((p) => p.product_name === product_name),
     );
+    if (newFormData.product_selection.length > 0) {
+      setErrors(undefined);
+    }
     setFormData({
       product_selection: newFormData.product_selection,
       production_data: updatedSelection,
