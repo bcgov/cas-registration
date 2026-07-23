@@ -31,6 +31,13 @@ spec:
               readOnly: true
             - mountPath: "/.config"
               name: config-volume
+          resources:
+            limits:
+              memory: 256Mi
+              ephemeral-storage: 50Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
           command:
             - /usr/bin/env
             - bash
@@ -54,6 +61,7 @@ spec:
                 exit 1
               fi
               exit 0
+      automountServiceAccountToken: false
       volumes:
         - name: attachment-credentials
           secret:
