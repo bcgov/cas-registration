@@ -11,14 +11,14 @@ class ReportMethodology(ReportDataBaseModel):
         Methodology,
         on_delete=models.PROTECT,
         related_name="%(class)s_records",
-        db_comment="The methodology this data applies to",
+        db_comment="The methodology this data applies to. Foreign key to the erc.methodology table",
     )
 
     report_emission = models.OneToOneField(
         ReportEmission,
         on_delete=models.CASCADE,
         related_name="report_methodology",
-        db_comment="The emission data this methodology applies to",
+        db_comment="The emission data this methodology applies to. Foreign key to the erc.report_emission table",
     )
 
     class Meta(ReportDataBaseModel.Meta):

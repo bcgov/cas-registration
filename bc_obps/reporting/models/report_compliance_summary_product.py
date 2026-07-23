@@ -13,19 +13,19 @@ class ReportComplianceSummaryProduct(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_compliance_summary_products",
-        db_comment="The version of the report this compliance summary data relates to",
+        db_comment="The version of the report this compliance summary data relates to. Foreign key to the erc.report_version table",
     )
     report_compliance_summary = models.ForeignKey(
         ReportComplianceSummary,
         on_delete=models.CASCADE,
         related_name="report_compliance_summary_products",
-        db_comment="The report_compliance_summary parent object this product data relates to",
+        db_comment="The report_compliance_summary parent object this product data relates to. Foreign key to the erc.report_compliance_summary table",
     )
     product = models.ForeignKey(
         RegulatedProduct,
         on_delete=models.CASCADE,
         related_name="+",
-        db_comment="The id of the regulated_product record this product data is for",
+        db_comment="The id of the regulated_product record this product data is for. Foreign key to the erc.regulated_product table",
     )
     annual_production = models.DecimalField(
         db_comment="Amount of product produced for the year",
@@ -45,7 +45,7 @@ class ReportComplianceSummaryProduct(TimeStampedModel):
         max_digits=20,
     )
     emission_intensity = models.DecimalField(
-        db_comment="The published B.C. productionweighted average emission intensity (PWAEI) for that product found in Schedule A.1 of the GGERR. https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleA",
+        db_comment="The published B.C. production weighted average emission intensity (PWAEI) for that product found in Schedule A.1 of the GGERR. https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleA",
         decimal_places=4,
         max_digits=10,
     )

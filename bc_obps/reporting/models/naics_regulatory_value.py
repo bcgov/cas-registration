@@ -22,7 +22,7 @@ class NaicsRegulatoryValue(BaseModel):
         NaicsCode,
         on_delete=models.DO_NOTHING,
         related_name="regulatory_values",
-        db_comment="Foreign key to the naics_code record that is associated with the regulatory values in this record",
+        db_comment="The naics_code record that is associated with the regulatory values in this record. Foreign key to erc.naics_code table",
     )
     reduction_factor = models.DecimalField(
         db_comment='The Province developed distinct reduction factors for products in the B.C. OBPS with disproportionately higher industrial process emissions than those produced in other sectors. https://www2.gov.bc.ca/assets/gov/environment/climate-change/action/carbon-tax/obps-technical-backgrounder.pdf',

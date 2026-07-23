@@ -10,7 +10,7 @@ class ReportElectricityImportData(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_electricity_import_data",
-        db_comment="The associated report version for this electricity import data",
+        db_comment="The associated report version for this electricity import data. Foreign key to the erc.report_version table",
     )
     import_specified_electricity = models.FloatField(
         blank=True,

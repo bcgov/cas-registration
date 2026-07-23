@@ -13,7 +13,7 @@ class EmissionCategory(BaseModel):
 
     category_name = models.CharField(
         max_length=1000,
-        db_comment="The name of the emission category as defined in the Greenhouse Gas Emission Reporting Regulation)",
+        db_comment="The name of the emission category as defined in the Greenhouse Gas Emission Reporting Regulation",
     )
     category_type = models.CharField(
         max_length=1000,

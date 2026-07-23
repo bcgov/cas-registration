@@ -21,20 +21,20 @@ class ReportRawActivityData(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_raw_activity_data",
-        db_comment="The report version this raw activity data belongs to",
+        db_comment="The report version this raw activity data belongs to. Foreign key to the erc.report_version table",
     )
     facility_report = models.ForeignKey(
         FacilityReport,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The facility report this raw activity JSON data belongs to",
+        db_comment="The facility report this raw activity JSON data belongs to. Foreign key to the erc.facility_report table",
     )
 
     activity = models.ForeignKey(
         Activity,
         on_delete=models.PROTECT,
         related_name="%(class)s_records",
-        db_comment="The reporting activity this raw activity JSON data applies to",
+        db_comment="The reporting activity this raw activity JSON data applies to. Foreign key to the erc.activity table",
     )
 
     json_data = models.JSONField(

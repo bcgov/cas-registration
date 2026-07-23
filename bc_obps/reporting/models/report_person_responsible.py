@@ -12,7 +12,7 @@ class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_person_responsible",
-        db_comment="The report version this person responsible applies to",
+        db_comment="The report version this person responsible applies to. Foreign key to the erc.report_version table",
     )
 
     contact = models.ForeignKey(
@@ -21,7 +21,7 @@ class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
         null=True,
         blank=True,
         related_name="report_person_responsibles",
-        db_comment="The source contact selected for this person responsible.",
+        db_comment="The source contact selected for this person responsible. Foreign key to the registration.contact table",
     )
 
     street_address = models.CharField(
