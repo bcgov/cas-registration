@@ -5,7 +5,8 @@ from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models.report import Report
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 from model_bakery.baker import make_recipe
-from rls.tests.helpers import test_policies_for_cas_roles, test_policies_for_industry_user
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
+
 
 class ReportTest(BaseTestCase):
     @classmethod
@@ -21,22 +22,23 @@ class ReportTest(BaseTestCase):
             ("compliance_report", "compliance report", None, None),
         ]
 
+
 class ReportRlsTest(BaseTestCase):
 
     def test_report_rls_industry_user(self):
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
         operation = make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         reporting_year = reporting_year_baker(reporting_year=2012)
-        report = report_baker( operation=operation, operator=approved_user_operator.operator, reporting_year=reporting_year)
+        report = report_baker(
+            operation=operation, operator=approved_user_operator.operator, reporting_year=reporting_year
+        )
         number_of_accesible_records = Report.objects.filter(operation=operation).count()
 
         random_operation = make_recipe('registration.tests.utils.operation')
         random_report = report_baker(operation=random_operation, reporting_year=reporting_year)
         number_of_total_records = Report.objects.count()
 
-        new_operation = make_recipe(
-                'registration.tests.utils.operation', operator=approved_user_operator.operator
-            )
+        new_operation = make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         new_reporting_year = reporting_year_baker(reporting_year=2042)
 
         def select_function(cursor):
@@ -44,6 +46,7 @@ class ReportRlsTest(BaseTestCase):
             assert Report.objects.count() < number_of_total_records
             assert Report.objects.count() == number_of_accesible_records
             assert Report.objects.filter(operation=random_operation).count() == 0
+
         def insert_function(cursor):
             # Insert a new report for the approved user operator
             new_report = Report.objects.create(
@@ -55,9 +58,7 @@ class ReportRlsTest(BaseTestCase):
             assert Report.objects.count() == number_of_accesible_records_after_insert
             assert new_report.id is not None
             # Attempt to insert a report that the user is not an operator for
-            with pytest.raises(
-                ProgrammingError, match='new row violates row-level security policy for table "report'
-            ):
+            with pytest.raises(ProgrammingError, match='new row violates row-level security policy for table "report'):
                 Report.objects.create(
                     operation=random_operation,
                     operator=random_report.operator,
@@ -70,9 +71,7 @@ class ReportRlsTest(BaseTestCase):
             report.save()
             assert Report.objects.get(id=report.id).reporting_year.reporting_year == new_reporting_year.reporting_year
             # Attempt to update a report that the user should not have access to
-            with pytest.raises(
-                ProgrammingError, match='new row violates row-level security policy for table "report'
-            ):
+            with pytest.raises(ProgrammingError, match='new row violates row-level security policy for table "report'):
                 random_report.reporting_year = new_reporting_year
                 random_report.save()
 
@@ -88,7 +87,7 @@ class ReportRlsTest(BaseTestCase):
             assert number_of_deleted_reports == 0
             assert Report.objects.count() == number_of_accesible_records_after_delete
 
-        test_policies_for_industry_user(
+        assert_policies_for_industry_user(
             Report,
             approved_user_operator.user,
             select_function,
@@ -103,7 +102,7 @@ class ReportRlsTest(BaseTestCase):
         def select_function(cursor, i):
             assert Report.objects.count() == 5
 
-        test_policies_for_cas_roles(
+        assert_policies_for_cas_roles(
             Report,
             select_function=select_function,
         )

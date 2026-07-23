@@ -2,7 +2,6 @@ from common.tests.utils.helpers import BaseTestCase
 from django.db import ProgrammingError
 import pytest
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from reporting.models import report
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.report_activity import ReportActivity
 from reporting.tests.utils.bakers import report_version_baker
@@ -12,7 +11,7 @@ from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
 from reporting.tests.utils.rls_test_recipe import ReportRlsSetup
-from rls.tests.helpers import test_policies_for_cas_roles, test_policies_for_industry_user
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 
 
 class ReportActivityModelTest(BaseTestCase):
@@ -38,6 +37,7 @@ class ReportActivityModelTest(BaseTestCase):
 
     def test_immutable_after_report_version_submitted(self):
         assert_immutable_report_version("reporting.tests.utils.report_activity")
+
 
 class ReportActivityRlsTest(BaseTestCase):
 
@@ -122,7 +122,14 @@ class ReportActivityRlsTest(BaseTestCase):
             number_of_deleted_report_attachments, _ = random_report_activity.delete()
             assert number_of_deleted_report_attachments == 0
 
-        test_policies_for_industry_user(ReportActivity, test.approved_user_operator.user, select_function, insert_function, update_function, delete_function)
+        assert_policies_for_industry_user(
+            ReportActivity,
+            test.approved_user_operator.user,
+            select_function,
+            insert_function,
+            update_function,
+            delete_function,
+        )
 
     def test_report_activity_rls_cas_user(self):
         test_quantity = 5
@@ -134,7 +141,7 @@ class ReportActivityRlsTest(BaseTestCase):
         def select_function(cursor):
             assert ReportActivity.objects.count() == test_quantity
 
-        test_policies_for_cas_roles(
+        assert_policies_for_cas_roles(
             ReportActivity,
             select_function=select_function,
         )
