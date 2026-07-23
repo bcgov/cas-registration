@@ -2,7 +2,7 @@ import { userEvent } from "@testing-library/user-event";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
-import { actionHandler } from "@bciers/testConfig/mocks";
+import { safeClientRequest } from "@bciers/actions/safeClientRequest";
 import {
   checkComboBoxWidgetValidationStyles,
   checkNoValidationErrorIsTriggered,
@@ -30,9 +30,13 @@ const operatorSearchFieldUiSchema = {
   },
 };
 
+vi.mock("@bciers/actions/safeClientRequest", () => ({
+  safeClientRequest: vi.fn().mockResolvedValue({ data: [], error: null }),
+}));
+
 describe("RJSF OperatorSearchWidget", () => {
   beforeEach(() => {
-    vi.resetAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should render the search field", async () => {
@@ -84,24 +88,27 @@ describe("RJSF OperatorSearchWidget", () => {
       await userEvent.type(searchField, "Operator");
     });
 
-    actionHandler.mockResolvedValueOnce([
-      {
-        id: "1",
-        legal_name: "Operator 1",
-      },
-      {
-        id: "2",
-        legal_name: "Operator 2",
-      },
-      {
-        id: "3",
-        legal_name: "Operator 3",
-      },
-      {
-        id: "4",
-        legal_name: "turtle",
-      },
-    ]);
+    vi.mocked(safeClientRequest).mockResolvedValueOnce({
+      data: [
+        {
+          id: "1",
+          legal_name: "Operator 1",
+        },
+        {
+          id: "2",
+          legal_name: "Operator 2",
+        },
+        {
+          id: "3",
+          legal_name: "Operator 3",
+        },
+        {
+          id: "4",
+          legal_name: "turtle",
+        },
+      ],
+      error: null,
+    });
 
     await waitFor(async () => {
       expect(searchField).toHaveValue("Operator");
@@ -129,12 +136,15 @@ describe("RJSF OperatorSearchWidget", () => {
       await userEvent.type(searchField, "Operator");
     });
 
-    actionHandler.mockResolvedValueOnce([
-      {
-        id: "1",
-        legal_name: "Operator 1",
-      },
-    ]);
+    vi.mocked(safeClientRequest).mockResolvedValueOnce({
+      data: [
+        {
+          id: "1",
+          legal_name: "Operator 1",
+        },
+      ],
+      error: null,
+    });
 
     await waitFor(async () => {
       expect(searchField).toHaveValue("Operator");
@@ -165,7 +175,10 @@ describe("RJSF OperatorSearchWidget", () => {
       await userEvent.type(searchField, "Operator");
     });
 
-    actionHandler.mockResolvedValueOnce([]);
+    vi.mocked(safeClientRequest).mockResolvedValueOnce({
+      data: [],
+      error: null,
+    });
 
     await waitFor(async () => {
       expect(searchField).toHaveValue("Operator");
@@ -192,12 +205,15 @@ describe("RJSF OperatorSearchWidget", () => {
       await userEvent.type(searchField, "Operator");
     });
 
-    actionHandler.mockResolvedValueOnce([
-      {
-        id: "1",
-        legal_name: "Operator 1",
-      },
-    ]);
+    vi.mocked(safeClientRequest).mockResolvedValueOnce({
+      data: [
+        {
+          id: "1",
+          legal_name: "Operator 1",
+        },
+      ],
+      error: null,
+    });
 
     await waitFor(async () => {
       expect(searchField).toHaveValue("Operator");
@@ -261,12 +277,41 @@ describe("RJSF OperatorSearchWidget", () => {
   });
 
   it("should have the correct styles when the validation error is shown", async () => {
-    actionHandler.mockResolvedValueOnce([]);
+    vi.mocked(safeClientRequest).mockResolvedValueOnce({
+      data: [],
+      error: null,
+    });
     await checkComboBoxWidgetValidationStyles(
       <FormBase
         schema={operatorSearchFieldSchema}
         uiSchema={operatorSearchFieldUiSchema}
       />,
     );
+  });
+
+  it("should render the failure message when the search request fails", async () => {
+    vi.mocked(safeClientRequest).mockResolvedValueOnce({
+      data: null,
+      error: "Something went wrong on the server",
+    });
+
+    render(
+      <FormBase
+        schema={operatorSearchFieldSchema}
+        uiSchema={operatorSearchFieldUiSchema}
+      />,
+    );
+
+    const searchField = screen.getByRole("combobox");
+
+    await userEvent.type(searchField, "Operator");
+
+    const errorMessage = await screen.findByText(
+      /Something went wrong on the server/i,
+      {},
+      { timeout: 5000 },
+    );
+
+    expect(errorMessage).toBeVisible();
   });
 });

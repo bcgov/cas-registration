@@ -4,6 +4,7 @@ import { useSearchParams } from "@bciers/testConfig/mocks";
 import AccessRequestDataGrid from "apps/administration/app/components/userOperators/AccessRequestDataGrid";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { TestErrorBoundary } from "@bciers/testConfig/helpers/TestErrorBoundary";
 
 const mockInitialData = {
   rows: [
@@ -183,5 +184,32 @@ describe("Access Requests DataGrid", () => {
       expect(screen.getByRole("button", { name: "Decline" })).toBeVisible();
       expect(screen.getByRole("button", { name: "Decline" })).toBeEnabled();
     });
+  });
+
+  it("triggers the error boundary when handleAccessRequestStatus crashes", async () => {
+    // Mock the async server action to fail and throw an error
+    handleAccessRequestStatus.mockRejectedValueOnce(
+      new Error("Database connection failure"),
+    );
+
+    // Suppress console.error logging for the expected React boundary crash printout
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    render(
+      <TestErrorBoundary>
+        <AccessRequestDataGrid initialData={mockInitialData} />
+      </TestErrorBoundary>,
+    );
+
+    const approveButton = screen.getByRole("button", { name: "Approve" });
+    await userEvent.click(approveButton);
+
+    // Verify that the error was caught and fallback was rendered
+    await waitFor(() => {
+      expect(screen.getByTestId("error-boundary")).toBeVisible();
+      expect(screen.getByText("Error Boundary Triggered")).toBeVisible();
+    });
+
+    consoleSpy.mockRestore();
   });
 });

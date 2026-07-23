@@ -1,15 +1,21 @@
 import { UUID } from "crypto";
 import { render, screen } from "@testing-library/react";
-import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
+import { useRouter } from "@bciers/testConfig/mocks";
 import CancelAccessRequest from "@/administration/app/components/buttons/CancelAccessRequest";
 import { UserOperatorJSON } from "@/administration/tests/components/userOperators/constants";
 import userEvent from "@testing-library/user-event";
+import { safeClientRequest } from "@bciers/actions/safeClientRequest";
 
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
   query: {},
   push: mockRouterPush,
 });
+
+// Mock the specific subpath utility used by cancelAccessRequest
+vi.mock("@bciers/actions/safeClientRequest", () => ({
+  safeClientRequest: vi.fn(),
+}));
 
 describe("Cancel Access Requests component", () => {
   beforeEach(() => {
@@ -26,7 +32,12 @@ describe("Cancel Access Requests component", () => {
   });
 
   it("should allow the user to cancel the request", async () => {
-    actionHandler.mockResolvedValueOnce(true);
+    // safeClientRequest returns a standardized { data, error } object
+    vi.mocked(safeClientRequest).mockResolvedValueOnce({
+      data: true,
+      error: null,
+    });
+
     render(
       <CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID} />,
     );
@@ -48,11 +59,12 @@ describe("Cancel Access Requests component", () => {
       }),
     ).toBeVisible();
     expect(screen.getByText(/yes, cancel this request/i)).toBeVisible();
+
     await userEvent.click(
       screen.getByRole("button", { name: /yes, cancel this request/i }),
     );
-    // make sure the action is called
-    expect(actionHandler).toHaveBeenCalledWith(
+    // make sure the mock was evaluated with the correct parameters
+    expect(safeClientRequest).toHaveBeenCalledWith(
       `registration/user-operators/${UserOperatorJSON.id}`,
       "DELETE",
       "",
@@ -60,8 +72,14 @@ describe("Cancel Access Requests component", () => {
     // make sure the user is redirected to the select operator page
     expect(mockRouterPush).toHaveBeenCalledWith("/select-operator");
   });
+
   it("shows an error message if the request fails", async () => {
-    actionHandler.mockResolvedValueOnce({ error: "Failed to cancel request" });
+    // Mock the standard error response format
+    vi.mocked(safeClientRequest).mockResolvedValueOnce({
+      data: null,
+      error: "Failed to cancel request",
+    });
+
     render(
       <CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID} />,
     );

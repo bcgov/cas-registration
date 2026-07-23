@@ -60,6 +60,7 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
   // Handle the confirmed delete action.
   const confirmDiscard = async () => {
     setConfirmAction(null);
+    // Wrapped in startTransition to automatically catch throws and trigger the Error Boundary
     startTransition(async () => {
       // delete report version
       await deleteReportVersion(reportVersionId);

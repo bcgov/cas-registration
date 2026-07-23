@@ -3,3 +3,4 @@
 export * from "./types";
 export * from "./mocks";
 export * from "./global";
+export * from "./helpers/TestErrorBoundary";

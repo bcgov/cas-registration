@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import type { SyntheticEvent } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 import debounce from "lodash.debounce";
-import { actionHandler } from "@bciers/actions";
+import { safeClientRequest } from "@bciers/actions/safeClientRequest";
 import type { WidgetProps } from "@rjsf/utils";
 import {
   DARK_GREY_BG_COLOR,
@@ -24,11 +24,13 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   const { formContext } = registry;
   const [options, setOptions] = useState<string[]>([]);
   const [isSearchAttempted, setIsSearchAttempted] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const handleSelect = (_e: SyntheticEvent, option: string | null) => {
     onChange(option);
     setOptions([]);
     setIsSearchAttempted(false);
+    setSearchError(null);
   };
 
   // Fetch suggestions (called by debounced wrapper below)
@@ -37,19 +39,27 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       if (!val) {
         setIsSearchAttempted(false);
         setOptions([]);
+        setSearchError(null);
         return;
       }
+
+      setSearchError(null);
 
       const endpoint = formContext?.endpoint ?? "registration/operators/search";
       const url = `${endpoint}?legal_name=${encodeURIComponent(val)}`;
 
-      const response = await actionHandler(url, "GET");
+      const { data, error } = await safeClientRequest<
+        Array<{ legal_name: string }>
+      >(url, "GET");
 
-      if (!response || response?.error) return;
+      if (error || !data) {
+        setSearchError(error || "An unexpected error occurred.");
+        setOptions([]);
+        setIsSearchAttempted(true);
+        return;
+      }
 
-      const results = (response as Array<{ legal_name: string }>).map(
-        (item) => item.legal_name,
-      );
+      const results = data.map((item) => item.legal_name);
 
       setOptions(results);
       setIsSearchAttempted(true);
@@ -71,7 +81,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
     setIsSearchAttempted(false);
   };
 
-  const isError = !!(rawErrors && rawErrors.length > 0);
+  const isError = !!(rawErrors && rawErrors.length > 0) || !!searchError;
   const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
 
   const styles = {
@@ -90,7 +100,11 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       autoHighlight
       options={options}
       sx={styles}
-      noOptionsText="No results found. Retry or create an operator."
+      noOptionsText={
+        searchError
+          ? `${searchError}`
+          : "No results found. Retry or create an operator."
+      }
       open={
         (options.length > 0 && !options.includes(value as string)) ||
         (options.length === 0 && isSearchAttempted)
