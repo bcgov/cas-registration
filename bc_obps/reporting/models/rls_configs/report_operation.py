@@ -1,5 +1,4 @@
 from reporting.enums.enums import ReportingTableNames
-from reporting.models import report_operation
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.helpers import (
     generate_report_policy_mapping_from_grants,
@@ -9,6 +8,7 @@ from rls.utils.helpers import (
 )
 from rls.utils.m2m import M2MPolicyStatements
 from rls.utils.policy import RlsPolicy
+
 
 class Rls:
     enable_rls = True
@@ -66,7 +66,7 @@ class Rls:
                 WHERE uo.user_id = current_setting('my.guid', true)::uuid
                 AND uo.status = 'Approved'
             )
-        )   
+        )
     """
     report_operation_m2m_delete_using_statement = RlsPolicy.add_draft_check_to_report_using_statement(
         report_operation_m2m_using_statement
