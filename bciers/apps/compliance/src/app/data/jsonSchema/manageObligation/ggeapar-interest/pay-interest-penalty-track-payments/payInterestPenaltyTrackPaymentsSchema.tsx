@@ -9,6 +9,7 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { WidgetProps } from "@rjsf/utils";
 import { InterestPaymentStatusNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/ggeapar-interest/pay-interest-penalty-track-payments/InterestPaymentStatusNote";
+import { ArrayFieldItemTemplate } from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 // Custom widget for payment headers
 const PaymentHeaderWidget = (props: WidgetProps) => {
@@ -64,6 +65,7 @@ export const payInterestPenaltyTrackPaymentsUiSchema: UiSchema = {
 
   // Payments Section
   payments: {
+    "ui:ArrayFieldItemTemplate": ArrayFieldItemTemplate,
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       orderable: false,
