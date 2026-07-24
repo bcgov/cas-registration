@@ -137,6 +137,7 @@ class ElicensingDataRefreshService:
                     CompliancePenalty.PenaltyType.LATE_SUBMISSION,
                     CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
                     'Automatic Overdue Penalty',
+                    'GGEAPAR Interest',
                 ]:
                     fee_record, _ = ElicensingLineItem.objects.update_or_create(
                         elicensing_invoice=invoice_record,
