@@ -55,5 +55,79 @@
       "report_version_id": 5,
       "type": "Unit"
     }
+  },
+  {
+    "model": "reporting.reportunit",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "gscUnitName": "GSC Unit Name 1",
+        "gscUnitType": "Kiln"
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_source_type_id": 4,
+      "updated_by_id": null,
+      "report_version_id": 9,
+      "type": "Unit"
+    }
+  },
+  {
+    "model": "reporting.reportunit",
+    "pk": 5,
+    "fields": {
+      "created_at": "2026-07-20T16:21:36.865975-07:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "gscUnitType": "Kiln"
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_source_type_id": 5,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "type": "Unit"
+    }
+  },
+  {
+    "model": "reporting.reportunit",
+    "pk": 6,
+    "fields": {
+      "created_at": "2026-07-20T16:21:36.865975-07:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "gscUnitType": "Other",
+        "gscUnitDescription": "something else"
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_source_type_id": 6,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "type": "Unit"
+    }
+  },
+  {
+    "model": "reporting.reportunit",
+    "pk": 7,
+    "fields": {
+      "created_at": "2026-07-20T16:24:13.068095-07:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "gscUnitType": "Kiln"
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_source_type_id": 8,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "type": "Unit"
+    }
   }
 ]

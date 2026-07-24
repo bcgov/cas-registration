@@ -49,6 +49,7 @@ export const ACTION_BUTTON_TEXT = {
   VIEW_DETAILS: "View Details",
   VIEW_REPORT: "View Report",
   REPORT_HISTORY: "Report history",
+  CREATE_SUPPLEMENTARY_REPORT: "Create supplementary report",
 } as const;
 
 export const GRID_BUTTON_TEXT = {

@@ -6,6 +6,8 @@ from reporting.service.report_person_responsible import (
 
 
 def create_report_person_responsible(report_version: ReportVersion):
+    if ReportContactService.get_report_person_responsible_by_version_id(report_version.id):
+        return
 
     ReportContactService.save_report_contact(
         report_version.id,

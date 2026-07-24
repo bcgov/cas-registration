@@ -49,5 +49,107 @@
       "report_version_id": 5,
       "source_type_id": 1
     }
+  },
+  {
+    "model": "reporting.reportsourcetype",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "activity_source_type_base_schema_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_activity_id": 4,
+      "updated_by_id": null,
+      "report_version_id": 9,
+      "source_type_id": 1
+    }
+  },
+  {
+    "model": "reporting.reportsourcetype",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "activity_source_type_base_schema_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_activity_id": 5,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "source_type_id": 1
+    }
+  },
+  {
+    "model": "reporting.reportsourcetype",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "activity_source_type_base_schema_id": 2,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_activity_id": 5,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "source_type_id": 2
+    }
+  },
+  {
+    "model": "reporting.reportsourcetype",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "activity_source_type_base_schema_id": 121,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_activity_id": 6,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "source_type_id": 8
+    }
+  },
+  {
+    "model": "reporting.reportsourcetype",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "activity_source_type_base_schema_id": 2,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_activity_id": 7,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "source_type_id": 2
+    }
+  },
+  {
+    "model": "reporting.reportsourcetype",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "activity_source_type_base_schema_id": 121,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_activity_id": 8,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "source_type_id": 8
+    }
   }
 ]

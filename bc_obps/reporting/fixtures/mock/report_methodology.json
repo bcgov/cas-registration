@@ -49,5 +49,120 @@
       "report_version_id": 5,
       "methodology_id": 18
     }
+  },
+  {
+    "model": "reporting.reportmethodology",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "unitFuelCo2DefaultEf": 1,
+        "unitFuelCo2DefaultEfFieldUnits": "kg/fuel units"
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_emission_id": 4,
+      "updated_by_id": null,
+      "report_version_id": 9,
+      "methodology_id": 2
+    }
+  },
+  {
+    "model": "reporting.reportmethodology",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_emission_id": 5,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "methodology_id": 8
+    }
+  },
+  {
+    "model": "reporting.reportmethodology",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_emission_id": 6,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "methodology_id": 8
+    }
+  },
+  {
+    "model": "reporting.reportmethodology",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_emission_id": 7,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "methodology_id": 108
+    }
+  },
+  {
+    "model": "reporting.reportmethodology",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_emission_id": 8,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "methodology_id": 8
+    }
+  },
+  {
+    "model": "reporting.reportmethodology",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_emission_id": 9,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "methodology_id": 8
+    }
+  },
+  {
+    "model": "reporting.reportmethodology",
+    "pk": 10,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_emission_id": 10,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "methodology_id": 108
+    }
   }
 ]
