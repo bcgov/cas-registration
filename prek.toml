@@ -131,6 +131,12 @@ id = "ruff"
 args = ["bc_obps/", "--fix"]
 priority = 3
 
+[[repos.hooks]]
+id = "ruff-check"
+name = "ruff check Airflow Dags"
+args = ["dags/", "--select", "AIR3", "--fix"]
+priority = 3
+
 # Python dependency management
 
 [[repos]]
