@@ -111,9 +111,11 @@ export class CurrentReportPOM {
   }
 
   async verifyPersonResponsible(contactName: string): Promise<void> {
-    await expect(
-      this.page.getByRole("combobox", { name: contactName }),
-    ).toHaveValue(contactName);
+    const personResponsibleInput = this.page
+      .getByTestId("root_person_responsible")
+      .getByRole("combobox");
+
+    await expect(personResponsibleInput).toHaveValue(contactName);
   }
 
   async fillAdditionalData(): Promise<void> {

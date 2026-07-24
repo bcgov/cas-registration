@@ -1,5 +1,5 @@
 import { Page, expect } from "@playwright/test";
-import { AppRoutes, FacilityIDs, ReportRoutes } from "../utils/enums";
+import { AppRoutes, ReportRoutes } from "../utils/enums";
 import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { FORM_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
 import { ProductionDataPOM } from "@/reporting-e2e/poms/production-data";
@@ -58,6 +58,23 @@ const NON_ATTRIBUTABLE = {
 const EMISSION_SUMMARY = {
   TITLE: "Emissions Summary (in tCO2e)",
 } as const;
+
+export type ReviewFacilityInformationValues = {
+  facilityName?: string;
+  facilityType?: string;
+  activityStates?: Record<string, boolean>;
+  expectedCheckedCount?: number;
+};
+
+const DEFAULT_LFO_REVIEW_FACILITY_INFORMATION: Required<ReviewFacilityInformationValues> = {
+  facilityName: "Default Facility Name",
+  facilityType: "Medium Facility",
+  activityStates: {
+    "General stationary combustion excluding line tracing (at SFO) General": true,
+    Ammonia: false,
+  },
+  expectedCheckedCount: 1,
+};
 
 export class SFOFacilityReportPOM {
   readonly page: Page;
@@ -201,6 +218,22 @@ export class SFOFacilityReportPOM {
     await noLabel.click();
   }
 
+  async verifyNonAttributable(expectedValue: boolean): Promise<void> {
+    await assertFieldVisibility(this.page, [NON_ATTRIBUTABLE.INFO_NOTE], true);
+    
+    const yesLabel = this.page.locator("label").filter({ hasText: /^Yes$/ });
+    await expect(yesLabel).toBeVisible();
+    const noLabel = this.page.locator("label").filter({ hasText: /^No$/ });
+    await expect(noLabel).toBeVisible();
+    if (expectedValue) {
+      await expect(yesLabel).toBeChecked();
+      await expect(noLabel).not.toBeChecked();
+    } else {
+      await expect(yesLabel).not.toBeChecked();
+      await expect(noLabel).toBeChecked();
+    }
+  }
+
   async verifyEmissionSummary(): Promise<void> {
     await verifyFormTitle(this.page, EMISSION_SUMMARY.TITLE);
   }
@@ -247,48 +280,83 @@ export class LFOFacilityReportPOM extends SFOFacilityReportPOM {
   // LFO-specific page: Facility specific information
   // -----------------
 
-  async fillReviewFacilityInformation(): Promise<void> {
-    await this.page
-      .getByRole("combobox", { name: "Facility type" })
-      .fill("Medium Facility");
-
-    await expect(
-      this.page.getByRole("checkbox", {
-        name: "General stationary combustion excluding line tracing (at SFO) General",
-      }),
-    ).toBeChecked();
-
-    await this.page
-      .getByRole("checkbox", {
-        name: "Ammonia",
-      })
-      .setChecked(false);
-
-    expect(
-      await this.page.getByRole("checkbox", { checked: true }).count(),
-    ).toBe(1);
+  private reviewFacilityInformationValues(
+    values: ReviewFacilityInformationValues = {},
+  ): Required<ReviewFacilityInformationValues> {
+    // dictionary structure of expected values for an LFO facility on the Review Facility Information page, with defaults for any missing values
+    return {
+      facilityName:
+        values.facilityName ?? DEFAULT_LFO_REVIEW_FACILITY_INFORMATION.facilityName,
+      facilityType:
+        values.facilityType ?? DEFAULT_LFO_REVIEW_FACILITY_INFORMATION.facilityType,
+      activityStates:
+        values.activityStates ?? DEFAULT_LFO_REVIEW_FACILITY_INFORMATION.activityStates,
+      expectedCheckedCount:
+        values.expectedCheckedCount ??
+        DEFAULT_LFO_REVIEW_FACILITY_INFORMATION.expectedCheckedCount,
+    };
   }
 
-  async verifyReviewFacilityInformation(facilityID: FacilityIDs): Promise<void> {
+  async fillReviewFacilityInformation(
+    values: ReviewFacilityInformationValues = {},
+  ): Promise<void> {
+    const reviewValues = this.reviewFacilityInformationValues(values);
+    const checkedActivities = this.page.getByRole("checkbox", { checked: true });
+
+    await this.page
+      .getByRole("combobox", { name: "Facility type" })
+      .fill(reviewValues.facilityType);
+
+    for (const [activityName, checked] of Object.entries(
+      reviewValues.activityStates,
+    )) {
+      await this.page
+        .getByRole("checkbox", {
+          name: activityName,
+        })
+        .setChecked(checked);
+    }
+
+    await expect(checkedActivities).toHaveCount(
+      reviewValues.expectedCheckedCount,
+    );
+  }
+
+  async verifyReviewFacilityInformation(
+    values: ReviewFacilityInformationValues = {},
+  ): Promise<void> {
+    const reviewValues = this.reviewFacilityInformationValues(values);
+    const checkedActivities = this.page.getByRole("checkbox", { checked: true });
+
+    const facilityNameInput = this.page.locator(
+      'input#root_facility_name[name="facility_name"]',
+    );
+
+    await expect(facilityNameInput).toBeVisible();
+    await expect(facilityNameInput).toBeDisabled();
+    await expect(facilityNameInput).toHaveValue(reviewValues.facilityName);
+
     await expect(
       this.page.getByRole("combobox", { name: "Facility type" }),
-    ).toHaveValue("Medium Facility");
+    ).toHaveValue(reviewValues.facilityType);
 
-    await expect(
-      this.page.getByRole("checkbox", {
-        name: "General stationary combustion excluding line tracing (at SFO) General",
-      }),
-    ).toBeChecked();
+    for (const [activityName, checked] of Object.entries(
+      reviewValues.activityStates,
+    )) {
+      const checkbox = this.page.getByRole("checkbox", {
+        name: activityName,
+      });
 
-    await expect(
-      this.page.getByRole("checkbox", {
-        name: "Ammonia",
-      }),
-    ).not.toBeChecked();
+      if (checked) {
+        await expect(checkbox).toBeChecked();
+      } else {
+        await expect(checkbox).not.toBeChecked();
+      }
+    }
 
-    expect(
-      await this.page.getByRole("checkbox", { checked: true }).count(),
-    ).toBe(1);
+    await expect(checkedActivities).toHaveCount(
+      reviewValues.expectedCheckedCount,
+    );
   }
 
   override async fillAllocationOfEmissions(
@@ -313,5 +381,79 @@ export class LFOFacilityReportPOM extends SFOFacilityReportPOM {
     await clickButton(this.page, FORM_BUTTON_TEXT.RETURN_TO_FACILITY_REPORTS, {
       waitForUrl: new RegExp(ReportRoutes.FACILITY_REPORT_GRID),
     });
+  }
+
+  // -----------------
+  // LFO-specific page: Facility Information for specific facilities
+  // -----------------
+  async verifyBarkHQFacilityInformation(): Promise<void> {
+    await this.verifyReviewFacilityInformation({
+      facilityName: "Bark HQ",
+      facilityType: "Large Facility",
+      activityStates: {
+        "General stationary combustion excluding line tracing (at SFO)": true,
+        "Cement production": true,
+      },
+      expectedCheckedCount: 2,
+    });
+  }
+
+  async verifyBarkFacility42Information(): Promise<void> {
+    await this.verifyReviewFacilityInformation({
+      facilityName: "Facility 42",
+      facilityType: "Small Facility",
+      activityStates: {
+        "General stationary combustion excluding line tracing (at SFO) General":
+          true,
+        Ammonia: false,
+      },
+      expectedCheckedCount: 1,
+    });
+  }
+
+  async verifyAndUpdateBarkHQFacilityGSCActivityForm(): Promise<void> {
+    const gscWithCheckbox = this.page.locator('#root_gscWithProductionOfUsefulEnergy');
+    await expect(gscWithCheckbox).toBeChecked();
+    const gscWithoutCheckbox = this.page.locator('#root_gscWithoutProductionOfUsefulEnergy');
+    await expect(gscWithoutCheckbox).toBeChecked();
+
+    // -- GSC with production of useful energy
+    await expect(this.page.locator("#root_sourceTypes_gscWithProductionOfUsefulEnergy_units_0_gscUnitType")).toHaveValue("Kiln");
+    await expect(this.page.locator("#root_sourceTypes_gscWithProductionOfUsefulEnergy_units_0_fuels_0_fuelType_fuelName")).toHaveValue("Hydrogen");
+    // update Annual Fuel Amount value from 345
+    const fuelAmountInput = this.page.locator("#root_sourceTypes_gscWithProductionOfUsefulEnergy_units_0_fuels_0_annualFuelAmount");
+    await expect(fuelAmountInput).toHaveValue("345");
+    await fuelAmountInput.clear();
+    await fuelAmountInput.fill("355");
+    const gasType = this.page.locator(
+      'input#root_sourceTypes_gscWithProductionOfUsefulEnergy_units_0_fuels_0_emissions_0_gasType[role="combobox"]:not([disabled])',
+    );
+    await expect(gasType).toHaveValue("CO2");
+    // update Emissions value from 1,563
+    await this.page.locator("#root_sourceTypes_gscWithProductionOfUsefulEnergy_units_0_fuels_0_emissions_0_emission").fill("1714");
+    await expect(this.page.locator("#root_sourceTypes_gscWithProductionOfUsefulEnergy_units_0_fuels_0_emissions_0_methodology_methodology")).toHaveValue("Replacement Methodology");
+
+    // -- GSC without production of useful energy
+    await expect(this.page.locator("#root_sourceTypes_gscWithoutProductionOfUsefulEnergy_units_0_gscUnitType")).toHaveValue("Other");
+    await expect(this.page.locator("#root_sourceTypes_gscWithoutProductionOfUsefulEnergy_units_0_gscUnitDescription")).toHaveValue("something else");
+    await expect(this.page.locator("#root_sourceTypes_gscWithoutProductionOfUsefulEnergy_units_0_fuels_0_fuelType_fuelName")).toHaveValue("Carpet fibre");
+    await expect(this.page.locator("#root_sourceTypes_gscWithoutProductionOfUsefulEnergy_units_0_fuels_0_annualFuelAmount")).toHaveValue("6");
+    await expect(
+      this.page.locator(
+        'input#root_sourceTypes_gscWithoutProductionOfUsefulEnergy_units_0_fuels_0_emissions_0_gasType[role="combobox"]:not([disabled])',
+      ),
+    ).toHaveValue("CO2");
+    await expect(this.page.locator("#root_sourceTypes_gscWithoutProductionOfUsefulEnergy_units_0_fuels_0_emissions_0_emission")).toHaveValue("13");
+    await expect(this.page.locator("#root_sourceTypes_gscWithoutProductionOfUsefulEnergy_units_0_fuels_0_emissions_0_methodology_methodology")).toHaveValue("Replacement Methodology");
+  }
+
+  async verifyAndUpdateBarkHQFacilityCementActivityForm(): Promise<void> {
+    await expect(this.page.locator('input#root_sourceTypes_calcinationUsedToProductClinker_emissions_0_gasType[role="combobox"]:not([disabled])')).toHaveValue("CO2");
+    await expect(this.page.locator("#root_sourceTypes_calcinationUsedToProductClinker_emissions_0_emission")).toHaveValue("9,462");
+    await expect(this.page.locator("#root_sourceTypes_calcinationUsedToProductClinker_emissions_0_timesMissingDataProceduresWereFollowed")).toHaveValue("2");
+    const methodologyLocator = this.page.locator("#root_sourceTypes_calcinationUsedToProductClinker_emissions_0_methodology_methodology");
+    await expect(methodologyLocator).toHaveValue('Oxidation Emissions');
+    // update methodology to CEMS
+    await methodologyLocator.fill("CEMS");
   }
 }
