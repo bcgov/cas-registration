@@ -188,7 +188,6 @@ class PenaltyCalculationService:
     def create_penalty_invoice(
         compliance_penalty: CompliancePenalty,
         total_penalty: Decimal,
-        penalty_type: CompliancePenalty.PenaltyType = CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
     ) -> None:
         """
         Create a fee and invoice for the penalty in elicensing
@@ -207,12 +206,18 @@ class PenaltyCalculationService:
             operator_id=compliance_penalty.compliance_obligation.compliance_report_version.compliance_report.report.operator_id
         )
 
+        penalty_description = (
+            'GGEAPAR Interest'
+            if compliance_penalty.penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION
+            else 'Automatic Overdue Penalty'
+        )
+
         # Compose the fee data for the penalty fee
         fee_data: Dict[str, Any] = {
             "businessAreaCode": "OBPS",
             "feeGUID": str(uuid.uuid4()),
             "feeProfileGroupName": "OBPS Administrative Penalty",
-            "feeDescription": penalty_type,
+            "feeDescription": penalty_description,
             "feeAmount": float(total_penalty),
             "feeDate": date.today().strftime("%Y-%m-%d"),
         }
