@@ -2,7 +2,7 @@ from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 from airflow.providers.cncf.kubernetes.operators.job import KubernetesJobOperator
 from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from airflow.decorators import dag, task
 import os
 import sys
@@ -10,13 +10,13 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 RESET_DATA_DAG_NAME = "bc_obps_reset_data"
 WAIT_FOR_BACKEND_ROLLOUT_DAG_NAME = "bc_obps_reset_data_wait_for_backend_rollout"
-TWO_DAYS_AGO = datetime.now(timezone.utc) - timedelta(days=2)
+START_DATE = datetime(2025, 10, 1, tzinfo=timezone.utc)
 SERVICE_ACCOUNT_NAME = "airflow-deployer"
 BACKEND_DEPLOYMENT_NAME = "cas-bciers-backend"
 K8S_IMAGE = "alpine/k8s:1.29.15"
 BCIERS_NAMESPACE = os.getenv("BCIERS_NAMESPACE")
 
-default_args = {**default_dag_args}
+default_args = {**default_dag_args, "start_date": START_DATE}
 
 RESET_DAG_DOC = """
 DAG to reset the data in the BCIERS database to a freshly deployed state.
@@ -27,6 +27,7 @@ DAG to reset the data in the BCIERS database to a freshly deployed state.
     dag_id=RESET_DATA_DAG_NAME,
     schedule=None,  # This dag is intended to be run manually
     default_args=default_args,
+    catchup=False,
     is_paused_upon_creation=False,
     doc_md=RESET_DAG_DOC,
     tags=['bciers'],
