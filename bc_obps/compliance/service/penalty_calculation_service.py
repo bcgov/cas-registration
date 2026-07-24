@@ -207,8 +207,8 @@ class PenaltyCalculationService:
         )
 
         penalty_description = (
-            compliance_penalty.penalty_type == 'GGEAPAR Interest'
-            if CompliancePenalty.PenaltyType.LATE_SUBMISSION
+            'GGEAPAR Interest'
+            if compliance_penalty.penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION
             else 'Automatic Overdue Penalty'
         )
 
