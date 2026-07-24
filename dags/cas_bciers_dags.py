@@ -2,7 +2,7 @@
 from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 from datetime import datetime, timezone
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 from airflow.models.dagrun import DagRun
 
 import os
