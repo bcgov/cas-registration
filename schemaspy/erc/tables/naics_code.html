@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>naics_code - default.erc</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.erc</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>naics_code</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>Table contains NAICS codes &amp; their descriptions. NAICS code means the 6-digit code applicable to one or more producing units within a reporting operation under the North American Industrial Classification System (NAICS) Canada, 2007, published by Statistics Canada. Operations can have more than one NAICS code. More information, including version history for NAICS codes can be found at <a href="https://www.statcan.gc.ca/en/concepts/industry">https://www.statcan.gc.ca/en/concepts/industry</a>.</p>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="id">id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title='Automatically updated by the database'>√</td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="naics_regulatory_override.naics_code_id references naics_code.id via naics_regulatory_ove_naics_code_id_8583ba8b_fk_naics_cod"><a href='naics_regulatory_override.html'>naics_regulatory_override</a><span class='relatedKey'>.naics_code_id</span></td>
+                                                <td class="constraint detail">naics_regulatory_ove_naics_code_id_8583ba8b_fk_naics_cod</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="naics_regulatory_values.naics_code_id references naics_code.id via naics_regulatory_values_naics_code_id_fde86be4_fk_naics_code_id"><a href='naics_regulatory_values.html'>naics_regulatory_values</a><span class='relatedKey'>.naics_code_id</span></td>
+                                                <td class="constraint detail">naics_regulatory_values_naics_code_id_fde86be4_fk_naics_code_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="operation.naics_code_id references naics_code.id via operation_naics_code_id_68193099_fk_naics_code_id"><a href='operation.html'>operation</a><span class='relatedKey'>.naics_code_id</span></td>
+                                                <td class="constraint detail">operation_naics_code_id_68193099_fk_naics_code_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="operation.secondary_naics_code_id references naics_code.id via operation_secondary_naics_code_id_22c7218b_fk_naics_code_id"><a href='operation.html'>operation</a><span class='relatedKey'>.secondary_naics_code_id</span></td>
+                                                <td class="constraint detail">operation_secondary_naics_code_id_22c7218b_fk_naics_code_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="operation.tertiary_naics_code_id references naics_code.id via operation_tertiary_naics_code_id_5ecf3562_fk_naics_code_id"><a href='operation.html'>operation</a><span class='relatedKey'>.tertiary_naics_code_id</span></td>
+                                                <td class="constraint detail">operation_tertiary_naics_code_id_5ecf3562_fk_naics_code_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="report_operation.naics_code_id references naics_code.id via report_operation_naics_code_id_4d55ee9b_fk_naics_code_id"><a href='report_operation.html'>report_operation</a><span class='relatedKey'>.naics_code_id</span></td>
+                                                <td class="constraint detail">report_operation_naics_code_id_4d55ee9b_fk_naics_code_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="naics_code">naics_code</span></td>
+                                    <td>varchar</td>
+                                    <td>1000</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The 6-digit North American Industry Classification System (NAICS) code identifying the primary economic activity of an operation</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="naics_description">naics_description</span></td>
+                                    <td>varchar</td>
+                                    <td>1000</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Description of the NAICS (North American Industry Classification System) code</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="is_regulated">is_regulated</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Whether the NAICS code applies to regulated operations</p></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 id="Indexes" class="box-title">Indexes</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="indexes_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Type</th>
+                                    <th>Sort</th>
+                                    <th>Column(s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> naics_code_pkey</td>
+                                    <td>Primary key</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>id</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="naics_regulatory_override.html" target="_top" title="naics_regulatory_override" alt="" coords="391,5,676,181">
+<area shape="rect" id="node2" href="naics_code.html" target="_top" title="naics_code" alt="" coords="5,683,299,869">
+<area shape="rect" id="node3" href="naics_regulatory_values.html" target="_top" title="naics_regulatory_values" alt="" coords="399,199,668,345">
+<area shape="rect" id="node4" href="operation.html" target="_top" title="operation" alt="" coords="382,363,685,891">
+<area shape="rect" id="node5" href="report_operation.html" target="_top" title="report_operation" alt="" coords="343,908,724,1289">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/naics_code.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
+<area shape="rect" id="node1" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="193,908,447,996">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,735,120,823">
+<area shape="rect" id="node3" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="164,1049,476,1137">
+<area shape="rect" id="node4" href="closure_event.html" target="_top" title="closure_event" alt="" coords="973,817,1163,905">
+<area shape="rect" id="node5" href="operation.html" target="_top" title="operation" alt="" coords="520,891,823,1419">
+<area shape="rect" id="node12" href="naics_code.html" target="_top" title="naics_code" alt="" coords="173,1363,467,1549">
+<area shape="rect" id="node15" href="operator.html" target="_top" title="operator" alt="" coords="245,735,395,823">
+<area shape="rect" id="node16" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="177,1227,463,1315">
+<area shape="rect" id="node6" href="document.html" target="_top" title="document" alt="" coords="987,1860,1149,1948">
+<area shape="rect" id="node7" href="facility.html" target="_top" title="facility" alt="" coords="1001,1420,1135,1508">
+<area shape="rect" id="node8" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1313,464,1701,552">
+<area shape="rect" id="node9" href="facility_snapshot.html" target="_top" title="facility_snapshot" alt="" coords="1400,2049,1615,2137">
+<area shape="rect" id="node10" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="956,1965,1180,2053">
+<area shape="rect" id="node11" href="naics_regulatory_override.html" target="_top" title="naics_regulatory_override" alt="" coords="925,1667,1211,1843">
+<area shape="rect" id="node13" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="558,1740,785,1828">
+<area shape="rect" id="node14" href="naics_regulatory_values.html" target="_top" title="naics_regulatory_values" alt="" coords="537,1508,806,1655">
+<area shape="rect" id="node17" href="operation_activities.html" target="_top" title="operation_activities" alt="" coords="949,929,1187,1017">
+<area shape="rect" id="node18" href="operation_contacts.html" target="_top" title="operation_contacts" alt="" coords="951,1071,1185,1159">
+<area shape="rect" id="node19" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="867,600,1269,688">
+<area shape="rect" id="node20" href="operation_regulated_products.html" target="_top" title="operation_regulated_products" alt="" coords="908,1525,1228,1613">
+<area shape="rect" id="node21" href="report.html" target="_top" title="report" alt="" coords="1003,495,1133,583">
+<area shape="rect" id="node22" href="report_operation.html" target="_top" title="report_operation" alt="" coords="1745,129,2127,511">
+<area shape="rect" id="node23" href="report_version.html" target="_top" title="report_version" alt="" coords="1409,359,1605,447">
+<area shape="rect" id="node24" href="report_operation_activities.html" target="_top" title="report_operation_activities" alt="" coords="2212,132,2507,220">
+<area shape="rect" id="node25" href="report_operation_regulated_products.html" target="_top" title="report_operation_regulated_products" alt="" coords="2171,927,2548,1015">
+<area shape="rect" id="node26" href="restart_event.html" target="_top" title="restart_event" alt="" coords="975,40,1161,128">
+<area shape="rect" id="node27" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="916,181,1220,269">
+<area shape="rect" id="node28" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="970,712,1166,800">
+</map>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/naics_code.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="naics_regulatory_override.html" target="_top" title="naics_regulatory_override" alt="" coords="391,5,676,181">
+<area shape="rect" id="node2" href="naics_code.html" target="_top" title="naics_code" alt="" coords="5,683,299,869">
+<area shape="rect" id="node3" href="naics_regulatory_values.html" target="_top" title="naics_regulatory_values" alt="" coords="399,199,668,345">
+<area shape="rect" id="node4" href="operation.html" target="_top" title="operation" alt="" coords="382,363,685,891">
+<area shape="rect" id="node5" href="report_operation.html" target="_top" title="report_operation" alt="" coords="343,908,724,1289">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/naics_code.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="551,1762,804,1850">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="321,1259,436,1347">
+<area shape="rect" id="node8" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,519,236,607">
+<area shape="rect" id="node3" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="521,1191,833,1279">
+<area shape="rect" id="node4" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1331,923,1520,1011">
+<area shape="rect" id="node5" href="operation.html" target="_top" title="operation" alt="" coords="877,950,1180,1478">
+<area shape="rect" id="node13" href="naics_code.html" target="_top" title="naics_code" alt="" coords="531,1368,824,1555">
+<area shape="rect" id="node16" href="operator.html" target="_top" title="operator" alt="" coords="603,640,752,728">
+<area shape="rect" id="node17" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="535,1050,820,1138">
+<area shape="rect" id="node6" href="document.html" target="_top" title="document" alt="" coords="1345,1898,1506,1986">
+<area shape="rect" id="node7" href="facility.html" target="_top" title="facility" alt="" coords="1358,2176,1493,2264">
+<area shape="rect" id="node9" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1671,2260,2059,2348">
+<area shape="rect" id="node10" href="facility_snapshot.html" target="_top" title="facility_snapshot" alt="" coords="1757,1982,1972,2070">
+<area shape="rect" id="node11" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1313,607,1537,695">
+<area shape="rect" id="node12" href="naics_regulatory_override.html" target="_top" title="naics_regulatory_override" alt="" coords="1283,236,1568,412">
+<area shape="rect" id="node14" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="915,272,1142,360">
+<area shape="rect" id="node15" href="naics_regulatory_values.html" target="_top" title="naics_regulatory_values" alt="" coords="894,1495,1163,1642">
+<area shape="rect" id="node22" href="reporting_year.html" target="_top" title="reporting_year" alt="" coords="280,392,477,480">
+<area shape="rect" id="node18" href="operation_activities.html" target="_top" title="operation_activities" alt="" coords="1307,1048,1544,1136">
+<area shape="rect" id="node19" href="operation_contacts.html" target="_top" title="operation_contacts" alt="" coords="1309,1154,1542,1242">
+<area shape="rect" id="node20" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1224,1619,1627,1707">
+<area shape="rect" id="node21" href="operation_regulated_products.html" target="_top" title="operation_regulated_products" alt="" coords="1265,502,1585,590">
+<area shape="rect" id="node23" href="report.html" target="_top" title="report" alt="" coords="1360,712,1491,800">
+<area shape="rect" id="node24" href="report_operation.html" target="_top" title="report_operation" alt="" coords="2103,191,2484,572">
+<area shape="rect" id="node25" href="report_version.html" target="_top" title="report_version" alt="" coords="1767,1808,1963,1896">
+<area shape="rect" id="node26" href="report_operation_activities.html" target="_top" title="report_operation_activities" alt="" coords="2569,194,2864,282">
+<area shape="rect" id="node27" href="report_operation_regulated_products.html" target="_top" title="report_operation_regulated_products" alt="" coords="2528,18,2905,106">
+<area shape="rect" id="node28" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1332,1724,1519,1812">
+<area shape="rect" id="node29" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1273,2071,1577,2159">
+<area shape="rect" id="node30" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1327,818,1523,906">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/naics_code.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 6.2.4</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>

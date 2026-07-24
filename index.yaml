@@ -1,0 +1,185 @@
+apiVersion: v1
+entries:
+  cas-obps-backend-migration-test:
+  - apiVersion: v2
+    appVersion: 5.17.0
+    created: "2026-07-22T22:36:30.419194673Z"
+    description: A Helm chart for Kubernetes
+    digest: 05ca94b1556dc72ea0a6d6dcd3d8170de969f1a83e527ce4d949450173f1a15a
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.2.10/cas-obps-backend-migration-test-0.2.10.tgz
+    version: 0.2.10
+  - apiVersion: v2
+    appVersion: 5.16.0
+    created: "2026-07-16T19:36:25.920305677Z"
+    description: A Helm chart for Kubernetes
+    digest: 480d8ac28bf65c1b4558a11db5598bc2f1efe5bd9d6bd92b43d36cff04563961
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.2.9/cas-obps-backend-migration-test-0.2.9.tgz
+    version: 0.2.9
+  - apiVersion: v2
+    appVersion: 5.15.1
+    created: "2026-07-09T15:58:37.701328674Z"
+    description: A Helm chart for Kubernetes
+    digest: 14ea90afba71d7f28fa19defc2220b471560beb1a6795a51e2eb791f4a315000
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.2.8/cas-obps-backend-migration-test-0.2.8.tgz
+    version: 0.2.8
+  - apiVersion: v2
+    appVersion: 5.15.0
+    created: "2026-06-30T18:32:11.178234514Z"
+    description: A Helm chart for Kubernetes
+    digest: d64eecc8fbb7779df89ec193414398d39783cc47863de1815230cc4088fb2070
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.2.7/cas-obps-backend-migration-test-0.2.7.tgz
+    version: 0.2.7
+  - apiVersion: v2
+    appVersion: 5.14.0
+    created: "2026-06-18T23:17:24.129760491Z"
+    description: A Helm chart for Kubernetes
+    digest: 39cbbfb63117a25c9ce073f9ecd33364a5b3f79b5bdba93d0c16883e4ea1a087
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.2.6/cas-obps-backend-migration-test-0.2.6.tgz
+    version: 0.2.6
+  - apiVersion: v2
+    appVersion: 5.13.1
+    created: "2026-06-11T22:35:59.799925679Z"
+    description: A Helm chart for Kubernetes
+    digest: c98030baddacf6873fb793249310573784fba607628b5243c2c757aaccf1351f
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.2.5/cas-obps-backend-migration-test-0.2.5.tgz
+    version: 0.2.5
+  - apiVersion: v2
+    appVersion: 5.13.0
+    created: "2026-06-08T18:45:48.662555228Z"
+    description: A Helm chart for Kubernetes
+    digest: ba15efa51835d414ab7b4eb575982636cb34ff3b605a80167cd7a49fd84773e4
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.2.4/cas-obps-backend-migration-test-0.2.4.tgz
+    version: 0.2.4
+  - apiVersion: v2
+    appVersion: 5.12.0
+    created: "2026-06-01T20:25:53.362919285Z"
+    description: A Helm chart for Kubernetes
+    digest: 95a8e904946fd053dd2fd4c3dfa41a527ec73ef2f7bc5d060a632ec182e7fb9d
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.2.3/cas-obps-backend-migration-test-0.2.3.tgz
+    version: 0.2.3
+  - apiVersion: v2
+    appVersion: 5.11.0
+    created: "2026-05-14T23:00:30.539652398Z"
+    description: A Helm chart for Kubernetes
+    digest: 4885b7b6306f2e1bf36f17b489b8e424704d604a6d5c37bfc223e0a47d016cdd
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.2.2/cas-obps-backend-migration-test-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: 5.10.0
+    created: "2026-05-08T00:31:55.003839104Z"
+    description: A Helm chart for Kubernetes
+    digest: 2cd8615e232bc3c020fb31c5abf5f7bda1c64a6c9e056daa69f9f63fd919438d
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.2.1/cas-obps-backend-migration-test-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-01-07T20:20:06.09732215Z"
+    description: A Helm chart for Kubernetes
+    digest: e565aedcddb1b87be3d85ec2c4bbbc80acc54f6a462e6f2073bb5e5d6b000b30
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.2.0/cas-obps-backend-migration-test-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-10-02T21:47:39.775433993Z"
+    description: A Helm chart for Kubernetes
+    digest: 8663fe8494f37abcaa8c40d5f7ce0a0940aafdfe8388498b808e7e08972a9e98
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.1.2/cas-obps-backend-migration-test-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-09-25T21:23:11.288020962Z"
+    description: A Helm chart for Kubernetes
+    digest: 0c6db848744dd49ed6629ed65d4d979293d9dbd2b9966c7c6ade599b0bc97e86
+    name: cas-obps-backend-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-backend-migration-test-0.1.1/cas-obps-backend-migration-test-0.1.1.tgz
+    version: 0.1.1
+  cas-obps-postgres-migration-test:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-03-31T21:52:35.417207768Z"
+    description: A chart for testing the backups of the CAS BCIERS Postgres cluster.
+    digest: 1593d8a7a4d7b09f59e528c091495288c6f7cd0ba1079131a4456d26f69aabe3
+    name: cas-obps-postgres-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-postgres-migration-test-0.2.2/cas-obps-postgres-migration-test-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-02-28T00:56:19.777731418Z"
+    description: A chart for testing the backups of the CAS BCIERS Postgres cluster.
+    digest: 3543d23939c0069fd5ab3dcc93e65015d77c353e260cfd6057cb9142a3dbd034
+    name: cas-obps-postgres-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-postgres-migration-test-0.2.1/cas-obps-postgres-migration-test-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-01-07T20:20:06.286123438Z"
+    description: A chart for testing the backups of the CAS BCIERS Postgres cluster.
+    digest: c4d338f26583e67adaadaff9b5b8ee9d29404941cd9e37a22873a5469ecc5cc5
+    name: cas-obps-postgres-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-postgres-migration-test-0.2.0/cas-obps-postgres-migration-test-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-10-02T21:47:39.912853159Z"
+    description: A chart for testing the backups of the CAS BCIERS Postgres cluster.
+    digest: b95df3b6ed2b31cdd30f7eda1812fdcb99d09e202a797dc7c2be1c47e06581b5
+    name: cas-obps-postgres-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-postgres-migration-test-0.1.2/cas-obps-postgres-migration-test-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-09-25T21:23:11.439178582Z"
+    description: A chart for testing the backups of the CAS BCIERS Postgres cluster.
+    digest: 249b5321e96a221e60c2b9249916d7af6477a07d03a2aaf59653aed301a50cc0
+    name: cas-obps-postgres-migration-test
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-registration/releases/download/cas-obps-postgres-migration-test-0.1.1/cas-obps-postgres-migration-test-0.1.1.tgz
+    version: 0.1.1
+generated: "2026-07-22T22:36:30.419307154Z"
