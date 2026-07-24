@@ -20,7 +20,7 @@
   constraints: {
     node: "24.x",
     yarn: "4.x",
-    python: "3.12.11",
+    python: "3.14.6",
   },
 
   // Add packages here that should never be updated by Renovate
