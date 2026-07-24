@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-check-gcs
+  labels: {{- include "cas-bciers.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-weight": "15" # Triggers after Terraform bucket provisioning, if enabled
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: "Never"
+      containers:
+        - name: check-for-active-gsc-bucket
+          image: "gcr.io/google.com/cloudsdktool/google-cloud-cli:stable"
+          imagePullPolicy: "Always"
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/attachment-credentials/attachment-credentials.json"
+            - name: GS_BUCKET_NAMES
+              value: >-
+                {{ .Release.Namespace }}-bciers-attach
+                {{ .Release.Namespace }}-bciers-attach-unscanned
+                {{ .Release.Namespace }}-bciers-attach-clean
+                {{ .Release.Namespace }}-bciers-attach-quarantined
+          volumeMounts:
+            - name: attachment-credentials
+              mountPath: /attachment-credentials
+              readOnly: true
+            - mountPath: "/.config"
+              name: config-volume
+          resources:
+            limits:
+              memory: 256Mi
+              ephemeral-storage: 50Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          command:
+            - /usr/bin/env
+            - bash
+            - -c
+            - |
+              set -eo pipefail
+              set -x
+              gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS
+
+              FAILED=false
+              for bucket in $GS_BUCKET_NAMES; do
+                if ! gcloud storage buckets describe "gs://$bucket" > /dev/null 2>&1; then
+                  echo "Bucket $bucket does not exist"
+                  FAILED=true
+                else
+                  echo "Bucket $bucket exists"
+                fi
+              done
+
+              if [ "$FAILED" = true ]; then
+                exit 1
+              fi
+              exit 0
+      automountServiceAccountToken: false
+      volumes:
+        - name: attachment-credentials
+          secret:
+            secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
+            items:
+            - key: credentials.json
+              path: attachment-credentials.json
+        - name: config-volume
+          emptyDir:
+            sizeLimit: 50Mi
