@@ -8,7 +8,7 @@ export const getManualHandlingData = async (
   const response = await actionHandler(endpoint, "GET");
   if (response && response.error) {
     throw new Error(
-      `Failed to fetch the manual handling data for compliance report version ${complianceReportVersionId}.`,
+      `Failed to fetch the manual handling data for compliance report version ${complianceReportVersionId}: ${response.error}`,
     );
   }
   return response as ManualHandlingData;

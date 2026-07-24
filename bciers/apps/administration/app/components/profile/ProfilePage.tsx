@@ -32,9 +32,7 @@ export default async function UserPage() {
 
   // Handle error case
   if ("error" in formData) {
-    return (
-      <div>{`Server Error: ${formData.error}. Please try again later.`}</div>
-    );
+    throw new Error(`Server Error: ${formData.error}. Please try again later.`);
   }
 
   // If formData has error or is empty, populate from session
@@ -66,8 +64,8 @@ export default async function UserPage() {
       typeof contactResponse === "object" &&
       "error" in contactResponse
     ) {
-      return (
-        <div>{`Server Error: failed to retrieve contact data. ${contactResponse.error}`}</div>
+      throw new Error(
+        `Server Error: failed to retrieve contact data. ${contactResponse.error}`,
       );
     }
     // if no error, this is either a number or null
