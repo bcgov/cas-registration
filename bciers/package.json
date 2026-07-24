@@ -82,7 +82,7 @@
     "lodash.throttle": "^4.1.1",
     "mui-tel-input": "^6.0.1",
     "next": "16.2.10",
-    "next-auth": "^5.0.0-beta.30",
+    "next-auth": "^5.0.0-beta.32",
     "pg": "^8.11.3",
     "postcss": "8.5.16",
     "react": "^19.2.3",
