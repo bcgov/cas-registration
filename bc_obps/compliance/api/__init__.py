@@ -20,7 +20,7 @@ from ._compliance_report_versions._compliance_report_version_id._automatic_overd
 from ._compliance_report_versions._compliance_report_version_id._late_submission_penalty.invoice import (
     pdf as late_submission_penalty_invoice,
 )
-from ._compliance_report_versions._compliance_report_version_id._obligation import payments
+from ._compliance_report_versions._compliance_report_version_id._obligation import payments, accruing_penalties
 from ._bccr._accounts._account_id._compliance_report_versions._compliance_report_version_id import account_id
 from ._bccr._compliance_report_versions._compliance_report_version_id import applied_compliance_units
 from ._bccr._accounts._account_id._compliance_report_versions._compliance_report_version_id import compliance_units

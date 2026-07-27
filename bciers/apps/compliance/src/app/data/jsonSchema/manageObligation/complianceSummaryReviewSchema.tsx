@@ -13,6 +13,8 @@ import { ComplianceSummaryGuidanceBanner } from "@/compliance/src/app/components
 
 export const createComplianceSummaryReviewSchema = (
   reportingYear: number,
+  hasAccruingAutomaticOverduePenalty: boolean = false,
+  hasAccruingGgeaparInterest: boolean = false,
 ): RJSFSchema => ({
   type: "object",
   title: `Review ${reportingYear} Compliance Obligation Report`,
@@ -40,6 +42,20 @@ export const createComplianceSummaryReviewSchema = (
     outstanding_balance_equivalent_value: readOnlyStringField(
       "Equivalent Value (Not including interest):",
     ),
+    faa_interest: readOnlyStringField("FAA interest as of today:"),
+    // Penalty sections are only shown while a penalty is actually accruing
+    ...(hasAccruingAutomaticOverduePenalty && {
+      automatic_overdue_penalty_header: readOnlyObjectField(
+        "Automatic Overdue Penalty",
+      ),
+      automatic_overdue_penalty_amount: readOnlyStringField(
+        "Amount as of today:",
+      ),
+    }),
+    ...(hasAccruingGgeaparInterest && {
+      ggeapar_interest_header: readOnlyObjectField("GGEAPAR Interest"),
+      ggeapar_interest_amount: readOnlyStringField("Amount as of today:"),
+    }),
   },
 });
 
@@ -99,6 +115,24 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
   outstanding_obligation_header: headerUiConfig,
   outstanding_balance_tco2e: tco2eUiConfig,
   outstanding_balance_equivalent_value: {
+    ...commonReadOnlyOptions,
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
+  faa_interest: {
+    ...commonReadOnlyOptions,
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
+
+  // Automatic Overdue Penalty Section
+  automatic_overdue_penalty_header: headerUiConfig,
+  automatic_overdue_penalty_amount: {
+    ...commonReadOnlyOptions,
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
+
+  // GGEAPAR Interest Section
+  ggeapar_interest_header: headerUiConfig,
+  ggeapar_interest_amount: {
     ...commonReadOnlyOptions,
     "ui:widget": "ReadOnlyCurrencyWidget",
   },

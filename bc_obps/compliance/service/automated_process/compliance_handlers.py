@@ -151,24 +151,16 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         logger.info(f"Updated compliance status for obligation {obligation.obligation_id}")
         final_transaction_date = PenaltyCalculationService.determine_last_transaction_date(obligation)
 
-        # Determine if late submission penalty applies
-        compliance_period = obligation.compliance_report_version.compliance_report.compliance_period
-        compliance_deadline = compliance_period.compliance_deadline
-        submission_date = obligation.created_at.date()  # type: ignore[union-attr]
-        has_late_submission = submission_date > compliance_deadline
+        # Determine if late submission penalty applies & when the automatic overdue penalty starts accruing
+        penalty_accrual_context = PenaltyCalculationService.get_penalty_accrual_context(obligation)
+        effective_deadline = penalty_accrual_context.effective_deadline
 
-        # Effective deadline determines when the large automatic overdue penalty is applied
-        # It is equal to the compliance deadline except in the case of late supplementary reports, which are granted 30 days to pay the additional obligation
-        # For late supplementary reports the effective deadline becomes the due_date of the invoice (ie: 30 days after report submission/invoice creation)
-        # As per the Greenhouse Gas Emission Administrative Penalties and Appeals Regulation https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/248_2015#section2
-        effective_deadline = compliance_deadline
-        if obligation.compliance_report_version.is_supplementary and has_late_submission:
-            effective_deadline = invoice.due_date
+        if obligation.compliance_report_version.is_supplementary and penalty_accrual_context.has_late_submission:
             # Create a late submission penalty if a supplementary obligation was submitted late
             retryable_create_penalty.execute(
                 obligation_id=obligation.id,
                 penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-                effective_deadline=compliance_deadline,
+                effective_deadline=penalty_accrual_context.compliance_deadline,
             )
             logger.info(f"Created penalties for obligation {obligation.obligation_id}")
 

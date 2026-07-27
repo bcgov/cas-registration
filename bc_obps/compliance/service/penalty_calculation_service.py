@@ -26,6 +26,7 @@ from compliance.service.elicensing.elicensing_api_client import (
     InvoiceCreationRequest,
 )
 from compliance.service.elicensing.schema import FeeCreationItem
+from compliance.enums import ComplianceInvoiceTypes
 from django.db import transaction
 from dataclasses import dataclass
 
@@ -40,6 +41,13 @@ class CalculatedPenaltyAccrualData:
     daily_compounded: Decimal
     accumulated_penalty: Decimal
     accumulated_compounded: Decimal
+
+
+@dataclass
+class PenaltyAccrualContext:
+    compliance_deadline: date
+    effective_deadline: date
+    has_late_submission: bool
 
 
 @dataclass
@@ -64,6 +72,91 @@ class PenaltyCalculationService:
     """
 
     @classmethod
+    def get_penalty_accrual_context(cls, obligation: ComplianceObligation) -> PenaltyAccrualContext:
+        """
+        Determine the deadlines that govern when penalties begin accruing for an obligation.
+
+        The effective deadline is the compliance deadline except in the case of late supplementary reports,
+        which are granted 30 days to pay the additional obligation, so their effective deadline becomes the
+        due_date of the invoice. As per the Greenhouse Gas Emission Administrative Penalties and Appeals
+        Regulation https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/248_2015#section2
+
+        Args:
+            obligation: The compliance obligation
+
+        Returns:
+            PenaltyAccrualContext Dataclass
+        """
+        compliance_period = obligation.compliance_report_version.compliance_report.compliance_period
+        compliance_deadline = compliance_period.compliance_deadline
+        submission_date = obligation.created_at.date()  # type: ignore[union-attr]
+        has_late_submission = submission_date > compliance_deadline
+
+        effective_deadline = compliance_deadline
+        if obligation.compliance_report_version.is_supplementary and has_late_submission:
+            effective_deadline = obligation.elicensing_invoice.due_date  # type: ignore[union-attr]
+
+        return PenaltyAccrualContext(
+            compliance_deadline=compliance_deadline,
+            effective_deadline=effective_deadline,
+            has_late_submission=has_late_submission,
+        )
+
+    @classmethod
+    def get_accruing_penalty_data(cls, compliance_report_version_id: int) -> Dict[str, Any]:
+        """
+        Get the penalty amounts an unpaid obligation has accrued as of today. These are calculated live
+        because no CompliancePenalty record exists until the obligation has been fully paid.
+
+        Args:
+            compliance_report_version_id: The ID of the compliance report version
+
+        Returns:
+            Dictionary containing the obligation's FAA interest and any accruing penalty amounts
+        """
+        refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            compliance_report_version_id=compliance_report_version_id
+        )
+        obligation = ComplianceObligation.objects.select_related(
+            'compliance_report_version__compliance_report__compliance_period',
+            'elicensing_invoice',
+        ).get(compliance_report_version_id=compliance_report_version_id)
+
+        faa_interest = (
+            refresh_result.invoice.invoice_interest_balance
+            if refresh_result.invoice and refresh_result.invoice.invoice_interest_balance
+            else Decimal('0.00')
+        )
+
+        result: Dict[str, Any] = {
+            "faa_interest": faa_interest,
+            "automatic_overdue_penalty_amount": Decimal('0.00'),
+            "ggeapar_interest_amount": Decimal('0.00'),
+        }
+
+        if obligation.penalty_status != ComplianceObligation.PenaltyStatus.ACCRUING:
+            return result
+
+        penalty_accrual_context = cls.get_penalty_accrual_context(obligation)
+
+        if penalty_accrual_context.effective_deadline < date.today():
+            overdue_penalty = cls.calculate_penalty(
+                obligation=obligation,
+                accrual_start_date=penalty_accrual_context.effective_deadline + timedelta(days=1),
+            )
+            result["automatic_overdue_penalty_amount"] = overdue_penalty.total_penalty
+
+        if obligation.compliance_report_version.is_supplementary and penalty_accrual_context.has_late_submission:
+            ggeapar_interest = cls.calculate_late_submission_penalty(
+                obligation=obligation,
+                accrual_start_date=penalty_accrual_context.compliance_deadline + timedelta(days=1),
+                final_accrual_date=None,
+            )
+            result["ggeapar_interest_amount"] = ggeapar_interest.total_penalty
+
+        return result
+
+    @classmethod
     def get_automatic_overdue_penalty_data(cls, compliance_report_version_id: int) -> Dict[str, Any]:
         """
         Get automatic overdue penalty data for a compliance obligation.
@@ -75,7 +168,8 @@ class PenaltyCalculationService:
             Dictionary containing penalty details or CompliancePenalty.DoesNotExist if no penalty applies
         """
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
-            compliance_report_version_id=compliance_report_version_id
+            compliance_report_version_id=compliance_report_version_id,
+            invoice_type=ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
         )
         current_compliance_penalty_rate = CompliancePenaltyRateService.get_current_compliance_penalty_rate()
         daily_penalty_rate = current_compliance_penalty_rate.rate
@@ -115,7 +209,8 @@ class PenaltyCalculationService:
                 - total_amount: Total amount including FAA interest
         """
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
-            compliance_report_version_id=compliance_report_version_id
+            compliance_report_version_id=compliance_report_version_id,
+            invoice_type=ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY,
         )
         obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
 
@@ -259,7 +354,7 @@ class PenaltyCalculationService:
         Args:
             obligation: The compliance obligation
             accrual_start_date: The first day that the penalty begins accruing
-            final_accrual_date: The last day that the penalty accrued, default None
+            final_accrual_date: The last day that the penalty accrued, default None which means today
 
         Returns:
             CalculatedPenaltyData Dataclass
