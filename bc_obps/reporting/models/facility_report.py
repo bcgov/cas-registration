@@ -16,14 +16,14 @@ class FacilityReport(TimeStampedModel):
     facility = models.ForeignKey(
         Facility,
         on_delete=models.DO_NOTHING,
-        db_comment="The facility record this report was created for, at the time the report was filled out.",
+        db_comment="The facility record this report was created for, at the time the report was filled out. Foreign key to the erc.facility table",
         related_name="facility_reports",
     )
 
     report_version = models.ForeignKey(
         ReportVersion,
         on_delete=models.CASCADE,
-        db_comment="The report this facility information is related to",
+        db_comment="The report_version record this facility report information is related to. Foreign key to the erc.report_version table",
         related_name="facility_reports",
     )
 
@@ -39,7 +39,7 @@ class FacilityReport(TimeStampedModel):
 
     facility_bcghgid = models.CharField(
         max_length=1000,
-        db_comment="The BC GHG ID of the facility as reported",
+        db_comment="The BC Green House Gas ID of the facility as reported",
         blank=True,
         null=True,
     )

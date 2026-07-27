@@ -11,19 +11,19 @@ class ReportSourceType(ReportDataBaseModel):
         ActivitySourceTypeJsonSchema,
         on_delete=models.PROTECT,
         related_name="%(class)s_records",
-        db_comment="The activity-source-type base schema used to render the form that collected this data",
+        db_comment="The activity-source-type base schema used to render the form that collected this data. Foreign key to the erc.activity_source_type_json_schema table",
     )
     source_type = models.ForeignKey(
         SourceType,
         on_delete=models.PROTECT,
         related_name="%(class)s_records",
-        db_comment="The source type this data applies to",
+        db_comment="The source type this data applies to. Foreign key to the erc.source_type table",
     )
     report_activity = models.ForeignKey(
         ReportActivity,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The activity data record this source type data belongs to",
+        db_comment="The activity data record this source type data belongs to. Foreign key to the erc.report_activity table",
     )
 
     class Meta(ReportDataBaseModel.Meta):

@@ -19,13 +19,13 @@ class NaicsRegulatoryOverride(BaseModel):
         NaicsCode,
         on_delete=models.PROTECT,
         related_name="regulatory_values_overrides",
-        db_comment="Foreign key to the naics_code record that is associated with the regulatory value override in this record",
+        db_comment="The naics_code record that is associated with the regulatory value override in this record. Foreign key to erc.naics_code table",
     )
     regulated_product = models.ForeignKey(
         RegulatedProduct,
         on_delete=models.PROTECT,
         related_name="regulatory_values_overrides",
-        db_comment="Foreign key to the regulated_product record associated with the regulatory values override in this record",
+        db_comment="The regulated_product record associated with the regulatory values override in this record. Foreign key to erc.regulated_product table",
     )
     reduction_factor = models.DecimalField(
         db_comment="""

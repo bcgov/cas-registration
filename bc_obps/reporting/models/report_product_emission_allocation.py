@@ -17,25 +17,25 @@ class ReportProductEmissionAllocation(TimeStampedModel):
         ReportEmissionAllocation,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The report emission allocation this emission data belongs to",
+        db_comment="The report emission allocation this emission data belongs to. Foreign key to the erc.report_emission_allocation table",
     )
     report_version = models.ForeignKey(
         report_version.ReportVersion,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The report version this data is associated with",
+        db_comment="The report version this data is associated with. Foreign key to the erc.report_version table",
     )
     report_product = models.ForeignKey(
         ReportProduct,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The regulated product this emission data has been allocated to",
+        db_comment="The regulated product this emission data has been allocated to. Foreign key to the erc.report_product table",
     )
     emission_category = models.ForeignKey(
         EmissionCategory,
         on_delete=models.PROTECT,
         related_name="%(class)s_records",
-        db_comment="The emission category that this emission data belongs to",
+        db_comment="The emission category that this emission data belongs to. Foreign key to the erc.emission_category table",
     )
     allocated_quantity = models.DecimalField(
         max_digits=20,

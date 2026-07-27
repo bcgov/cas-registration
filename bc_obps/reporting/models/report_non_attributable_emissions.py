@@ -12,13 +12,13 @@ class ReportNonAttributableEmissions(TimeStampedModel):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_non_attributable_emissions",
-        db_comment="The report this operation information relates to",
+        db_comment="The report version this operation information relates to. Foreign key to the erc.report_version table",
     )
     facility_report = models.ForeignKey(
         FacilityReport,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The facility report this activity data belongs to",
+        db_comment="The facility report this activity data belongs to. Foreign key to the erc.facility_report table",
     )
     activity = models.CharField(max_length=255, db_comment="The name or description of the activity.")
 
@@ -30,7 +30,7 @@ class ReportNonAttributableEmissions(TimeStampedModel):
     emission_category = models.ForeignKey(
         EmissionCategory,
         on_delete=models.PROTECT,
-        db_comment="The emission category associated with this emission.",
+        db_comment="The emission category associated with this emission. Foreign key to the erc.emission_category table",
         related_name="report_non_attributable_emissions",
     )
 

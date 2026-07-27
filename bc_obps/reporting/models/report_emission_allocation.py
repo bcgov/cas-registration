@@ -23,19 +23,19 @@ class ReportEmissionAllocation(TimeStampedModel):
         report_version.ReportVersion,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The report version this data is associated with",
+        db_comment="The report version this data is associated with. Foreign key to the erc.report_version table",
     )
     facility_report = models.ForeignKey(
         FacilityReport,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
-        db_comment="The facility report this data belongs to",
+        db_comment="The facility report this data belongs to. Foreign key to the erc.facility_report table",
     )
     allocation_methodology = models.CharField(
         max_length=255,
         choices=AllocationMethodologyChoices.choices,
         default=AllocationMethodologyChoices.NOT_APPLICABLE,
-        db_comment="The methodology used to calculate the allocated emissions",
+        db_comment="The methodology used to calculate the allocated emissions. Defaulted to not applicable which is only available for LFOs",
     )
     allocation_other_methodology_description = models.TextField(
         blank=True,

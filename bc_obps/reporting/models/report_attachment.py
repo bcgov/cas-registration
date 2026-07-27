@@ -22,21 +22,21 @@ class ReportAttachment(TimeStampedModel, ScannedFileStorageMixin):
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_attachments",
-        db_comment="The report version this attachment belongs to",
+        db_comment="The report version this attachment belongs to. Foreign key to the erc.report_version table",
     )
     attachment = FileField(
         upload_to=FOLDER_NAME,
-        db_comment="A file uploaded as an attachment to a report",
+        db_comment="A file containing supplementary report information uploaded as an attachment to a report",
         max_length=1000,
     )
     attachment_type = CharField(
         max_length=1000,
         choices=ReportAttachmentType.choices,
-        db_comment="The type of attachment this record represents",
+        db_comment="The type of attachment this record represents (verification statement, WCI 352/362, additional reportable information, confidentiality request)",
     )
     attachment_name = CharField(
         max_length=1000,
-        db_comment="The name of the original file that was uploaded, since django adds a hash to avoid file name collisions",
+        db_comment="The name of the original file that was uploaded, since django (our backend python framework) adds a hash to avoid file name collisions",
     )
 
     @typing.no_type_check
