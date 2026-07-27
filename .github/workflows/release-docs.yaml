@@ -1,0 +1,48 @@
+name: Release Docs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+# Allow this job to clone the repo and create a page deployment
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-docs:
+    name: Build documentation pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Enable Corepack and Yarn 4
+        run: |
+          corepack enable
+          corepack prepare yarn@4.13.0 --activate
+
+      - name: Install build and deploy with Astro
+        uses: withastro/action@v6
+        with:
+          path: docs-site
+          node-version: 24.16.0
+          package-manager: yarn@4.13.0
+          build-cmd: node sync-docs.js && yarn astro build && touch dist/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs-site/dist/
+          target-folder: docs
+          single-commit: true
+          clean: true
+          clean-exclude: |
+            .nojekyll
+          token: ${{ secrets.GITHUB_TOKEN }}
