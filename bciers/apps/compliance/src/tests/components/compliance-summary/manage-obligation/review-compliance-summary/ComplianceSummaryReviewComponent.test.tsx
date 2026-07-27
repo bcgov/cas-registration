@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { ComplianceSummaryReviewComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent";
 import userEvent from "@testing-library/user-event";
 import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
+import { ComplianceSummaryStatus } from "@bciers/utils/src/enums";
 
 // Mocks
 const mockWindowOpen = vi.fn();
@@ -38,30 +39,38 @@ vi.mock("@bciers/components", async () => {
 
 const mockData: ComplianceSummaryReviewPageData = {
   id: 2,
+  has_late_submission_penalty: false,
+  has_overdue_penalty: false,
+  max_credit_usage_percentage: 0,
+  requires_manual_handling: false,
   obligation_id: "24-0019-3-3",
   operation_name: "Compliance SFO - Obligation not met",
-  operation_bcghg_id: "13219990046",
   reporting_year: 2025,
   excess_emissions: 5264.635,
-  emissions_attributable_for_compliance: 5500.0,
-  emissions_limit: 235.365,
-  credited_emissions: 0.0,
-  outstanding_balance: 421170.8,
+  emissions_attributable_for_compliance: "5500.0",
+  emissions_limit: "235.365",
   compliance_charge_rate: 80.0,
   equivalent_value: 421170.8,
   outstanding_balance_equivalent_value: 33693664.0,
-  status: "Obligation not met",
+  status: "Obligation not met" as ComplianceSummaryStatus,
   monetary_payments: { rows: [], row_count: 0 },
   applied_units_summary: {
-    compliance_report_version_id: "2",
-    applied_compliance_units: { rows: [], row_count: 0 },
+    compliance_report_version_id: 2,
+    applied_compliance_units: {
+      rows: [],
+      row_count: 0,
+      can_apply_compliance_units: false,
+    },
   },
+  faa_interest: "0.00",
+  automatic_overdue_penalty_amount: "0.00",
+  ggeapar_interest_amount: "0.00",
 };
 
-const setupComponent = (id = 123) =>
+const setupComponent = (id = 123, data = mockData) =>
   render(
     <ComplianceSummaryReviewComponent
-      data={mockData}
+      data={data}
       complianceReportVersionId={id}
     />,
   );
@@ -163,5 +172,53 @@ describe("ComplianceSummaryReviewComponent", () => {
     );
     expect(hasErrorText).toBe(true);
     expect(getGenerateButton()).toBeEnabled();
+  });
+
+  describe("accruing penalties", () => {
+    it("shows the accruing automatic overdue penalty amount as of today", () => {
+      setupComponent(123, {
+        ...mockData,
+        automatic_overdue_penalty_amount: "3800.00",
+      });
+
+      expect(screen.getByText("Automatic Overdue Penalty")).toBeVisible();
+      expect(screen.getByText("Amount as of today:")).toBeVisible();
+      expect(screen.getByText("$3,800.00")).toBeVisible();
+    });
+
+    it("shows the accruing GGEAPAR interest amount as of today", () => {
+      setupComponent(123, {
+        ...mockData,
+        ggeapar_interest_amount: "1250.00",
+      });
+
+      expect(screen.getByText("GGEAPAR Interest")).toBeVisible();
+      expect(screen.getByText("Amount as of today:")).toBeVisible();
+      expect(screen.getByText("$1,250.00")).toBeVisible();
+    });
+
+    it("shows the FAA interest accrued on the outstanding obligation", () => {
+      setupComponent(123, { ...mockData, faa_interest: "1000.00" });
+
+      expect(screen.getByText("FAA interest as of today:")).toBeVisible();
+      expect(screen.getByText("$1,000.00")).toBeVisible();
+    });
+
+    it("does not show penalty sections when nothing is accruing", () => {
+      setupComponent();
+
+      expect(
+        screen.queryByText("Automatic Overdue Penalty"),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText("GGEAPAR Interest")).not.toBeInTheDocument();
+      expect(screen.queryByText("Amount as of today:")).not.toBeInTheDocument();
+    });
+
+    it("still shows the FAA interest label as $0 when none has accrued", () => {
+      setupComponent();
+
+      expect(screen.getByText("FAA interest as of today:")).toBeVisible();
+      expect(screen.getByText("$0.00")).toBeVisible();
+    });
   });
 });
