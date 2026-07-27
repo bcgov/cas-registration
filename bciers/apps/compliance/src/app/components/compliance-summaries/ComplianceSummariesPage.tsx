@@ -9,6 +9,7 @@ import {
   FrontEndRoles,
   PenaltyStatus,
 } from "@bciers/utils/src/enums";
+import getCurrentCompliancePenaltyRate from "@/compliance/src/app/utils/getCurrentCompliancePenaltyRate";
 
 export default async function ComplianceSummariesPage({
   searchParams,
@@ -34,6 +35,10 @@ export default async function ComplianceSummariesPage({
     dueDate,
   );
   const dueDay = dueDate.getDate();
+  const currentCompliancePenaltyRate = await getCurrentCompliancePenaltyRate();
+  const dailyPenaltyRate = currentCompliancePenaltyRate
+    ? currentCompliancePenaltyRate.rate * 100
+    : 0;
 
   const isAllowedCas = [
     FrontEndRoles.CAS_DIRECTOR,
@@ -77,9 +82,9 @@ export default async function ComplianceSummariesPage({
           penaltyExists && (
             <AlertNote>
               An automatic overdue penalty has been incurred and{" "}
-              <strong>accrues at 0.38% daily</strong> since the compliance
-              obligation was not paid by its due date. You may pay the penalty
-              after the compliance obligation is paid.
+              <strong>accrues at {dailyPenaltyRate}% daily</strong> since the
+              compliance obligation was not paid by its due date. You may pay
+              the penalty after the compliance obligation is paid.
             </AlertNote>
           )}
       </div>
