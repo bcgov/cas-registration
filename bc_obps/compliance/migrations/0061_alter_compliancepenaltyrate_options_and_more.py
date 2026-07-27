@@ -7,8 +7,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0056_backfill_obligation_met_interest_not_paid'),
-        ('registration', '0186_V5_15_1'),
+        ('compliance', '0060_V5_17_0'),
+        ('registration', '0188_V5_17_0'),
     ]
 
     operations = [
