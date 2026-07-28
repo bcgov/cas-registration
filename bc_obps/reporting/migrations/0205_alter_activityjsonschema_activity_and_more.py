@@ -19,6 +19,9 @@ class Migration(migrations.Migration):
             cursor.execute(
                 "drop policy if exists compliance_earned_credit_industry_user_delete_policy on erc.compliance_earned_credit"
             )
+            cursor.execute(
+                "drop policy if exists compliance_report_industry_user_select_policy on erc.compliance_report"
+            )
 
     operations = [
         migrations.RunPython(drop_conflicting_policies, migrations.operations.special.RunPython.noop, elidable=True),
