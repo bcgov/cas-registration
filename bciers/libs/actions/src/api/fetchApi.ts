@@ -37,13 +37,25 @@ export const fetchApi = async (
 
   const response = await fetch(`${baseApiUrl}${endpoint}`, options);
 
+  let res: any = null;
+  // Parse the JSON error body
+  try {
+    res = await response.json();
+  } catch {
+    // Fallback if the error payload isn't valid JSON (e.g., HTML 502/500 pages)
+  }
+
   if (!response.ok) {
     const userGuid = token?.user_guid;
     captureException(
       new Error(`❗ Failed to fetchAPI ${endpoint}: ${response.statusText}`),
       userGuid,
     );
+
+    const errorMessage = `HTTP error! Status: ${response.status}`;
+    const error = new Error(errorMessage);
+    throw error;
   }
 
-  return response.json();
+  return res;
 };

@@ -1,5 +1,5 @@
 import { NextProxy, NextRequest, NextResponse } from "next/server";
-import { ProxyFactory, getUserRole } from "@bciers/proxies";
+import { ProxyFactory, getUserRole, DashboardRoutes } from "@bciers/proxies";
 import { getToken } from "@bciers/actions";
 import {
   extractComplianceReportVersionId,
@@ -39,7 +39,7 @@ const redirectTo = (path: string, request: NextRequest) =>
   NextResponse.redirect(new URL(absolutize(path), request.url));
 
 const HUB_SUMMARIES_PATH = `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`;
-const ONBOARDING_PATH = absolutize(AppRoutes.ONBOARDING);
+const ONBOARDING_PATH = absolutize(DashboardRoutes.ONBOARDING);
 
 // --------------------
 // Types
@@ -440,7 +440,7 @@ const checkHasPathAccess = (request: ContextAwareNextRequest) =>
       extractComplianceReportVersionId(pathname) ?? undefined,
     createContext: createRuleContext,
     rules: permissionRules,
-    onErrorRedirect: (req) => redirectTo(AppRoutes.ONBOARDING, req),
+    onErrorRedirect: (req) => redirectTo(DashboardRoutes.ONBOARDING, req),
   });
 
 // --------------------

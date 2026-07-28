@@ -4,7 +4,7 @@ import {
   NextRequest,
   NextResponse,
 } from "next/server";
-import { ProxyFactory } from "@bciers/proxies";
+import { ProxyFactory, DashboardRoutes } from "@bciers/proxies";
 import { getToken } from "@bciers/actions";
 import { IDP } from "@bciers/utils/src/enums";
 import { fetchApi } from "@bciers/actions/api/fetchApi";
@@ -27,7 +27,9 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
     // If user does not have an operator, redirect to the onboarding page
     if (!userOperator) {
       // 🛸 Redirect to BCIERS dashboard
-      return NextResponse.redirect(new URL(`/onboarding`, request.url));
+      return NextResponse.redirect(
+        new URL(DashboardRoutes.ONBOARDING, request.url),
+      );
     }
 
     // 📏 Rule: Check if the operator has all required fields filled
@@ -41,11 +43,13 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
     // If required fields are missing, redirect to the onboarding page
     if (operatorFields.has_required_fields !== true) {
       // 🛸 Redirect to BCIERS dashboard
-      return NextResponse.redirect(new URL(`/onboarding`, request.url));
+      return NextResponse.redirect(
+        new URL(DashboardRoutes.ONBOARDING, request.url),
+      );
     }
   } catch (_error) {
-    // 🛸 Redirect to BCIERS dashboard
-    return NextResponse.redirect(new URL(`/onboarding`, request.url));
+    // 🛸 Redirect to BCIERS dashboard error
+    return NextResponse.redirect(new URL(DashboardRoutes.ERROR, request.url));
   }
 
   // 🛸 No redirect required, proceed to the next proxy
@@ -70,7 +74,9 @@ export const withRulesAppliedReg: ProxyFactory = (next: NextProxy) => {
         }
       } catch (_error) {
         // 🛸 Redirect to BCIERS dashboard
-        return NextResponse.redirect(new URL(`/onboarding`, request.url));
+        return NextResponse.redirect(
+          new URL(DashboardRoutes.ONBOARDING, request.url),
+        );
       }
     }
 

@@ -22,6 +22,11 @@ from registration.schema import Message
     auth=authorize("industry_user"),
 )
 def get_current_user_operator_has_required_fields(request: HttpRequest) -> Tuple[Literal[200], Dict[str, bool]]:
+    
+   
+    raise ValueError(
+        "Error."
+    )
     try:
         # Retrieve the operator associated with the current user
         operator = UserDataAccessService.get_operator_by_user(get_current_user_guid(request))
