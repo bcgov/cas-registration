@@ -1,5 +1,21 @@
 # Changelog
 
+# [5.18.0](https://github.com/bcgov/cas-registration/compare/v5.17.0...v5.18.0) (2026-07-28)
+
+### Bug Fixes
+
+- **deps:** update dependency postcss to v8.5.18 [security] ([44f3000](https://github.com/bcgov/cas-registration/commit/44f3000c95a6f644fbe03a4731fb836f6dd69c05))
+- fix broken parent company layout and add a happo screenshot for it ([6069a06](https://github.com/bcgov/cas-registration/commit/6069a06ff16200687e1c266f9daf6ca3e260a2ba))
+- fix broken payment layout in pay penalty track page ([b711f39](https://github.com/bcgov/cas-registration/commit/b711f392ce68bd9f85c71c1abfe5f5de505f2ba0))
+- missing selection errors are cleared when selection is made ([fe54e58](https://github.com/bcgov/cas-registration/commit/fe54e5805d917b38ba9d2702a33dfc373fa6a59e))
+- push correct fee description for penalties to elicensing ([656618a](https://github.com/bcgov/cas-registration/commit/656618aa8e496985179ff2fb88e128476c527395))
+- update widgets to use `registry.formContext` instead of `formContext` directly ([e3d3ce6](https://github.com/bcgov/cas-registration/commit/e3d3ce61cd2c4d7e611b2748828206f72a1c7c90))
+
+### Features
+
+- add check in heml template for attachment storage pre-install ([d99129b](https://github.com/bcgov/cas-registration/commit/d99129bd5bab4aa95a088283d59de7945e41be70))
+- replace hardcoded compliance penalty rate with new endpoint ([5b0af48](https://github.com/bcgov/cas-registration/commit/5b0af4875c13944827fb6e490e457c087020f842))
+
 # [5.17.0](https://github.com/bcgov/cas-registration/compare/v5.16.0...v5.17.0) (2026-07-22)
 
 ### Bug Fixes
