@@ -41,8 +41,6 @@ export async function fetchResponse(endpoint: string, user_guid: string) {
 
 // App routing routes
 export enum AppRoutes {
-  ERROR = "/dashboard/error",
-  ONBOARDING = "/onboarding",
   OPERATION = "/review-operation-information",
   REPORTS = "/reports",
   REVIEW = "/final-review",
