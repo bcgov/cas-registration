@@ -21,9 +21,5 @@ export default async function DashboardLayout({
 }) {
   const session = await auth();
 
-  return (
-    <RootLayout zone="dashboard" session={session}>
-      {children}
-    </RootLayout>
-  );
+  return <RootLayout session={session}>{children}</RootLayout>;
 }

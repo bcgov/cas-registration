@@ -370,7 +370,7 @@ const checkHasPathAccess = async (request: NextRequest) => {
     }
   } catch (_error) {
     // Fallback: Redirect to the onboarding/dashboard page on error
-    return NextResponse.redirect(new URL(AppRoutes.ONBOARDING, request.url));
+    return NextResponse.redirect(new URL(AppRoutes.ERROR, request.url));
   }
   // Proceed if all rules pass
   return null;
