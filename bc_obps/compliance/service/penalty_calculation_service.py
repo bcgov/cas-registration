@@ -122,14 +122,8 @@ class PenaltyCalculationService:
             'elicensing_invoice',
         ).get(compliance_report_version_id=compliance_report_version_id)
 
-        faa_interest = (
-            refresh_result.invoice.invoice_interest_balance
-            if refresh_result.invoice and refresh_result.invoice.invoice_interest_balance
-            else Decimal('0.00')
-        )
-
         result: Dict[str, Any] = {
-            "faa_interest": faa_interest,
+            "faa_interest": refresh_result.invoice.invoice_interest_balance,
             "automatic_overdue_penalty_amount": Decimal('0.00'),
             "ggeapar_interest_amount": Decimal('0.00'),
         }
