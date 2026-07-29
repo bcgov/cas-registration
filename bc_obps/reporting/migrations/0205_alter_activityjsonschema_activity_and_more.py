@@ -4,6 +4,50 @@ import django.db.models.deletion
 from django.db import connection, migrations, models
 
 
+conflicting_policies = [
+    ("compliance_obligation", "compliance_obligation_industry_user_delete_policy"),
+    ("compliance_obligation", "compliance_obligation_industry_user_insert_policy"),
+    ("compliance_obligation", "compliance_obligation_industry_user_select_policy"),
+    ("compliance_obligation", "compliance_obligation_industry_user_update_policy"),
+    ("compliance_report", "compliance_report_industry_user_select_policy"),
+    ("compliance_report", "compliance_report_industry_user_delete_policy"),
+    ("compliance_report", "compliance_report_industry_user_insert_policy"),
+    ("compliance_report", "compliance_report_industry_user_update_policy"),
+    ("compliance_earned_credit", "compliance_earned_credit_industry_user_delete_policy"),
+    ("compliance_earned_credit", "compliance_earned_credit_industry_user_insert_policy"),
+    ("compliance_earned_credit", "compliance_earned_credit_industry_user_select_policy"),
+    ("compliance_earned_credit", "compliance_earned_credit_industry_user_update_policy"),
+    ("compliance_penalty_accrual", "compliance_penalty_accrual_industry_user_delete_policy"),
+    ("compliance_penalty_accrual", "compliance_penalty_accrual_industry_user_insert_policy"),
+    ("compliance_penalty_accrual", "compliance_penalty_accrual_industry_user_select_policy"),
+    ("compliance_penalty_accrual", "compliance_penalty_accrual_industry_user_update_policy"),
+    ("compliance_penalty", "compliance_penalty_industry_user_update_policy"),
+    ("compliance_penalty", "compliance_penalty_industry_user_select_policy"),
+    ("compliance_penalty", "compliance_penalty_industry_user_insert_policy"),
+    ("compliance_penalty", "compliance_penalty_industry_user_delete_policy"),
+    ("compliance_report_version", "compliance_report_version_industry_user_select_policy"),
+    ("compliance_report_version", "compliance_report_version_industry_user_delete_policy"),
+    ("compliance_report_version", "compliance_report_version_industry_user_insert_policy"),
+    ("compliance_report_version", "compliance_report_version_industry_user_update_policy"),
+    (
+        "compliance_report_version_manual_handling",
+        "compliance_report_version_manual_handling_industry_user_select_policy",
+    ),
+    (
+        "compliance_report_version_manual_handling",
+        "compliance_report_version_manual_handling_industry_user_delete_policy",
+    ),
+    (
+        "compliance_report_version_manual_handling",
+        "compliance_report_version_manual_handling_industry_user_insert_policy",
+    ),
+    (
+        "compliance_report_version_manual_handling",
+        "compliance_report_version_manual_handling_industry_user_update_policy",
+    ),
+]
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -13,15 +57,8 @@ class Migration(migrations.Migration):
 
     def drop_conflicting_policies(apps, schema_editor):
         with connection.cursor() as cursor:
-            cursor.execute(
-                "drop policy if exists compliance_obligation_industry_user_delete_policy on erc.compliance_obligation"
-            )
-            cursor.execute(
-                "drop policy if exists compliance_earned_credit_industry_user_delete_policy on erc.compliance_earned_credit"
-            )
-            cursor.execute(
-                "drop policy if exists compliance_report_industry_user_select_policy on erc.compliance_report"
-            )
+            for table, policy in conflicting_policies:
+                cursor.execute(f"drop policy if exists {policy} on erc.{table}")
 
     operations = [
         migrations.RunPython(drop_conflicting_policies, migrations.operations.special.RunPython.noop, elidable=True),
