@@ -156,13 +156,7 @@ describe("pastReportsColumns function", () => {
   it("navigates to the matching report page when clicking the 'Continue' button", async () => {
     const user = userEvent.setup();
 
-    // Mock window.location.href
-    const locationSpy = vi.spyOn(window, "location", "get").mockReturnValue({
-      ...window.location,
-      href: "",
-    } as Location);
-
-    // Or create a mock setter/assignee
+    // Create a mock setter/assignee
     delete (window as any).location;
     window.location = { href: "" } as any;
 

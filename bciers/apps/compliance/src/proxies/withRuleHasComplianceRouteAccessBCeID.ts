@@ -440,7 +440,7 @@ const checkHasPathAccess = (request: ContextAwareNextRequest) =>
       extractComplianceReportVersionId(pathname) ?? undefined,
     createContext: createRuleContext,
     rules: permissionRules,
-    onErrorRedirect: (req) => redirectTo(DashboardRoutes.ONBOARDING, req),
+    onErrorRedirect: (req) => redirectTo(DashboardRoutes.ERROR, req),
   });
 
 // --------------------

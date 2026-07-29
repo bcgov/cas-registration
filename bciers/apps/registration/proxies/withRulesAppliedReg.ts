@@ -48,7 +48,7 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
       );
     }
   } catch (_error) {
-    // 🛸 Redirect to BCIERS dashboard error
+    // 🛸 Redirect to BCIERS error page
     return NextResponse.redirect(new URL(DashboardRoutes.ERROR, request.url));
   }
 

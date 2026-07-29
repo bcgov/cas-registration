@@ -68,7 +68,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "Manage Obligation",
-          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
         );
       });
 
@@ -85,7 +85,7 @@ describe("ActionCell", () => {
         render(ActionCell(params));
         expectLink(
           "Manage Obligation",
-          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
         );
       });
 
@@ -97,7 +97,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
         );
       });
 
@@ -114,7 +114,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "Manage Obligation",
-          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
         );
       });
 
@@ -133,7 +133,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "Manage Obligation",
-          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
         );
       });
 
@@ -168,7 +168,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
         );
       });
 
@@ -181,7 +181,7 @@ describe("ActionCell", () => {
 
         expectLink(
           "View Details",
-          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
         );
       });
 
@@ -199,7 +199,7 @@ describe("ActionCell", () => {
 
         expectLink(
           "View Details",
-          "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
         );
       });
 
@@ -243,7 +243,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "Review Credits Issuance Request",
-          "/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
         );
       });
 
@@ -261,7 +261,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
         );
       });
 
@@ -279,7 +279,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
         );
       });
 
@@ -297,7 +297,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-administration/compliance-summaries/123/track-status-of-issuance",
+          "/compliance/compliance-administration/compliance-summaries/123/track-status-of-issuance",
         );
       });
 
@@ -315,7 +315,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-administration/compliance-summaries/123/track-status-of-issuance",
+          "/compliance/compliance-administration/compliance-summaries/123/track-status-of-issuance",
         );
       });
     });
@@ -335,7 +335,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "Request Issuance of Credits",
-          "/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
         );
       });
 
@@ -353,7 +353,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
+          "/compliance/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
         );
       });
 
@@ -371,7 +371,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "Review Change Required",
-          "/compliance-administration/compliance-summaries/123/request-issuance-of-earned-credits",
+          "/compliance/compliance-administration/compliance-summaries/123/request-issuance-of-earned-credits",
         );
       });
 
@@ -389,7 +389,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-administration/compliance-summaries/123/track-status-of-issuance",
+          "/compliance/compliance-administration/compliance-summaries/123/track-status-of-issuance",
         );
       });
 
@@ -407,7 +407,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-administration/compliance-summaries/123/track-status-of-issuance",
+          "/compliance/compliance-administration/compliance-summaries/123/track-status-of-issuance",
         );
       });
     });
@@ -460,7 +460,7 @@ describe("ActionCell", () => {
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
         "href",
-        "/compliance-administration/compliance-summaries/456/resolve-issue",
+        "/compliance/compliance-administration/compliance-summaries/456/resolve-issue",
       );
 
       // And not show the Contact Us non-link label in this case
@@ -514,7 +514,7 @@ describe("ActionCell", () => {
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
         "href",
-        "/compliance-administration/compliance-summaries/999/resolve-issue",
+        "/compliance/compliance-administration/compliance-summaries/999/resolve-issue",
       );
 
       // Should not show Contact Us or Resolve Issue in this state
@@ -538,7 +538,7 @@ describe("ActionCell", () => {
       );
       expectLink(
         "View Details",
-        "/compliance-administration/compliance-summaries/123/review-compliance-no-obligation-report",
+        "/compliance/compliance-administration/compliance-summaries/123/review-compliance-no-obligation-report",
       );
     });
 
@@ -556,7 +556,7 @@ describe("ActionCell", () => {
       );
       expectLink(
         "View Details",
-        "/compliance-administration/compliance-summaries/123/review-compliance-no-obligation-report",
+        "/compliance/compliance-administration/compliance-summaries/123/review-compliance-no-obligation-report",
       );
     });
   });

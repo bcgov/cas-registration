@@ -4,7 +4,7 @@ import { withRuleHasComplianceRouteAccessIDIR } from "./withRuleHasComplianceRou
 import * as constants from "./constants";
 import { IDP, IssuanceStatus } from "@bciers/utils/src/enums";
 import { getToken } from "@bciers/actions";
-import { getUserRole } from "@bciers/proxies";
+import { getUserRole, DashboardRoutes } from "@bciers/proxies";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 import type { Mock } from "vitest";
 
@@ -227,13 +227,13 @@ describe("withRuleHasComplianceRouteAccessIDIR", () => {
 
   // ── Fallbacks / Bypass
   describe("fallbacks & bypass", () => {
-    it("falls back to hub on fetch error", async () => {
+    it("falls back to dashboard error on fetch error", async () => {
       (getRequestIssuanceComplianceSummaryData as Mock).mockRejectedValue(
         new Error("boom"),
       );
       const { res } = await runProxy(PATH_REVIEW_DIRECTOR);
       expect(res!.status).toBe(307);
-      expect(getPathname(res)).toBe(HUB);
+      expect(getPathname(res)).toBe(DashboardRoutes.ERROR);
     });
 
     it("bypasses all rules when user is not IDIR", async () => {

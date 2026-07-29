@@ -163,7 +163,7 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
       mockComplianceStatus("Invalid" as ComplianceSummaryStatus);
       const { res } = await runProxy(reviewSummariesPath);
       expect(res!.status).toBe(307);
-      expect(getPathname(res)).toBe(`/${DashboardRoutes.ONBOARDING}`);
+      expect(getPathname(res)).toBe(`${DashboardRoutes.ONBOARDING}`);
     });
 
     it("allows when compliance access status is defined and not Invalid", async () => {
@@ -451,15 +451,15 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
       expect(res!.status).toBe(200);
     });
 
-    it("redirects to onboarding on error", async () => {
+    it("redirects to error on api error", async () => {
       (getUserComplianceAccessStatus as Mock).mockRejectedValue(
         new Error("boom"),
       );
       const { res } = await runProxy(applyUnitsPath);
+      const redirectedPath = getPathname(res);
       expect(res!.status).toBe(307);
-      expect(getPathname(res)!.endsWith(`/${DashboardRoutes.ONBOARDING}`)).toBe(
-        true,
-      );
+      expect(redirectedPath).toBeDefined();
+      expect(redirectedPath!.endsWith(DashboardRoutes.ERROR)).toBe(true);
     });
   });
 });
