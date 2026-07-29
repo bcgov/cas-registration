@@ -49,7 +49,7 @@ Supplementary Obligation (created March 1 2027) - due 30 days from March 1 2027
 
 GGEAPAR Interest is applied to any supplementary obligation created after the compliance deadline.
 It can _only_ apply to supplementary obligations.
-GGEAPAR Interest is calculated from the day after the compliance deadline until the date that the supplementary obligation is met, using Prime + 3% as the base for each day it is considered late.
+GGEAPAR Interest is calculated from the day after the compliance deadline until the date that the supplementary obligation is met, using an annual rate of Prime + 3% as the base for each day it is considered late.
 
 Example:
 
