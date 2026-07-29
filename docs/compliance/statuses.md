@@ -69,6 +69,7 @@ This document describes the various statuses that each compliance object can be 
 
 - Indicates that this ComplianceReportVersion is to be ignored. It has been replaced as the source of truth by a subsequent version.
 - When no binding action has occured on a version (obligation has created an invoice or earned credits have been issued) then we can cleanly replace it with the new version.
+- When a previous version is superceded and replaced with the new one, the related ComplianceObligation or ComplianceEarnedCredit object is deleted.
 - This status does not move to any other state.
 
 ### ComplianceEarnedCredit
