@@ -2,7 +2,7 @@
 
 This document describes how to generate penalties for manual testing/QA. Because penalties are applied based on dates in the future, penalties are not something we can trigger with a workflow in BCIERS. Penalties are applied when a compliance obligation is paid in full, but it was paid after the deadline (or invoice due date). We can manipulate some dates in the database to force a penalty to generate.
 
-## Generate Penalty
+## Generate Automatic Overdue Penalty
 
 ### Steps:
 
@@ -23,6 +23,18 @@ PenaltyCalculationService.create_penalty(obligation_id=<obligation_id>, penalty_
 ```
 
 - This would calculate & persist a penalty to the database that is `<received_date of final payment record - effective deadline>` days late
+
+## Generate Both GGEAPAR Interest & Automatic Overdue Penalty
+
+### Steps:
+
+- Update compliance_deadline and invoice_generation_date to a date in the past
+- Submit with excess emissions
+- Create a supplementary report with increased excess emission (can be just by decreasing the Annual Production of the first product)
+- Submit supplementary report
+- Pay off the balance of the supplementary report's obligation record with received and deposit date past the invoice due date
+- Run `Python AutomatedProcessService.run_scheduled_compliance_sync()` in the shell - this will create just the GGEAPAR interest
+- Run `Python PenaltyCalculationService.create_penalty(obligation_id=ComplianceObligation.objects.get(invoice_number=<obligation_invoice_number>).id, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE, effective_deadline=ElicensingInvoice.objects.get(invoice_number= <obligation_invoice_number>).due_date)` - this will create the Automatic Overdue Penalty
 
 ### Notes:
 

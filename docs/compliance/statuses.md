@@ -25,6 +25,7 @@ This document describes the various statuses that each compliance object can be 
 ##### Obligation pending invoice creation
 
 - Indicates that this ComplianceReportVersion record has a related obligation, but the eLicensing invoice has not yet been generated for this obligation. No actions for the reporter to take in this state.
+- Usually this status is set because it is before the invoice generation date, but will also be set if the call to generate the invoice in eLicensing fails for any reason
 - Moves to `Obligation not met` once an invoice has been generated.
 - Moves to `Superceded` if a supplementary report is submitted.
 
@@ -75,7 +76,7 @@ This document describes the various statuses that each compliance object can be 
 #### Statuses
 
 - Credits Not Issued in BCCR
-- Issuance Requested
+- Issuance Required
 - Changes Required
 - Approved
 - Declined
@@ -97,7 +98,7 @@ This document describes the various statuses that each compliance object can be 
 ##### Changes Required
 
 - Indicates that this ComplianceEarnedCredit record been reviewed, but there are changes that must be made before the analyst or director feel that the issuance can be granted.
-- Moves to `Changes Requested` if during review, there are changes that must be made before they can be approved.
+- Moves to `Approved` or `Declined` once the changes have been made and a re-review has taken place
 - Moves to `Superceded` if a supplementary report is submitted before the credits are issued.
 
 ##### Approved
