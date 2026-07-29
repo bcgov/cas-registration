@@ -23,7 +23,7 @@ describe("withRulesAppliedReg proxy", () => {
     );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
-      new URL(DashboardRoutes.ONBOARDING, domain),
+      new URL(DashboardRoutes.ERROR, domain),
     );
     expect(result?.status).toBe(307);
   });

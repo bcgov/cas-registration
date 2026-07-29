@@ -160,9 +160,6 @@ def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int
     auth=approved_authorized_roles_report_version_composite_auth,
 )
 def delete_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
-    raise Exception(
-                   "fail"
-                )
     response_data = ReportVersionService.delete_report_version(version_id)
     return 200, {"success": response_data}
 

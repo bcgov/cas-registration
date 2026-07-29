@@ -3,7 +3,7 @@ import { IDP } from "@bciers/utils/src/enums";
 
 // Dashboard routing routes
 export enum DashboardRoutes {
-  DECLINE = "/dashboard/decline",
+  DECLINED = "/dashboard/declined",
   ERROR = "/dashboard/error",
   ONBOARDING = "/onboarding",
 }

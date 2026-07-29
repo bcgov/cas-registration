@@ -27,7 +27,7 @@ export const withAuthorization: ProxyFactory = (next: NextProxy) => {
         );
         if (response === true) {
           return NextResponse.redirect(
-            new URL(DashboardRoutes.DECLINE, request.url),
+            new URL(DashboardRoutes.DECLINED, request.url),
           );
         }
         // 🛸 Route to next proxy
@@ -39,6 +39,7 @@ export const withAuthorization: ProxyFactory = (next: NextProxy) => {
         );
       }
     } catch (error) {
+      console.error("Authorization proxy error:", error);
       // Prevent redirect loops if the error route itself runs through this proxy
       if (request.nextUrl.pathname === DashboardRoutes.ERROR) {
         return next(request, _next);
