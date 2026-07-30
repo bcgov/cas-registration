@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import FormBase from "@bciers/components/form/FormBase";
 import { Alert, Button } from "@mui/material";
 import SubmitButton from "@bciers/components/button/SubmitButton";
@@ -17,10 +17,16 @@ import TransferSuccess from "@/registration/app/components/transfers/TransferSuc
 import { OperationRow } from "@/administration/app/components/operations/types";
 import { fetchOperationsPageData } from "@bciers/actions/api";
 import useKey from "@bciers/utils/src/useKey";
+import { UiSchema } from "@rjsf/utils";
 
 interface TransferFormProps {
   formData: TransferFormData;
   operators: OperatorRow[];
+}
+
+interface FetchResult<TRow> {
+  rows: TRow[];
+  error?: string;
 }
 
 export default function TransferForm({
@@ -32,16 +38,21 @@ export default function TransferForm({
 
   const [formState, setFormState] = useState(formData);
   const [key, resetKey] = useKey();
-  const [error, setError] = useState(undefined);
+  const [error, setError] = useState<string | undefined>(undefined);
   const [schema, setSchema] = useState(transferSchema);
   const [uiSchema, setUiSchema] = useState(transferUISchema);
-  const [fromOperatorOperations, setFromOperatorOperations] = useState(
-    [] as any,
-  );
-  const [toOperatorOperations, setToOperatorOperations] = useState([] as any);
+  const [fromOperatorOperations, setFromOperatorOperations] = useState<
+    OperationRow[]
+  >([]);
+  const [toOperatorOperations, setToOperatorOperations] = useState<
+    OperationRow[]
+  >([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [disabled, setDisabled] = useState(true);
+  // Identify the most recent change of each kind. Each one kicks off fetches, so a slow earlier
+  // change can resolve after a later one; only the latest may apply its result.
+  const latestOperatorChange = useRef(0);
+  const latestOperationChange = useRef(0);
 
   // Check if the form is valid
   const formIsValid = (data: TransferFormData): boolean => {
@@ -65,24 +76,31 @@ export default function TransferForm({
       return !!data[field];
     });
   };
+
+  // Derived rather than stored: the async handlers below rewrite formState after their fetches
+  // resolve, and a stored flag would keep whatever the last onChange computed, leaving the
+  // button's state disagreeing with the data it is validating.
+  const disabled = !formIsValid(formState);
   // Handling the error when the same operator is selected for both from and to operators when transferring an operation
+  const withSameOperatorError = (base: UiSchema): UiSchema => ({
+    ...base,
+    operation: {
+      ...base?.operation,
+      "ui:options": {
+        ...(base?.operation?.["ui:options"] ?? {}),
+        disabled: true,
+      },
+      "ui:help": (
+        <small className="text-bc-error-red">
+          <b>Note: </b>Cannot transfer an operation to the same operator
+        </small>
+      ),
+    },
+  });
+
   // uses functional update so it never closes over stale uiSchema
   const updateUiSchemaWithError = (): void =>
-    setUiSchema((prev: any) => ({
-      ...prev,
-      operation: {
-        ...prev.operation,
-        "ui:options": {
-          ...(prev.operation?.["ui:options"] ?? {}),
-          disabled: true,
-        },
-        "ui:help": (
-          <small className="text-bc-error-red">
-            <b>Note: </b>Cannot transfer an operation to the same operator
-          </small>
-        ),
-      },
-    }));
+    setUiSchema((prev) => withSameOperatorError(prev));
 
   const resetUiSchema = () => setUiSchema(transferUISchema);
 
@@ -95,9 +113,10 @@ export default function TransferForm({
     d.from_operator === d.to_operator &&
     d.transfer_entity === "Operation";
 
-  const fetchOperatorOperations = async (operatorId?: string) => {
-    if (!operatorId)
-      return { rows: [] as OperationRow[], error: undefined as any };
+  const fetchOperatorOperations = async (
+    operatorId?: string,
+  ): Promise<FetchResult<OperationRow>> => {
+    if (!operatorId) return { rows: [] };
 
     const response: { rows: OperationRow[]; row_count: number } =
       await fetchOperationsPageData({
@@ -110,13 +129,16 @@ export default function TransferForm({
       });
 
     if (!response || "error" in response || !response.rows) {
-      return { rows: [], error: "Failed to fetch operations data!" as any };
+      return { rows: [], error: "Failed to fetch operations data!" };
     }
 
-    return { rows: response.rows, error: undefined as any };
+    return { rows: response.rows };
   };
 
   const handleOperatorChange = async (transferFormData: TransferFormData) => {
+    const changeId = ++latestOperatorChange.current;
+    const isStale = () => changeId !== latestOperatorChange.current;
+
     // Reset error state
     setError(undefined);
 
@@ -128,12 +150,14 @@ export default function TransferForm({
     const fromRes = await fetchOperatorOperations(
       transferFormData?.from_operator,
     );
+    if (isStale()) return;
     if (fromRes.error) {
       setError(fromRes.error);
       return;
     }
 
     const toRes = await fetchOperatorOperations(transferFormData?.to_operator);
+    if (isStale()) return;
     if (toRes.error) {
       setError(toRes.error);
       return;
@@ -147,21 +171,28 @@ export default function TransferForm({
       toRes.rows,
     );
     setSchema(updatedSchemaObjects.transferSchema);
-    setUiSchema(updatedSchemaObjects.transferUISchema);
+    // Re-apply the same-operator error, otherwise the rebuilt uiSchema drops the message that
+    // was set before the fetches started.
+    setUiSchema(
+      sameOperatorSelectedForOperationEntity(transferFormData)
+        ? withSameOperatorError(updatedSchemaObjects.transferUISchema)
+        : updatedSchemaObjects.transferUISchema,
+    );
 
     // reset dependent selections
-    setFormState({
-      ...transferFormData,
+    setFormState((prev) => ({
+      ...prev,
       operation: "",
       from_operation: "",
       to_operation: "",
       facilities: [],
-    });
+    }));
   };
 
-  const fetchFacilities = async (operationId?: string) => {
-    if (!operationId)
-      return { rows: [] as FacilityRow[], error: undefined as any };
+  const fetchFacilities = async (
+    operationId?: string,
+  ): Promise<FetchResult<FacilityRow>> => {
+    if (!operationId) return { rows: [] };
 
     const response: { rows: FacilityRow[]; row_count: number } =
       await fetchFacilitiesPageData(operationId, {
@@ -171,20 +202,23 @@ export default function TransferForm({
       });
 
     if (!response || "error" in response || !response.rows) {
-      return { rows: [], error: "Failed to fetch facilities data!" as any };
+      return { rows: [], error: "Failed to fetch facilities data!" };
     }
 
-    return { rows: response.rows, error: undefined as any };
+    return { rows: response.rows };
   };
 
   const handleFromOperationChange = async (
     transferFormData: TransferFormData,
   ) => {
+    const changeId = ++latestOperationChange.current;
+
     setError(undefined);
 
     const facilitiesRes = await fetchFacilities(
       transferFormData?.from_operation,
     );
+    if (changeId !== latestOperationChange.current) return;
     if (facilitiesRes.error) {
       setError(facilitiesRes.error);
       return;
@@ -203,10 +237,10 @@ export default function TransferForm({
     setSchema(updatedSchemaObjects.transferSchema);
     setUiSchema(updatedSchemaObjects.transferUISchema);
 
-    setFormState({
-      ...transferFormData,
+    setFormState((prev) => ({
+      ...prev,
       facilities: [],
-    });
+    }));
 
     // force re-render
     resetKey();
@@ -233,7 +267,7 @@ export default function TransferForm({
       updatedFormData.transfer_entity === "Facility" &&
       updatedFormData.from_operation === updatedFormData.to_operation
     ) {
-      setError("Cannot transfer facilities to the same operation!" as any);
+      setError("Cannot transfer facilities to the same operation!");
       return;
     }
 
@@ -255,12 +289,10 @@ export default function TransferForm({
     setIsSubmitting(false);
 
     if (!response || response?.error) {
-      setDisabled(false);
-      setError(response?.error as any);
+      setError(response?.error);
       return;
     }
 
-    setDisabled(true);
     setIsSubmitted(true);
   };
 
@@ -295,7 +327,6 @@ export default function TransferForm({
                 setFormState(updatedFormData);
 
                 handleFormStateUpdate(updatedFormData);
-                setDisabled(!formIsValid(updatedFormData));
               }}
               onSubmit={submitHandler}
               omitExtraData={true}
