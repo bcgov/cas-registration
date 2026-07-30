@@ -2,6 +2,7 @@ from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 from airflow.providers.cncf.kubernetes.operators.job import KubernetesJobOperator
 from airflow.providers.standard.sensors.time_delta import TimeDeltaSensor
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.decorators import dag, task
 from datetime import datetime, timedelta
 import os
@@ -10,6 +11,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 TWO_DAYS_AGO = datetime.now() - timedelta(days=2)
 TEST_MIGRATIONS_DAG_NAME = "cas_bciers_test_migrations"
+CLEANUP_TEST_MIGRATIONS_DAG_NAME = "cas_bciers_cleanup_test_migrations"
 K8S_IMAGE = "alpine/k8s:1.29.15"
 SERVICE_ACCOUNT_NAME = "airflow-deployer"
 BCIERS_NAMESPACE = os.getenv("BCIERS_NAMESPACE")
@@ -140,6 +142,68 @@ def test_migrations(
         "be-migration-test-job"
     )
 
+    cleanup_test_migrations = TriggerDagRunOperator(
+        task_id="cleanup-test-migrations",
+        trigger_dag_id=CLEANUP_TEST_MIGRATIONS_DAG_NAME,
+        wait_for_completion=True,
+        conf={
+            "destination_namespace": destination_namespace,
+            "backend_chart_tag": backend_chart_tag,
+            "helm_options": helm_options,
+        },
+    )
+
+    (
+        postgres_helm_install
+        >> time_delay_postgres
+        >> wait_for_postgres_restore
+        >> [postgres_check_backup_age, postgres_migration_test]
+        >> backend_helm_install
+        >> time_delay_backend
+        >> wait_for_backend
+        >> backend_migration_test
+        >> cleanup_test_migrations
+    )
+
+
+test_migrations()
+
+
+CLEANUP_DAG_DOC = """
+DAG to test the database and backend migrations. This DAG will uninstall the helm charts after the tests are complete, but **if the tests fail, the charts will remain installed**.
+
+The _time_delay_postgres_ (8 minutes) and _time_delay_backend_ (150 seconds) tasks are used to give the pods time to start up before initiating checks.
+
+The following parameters are available:
+
+- **destination_namespace**: The namespace to deploy the test charts into. This will ONLY work if the environment matches this Airflow instance.
+- **backend_chart_tag**: The built image tag to pull within the backend chart (not the chart tag).
+- **helm_options**: Helm install options, shouldn't need to be changed.
+"""
+
+
+@dag(
+    dag_id=CLEANUP_TEST_MIGRATIONS_DAG_NAME,
+    default_args=default_args,
+    schedule=None,
+    catchup=False,
+    is_paused_upon_creation=False,
+    doc_md=CLEANUP_DAG_DOC,
+    tags=['bciers'],
+)
+def cleanup_test_migrations(
+    destination_namespace: str = BCIERS_NAMESPACE,
+    backend_chart_tag: str = "latest",
+    helm_options: str = "--atomic --wait-for-jobs --timeout 2400s",
+):
+    @task
+    def trigger_k8s_cronjob_with_params(job_name_template, **context):
+        namespace = context["params"]["destination_namespace"]
+        job_name = job_name_template.format(**context)
+        trigger_k8s_cronjob(job_name, namespace)
+
+    # TODO: Check if the Helm Deployment job pod is still running (maybe just a helm status check?) and kill the pod if it is
+
     uninstall_postgres_helm_charts = KubernetesJobOperator(
         task_id="uninstall-postgres-helm-charts",
         name="uninstall-postgres-helm-charts",
@@ -170,17 +234,7 @@ def test_migrations(
         is_delete_operator_pod=True,
     )
 
-    (
-        postgres_helm_install
-        >> time_delay_postgres
-        >> wait_for_postgres_restore
-        >> [postgres_check_backup_age, postgres_migration_test]
-        >> backend_helm_install
-        >> time_delay_backend
-        >> wait_for_backend
-        >> backend_migration_test
-        >> [uninstall_postgres_helm_charts, uninstall_backend_helm_charts]
-    )
+    ([uninstall_postgres_helm_charts, uninstall_backend_helm_charts])
 
 
-test_migrations()
+cleanup_test_migrations()
