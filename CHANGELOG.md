@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.18.1](https://github.com/bcgov/cas-registration/compare/v5.18.0...v5.18.1) (2026-07-30)
+
+### Bug Fixes
+
+- **deps:** update dependency next to v16.2.11 [security] ([82cc506](https://github.com/bcgov/cas-registration/commit/82cc506928cfd79c23305a06d56d877bb85f74ac))
+
 # [5.18.0](https://github.com/bcgov/cas-registration/compare/v5.17.0...v5.18.0) (2026-07-29)
 
 ### Bug Fixes
