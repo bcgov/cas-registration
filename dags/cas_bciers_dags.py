@@ -14,6 +14,10 @@ NIGHTLY_BUILD_DAG_NAME = "cas_bciers_nightly_build_report"
 BCIERS_NAMESPACE = os.getenv('BCIERS_NAMESPACE')
 TWO_DAYS_AGO = datetime.now(timezone.utc) - timedelta(days=2)
 
+# Define which environments this Dag loads in to
+CURRENT_ENV = os.environ.get("ENVIRONMENT")
+ALLOWED_ENVIRONMENTS = ["dev", "test", "prod"]
+
 default_args = {**default_dag_args, 'start_date': TWO_DAYS_AGO}
 
 PROCESS_DUE_DAG_DOC = """
@@ -40,7 +44,8 @@ def process_transfer_event():
     process_due_transfers()
 
 
-process_transfer_event()  # NOSONAR
+if CURRENT_ENV in ALLOWED_ENVIRONMENTS:
+    process_transfer_event()  # NOSONAR
 
 NIGHTLY_BUILD_DAG_DOC = """
 Dag reporting the status of the nightly CI workflow from GitHub.
@@ -76,4 +81,5 @@ def nightly_build_report(
     record_status()
 
 
-nightly_build_report()  # NOSONAR
+if CURRENT_ENV in ALLOWED_ENVIRONMENTS:
+    nightly_build_report()  # NOSONAR

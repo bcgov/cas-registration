@@ -28,6 +28,11 @@ BACKEND_CHART_TAG = os.getenv("BACKEND_CHART_TAG")
 # Jinja (runtime) template constant
 DESTINATION_NAMESPACE_TEMPLATE = "{{ params.destination_namespace }}"
 
+# Define which environments this Dag loads in to
+CURRENT_ENV = os.environ.get("ENVIRONMENT")
+ALLOWED_ENVIRONMENTS = ["dev", "test"]
+
+
 default_args = {**default_dag_args, "start_date": TWO_DAYS_AGO}
 
 DAG_DOC = """
@@ -183,4 +188,5 @@ def test_migrations(
     )
 
 
-test_migrations()
+if CURRENT_ENV in ALLOWED_ENVIRONMENTS:
+    test_migrations()
