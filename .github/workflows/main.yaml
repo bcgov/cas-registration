@@ -83,9 +83,8 @@ jobs:
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
-      image_url: "ghcr.io/bcgov/cas-admin-frontend"
+      compose_profiles: "administration"
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
-      nx_app_port: 4001
       nx_project: administration
     secrets: inherit
   test-registration-e2e:
@@ -99,9 +98,8 @@ jobs:
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
-      image_url: "ghcr.io/bcgov/cas-reg-frontend"
+      compose_profiles: "registration"
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
-      nx_app_port: 4000
       nx_project: registration
     secrets: inherit
   test-dashboard-e2e:
@@ -118,21 +116,27 @@ jobs:
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
-      docker_compose_file: "docker-compose-bciers-apps.yaml"
-      image_url: "ghcr.io/bcgov/cas-dash-frontend"
+      # dashboard e2e clicks through to every app tile, so every app has to be up
+      compose_profiles: "administration,compliance,registration,reporting"
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
       nx_project: dashboard
     secrets: inherit
   test-compliance-e2e:
     needs:
-      [build-backend, build-dashboard-e2e, build-compliance, check-nx-affected]
+      [
+        build-backend,
+        build-compliance,
+        build-dashboard-e2e,
+        build-reporting,
+        check-nx-affected,
+      ]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
-      docker_compose_file: "docker-compose-bciers-apps.yaml"
-      image_url: "ghcr.io/bcgov/cas-compliance-frontend"
+      # compliance e2e drives the reporting UI directly to seed its data
+      # (its specs import @/reporting-e2e POMs), so reporting has to be up too
+      compose_profiles: "compliance,reporting"
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
-      nx_app_port: 7000
       nx_project: compliance
     secrets: inherit
   test-reporting-e2e:
@@ -141,8 +145,7 @@ jobs:
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
-      docker_compose_file: "docker-compose-bciers-apps.yaml"
-      image_url: "ghcr.io/bcgov/cas-rep-frontend"
+      compose_profiles: "reporting"
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
       nx_project: reporting
     secrets: inherit

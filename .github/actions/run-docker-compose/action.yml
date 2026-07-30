@@ -1,10 +1,10 @@
-name: "Local Registration app run"
-description: "Runs the Registration app locally using Docker Compose"
+name: "Local BCIERS app run"
+description: "Runs the BCIERS stack locally using Docker Compose"
 
 inputs:
-  docker_compose_file:
-    description: "Optional input to specify another docker-compose file. The default is docker-compose-nx-app.yaml"
-    required: false
+  compose_profiles:
+    description: "Comma separated docker compose profiles naming the apps to start, e.g. 'registration' or 'compliance,reporting'. db, backend and dashboard always start. See bciers/docker-compose.yaml."
+    required: true
   django_secret_key:
     description: "Django secret key"
     required: true
@@ -17,12 +17,6 @@ inputs:
   nextauth_secret:
     description: "NextAuth client secret"
     required: true
-  image_url:
-    description: "Docker image URL minus the tag which will be the pull request sha"
-    required: true
-  nx_app_port:
-    description: "Port to run the Nx app on if using the docker-compose-nx-app.yaml file"
-    required: false
 
 runs:
   using: composite
@@ -36,8 +30,6 @@ runs:
         NEXTAUTH_SECRET: ${{ inputs.nextauth_secret }}
         KEYCLOAK_CLIENT_ID: ${{ inputs.keycloak_client_id }}
         KEYCLOAK_CLIENT_SECRET: ${{ inputs.keycloak_client_secret }}
-        NX_APP_PORT: ${{ inputs.nx_app_port }}
-        IMAGE_URL: ${{ inputs.image_url }}
       run: |
         echo "GITHUB_SHA=${{ github.sha }}" >> $GITHUB_ENV
         echo "DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY" >> $GITHUB_ENV
@@ -48,13 +40,15 @@ runs:
         echo "NEXTAUTH_URL=http://localhost:3000" >> $GITHUB_ENV
         echo "API_URL=http://127.0.0.1:8000/api/" >> $GITHUB_ENV
         echo "KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard" >> $GITHUB_ENV
-        echo "NX_APP_PORT=$NX_APP_PORT" >> $GITHUB_ENV
-        echo "IMAGE_URL=$IMAGE_URL" >> $GITHUB_ENV
-
+        DB_PASSWORD=$(openssl rand -hex 24)
+        echo "::add-mask::$DB_PASSWORD"
+        echo "DB_PASSWORD=$DB_PASSWORD" >> $GITHUB_ENV
       shell: bash
 
     - name: Start services with Docker Compose and wait for them to be ready
       working-directory: ./bciers
+      env:
+        COMPOSE_PROFILES: ${{ inputs.compose_profiles }}
       run: |
-        docker compose -f ${{ inputs.docker_compose_file || 'docker-compose-nx-app.yaml' }} up -d --wait
+        docker compose up -d --wait
       shell: bash
