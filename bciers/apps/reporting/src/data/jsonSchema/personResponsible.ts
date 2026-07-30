@@ -14,6 +14,7 @@ import { Contact } from "@reporting/src/app/components/operations/types";
 export const personResponsibleSchema: RJSFSchema = {
   title: "Person Responsible for Submitting Report",
   type: "object",
+  required: ["person_responsible"],
   properties: {
     purpose_note: {
       type: "object",

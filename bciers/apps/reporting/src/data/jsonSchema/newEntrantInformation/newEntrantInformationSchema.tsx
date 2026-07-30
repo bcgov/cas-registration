@@ -7,6 +7,7 @@ export const newEntrantSchema: RJSFSchema = {
     "authorization_date",
     "first_shipment_date",
     "new_entrant_period_start",
+    "assertion_statement",
   ],
   properties: {
     purpose_note: {
@@ -28,6 +29,7 @@ export const newEntrantSchema: RJSFSchema = {
     assertion_statement: {
       type: "boolean",
       title: "Assertion statement",
+      const: true,
       default: false,
     },
     products: {

@@ -197,6 +197,12 @@ const customTransformErrors = (
       error.message = `Select at least one option`;
       return error;
     }
+    if (error?.name === "const" && error?.params?.allowedValue === true) {
+      error.message = error.title
+        ? `${error.title} must be accepted`
+        : "This field must be checked";
+      return error;
+    }
     // Only show the 0-100 message for biogenicIndustrialProcessEmissions fields
     if (
       (error?.name === "minimum" || error?.name === "maximum") &&

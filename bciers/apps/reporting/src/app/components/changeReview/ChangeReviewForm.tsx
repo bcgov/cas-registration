@@ -12,6 +12,7 @@ import Loading from "@bciers/components/loading/SkeletonForm";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
 import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
 
 interface ChangeReviewProps {
   versionId: number;
@@ -55,6 +56,12 @@ export default function ChangeReviewForm({
   }, [versionId, displayChanges]);
 
   const handleSubmit = async (canContinue: boolean) => {
+    if (!reasonForChange || reasonForChange === "") {
+      setErrors([
+        createGenericReportValidationError("Reason for change is required."),
+      ]);
+      return false;
+    }
     const payload = {
       ...formData,
       reason_for_change: reasonForChange,
