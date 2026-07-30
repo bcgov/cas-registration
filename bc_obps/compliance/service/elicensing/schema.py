@@ -103,6 +103,7 @@ class FeeItem:
     feeDescription: Optional[str] = None
     feeAmount: Optional[Decimal] = None
     feeDate: Optional[str] = None
+    feeType: Optional[str] = None
 
 
 @dataclass
@@ -142,6 +143,7 @@ class PaymentDistribution:
     reversedDistributionObjectId: Optional[str] = None
     invoiceNumber: Optional[str] = None
     reversedAmount: Optional[Decimal] = None
+    feeObjectId: Optional[str] = None
 
 
 @dataclass
@@ -188,6 +190,7 @@ class InvoiceFee:
     paymentBaseAmount: Decimal
     paymentTotal: Decimal
     invoiceNumber: str
+    feeType: Optional[str] = None
     payments: List[Payment] = field(default_factory=list)
     adjustments: List[FeeAdjustment] = field(default_factory=list)
 
