@@ -202,6 +202,8 @@ def cleanup_test_migrations(
         job_name = job_name_template.format(**context)
         trigger_k8s_cronjob(job_name, namespace)
 
+    # TODO: Check if the Helm Deployment job pod is still running (maybe just a helm status check?) and kill the pod if it is
+
     uninstall_postgres_helm_charts = KubernetesJobOperator(
         task_id="uninstall-postgres-helm-charts",
         name="uninstall-postgres-helm-charts",
