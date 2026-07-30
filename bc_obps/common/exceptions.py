@@ -5,3 +5,13 @@ class UserError(Exception):
     """
 
     pass
+
+
+class SystemError(Exception):
+    """
+    Base class for system-related errors.
+    These errors are typically used for unexpected conditions that indicate a problem in either
+    unforeseen manipulation of the system, or a bug in the code.
+    """
+
+    pass
