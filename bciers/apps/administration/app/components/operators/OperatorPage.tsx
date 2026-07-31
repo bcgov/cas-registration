@@ -27,9 +27,6 @@ export default async function OperatorPage({
     } else {
       operatorFormData = await getCurrentOperator();
     }
-    if (!operatorFormData || operatorFormData?.error) {
-      throw new Error("Failed to retrieve operator information");
-    }
   }
   const businessStructures: { name: string }[] | { error: string } =
     await getBusinessStructures();

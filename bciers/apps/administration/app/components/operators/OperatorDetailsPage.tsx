@@ -13,8 +13,6 @@ const OperatorDetailsPage = async ({ operatorId }: { operatorId: UUID }) => {
 
   if (operatorId && isValidUUID(operatorId)) {
     operator = await getOperator(operatorId);
-    if (operator && "error" in operator)
-      throw new Error("Failed to retrieve Operator details");
   } else throw new Error(`Invalid operator id: ${operatorId}`);
 
   operatorDashboardData = (await fetchDashboardData(

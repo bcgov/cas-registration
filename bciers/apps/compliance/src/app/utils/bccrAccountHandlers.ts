@@ -5,12 +5,8 @@ export const getBccrAccountDetails = async (
   accountId: string,
   complianceReportVersionId: number,
 ): Promise<BccrAccountDetailsResponse> => {
-  const response = await actionHandler(
+  return actionHandler(
     `compliance/bccr/accounts/${accountId}/compliance-report-versions/${complianceReportVersionId}`,
     "GET",
   );
-  if (!response || response?.error) {
-    throw new Error(response.error || "Failed to fetch BCCR account details");
-  }
-  return response;
 };

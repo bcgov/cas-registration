@@ -2,16 +2,16 @@
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import Link from "next/link";
 import Form from "@bciers/components/form/FormBase";
-import { useState } from "react";
-import { Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { SelectOperatorFormData } from "../userOperators/types";
 import { selectOperatorUiSchema } from "../../data/jsonSchema/selectOperator";
 import { selectOperatorSchema } from "../../data/jsonSchema/selectOperator";
+import { useState } from "react";
+import { Alert } from "@mui/material";
 
 export default function SelectOperatorForm() {
-  const [errorList, setErrorList] = useState([] as any[]);
+  const [errorList, setErrorList] = useState<{ message: string }[]>([]);
   const router = useRouter();
 
   const handleSubmit = async (data: { formData?: SelectOperatorFormData }) => {

@@ -18,16 +18,7 @@ export default async function SelectOperatorReceivedPage({
       `/select-operator/confirm/${id}`,
     );
     const hasAdmin = await getOperatorHasAdmin(id);
-    if (
-      "error" in operator ||
-      (typeof hasAdmin !== "boolean" && "error" in hasAdmin)
-    ) {
-      throw new Error("Failed to retrieve operator information.");
-    }
-
     const currentUserOperator = await getCurrentUserOperator();
-    if (currentUserOperator && "error" in currentUserOperator)
-      throw new Error("Failed to retrieve current user operator information.");
 
     const adminRequestJSX: ReactNode = (
       <div data-testid="access-request-message">

@@ -6,9 +6,6 @@ import processAccessRequestData from "apps/administration/app/components/userOpe
 export default async function AccessRequestsPage() {
   const accessRequestData = await getAccessRequests();
 
-  if (!accessRequestData || "error" in accessRequestData)
-    throw new Error("Failed to retrieve access requests.");
-
   const processedAccessRequestData: { rows: AccessRequestDataGridRow[] } | [] =
     await processAccessRequestData(accessRequestData);
   return <AccessRequestDataGrid initialData={processedAccessRequestData} />;

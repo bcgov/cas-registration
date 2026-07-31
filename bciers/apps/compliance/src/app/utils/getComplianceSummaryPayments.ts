@@ -10,18 +10,6 @@ export async function getComplianceSummaryPayments(
     "",
   );
 
-  if (data?.error) {
-    throw new Error(
-      `Failed to fetch compliance summary payments: ${data.error}`,
-    );
-  }
-
-  if (!data || typeof data !== "object" || !Array.isArray(data.rows)) {
-    throw new Error(
-      "Invalid response format from compliance summary payments endpoint",
-    );
-  }
-
   return {
     rows: data.rows,
     row_count: data.row_count,

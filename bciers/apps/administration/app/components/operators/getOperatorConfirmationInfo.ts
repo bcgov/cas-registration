@@ -6,7 +6,7 @@ import { Operator } from "@/administration/app/components/userOperators/types";
 export default async function getOperatorConfirmationInfo(
   id: UUID,
   pathToRevalidate: string = "",
-): Promise<Operator | { error: string }> {
+): Promise<Operator> {
   const response = await actionHandler(
     `registration/operators/${id}/confirm`,
     "GET",

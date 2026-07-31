@@ -16,10 +16,6 @@ export const fetchComplianceSummariesPageData = async (params: {
     "",
   );
 
-  if (!data || data.error) {
-    throw new Error(`Failed to fetch compliance summaries: ${data.error}`);
-  }
-
   return {
     rows: data.items,
     row_count: data.count ?? 0,

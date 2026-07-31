@@ -9,11 +9,10 @@ const UserOperatorPage = async ({
 }: {
   userOperatorId: UUID;
 }) => {
-  const userOperatorData: UserOperatorFormData | { error: string } =
-    await getUserOperatorFormData(userOperatorId as string);
-  if (!userOperatorData || "error" in userOperatorData) {
-    throw new Error("Failed to retrieve operator and admin information");
-  }
+  const userOperatorData: UserOperatorFormData = await getUserOperatorFormData(
+    userOperatorId as string,
+  );
+
   return (
     <UserOperatorReviewForm
       operatorSchema={await createOperatorSchema()}

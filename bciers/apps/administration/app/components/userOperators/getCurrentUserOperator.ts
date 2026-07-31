@@ -1,9 +1,7 @@
 import { actionHandler } from "@bciers/actions";
 import { UserOperator } from "@/administration/app/components/userOperators/types";
 
-export default async function getCurrentUserOperator(): Promise<
-  UserOperator | { error: string }
-> {
+export default async function getCurrentUserOperator(): Promise<UserOperator> {
   const response = await actionHandler(
     "registration/user-operators/current",
     "GET",
