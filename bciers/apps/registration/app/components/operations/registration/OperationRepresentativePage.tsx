@@ -13,9 +13,9 @@ const OperationRepresentativePage = async ({
   step: number;
   steps: string[];
 }) => {
+  const contacts: { items: ContactRow[]; count: number } = await getContacts();
   const existingOperationRepresentatives: OperationRepresentative[] =
     await getOperationRepresentatives(operation);
-  const contacts: { items: ContactRow[]; count: number } = await getContacts();
 
   // Excluding existing operation representatives from the list of contacts
   contacts.items = contacts.items?.filter(

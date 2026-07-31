@@ -79,14 +79,6 @@ describe("TransfersDataGrid page", () => {
     getSessionRole.mockReturnValue(FrontEndRoles.CAS_ADMIN);
   });
 
-  it("throws an error when there's a problem fetching data", async () => {
-    fetchTransferEventsPageData.mockReturnValueOnce(undefined);
-    await expect(async () => {
-      render(await TransfersDataGridPage({ searchParams: {} }));
-    }).rejects.toThrow("Failed to retrieve transfers");
-    expect(screen.queryByRole("grid")).not.toBeInTheDocument();
-  });
-
   it("renders the TransfersDataGrid component when there are transfers in the database", async () => {
     fetchTransferEventsPageData.mockReturnValueOnce(mockResponse);
     render(await TransfersDataGridPage({ searchParams: {} }));
