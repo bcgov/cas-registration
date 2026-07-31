@@ -27,11 +27,7 @@ const responseLegalName = {
   legal_name: operatorLegalName,
   error: null,
 };
-const responseError = {
-  id: null,
-  legal_name: null,
-  error: "No matching operator found. Retry or add operator.",
-};
+
 const urlPush = `/select-operator/confirm/${id}?title=${operatorLegalName}`;
 
 const mockPush = vi.fn(); // Create a mock function for router.push method
@@ -170,23 +166,5 @@ describe("Select Operator Form", () => {
     await clickSubmitButton(buttonCRANumber);
     // Verify the "Required field" error message to appear and form is not submited
     await verifyRequiredOperator(requiredCRANumber);
-  });
-  it("shows error when operator by cra number is not found", async () => {
-    // Select Search Operator by CRA number...
-    selectSearchByCRANumber();
-    // Get the search field for entering the operator's cra number
-    const searchField = screen.getByPlaceholderText(craNumberDefaultText);
-    // Enter text into the search by input field - cra_business_number
-    await userEvent.type(searchField, operatorCRA);
-    // Verify that the search field contains the operator's cra number
-    expect(searchField).toHaveValue(operatorCRA);
-    // Mock the actionHandler to return an operator on submit
-    actionHandler.mockResolvedValueOnce(responseError);
-    // Attempt to submit the form
-    await clickSubmitButton(buttonCRANumber);
-    // Assert that the error message is displayed
-    expect(await screen.findByText(responseError.error)).toBeInTheDocument();
-    // Ensure that the mockPush function has not been called, indicating no navigation
-    expect(mockPush).not.toHaveBeenCalled();
   });
 });

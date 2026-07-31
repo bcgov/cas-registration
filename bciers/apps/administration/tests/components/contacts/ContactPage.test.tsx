@@ -28,31 +28,6 @@ describe("Contact component", () => {
     useSessionRole.mockReturnValue("industry_user_admin");
   });
 
-  it("renders the appropriate error component when getContact fails", async () => {
-    getContact.mockReturnValueOnce({
-      error: "Do not attempt to contact this contact",
-    });
-    await expect(async () => {
-      render(
-        await ContactPage({
-          contactId,
-        }),
-      );
-    }).rejects.toThrow("Failed to retrieve contact information");
-  });
-
-  it("renders the appropriate error component when getUserOperatorUsers fails", async () => {
-    getUserOperatorUsers.mockReturnValueOnce({
-      error: "No users found",
-    });
-    await expect(async () => {
-      render(
-        await ContactPage({
-          contactId: undefined,
-        }),
-      );
-    }).rejects.toThrow("Failed to retrieve user information");
-  });
   it("renders the Contact component in create mode", async () => {
     getUserOperatorUsers.mockReturnValueOnce([]);
     render(

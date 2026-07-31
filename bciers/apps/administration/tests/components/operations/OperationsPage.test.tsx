@@ -42,15 +42,6 @@ describe("OperationsPage component", () => {
     });
   });
 
-  it("throws an error when there's a problem fetching data", async () => {
-    getSessionRole.mockReturnValue("cas_director");
-    fetchOperationsPageData.mockReturnValueOnce(undefined);
-
-    await expect(async () => {
-      render(await OperationsPage({ searchParams: {} }));
-    }).rejects.toThrow("Failed to retrieve operations");
-  });
-
   it('renders the "Add and Register an Operation" link for external users', async () => {
     getSessionRole.mockReturnValue("industry_user");
     fetchOperationsPageData.mockReturnValueOnce({

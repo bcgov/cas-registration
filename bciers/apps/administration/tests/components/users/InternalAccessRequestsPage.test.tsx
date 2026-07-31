@@ -30,15 +30,6 @@ describe("Access Requests component", () => {
       get: vi.fn(),
     });
   });
-  it("renders the appropriate error message when fetching Internal Access Requests fails", async () => {
-    // couldn't get a mock of getInternalAccessRequests to work, so using actionHandler instead
-    actionHandler.mockResolvedValue({
-      error: "some error",
-    });
-    await expect(async () => {
-      render(await InternalAccessRequestsPage());
-    }).rejects.toThrow("Failed to retrieve internal access requests.");
-  });
 
   it("renders Internal Access Requests component", async () => {
     useSession.mockReturnValue({

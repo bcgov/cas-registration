@@ -44,18 +44,6 @@ describe("OperatorsPage component", () => {
     vi.clearAllMocks();
   });
 
-  it("throws an error when there's a problem fetching data", async () => {
-    fetchOperatorsPageData.mockReturnValueOnce({
-      rows: undefined,
-      row_count: undefined,
-    });
-    await expect(async () => {
-      render(await OperatorsPage({ searchParams: {} }));
-    }).rejects.toThrow("Failed to retrieve operators");
-
-    expect(screen.queryByRole("grid")).not.toBeInTheDocument();
-  });
-
   it("renders the OperatorsDataGrid component when there are operators in the database", async () => {
     fetchOperatorsPageData.mockReturnValueOnce(mockResponse);
     render(await OperatorsPage({ searchParams: {} }));

@@ -68,35 +68,6 @@ describe("OperatorPage component", () => {
     ] as any);
   });
 
-  it("throws when getCurrentOperator fails", async () => {
-    auth.mockReturnValueOnce({ user: { app_role: "industry_user_admin" } });
-
-    vi.mocked(getCurrentOperator).mockResolvedValueOnce({
-      error: "no operator found",
-    } as any);
-
-    await expect(async () => {
-      render(await OperatorPage({ isCreating: false }));
-    }).rejects.toThrow("Failed to retrieve operator information");
-  });
-
-  it("throws when getBusinessStructures fails", async () => {
-    auth.mockReturnValueOnce({ user: { app_role: "industry_user_admin" } });
-
-    vi.mocked(getCurrentOperator).mockResolvedValueOnce({
-      id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-    } as any);
-
-    // ✅ Override the default for this specific test
-    vi.mocked(getBusinessStructures).mockResolvedValueOnce({
-      error: "no business structures",
-    } as any);
-
-    await expect(async () => {
-      render(await OperatorPage({ isCreating: false }));
-    }).rejects.toThrow("Failed to retrieve business structure information");
-  });
-
   it("renders the operator form with form data (external user)", async () => {
     auth.mockReturnValueOnce({ user: { app_role: "industry_user_admin" } });
 

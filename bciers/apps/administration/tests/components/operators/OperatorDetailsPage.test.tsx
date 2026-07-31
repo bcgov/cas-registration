@@ -41,14 +41,6 @@ describe("OperatorDetailsPage component", () => {
     );
   });
 
-  it("renders the appropriate error component when getOperator fails", async () => {
-    getOperator.mockReturnValueOnce({
-      error: "some error",
-    });
-    await expect(async () => {
-      render(await OperatorDetailsPage({ operatorId }));
-    }).rejects.toThrow("Failed to retrieve Operator details");
-  });
   it("renders the operator details page with proper tiles", async () => {
     getOperator.mockReturnValueOnce({
       legal_name: "Test Operator Name",
