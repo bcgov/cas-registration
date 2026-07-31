@@ -5,8 +5,5 @@ export async function getOperationEmissionSummaryData(versionId: number) {
     `reporting/report-version/${versionId}/emission-summary`,
     "GET",
   );
-  if (response.error) {
-    throw new Error("We couldn't find the summary data for this report.");
-  }
   return response;
 }

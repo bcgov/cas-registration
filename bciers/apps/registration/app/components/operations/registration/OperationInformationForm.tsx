@@ -40,7 +40,6 @@ const OperationInformationForm = ({
     rawFormData?.operation,
   );
 
-  const [error, setError] = useState(undefined);
   const [schema, setSchema] = useState(initialSchema);
   const nestedFormData = rawFormData
     ? createNestedFormData(rawFormData, schema)
@@ -181,9 +180,6 @@ const OperationInformationForm = ({
     const operationId = data.section1.operation;
     setSelectedOperation(operationId);
     const operationData = await getOperationRegistration(operationId);
-    if (operationData?.error) {
-      setError("Failed to fetch operation data!" as any);
-    }
     updateConfirmedFormState(createNestedFormData(operationData, schema));
     resetKey();
   };
@@ -330,7 +326,6 @@ const OperationInformationForm = ({
         schema={schema}
         step={step}
         steps={steps}
-        error={error}
         onChange={(e: IChangeEvent) => {
           const newSelectedOperation = e.formData?.section1?.operation;
           const newSelectedPurpose = e.formData?.section1?.registration_purpose;

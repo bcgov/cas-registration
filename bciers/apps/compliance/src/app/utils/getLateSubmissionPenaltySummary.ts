@@ -10,17 +10,5 @@ export const getLateSubmissionPenaltySummary = async (
     "",
   );
 
-  if (data?.error) {
-    throw new Error(
-      `Failed to fetch late submission penalty summary: ${data.error}`,
-    );
-  }
-
-  if (!data || typeof data !== "object") {
-    throw new Error(
-      "Invalid response format from late submission penalty summary endpoint",
-    );
-  }
-
   return data as PenaltyData;
 };

@@ -14,16 +14,11 @@ const OptedInOperationPage = async ({
   step: number;
   steps: string[];
 }) => {
-  let formData = {};
-  if (operation && isValidUUID(operation)) {
-    formData = await getOptedInOperationDetail(operation);
-  }
+  if (!operation || !isValidUUID(operation))
+    throw new Error(`Invalid operation id: ${operation}`);
 
-  if (formData && "error" in formData) {
-    throw new Error(
-      "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
-    );
-  }
+  const formData = await getOptedInOperationDetail(operation);
+
   return (
     <OptedInOperationForm
       operation={operation}

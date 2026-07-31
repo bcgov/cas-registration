@@ -55,23 +55,18 @@ const NewOperationRepresentativeForm: FC<
     newSelectedContactId: string,
   ): Promise<void> => {
     setExistingContactId(newSelectedContactId);
-    try {
-      const contactData: ContactFormData =
-        await getContact(newSelectedContactId);
+    const contactData: ContactFormData = await getContact(newSelectedContactId);
 
-      setFormState({
-        operation_representatives: formState.operation_representatives,
-        new_operation_representative: [
-          {
-            existing_contact_id: newSelectedContactId,
-            ...contactData,
-          },
-        ],
-      });
-      resetKey(); // force re-render to handle blank fields in the new selected contact data
-    } catch (_err) {
-      setError("Failed to fetch contact data!" as any);
-    }
+    setFormState({
+      operation_representatives: formState.operation_representatives,
+      new_operation_representative: [
+        {
+          existing_contact_id: newSelectedContactId,
+          ...contactData,
+        },
+      ],
+    });
+    resetKey(); // force re-render to handle blank fields in the new selected contact data
   };
 
   const handleClearingExistingContact = () => {

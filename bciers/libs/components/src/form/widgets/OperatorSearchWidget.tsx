@@ -49,17 +49,6 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
         setError(null); // Clear previous errors on new fetch
         const response = await actionHandler(url, "GET");
 
-        // Handle returned API errors (e.g. { error: "..." })
-        if (!response || response?.error) {
-          setError(
-            response?.error ||
-              "An internal server error has occurred. Please contact support.",
-          );
-          setOptions([]);
-          setIsSearchAttempted(true);
-          return;
-        }
-
         const results = (response as Array<{ legal_name: string }>).map(
           (item) => item.legal_name,
         );
@@ -70,7 +59,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
         // Handle caught rejections/exceptions
         setError(
           err?.message ||
-            "An internal server error has occurred. Please contact support.",
+          "An internal server error has occurred. Please contact support.",
         );
         setOptions([]);
         setIsSearchAttempted(true);

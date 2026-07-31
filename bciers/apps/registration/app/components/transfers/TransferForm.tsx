@@ -150,11 +150,7 @@ export default function TransferForm({
         status: "Active", // only fetch active facilities
       });
 
-    if (!response || "error" in response || !response.rows) {
-      return { rows: [], error: "Failed to fetch operations data!" };
-    }
-
-    return { rows: response.rows };
+    return { rows: response.rows, error: undefined as any };
   };
 
   const handleOperatorChange = async (transferFormData: TransferFormData) => {
