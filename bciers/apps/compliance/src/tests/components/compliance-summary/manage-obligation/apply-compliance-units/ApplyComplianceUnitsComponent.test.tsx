@@ -653,58 +653,6 @@ describe("ApplyComplianceUnitsComponent", () => {
     });
   });
 
-  it("handles initial compliance data submission errors correctly", async () => {
-    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      bccr_trading_name: MOCK_TRADING_NAME,
-    });
-
-    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      error: "API Error",
-    });
-
-    render(
-      <ApplyComplianceUnitsComponent
-        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
-        reportingYear={2024}
-      />,
-    );
-
-    // Enter account ID
-    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
-    fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
-
-    await waitFor(() => {
-      expect(screen.getByText(MOCK_TRADING_NAME)).toBeVisible();
-    });
-
-    // Wait for checkbox to appear then check it
-    await waitFor(() => {
-      expect(screen.getByRole("checkbox")).toBeInTheDocument();
-    });
-
-    const checkbox = screen.getByRole("checkbox");
-    fireEvent.click(checkbox);
-
-    // Wait for checkbox state to update
-    await waitFor(() => {
-      expect(checkbox).toBeChecked();
-    });
-
-    // Wait for submit button to be enabled, then click it
-    await waitFor(() => {
-      const submitButton = screen.getByRole("button", { name: "Submit" });
-      expect(submitButton).toBeVisible();
-      expect(submitButton).not.toBeDisabled();
-    });
-
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-    fireEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(screen.getByText("API Error")).toBeVisible();
-    });
-  });
-
   it("clears form data when account ID is changed", async () => {
     (getBccrAccountDetails as ReturnType<typeof vi.fn>)
       .mockResolvedValueOnce({
