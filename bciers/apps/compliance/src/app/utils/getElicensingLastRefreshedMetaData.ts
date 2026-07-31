@@ -1,17 +1,13 @@
-import { actionHandler } from "@bciers/actions";
 import type { ElicensingLastRefreshData } from "@/compliance/src/app/types";
+import { safeFetchApi } from "@bciers/actions/safeFetchApi";
 
 export async function getElicensingLastRefreshedMetaData(
   complianceReportVersionId: number,
 ): Promise<ElicensingLastRefreshData> {
   const endpoint = `compliance/elicensing/compliance-report-versions/${complianceReportVersionId}/last-refreshed-metadata`;
-  const response = await actionHandler(endpoint, "GET", "");
 
-  if (response?.error) {
-    throw new Error(
-      `Failed to fetch Elicensing LastRefreshData for compliance report version ${complianceReportVersionId}: ${response.error}`,
-    );
-  }
-
-  return response;
+  return safeFetchApi<ElicensingLastRefreshData>(endpoint, {
+    last_refreshed_display: "",
+    data_is_fresh: false,
+  });
 }
