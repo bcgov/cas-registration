@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
-from datetime import timedelta, datetime, timezone
-from airflow.decorators import dag, task
+from datetime import datetime, timezone
+from airflow.sdk import dag, task
 from airflow.models.dagrun import DagRun
 
 import os
@@ -12,9 +12,9 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 PROCESS_DUE_TRANSFERS_DAG_NAME = 'cas_bciers_process_due_transfer_events'
 NIGHTLY_BUILD_DAG_NAME = "cas_bciers_nightly_build_report"
 BCIERS_NAMESPACE = os.getenv('BCIERS_NAMESPACE')
-TWO_DAYS_AGO = datetime.now(timezone.utc) - timedelta(days=2)
+START_DATE = datetime(2025, 1, 1, tzinfo=timezone.utc)
 
-default_args = {**default_dag_args, 'start_date': TWO_DAYS_AGO}
+default_args = {**default_dag_args, 'start_date': START_DATE}
 
 PROCESS_DUE_DAG_DOC = """
 DAG triggering cron job to process due transfers
@@ -25,6 +25,7 @@ DAG triggering cron job to process due transfers
     dag_id=PROCESS_DUE_TRANSFERS_DAG_NAME,
     schedule='0 8 * * *',
     default_args=default_args,
+    catchup=False,
     is_paused_upon_creation=False,
     doc_md=PROCESS_DUE_DAG_DOC,
     tags=['bciers'],
@@ -56,6 +57,7 @@ The following parameters are available:
     dag_id=NIGHTLY_BUILD_DAG_NAME,
     schedule=None,  # This dag is intended triggered
     default_args=default_args,
+    catchup=False,
     is_paused_upon_creation=False,
     doc_md=NIGHTLY_BUILD_DAG_DOC,
     tags=['bciers'],

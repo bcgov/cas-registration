@@ -2,13 +2,13 @@ from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 from airflow.providers.cncf.kubernetes.operators.job import KubernetesJobOperator
 from airflow.providers.standard.sensors.time_delta import TimeDeltaSensor
-from airflow.decorators import dag, task
-from datetime import datetime, timedelta
+from airflow.sdk import dag, task
+from datetime import datetime, timedelta, timezone
 import os
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-TWO_DAYS_AGO = datetime.now() - timedelta(days=2)
+START_DATE = datetime(2025, 6, 1, tzinfo=timezone.utc)
 TEST_MIGRATIONS_DAG_NAME = "cas_bciers_test_migrations"
 K8S_IMAGE = "alpine/k8s:1.29.15"
 SERVICE_ACCOUNT_NAME = "airflow-deployer"
@@ -28,7 +28,7 @@ BACKEND_CHART_TAG = os.getenv("BACKEND_CHART_TAG")
 # Jinja (runtime) template constant
 DESTINATION_NAMESPACE_TEMPLATE = "{{ params.destination_namespace }}"
 
-default_args = {**default_dag_args, "start_date": TWO_DAYS_AGO}
+default_args = {**default_dag_args, "start_date": START_DATE}
 
 DAG_DOC = """
 DAG to test the database and backend migrations. This DAG will uninstall the helm charts after the tests are complete, but **if the tests fail, the charts will remain installed**.
