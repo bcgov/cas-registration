@@ -56,7 +56,7 @@ export default function ChangeReviewForm({
   }, [versionId, displayChanges]);
 
   const handleSubmit = async (canContinue: boolean) => {
-    if (!reasonForChange || reasonForChange === "") {
+    if (!reasonForChange) {
       setErrors([
         createGenericReportValidationError("Reason for change is required."),
       ]);
