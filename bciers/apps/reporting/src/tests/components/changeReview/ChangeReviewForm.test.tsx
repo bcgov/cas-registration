@@ -78,7 +78,10 @@ describe("ChangeReviewForm", () => {
 
   const defaultProps = {
     versionId: 123,
-    initialFormData: { test: "initial", reason_for_change: "" },
+    initialFormData: {
+      test: "initial",
+      reason_for_change: "Initial reason for change",
+    },
     navigationInformation: {
       headerStepIndex: 1,
       headerSteps: [
