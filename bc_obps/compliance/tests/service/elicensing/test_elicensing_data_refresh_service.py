@@ -15,7 +15,6 @@ from compliance.enums import ComplianceInvoiceTypes
 from compliance.dataclass import RefreshWrapperReturn
 from common.utils import format_timestamp_en_ca
 
-
 pytestmark = pytest.mark.django_db
 
 ELICENSING_SERVICE_PATH = "compliance.service.elicensing"
@@ -73,13 +72,14 @@ class TestElicensingOperatorService:
                     businessAreaCode='asdf',
                     feeDate="2025-11-30",
                     description="2024 GGIRCA Compliance Obligation",
-                    baseAmount=Decimal('0'),
+                    baseAmount=Decimal('1'),
                     taxTotal=Decimal('0'),
                     adjustmentTotal=Decimal('0'),
                     taxAdjustmentTotal=Decimal('0'),
                     paymentBaseAmount=Decimal('0'),
                     paymentTotal=Decimal('0'),
                     invoiceNumber="inv-001",
+                    feeType="Regular",
                     payments=[
                         Payment(
                             paymentObjectId=2,
@@ -109,13 +109,14 @@ class TestElicensingOperatorService:
                     businessAreaCode='asdf',
                     feeDate="2025-11-30",
                     description="Interest",
-                    baseAmount=Decimal('0'),
+                    baseAmount=Decimal('2'),
                     taxTotal=Decimal('0'),
                     adjustmentTotal=Decimal('0'),
                     taxAdjustmentTotal=Decimal('0'),
                     paymentBaseAmount=Decimal('0'),
                     paymentTotal=Decimal('0'),
                     invoiceNumber="inv-001",
+                    feeType="Interest",
                 ),
             ],
         )
@@ -133,20 +134,28 @@ class TestElicensingOperatorService:
         # Assert record creation successful & accurate
         invoice = ElicensingInvoice.objects.get(invoice_number='inv-001')
         fees = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
-        fee = fees.first()
-        payment = ElicensingPayment.objects.get(elicensing_line_item=fee)
-        adjustment = ElicensingAdjustment.objects.get(elicensing_line_item=fee)
+
+        payment = ElicensingPayment.objects.get(elicensing_line_item=fees[0])
+        adjustment = ElicensingAdjustment.objects.get(elicensing_line_item=fees[0])
+
         assert invoice.outstanding_balance == 100.00
-        assert fees.count() == 1  # Did not parse extra fee with "Interest" description
-        assert fee.object_id == 1
-        assert fee.description == '2024 GGIRCA Compliance Obligation'
+        assert fees.count() == 2
+
+        assert fees[0].object_id == 1
+        assert fees[0].description == '2024 GGIRCA Compliance Obligation'
+        assert fees[0].line_item_type == ElicensingLineItem.LineItemType.FEE
+
+        assert fees[1].object_id == 2
+        assert fees[1].description == 'Interest'
+        assert fees[1].line_item_type == ElicensingLineItem.LineItemType.INTEREST
+
         assert payment.amount == Decimal('50')
         assert payment.method == "EFT/Wire - OBPS"
         assert payment.receipt_number == 'R192883'
         assert adjustment.amount == Decimal('10.11')
 
     @patch(RLS_BYPASS_RLS_PATH)
-    def test_parses_penalty_fees_from_elicensing(self, mock_bypass_rls, mock_query_invoice):
+    def test_throws_with_unknown_fee_type(self, mock_bypass_rls, mock_query_invoice):
         """Test fee filter parses penalty fees"""
         # Setup mocks
         client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
@@ -174,34 +183,7 @@ class TestElicensingOperatorService:
                     paymentBaseAmount=Decimal('0'),
                     paymentTotal=Decimal('0'),
                     invoiceNumber="inv-002",
-                ),
-                InvoiceFee(
-                    feeObjectId=4,
-                    feeGUID="00000000-0000-0000-0000-000000000000",
-                    businessAreaCode='asdf',
-                    feeDate="2025-11-30",
-                    description="Automatic Overdue",
-                    baseAmount=Decimal('0'),
-                    taxTotal=Decimal('0'),
-                    adjustmentTotal=Decimal('0'),
-                    taxAdjustmentTotal=Decimal('0'),
-                    paymentBaseAmount=Decimal('0'),
-                    paymentTotal=Decimal('0'),
-                    invoiceNumber="inv-002",
-                ),
-                InvoiceFee(
-                    feeObjectId=5,
-                    feeGUID="00000000-0000-0000-0000-000000000000",
-                    businessAreaCode='asdf',
-                    feeDate="2025-11-30",
-                    description="Automatic Overdue Penalty",
-                    baseAmount=Decimal('0'),
-                    taxTotal=Decimal('0'),
-                    adjustmentTotal=Decimal('0'),
-                    taxAdjustmentTotal=Decimal('0'),
-                    paymentBaseAmount=Decimal('0'),
-                    paymentTotal=Decimal('0'),
-                    invoiceNumber="inv-002",
+                    feeType="Bad Fee Type",
                 ),
             ],
         )
@@ -209,26 +191,12 @@ class TestElicensingOperatorService:
         mock_query_invoice.return_value = mock_inv
         mock_bypass_rls.return_value = MagicMock()
 
-        # Call the method
-        ElicensingDataRefreshService.refresh_data_by_invoice(
-            client_operator_id=client_operator.id, invoice_number="inv-002"
-        )
+        with pytest.raises(Exception) as exc:
+            ElicensingDataRefreshService.refresh_data_by_invoice(
+                client_operator_id=client_operator.id, invoice_number="inv-002"
+            )
 
-        mock_bypass_rls.assert_called_once()
-
-        # Assert record creation successful & accurate
-        invoice = ElicensingInvoice.objects.get(invoice_number='inv-002')
-        fees = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
-        late_fee = fees[0]
-        overdue_fee = fees[1]
-        overdue_alt_description_fee = fees[2]
-        assert fees.count() == 3
-        assert late_fee.object_id == 3
-        assert late_fee.description == 'Late Submission'
-        assert overdue_fee.object_id == 4
-        assert overdue_fee.description == 'Automatic Overdue'
-        assert overdue_alt_description_fee.object_id == 5
-        assert overdue_alt_description_fee.description == 'Automatic Overdue Penalty'
+        assert str(exc.value) == "Unknown fee type: Bad Fee Type for invoice inv-002"
 
     def test_compliance_report_version_id_wrapper_stale_data(self, mock_refresh_invoice):
         invoice = make_recipe(
