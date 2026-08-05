@@ -54,7 +54,11 @@ export function ComplianceSummaryReviewComponent({
 
   return (
     <FormBase
-      schema={createComplianceSummaryReviewSchema(data.reporting_year)}
+      schema={createComplianceSummaryReviewSchema(
+        data.reporting_year,
+        Number(data.automatic_overdue_penalty_amount) > 0,
+        Number(data.ggeapar_interest_amount) > 0,
+      )}
       uiSchema={complianceSummaryReviewUiSchema}
       formData={data}
       className="w-full"

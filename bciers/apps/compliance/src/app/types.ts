@@ -174,7 +174,14 @@ export interface ComplianceAppliedUnitsSummary {
   applied_compliance_units: ComplianceAppliedUnitsData;
 }
 
-export interface ComplianceSummaryReviewPageData extends ComplianceSummary {
+export interface AccruingPenalties {
+  faa_interest: string;
+  automatic_overdue_penalty_amount: string;
+  ggeapar_interest_amount: string;
+}
+
+export interface ComplianceSummaryReviewPageData
+  extends ComplianceSummary, AccruingPenalties {
   monetary_payments: PaymentData;
   applied_units_summary: ComplianceAppliedUnitsSummary;
 }
