@@ -40,6 +40,7 @@ const OperationInformationForm = ({
     rawFormData?.operation,
   );
 
+  const [error, setError] = useState<string | undefined>(undefined);
   const [schema, setSchema] = useState(initialSchema);
   const nestedFormData = rawFormData
     ? createNestedFormData(rawFormData, schema)
@@ -179,8 +180,12 @@ const OperationInformationForm = ({
   const handleSelectOperationChange = async (data: any) => {
     const operationId = data.section1.operation;
     setSelectedOperation(operationId);
-    const operationData = await getOperationRegistration(operationId);
-    updateConfirmedFormState(createNestedFormData(operationData, schema));
+    try {
+      const operationData = await getOperationRegistration(operationId);
+      updateConfirmedFormState(createNestedFormData(operationData, schema));
+    } catch {
+      setError("Failed to fetch operation data!" as any);
+    }
     resetKey();
   };
   // purpose change
@@ -326,6 +331,7 @@ const OperationInformationForm = ({
         schema={schema}
         step={step}
         steps={steps}
+        error={error}
         onChange={(e: IChangeEvent) => {
           const newSelectedOperation = e.formData?.section1?.operation;
           const newSelectedPurpose = e.formData?.section1?.registration_purpose;
