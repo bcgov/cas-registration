@@ -141,7 +141,7 @@ class ElicensingDataRefreshService:
                 elif fee.feeType == "Interest":
                     fee_type = ElicensingLineItem.LineItemType.INTEREST
                 else:
-                    raise Exception(f"Unknown fee type: {fee.feeType} for invoice {invoice_number}")
+                    raise ValueError(f"Unknown fee type: {fee.feeType} for invoice {invoice_number}")
 
                 fee_record, _ = ElicensingLineItem.objects.update_or_create(
                     elicensing_invoice=invoice_record,
