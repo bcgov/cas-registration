@@ -1,5 +1,8 @@
+from typing import List
+
 from compliance.enums import ComplianceInvoiceTypes
 from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
+from compliance.service.elicensing.schema import Payment
 from django.db import transaction
 from compliance.models import (
     ElicensingClientOperator,
@@ -155,20 +158,35 @@ class ElicensingDataRefreshService:
                 cls._process_fee_adjustments(fee_record, fee.adjustments, supplementary_compliance_report_version_id)
 
     @classmethod
-    def _process_fee_payments(cls, fee_record: ElicensingLineItem, payments: list) -> None:
+    def _process_fee_payments(cls, fee_record: ElicensingLineItem, payments: List[Payment]) -> None:
         for payment in payments:
             # Quarantine incorrectly applied receipt number in elicensing. This is a temporary fix & should be removed during the work in ticket 468 when the more permanent fix for distributions is applied.
-            if payment.receiptNumber != 'R998167':
-                ElicensingPayment.objects.update_or_create(
-                    elicensing_line_item=fee_record,
-                    payment_object_id=payment.paymentObjectId,
-                    defaults={
-                        "received_date": date.fromisoformat(payment.receivedDate),
-                        "amount": Decimal(payment.amount).quantize(Decimal("0.00")),
-                        "method": payment.method,
-                        "receipt_number": payment.receiptNumber,
-                    },
-                )
+            if payment.receiptNumber == 'R998167':
+                continue
+
+            """
+            Applicable distributions:
+            - have a feeObjectId that matches the current fee_record.object_id
+            - have a distributionType of either 'Payment' or 'Reversal'
+            """
+
+            applicable_distributions = [
+                d
+                for d in payment.distributions
+                if d.feeObjectId == fee_record.object_id and d.distributionType in ['Payment', 'Reversal']
+            ]
+            sum_distributed_amount = Decimal(sum(d.amount for d in applicable_distributions))
+
+            ElicensingPayment.objects.update_or_create(
+                elicensing_line_item=fee_record,
+                payment_object_id=payment.paymentObjectId,
+                defaults={
+                    "received_date": date.fromisoformat(payment.receivedDate),
+                    "amount": sum_distributed_amount.quantize(Decimal("0.00")),
+                    "method": payment.method,
+                    "receipt_number": payment.receiptNumber,
+                },
+            )
 
     @classmethod
     def _process_fee_adjustments(
