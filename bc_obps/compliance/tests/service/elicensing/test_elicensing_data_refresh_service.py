@@ -4,7 +4,13 @@ from compliance.models.compliance_penalty import CompliancePenalty
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
 )
-from compliance.service.elicensing.schema import InvoiceQueryResponse, InvoiceFee, Payment, FeeAdjustment
+from compliance.service.elicensing.schema import (
+    InvoiceQueryResponse,
+    InvoiceFee,
+    Payment,
+    FeeAdjustment,
+    PaymentDistribution,
+)
 from decimal import Decimal
 
 import pytest
@@ -90,6 +96,60 @@ class TestElicensingOperatorService:
                             referenceNumber='1',
                             method='EFT/Wire - OBPS',
                             receiptNumber='R192883',
+                            distributions=[
+                                PaymentDistribution(
+                                    distributionObjectId=1,
+                                    description='dist',
+                                    transactionDate='2025-11-30',
+                                    method='test',
+                                    reason='test',
+                                    amount=1000.00,
+                                    taxAmount=0,
+                                    distributionType='Payment',
+                                    reversedDistributionObjectId=0,
+                                    invoiceNumber="inv-001",
+                                    feeObjectId=2,
+                                ),
+                                PaymentDistribution(
+                                    distributionObjectId=2,
+                                    description='dist',
+                                    transactionDate='2025-11-30',
+                                    method='test',
+                                    reason='test',
+                                    amount=150.00,
+                                    taxAmount=0,
+                                    distributionType='Payment',
+                                    reversedDistributionObjectId=0,
+                                    invoiceNumber="inv-001",
+                                    feeObjectId=1,
+                                ),
+                                PaymentDistribution(
+                                    distributionObjectId=3,
+                                    description='dist',
+                                    transactionDate='2025-11-30',
+                                    method='test',
+                                    reason='test',
+                                    amount=-100.00,
+                                    taxAmount=0,
+                                    distributionType='Reversal',
+                                    reversedDistributionObjectId=2,
+                                    invoiceNumber="inv-001",
+                                    feeObjectId=1,
+                                ),
+                                PaymentDistribution(
+                                    distributionObjectId=4,
+                                    description='dist',
+                                    transactionDate='2025-11-30',
+                                    method='test',
+                                    reason='test',
+                                    amount=50.00,
+                                    taxAmount=0,
+                                    distributionType='Correction',
+                                    reversedDistributionObjectId=0,
+                                    invoiceNumber="inv-001",
+                                    feeObjectId=1,
+                                ),
+                            ],
                         )
                     ],
                     adjustments=[
