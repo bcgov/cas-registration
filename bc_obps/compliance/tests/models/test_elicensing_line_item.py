@@ -26,6 +26,23 @@ class ElicensingLineItemTest(BaseTestCase):
             ("elicensing_adjustments", "elicensing adjustment", None, None),
         ]
 
+    def test_unique_constraint_on_fee_line_item_per_invoice(self):
+        invoice = make_recipe('compliance.tests.utils.elicensing_invoice')
+        # Create a Fee line item for the invoice
+        make_recipe(
+            'compliance.tests.utils.elicensing_line_item',
+            elicensing_invoice=invoice,
+            line_item_type=ElicensingLineItem.LineItemType.FEE,
+        )
+        # Attempt to create another Fee line item for the same invoice, which should raise an IntegrityError
+        with self.assertRaises(Exception) as context:
+            make_recipe(
+                'compliance.tests.utils.elicensing_line_item',
+                elicensing_invoice=invoice,
+                line_item_type=ElicensingLineItem.LineItemType.FEE,
+            )
+        self.assertEqual(["A Fee line item already exists for this invoice."], context.exception.messages)
+
 
 #  RLS tests
 class TestElicensingLineItemRls(BaseTestCase):
