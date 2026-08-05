@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from registration.models.time_stamped_model import TimeStampedModel
 from compliance.models import ElicensingInvoice
 from .rls_configs.elicensing_line_item import Rls as ElicensingLineItemRls
@@ -12,7 +13,8 @@ class ElicensingLineItem(TimeStampedModel):
     """
 
     class LineItemType(models.TextChoices):
-        FEE = ('Fee',)
+        FEE = 'Fee'
+        INTEREST = 'Interest'
 
     object_id = models.IntegerField(db_comment="The objectId of the line item from elicensing")
 
@@ -43,5 +45,13 @@ class ElicensingLineItem(TimeStampedModel):
         app_label = "compliance"
         db_table_comment = "Table contains line item data on an invoice from elicensing"
         db_table = 'erc"."elicensing_line_item'
+        constraints = [
+            models.UniqueConstraint(
+                fields=["elicensing_invoice"],
+                condition=Q(line_item_type="Fee"),
+                name="elicensing_line_item_unique_fee_line_item_per_invoice",
+                violation_error_message="A Fee line item already exists for this invoice.",
+            )
+        ]
 
     Rls = ElicensingLineItemRls
