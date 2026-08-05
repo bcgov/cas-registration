@@ -26,9 +26,15 @@ jobs:
 
       # Start all services using Docker Compose
       - name: Start Services with Docker Compose
+        # ZAP scans every app, so all of the app profiles have to be active
+        env:
+          COMPOSE_PROFILES: "administration,compliance,registration,reporting"
         run: |
+          DB_PASSWORD=$(openssl rand -hex 24)
+          echo "::add-mask::$DB_PASSWORD"
+          export DB_PASSWORD
           echo "Starting services..."
-          docker compose -f ./bciers/docker-compose-bciers-apps.yaml up -d --wait
+          docker compose -f ./bciers/docker-compose.yaml up -d --wait
 
       # Run ZAP Scan for Backend API
       - name: ZAP Scan - Backend API

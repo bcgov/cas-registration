@@ -11,22 +11,14 @@ on:
         required: false
         type: boolean
         default: false
-      docker_compose_file:
-        description: "Optional input to specify another docker-compose file. The default is docker-compose-nx-app.yaml"
-        required: false
-        type: string
-      image_url:
-        description: "Docker image URL minus the tag which will be the pull request sha"
+      compose_profiles:
+        description: "Comma separated docker compose profiles naming the apps to start, e.g. 'registration' or 'compliance,reporting'. db, backend and dashboard always start. See bciers/docker-compose.yaml."
         required: true
         type: string
       is_nx_affected:
         description: "Whether the project is affected by the PR"
         required: true
         type: boolean
-      nx_app_port:
-        description: "Port to run the Nx app on if using the docker-compose-nx-app.yaml file"
-        required: false
-        type: number
       nx_project:
         description: "Nx project to test"
         required: true
@@ -54,13 +46,11 @@ jobs:
       - name: 🎁 setup local app
         uses: ./.github/actions/run-docker-compose
         with:
+          compose_profiles: ${{ inputs.compose_profiles }}
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
-          docker_compose_file: ${{ inputs.docker_compose_file }}
-          image_url: ${{ inputs.image_url }}
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
-          nx_app_port: ${{ inputs.nx_app_port }}
       - name: yarn modern
         shell: bash
         run: |
@@ -133,8 +123,9 @@ jobs:
         env:
           NX_PROJECT: ${{ inputs.nx_project }}
           API_URL: http://127.0.0.1:8000/api/
+          # DB_PASSWORD deliberately omitted: it is generated per run by the setup step and
+          # read from $GITHUB_ENV. Setting it here would override that and break the connection.
           DB_USER: postgres
-          DB_PASSWORD: postgres
           DB_NAME: registration
           DB_PORT: 5432
           DB_HOST: localhost

@@ -62,9 +62,8 @@ jobs:
       ]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
-      image_url: "ghcr.io/bcgov/cas-admin-frontend"
+      compose_profiles: "administration"
       is_nx_affected: true
-      nx_app_port: 4001
       nx_project: administration
     secrets: inherit
   test-registration-e2e:
@@ -76,9 +75,8 @@ jobs:
       ]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
-      image_url: "ghcr.io/bcgov/cas-reg-frontend"
+      compose_profiles: "registration"
       is_nx_affected: true
-      nx_app_port: 4000
       nx_project: registration
     secrets: inherit
   test-dashboard-e2e:
@@ -93,20 +91,25 @@ jobs:
       ]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
-      docker_compose_file: "docker-compose-bciers-apps.yaml"
-      image_url: "ghcr.io/bcgov/cas-dash-frontend"
+      # dashboard e2e clicks through to every app tile, so every app has to be up
+      compose_profiles: "administration,compliance,registration,reporting"
       is_nx_affected: true
       nx_project: dashboard
     secrets: inherit
   test-compliance-e2e:
     needs:
-      [build-backend, build-dashboard-e2e, build-compliance]
+      [
+        build-backend,
+        build-compliance,
+        build-dashboard-e2e,
+        build-reporting,
+      ]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
-      docker_compose_file: "docker-compose-bciers-apps.yaml"
-      image_url: "ghcr.io/bcgov/cas-compliance-frontend"
+      # compliance e2e drives the reporting UI directly to seed its data
+      # (its specs import @/reporting-e2e POMs), so reporting has to be up too
+      compose_profiles: "compliance,reporting"
       is_nx_affected: true
-      nx_app_port: 7000
       nx_project: compliance
     secrets: inherit
   test-reporting-e2e:
@@ -114,8 +117,7 @@ jobs:
       [build-backend, build-dashboard-e2e, build-reporting]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
-      docker_compose_file: "docker-compose-bciers-apps.yaml"
-      image_url: "ghcr.io/bcgov/cas-rep-frontend"
+      compose_profiles: "reporting"
       is_nx_affected: true
       nx_project: reporting
     secrets: inherit
