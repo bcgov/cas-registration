@@ -22,13 +22,17 @@ class Rls:
     grants = generate_rls_grants(role_grants_mapping, table)
 
     using_statement = """
-        operator_id IN (
-            SELECT uo.operator_id
-            FROM erc.user_operator uo
-            WHERE uo.user_id = current_setting('my.guid', true)::uuid
-            AND uo.status = 'Approved'
+        exists (
+            with approved_operator as (
+                select operator_id from erc.user_operator where
+                user_id = current_setting('my.guid', true)::uuid
+                and status='Approved'
+            )
+            select 1 from erc.operation_designated_operator_timeline tline
+            where tline.operator_id = (select operator_id from approved_operator)
+            and tline.operation_id = report.operation_id
+            and (start_date <= concat(report.reporting_year_id::text, '-12-31')::date and (end_date is null or end_date > concat(report.reporting_year_id::text, '-12-31')::date))
         )"""
-    
 
     role_policy_mapping = generate_report_policy_mapping_from_grants(
         role_grants_mapping=role_grants_mapping,
