@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import FormBase from "@bciers/components/form/FormBase";
 import { Alert, Button } from "@mui/material";
 import SubmitButton from "@bciers/components/button/SubmitButton";
@@ -49,10 +49,6 @@ export default function TransferForm({
   >([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // Identify the most recent change of each kind. Each one kicks off fetches, so a slow earlier
-  // change can resolve after a later one; only the latest may apply its result.
-  const latestOperatorChange = useRef(0);
-  const latestOperationChange = useRef(0);
 
   // Check if the form is valid
   const formIsValid = (data: TransferFormData): boolean => {
@@ -104,6 +100,32 @@ export default function TransferForm({
 
   const resetUiSchema = () => setUiSchema(transferUISchema);
 
+  // Changing an operator or the transfer entity invalidates the operation and facility
+  // selections; changing the source operation invalidates the chosen facilities. Both are
+  // synchronous consequences of the user's edit, so they are applied with the edit itself
+  const clearInvalidatedSelections = (
+    prev: TransferFormData,
+    next: TransferFormData,
+  ): TransferFormData => {
+    if (
+      next.from_operator !== prev.from_operator ||
+      next.to_operator !== prev.to_operator ||
+      next.transfer_entity !== prev.transfer_entity
+    ) {
+      return {
+        ...next,
+        operation: "",
+        from_operation: "",
+        to_operation: "",
+        facilities: [],
+      };
+    }
+    if (next.from_operation !== prev.from_operation) {
+      return { ...next, facilities: [] };
+    }
+    return next;
+  };
+
   // ✅ check against the *incoming* data, not stale formState
   const sameOperatorSelectedForOperationEntity = (
     d: TransferFormData,
@@ -136,9 +158,6 @@ export default function TransferForm({
   };
 
   const handleOperatorChange = async (transferFormData: TransferFormData) => {
-    const changeId = ++latestOperatorChange.current;
-    const isStale = () => changeId !== latestOperatorChange.current;
-
     // Reset error state
     setError(undefined);
 
@@ -150,14 +169,12 @@ export default function TransferForm({
     const fromRes = await fetchOperatorOperations(
       transferFormData?.from_operator,
     );
-    if (isStale()) return;
     if (fromRes.error) {
       setError(fromRes.error);
       return;
     }
 
     const toRes = await fetchOperatorOperations(transferFormData?.to_operator);
-    if (isStale()) return;
     if (toRes.error) {
       setError(toRes.error);
       return;
@@ -178,15 +195,6 @@ export default function TransferForm({
         ? withSameOperatorError(updatedSchemaObjects.transferUISchema)
         : updatedSchemaObjects.transferUISchema,
     );
-
-    // reset dependent selections
-    setFormState((prev) => ({
-      ...prev,
-      operation: "",
-      from_operation: "",
-      to_operation: "",
-      facilities: [],
-    }));
   };
 
   const fetchFacilities = async (
@@ -211,14 +219,11 @@ export default function TransferForm({
   const handleFromOperationChange = async (
     transferFormData: TransferFormData,
   ) => {
-    const changeId = ++latestOperationChange.current;
-
     setError(undefined);
 
     const facilitiesRes = await fetchFacilities(
       transferFormData?.from_operation,
     );
-    if (changeId !== latestOperationChange.current) return;
     if (facilitiesRes.error) {
       setError(facilitiesRes.error);
       return;
@@ -236,11 +241,6 @@ export default function TransferForm({
     );
     setSchema(updatedSchemaObjects.transferSchema);
     setUiSchema(updatedSchemaObjects.transferUISchema);
-
-    setFormState((prev) => ({
-      ...prev,
-      facilities: [],
-    }));
 
     // force re-render
     resetKey();
@@ -324,7 +324,9 @@ export default function TransferForm({
                 const updatedFormData = e.formData as TransferFormData;
 
                 // ✅ keep state in sync immediately (prevents stale checks/UI)
-                setFormState(updatedFormData);
+                setFormState(
+                  clearInvalidatedSelections(formState, updatedFormData),
+                );
 
                 handleFormStateUpdate(updatedFormData);
               }}
