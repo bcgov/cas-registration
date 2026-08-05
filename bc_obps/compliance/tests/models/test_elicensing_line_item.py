@@ -1,5 +1,6 @@
 from decimal import Decimal
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
+from django.core.exceptions import ValidationError
 from compliance.models.elicensing_line_item import ElicensingLineItem
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
@@ -35,7 +36,7 @@ class ElicensingLineItemTest(BaseTestCase):
             line_item_type=ElicensingLineItem.LineItemType.FEE,
         )
         # Attempt to create another Fee line item for the same invoice, which should raise an IntegrityError
-        with self.assertRaises(Exception) as context:
+        with self.assertRaises(ValidationError) as context:
             make_recipe(
                 'compliance.tests.utils.elicensing_line_item',
                 elicensing_invoice=invoice,
