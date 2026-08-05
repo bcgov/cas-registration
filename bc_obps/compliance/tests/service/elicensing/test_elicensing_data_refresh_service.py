@@ -193,7 +193,7 @@ class TestElicensingOperatorService:
 
         # Assert record creation successful & accurate
         invoice = ElicensingInvoice.objects.get(invoice_number='inv-001')
-        fees = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
+        fees = ElicensingLineItem.objects.filter(elicensing_invoice=invoice).order_by('object_id')
 
         payment = ElicensingPayment.objects.get(elicensing_line_item=fees[0])
         adjustment = ElicensingAdjustment.objects.get(elicensing_line_item=fees[0])
@@ -251,7 +251,7 @@ class TestElicensingOperatorService:
         mock_query_invoice.return_value = mock_inv
         mock_bypass_rls.return_value = MagicMock()
 
-        with pytest.raises(Exception) as exc:
+        with pytest.raises(ValueError) as exc:
             ElicensingDataRefreshService.refresh_data_by_invoice(
                 client_operator_id=client_operator.id, invoice_number="inv-002"
             )
