@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0183_V5_14_0'),
-        ('reporting', '0197_update_reportattachment_metadata'),
+        ('reporting', '0001_initial_squashed_0148_V5_0_0'),
     ]
 
     operations = [

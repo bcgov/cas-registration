@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('compliance', '0001_initial_squashed_0024_V5_0_0'),
-        ('reporting', '0206_V5_18_0'),
+        ('reporting', '0149_V5_0_1_squashed_0206_V5_18_0'),
     ]
 
     operations = [
