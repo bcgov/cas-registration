@@ -436,6 +436,11 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "get_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
         {"method": "get", "endpoint_name": "get_internal_users"},
         {"method": "get", "endpoint_name": "get_all_attachments"},
+        {
+            "method": "get",
+            "endpoint_name": "get_compliance_report_version_manual_handling",
+            "kwargs": {"compliance_report_version_id": MOCK_INT},
+        },
     ],
     "approved_authorized_roles": [
         {"method": "get", "endpoint_name": "get_user_compliance_access_status"},
@@ -632,11 +637,6 @@ ENDPOINTS = {
         {
             "method": "put",
             "endpoint_name": "update_compliance_report_version_earned_credit",
-            "kwargs": {"compliance_report_version_id": MOCK_INT},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "get_compliance_report_version_manual_handling",
             "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
         {

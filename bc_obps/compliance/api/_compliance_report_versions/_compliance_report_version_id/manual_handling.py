@@ -5,6 +5,7 @@ from compliance.api.router import router
 from compliance.constants import COMPLIANCE
 from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.permissions import authorize
 from compliance.api.permissions import (
     approved_industry_user_cas_director_cas_analyst_compliance_report_version_composite_auth,
 )
@@ -22,7 +23,7 @@ from compliance.service.compliance_report_version_manual_handling_service import
     tags=COMPLIANCE,
     description="Get manual handling data for a compliance report version",
     exclude_none=True,
-    auth=approved_industry_user_cas_director_cas_analyst_compliance_report_version_composite_auth,
+    auth=authorize("authorized_irc_user"),
 )
 def get_compliance_report_version_manual_handling(
     request: HttpRequest,

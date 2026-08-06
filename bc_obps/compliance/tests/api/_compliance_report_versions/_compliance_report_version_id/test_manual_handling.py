@@ -6,6 +6,7 @@ from registration.utils import custom_reverse_lazy
 from compliance.models import ComplianceReportVersionManualHandling
 
 VALIDATE_PERMISSION_PATH = "common.permissions.validate_all"
+CHECK_PERMISSION_PATH = "common.permissions.check_permission_for_role"
 GET_SERVICE_PATH = (
     "compliance.service.compliance_report_version_manual_handling_service."
     "ComplianceManualHandlingService.get_manual_handling_by_report_version"
@@ -55,10 +56,12 @@ class TestComplianceReportVersionManualHandlingEndpoint(SimpleTestCase):
 
     # --- GET success ---
 
+    @patch(CHECK_PERMISSION_PATH)
     @patch(GET_SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
-    def test_get_manual_handling_success(self, mock_permission, mock_get_manual_handling):
+    def test_get_manual_handling_success(self, mock_permission, mock_get_manual_handling, mock_check_permission):
         mock_permission.return_value = True
+        mock_check_permission.return_value = True
 
         manual_handling = self._manual_handling_dict(
             handling_type="decreased_obligation",
