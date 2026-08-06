@@ -1,4 +1,3 @@
-import re
 from reporting.enums.enums import ReportingTableNames
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.helpers import generate_report_policy_mapping_from_grants, generate_rls_grants, generate_rls_policies
@@ -23,22 +22,20 @@ class Rls:
     grants = generate_rls_grants(role_grants_mapping, table)
 
     using_statement = """
-        report_id IN (
-            SELECT r.id
-            FROM erc.report r
-            WHERE r.operator_id IN (
-                SELECT uo.operator_id
-                FROM erc.user_operator uo
-                WHERE uo.user_id = current_setting('my.guid', true)::uuid
-                AND uo.status = 'Approved'
+        exists (
+            with approved_operator as (
+                select operator_id from erc.user_operator where
+                user_id = current_setting('my.guid', true)::uuid
+                and status='Approved'
             )
+            select 1 from erc.operation_designated_operator_timeline tline
+            join approved_operator ao on ao.operator_id = tline.operator_id
+            join erc.report r on ao.operator_id = r.operator_id
+            and r.id = report_id
+            and tline.operation_id = r.operation_id
+            and (start_date <= concat(r.reporting_year_id::text, '-12-31')::date and (end_date is null or end_date >= concat(r.reporting_year_id::text, '-12-31')::date))
         )"""
-    delete_using_statement = re.sub(
-        r"(AND uo\.status = 'Approved'\s*\)\s*\))",
-        r"\1 AND status = 'Draft'",
-        using_statement,
-        count=1,
-    )
+    delete_using_statement = using_statement + " and status='Draft'"
     role_policy_mapping = generate_report_policy_mapping_from_grants(
         role_grants_mapping=role_grants_mapping,
         using_statement=using_statement,
