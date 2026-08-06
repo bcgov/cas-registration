@@ -1,6 +1,4 @@
 from common.tests.utils.helpers import BaseTestCase
-from django.db import ProgrammingError
-import pytest
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models.report import Report
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
@@ -28,72 +26,91 @@ class ReportRlsTest(BaseTestCase):
     def test_report_rls_industry_user(self):
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
         operation = make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
-        reporting_year = reporting_year_baker(reporting_year=2012)
-        report = report_baker(
-            operation=operation, operator=approved_user_operator.operator, reporting_year=reporting_year
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=operation,
+            start_date='2009-01-01',
+            end_date='2012-12-31',
         )
-        number_of_accesible_records = Report.objects.filter(operation=operation).count()
+        reporting_year_baker(reporting_year=2009)
+        reporting_year_2010 = reporting_year_baker(reporting_year=2010)
+        reporting_year_2012 = reporting_year_baker(reporting_year=2012)
+        # Outside bounds of access
+        reporting_year_2013 = reporting_year_baker(reporting_year=2013)
+        reporting_year_2014 = reporting_year_baker(reporting_year=2014)
 
-        random_operation = make_recipe('registration.tests.utils.operation')
-        random_report = report_baker(operation=random_operation, reporting_year=reporting_year)
-        number_of_total_records = Report.objects.count()
-
-        new_operation = make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
-        new_reporting_year = reporting_year_baker(reporting_year=2042)
+        # 2010 & 2011 reports - Within access bounds
+        report_2010 = report_baker(
+            operation=operation, operator=approved_user_operator.operator, reporting_year=reporting_year_2010
+        )
+        # 2013 report - Outside bounds of
+        report_2013 = report_baker(
+            operation=operation, operator=approved_user_operator.operator, reporting_year=reporting_year_2013
+        )
 
         def select_function(cursor):
-            # Select the report for the approved user operator and not the random report
-            assert Report.objects.count() < number_of_total_records
-            assert Report.objects.count() == number_of_accesible_records
-            assert Report.objects.filter(operation=random_operation).count() == 0
+            Report.objects.get(reporting_year_id=2010)
+
+        def forbidden_select_function(cursor):
+            Report.objects.get(reporting_year_id=2013)
 
         def insert_function(cursor):
-            # Insert a new report for the approved user operator
-            new_report = Report.objects.create(
-                operation=new_operation,
+            Report.objects.create(
+                operation=operation,
                 operator=approved_user_operator.operator,
-                reporting_year=report.reporting_year,
+                reporting_year=reporting_year_2012,
             )
-            number_of_accesible_records_after_insert = number_of_accesible_records + 1
-            assert Report.objects.count() == number_of_accesible_records_after_insert
-            assert new_report.id is not None
-            # Attempt to insert a report that the user is not an operator for
-            with pytest.raises(ProgrammingError, match='new row violates row-level security policy for table "report'):
-                Report.objects.create(
-                    operation=random_operation,
-                    operator=random_report.operator,
-                    reporting_year=random_report.reporting_year,
-                )
+
+        def forbidden_insert_function(cursor):
+            Report.objects.create(
+                operation=operation,
+                operator=approved_user_operator.operator,
+                reporting_year=reporting_year_2014,
+            )
 
         def update_function(cursor):
-            # Update the report for the approved user operator
-            report.reporting_year = new_reporting_year
-            report.save()
-            assert Report.objects.get(id=report.id).reporting_year.reporting_year == new_reporting_year.reporting_year
-            # Attempt to update a report that the user should not have access to
-            with pytest.raises(ProgrammingError, match='new row violates row-level security policy for table "report'):
-                random_report.reporting_year = new_reporting_year
-                random_report.save()
+            cursor.execute(
+                """
+                    UPDATE "erc"."report"
+                    SET reporting_year_id = %s
+                    WHERE id = %s
+                """,
+                (2009, report_2010.id),
+            )
+            return cursor.rowcount
+
+        def forbidden_update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."report"
+                    SET reporting_year_id = %s
+                    WHERE id = %s
+                """,
+                (2009, report_2013.id),
+            )
+            return cursor.rowcount
 
         def delete_function(cursor):
             # Delete the report for the approved user operator
-            number_of_deleted_reports, _ = report.delete()
-            number_of_accesible_records_after_delete = number_of_accesible_records - number_of_deleted_reports
-            assert number_of_deleted_reports > 0
-            assert Report.objects.count() == number_of_accesible_records_after_delete
+            report_2010.delete()
 
-            # Attempt to delete a report that the user should not have access to
-            number_of_deleted_reports, _ = random_report.delete()
-            assert number_of_deleted_reports == 0
-            assert Report.objects.count() == number_of_accesible_records_after_delete
+        def forbidden_delete_function(cursor):
+            # Delete the report for the approved user operator
+            report_2013.delete()
 
+        print('SELECT FUNCTION INSIDE: ', select_function)
         assert_policies_for_industry_user(
             Report,
             approved_user_operator.user,
-            select_function,
-            insert_function,
-            update_function,
-            delete_function,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            delete_function=delete_function,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
         )
 
     def test_report_rls_cas_user(self):
