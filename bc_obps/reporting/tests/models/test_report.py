@@ -92,14 +92,25 @@ class ReportRlsTest(BaseTestCase):
             return cursor.rowcount
 
         def delete_function(cursor):
-            # Delete the report for the approved user operator
-            report_2010.delete()
+            cursor.execute(
+                """
+                    DELETE from "erc"."report"
+                    WHERE id = %s
+                """,
+                (report_2010.id,),
+            )
+            return cursor.rowcount
 
         def forbidden_delete_function(cursor):
-            # Delete the report for the approved user operator
-            report_2013.delete()
+            cursor.execute(
+                """
+                    DELETE from "erc"."report"
+                    WHERE id = %s
+                """,
+                (report_2013.id,),
+            )
+            return cursor.rowcount
 
-        print('SELECT FUNCTION INSIDE: ', select_function)
         assert_policies_for_industry_user(
             Report,
             approved_user_operator.user,
