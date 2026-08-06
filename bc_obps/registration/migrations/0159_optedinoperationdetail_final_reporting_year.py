@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0158_add_pulp_and_paper_product'),
-        ('reporting', '0152_report_operation_final_reporting_year'),
+        ('reporting', '0001_initial_squashed_0148_V5_0_0'),
     ]
 
     operations = [
