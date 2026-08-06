@@ -31,7 +31,7 @@ class Rls:
             select 1 from erc.operation_designated_operator_timeline tline
             where tline.operator_id = (select operator_id from approved_operator)
             and tline.operation_id = report.operation_id
-            and (start_date <= concat(report.reporting_year_id::text, '-12-31')::date and (end_date is null or end_date > concat(report.reporting_year_id::text, '-12-31')::date))
+            and (start_date <= concat(report.reporting_year_id::text, '-12-31')::date and (end_date is null or end_date >= concat(report.reporting_year_id::text, '-12-31')::date))
         )"""
 
     role_policy_mapping = generate_report_policy_mapping_from_grants(
