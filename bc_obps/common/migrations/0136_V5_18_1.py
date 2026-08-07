@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('common', '0135_V5_18_0'),
+        ('common', '0105_V5_0_1_squashed_0135_V5_18_0'),
     ]
 
     operations = []
