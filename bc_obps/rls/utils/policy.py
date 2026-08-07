@@ -95,7 +95,7 @@ class RlsPolicy:
             select 1 from erc.report_version rv
             join erc.report r on rv.report_id = r.id
             join approved_operator ao on r.operator_id = ao.operator_id
-            join erc.operation_designated_timeline tline on tline.operator_id = r.operator_id
+            join erc.operation_designated_operator_timeline tline on tline.operator_id = r.operator_id
             and rv.id = report_version_id
             and (start_date <= concat(r.reporting_year_id::text, '-12-31')::date and (end_date is null or end_date >= concat(r.reporting_year_id::text, '-12-31')::date))
         )"""
