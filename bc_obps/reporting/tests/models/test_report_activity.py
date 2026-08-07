@@ -41,51 +41,6 @@ class ReportActivityModelTest(BaseTestCase):
 class ReportActivityRlsTest(BaseTestCase):
 
     def test_report_activity_rls_industry_user(self):
-        # approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
-        # operation = make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
-        # make_recipe(
-        #     'registration.tests.utils.operation_designated_operator_timeline',
-        #     operator=approved_user_operator.operator,
-        #     operation=operation,
-        #     start_date='2009-01-01',
-        #     end_date='2012-12-31',
-        # )
-        # reporting_year_2010 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2010)
-        # reporting_year_2012 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2012)
-        # # Outside bounds of access
-        # reporting_year_2013 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2013)
-
-        # # 2010 - Within access bounds
-        # report_2010 = make_recipe(
-        #     'reporting.tests.utils.report',
-        #     operation=operation,
-        #     operator=approved_user_operator.operator,
-        #     reporting_year=reporting_year_2010,
-        # )
-        # report_version_2010_submitted = make_recipe(
-        #     'reporting.tests.utils.report_version', report=report_2010, status='Submitted'
-        # )
-        # report_version_2010_draft = make_recipe(
-        #     'reporting.tests.utils.report_version', report=report_2010, status='Draft'
-        # )
-        # facility_report_2010_draft = make_recipe(
-        #     'reporting.tests.utils.facility_report', report_version=report_version_2010_draft
-        # )
-
-        # # 2013 report - Outside bounds of access
-        # report_2013 = make_recipe(
-        #     'reporting.tests.utils.report',
-        #     operation=operation,
-        #     operator=approved_user_operator.operator,
-        #     reporting_year=reporting_year_2013,
-        # )
-        # report_version_2013_draft = make_recipe(
-        #     'reporting.tests.utils.report_version', report=report_2013, status='Draft'
-        # )
-        # facility_report_2013_draft = make_recipe(
-        #             f'reporting.tests.utils.facility_report', report_version=report_version_2013_draft
-        #         )
-
         # Common Test Setup
         t = ReportRlsTestSetup(parent_object='facility_report')
 
