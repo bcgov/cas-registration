@@ -41,8 +41,8 @@ export async function runLfoSubmitReport({
   // ── 3. Review Operation Information
   await verifyFormTitle(page, "Review Operation Information");
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Review Operation Information",
-    variant: "filled",
+    component: "Report - Review Operation Information",
+    variant: "LFO",
   });
   await report.saveAndContinue(
     new RegExp(report.personResponsibleUrl(versionId)),
@@ -52,8 +52,8 @@ export async function runLfoSubmitReport({
   await verifyFormTitle(page, "Person Responsible for Submitting Report");
   await report.fillPersonResponsible("Bill Blue");
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Person Responsible",
-    variant: "filled",
+    component: "Report - Person Responsible",
+    variant: "LFO",
   });
   await report.saveAndContinue(
     new RegExp(report.reviewFacilitiesUrl(versionId)),
@@ -63,8 +63,8 @@ export async function runLfoSubmitReport({
   const reviewFacility = new ReviewFacilitiesPOM(page);
   await reviewFacility.selectFacilities(["Facility 38"]);
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Review Facilities",
-    variant: "filled",
+    component: "Report - Review Facilities",
+    variant: "LFO",
   });
   await report.saveAndContinue(new RegExp(report.facilitiesGridUrl(versionId)));
 
@@ -73,8 +73,8 @@ export async function runLfoSubmitReport({
   const facilityGrid = new FacilityGridPOM(page, versionId);
   await facilityGrid.waitForReady();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Facility Grid",
-    variant: "not started",
+    component: "Report - Facility Grid",
+    variant: "LFO not started",
   });
   const facilityId =
     await facilityGrid.continueReportForFacility("Facility 38");
@@ -84,8 +84,8 @@ export async function runLfoSubmitReport({
   await verifyFormTitle(page, "Review Facility Information");
   await facilityReport.fillReviewFacilityInformation();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Review Facility",
-    variant: "filled",
+    component: "Report - Review Facility",
+    variant: "LFO",
   });
   await facilityReport.saveAndContinue(
     new RegExp(report.activitiesUrl(versionId, FacilityIDs.BEES_LFO), "i"),
@@ -98,8 +98,8 @@ export async function runLfoSubmitReport({
   );
   await facilityReport.fillGscActivity();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Activities",
-    variant: "filled",
+    component: "Report - Activities",
+    variant: "LFO",
   });
   await facilityReport.saveAndContinue(
     new RegExp(facilityReport.nonAttributableUrl()),
@@ -109,8 +109,8 @@ export async function runLfoSubmitReport({
   await verifyFormTitle(page, "Non-Attributable Emissions");
   await facilityReport.fillNonAttributable();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Non-Attributable Emissions",
-    variant: "filled",
+    component: "Report - Non-Attributable Emissions",
+    variant: "LFO",
   });
   await facilityReport.saveAndContinue(
     new RegExp(facilityReport.emissionsSummaryUrl()),
@@ -119,8 +119,8 @@ export async function runLfoSubmitReport({
   // ── 10. Emission Summary (read-only) ──
   await facilityReport.verifyEmissionSummary();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Emission Summary",
-    variant: "default",
+    component: "Report - Emission Summary",
+    variant: "LFO",
   });
   await facilityReport.clickContinue(
     new RegExp(facilityReport.productionDataUrl()),
@@ -133,8 +133,8 @@ export async function runLfoSubmitReport({
     ["Compression, positive displacement - consumed energy"],
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Production Data",
-    variant: "filled",
+    component: "Report - Production Data",
+    variant: "LFO",
   });
   await facilityReport.clickContinue(
     new RegExp(facilityReport.allocationOfEmissionsUrl()),
@@ -144,8 +144,8 @@ export async function runLfoSubmitReport({
   await verifyFormTitle(page, "Allocation of Emissions");
   await facilityReport.fillAllocationOfEmissions();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Allocation of Emissions",
-    variant: "filled",
+    component: "Report - Allocation of Emissions",
+    variant: "LFO",
   });
   await facilityReport.clickContinue(
     new RegExp(facilityReport.facilityReportCompletedUrl()),
@@ -157,8 +157,8 @@ export async function runLfoSubmitReport({
 
   await facilityGrid.markFacilityComplete("Facility 38");
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Facility Grid",
-    variant: "completed",
+    component: "Report - Facility Grid",
+    variant: "LFO completed",
   });
   await facilityGrid.clickContinue(
     new RegExp(`${versionId}/${ReportRoutes.ADDITIONAL_REPORTING_DATA}`),
@@ -168,8 +168,8 @@ export async function runLfoSubmitReport({
   await verifyFormTitle(page, "Additional Reporting Data");
   await report.fillAdditionalData();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Additional Reporting Data",
-    variant: "filled",
+    component: "Report - Additional Reporting Data",
+    variant: "LFO",
   });
   await report.saveAndContinue();
 
@@ -177,8 +177,8 @@ export async function runLfoSubmitReport({
   const operationEmissionSummary = new OperationEmissionSummaryPOM(page);
   await operationEmissionSummary.validateEmissionSummary();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Emission Summary",
-    variant: "default",
+    component: "Report - Operation Emission Summary",
+    variant: "LFO",
   });
   await operationEmissionSummary.continue(
     new RegExp(`${versionId}/${ReportRoutes.COMPLIANCE_SUMMARY}`),
@@ -187,8 +187,8 @@ export async function runLfoSubmitReport({
   // ── 16. Compliance Summary (read-only) ──
   await report.verifyComplianceSummary();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Compliance Summary",
-    variant: "default",
+    component: "Report - Compliance Summary",
+    variant: "LFO",
   });
   await report.continue(new RegExp(`${versionId}/${ReportRoutes.VALIDATION}`));
 
@@ -196,8 +196,8 @@ export async function runLfoSubmitReport({
   await verifyFormTitle(page, "Report validation");
   await report.verifyReportValidation();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Report Validation",
-    variant: "default",
+    component: "Report - Report Validation",
+    variant: "LFO",
   });
   await report.continue(
     new RegExp(`${versionId}/${ReportRoutes.FINAL_REVIEW}`),
@@ -206,8 +206,8 @@ export async function runLfoSubmitReport({
   // ── 18. Final Review (read-only) ──
   await report.verifyFinalReview();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Final Review",
-    variant: "default",
+    component: "Report - Final Review",
+    variant: "LFO",
   });
 
   await report.continue(
@@ -218,8 +218,8 @@ export async function runLfoSubmitReport({
   await verifyFormTitle(page, "Verification");
   await report.fillVerification();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Verification",
-    variant: "filled",
+    component: "Report - Verification",
+    variant: "LFO",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
@@ -228,8 +228,8 @@ export async function runLfoSubmitReport({
   // ── 20. Attachments — upload verification statement PDF ──
   await report.uploadVerificationStatement();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Attachments",
-    variant: "filled",
+    component: "Report - Attachments",
+    variant: "LFO",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.SIGN_OFF}`),
@@ -242,8 +242,8 @@ export async function runLfoSubmitReport({
   // ── 22. Submission page — verify success content ──
   await grid.verifySubmissionPage();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Submission",
-    variant: "default",
+    component: "Report - Submission",
+    variant: "LFO",
   });
 
   // ── 23. Return to the grid and verify the report status ──
@@ -255,7 +255,7 @@ export async function runLfoSubmitReport({
     REPORT_STATUS.SUBMITTED,
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Report - Current Reports Grid",
-    variant: "submitted",
+    component: "Report - Current Reports Grid",
+    variant: "LFO submitted",
   });
 }
