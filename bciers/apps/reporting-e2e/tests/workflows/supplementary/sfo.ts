@@ -15,12 +15,14 @@ import {
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { ReviewChangesPOM } from "@/reporting-e2e/poms/review-changes";
-import { SFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
+import {
+  DEFAULT_GSC_EMISSION,
+  SFOFacilityReportPOM,
+} from "@/reporting-e2e/poms/facility-report";
 import { ReportHistoryPOM } from "@/reporting-e2e/poms/report-history";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
 import { SubmittedPOM } from "@/reporting-e2e/poms/submitted";
 import { DEFAULT_ANNUAL_PRODUCTION } from "@/reporting-e2e/poms/production-data";
-import { DEFAULT_GSC_EMISSION } from "@/reporting-e2e/poms/facility-report";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { runSfoSubmitReport } from "@/reporting-e2e/tests/workflows/submit/sfo";

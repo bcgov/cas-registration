@@ -11,14 +11,16 @@ import {
 } from "@/reporting-e2e/utils/constants";
 
 const escapeForRegExp = (value: string) =>
-  value.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+  value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
 /**
  * Matches a label exactly, tolerating the StatusLabel chip that added and removed
  * rows render inside the same element.
  */
 const exactText = (label: string) =>
-  new RegExp(`^${escapeForRegExp(label)}\\s*(ADDED|DELETED|MODIFIED)?$`);
+  new RegExp(
+    String.raw`^${escapeForRegExp(label)}\s*(ADDED|DELETED|MODIFIED)?$`,
+  );
 
 export class ReviewChangesPOM {
   readonly page: Page;
