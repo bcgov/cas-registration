@@ -107,8 +107,8 @@ export async function runLfoSupplementaryScenario({
     REPORT_STATUS.DRAFT_SUPPLEMENTARY,
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Supplementary Report - Current Reports Grid",
-    variant: "draft supplementary",
+    component: "Report - Current Reports Grid",
+    variant: "LFO draft supplementary",
   });
 
   expect(await grid.continueReportForOperation(operationName)).toBe(versionId);
@@ -180,8 +180,8 @@ export async function runLfoSupplementaryScenario({
     edits.methodology.description,
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Supplementary Report - Production Data",
-    variant: "changed",
+    component: "Report - Production Data",
+    variant: "LFO supplementary",
   });
   await facilityReport.clickContinue(
     new RegExp(facilityReport.allocationOfEmissionsUrl()),
@@ -331,8 +331,8 @@ export async function runLfoSupplementaryScenario({
   await reviewChanges.fillReason();
   await reviewChanges.verifySaveAndContinueEnabled();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Supplementary Report - Review Changes",
-    variant: "reason entered",
+    component: "Report - Review Changes",
+    variant: "LFO",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.VALIDATION}`),
@@ -356,8 +356,8 @@ export async function runLfoSupplementaryScenario({
   await verifyFormTitle(page, "Verification");
   await report.verifySupplementaryVerification();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Supplementary Report - Verification",
-    variant: "supplementary info note",
+    component: "Report - Verification",
+    variant: "LFO supplementary",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
@@ -370,8 +370,8 @@ export async function runLfoSupplementaryScenario({
   await grid.fillAttachments();
   await grid.verifySaveAndContinueEnabled();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Supplementary Report - Attachments",
-    variant: "reuploaded and confirmed",
+    component: "Report - Attachments",
+    variant: "LFO supplementary",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.SIGN_OFF}`),
@@ -381,16 +381,16 @@ export async function runLfoSupplementaryScenario({
   // ── 24. Sign-off ──
   await grid.verifySupplementarySignOffFields(isRegulated);
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Supplementary Report - Sign-off",
-    variant: "supplementary regulated",
+    component: "Report - Sign-off",
+    variant: "LFO supplementary",
   });
   await grid.submitReportById(request, versionId, false, true, isRegulated);
 
   // ── 25. Submission page ──
   await grid.verifySubmissionPage(true);
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Supplementary Report - Submission",
-    variant: "supplementary",
+    component: "Report - Submission",
+    variant: "LFO supplementary",
   });
 
   // ── 26. Back on the grid, the report reads as a submitted supplementary ──
@@ -406,8 +406,8 @@ export async function runLfoSupplementaryScenario({
   await reportHistory.validatePageElements(operationName);
   await reportHistory.verifyVersions(scenario.expectedVersions);
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "LFO Supplementary Report - Report History",
-    variant: "two versions",
+    component: "Report - Report History",
+    variant: "LFO",
   });
   await reportHistory.viewDetailsFromReportHistory(1);
   await new SubmittedPOM(page).verifySubmittedReportView(operationName, true);

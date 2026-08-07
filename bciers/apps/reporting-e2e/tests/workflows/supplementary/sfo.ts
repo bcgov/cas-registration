@@ -102,8 +102,8 @@ export async function runSfoSupplementaryScenario({
     REPORT_STATUS.DRAFT_SUPPLEMENTARY,
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "SFO Supplementary Report - Current Reports Grid",
-    variant: "draft supplementary",
+    component: "Report - Current Reports Grid",
+    variant: "SFO draft supplementary",
   });
 
   expect(await grid.continueReportForOperation(operationName)).toBe(versionId);
@@ -153,8 +153,8 @@ export async function runSfoSupplementaryScenario({
     edits.methodology.description,
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "SFO Supplementary Report - Production Data",
-    variant: "changed",
+    component: "Report - Production Data",
+    variant: "SFO supplementary",
   });
   await facilityReport.saveAndContinue(
     new RegExp(
@@ -278,8 +278,8 @@ export async function runSfoSupplementaryScenario({
   await reviewChanges.fillReason();
   await reviewChanges.verifySaveAndContinueEnabled();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "SFO Supplementary Report - Review Changes",
-    variant: "reason entered",
+    component: "Report - Review Changes",
+    variant: "SFO",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.VALIDATION}`),
@@ -303,8 +303,8 @@ export async function runSfoSupplementaryScenario({
   await verifyFormTitle(page, "Verification");
   await report.verifySupplementaryVerification();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "SFO Supplementary Report - Verification",
-    variant: "supplementary info note",
+    component: "Report - Verification",
+    variant: "SFO supplementary",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
@@ -317,8 +317,8 @@ export async function runSfoSupplementaryScenario({
   await grid.fillAttachments();
   await grid.verifySaveAndContinueEnabled();
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "SFO Supplementary Report - Attachments",
-    variant: "reuploaded and confirmed",
+    component: "Report - Attachments",
+    variant: "SFO supplementary",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.SIGN_OFF}`),
@@ -328,16 +328,16 @@ export async function runSfoSupplementaryScenario({
   // ── 19. Sign-off ──
   await grid.verifySupplementarySignOffFields(isRegulated);
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "SFO Supplementary Report - Sign-off",
-    variant: "supplementary regulated",
+    component: "Report - Sign-off",
+    variant: "SFO supplementary",
   });
   await grid.submitReportById(request, versionId, false, true, isRegulated);
 
   // ── 20. Submission page ──
   await grid.verifySubmissionPage(true);
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "SFO Supplementary Report - Submission",
-    variant: "supplementary",
+    component: "Report - Submission",
+    variant: "SFO supplementary",
   });
 
   // ── 21. Back on the grid, the report reads as a submitted supplementary ──
@@ -353,8 +353,8 @@ export async function runSfoSupplementaryScenario({
   await reportHistory.validatePageElements(operationName);
   await reportHistory.verifyVersions(scenario.expectedVersions);
   await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "SFO Supplementary Report - Report History",
-    variant: "two versions",
+    component: "Report - Report History",
+    variant: "SFO",
   });
   await reportHistory.viewDetailsFromReportHistory(1);
   await new SubmittedPOM(page).verifySubmittedReportView(operationName);
