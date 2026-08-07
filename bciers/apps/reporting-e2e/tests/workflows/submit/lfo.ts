@@ -134,7 +134,7 @@ export async function runLfoSubmitReport({
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Production Data",
-    variant: "LFO - non-supplementary",
+    variant: "LFO",
   });
   await facilityReport.clickContinue(
     new RegExp(facilityReport.allocationOfEmissionsUrl()),
@@ -233,6 +233,10 @@ export async function runLfoSubmitReport({
   );
 
   // ── 21. Sign-off and submit ──
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Sign-off",
+    variant: "LFO - non-supplementary",
+  });
   await grid.submitReportById(request, versionId, false, false, true);
 
   // ── 22. Submission page — verify success content ──

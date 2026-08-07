@@ -103,7 +103,7 @@ export async function runSfoSupplementaryScenario({
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Current Reports Grid",
-    variant: "SFO",
+    variant: "draft supplementary",
   });
 
   expect(await grid.continueReportForOperation(operationName)).toBe(versionId);
@@ -152,10 +152,6 @@ export async function runSfoSupplementaryScenario({
     edits.methodology.updated,
     edits.methodology.description,
   );
-  await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "Report - Production Data",
-    variant: "SFO - supplementary",
-  });
   await facilityReport.saveAndContinue(
     new RegExp(
       `/facilities/${facilityId}/${ReportRoutes.ALLOCATION_OF_EMISSIONS}`,
@@ -329,7 +325,7 @@ export async function runSfoSupplementaryScenario({
   await grid.verifySupplementarySignOffFields(isRegulated);
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Sign-off",
-    variant: "SFO",
+    variant: "SFO - supplementary",
   });
   await grid.submitReportById(request, versionId, false, true, isRegulated);
 

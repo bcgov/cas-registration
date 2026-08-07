@@ -100,7 +100,7 @@ export async function runSfoSubmitReport({
   await facilityReport.fillProductionData();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Production Data",
-    variant: "SFO - non-supplementary",
+    variant: "SFO",
   });
   await facilityReport.saveAndContinue(
     new RegExp(
@@ -183,6 +183,10 @@ export async function runSfoSubmitReport({
   );
 
   // ── 16. Sign-off and submit (submission stubbed to avoid external calls) ──
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Sign-off",
+    variant: "SFO - non-supplementary",
+  });
   await grid.submitReportById(request, versionId, false, false, true);
 
   // ── 17. Submission page — verify success content ──
