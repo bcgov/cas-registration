@@ -39,6 +39,22 @@ export class ReportHistoryPOM {
   }
 
   /**
+   * Asserts the "Report version" column contains exactly the expected rows, in order.
+   *
+   * The grid lists versions newest first: the newest renders as "Current Version" and
+   * older ones as "Version N", counting up from the oldest — so a report with two
+   * versions reads ["Current Version", "Version 1"], and "Version 2" never appears.
+   */
+  async verifyVersions(expectedVersions: string[]): Promise<void> {
+    await waitForGridReady(this.page);
+
+    const versionCells = this.page.locator(
+      '[role="gridcell"][data-field="version"]',
+    );
+    await expect(versionCells).toHaveText(expectedVersions);
+  }
+
+  /**
    * Clicks the "View Details" button for a specific report version in the report history page, based on the version number.
    * If no version number is provided, clicks the "View Details" button for the current version of the report.
    */

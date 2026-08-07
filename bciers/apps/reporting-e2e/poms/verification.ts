@@ -1,5 +1,6 @@
-import { Page } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 import {
+  assertFieldVisibility,
   fillComboxboxWidget,
   fillInputValueByLabel,
 } from "@bciers/e2e/utils/helpers";
@@ -10,6 +11,9 @@ const VERIFICATION = {
 
   ACCREDITED_BY_LABEL: "Accredited by",
   ACCREDITED_BY_VALUE: "ANAB",
+
+  SUPPLEMENTARY_INFO_NOTE:
+    "you must upload a new verification statement in the attachments page",
 } as const;
 
 export class VerificationPOM {
@@ -34,5 +38,26 @@ export class VerificationPOM {
 
     const noLabel = this.page.locator("label").filter({ hasText: /^No$/ });
     await noLabel.click();
+  }
+
+  /**
+   * Asserts the supplementary-only info note is rendered, and that the verification
+   * details carried over from the previous version.
+   */
+  async verifySupplementaryCarryOver(): Promise<void> {
+    await assertFieldVisibility(
+      this.page,
+      [VERIFICATION.SUPPLEMENTARY_INFO_NOTE],
+      true,
+    );
+
+    await expect(
+      this.page.getByLabel(new RegExp(VERIFICATION.BODY_NAME_LABEL, "i")),
+    ).toHaveValue(VERIFICATION.BODY_NAME_VALUE);
+    await expect(
+      this.page.getByRole("combobox", {
+        name: new RegExp(VERIFICATION.ACCREDITED_BY_LABEL, "i"),
+      }),
+    ).toHaveValue(VERIFICATION.ACCREDITED_BY_VALUE);
   }
 }
