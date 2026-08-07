@@ -59,7 +59,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
         // Handle caught rejections/exceptions
         setError(
           err?.message ||
-          "An internal server error has occurred. Please contact support.",
+            "An internal server error has occurred. Please contact support.",
         );
         setOptions([]);
         setIsSearchAttempted(true);
