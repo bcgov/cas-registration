@@ -352,10 +352,11 @@ def str_to_camel_case(st: str) -> str:
 
 def populate_slug(apps, schema_monitor):
     ReportingField = apps.get_model('reporting', 'ReportingField')
-    for reporting_field in ReportingField.objects.all():
-        slug_to_insert = str_to_camel_case(reporting_field.field_name)
-        reporting_field.slug = slug_to_insert
-        reporting_field.save()
+    with pgtrigger.ignore("reporting.ReportingField:immutable_slug"):
+        for reporting_field in ReportingField.objects.all():
+            slug_to_insert = str_to_camel_case(reporting_field.field_name)
+            reporting_field.slug = slug_to_insert
+            reporting_field.save()
 
 
 def insert_validation_records(apps, schema_monitor):
