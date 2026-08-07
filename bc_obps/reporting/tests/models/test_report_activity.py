@@ -1,6 +1,4 @@
 from common.tests.utils.helpers import BaseTestCase
-from django.db import ProgrammingError
-import pytest
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.report_activity import ReportActivity
@@ -10,8 +8,9 @@ from model_bakery.baker import make_recipe
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
-from reporting.tests.utils.rls_test_recipe import ReportRlsSetup
+from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
+from common.lib import pgtrigger
 
 
 class ReportActivityModelTest(BaseTestCase):
@@ -42,93 +41,153 @@ class ReportActivityModelTest(BaseTestCase):
 class ReportActivityRlsTest(BaseTestCase):
 
     def test_report_activity_rls_industry_user(self):
-        test = ReportRlsSetup()
-        report_activity = make_recipe(
-            "reporting.tests.utils.report_activity",
-            facility_report=test.facility_report,
-            report_version=test.report_version,
-        )
-        number_of_accessible_records = ReportActivity.objects.filter(report_version=test.report_version).count()
-        random = ReportRlsSetup()
-        random_report_activity = make_recipe(
-            "reporting.tests.utils.report_activity",
-            facility_report=random.facility_report,
-            report_version=random.report_version,
-        )
+        # approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        # operation = make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        # make_recipe(
+        #     'registration.tests.utils.operation_designated_operator_timeline',
+        #     operator=approved_user_operator.operator,
+        #     operation=operation,
+        #     start_date='2009-01-01',
+        #     end_date='2012-12-31',
+        # )
+        # reporting_year_2010 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2010)
+        # reporting_year_2012 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2012)
+        # # Outside bounds of access
+        # reporting_year_2013 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2013)
 
-        number_of_total_records = ReportActivity.objects.count()
+        # # 2010 - Within access bounds
+        # report_2010 = make_recipe(
+        #     'reporting.tests.utils.report',
+        #     operation=operation,
+        #     operator=approved_user_operator.operator,
+        #     reporting_year=reporting_year_2010,
+        # )
+        # report_version_2010_submitted = make_recipe(
+        #     'reporting.tests.utils.report_version', report=report_2010, status='Submitted'
+        # )
+        # report_version_2010_draft = make_recipe(
+        #     'reporting.tests.utils.report_version', report=report_2010, status='Draft'
+        # )
+        # facility_report_2010_draft = make_recipe(
+        #     'reporting.tests.utils.facility_report', report_version=report_version_2010_draft
+        # )
+
+        # # 2013 report - Outside bounds of access
+        # report_2013 = make_recipe(
+        #     'reporting.tests.utils.report',
+        #     operation=operation,
+        #     operator=approved_user_operator.operator,
+        #     reporting_year=reporting_year_2013,
+        # )
+        # report_version_2013_draft = make_recipe(
+        #     'reporting.tests.utils.report_version', report=report_2013, status='Draft'
+        # )
+        # facility_report_2013_draft = make_recipe(
+        #             f'reporting.tests.utils.facility_report', report_version=report_version_2013_draft
+        #         )
+
+        # Common Test Setup
+        t = ReportRlsTestSetup(parent_object='facility_report')
+
+        # ReportActivity Setup
+        # Inside access bounds
+        with pgtrigger.ignore("reporting.ReportActivity:immutable_report_version"):
+            report_activity_2010_submitted = make_recipe(
+                'reporting.tests.utils.report_activity', report_version=t.report_version_2010_submitted
+            )
+        report_activity_2010_draft = make_recipe(
+            'reporting.tests.utils.report_activity', report_version=t.report_version_2010_draft
+        )
+        # Outside access bounds
+        report_activity_2013_draft = make_recipe(
+            'reporting.tests.utils.report_activity', report_version=t.report_version_2013_draft
+        )
 
         def select_function(cursor):
-            assert ReportActivity.objects.count() < number_of_total_records
-            assert ReportActivity.objects.count() == number_of_accessible_records
-            assert ReportActivity.objects.filter(report_version=random.report_version).count() == 0
+            ReportActivity.objects.get(id=report_activity_2010_submitted.id)
+
+        def forbidden_select_function(cursor):
+            ReportActivity.objects.get(id=report_activity_2013_draft.id)
 
         def insert_function(cursor):
-            new_report_activity = make_recipe(
-                "reporting.tests.utils.report_activity",
-                facility_report=test.facility_report,
-                report_version=test.report_version,
+            ReportActivity.objects.create(
+                report_version=t.report_version_2010_draft,
+                facility_report_id=t.parent_object_2010_draft.id,
+                activity_base_schema_id=1,
+                activity_id=1,
+                json_data={},
             )
-            assert ReportActivity.objects.count() == number_of_accessible_records + 1
-            assert ReportActivity.objects.filter(id=new_report_activity.id).exists()
-            # Attempt to insert a report activity for a report that the user is not an operator for
-            with pytest.raises(
-                ProgrammingError, match='new row violates row-level security policy for table "report_activity"'
-            ):
-                cursor.execute(
-                    """
-                    INSERT INTO "erc"."report_activity" (
-                        "report_version_id", "facility_report_id", "activity_id", "activity_base_schema_id"
-                    )
-                    VALUES (%s, %s, %s, %s)
-                """,
-                    (
-                        random.report_version.id,
-                        random.facility_report.id,
-                        report_activity.activity.id,
-                        report_activity.activity_base_schema.id,
-                    ),
-                )
 
-        def update_function(cursor):
-            new_data = "{'test': 42}"
-            report_activity.json_data = new_data
-            report_activity.save()
-            assert ReportActivity.objects.filter(id=report_activity.id).json_data == new_data
-            # Attempt to update a report activity that the user should not have access to
+        def forbidden_insert_function(cursor):
             cursor.execute(
                 """
-                UPDATE "erc"."report_activity"
-                SET "json_data" = %s
-                WHERE "id" = %s
-            """,
-                (new_data, random_report_activity.id),
+                    INSERT into "erc"."report_activity"(report_version_id, facility_report_id, activity_base_schema_id, activity_id, json_data )
+                    values(%s, %s, %s, %s, %s)
+                """,
+                (
+                    report_activity_2013_draft.id,
+                    t.parent_object_2013_draft.id,
+                    1,
+                    1,
+                    '{}',
+                ),
             )
-            assert cursor.rowcount == 0
+
+        def update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."report_activity"
+                    SET activity_id = %s
+                    WHERE id = %s
+                """,
+                (999, report_activity_2010_draft.id),
+            )
+            return cursor.rowcount
+
+        def forbidden_update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."report_activity"
+                    SET activity_id = %s
+                    WHERE id = %s
+                """,
+                (999, report_activity_2013_draft.id),
+            )
+            return cursor.rowcount
 
         def delete_function(cursor):
-            assert (
-                ReportActivity.objects.filter(report_version=test.report_version).count()
-                == number_of_accessible_records
+            # Delete the report for the approved user operator
+            cursor.execute(
+                """
+                    DELETE from "erc"."report_activity"
+                    WHERE id = %s
+                """,
+                (report_activity_2010_draft.id,),
             )
-            # Delete the test report activity
-            number_of_deleted_report_attachments, _ = report_activity.delete()
-            assert number_of_deleted_report_attachments == 1
-            assert (
-                ReportActivity.objects.filter(report_version=test.report_version).count()
-                == number_of_accessible_records - 1
+            return cursor.rowcount
+
+        def forbidden_delete_function(cursor):
+            # Delete the report for the approved user operator
+            cursor.execute(
+                """
+                    DELETE from "erc"."report_activity"
+                    WHERE id in (%s,%s)
+                """,
+                (report_activity_2010_submitted.id, report_activity_2013_draft.id),
             )
-            # Attempt to delete a report activity that the user should not have access to
-            number_of_deleted_report_attachments, _ = random_report_activity.delete()
-            assert number_of_deleted_report_attachments == 0
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ReportActivity,
-            test.approved_user_operator.user,
-            select_function,
-            insert_function,
-            update_function,
-            delete_function,
+            t.approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            delete_function=delete_function,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
         )
 
     def test_report_activity_rls_cas_user(self):
