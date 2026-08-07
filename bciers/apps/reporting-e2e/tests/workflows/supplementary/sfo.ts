@@ -103,7 +103,7 @@ export async function runSfoSupplementaryScenario({
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Current Reports Grid",
-    variant: "SFO draft supplementary",
+    variant: "SFO",
   });
 
   expect(await grid.continueReportForOperation(operationName)).toBe(versionId);
@@ -154,7 +154,7 @@ export async function runSfoSupplementaryScenario({
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Production Data",
-    variant: "SFO supplementary",
+    variant: "SFO - supplementary",
   });
   await facilityReport.saveAndContinue(
     new RegExp(
@@ -304,7 +304,7 @@ export async function runSfoSupplementaryScenario({
   await report.verifySupplementaryVerification();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Verification",
-    variant: "SFO supplementary",
+    variant: "SFO - supplementary",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
@@ -318,7 +318,7 @@ export async function runSfoSupplementaryScenario({
   await grid.verifySaveAndContinueEnabled();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Attachments",
-    variant: "SFO supplementary",
+    variant: "SFO - supplementary",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.SIGN_OFF}`),
@@ -329,7 +329,7 @@ export async function runSfoSupplementaryScenario({
   await grid.verifySupplementarySignOffFields(isRegulated);
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Sign-off",
-    variant: "SFO supplementary",
+    variant: "SFO",
   });
   await grid.submitReportById(request, versionId, false, true, isRegulated);
 
@@ -337,7 +337,7 @@ export async function runSfoSupplementaryScenario({
   await grid.verifySubmissionPage(true);
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Submission",
-    variant: "SFO supplementary",
+    variant: "SFO - supplementary",
   });
 
   // ── 21. Back on the grid, the report reads as a submitted supplementary ──

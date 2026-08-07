@@ -108,7 +108,7 @@ export async function runLfoSupplementaryScenario({
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Current Reports Grid",
-    variant: "LFO draft supplementary",
+    variant: "LFO",
   });
 
   expect(await grid.continueReportForOperation(operationName)).toBe(versionId);
@@ -181,7 +181,7 @@ export async function runLfoSupplementaryScenario({
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Production Data",
-    variant: "LFO supplementary",
+    variant: "LFO - supplementary",
   });
   await facilityReport.clickContinue(
     new RegExp(facilityReport.allocationOfEmissionsUrl()),
@@ -357,7 +357,7 @@ export async function runLfoSupplementaryScenario({
   await report.verifySupplementaryVerification();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Verification",
-    variant: "LFO supplementary",
+    variant: "LFO - supplementary",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
@@ -371,7 +371,7 @@ export async function runLfoSupplementaryScenario({
   await grid.verifySaveAndContinueEnabled();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Attachments",
-    variant: "LFO supplementary",
+    variant: "LFO - supplementary",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.SIGN_OFF}`),
@@ -382,7 +382,7 @@ export async function runLfoSupplementaryScenario({
   await grid.verifySupplementarySignOffFields(isRegulated);
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Sign-off",
-    variant: "LFO supplementary",
+    variant: "LFO",
   });
   await grid.submitReportById(request, versionId, false, true, isRegulated);
 
@@ -390,7 +390,7 @@ export async function runLfoSupplementaryScenario({
   await grid.verifySubmissionPage(true);
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Submission",
-    variant: "LFO supplementary",
+    variant: "LFO - supplementary",
   });
 
   // ── 26. Back on the grid, the report reads as a submitted supplementary ──
