@@ -14,13 +14,10 @@ const OperationInformationPage = async ({
 }: {
   operationId: UUID;
 }) => {
-  let operation;
-  if (operationId && isValidUUID(operationId)) {
-    operation = await getOperationWithDocuments(operationId);
-  } else throw new Error(`Invalid operation id: ${operationId}`);
+  if (!operationId || !isValidUUID(operationId))
+    throw new Error(`Invalid operation id: ${operationId}`);
 
-  if (operation?.error) throw new Error("Error fetching operation information");
-
+  const operation = await getOperationWithDocuments(operationId);
   const formSchema = await createAdministrationOperationInformationSchema(
     operation.registration_purpose,
     operation.status,

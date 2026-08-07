@@ -11,22 +11,6 @@ describe("UserOperator component", () => {
   beforeEach(async () => {
     vi.resetAllMocks();
   });
-  it("renders the appropriate error component when getUserOperatorFormData fails", async () => {
-    auth.mockReturnValueOnce({
-      user: { app_role: "cas_analyst" },
-    });
-    getUserOperatorFormData.mockReturnValueOnce({
-      error: "bad things",
-    });
-
-    await expect(async () => {
-      render(
-        await UserOperator({
-          params: { userOperatorId: "1b06e328-715d-4642-b403-3392256d7344" },
-        }),
-      );
-    }).rejects.toThrow("Failed to retrieve operator and admin information");
-  });
 
   it("renders the user operator form with form data", async () => {
     // Mock auth (server components)

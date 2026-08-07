@@ -44,12 +44,6 @@ describe("Access Requests Page", () => {
     });
   });
 
-  it("renders the appropriate error message when fetching Access Requests fails", async () => {
-    getAccessRequests.mockResolvedValueOnce({ error: "some error" });
-    await expect(async () => {
-      render(await AccessRequestsPage());
-    }).rejects.toThrow("Failed to retrieve access requests.");
-  });
   it("renders Access Requests component", async () => {
     getAccessRequests.mockResolvedValueOnce(mockResponse);
     render(await AccessRequestsPage());

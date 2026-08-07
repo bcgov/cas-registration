@@ -29,20 +29,14 @@ export const createRegistrationPurposeSchemas =
     // fetch db values that are dropdown options
     const regulatedProducts: { id: number; name: string }[] =
       await getRegulatedProducts();
-    if (regulatedProducts && "error" in regulatedProducts)
-      throw new Error("Failed to retrieve regulated products information");
     const reportingActivities: {
       id: number;
       applicable_to: string;
       name: string;
       regulated_name: string;
     }[] = await getReportingActivities();
-    if (reportingActivities && "error" in reportingActivities)
-      throw new Error("Failed to retrieve reporting activities information");
     const registrationPurposes: RegistrationPurposes[] =
       await getRegistrationPurposes();
-    if (registrationPurposes && "error" in registrationPurposes)
-      throw new Error("Failed to retrieve registration purposes information");
 
     const operations = await getCurrentUsersOperations();
     // Using empty array for anyOf will cause the field to not show up and raise an error

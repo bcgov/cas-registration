@@ -54,47 +54,7 @@ describe("Select Operator Received Page", () => {
     );
     expectCancelRequestButton();
   });
-  it("renders error when getOperator fails", async () => {
-    getOperatorConfirmationInfo.mockReturnValueOnce({
-      error: "operator error",
-    });
-    getOperatorHasAdmin.mockReturnValueOnce(false);
-    await expect(async () => {
-      render(
-        await SelectOperatorReceivedPage({
-          step: "error",
-          id: id,
-        }),
-      );
-    }).rejects.toThrow("Failed to retrieve operator information.");
-  });
-  it("renders error when getOperatorHasAdmin fails", async () => {
-    getOperatorConfirmationInfo.mockReturnValueOnce(operatorJSON);
-    getOperatorHasAdmin.mockReturnValueOnce({
-      error: "operator admin error",
-    });
-    await expect(async () => {
-      render(
-        await SelectOperatorReceivedPage({
-          step: "error",
-          id: id,
-        }),
-      );
-    }).rejects.toThrow("Failed to retrieve operator information.");
-  });
-  it("renders error when getCurrentUserOperator fails", async () => {
-    getOperatorConfirmationInfo.mockReturnValueOnce(operatorJSON);
-    getOperatorHasAdmin.mockReturnValueOnce(false);
-    getCurrentUserOperator.mockReturnValueOnce({ error: "current user error" });
-    await expect(async () => {
-      render(
-        await SelectOperatorReceivedPage({
-          step: "error",
-          id: id,
-        }),
-      );
-    }).rejects.toThrow("Failed to retrieve current user operator information.");
-  });
+
   it("renders notFound for invalid id", async () => {
     render(
       await SelectOperatorReceivedPage({

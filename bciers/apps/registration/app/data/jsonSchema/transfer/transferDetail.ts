@@ -58,12 +58,6 @@ export const operationEntitySchema = async (
     end_date: true, // this indicates that the end_date is not null,
     status: "Active", // only fetch active facilities
   });
-  if (
-    !operationsByOperator ||
-    "error" in operationsByOperator ||
-    !operationsByOperator.rows
-  )
-    throw new Error("Failed to fetch operations data!" as any);
 
   /*
     Add the existing operation to the operation options

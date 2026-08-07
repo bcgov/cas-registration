@@ -20,33 +20,23 @@ export const createAdministrationRegistrationInformationSchema =
     // fetch db values that are dropdown options
     const regulatedProducts: { id: number; name: string }[] =
       await getRegulatedProducts();
-    if (regulatedProducts && "error" in regulatedProducts)
-      throw new Error("Failed to retrieve regulated products information");
     const contacts: {
       items: [{ id: number; first_name: string; last_name: string }];
     } = await getContacts();
-    if (contacts && "error" in contacts)
-      throw new Error("Failed to retrieve contacts information");
     const registrationPurposes: { id: number; name: string }[] =
       await getRegistrationPurposes();
-    if (registrationPurposes && "error" in registrationPurposes)
-      throw new Error("Failed to retrieve registration purposes information");
     const reportingActivities: {
       id: number;
       applicable_to: string;
       name: string;
       regulated_name: string;
     }[] = await getReportingActivities();
-    if (reportingActivities && "error" in reportingActivities)
-      throw new Error("Failed to retrieve reporting activities information");
     // fetch valid reporting years for OptedOutOperation dropdown
     const validReportingYears: { reporting_year: number }[] =
       // NOTE: getReportingYears() includes optional query param exclude_past.
       // Not using it immediately due to timing of opt-out feature rollout relative to reporting year,
       // but will be able to make use of this feature in the future to simplify the dropdown list
       await getReportingYears();
-    if (validReportingYears && "error" in validReportingYears)
-      throw new Error("Failed to retrieve reporting years");
 
     const reportingYearsDropdownOptions = validReportingYears.map((year) => ({
       const: year.reporting_year,

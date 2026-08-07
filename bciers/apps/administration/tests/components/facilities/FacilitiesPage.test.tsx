@@ -1,5 +1,4 @@
 import { render, screen } from "@testing-library/react";
-import getOperation from "@bciers/actions/api/getOperation";
 import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
 
 vi.mock(
@@ -71,27 +70,5 @@ describe("FacilitiesPage", () => {
     expect(grid).toBeVisible();
     expect(grid).toHaveTextContent("operationId:not-a-uuid");
     expect(grid).toHaveTextContent("row_count:2");
-  });
-
-  it("throws when operationId is a valid UUID and getOperation returns an error", async () => {
-    vi.mocked(getOperation).mockResolvedValueOnce({ error: "nope" } as any);
-    vi.mocked(fetchFacilitiesPageData).mockResolvedValueOnce({
-      rows: [],
-      row_count: 0,
-    } as any);
-
-    const { default: FacilitiesPage } =
-      await import("apps/administration/app/components/facilities/FacilitiesPage");
-
-    await expect(async () => {
-      render(
-        await FacilitiesPage({
-          operationId: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-          searchParams: {},
-        }),
-      );
-    }).rejects.toThrow(
-      "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
-    );
   });
 });

@@ -7,9 +7,7 @@ import {
   HeaderStep,
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
-import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
 import { getReportValidationData } from "@reporting/src/app/utils/reportValidationForm/getReportValidationData";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
 
 export default async function ValidationPage({
   version_id,
@@ -34,19 +32,8 @@ export default async function ValidationPage({
   );
 
   // Get form data - report validation data
-  let validationErrors: ReportValidationErrors = [];
-  try {
-    const response = await getReportValidationData(version_id);
-    validationErrors = response.errors;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Failed to load validation data", error);
-    validationErrors = [
-      createGenericReportValidationError(
-        "Failed to load report validation data.",
-      ),
-    ];
-  }
+  const response = await getReportValidationData(version_id);
+  const validationErrors = response.errors;
   return (
     <ValidationForm
       navigationInformation={navInfo}

@@ -11,7 +11,7 @@ import { selectOperatorUiSchema } from "../../data/jsonSchema/selectOperator";
 import { selectOperatorSchema } from "../../data/jsonSchema/selectOperator";
 
 export default function SelectOperatorForm() {
-  const [errorList, setErrorList] = useState([] as any[]);
+  const [errorList, setErrorList] = useState<{ message: string }[]>([]);
   const router = useRouter();
 
   const handleSubmit = async (data: { formData?: SelectOperatorFormData }) => {

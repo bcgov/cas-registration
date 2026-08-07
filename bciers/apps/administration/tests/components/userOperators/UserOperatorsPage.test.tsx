@@ -56,10 +56,4 @@ describe("UserOperatorsPage component (External Access Requests)", () => {
     const allRows = screen.getAllByRole("row");
     expect(allRows).toHaveLength(4); // 2 rows + 1 header + 1 filter row
   });
-  it("renders the appropriate error component when getUserOperatorsPageData fails", async () => {
-    getUserOperatorsPageData.mockReturnValueOnce(undefined);
-    expect(async () =>
-      render(await UserOperatorsPage({ searchParams: {} })),
-    ).rejects.toThrow("Failed to retrieve admin requests.");
-  });
 });

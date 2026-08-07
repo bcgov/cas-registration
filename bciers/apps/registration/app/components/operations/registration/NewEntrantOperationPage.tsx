@@ -14,15 +14,9 @@ const NewEntrantOperationPage = async ({
   step: number;
   steps: string[];
 }) => {
-  let formData:
-    NewEntrantOperationFormData | { error: string } | Record<string, never> =
-    {};
+  let formData: NewEntrantOperationFormData | Record<string, never> = {};
   if (operation && isValidUUID(operation))
     formData = await getOperationNewEntrantApplication(operation);
-
-  if (formData && "error" in formData)
-    // using dot notation for error raises a TS error
-    throw new Error("Failed to fetch new entrant application");
 
   return (
     <NewEntrantOperationForm

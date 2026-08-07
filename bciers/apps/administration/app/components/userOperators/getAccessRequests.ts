@@ -1,9 +1,7 @@
 import { actionHandler } from "@bciers/actions";
 import { AccessRequest } from "@/administration/app/components/userOperators/types";
 
-export default async function getAccessRequests(): Promise<
-  AccessRequest[] | { error: string }
-> {
+export default async function getAccessRequests(): Promise<AccessRequest[]> {
   const response = await actionHandler(
     `registration/user-operators/current/access-requests`,
     "GET",

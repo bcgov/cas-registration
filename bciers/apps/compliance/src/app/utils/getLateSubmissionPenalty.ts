@@ -9,13 +9,6 @@ const getLateSubmissionPenalty = async (
     "GET",
     "",
   );
-
-  if (response?.error) {
-    throw new Error(
-      `Failed to fetch late submission penalty: ${response.error}`,
-    );
-  }
-
   return response;
 };
 

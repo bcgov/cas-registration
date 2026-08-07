@@ -10,11 +10,7 @@ import { getBusinessStructures } from "@bciers/actions/api";
 
 const createSection1Schema = async () => {
   // business structures
-  const businessStructures: { name: string }[] | { error: string } =
-    await getBusinessStructures();
-  if ("error" in businessStructures) {
-    throw new Error("Failed to retrieve business structure information");
-  }
+  const businessStructures: { name: string }[] = await getBusinessStructures();
 
   const businessStructureOptions = businessStructures?.map(
     (businessStructure) => ({

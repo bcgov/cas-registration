@@ -10,12 +10,10 @@ export default async function UserOperatorsPage({
 }: {
   searchParams: UserOperatorsSearchParams;
 }) {
-  const userOperatorData:
-    { rows: UserOperatorDataGridRow[]; row_count: number } | { error: string } =
-    await getUserOperatorsPageData(searchParams);
-
-  if (!userOperatorData || "error" in userOperatorData)
-    throw new Error("Failed to retrieve admin requests.");
+  const userOperatorData: {
+    rows: UserOperatorDataGridRow[];
+    row_count: number;
+  } = await getUserOperatorsPageData(searchParams);
 
   return <UserOperatorDataGrid initialData={userOperatorData} />;
 }

@@ -16,12 +16,8 @@ export const getElicensingInvoices = async (params: {
     "",
   );
 
-  if (!data || data.error) {
-    throw new Error(`Failed to fetch invoices`);
-  }
-
   return {
     rows: data.items,
-    row_count: data.count ?? 0,
+    row_count: data.count,
   };
 };

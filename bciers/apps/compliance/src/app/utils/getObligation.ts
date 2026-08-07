@@ -10,13 +10,5 @@ export const getObligationData = async (
     "",
   );
 
-  if (data?.error) {
-    throw new Error(`Failed to fetch obligation data: ${data.error}`);
-  }
-
-  if (!data || typeof data !== "object") {
-    throw new Error("Invalid response format from obligation data endpoint");
-  }
-
   return data as ObligationData;
 };

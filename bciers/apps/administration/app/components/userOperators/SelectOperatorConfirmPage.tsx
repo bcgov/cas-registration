@@ -14,11 +14,12 @@ export default async function SelectOperatorConfirmPage({
   id,
 }: Readonly<{ id?: UUID }>) {
   if (id) {
-    const operator: Operator | { error: string } =
-      await getOperatorConfirmationInfo(id, `/select-operator/confirm/${id}`);
-    const hasAdmin: boolean | { error: string } = await getOperatorHasAdmin(id);
-    const accessDeclined: boolean | { error: string } =
-      await getOperatorAccessDeclined(id);
+    const operator: Operator = await getOperatorConfirmationInfo(
+      id,
+      `/select-operator/confirm/${id}`,
+    );
+    const hasAdmin: boolean = await getOperatorHasAdmin(id);
+    const accessDeclined: boolean = await getOperatorAccessDeclined(id);
 
     if (accessDeclined) {
       const declinedHasAdminJSX: ReactNode = (
@@ -70,13 +71,6 @@ export default async function SelectOperatorConfirmPage({
           </span>
         </section>
       );
-    }
-
-    if (
-      "error" in operator ||
-      (typeof hasAdmin !== "boolean" && "error" in hasAdmin)
-    ) {
-      throw new Error("Failed to retrieve operator information.");
     }
 
     return (

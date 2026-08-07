@@ -36,6 +36,8 @@ describe("RJSF OperatorSearchWidget", () => {
   });
 
   it("should render the search field", async () => {
+    actionHandler.mockResolvedValueOnce([]);
+
     render(
       <FormBase
         schema={operatorSearchFieldSchema}
@@ -46,6 +48,8 @@ describe("RJSF OperatorSearchWidget", () => {
   });
 
   it("should be empty by default", async () => {
+    actionHandler.mockResolvedValue([]);
+
     render(
       <FormBase
         schema={operatorSearchFieldSchema}
@@ -59,6 +63,8 @@ describe("RJSF OperatorSearchWidget", () => {
   });
 
   it("should render the search field placeholder text", async () => {
+    actionHandler.mockResolvedValue([]);
+
     render(
       <FormBase
         schema={operatorSearchFieldSchema}
@@ -84,7 +90,7 @@ describe("RJSF OperatorSearchWidget", () => {
       await userEvent.type(searchField, "Operator");
     });
 
-    actionHandler.mockResolvedValueOnce([
+    actionHandler.mockResolvedValue([
       {
         id: "1",
         legal_name: "Operator 1",
@@ -129,7 +135,7 @@ describe("RJSF OperatorSearchWidget", () => {
       await userEvent.type(searchField, "Operator");
     });
 
-    actionHandler.mockResolvedValueOnce([
+    actionHandler.mockResolvedValue([
       {
         id: "1",
         legal_name: "Operator 1",
@@ -165,7 +171,7 @@ describe("RJSF OperatorSearchWidget", () => {
       await userEvent.type(searchField, "Operator");
     });
 
-    actionHandler.mockResolvedValueOnce([]);
+    actionHandler.mockResolvedValue([]);
 
     await waitFor(async () => {
       expect(searchField).toHaveValue("Operator");
@@ -192,7 +198,7 @@ describe("RJSF OperatorSearchWidget", () => {
       await userEvent.type(searchField, "Operator");
     });
 
-    actionHandler.mockResolvedValueOnce([
+    actionHandler.mockResolvedValue([
       {
         id: "1",
         legal_name: "Operator 1",
@@ -233,7 +239,7 @@ describe("RJSF OperatorSearchWidget", () => {
       await userEvent.type(searchField, "Operator");
     });
 
-    actionHandler.mockResolvedValueOnce([]);
+    actionHandler.mockResolvedValue([]);
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
@@ -244,6 +250,8 @@ describe("RJSF OperatorSearchWidget", () => {
   });
 
   it("should show the validation error message when the search field is required", async () => {
+    actionHandler.mockResolvedValue([]);
+
     render(
       <FormBase
         schema={operatorSearchFieldSchema}
@@ -261,7 +269,7 @@ describe("RJSF OperatorSearchWidget", () => {
   });
 
   it("should have the correct styles when the validation error is shown", async () => {
-    actionHandler.mockResolvedValueOnce([]);
+    actionHandler.mockResolvedValue([]);
     await checkComboBoxWidgetValidationStyles(
       <FormBase
         schema={operatorSearchFieldSchema}

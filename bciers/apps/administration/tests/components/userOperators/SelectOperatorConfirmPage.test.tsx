@@ -61,26 +61,7 @@ describe("Select Operator Confirm Page", () => {
     );
     expectLink("Select another operator", "/select-operator");
   });
-  it("renders error when getOperator fails", async () => {
-    getOperatorConfirmationInfo.mockReturnValueOnce({
-      error: "operator error",
-    });
-    getOperatorHasAdmin.mockReturnValueOnce(false);
-    getOperatorAccessDeclined.mockReturnValueOnce(false);
-    await expect(async () => {
-      render(await SelectOperatorConfirmPage({ id }));
-    }).rejects.toThrow("Failed to retrieve operator information.");
-  });
-  it("renders error when getOperatorHasAdmin fails", async () => {
-    getOperatorConfirmationInfo.mockReturnValueOnce(operatorJSON);
-    getOperatorAccessDeclined.mockReturnValueOnce(false);
-    getOperatorHasAdmin.mockReturnValueOnce({
-      error: "operator admin error",
-    });
-    await expect(async () => {
-      render(await SelectOperatorConfirmPage({ id }));
-    }).rejects.toThrow("Failed to retrieve operator information.");
-  });
+
   it("renders notFound for invalid id", async () => {
     render(
       await SelectOperatorConfirmPage({

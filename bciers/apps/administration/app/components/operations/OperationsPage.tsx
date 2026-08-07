@@ -28,8 +28,6 @@ export default async function OperationsPage({
     rows: OperationRow[];
     row_count: number;
   } = await fetchOperationsPageData(filteredSearchParams);
-  if (!operations || "error" in operations)
-    throw new Error("Failed to retrieve operations");
 
   const operationsWithoutContacts = operations.rows // this filter lists operations that are Registered but have no contacts(reps) assigned
     .filter(

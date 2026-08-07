@@ -40,7 +40,6 @@ describe("the OperationRepresentativePage component", () => {
   it("should render the Operation Representative Form", async () => {
     // contacts
     actionHandler.mockResolvedValueOnce(contactsMockResponse);
-
     // existingOperationRepresentatives
     actionHandler.mockResolvedValueOnce([]);
 
@@ -57,43 +56,9 @@ describe("the OperationRepresentativePage component", () => {
     );
   });
 
-  it("renders the appropriate error component when getContacts fails", async () => {
-    // contacts
-    actionHandler.mockResolvedValueOnce({ error: "oops!" });
-
-    await expect(async () => {
-      render(
-        await OperationRepresentativePage({
-          step: 5,
-          operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-          steps: allOperationRegistrationSteps,
-        }),
-      );
-    }).rejects.toThrow("Failed to Retrieve Contact");
-  });
-
-  it("renders the appropriate error component when getOperationRepresentatives fails", async () => {
-    // contacts
-    actionHandler.mockResolvedValueOnce(contactsMockResponse);
-
-    // existingOperationRepresentatives
-    actionHandler.mockResolvedValueOnce({ error: "oops!" });
-
-    await expect(async () => {
-      render(
-        await OperationRepresentativePage({
-          step: 5,
-          operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-          steps: allOperationRegistrationSteps,
-        }),
-      );
-    }).rejects.toThrow("Failed to Retrieve Operation Representatives");
-  });
-
   it("renders the contacts that are not already operation representatives", async () => {
     // contacts
     actionHandler.mockResolvedValueOnce(contactsMockResponse);
-
     // existingOperationRepresentatives
     actionHandler.mockResolvedValueOnce(
       existingOperationRepresentativesMockResponse,

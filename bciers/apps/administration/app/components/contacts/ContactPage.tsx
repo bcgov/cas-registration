@@ -1,8 +1,7 @@
 import { getContact } from "@bciers/actions/api";
 import ContactForm from "./ContactForm";
 import { contactsSchema } from "@/administration/app/data/jsonSchema/contact";
-import { ContactFormData, UserOperatorUser } from "./types";
-import getUserOperatorUsers from "./getUserOperatorUsers";
+import { ContactFormData } from "./types";
 import { createContactSchema } from "./createContactSchema";
 import Note from "@bciers/components/layout/Note";
 import { auth } from "@/dashboard/auth";
@@ -13,17 +12,9 @@ export default async function ContactPage({
 }: Readonly<{ contactId?: string }>) {
   let contactFormData: ContactFormData | { error: string } = {};
   const isCreating: boolean = !contactId;
-  let userOperatorUsers: UserOperatorUser[] | { error: string } = [];
 
   if (contactId) {
     contactFormData = await getContact(contactId, `/contacts/${contactId}`);
-    if (contactFormData && "error" in contactFormData)
-      throw new Error("Failed to retrieve contact information");
-  } else {
-    // Retrieves the list of users associated with the operator of the current user
-    userOperatorUsers = await getUserOperatorUsers("/contacts/add-contact");
-    if (userOperatorUsers && "error" in userOperatorUsers)
-      throw new Error("Failed to retrieve user information");
   }
 
   const noteMsg = isCreating
