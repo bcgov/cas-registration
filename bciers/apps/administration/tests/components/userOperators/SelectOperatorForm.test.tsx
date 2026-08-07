@@ -182,7 +182,7 @@ describe("Select Operator Form", () => {
     expect(searchField).toHaveValue(operatorCRA);
     // Mock the actionHandler to return an operator on submit
     actionHandler.mockResolvedValueOnce(responseError);
-    // Attempt to submit the form without entering a legal_name
+    // Attempt to submit the form
     await clickSubmitButton(buttonCRANumber);
     // Assert that the error message is displayed
     expect(await screen.findByText(responseError.error)).toBeInTheDocument();

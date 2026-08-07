@@ -1,9 +1,10 @@
 import { handleAccessRequestStatus } from "apps/administration/tests/components/userOperators/mocks";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import AccessRequestDataGrid from "apps/administration/app/components/userOperators/AccessRequestDataGrid";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { TestErrorBoundary } from "@bciers/testConfig/helpers/TestErrorBoundary";
 
 const mockInitialData = {
   rows: [
@@ -148,7 +149,19 @@ describe("Access Requests DataGrid", () => {
     );
     expect(screen.getByText(/John Doe is now pending/i)).toBeVisible();
   });
+
   it("displays a spinner and disables the button while loading", async () => {
+    const user = userEvent.setup();
+
+    // Create controlled promise to hold the pending state
+    let resolveAction: (value: any) => void;
+    handleAccessRequestStatus.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveAction = resolve;
+        }),
+    );
+
     const modifiedInitialData = {
       rows: [
         {
@@ -162,26 +175,67 @@ describe("Access Requests DataGrid", () => {
         },
       ],
     };
-    handleAccessRequestStatus.mockResolvedValue({
-      status: "Pending",
-      first_name: "John",
-      last_name: "Doe",
-    });
+
     render(<AccessRequestDataGrid initialData={modifiedInitialData} />);
+
+    // Locate action target and initiate click
     const editButton = screen.getAllByRole("button", { name: "Edit" })[0];
     expect(editButton).toBeEnabled();
-    fireEvent.click(editButton);
-    expect(editButton).toBeDisabled();
-    expect(
-      editButton.querySelector("span svg[aria-label='loading']"),
-    ).toBeVisible();
-    expect(handleAccessRequestStatus).toHaveBeenCalled();
+
+    await user.click(editButton);
+
+    // Assert loading state while promise is unresolved
     await waitFor(() => {
-      // Make sure that buttons are visible and enabled again
-      expect(screen.getByRole("button", { name: "Approve" })).toBeVisible();
-      expect(screen.getByRole("button", { name: "Approve" })).toBeEnabled();
-      expect(screen.getByRole("button", { name: "Decline" })).toBeVisible();
-      expect(screen.getByRole("button", { name: "Decline" })).toBeEnabled();
+      expect(editButton).toBeDisabled();
+      expect(
+        editButton.querySelector("span svg[aria-label='loading']"),
+      ).toBeVisible();
     });
+    expect(handleAccessRequestStatus).toHaveBeenCalled();
+
+    // Resolve promise inside act() to flush React state updates
+    await act(async () => {
+      resolveAction({
+        status: "Pending",
+        first_name: "John",
+        last_name: "Doe",
+      });
+    });
+
+    // Query freshly re-rendered DOM elements with findByRole
+    const approveBtn = await screen.findByRole("button", { name: "Approve" });
+    const declineBtn = await screen.findByRole("button", { name: "Decline" });
+
+    expect(approveBtn).toBeVisible();
+    expect(approveBtn).toBeEnabled();
+    expect(declineBtn).toBeVisible();
+    expect(declineBtn).toBeEnabled();
+  });
+
+  it("triggers the error boundary when handleAccessRequestStatus crashes", async () => {
+    // Mock the async server action to fail and throw an error
+    handleAccessRequestStatus.mockRejectedValueOnce(
+      new Error("Database connection failure"),
+    );
+
+    // Suppress console.error logging for the expected React boundary crash printout
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    render(
+      <TestErrorBoundary>
+        <AccessRequestDataGrid initialData={mockInitialData} />
+      </TestErrorBoundary>,
+    );
+
+    const approveButton = screen.getByRole("button", { name: "Approve" });
+    await userEvent.click(approveButton);
+
+    // Verify that the error was caught and fallback was rendered
+    await waitFor(() => {
+      expect(screen.getByTestId("error-boundary")).toBeVisible();
+      expect(screen.getByText("Error Boundary Triggered")).toBeVisible();
+    });
+
+    consoleSpy.mockRestore();
   });
 });

@@ -155,6 +155,10 @@ describe("operationColumns function", () => {
   it("navigates to the matching report page when clicking the 'Continue' button", async () => {
     const user = userEvent.setup();
 
+    // Mock window.location so we can capture href assignments
+    delete (window as any).location;
+    window.location = { href: "" } as any;
+
     const columns = operationColumns(true);
 
     const row = {
@@ -180,7 +184,8 @@ describe("operationColumns function", () => {
     render(<WrapperComponent />);
     await user.click(screen.getByText("Continue"));
 
-    expect(mockPush).toHaveBeenCalledWith(`15/review-operation-information`);
+    // Assert that window.location.href was updated
+    expect(window.location.href).toBe("15/review-operation-information");
   });
 
   it("shows 'Available Soon' when reporting is not open and no report version exists", () => {

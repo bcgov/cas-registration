@@ -60,9 +60,14 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
   // Handle the confirmed delete action.
   const confirmDiscard = async () => {
     setConfirmAction(null);
+    // Wrapped in startTransition to automatically catch throws and trigger the Error Boundary
     startTransition(async () => {
       // delete report version
-      await deleteReportVersion(reportVersionId);
+      const response = await deleteReportVersion(reportVersionId);
+      // Throw if API returned an error response to trigger Error Boundary
+      if (response?.error) {
+        throw new Error(`Failed to delete report version: ${response.error}`);
+      }
       // close menu
       handleClose();
       // refetch the grid data
@@ -73,13 +78,19 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
   // Handle the confirmed supplementary report action.
   const confirmSupplementaryReport = async () => {
     setConfirmAction(null);
-    await startTransition(async () => {
+    // Wrapping event handlers in startTransition allows errors to propagate to the Error Boundary.
+    startTransition(async () => {
       // create supplementary report
       const response = await postSupplementaryReportVersion(reportVersionId);
-      //navigate to new report version
-      if (response && !response.error) {
-        router.push(`${response}/review-operation-information`);
+      // Throw if API returned an error response or empty result
+      if (response?.error || !response) {
+        throw new Error(
+          `Failed to create supplementary report: ${response?.error ?? "No response"}`,
+        );
       }
+      //navigate to new report version
+      // Perform hard browser navigation so Next.js Middleware errors render full page error states
+      window.location.href = `${response}/review-operation-information`;
       // close menu
       handleClose();
     });
@@ -157,10 +168,16 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
           <MenuItem
             disabled={pending}
             onClick={() => {
-              // Perform the API call and set the state based on its response before opening the confirmation dialog.
+              // Wrapping event handlers in startTransition allows errors to propagate to the Error Boundary.
               startTransition(async () => {
                 const response =
                   await getIsSupplementaryReport(reportVersionId);
+                // Throw if API returned an error response
+                if (response?.error) {
+                  throw new Error(
+                    `Failed to check supplementary status: ${response.error}`,
+                  );
+                }
                 setIsSupplementaryReport(response);
                 openConfirmation("delete");
               });
@@ -183,7 +200,7 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
           <MenuItem disabled={true}>Report history</MenuItem>
         )}
       </Menu>
-      {/* Custom Confirmation Dialog */}
+
       <Dialog open={Boolean(confirmAction)} onClose={cancelConfirmation}>
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>{message}</DialogContent>

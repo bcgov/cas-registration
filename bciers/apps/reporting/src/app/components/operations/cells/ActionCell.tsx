@@ -1,10 +1,11 @@
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import { useRouter } from "next/navigation";
 import * as React from "react";
+import { useTransition } from "react";
 import { createReport } from "@reporting/src/app/utils/createReport";
 import { createReportVersion } from "@reporting/src/app/utils/createReportVersion";
 import { getReportingYear } from "@bciers/actions/api";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import {
   BC_GOV_LINKS_COLOR,
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
@@ -21,57 +22,56 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
     string | undefined
   >(row?.report_version_id);
   const reportStatus = row?.report_status;
-  const router = useRouter();
   const operationId = row.operation_id;
-  const [responseError, setResponseError] = React.useState<string | null>(null);
-  const [hasClicked, setHasClicked] = React.useState<boolean>(false);
+
+  // React Transition hook to manage loading state & catch errors in Error Boundaries
+  const [pending, startTransition] = useTransition();
 
   // Create a new report
-  const handleStartReport = async (
-    reportingYear: number,
-  ): Promise<string | null> => {
+  const handleStartReport = async (reportingYear: number): Promise<string> => {
     const response = await createReport(operationId, reportingYear);
     if (response?.error) {
-      setResponseError(
+      throw new Error(
         `We couldn't create a report for operation ID '${operationId}' and reporting year '${reportingYear}': ${response?.error}.`,
       );
-      return null;
     }
-
     return response;
   };
-
-  if (responseError) {
-    throw new Error(responseError);
-  }
 
   // Create a new report version
-  const handleNewDraftVersion = async (): Promise<string | null> => {
+  const handleNewDraftVersion = async (): Promise<string> => {
     const response = await createReportVersion(operationId, reportId);
     if (response?.error) {
-      setResponseError(
+      throw new Error(
         `We couldn't create a draft report version for report ID '${reportId}': ${response?.error}.`,
       );
-      return null;
     }
     return response;
   };
 
-  const handleStartClick = async () => {
-    setHasClicked(true); // Disable button immediately to prevent duplicate clicks
-    let newReportVersionId: string | number | null;
-    if (reportId) {
-      // create a new report version
-      newReportVersionId = await handleNewDraftVersion();
-    } else {
-      // create a new report
-      const reportingYearObj = await getReportingYear();
-      newReportVersionId = await handleStartReport(
-        reportingYearObj.reporting_year,
-      );
-    }
-    if (newReportVersionId) setReportVersionId(newReportVersionId);
-    router.push(`${newReportVersionId}/review-operation-information`);
+  const handleStartClick = () => {
+    // Wrapping the async creation sequence inside startTransition ensures
+    // thrown errors propagate to the Next.js Error Boundary/Middleware layer
+    startTransition(async () => {
+      let newReportVersionId: string | number;
+      if (reportId) {
+        // create a new report version
+        newReportVersionId = await handleNewDraftVersion();
+      } else {
+        // create a new report
+        const reportingYearObj = await getReportingYear();
+        newReportVersionId = await handleStartReport(
+          reportingYearObj.reporting_year,
+        );
+      }
+
+      if (newReportVersionId) {
+        setReportVersionId(newReportVersionId);
+        // Perform a hard browser navigation (instead of router.push) so Next.js Middleware
+        // error responses and redirects trigger full-page error boundary
+        window.location.href = `${newReportVersionId}/review-operation-information`;
+      }
+    });
   };
 
   // Show "Available Soon" for all actions if reporting is not open or row is restricted
@@ -90,8 +90,7 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
   }
 
   let buttonText = "Start";
-  let buttonAction: () => Promise<void> = async () => handleStartClick();
-  const buttonDisabled = hasClicked;
+  let buttonAction: () => void = () => handleStartClick();
 
   if (reportVersionId) {
     if (
@@ -99,14 +98,19 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
       reportStatus === ReportOperationStatus.DRAFT_SUPPLEMENTARY
     ) {
       buttonText = "Continue";
-      buttonAction = async () =>
-        router.push(`${reportVersionId}/review-operation-information`);
+      buttonAction = () =>
+        startTransition(() => {
+          window.location.href = `${reportVersionId}/review-operation-information`;
+        });
     } else if (
       reportStatus === ReportOperationStatus.SUBMITTED ||
       reportStatus === ReportOperationStatus.SUBMITTED_SUPPLEMENTARY
     ) {
       buttonText = "View Details";
-      buttonAction = async () => router.push(`${reportVersionId}/submitted`);
+      buttonAction = () =>
+        startTransition(() => {
+          window.location.href = `${reportVersionId}/submitted`;
+        });
     }
   }
 
@@ -117,19 +121,13 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
         height: 40,
         borderRadius: "5px",
         border: `1px solid ${BC_GOV_LINKS_COLOR}`,
-        cursor: buttonDisabled ? "not-allowed" : "pointer",
+        cursor: pending ? "not-allowed" : "pointer",
       }}
       color="primary"
-      disabled={buttonDisabled}
-      onClick={async () => {
-        setHasClicked(true);
-        await buttonAction();
-        if (buttonText !== "Start") {
-          setHasClicked(false);
-        }
-      }}
+      disabled={pending}
+      onClick={buttonAction}
     >
-      {buttonText}
+      {pending ? <CircularProgress size={20} /> : buttonText}
     </Button>
   );
 };

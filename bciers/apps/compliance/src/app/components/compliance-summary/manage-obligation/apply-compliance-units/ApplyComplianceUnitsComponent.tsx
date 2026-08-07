@@ -162,36 +162,45 @@ export default function ApplyComplianceUnitsComponent({
     e: IChangeEvent<ApplyComplianceUnitsFormData>,
   ) => {
     setStatus("submitting");
-    const response = await actionHandler(
-      `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
-      "GET",
-      "",
-    );
-    if (!response || response.error) {
-      setStatus("idle");
-      setErrors([response?.error || "Failed to get compliance units data."]);
-    } else {
-      // Set the remaining cap from the response (what’s left to apply)
-      setRemainingCap(Number(response.compliance_unit_cap_remaining));
+    try {
+      const response = await actionHandler(
+        `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
+        "GET",
+        "",
+      );
 
-      // Set the outstanding balance from the response
-      setInitialOutstandingBalance(response.outstanding_balance || 0);
+      if (!response || response.error) {
+        setStatus("idle");
+        setErrors([response?.error || "Failed to get compliance units data."]);
+      } else {
+        // Set the remaining cap from the response (what’s left to apply)
+        setRemainingCap(Number(response.compliance_unit_cap_remaining));
 
-      // Update form data with the full compliance data from the response
-      setFormData((prev: Partial<ApplyComplianceUnitsFormData>) => {
-        // Create a clean data object for the compliance phase
-        const cleanFormData = {
-          bccr_holding_account_id: prev.bccr_holding_account_id,
-          bccr_trading_name: prev.bccr_trading_name,
-          ...response,
-        };
+        // Set the outstanding balance from the response
+        setInitialOutstandingBalance(response.outstanding_balance || 0);
 
-        setCurrentPhase("compliance_data");
-        return cleanFormData;
-      });
+        // Update form data with the full compliance data from the response
+        setFormData((prev: Partial<ApplyComplianceUnitsFormData>) => {
+          // Create a clean data object for the compliance phase
+          const cleanFormData = {
+            bccr_holding_account_id: prev.bccr_holding_account_id,
+            bccr_trading_name: prev.bccr_trading_name,
+            ...response,
+          };
 
-      setStatus("submitted");
-      setErrors(undefined);
+          setCurrentPhase("compliance_data");
+          return cleanFormData;
+        });
+
+        setStatus("submitted");
+        setErrors(undefined);
+      }
+    } catch (err: any) {
+      // Catch uncaught server errors
+      setErrors([
+        err?.message ||
+          "An internal server error has occurred. Please contact support.",
+      ]);
     }
   };
 
