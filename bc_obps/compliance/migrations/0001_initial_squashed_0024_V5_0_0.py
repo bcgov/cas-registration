@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0155_V5_0_1'),
-        ('reporting', '0149_V5_0_1'),
+        ('reporting', '0002_V5_0_1_squashed_0206_V5_18_0'),
         ('task_scheduler', '0014_V5_0_1'),
     ]
 
