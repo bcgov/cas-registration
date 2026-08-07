@@ -182,7 +182,8 @@ export async function runSfoSubmitReport({
     false,
   );
 
-  // ── 16. Sign-off and submit (submission stubbed to avoid external calls) ──
+  // ── 16. Sign-off and submit ──
+  await grid.completeSignOffRequiredFields();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Sign-off",
     variant: "SFO - non-supplementary",
