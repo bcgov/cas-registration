@@ -68,6 +68,11 @@ export class CurrentReportPOM {
     await personResponsible.selectContact(contactName);
   }
 
+  async verifyPersonResponsible(contactName: string): Promise<void> {
+    const personResponsible = new PersonResponsiblePOM(this.page);
+    await personResponsible.verifyContactFields(contactName);
+  }
+
   async fillAdditionalData(): Promise<void> {
     const additionalReportingData = new AdditionalReportingDataPOM(this.page);
     await additionalReportingData.fill();
@@ -93,8 +98,18 @@ export class CurrentReportPOM {
     await verification.fill();
   }
 
+  async verifySupplementaryVerification(): Promise<void> {
+    const verification = new VerificationPOM(this.page);
+    await verification.verifySupplementaryCarryOver();
+  }
+
   async uploadVerificationStatement(): Promise<void> {
     const attachments = new AttachmentsPOM(this.page);
     await attachments.uploadVerificationStatement();
+  }
+
+  async verifySupplementaryAttachments(): Promise<void> {
+    const attachments = new AttachmentsPOM(this.page);
+    await attachments.verifySupplementaryAttachments();
   }
 }

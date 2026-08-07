@@ -3,9 +3,10 @@ import {
   AppRoutes,
   AttachmentCheckboxLabel,
   FacilityIDs,
-  OPERATION_NAMES,
+  REPORT_ID_TO_OPERATION_NAME,
   REPORT_STATUS,
   ReportIDs,
+  ReportPageTitles,
   ReportRoutes,
   SignOffCheckboxLabel,
 } from "@/reporting-e2e/utils/enums";
@@ -20,9 +21,9 @@ import {
   SIGN_OFF_SIGNATURE_LABEL,
   SIGN_OFF_SUBMIT_BUTTON_TEXT,
   SUBMISSION_SUCCESS_TEXT,
+  SUBMISSION_SUCCESS_MESSAGE,
   SIGN_OFF_SIGNATURE_NAME,
   REVIEW_CHANGES_DEFAULT_REASON,
-  REVIEW_CHANGES_REASON_LABEL,
 } from "@/reporting-e2e/utils/constants";
 
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
@@ -30,7 +31,6 @@ import {
   assertFieldVisibility,
   checkCheckboxByLabel,
   clickButton,
-  fillInputValueByLabel,
   fillInputValueByLocator,
   waitForGridReady,
 } from "@bciers/e2e/utils/helpers";
@@ -38,6 +38,16 @@ import {
   clickViewReportDetails,
   verifyFormTitle,
 } from "@/reporting-e2e/utils/helpers";
+import { ReviewChangesPOM } from "@/reporting-e2e/poms/review-changes";
+
+/**
+ * Matches the first page of any report version — where the app lands after starting a
+ * report, resuming a draft, or creating a supplementary version.
+ */
+const REVIEW_OPERATION_INFO_URL_REGEX = new RegExp(
+  String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
+  "i",
+);
 
 export class CurrentReportsPOM {
   readonly page: Page;
@@ -70,11 +80,6 @@ export class CurrentReportsPOM {
   // URL builders
   // -----------------
 
-  // Initial URL for this version_id report
-  getReviewOperationInfoUrl(reportId: string | number): string {
-    return `${this.url}/${reportId}/${ReportRoutes.REVIEW_OPERATION_INFORMATION}`;
-  }
-
   // Production Data page URL for this version_id report
   getProductionDataUrl(reportId: string | number, facilityId: string): string {
     return `${this.url}/${reportId}/${ReportRoutes.FACILITIES}/${facilityId}/${ReportRoutes.PRODUCTION_DATA}`;
@@ -96,11 +101,6 @@ export class CurrentReportsPOM {
   // Final Review page URL for this version_id report
   getReportValidationUrl(reportId: string | number): string {
     return `${this.url}/${reportId}/${ReportRoutes.VALIDATION}`;
-  }
-
-  // Final Review page URL for this version_id report
-  getFinalReviewsUrl(reportId: string | number): string {
-    return `${this.url}/${reportId}/${ReportRoutes.FINAL_REVIEW}`;
   }
 
   // Attachments page url
@@ -146,11 +146,7 @@ export class CurrentReportsPOM {
 
     await Promise.all([
       this.page.waitForURL(
-        (u) =>
-          new RegExp(
-            String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
-            "i",
-          ).test(u.toString()),
+        (u) => REVIEW_OPERATION_INFO_URL_REGEX.test(u.toString()),
         { waitUntil: "domcontentloaded" },
       ),
       startButton.click(),
@@ -158,6 +154,35 @@ export class CurrentReportsPOM {
     ]);
 
     await verifyFormTitle(this.page, "Review Operation Information");
+
+    return this.extractReportVersionIdFromUrl(
+      this.page,
+      ReportRoutes.REVIEW_OPERATION_INFORMATION,
+    );
+  }
+
+  async continueReportForOperation(operationName: string): Promise<number> {
+    await waitForGridReady(this.page);
+
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .first();
+    await expect(row).toBeVisible();
+
+    await clickButton(
+      this.page,
+      new RegExp(`^${ACTION_BUTTON_TEXT.CONTINUE}$`, "i"),
+      {
+        root: row,
+        waitForUrl: REVIEW_OPERATION_INFO_URL_REGEX,
+      },
+    );
+
+    await verifyFormTitle(
+      this.page,
+      ReportPageTitles.REVIEW_OPERATION_INFORMATION,
+    );
 
     return this.extractReportVersionIdFromUrl(
       this.page,
@@ -228,17 +253,25 @@ export class CurrentReportsPOM {
     ]);
   }
 
-  async verifySubmissionPage(): Promise<void> {
+  async verifySubmissionPage(isSupplementary: boolean = false): Promise<void> {
     await assertFieldVisibility(
       this.page,
       [
         SUBMISSION_SUCCESS_TEXT,
-        "You successfully submitted your report.",
+        isSupplementary
+          ? SUBMISSION_SUCCESS_MESSAGE.SUPPLEMENTARY
+          : SUBMISSION_SUCCESS_MESSAGE.INITIAL,
         "Submission time:",
-        "Return to report table",
+        ACTION_BUTTON_TEXT.RETURN_TO_REPORT_TABLE,
       ],
       true,
     );
+
+    await expect(
+      this.page.getByRole("link", {
+        name: ACTION_BUTTON_TEXT.VIEW_REPORT_HISTORY,
+      }),
+    ).toHaveCount(isSupplementary ? 1 : 0);
   }
 
   async verifyReportStatus(
@@ -252,11 +285,42 @@ export class CurrentReportsPOM {
       .first();
     await expect(row).toBeVisible();
     await expect(row.getByText(expectedStatus)).toBeVisible();
-    if (expectedStatus === REPORT_STATUS.SUBMITTED) {
+
+    const isSubmitted =
+      expectedStatus === REPORT_STATUS.SUBMITTED ||
+      expectedStatus === REPORT_STATUS.SUBMITTED_SUPPLEMENTARY;
+
+    if (isSubmitted) {
       await expect(
         row.getByRole("button", { name: ACTION_BUTTON_TEXT.VIEW_DETAILS }),
       ).toBeVisible();
     }
+  }
+
+  async hasSubmittedReport(operationName: string): Promise<boolean> {
+    await waitForGridReady(this.page);
+
+    const row = this.page
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .first();
+    await expect(row).toBeVisible();
+
+    return (await row.getByText(REPORT_STATUS.SUBMITTED).count()) > 0;
+  }
+
+  async verifyReportHeading(
+    operationName: string,
+    versionNumber: number,
+  ): Promise<void> {
+    await expect(
+      this.page
+        .getByRole("heading", { name: new RegExp(operationName, "i") })
+        .first(),
+    ).toBeVisible();
+    await expect(
+      this.page.getByText(`Version ${versionNumber}`, { exact: true }),
+    ).toBeVisible();
   }
 
   // -----------------
@@ -296,6 +360,16 @@ export class CurrentReportsPOM {
       inForm: opts?.inForm,
       waitForUrl,
     });
+  }
+
+  async verifySaveAndContinueDisabled(): Promise<void> {
+    await expect(this.saveAndContinueButton).toBeVisible();
+    await expect(this.saveAndContinueButton).toBeDisabled();
+  }
+
+  async verifySaveAndContinueEnabled(): Promise<void> {
+    await expect(this.saveAndContinueButton).toBeVisible();
+    await expect(this.saveAndContinueButton).toBeEnabled();
   }
 
   private extractReportVersionIdFromUrl(
@@ -558,15 +632,10 @@ export class CurrentReportsPOM {
   // supplementary report
   // -----------------
 
-  async createSupplementaryReportById(
-    reportId: string | number,
+  async createSupplementaryReportForOperation(
+    operationName: string,
   ): Promise<number> {
-    const operationName =
-      reportId === ReportIDs.OBLIGATION_NOT_MET
-        ? OPERATION_NAMES.OBLIGATION_NOT_MET
-        : reportId === ReportIDs.EARNED_CREDITS
-          ? OPERATION_NAMES.EARNED_CREDITS
-          : OPERATION_NAMES.NO_OBLIGATION;
+    await waitForGridReady(this.page);
 
     // find row
     const row = this.page
@@ -593,27 +662,44 @@ export class CurrentReportsPOM {
     });
     await expect(dialogBox).toBeVisible();
 
-    // Confirm (server action runs server-to-server)
-    await dialogBox
-      .getByRole("button", {
-        name: new RegExp(DIALOG_BUTTON_TEXT.CONFIRM, "i"),
-      })
-      .click();
-
-    // Click Confirm and wait for the review-operation-information URL
-    await clickButton(this.page, DIALOG_BUTTON_TEXT.CONFIRM, {
-      waitForUrl: new RegExp(
-        String.raw`${REPORTING_REPORTS_BASE_PATH}/\d+/${ReportRoutes.REVIEW_OPERATION_INFORMATION}$`,
-        "i",
+    // Confirm (server action runs server-to-server), then the app redirects to the
+    // new draft version's first page
+    await Promise.all([
+      this.page.waitForURL(
+        (u) => REVIEW_OPERATION_INFO_URL_REGEX.test(u.toString()),
+        { timeout: 30_000, waitUntil: "domcontentloaded" },
       ),
-    });
+      dialogBox
+        .getByRole("button", {
+          name: new RegExp(DIALOG_BUTTON_TEXT.CONFIRM, "i"),
+        })
+        .click(),
+    ]);
+
     // Extract the created supplementary report id from URL
-    const newVersionId = this.extractReportVersionIdFromUrl(
+    return this.extractReportVersionIdFromUrl(
       this.page,
       ReportRoutes.REVIEW_OPERATION_INFORMATION,
     );
+  }
 
-    return newVersionId;
+  /**
+   * Wrapper around createSupplementaryReportForOperation for the report version IDs the compliance suite works with
+   */
+  async createSupplementaryReportById(
+    reportId: string | number,
+  ): Promise<number> {
+    const operationName =
+      REPORT_ID_TO_OPERATION_NAME[String(reportId) as ReportIDs];
+
+    if (!operationName) {
+      throw new Error(
+        `createSupplementaryReportById: no operation name is mapped to report id "${reportId}". ` +
+          `Add it to REPORT_ID_TO_OPERATION_NAME, or call createSupplementaryReportForOperation directly.`,
+      );
+    }
+
+    return this.createSupplementaryReportForOperation(operationName);
   }
 
   async fillProductionData(productIndex: number, annualProduction: number) {
@@ -626,12 +712,7 @@ export class CurrentReportsPOM {
   async fillReviewChanges(
     reason: string = REVIEW_CHANGES_DEFAULT_REASON,
   ): Promise<void> {
-    await fillInputValueByLabel(
-      this.page,
-      new RegExp(REVIEW_CHANGES_REASON_LABEL, "i"),
-      reason,
-      { blur: "none" },
-    );
+    await new ReviewChangesPOM(this.page).fillReason(reason);
   }
 
   async fillAttachments(): Promise<void> {
@@ -643,6 +724,28 @@ export class CurrentReportsPOM {
       this.page,
       AttachmentCheckboxLabel.STILL_RELEVANT,
     );
+  }
+
+  async verifySupplementarySignOffFields(
+    isRegulated: boolean = true,
+  ): Promise<void> {
+    await expect(
+      this.page.getByRole("checkbox", {
+        name: new RegExp(SignOffCheckboxLabel.NEW_VERSION, "i"),
+      }),
+    ).toBeVisible();
+
+    await expect(
+      this.page.getByRole("checkbox", {
+        name: new RegExp(SignOffCheckboxLabel.CORRECTIONS, "i"),
+      }),
+    ).toHaveCount(isRegulated ? 1 : 0);
+
+    await expect(
+      this.page.getByRole("checkbox", {
+        name: new RegExp(SignOffCheckboxLabel.COSTS, "i"),
+      }),
+    ).toHaveCount(0);
   }
 
   // -----------------
