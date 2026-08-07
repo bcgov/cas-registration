@@ -1,13 +1,13 @@
 from django.apps import apps
 from django.conf import settings
 from django.db import connection
-import pytest
 from registration.models.app_role import AppRole
 from registration.models.user import User
+from model_bakery import baker
 from rls.enums import RlsOperations, RlsRoles
 from rls.middleware.rls import RlsMiddleware
 from django.db import transaction
-from model_bakery import baker
+import pytest
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import ProgrammingError
 
@@ -168,5 +168,11 @@ def assert_policies_for_industry_user(
                     forbidden_updated_records_count == 0
                 ), f"Expected 0 updated records, but got {permitted_updated_records_count} (did you remember to return in the update function?)"
             elif operation == RlsOperations.DELETE:
-                run_with_rollback(cursor, function)
-                run_with_rollback(cursor, forbidden_function)
+                permitted_deleted_records_count = run_with_rollback(cursor, function)
+                assert (
+                    permitted_deleted_records_count == 1
+                ), f"Expected 1 updated record, but got {permitted_deleted_records_count} (did you remember to return in the delete function?)"
+                forbidden_deleted_records_count = run_with_rollback(cursor, forbidden_function)
+                assert (
+                    forbidden_deleted_records_count == 0
+                ), f"Expected 0 updated records, but got {permitted_deleted_records_count} (did you remember to return in the delete function?)"

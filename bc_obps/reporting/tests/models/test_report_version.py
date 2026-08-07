@@ -8,6 +8,9 @@ from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_version import ReportVersion
 from reporting.tests.utils.bakers import report_version_baker
+from reporting.tests.utils.bakers import report_baker
+from model_bakery.baker import make_recipe
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 
 
 class ReportVersionTest(BaseTestCase):
@@ -225,3 +228,138 @@ class ReportVersionTest(BaseTestCase):
         assert (
             missing_triggers == []
         ), f"{', '.join(missing_triggers)} models are missing the `immutable_report_version` trigger"
+
+
+class ReportVersionRlsTest(BaseTestCase):
+
+    def test_report_version_rls_industry_user(self):
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        operation = make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=operation,
+            start_date='2009-01-01',
+            end_date='2012-12-31',
+        )
+        reporting_year_2010 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2010)
+        reporting_year_2012 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2012)
+        # Outside bounds of access
+        reporting_year_2013 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2013)
+
+        # 2010 & 2012 - Within access bounds
+        report_2010 = make_recipe(
+            'reporting.tests.utils.report',
+            operation=operation,
+            operator=approved_user_operator.operator,
+            reporting_year=reporting_year_2010,
+        )
+        report_version_2010_submitted = make_recipe(
+            'reporting.tests.utils.report_version', report=report_2010, status='Submitted'
+        )
+        report_version_2010_draft = make_recipe(
+            'reporting.tests.utils.report_version', report=report_2010, status='Draft'
+        )
+        report_2012 = make_recipe(
+            'reporting.tests.utils.report',
+            operation=operation,
+            operator=approved_user_operator.operator,
+            reporting_year=reporting_year_2012,
+        )
+
+        # 2013 report - Outside bounds of access
+        report_2013 = make_recipe(
+            'reporting.tests.utils.report',
+            operation=operation,
+            operator=approved_user_operator.operator,
+            reporting_year=reporting_year_2013,
+        )
+        report_version_2013_draft = make_recipe(
+            'reporting.tests.utils.report_version', report=report_2013, status='Draft'
+        )
+
+        def select_function(cursor):
+            ReportVersion.objects.get(id=report_version_2010_submitted.id)
+
+        def forbidden_select_function(cursor):
+            ReportVersion.objects.get(id=report_version_2013_draft.id)
+
+        def insert_function(cursor):
+            ReportVersion.objects.create(report=report_2012, status='Draft')
+
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
+                    INSERT into "erc"."report_version"(report_id, status, is_latest_submitted, report_type)
+                    values(%s, %s, %s, %s)
+                """,
+                (report_2013.id, 'Draft', "false", "Annual Report"),
+            )
+
+        def update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."report_version"
+                    SET reason_for_change = %s
+                    WHERE id = %s
+                """,
+                ('test ok', report_version_2010_draft.id),
+            )
+            return cursor.rowcount
+
+        def forbidden_update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."report_version"
+                    SET reason_for_change = %s
+                    WHERE id = %s
+                """,
+                ('test not ok', report_version_2013_draft.id),
+            )
+            return cursor.rowcount
+
+        def delete_function(cursor):
+            # Delete the report for the approved user operator
+            cursor.execute(
+                """
+                    DELETE from "erc"."report_version"
+                    WHERE id = %s
+                """,
+                (report_version_2010_draft.id,),
+            )
+            return cursor.rowcount
+
+        def forbidden_delete_function(cursor):
+            # Delete the report for the approved user operator
+            cursor.execute(
+                """
+                    DELETE from "erc"."report_version"
+                    WHERE id in (%s,%s)
+                """,
+                (report_version_2010_submitted.id, report_version_2013_draft.id),
+            )
+            return cursor.rowcount
+
+        assert_policies_for_industry_user(
+            ReportVersion,
+            approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            delete_function=delete_function,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
+        )
+
+    def test_report_version_rls_cas_user(self):
+        report_baker(_quantity=5)
+
+        def select_function(cursor, i):
+            assert ReportVersion.objects.count() == 5
+
+        assert_policies_for_cas_roles(
+            ReportVersion,
+            select_function=select_function,
+        )

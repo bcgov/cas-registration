@@ -79,23 +79,25 @@ class RlsPolicy:
         Adds an approved check to the report using statement.
         """
         return re.sub(
-            r"(AND uo\.status = 'Approved'\s*\))",
+            r"(and rv.id = report_version_id)",
             r"\1 AND rv.status = 'Draft'",
             report_using_statement,
             count=1,
         )
 
     REPORT_USING_STATEMENT = """
-    report_version_id IN (
-        SELECT rv.id
-        FROM erc.report_version rv
-        JOIN erc.report r ON rv.report_id = r.id
-        WHERE r.operator_id IN (
-            SELECT uo.operator_id
-            FROM erc.user_operator uo
-            WHERE uo.user_id = current_setting('my.guid', true)::uuid
-            AND uo.status = 'Approved'
-        )
-    )
-    """
+        exists (
+            with approved_operator as (
+                select operator_id from erc.user_operator where
+                user_id = current_setting('my.guid', true)::uuid
+                and status='Approved'
+            )
+            select 1 from erc.report_version rv
+            join erc.report r on rv.report_id = r.id
+            join approved_operator ao on r.operator_id = ao.operator_id
+            join erc.operation_designated_operator_timeline tline on tline.operator_id = r.operator_id
+            and rv.id = report_version_id
+            and (start_date <= concat(r.reporting_year_id::text, '-12-31')::date and (end_date is null or end_date >= concat(r.reporting_year_id::text, '-12-31')::date))
+        )"""
+
     REPORT_DELETE_USING_STATEMENT = add_draft_check_to_report_using_statement(REPORT_USING_STATEMENT)
