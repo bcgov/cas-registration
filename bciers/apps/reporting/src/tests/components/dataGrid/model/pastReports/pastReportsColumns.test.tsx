@@ -156,6 +156,7 @@ describe("pastReportsColumns function", () => {
   it("navigates to the matching report page when clicking the 'Continue' button", async () => {
     const user = userEvent.setup();
 
+    // Create a mock setter/assignee
     delete (window as any).location;
     window.location = { href: "" } as any;
 

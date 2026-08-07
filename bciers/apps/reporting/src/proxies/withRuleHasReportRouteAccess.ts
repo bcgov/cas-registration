@@ -4,7 +4,7 @@ import {
   NextRequest,
   NextResponse,
 } from "next/server";
-import { ProxyFactory, getUserRole } from "@bciers/proxies";
+import { ProxyFactory, getUserRole, DashboardRoutes } from "@bciers/proxies";
 import { getToken } from "@bciers/actions";
 import {
   extractReportVersionId,
@@ -21,6 +21,7 @@ import {
   restrictedRoutesSubmitted,
   restrictedSupplementaryReport,
 } from "./constants";
+
 import {
   ELECTRICITY_IMPORT_OPERATION,
   NEW_ENTRANT_REGISTRATION_PURPOSE,
@@ -369,8 +370,8 @@ const checkHasPathAccess = async (request: NextRequest) => {
       }
     }
   } catch (_error) {
-    // Fallback: Redirect to the onboarding/dashboard page on error
-    return NextResponse.redirect(new URL(AppRoutes.ONBOARDING, request.url));
+    // Fallback: Redirect to dashboard error route
+    return NextResponse.redirect(new URL(DashboardRoutes.ERROR, request.url));
   }
   // Proceed if all rules pass
   return null;

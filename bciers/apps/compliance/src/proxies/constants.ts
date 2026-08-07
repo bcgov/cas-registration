@@ -33,7 +33,6 @@ export const joinCompliancePath = (...segs: (string | number | undefined)[]) =>
 
 // App routes
 export enum AppRoutes {
-  ONBOARDING = "onboarding",
   REVIEW_COMPLIANCE_SUMMARIES = "compliance-administration/compliance-summaries",
   MO_REVIEW_SUMMARY = "review-compliance-obligation-report",
   MO_APPLY_COMPLIANCE_UNITS = "apply-compliance-units",

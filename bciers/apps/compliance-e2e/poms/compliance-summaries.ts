@@ -263,10 +263,8 @@ export class ComplianceSummariesPOM {
       await expect(actionLink).toBeVisible();
     }).toPass({ timeout: 30_000 });
 
-    const href = await actionLink.getAttribute("href");
-    const targetUrl = new URL(href ?? "", this.url).toString();
-
-    await this.page.goto(targetUrl, { waitUntil: "domcontentloaded" });
+    // Simulate real user click
+    await actionLink.click();
 
     if (urlPattern) {
       await expect(this.page).toHaveURL(urlPattern);

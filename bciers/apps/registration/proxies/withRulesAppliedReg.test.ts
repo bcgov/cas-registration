@@ -3,6 +3,7 @@ import { domain, mockRequest } from "@bciers/testConfig/helpers/mockRequest";
 import proxy from "../proxy";
 import { fetch, getToken } from "@bciers/testConfig/mocks";
 import { mockIndustryUserToken } from "@bciers/testConfig/data/tokens";
+import { DashboardRoutes } from "@bciers/proxies";
 
 vi.spyOn(NextResponse, "redirect");
 vi.spyOn(NextResponse, "rewrite");
@@ -22,7 +23,7 @@ describe("withRulesAppliedReg proxy", () => {
     );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
-      new URL("/onboarding", domain),
+      new URL(DashboardRoutes.ERROR, domain),
     );
     expect(result?.status).toBe(307);
   });
@@ -49,7 +50,7 @@ describe("withRulesAppliedReg proxy", () => {
     );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
-      new URL("/onboarding", domain),
+      new URL(DashboardRoutes.ONBOARDING, domain),
     );
     expect(result?.status).toBe(307);
   });

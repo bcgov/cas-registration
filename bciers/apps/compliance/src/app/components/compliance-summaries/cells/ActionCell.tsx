@@ -126,7 +126,7 @@ function getActionCellConfig(
     director_decision: directorDecision,
   } = row;
 
-  const basePath = `/compliance-administration/compliance-summaries/${id}`;
+  const basePath = `/compliance/compliance-administration/compliance-summaries/${id}`;
 
   // Manual Handling case via directorDecision
   const resolveIssuePath = `${basePath}/resolve-issue`;
@@ -197,6 +197,7 @@ const ActionCell = (params: ActionCellProps) => {
   const cell = ActionCellFactory({
     generateHref: () => basePath,
     cellText,
+    useWindowLocation: true,
   });
 
   return cell(params);
