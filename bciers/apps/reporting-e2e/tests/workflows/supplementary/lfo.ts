@@ -106,10 +106,6 @@ export async function runLfoSupplementaryScenario({
     operationName,
     REPORT_STATUS.DRAFT_SUPPLEMENTARY,
   );
-  await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "Report - Current Reports Grid",
-    variant: "LFO",
-  });
 
   expect(await grid.continueReportForOperation(operationName)).toBe(versionId);
   await report.saveAndContinue(
@@ -179,10 +175,6 @@ export async function runLfoSupplementaryScenario({
     edits.methodology.updated,
     edits.methodology.description,
   );
-  await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "Report - Production Data",
-    variant: "LFO - supplementary",
-  });
   await facilityReport.clickContinue(
     new RegExp(facilityReport.allocationOfEmissionsUrl()),
   );
@@ -382,7 +374,7 @@ export async function runLfoSupplementaryScenario({
   await grid.verifySupplementarySignOffFields(isRegulated);
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Sign-off",
-    variant: "LFO",
+    variant: "LFO - supplementary",
   });
   await grid.submitReportById(request, versionId, false, true, isRegulated);
 
