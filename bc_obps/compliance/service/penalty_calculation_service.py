@@ -249,7 +249,9 @@ class PenaltyCalculationService:
             Decimal sum of payment amounts
         """
         # Get line items for this invoice and sum payments received on or before date
-        line_items = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
+        line_items = ElicensingLineItem.objects.filter(
+            elicensing_invoice=invoice, line_item_type=ElicensingLineItem.LineItemType.FEE
+        )
 
         return ElicensingPayment.objects.filter(
             elicensing_line_item__in=line_items, received_date__lt=cutoff_date
@@ -268,7 +270,9 @@ class PenaltyCalculationService:
             Decimal sum of adjustment amounts
         """
         # Get line items for this invoice and sum adjustments made on or before date
-        line_items = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
+        line_items = ElicensingLineItem.objects.filter(
+            elicensing_invoice=invoice, line_item_type=ElicensingLineItem.LineItemType.FEE
+        )
 
         return ElicensingAdjustment.objects.filter(
             elicensing_line_item__in=line_items, adjustment_date__lt=cutoff_date

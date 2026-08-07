@@ -11,6 +11,7 @@ from compliance.service.penalty_calculation_service import (
     CalculatedPenaltyData,
     CalculatedPenaltyAccrualData,
     ElicensingInterestRate,
+    ElicensingLineItem,
 )
 from compliance.dataclass import RefreshWrapperReturn
 
@@ -64,6 +65,28 @@ class TestPenaltyCalculationService:
             amount=Decimal("-30000.00"),
             adjustment_date=date(2025, 12, 8),
         )
+
+        # excluded_line_item (Interest) should be ignored as it is not of type ElicensingLineItem.LineItemType.FEE
+        excluded_line_item = baker.make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=self.invoice,
+            base_amount=Decimal("1000000.00"),
+            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+        )
+
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=excluded_line_item,
+            amount=Decimal("1200000.00"),
+            received_date=date(2025, 12, 1),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            elicensing_line_item=excluded_line_item,
+            amount=Decimal("150000.00"),
+            adjustment_date=date(2025, 12, 5),
+        )
+
         CompliancePenaltyRate.objects.get(is_current_rate=True).delete()
         self.compliance_penalty_rate = baker.make_recipe(
             "compliance.tests.utils.compliance_penalty_rate",
