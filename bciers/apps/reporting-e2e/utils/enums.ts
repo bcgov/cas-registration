@@ -118,5 +118,6 @@ export enum REPORT_STATUS {
   DRAFT = "Draft",
   SUBMITTED = "Submitted",
   DRAFT_SUPPLEMENTARY = "Draft Supplementary Report",
+  SUBMITTED_SUPPLEMENTARY = "Submitted Supplementary Report",
   NOT_STARTED = "Not Started",
 }

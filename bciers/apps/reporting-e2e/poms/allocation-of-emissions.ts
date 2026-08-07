@@ -48,8 +48,16 @@ export class AllocationOfEmissionsPOM {
     );
   }
 
+  /**
+   * Selects the methodology and allocates the facility's emissions to its product.
+   *
+   * For a report version that already has a methodology — any supplementary version
+   * carries one over — use {@link updateAllocatedQuantity} instead: re-selecting an
+   * already-selected value through the Autocomplete filters the listbox to nothing.
+   */
   async fill(
     methodology: AllocationMethodology = "OBPS Allocation Calculator",
+    allocatedQuantity: number = ALLOCATION_OF_EMISSIONS.GSC_EMISSION_VALUE,
   ): Promise<void> {
     // SelectWidget renders as MUI Autocomplete — use fillComboxboxWidget
     await fillComboxboxWidget(
@@ -68,9 +76,17 @@ export class AllocationOfEmissionsPOM {
       true,
     );
 
+    await this.updateAllocatedQuantity(allocatedQuantity);
+  }
+
+  /**
+   * Re-allocates emissions without touching the methodology, for a version that
+   * already has one selected.
+   */
+  async updateAllocatedQuantity(allocatedQuantity: number): Promise<void> {
     await fillInputValueByLocator(
       this.page.locator(ALLOCATION_OF_EMISSIONS.GSC_CEMENT_EQUIVALENT_INPUT),
-      ALLOCATION_OF_EMISSIONS.GSC_EMISSION_VALUE,
+      allocatedQuantity,
     );
   }
 }

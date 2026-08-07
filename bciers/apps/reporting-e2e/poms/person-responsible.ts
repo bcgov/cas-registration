@@ -13,7 +13,10 @@ export class PersonResponsiblePOM {
 
   async selectContact(contactName: string): Promise<void> {
     await selectItemFromAutocomplete(this.page, contactName);
+    await this.verifyContactFields(contactName);
+  }
 
+  async verifyContactFields(contactName: string): Promise<void> {
     const [firstName, lastName] = contactName.split(" ");
 
     const firstNameField = this.page.getByLabel(/first name/i);
