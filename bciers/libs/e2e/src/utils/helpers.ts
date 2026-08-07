@@ -185,8 +185,8 @@ export async function expectNumericInputValue(
     // Default formatting rounds to 3 decimal places, which would misreport a value
     // like 27290.8017 as unequal to itself
     .toLocaleString("en-US", { maximumFractionDigits: 20 })
-    .replace(/\./g, String.raw`\.`)
-    .replace(/,/g, ",?");
+    .replaceAll(".", String.raw`\.`)
+    .replaceAll(",", ",?");
 
   await expect(field).toHaveValue(new RegExp(`^${formatted}$`), {
     timeout: 30_000,
