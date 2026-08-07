@@ -87,7 +87,7 @@
       "updated_by_id": null
     }
   },
-  {
+    {
     "model": "reporting.reportproduct",
     "pk": 5,
     "fields": {
@@ -107,6 +107,116 @@
       "archived_by_id": null,
       "created_by_id": "00000000-0000-0000-0000-000000000005",
       "updated_by_id": "00000000-0000-0000-0000-000000000005"
+    }
+  },
+  {
+    "model": "reporting.reportproduct",
+    "pk": 48,
+    "fields": {
+      "facility_report": 50,
+      "product": 2,
+      "report_version": 11,
+      "created_at": "2025-05-26T10:36:35.714914-04:00",
+      "updated_at": "2025-05-26T10:51:37.437043-04:00",
+      "archived_at": null,
+      "annual_production": 670,
+      "production_methodology": "OBPS Calculator",
+      "production_methodology_description": null,
+      "storage_quantity_start_of_period": null,
+      "storage_quantity_end_of_period": null,
+      "quantity_sold_during_period": null,
+      "quantity_throughput_during_period": null,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "updated_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822"
+    }
+  },
+  {
+    "model": "reporting.reportproduct",
+    "pk": 49,
+    "fields": {
+      "facility_report": 50,
+      "product": 6,
+      "report_version": 11,
+      "created_at": "2025-05-26T10:51:37.437043-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "annual_production": 1940,
+      "production_methodology": "OBPS Calculator",
+      "production_methodology_description": null,
+      "storage_quantity_start_of_period": null,
+      "storage_quantity_end_of_period": null,
+      "quantity_sold_during_period": null,
+      "quantity_throughput_during_period": null,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "updated_by_id": null
+    }
+  },
+  {
+    "model": "reporting.reportproduct",
+    "pk": 50,
+    "fields": {
+      "facility_report": 50,
+      "product": 24,
+      "report_version": 11,
+      "created_at": "2025-05-26T10:36:35.714914-04:00",
+      "updated_at": "2025-05-26T10:51:37.437043-04:00",
+      "archived_at": null,
+      "annual_production": 468,
+      "production_methodology": "OBPS Calculator",
+      "production_methodology_description": null,
+      "storage_quantity_start_of_period": null,
+      "storage_quantity_end_of_period": null,
+      "quantity_sold_during_period": null,
+      "quantity_throughput_during_period": null,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "updated_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822"
+    }
+  },
+  {
+    "model": "reporting.reportproduct",
+    "pk": 51,
+    "fields": {
+      "facility_report": 49,
+      "product": 2,
+      "report_version": 11,
+      "created_at": "2025-05-26T10:51:37.437043-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "annual_production": 841.32,
+      "production_methodology": "OBPS Calculator",
+      "production_methodology_description": null,
+      "storage_quantity_start_of_period": null,
+      "storage_quantity_end_of_period": null,
+      "quantity_sold_during_period": null,
+      "quantity_throughput_during_period": null,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "updated_by_id": null
+    }
+  },
+  {
+    "model": "reporting.reportproduct",
+    "pk": 52,
+    "fields": {
+      "facility_report": 49,
+      "product": 6,
+      "report_version": 11,
+      "created_at": "2025-05-26T10:36:35.714914-04:00",
+      "updated_at": "2025-05-26T10:51:37.437043-04:00",
+      "archived_at": null,
+      "annual_production": 11652,
+      "production_methodology": "OBPS Calculator",
+      "production_methodology_description": null,
+      "storage_quantity_start_of_period": null,
+      "storage_quantity_end_of_period": null,
+      "quantity_sold_during_period": null,
+      "quantity_throughput_during_period": null,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "updated_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822"
     }
   }
 ]

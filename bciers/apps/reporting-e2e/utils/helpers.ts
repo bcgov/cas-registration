@@ -30,6 +30,15 @@ export async function verifySaveAsPDF(page: Page): Promise<void> {
   await page.waitForFunction("window.waitForPrintDialog");
 }
 
+export async function verifyReportHeader(
+  page: Page,
+  operationName: string,
+  versionText: string,
+): Promise<void> {
+  await expect(page.locator("main h2")).toHaveText(operationName);
+  await expect(page.locator("main small")).toHaveText(versionText);
+}
+
 export async function clickViewReportDetails(
   page: Page,
   row: Locator,

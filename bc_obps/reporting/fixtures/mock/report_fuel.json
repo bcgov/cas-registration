@@ -58,5 +58,82 @@
       "report_unit_id": 3,
       "report_version_id": 5
     }
+  },
+  {
+    "model": "reporting.reportfuel",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "fuelDescription": "Diesel fuel",
+        "annualFuelAmount": 12000
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "fuel_type_id": 15,
+      "updated_by_id": null,
+      "report_source_type_id": 4,
+      "report_unit_id": 4,
+      "report_version_id": 9
+    }
+  },
+  {
+    "model": "reporting.reportfuel",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "annualFuelAmount": 345
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "fuel_type_id": 24,
+      "updated_by_id": null,
+      "report_source_type_id": 5,
+      "report_unit_id": 5,
+      "report_version_id": 10
+    }
+  },
+  {
+    "model": "reporting.reportfuel",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "annualFuelAmount": 6
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "fuel_type_id": 9,
+      "updated_by_id": null,
+      "report_source_type_id": 6,
+      "report_unit_id": 6,
+      "report_version_id": 11
+    }
+  },
+  {
+    "model": "reporting.reportfuel",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "annualFuelAmount": 7326
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "fuel_type_id": 37,
+      "updated_by_id": null,
+      "report_source_type_id": 8,
+      "report_unit_id": 7,
+      "report_version_id": 11
+    }
   }
 ]

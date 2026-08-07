@@ -52,5 +52,23 @@
       "report_version": 5,
       "updated_by_id": null
     }
+  },
+  {
+    "model": "reporting.reportverification",
+    "pk": 8,
+    "fields": {
+      "created_at": "2026-07-20T16:26:27.471456-07:00",
+      "updated_at": null,
+      "archived_at": null,
+      "verification_body_name": "mickey mouse enterprises",
+      "accredited_by": "SCC",
+      "scope_of_verification": null,
+      "threats_to_independence": false,
+      "verification_conclusion": null,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_version": 11,
+      "updated_by_id": null
+    }
   }
 ]

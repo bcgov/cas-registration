@@ -4,6 +4,7 @@ import {
   FacilityIDs,
   OPERATION_NAMES,
   REPORT_STATUS,
+  ReportIDs,
   ReportRoutes,
 } from "@/reporting-e2e/utils/enums";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
@@ -13,7 +14,10 @@ import { LFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReviewFacilitiesPOM } from "@/reporting-e2e/poms/LFO/review-facilities";
 import { FacilityGridPOM } from "@/reporting-e2e/poms/LFO/facility-grid";
 import { OperationEmissionSummaryPOM } from "@/reporting-e2e/poms/LFO/operation-emissions-summary";
-import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
+import {
+  verifyFormTitle,
+  verifyReportHeader,
+} from "@/reporting-e2e/utils/helpers";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
@@ -265,5 +269,102 @@ test.describe("LFO: create and submit a new report for the current reporting yea
       component: "LFO Report - Current Reports Grid",
       variant: "submitted",
     });
+  });
+
+  test("Industry user starts, fills, and submits a supplementary report for an LFO", async ({
+    page,
+    request,
+    happoScreenshot,
+  }) => {
+    // -- 0. Open the current reporting year so the "Start" button is available
+    const setup = new ReportSetUpPOM(page);
+    await setup.primeReportingYear("open");
+
+    // -- 1. Navigate to the current reports grid
+    const grid = new CurrentReportsPOM(page);
+    await grid.route();
+
+    // -- 2. Create a supplementary report for Bark LFO
+    const supplementaryReportId = await grid.createSupplementaryReportById(
+      ReportIDs.BARK_LFO,
+    );
+    const report = new CurrentReportPOM(page);
+
+    // -- 3. Review Operation Information
+    await verifyReportHeader(page, OPERATION_NAMES.BARK_LFO, "Version 2");
+    await verifyFormTitle(page, "Review Operation Information");
+    await report.verifyBarkLfoOperationInfo();
+    await report.saveAndContinue(
+      new RegExp(report.personResponsibleUrl(supplementaryReportId), "i"),
+    );
+
+    // -- 4. Person Responsible — confirm Bill Blue selected
+    await verifyFormTitle(page, "Person Responsible for Submitting Report");
+    await report.verifyPersonResponsible("Bill Blue");
+    await report.saveAndContinue(
+      new RegExp(report.reviewFacilitiesUrl(supplementaryReportId), "i"),
+    );
+
+    // -- 5. Review Facilities
+    const reviewFacilities = new ReviewFacilitiesPOM(page);
+    await reviewFacilities.verifyFacilitiesSelected(["Bark HQ", "Facility 42"]);
+    await report.saveAndContinue(
+      new RegExp(report.facilitiesGridUrl(supplementaryReportId)),
+    );
+
+    // -- 6. Facility Grid
+    const facilityGrid = new FacilityGridPOM(page, supplementaryReportId);
+    await facilityGrid.waitForReady();
+    const barkHQFacilityId =
+      await facilityGrid.continueReportForFacility("Bark HQ");
+
+    // -- 7. Facility report for Bark HQ
+    const facilityReport = new LFOFacilityReportPOM(page, barkHQFacilityId);
+    // -- 7a. Review Facility Information
+    await verifyFormTitle(page, "Review Facility Information");
+    await facilityReport.verifyBarkHQFacilityInformation();
+    await facilityReport.saveAndContinue(
+      new RegExp(report.activitiesUrl(supplementaryReportId, barkHQFacilityId)),
+    );
+
+    // -- 7b. Activities — GSC with 1 unit, 1 fuel (Diesel), 1 emission (CO2)
+    await verifyFormTitle(
+      page,
+      "General stationary combustion excluding line tracing (at SFO)",
+    );
+    await facilityReport.verifyAndUpdateBarkHQFacilityGSCActivityForm();
+    await facilityReport.saveAndContinue(
+      new RegExp(report.activitiesUrl(supplementaryReportId, barkHQFacilityId)),
+    );
+
+    // -- 7c. Activities - Cement production
+    await verifyFormTitle(page, "Cement Production");
+    await facilityReport.verifyAndUpdateBarkHQFacilityCementActivityForm();
+    await facilityReport.saveAndContinue(
+      new RegExp(facilityReport.nonAttributableUrl()),
+    );
+
+    // -- 7d. Non-Attributable Emissions (no entries needed)
+    await verifyFormTitle(page, "Non-Attributable Emissions");
+    await facilityReport.verifyNonAttributable(false);
+    await facilityReport.saveAndContinue(
+      new RegExp(facilityReport.emissionsSummaryUrl()),
+    );
+
+    // -- 7e. Emission Summary (read-only)
+    await facilityReport.verifyEmissionSummary();
+    await facilityReport.clickContinue(
+      new RegExp(facilityReport.productionDataUrl()),
+    );
+
+    // -- 7f. Production Data — select Cement equivalent, fill annual production
+    await verifyFormTitle(page, "Production Data");
+    await facilityReport.fillProductionData(
+      ["Cement equivalent"],
+      ["Cement equivalent"],
+    );
+    await facilityReport.clickContinue(
+      new RegExp(facilityReport.allocationOfEmissionsUrl()),
+    );
   });
 });
