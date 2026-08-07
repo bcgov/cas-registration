@@ -30,8 +30,8 @@ from ._squashed_data_functions import (
     revert_2023_ry,
 )
 
-import common.lib.pgtrigger.migrations
-import common.lib.pgtrigger.compiler
+import common.lib.pgtrigger.migrations  # noqa
+import common.lib.pgtrigger.compiler  # noqa
 import common.lib.pgtrigger as pgtrigger
 
 import django.db.migrations.operations.special
