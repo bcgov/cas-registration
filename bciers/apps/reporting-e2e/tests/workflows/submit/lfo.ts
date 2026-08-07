@@ -74,7 +74,7 @@ export async function runLfoSubmitReport({
   await facilityGrid.waitForReady();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Facility Grid",
-    variant: "LFO not started",
+    variant: "LFO",
   });
   const facilityId =
     await facilityGrid.continueReportForFacility("Facility 38");
@@ -134,7 +134,7 @@ export async function runLfoSubmitReport({
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Production Data",
-    variant: "LFO",
+    variant: "LFO - non-supplementary",
   });
   await facilityReport.clickContinue(
     new RegExp(facilityReport.allocationOfEmissionsUrl()),
@@ -156,10 +156,6 @@ export async function runLfoSubmitReport({
   await facilityReport.returnToAllFacilityReports();
 
   await facilityGrid.markFacilityComplete("Facility 38");
-  await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "Report - Facility Grid",
-    variant: "LFO completed",
-  });
   await facilityGrid.clickContinue(
     new RegExp(`${versionId}/${ReportRoutes.ADDITIONAL_REPORTING_DATA}`),
   );
@@ -219,7 +215,7 @@ export async function runLfoSubmitReport({
   await report.fillVerification();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Verification",
-    variant: "LFO",
+    variant: "LFO - non-supplementary",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
@@ -229,7 +225,7 @@ export async function runLfoSubmitReport({
   await report.uploadVerificationStatement();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Attachments",
-    variant: "LFO",
+    variant: "LFO - non-supplementary",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.SIGN_OFF}`),
@@ -243,7 +239,7 @@ export async function runLfoSubmitReport({
   await grid.verifySubmissionPage();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Submission",
-    variant: "LFO",
+    variant: "LFO - non-supplementary",
   });
 
   // ── 23. Return to the grid and verify the report status ──
@@ -254,8 +250,4 @@ export async function runLfoSubmitReport({
     OPERATION_NAMES.BEES_LFO,
     REPORT_STATUS.SUBMITTED,
   );
-  await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "Report - Current Reports Grid",
-    variant: "LFO submitted",
-  });
 }

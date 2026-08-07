@@ -100,7 +100,7 @@ export async function runSfoSubmitReport({
   await facilityReport.fillProductionData();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Production Data",
-    variant: "SFO",
+    variant: "SFO - non-supplementary",
   });
   await facilityReport.saveAndContinue(
     new RegExp(
@@ -165,7 +165,7 @@ export async function runSfoSubmitReport({
   await report.fillVerification();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Verification",
-    variant: "SFO",
+    variant: "SFO - non-supplementary",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
@@ -175,7 +175,7 @@ export async function runSfoSubmitReport({
   await report.uploadVerificationStatement();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Attachments",
-    variant: "SFO",
+    variant: "SFO - non-supplementary",
   });
   await report.saveAndContinue(
     new RegExp(`${versionId}/${ReportRoutes.SIGN_OFF}`),
@@ -189,7 +189,7 @@ export async function runSfoSubmitReport({
   await grid.verifySubmissionPage();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Submission",
-    variant: "SFO",
+    variant: "SFO - non-supplementary",
   });
 
   // ── 18. Return to the grid and verify the report status ──
@@ -200,8 +200,4 @@ export async function runSfoSubmitReport({
     OPERATION_NAMES.BUGLE_SFO,
     REPORT_STATUS.SUBMITTED,
   );
-  await takeStabilizedScreenshot(happoScreenshot, page, {
-    component: "Report - Current Reports Grid",
-    variant: "SFO submitted",
-  });
 }
