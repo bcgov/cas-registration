@@ -5,6 +5,8 @@ import os
 import json
 from typing import Optional
 from common.lib import pgtrigger
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 
 def update_activity_schema_titles(apps, schema_editor):
@@ -297,6 +299,13 @@ def revert_lime_recovery_kiln_override(apps, schema_monitor):
         valid_from='2025-01-01',
         valid_to='9999-12-31',
     ).delete()
+
+
+def update_report_open_date(apps, schema_editor):
+    ReportingYear = apps.get_model('reporting', 'ReportingYear')
+    reporting_year_2025 = ReportingYear.objects.get(reporting_year=2025)
+    reporting_year_2025.report_open_date = datetime(2026, 3, 18, tzinfo=ZoneInfo("America/Vancouver"))
+    reporting_year_2025.save()
 
 
 def fix_municipal_solid_waste_fuel_name(apps, schema_editor):
