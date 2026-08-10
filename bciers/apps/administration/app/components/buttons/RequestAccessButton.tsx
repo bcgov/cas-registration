@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import type { ReactNode } from "react";
 import Button from "@mui/material/Button";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
-import { Alert } from "@mui/material";
 import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import { ReportValidationItem } from "@reporting/src/app/components/shared/validation/types";
 
 interface RequestAccessButtonProps {
   operatorId: number;
@@ -14,13 +14,36 @@ interface RequestAccessButtonProps {
   isAdminRequest?: boolean;
 }
 
+const createErrorItem = (
+  message: string,
+  operatorId?: number,
+): ReportValidationItem => {
+  const isBceidError = message.includes(
+    "Your business BCeID does not have access to this operator.",
+  );
+
+  return {
+    key: "generic_error",
+    error: {
+      message,
+      severity: "Error",
+      context: isBceidError
+        ? {
+            email: ghgRegulatorEmail,
+            report_version_id: operatorId,
+          }
+        : undefined,
+    },
+  };
+};
+
 export default function RequestAccessButton({
   operatorId,
   operatorName,
   isAdminRequest = false,
 }: Readonly<RequestAccessButtonProps>) {
   const router = useRouter();
-  const [error, setError] = useState<string | undefined>(undefined);
+  const { setErrors, renderedErrors } = useFormErrors();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const label = isAdminRequest
@@ -31,49 +54,41 @@ export default function RequestAccessButton({
     isAdminRequest ? "request-admin-access" : "request-access"
   }`;
 
-  const errorMessageJSX: ReactNode = (
-    <>
-      {error}
-      {error?.includes(
-        "Your business BCeID does not have access to this operator.",
-      ) && (
-        <a className="ps-1" href={ghgRegulatorEmail}>
-          ghgregulator@gov.bc.ca
-        </a>
-      )}
-    </>
-  );
-
   const handleRequestAccess = async () => {
     setIsSubmitting(true);
-    const response = await actionHandler(endpointUrl, "POST", "");
-    if (response?.error) {
-      setError(response.error);
+
+    try {
+      const response = await actionHandler(endpointUrl, "POST", "");
+
+      if (response?.error) {
+        setErrors([createErrorItem(response.error, operatorId)]);
+      } else {
+        router.push(
+          `/select-operator/received/request-access/${operatorId}?title=${operatorName}`,
+        );
+      }
+    } catch (err: any) {
+      setErrors([
+        createErrorItem(
+          err?.message || "An unexpected error occurred. Please try again.",
+          operatorId,
+        ),
+      ]);
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-    // admin vs. subsequent access request conditionality handled in component: select-operator/(request-access)/received/[step]/[id]
-    router.push(
-      `/select-operator/received/request-access/${operatorId}?title=${operatorName}`,
-    );
   };
 
   return (
     <>
-      <div className="min-h-6 flex justify-center">
-        {error && (
-          <Alert severity="error" className="w-2/3">
-            {errorMessageJSX}
-          </Alert>
-        )}
-      </div>
+      <div className="min-h-6 flex justify-center w-full">{renderedErrors}</div>
       <Button
         className="my-10"
-        sx={{ textTransform: "none" }} //to remove uppercase text
+        sx={{ textTransform: "none" }} // to remove uppercase text
         aria-label={label ?? "Request Access"}
         color="primary"
         variant="contained"
-        onClick={async () => handleRequestAccess()}
+        onClick={handleRequestAccess}
         disabled={isSubmitting}
       >
         {label}
