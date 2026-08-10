@@ -14,6 +14,10 @@ import { createContactSchema } from "apps/administration/app/components/contacts
 import { FrontendMessages } from "@bciers/utils/src/enums";
 import { ContactFormData } from "@/administration/app/components/contacts/types";
 
+vi.mock("@reporting/src/app/utils/handleApiResponse", () => ({
+  handleApiResponse: vi.fn().mockReturnValue(false),
+}));
+
 const mockReplace = vi.fn();
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
@@ -308,7 +312,6 @@ describe("ContactForm component", () => {
         id: 123,
         first_name: "John",
         last_name: "Doe",
-        error: null,
       };
       actionHandler.mockReturnValueOnce(response);
 
@@ -356,7 +359,6 @@ describe("ContactForm component", () => {
         id: 123,
         first_name: "John",
         last_name: "Doe",
-        error: null,
       };
       actionHandler.mockReturnValueOnce(response);
 
@@ -411,7 +413,6 @@ describe("ContactForm component", () => {
         id: 123,
         first_name: "John updated",
         last_name: "Doe updated",
-        error: null,
       };
       actionHandler.mockReturnValueOnce(response);
 
@@ -465,7 +466,6 @@ describe("ContactForm component", () => {
       id: 123,
       first_name: "John updated",
       last_name: "Doe updated",
-      error: null,
     };
     actionHandler.mockReturnValueOnce(response);
 
