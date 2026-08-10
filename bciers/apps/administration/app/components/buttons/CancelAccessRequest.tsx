@@ -2,41 +2,51 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Alert } from "@mui/material";
 import { UUID } from "crypto";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import cancelAccessRequest from "@/administration/app/components/userOperators/cancelAccessRequest";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import { ReportValidationItem } from "@reporting/src/app/components/shared/validation/types";
 
 interface CancelAccessRequestProps {
   userOperatorId: UUID;
 }
 
+const createErrorItem = (message: string): ReportValidationItem => ({
+  key: "generic_error",
+  error: {
+    message,
+    severity: "Error",
+  },
+});
+
 export default function CancelAccessRequest({
   userOperatorId,
 }: Readonly<CancelAccessRequestProps>) {
   const router = useRouter();
-  const [error, setError] = useState(undefined);
+  const { setErrors, renderedErrors } = useFormErrors();
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCancelAccessRequest = async () => {
     setIsSubmitting(true);
+
     try {
       const response = await cancelAccessRequest(userOperatorId);
 
       if (typeof response !== "boolean" && response?.error) {
-        setError(response.error as any);
-        setModalOpen(false);
-        setIsSubmitting(false);
-        return;
+        setErrors([createErrorItem(response.error)]);
+      } else {
+        router.push("/select-operator");
       }
-      router.push("/select-operator");
     } catch (err: any) {
-      setError(
-        err?.message || "An unexpected error occurred. Please try again.",
-      );
-      setModalOpen(false);
+      setErrors([
+        createErrorItem(
+          err?.message || "An unexpected error occurred. Please try again.",
+        ),
+      ]);
     } finally {
+      setModalOpen(false);
       setIsSubmitting(false);
     }
   };
@@ -61,9 +71,8 @@ export default function CancelAccessRequest({
       >
         Cancel Request
       </button>
-      <div className="min-h-6 mt-4">
-        {error && <Alert severity="error">{error}</Alert>}
-      </div>
+
+      <div className="min-h-6 mt-4">{renderedErrors}</div>
     </div>
   );
 }
