@@ -12,6 +12,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { actionHandler } from "@bciers/actions";
 import useKey from "@bciers/utils/src/useKey";
+import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
 
 interface Props {
   schema: any;
@@ -35,8 +37,8 @@ export default function ContactForm({
   allowEdit,
 }: Readonly<Props>) {
   const router = useRouter();
-  const [error, setError] = useState(undefined);
-  const [formState, setFormState] = useState(formData ?? {});
+  const { setErrors, renderedErrors } = useFormErrors();
+  const [formState, setFormState] = useState<ContactFormData>(formData ?? {});
   const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const [key, resetKey] = useKey();
   const role = useSessionRole();
@@ -50,9 +52,10 @@ export default function ContactForm({
 
   const handleArchiveContact = async () => {
     setIsSubmitting(true);
+    setErrors(undefined);
     const response = await archiveContact(params.contactId as string);
     if (response?.error) {
-      setError(response.error as any);
+      handleApiResponse(response, setErrors);
       setModalOpen(false);
       setIsSubmitting(false);
       return;
@@ -82,7 +85,7 @@ export default function ContactForm({
       </SimpleModal>
       <SingleStepTaskListForm
         key={key}
-        error={error}
+        errors={renderedErrors}
         schema={schema}
         uiSchema={contactsUiSchema}
         formData={formState}
@@ -98,7 +101,7 @@ export default function ContactForm({
         handleDelete={handleClickDelete}
         deleteButtonText="Delete Contact"
         onSubmit={async (data: { formData?: any }) => {
-          setError(undefined);
+          setErrors(undefined);
           const updatedFormData = { ...formState, ...data.formData };
           setFormState(updatedFormData);
 
@@ -122,9 +125,9 @@ export default function ContactForm({
             },
           );
 
-          if (response.error) {
-            setError(response.error);
-            return { error: response.error };
+          const hasErrors = handleApiResponse(response, setErrors);
+          if (hasErrors || response.error) {
+            return { error: response.error || "Validation error" };
           }
 
           if (isCreatingState) {
