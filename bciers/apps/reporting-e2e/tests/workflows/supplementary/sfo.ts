@@ -120,7 +120,7 @@ export async function runSfoSupplementaryScenario({
 
   // ── 7. Activities — the GSC unit, fuel and emission all carried over ──
   await facilityReport.verifyGscActivityCarriedOver();
-  await facilityReport.fillEmissionAmount(edits.emission.updated);
+  await facilityReport.fillGSCEmissionAmount(edits.emission.updated);
   await facilityReport.saveAndContinue(
     new RegExp(facilityReport.nonAttributableUrl(), "i"),
   );

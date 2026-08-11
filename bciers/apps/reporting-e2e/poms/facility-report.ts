@@ -246,7 +246,7 @@ export class SFOFacilityReportPOM {
     );
   }
 
-  async fillEmissionAmount(emission: number): Promise<void> {
+  async fillGSCEmissionAmount(emission: number): Promise<void> {
     await fillInputValueByLocator(
       this.page.getByRole("textbox", {
         name: GSC_ACTIVITY.EMISSION_INPUT_NAME,
