@@ -26,7 +26,7 @@ export const createStartReportSchemas =
     ).sort((a, b) => b - a);
 
     const operationHelpText =
-      "Only operations missing a submitted report are shown. If an operation is not showing, it must be registered first.";
+      "Only operations missing a report for the selected reporting year are shown. If an operation is not showing, it must be registered first.";
 
     const schema: RJSFSchema = {
       type: "object",

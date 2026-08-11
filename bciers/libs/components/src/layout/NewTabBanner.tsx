@@ -20,8 +20,7 @@ const NewTabBanner: React.FC = () => {
     </Note>
   ) : (
     <Note variant="important">
-      This link has opened in a new tab. To go back to the report, close this
-      tab. Then click sync latest changes.
+      This link has opened in a new tab. To go back, close this tab.
     </Note>
   );
 };
