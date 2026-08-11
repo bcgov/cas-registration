@@ -1,3 +1,8 @@
+# syntax=docker/dockerfile:1
+# check=skip=InvalidDefaultArgInFrom
+
+# PYTHON_VERSION is deliberately left without a default: a build that doesn't pass it should fail
+# rather than silently build on the wrong Python, hence the skipped check above.
 # In CI, the Python version is specified in the build args, see .github/workflows/build-backend.yaml
 ARG PYTHON_VERSION
 
