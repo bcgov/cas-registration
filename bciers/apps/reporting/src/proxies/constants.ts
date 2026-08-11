@@ -1,5 +1,3 @@
-import { fetchApi } from "@bciers/actions/api/fetchApi";
-
 export const REPORTING_BASE = "reporting";
 export const REPORT_BASE = "reports";
 export const REPORT_VERSION_BASE = "report-version";
@@ -22,26 +20,8 @@ export const extractReportVersionId = (pathname: string): number | null => {
   return null;
 };
 
-/**
- * Fetches the response from a given API endpoint.
- *
- * @param endpoint - The URL of the API endpoint.
- * @param user_guid - The unique identifier for the user, used for authorization.
- * @returns The response from the API call.
- */
-export async function fetchResponse(endpoint: string, user_guid: string) {
-  // Call the API using fetchApi, passing the user_guid as part of the request data.
-  const response = await fetchApi(endpoint, {
-    user_guid: user_guid,
-  });
-
-  // Return the response from the API.
-  return response;
-}
-
 // App routing routes
 export enum AppRoutes {
-  ONBOARDING = "/onboarding",
   OPERATION = "/review-operation-information",
   REPORTS = "/reports",
   REVIEW = "/final-review",

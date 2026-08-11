@@ -4,7 +4,7 @@ import { withRuleHasComplianceRouteAccessIDIR } from "./withRuleHasComplianceRou
 import * as constants from "./constants";
 import { IDP, IssuanceStatus } from "@bciers/utils/src/enums";
 import { getToken } from "@bciers/actions";
-import { getUserRole } from "@bciers/proxies";
+import { getUserRole, DashboardRoutes } from "@bciers/proxies";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 import type { Mock } from "vitest";
 
@@ -225,17 +225,54 @@ describe("withRuleHasComplianceRouteAccessIDIR", () => {
     });
   });
 
-  // ── Fallbacks / Bypass
-  describe("fallbacks & bypass", () => {
-    it("falls back to hub on fetch error", async () => {
-      (getRequestIssuanceComplianceSummaryData as Mock).mockRejectedValue(
-        new Error("boom"),
+  describe("API failure / exception handling", () => {
+    it("redirects to error route when getRequestIssuanceComplianceSummaryData throws an error for accessReviewSummary", async () => {
+      (getRequestIssuanceComplianceSummaryData as Mock).mockRejectedValueOnce(
+        new Error("Failed to fetch issuance data"),
       );
-      const { res } = await runProxy(PATH_REVIEW_DIRECTOR);
+
+      const { res } = await runProxy(PATH_REVIEW_SUMMARY);
+
       expect(res!.status).toBe(307);
-      expect(getPathname(res)).toBe(HUB);
+      expect(getPathname(res)).toBe(DashboardRoutes.ERROR);
     });
 
+    it("redirects to error route when getRequestIssuanceComplianceSummaryData throws an error for accessReviewDirector", async () => {
+      (getRequestIssuanceComplianceSummaryData as Mock).mockRejectedValueOnce(
+        new Error("Database connection error"),
+      );
+
+      const { res } = await runProxy(PATH_REVIEW_DIRECTOR);
+
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(DashboardRoutes.ERROR);
+    });
+
+    it("redirects to error route when getRequestIssuanceComplianceSummaryData throws an error for accessReviewCredits", async () => {
+      (getRequestIssuanceComplianceSummaryData as Mock).mockRejectedValueOnce(
+        new Error("API service unavailable"),
+      );
+
+      const { res } = await runProxy(PATH_REVIEW_CREDITS);
+
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(DashboardRoutes.ERROR);
+    });
+
+    it("redirects to error route when getRequestIssuanceComplianceSummaryData throws an error for accessTrackStatusIssuance", async () => {
+      (getRequestIssuanceComplianceSummaryData as Mock).mockRejectedValueOnce(
+        new Error("Timeout waiting for response"),
+      );
+
+      const { res } = await runProxy(PATH_TRACK);
+
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(DashboardRoutes.ERROR);
+    });
+  });
+
+  // ── Fallbacks / Bypass
+  describe("fallbacks & bypass", () => {
     it("bypasses all rules when user is not IDIR", async () => {
       (getUserRole as Mock).mockReturnValue(IDP.BCEIDBUSINESS);
       mockIssuance(IssuanceStatus.CREDITS_NOT_ISSUED, null);

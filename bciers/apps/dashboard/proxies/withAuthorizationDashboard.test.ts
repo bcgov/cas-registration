@@ -11,8 +11,10 @@ import {
   mockCasUserToken,
   mockIndustryUserToken,
 } from "@bciers/testConfig/data/tokens";
+import { isUserArchived } from "@bciers/actions/api";
+import { DashboardRoutes } from "@bciers/proxies";
 
-const dashboardUrl = new URL("/dashboard", domain);
+const dashboardUrl = new URL(DashboardRoutes.DASHBOARD, domain);
 
 vi.spyOn(NextResponse, "redirect");
 vi.spyOn(NextResponse, "rewrite");
@@ -20,12 +22,23 @@ vi.spyOn(NextResponse, "rewrite");
 vi.mock("next-auth/jwt", () => ({
   getToken: vi.fn(),
 }));
+
+vi.mock("@bciers/actions/api", async () => {
+  const actual = await vi.importActual("@bciers/actions/api");
+  return {
+    ...actual,
+    isUserArchived: vi.fn(),
+  };
+});
+
 const mockGetToken = nextGetToken as ReturnType<typeof vi.fn>;
 
 describe("withAuthorizationDashboard proxy", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetToken.mockReturnValue(undefined);
+    // Default isUserArchived to false so existing authenticated tests succeed
+    vi.mocked(isUserArchived).mockResolvedValue(false);
   });
 
   it("redirects to the onboarding page if the user is not authenticated", async () => {
@@ -36,14 +49,14 @@ describe("withAuthorizationDashboard proxy", () => {
     );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
-      new URL("/onboarding", domain),
+      new URL(DashboardRoutes.ONBOARDING, domain),
     );
     expect(result?.status).toBe(307);
   });
 
   it("calls NextProxy if the user is not authenticated and the route is /onboarding", async () => {
     const result = await proxy(
-      mockRequest("/onboarding"),
+      mockRequest(DashboardRoutes.ONBOARDING),
       {} as NextFetchEvent,
     );
 
@@ -53,11 +66,14 @@ describe("withAuthorizationDashboard proxy", () => {
   it("redirects to the administration profile page if the user has no app role", async () => {
     getToken.mockResolvedValue(mockBaseToken);
 
-    const result = await proxy(mockRequest("/dashboard"), {} as NextFetchEvent);
+    const result = await proxy(
+      mockRequest(DashboardRoutes.DASHBOARD),
+      {} as NextFetchEvent,
+    );
 
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
-      new URL("/administration/profile", domain),
+      new URL(DashboardRoutes.PROFILE, domain),
     );
     expect(result).toBeInstanceOf(NextResponse);
 
@@ -68,7 +84,10 @@ describe("withAuthorizationDashboard proxy", () => {
   it("calls NextProxy if the user has no app role and the route ends in /profile", async () => {
     getToken.mockResolvedValue(mockBaseToken);
 
-    const result = await proxy(mockRequest("/profile"), {} as NextFetchEvent);
+    const result = await proxy(
+      mockRequest(DashboardRoutes.PROFILE),
+      {} as NextFetchEvent,
+    );
 
     expect(result?.status).toBe(200);
   });
@@ -77,7 +96,7 @@ describe("withAuthorizationDashboard proxy", () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
 
     const result = await proxy(
-      mockRequest("/onboarding"),
+      mockRequest(DashboardRoutes.ONBOARDING),
       {} as NextFetchEvent,
     );
 
@@ -109,7 +128,10 @@ describe("withAuthorizationDashboard proxy", () => {
   it("calls NextProxy for authenticated, authorized cas_user if the route is /dashboard", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
 
-    const result = await proxy(mockRequest("/dashboard"), {} as NextFetchEvent);
+    const result = await proxy(
+      mockRequest(DashboardRoutes.DASHBOARD),
+      {} as NextFetchEvent,
+    );
     expect(result?.status).toBe(200);
   });
 
@@ -117,7 +139,7 @@ describe("withAuthorizationDashboard proxy", () => {
     getToken.mockResolvedValue(mockCasUserToken);
 
     const result = await proxy(
-      mockRequest("/onboarding"),
+      mockRequest(DashboardRoutes.ONBOARDING),
       {} as NextFetchEvent,
     );
 
@@ -141,7 +163,7 @@ describe("withAuthorizationDashboard proxy", () => {
     // Loop through the array of allowed paths
     for (const allowedPath of authAllowedPaths) {
       const result = await proxy(
-        mockRequest(`/${allowedPath}`),
+        mockRequest(allowedPath),
         {} as NextFetchEvent,
       );
 
@@ -167,5 +189,81 @@ describe("withAuthorizationDashboard proxy", () => {
     }
 
     expect(NextResponse.redirect).toHaveBeenCalledTimes(paths.length);
+  });
+
+  describe("archived user handling", () => {
+    it("redirects an archived user to the declined page when accessing a protected route", async () => {
+      getToken.mockResolvedValue(mockIndustryUserToken);
+      vi.mocked(isUserArchived).mockResolvedValueOnce(true);
+
+      const result = await proxy(
+        mockRequest(DashboardRoutes.DASHBOARD),
+        {} as NextFetchEvent,
+      );
+
+      expect(NextResponse.redirect).toHaveBeenCalledOnce();
+      expect(NextResponse.redirect).toHaveBeenCalledWith(
+        new URL(DashboardRoutes.DECLINED, domain),
+      );
+      expect(result?.status).toBe(307);
+    });
+
+    it("redirects an archived user to the declined page regardless of the requested route", async () => {
+      getToken.mockResolvedValue(mockIndustryUserToken);
+      vi.mocked(isUserArchived).mockResolvedValue(true);
+
+      const routesToTest = [
+        DashboardRoutes.PROFILE,
+        "/registration/operations",
+        "/reporting",
+      ];
+
+      for (const route of routesToTest) {
+        vi.clearAllMocks();
+        const result = await proxy(mockRequest(route), {} as NextFetchEvent);
+
+        expect(NextResponse.redirect).toHaveBeenCalledWith(
+          new URL(DashboardRoutes.DECLINED, domain),
+        );
+        expect(result?.status).toBe(307);
+      }
+    });
+  });
+
+  describe("API failure / exception handling", () => {
+    it("redirects to the error page when getToken throws an error", async () => {
+      // Simulate an internal failure during session check
+      getToken.mockRejectedValueOnce(new Error("JWT retrieval failed"));
+
+      const result = await proxy(
+        mockRequest(DashboardRoutes.DASHBOARD),
+        {} as NextFetchEvent,
+      );
+
+      expect(NextResponse.redirect).toHaveBeenCalledOnce();
+      expect(NextResponse.redirect).toHaveBeenCalledWith(
+        new URL(DashboardRoutes.ERROR, domain),
+      );
+      expect(result?.status).toBe(307);
+    });
+
+    it("redirects to the error page when isUserArchived API call throws an error", async () => {
+      // User has a token, but the API endpoint fails
+      getToken.mockResolvedValue(mockIndustryUserToken);
+      vi.mocked(isUserArchived).mockRejectedValueOnce(
+        new Error("Database connection error"),
+      );
+
+      const result = await proxy(
+        mockRequest(DashboardRoutes.DASHBOARD),
+        {} as NextFetchEvent,
+      );
+
+      expect(NextResponse.redirect).toHaveBeenCalledOnce();
+      expect(NextResponse.redirect).toHaveBeenCalledWith(
+        new URL(DashboardRoutes.ERROR, domain),
+      );
+      expect(result?.status).toBe(307);
+    });
   });
 });

@@ -1,6 +1,17 @@
 import { JWT } from "next-auth/jwt";
 import { IDP } from "@bciers/utils/src/enums";
 
+// Dashboard routing routes
+export enum DashboardRoutes {
+  AUTH = "/auth",
+  UNAUTH = "/unauth",
+  DECLINED = "/dashboard/declined",
+  ERROR = "/dashboard/error",
+  ONBOARDING = "/onboarding",
+  DASHBOARD = "/dashboard",
+  PROFILE = "/administration/profile",
+}
+
 /**
  * Retrieves the user role (identity provider) from the given JWT token.
  *

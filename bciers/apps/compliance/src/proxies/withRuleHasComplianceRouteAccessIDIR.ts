@@ -1,5 +1,5 @@
 import { NextProxy, NextRequest, NextResponse } from "next/server";
-import { ProxyFactory, getUserRole } from "@bciers/proxies";
+import { ProxyFactory, getUserRole, DashboardRoutes } from "@bciers/proxies";
 import { getToken } from "@bciers/actions";
 import { IDP, IssuanceStatus } from "@bciers/utils/src/enums";
 
@@ -91,19 +91,16 @@ const permissionRules: PermissionRule[] = [
       ),
     validate: async (id, _req, context) => {
       if (typeof id !== "number") return false;
-      try {
-        const data = await context!.getIssuanceData(id);
-        if (
-          data.issuance_status === IssuanceStatus.APPROVED ||
-          data.issuance_status === IssuanceStatus.DECLINED
-        ) {
-          context!.redirectTargetById[id] = AppRoutes.RI_TRACK_STATUS;
-          return false;
-        }
-        return true;
-      } catch {
+
+      const data = await context!.getIssuanceData(id);
+      if (
+        data.issuance_status === IssuanceStatus.APPROVED ||
+        data.issuance_status === IssuanceStatus.DECLINED
+      ) {
+        context!.redirectTargetById[id] = AppRoutes.RI_TRACK_STATUS;
         return false;
       }
+      return true;
     },
     redirect: makeRuleRedirect(HUB_SUMMARIES_PATH),
   },
@@ -139,31 +136,28 @@ const permissionRules: PermissionRule[] = [
       ),
     validate: async (id, _req, context) => {
       if (typeof id !== "number") return false;
-      try {
-        const data = await context!.getIssuanceData(id);
 
-        if (data.issuance_status === IssuanceStatus.CREDITS_NOT_ISSUED) {
-          context!.redirectTargetById[id] = AppRoutes.RI_REVIEW_SUMMARY;
-          return false;
-        }
+      const data = await context!.getIssuanceData(id);
 
-        if (
-          data.issuance_status === IssuanceStatus.APPROVED ||
-          data.issuance_status === IssuanceStatus.DECLINED
-        ) {
-          context!.redirectTargetById[id] = AppRoutes.RI_TRACK_STATUS;
-          return false;
-        }
-
-        if (!data.analyst_suggestion) {
-          context!.redirectTargetById[id] = AppRoutes.RI_REVIEW_SUMMARY_CREDITS;
-          return false;
-        }
-
-        return true;
-      } catch {
+      if (data.issuance_status === IssuanceStatus.CREDITS_NOT_ISSUED) {
+        context!.redirectTargetById[id] = AppRoutes.RI_REVIEW_SUMMARY;
         return false;
       }
+
+      if (
+        data.issuance_status === IssuanceStatus.APPROVED ||
+        data.issuance_status === IssuanceStatus.DECLINED
+      ) {
+        context!.redirectTargetById[id] = AppRoutes.RI_TRACK_STATUS;
+        return false;
+      }
+
+      if (!data.analyst_suggestion) {
+        context!.redirectTargetById[id] = AppRoutes.RI_REVIEW_SUMMARY_CREDITS;
+        return false;
+      }
+
+      return true;
     },
     redirect: makeRuleRedirect(HUB_SUMMARIES_PATH),
   },
@@ -193,25 +187,22 @@ const permissionRules: PermissionRule[] = [
       ),
     validate: async (id, _req, context) => {
       if (typeof id !== "number") return false;
-      try {
-        const data = await context!.getIssuanceData(id);
 
-        if (data.issuance_status === IssuanceStatus.CREDITS_NOT_ISSUED) {
-          context!.redirectTargetById[id] = AppRoutes.RI_REVIEW_SUMMARY;
-          return false;
-        }
+      const data = await context!.getIssuanceData(id);
 
-        if (
-          data.issuance_status === IssuanceStatus.APPROVED ||
-          data.issuance_status === IssuanceStatus.DECLINED
-        ) {
-          context!.redirectTargetById[id] = AppRoutes.RI_TRACK_STATUS;
-          return false;
-        }
-        return true;
-      } catch {
+      if (data.issuance_status === IssuanceStatus.CREDITS_NOT_ISSUED) {
+        context!.redirectTargetById[id] = AppRoutes.RI_REVIEW_SUMMARY;
         return false;
       }
+
+      if (
+        data.issuance_status === IssuanceStatus.APPROVED ||
+        data.issuance_status === IssuanceStatus.DECLINED
+      ) {
+        context!.redirectTargetById[id] = AppRoutes.RI_TRACK_STATUS;
+        return false;
+      }
+      return true;
     },
     redirect: makeRuleRedirect(HUB_SUMMARIES_PATH),
   },
@@ -236,26 +227,23 @@ const permissionRules: PermissionRule[] = [
       ),
     validate: async (id, _req, context) => {
       if (typeof id !== "number") return false;
-      try {
-        const data = await context!.getIssuanceData(id);
 
-        if (data.issuance_status === IssuanceStatus.CREDITS_NOT_ISSUED) {
-          context!.redirectTargetById[id] = AppRoutes.RI_REVIEW_SUMMARY;
-          return false;
-        }
+      const data = await context!.getIssuanceData(id);
 
-        if (
-          data.issuance_status === IssuanceStatus.ISSUANCE_REQUESTED ||
-          data.issuance_status === IssuanceStatus.CHANGES_REQUIRED
-        ) {
-          context!.redirectTargetById[id] = AppRoutes.REVIEW_BY_DIRECTOR;
-          return false;
-        }
-
-        return true;
-      } catch {
+      if (data.issuance_status === IssuanceStatus.CREDITS_NOT_ISSUED) {
+        context!.redirectTargetById[id] = AppRoutes.RI_REVIEW_SUMMARY;
         return false;
       }
+
+      if (
+        data.issuance_status === IssuanceStatus.ISSUANCE_REQUESTED ||
+        data.issuance_status === IssuanceStatus.CHANGES_REQUIRED
+      ) {
+        context!.redirectTargetById[id] = AppRoutes.REVIEW_BY_DIRECTOR;
+        return false;
+      }
+
+      return true;
     },
     redirect: makeRuleRedirect(HUB_SUMMARIES_PATH),
   },
@@ -270,7 +258,7 @@ const checkHasPathAccess = (request: ContextAwareNextRequest) =>
       extractComplianceReportVersionId(pathname) ?? undefined,
     createContext: createRuleContext,
     rules: permissionRules,
-    onErrorRedirect: (req) => redirectTo(HUB_SUMMARIES_PATH, req),
+    onErrorRedirect: (req) => redirectTo(DashboardRoutes.ERROR, req),
   });
 
 // --------------------
