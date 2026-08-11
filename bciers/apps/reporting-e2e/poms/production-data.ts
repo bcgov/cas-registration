@@ -1,6 +1,8 @@
-import { Page, expect } from "@playwright/test";
+import { Locator, Page, expect } from "@playwright/test";
 import {
   checkCheckboxByLabel,
+  expectNumericInputValue,
+  fillInputValueByLabel,
   fillInputValueByLocator,
 } from "@bciers/e2e/utils/helpers";
 
@@ -19,7 +21,12 @@ const PRODUCTION_DATA = {
   METHODOLOGY_LABEL: /Production Quantification/i,
   METHODOLOGY_OPTIONS: ["OBPS Calculator", "other"],
   METHODOLOGY_DEFAULT: "OBPS Calculator",
+  METHODOLOGY_DESCRIPTION_LABEL: /Methodology description/i,
 } as const;
+
+// The annual production `fillProducts` enters, so later versions can assert carry-over
+export const DEFAULT_ANNUAL_PRODUCTION =
+  PRODUCTION_DATA.ANNUAL_PRODUCTION_VALUE;
 
 // Maps each product name to its read-only unit value (from ReadOnlyWidget)
 const PRODUCT_UNITS: Record<string, string> = {
@@ -34,6 +41,55 @@ export class ProductionDataPOM {
 
   constructor(page: Page) {
     this.page = page;
+  }
+
+  annualProductionInput(productIndex: number): Locator {
+    return this.page.locator(
+      `input#root_production_data_${productIndex}_annual_production[type="text"]`,
+    );
+  }
+
+  async verifyAnnualProduction(
+    productIndex: number,
+    expected: number,
+  ): Promise<void> {
+    await expectNumericInputValue(
+      this.annualProductionInput(productIndex),
+      expected,
+    );
+  }
+
+  async fillAnnualProduction(
+    productIndex: number,
+    annualProduction: number,
+  ): Promise<void> {
+    await fillInputValueByLocator(
+      this.annualProductionInput(productIndex),
+      annualProduction,
+    );
+  }
+
+  async fillMethodology(
+    productIndex: number,
+    methodology: string,
+    description?: string,
+  ): Promise<void> {
+    const combobox = this.page
+      .getByRole("combobox", { name: PRODUCTION_DATA.METHODOLOGY_LABEL })
+      .nth(productIndex);
+
+    await expect(combobox).toBeVisible();
+    await combobox.click();
+    await this.page.getByRole("option", { name: methodology }).click();
+    await expect(combobox).toHaveValue(methodology);
+
+    if (description !== undefined) {
+      await fillInputValueByLabel(
+        this.page,
+        PRODUCTION_DATA.METHODOLOGY_DESCRIPTION_LABEL,
+        description,
+      );
+    }
   }
 
   async fillProducts(

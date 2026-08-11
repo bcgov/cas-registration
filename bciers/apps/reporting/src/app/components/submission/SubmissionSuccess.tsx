@@ -26,7 +26,7 @@ export default function SubmissionSuccess({
         flexDirection="column"
         alignItems="center"
         maxWidth={600}
-        height="20vh"
+        minHeight="20vh"
       >
         <Box display="flex" flexDirection="column" alignItems="center">
           <Check />

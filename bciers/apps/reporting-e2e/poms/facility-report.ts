@@ -12,6 +12,7 @@ import {
   checkCheckboxById,
   checkFormFieldsReadOnly,
   clickButton,
+  expectNumericInputValue,
   fillComboxboxWidget,
   fillInputValueByLabel,
   fillInputValueByLocator,
@@ -48,6 +49,9 @@ const GSC_ACTIVITY = {
   METHODOLOGY_LABEL: "Methodology",
   METHODOLOGY_VALUE: "Default HHV/Default EF",
 } as const;
+
+// The emission `fillGscActivity` enters, so later versions can assert carry-over
+export const DEFAULT_GSC_EMISSION = GSC_ACTIVITY.EMISSION_VALUE;
 
 const NON_ATTRIBUTABLE = {
   INFO_NOTE:
@@ -213,6 +217,78 @@ export class SFOFacilityReportPOM {
     await productionData.fillProducts(productsToSelect, productsAvailable);
   }
 
+  async verifyAnnualProduction(
+    productIndex: number,
+    expected: number,
+  ): Promise<void> {
+    const productionData = new ProductionDataPOM(this.page);
+    await productionData.verifyAnnualProduction(productIndex, expected);
+  }
+
+  async fillAnnualProduction(
+    productIndex: number,
+    annualProduction: number,
+  ): Promise<void> {
+    const productionData = new ProductionDataPOM(this.page);
+    await productionData.fillAnnualProduction(productIndex, annualProduction);
+  }
+
+  async fillProductionMethodology(
+    productIndex: number,
+    methodology: string,
+    description?: string,
+  ): Promise<void> {
+    const productionData = new ProductionDataPOM(this.page);
+    await productionData.fillMethodology(
+      productIndex,
+      methodology,
+      description,
+    );
+  }
+
+  async fillGSCEmissionAmount(emission: number): Promise<void> {
+    await fillInputValueByLocator(
+      this.page.getByRole("textbox", {
+        name: GSC_ACTIVITY.EMISSION_INPUT_NAME,
+        exact: true,
+      }),
+      emission,
+    );
+  }
+
+  /**
+   * Asserts the GSC activity entered on a previous report version carried over:
+   * the source type is still selected, and the fuel and emission amounts are intact.
+   */
+  async verifyGscActivityCarriedOver(): Promise<void> {
+    await expect(
+      this.page.locator(`#root_${GSC_ACTIVITY.SOURCE_TYPE_SLUG}`),
+    ).toBeChecked();
+
+    await expect(
+      this.page.getByRole("combobox", { name: GSC_ACTIVITY.UNIT_TYPE_LABEL }),
+    ).toHaveValue(GSC_ACTIVITY.UNIT_TYPE_VALUE);
+
+    await expect(
+      this.page.getByRole("combobox", { name: GSC_ACTIVITY.FUEL_NAME_LABEL }),
+    ).toHaveValue(GSC_ACTIVITY.FUEL_NAME_VALUE);
+
+    await expectNumericInputValue(
+      this.page.getByRole("textbox", {
+        name: GSC_ACTIVITY.ANNUAL_FUEL_AMOUNT_INPUT_NAME,
+      }),
+      GSC_ACTIVITY.ANNUAL_FUEL_AMOUNT_VALUE,
+    );
+
+    await expectNumericInputValue(
+      this.page.getByRole("textbox", {
+        name: GSC_ACTIVITY.EMISSION_INPUT_NAME,
+        exact: true,
+      }),
+      GSC_ACTIVITY.EMISSION_VALUE,
+    );
+  }
+
   async verifyAllocationAlerts(): Promise<void> {
     const allocationOfEmissions = new AllocationOfEmissionsPOM(this.page);
     await allocationOfEmissions.validateProductAlertVisible();
@@ -223,6 +299,11 @@ export class SFOFacilityReportPOM {
   ): Promise<void> {
     const allocationOfEmissions = new AllocationOfEmissionsPOM(this.page);
     await allocationOfEmissions.fill(methodology);
+  }
+
+  async updateAllocationOfEmissions(allocatedQuantity: number): Promise<void> {
+    const allocationOfEmissions = new AllocationOfEmissionsPOM(this.page);
+    await allocationOfEmissions.updateAllocatedQuantity(allocatedQuantity);
   }
 }
 
@@ -264,9 +345,9 @@ export class LFOFacilityReportPOM extends SFOFacilityReportPOM {
       })
       .setChecked(false);
 
-    expect(
-      await this.page.getByRole("checkbox", { checked: true }).count(),
-    ).toBe(1);
+    await expect(
+      this.page.getByRole("checkbox", { checked: true }),
+    ).toHaveCount(1);
   }
 
   override async fillAllocationOfEmissions(

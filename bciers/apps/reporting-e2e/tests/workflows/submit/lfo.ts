@@ -1,0 +1,258 @@
+import {
+  FacilityIDs,
+  OPERATION_NAMES,
+  REPORT_STATUS,
+  ReportRoutes,
+} from "@/reporting-e2e/utils/enums";
+import { ACTION_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
+import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
+import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
+import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
+import { LFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
+import { ReviewFacilitiesPOM } from "@/reporting-e2e/poms/LFO/review-facilities";
+import { FacilityGridPOM } from "@/reporting-e2e/poms/LFO/facility-grid";
+import { OperationEmissionSummaryPOM } from "@/reporting-e2e/poms/LFO/operation-emissions-summary";
+import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
+import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { WorkflowRunnerArgs } from "@bciers/e2e/utils/types";
+
+export async function runLfoSubmitReport({
+  page,
+  request,
+  happoScreenshot,
+}: WorkflowRunnerArgs) {
+  // ── 0. Open the current reporting year so the "Start" button is available ──
+  const setup = new ReportSetUpPOM(page);
+  await setup.primeReportingYear("open");
+
+  // ── 1. Navigate to the current reports grid ──
+  const grid = new CurrentReportsPOM(page);
+  await grid.route();
+
+  // ── 2. Click "Start" for Bees LFO — creates the report and navigates to
+  //       review-operation-information; ──
+  await grid.searchByOperationName(OPERATION_NAMES.BEES_LFO);
+
+  const versionId = await grid.startNewReportForOperation(
+    OPERATION_NAMES.BEES_LFO,
+  );
+  const report = new CurrentReportPOM(page);
+
+  // ── 3. Review Operation Information
+  await verifyFormTitle(page, "Review Operation Information");
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Review Operation Information",
+    variant: "LFO",
+  });
+  await report.saveAndContinue(
+    new RegExp(report.personResponsibleUrl(versionId)),
+  );
+
+  // ── 4. Person Responsible — select "Bill Blue" (contact linked to the op)
+  await verifyFormTitle(page, "Person Responsible for Submitting Report");
+  await report.fillPersonResponsible("Bill Blue");
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Person Responsible",
+    variant: "LFO",
+  });
+  await report.saveAndContinue(
+    new RegExp(report.reviewFacilitiesUrl(versionId)),
+  );
+
+  // ── 5. Review Facilities
+  const reviewFacility = new ReviewFacilitiesPOM(page);
+  await reviewFacility.selectFacilities(["Facility 38"]);
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Review Facilities",
+    variant: "LFO",
+  });
+  await report.saveAndContinue(new RegExp(report.facilitiesGridUrl(versionId)));
+
+  // LFO Specific flow items
+  // ── 6. Facility Grid
+  const facilityGrid = new FacilityGridPOM(page, versionId);
+  await facilityGrid.waitForReady();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Facility Grid",
+    variant: "LFO",
+  });
+  const facilityId =
+    await facilityGrid.continueReportForFacility("Facility 38");
+
+  // ── 7. Review Facility Information
+  const facilityReport = new LFOFacilityReportPOM(page, facilityId);
+  await verifyFormTitle(page, "Review Facility Information");
+  await facilityReport.fillReviewFacilityInformation();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Review Facility",
+    variant: "LFO",
+  });
+  await facilityReport.saveAndContinue(
+    new RegExp(report.activitiesUrl(versionId, FacilityIDs.BEES_LFO), "i"),
+  );
+
+  // ── 8. Activities — GSC with 1 unit, 1 fuel (Diesel), 1 emission (CO2) ──
+  await verifyFormTitle(
+    page,
+    "General stationary combustion excluding line tracing (at SFO)",
+  );
+  await facilityReport.fillGscActivity();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Activities",
+    variant: "LFO",
+  });
+  await facilityReport.saveAndContinue(
+    new RegExp(facilityReport.nonAttributableUrl()),
+  );
+
+  // ── 9. Non-Attributable Emissions (no entries needed) ──
+  await verifyFormTitle(page, "Non-Attributable Emissions");
+  await facilityReport.fillNonAttributable();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Non-Attributable Emissions",
+    variant: "LFO",
+  });
+  await facilityReport.saveAndContinue(
+    new RegExp(facilityReport.emissionsSummaryUrl()),
+  );
+
+  // ── 10. Emission Summary (read-only) ──
+  await facilityReport.verifyEmissionSummary();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Emission Summary",
+    variant: "LFO",
+  });
+  await facilityReport.clickContinue(
+    new RegExp(facilityReport.productionDataUrl()),
+  );
+
+  // ── 11. Production Data — select Cement equivalent, fill annual production ──
+  await verifyFormTitle(page, "Production Data");
+  await facilityReport.fillProductionData(
+    ["Compression, positive displacement - consumed energy"],
+    ["Compression, positive displacement - consumed energy"],
+  );
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Production Data",
+    variant: "LFO",
+  });
+  await facilityReport.clickContinue(
+    new RegExp(facilityReport.allocationOfEmissionsUrl()),
+  );
+
+  // ── 12. Allocation of Emissions (no entries needed for minimal test) ──
+  await verifyFormTitle(page, "Allocation of Emissions");
+  await facilityReport.fillAllocationOfEmissions();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Allocation of Emissions",
+    variant: "LFO",
+  });
+  await facilityReport.clickContinue(
+    new RegExp(facilityReport.facilityReportCompletedUrl()),
+  );
+
+  // -- 13. Facility report completed
+  await facilityReport.verifyFacilityReportCompleted();
+  await facilityReport.returnToAllFacilityReports();
+
+  await facilityGrid.markFacilityComplete("Facility 38");
+  await facilityGrid.clickContinue(
+    new RegExp(`${versionId}/${ReportRoutes.ADDITIONAL_REPORTING_DATA}`),
+  );
+
+  // ── 14. Additional Reporting Data — no captured emissions ──
+  await verifyFormTitle(page, "Additional Reporting Data");
+  await report.fillAdditionalData();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Additional Reporting Data",
+    variant: "LFO",
+  });
+  await report.saveAndContinue();
+
+  // ── 15. Operation Emission Summary (read-only) ──
+  const operationEmissionSummary = new OperationEmissionSummaryPOM(page);
+  await operationEmissionSummary.validateEmissionSummary();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Operation Emission Summary",
+    variant: "LFO",
+  });
+  await operationEmissionSummary.continue(
+    new RegExp(`${versionId}/${ReportRoutes.COMPLIANCE_SUMMARY}`),
+  );
+
+  // ── 16. Compliance Summary (read-only) ──
+  await report.verifyComplianceSummary();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Compliance Summary",
+    variant: "LFO",
+  });
+  await report.continue(new RegExp(`${versionId}/${ReportRoutes.VALIDATION}`));
+
+  // ── 17. Report Validation (read-only) ──
+  await verifyFormTitle(page, "Report validation");
+  await report.verifyReportValidation();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Report Validation",
+    variant: "LFO",
+  });
+  await report.continue(
+    new RegExp(`${versionId}/${ReportRoutes.FINAL_REVIEW}`),
+  );
+
+  // ── 18. Final Review (read-only) ──
+  await report.verifyFinalReview();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Final Review",
+    variant: "LFO",
+  });
+
+  await report.continue(
+    new RegExp(`${versionId}/${ReportRoutes.VERIFICATION}`),
+  );
+
+  // ── 19. Verification ──
+  await verifyFormTitle(page, "Verification");
+  await report.fillVerification();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Verification",
+    variant: "LFO - non-supplementary",
+  });
+  await report.saveAndContinue(
+    new RegExp(`${versionId}/${ReportRoutes.ATTACHMENTS}`),
+  );
+
+  // ── 20. Attachments — upload verification statement PDF ──
+  await report.uploadVerificationStatement();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Attachments",
+    variant: "LFO - non-supplementary",
+  });
+  await report.saveAndContinue(
+    new RegExp(`${versionId}/${ReportRoutes.SIGN_OFF}`),
+    false,
+  );
+
+  // ── 21. Sign-off and submit ──
+  await grid.completeSignOffRequiredFields();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Sign-off",
+    variant: "LFO - non-supplementary",
+  });
+  await grid.submitReportById(request, versionId, false, false, true);
+
+  // ── 22. Submission page — verify success content ──
+  await grid.verifySubmissionPage();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Report - Submission",
+    variant: "LFO - non-supplementary",
+  });
+
+  // ── 23. Return to the grid and verify the report status ──
+  await page
+    .getByRole("link", { name: ACTION_BUTTON_TEXT.RETURN_TO_REPORT_TABLE })
+    .click();
+  await grid.verifyReportStatus(
+    OPERATION_NAMES.BEES_LFO,
+    REPORT_STATUS.SUBMITTED,
+  );
+}

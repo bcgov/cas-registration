@@ -10,6 +10,7 @@ import {
 } from "@playwright/test";
 import { baseUrlSetup, GRID_ROOT } from "@bciers/e2e/utils/constants";
 import { DataTestID, MessageTextResponse } from "@bciers/e2e/utils/enums";
+import { HappoScreenshot } from "@bciers/e2e/utils/types";
 import AxeBuilder from "@axe-core/playwright";
 import path from "node:path";
 
@@ -165,6 +166,31 @@ export async function fillInputValueByLocator(
 
   if (blur === "tab") await field.press("Tab");
   if (blur === "enter") await field.press("Enter");
+}
+
+/**
+ * Asserts a numeric input holds the expected value.
+ *
+ * The number widgets render values locale-formatted — 12000 displays as "12,000" — so
+ * a plain `toHaveValue("12000")` fails. Matching a pattern with the thousands
+ * separators made optional accepts either rendering, while keeping the assertion a
+ * web-first one: `toHaveValue` retries on its own and, on failure, reports the field
+ * and the value it actually found.
+ */
+export async function expectNumericInputValue(
+  field: Locator,
+  expected: number,
+): Promise<void> {
+  const formatted = expected
+    // Default formatting rounds to 3 decimal places, which would misreport a value
+    // like 27290.8017 as unequal to itself
+    .toLocaleString("en-US", { maximumFractionDigits: 20 })
+    .replaceAll(".", String.raw`\.`)
+    .replaceAll(",", ",?");
+
+  await expect(field).toHaveValue(new RegExp(`^${formatted}$`), {
+    timeout: 30_000,
+  });
 }
 
 export async function checkAllRadioButtons(page: Page) {
@@ -433,7 +459,7 @@ export async function waitForElementToStabilize(page: Page, element: string) {
 
 // This function can be used instead of `happoScreenshot` directly when experiencing flaky screenshots. It waits for the page to be stable before taking a screenshot.
 export async function takeStabilizedScreenshot(
-  happoScreenshot: any,
+  happoScreenshot: HappoScreenshot,
   page: Page,
   happoArgs: { component: string; variant: string; targets?: string[] },
 ) {

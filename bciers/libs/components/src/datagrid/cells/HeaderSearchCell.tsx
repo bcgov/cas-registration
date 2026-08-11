@@ -6,6 +6,7 @@ import { TextField } from "@mui/material";
 import OutsideClickHandler from "react-outside-click-handler";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
 import debounce from "lodash.debounce";
+import { replaceUrlParams } from "@bciers/components/datagrid/replaceUrlParams";
 
 const SearchCell = ({
   field,
@@ -33,11 +34,7 @@ const SearchCell = ({
         params.delete(field);
       }
 
-      window.history.replaceState(
-        {},
-        "",
-        `${window.location.pathname}?${params.toString()}`,
-      );
+      replaceUrlParams(params);
     }, 400);
 
     debounced();

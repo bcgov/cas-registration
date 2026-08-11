@@ -19,6 +19,10 @@ import {
 } from "@mui/x-data-grid";
 import type { GridRowParams } from "@mui/x-data-grid";
 import Pagination from "@bciers/components/datagrid/Pagination";
+import {
+  getLiveSearchParams,
+  replaceUrlParams,
+} from "@bciers/components/datagrid/replaceUrlParams";
 import SortIcon from "@bciers/components/icons/SortIcon";
 import styles from "@bciers/components/datagrid/styles";
 import { Dict } from "@bciers/types/dictionary";
@@ -54,6 +58,10 @@ const experimentalFeatures = {
   columnGrouping: true,
   ariaV7: true,
 };
+
+// The sort the grid falls back to when the URL doesn't specify one
+const DEFAULT_SORT_FIELD = "created_at";
+const DEFAULT_SORT_ORDER: GridSortDirection = "desc";
 
 const DataGrid: React.FC<Props> = ({
   columns,
@@ -140,56 +148,60 @@ const DataGrid: React.FC<Props> = ({
   const handleSortModelChange = useMemo(
     () => (newSortModel: GridSortItem[]) => {
       if (disabled) return;
-      // window.location.pathname includes `/registration` unlike usePathname
-      const pathName = window.location.pathname;
-      const params = new URLSearchParams(searchParams);
-      const isParamsEmpty =
-        Object.keys(Object.fromEntries(params)).length === 0;
-      const isSortFieldEmpty = !newSortModel[0]?.field;
-
-      // Do not update the URL if the sort field is empty and the URL is already empty
-      if (isParamsEmpty && isSortFieldEmpty) return;
 
       const sortField = newSortModel[0]?.field;
+      const sortOrder = newSortModel[0]?.sort === "asc" ? "asc" : "desc";
+
+      // Keep the controlled model in step with the grid even when the URL doesn't
+      // need touching, so a sort carried in on the URL still renders as sorted.
+      setSortModel(newSortModel);
+
+      // MUI reports the sort model back while it initialises, before the user has
+      // done anything. Ignore anything that already matches the URL — including the
+      // implicit default the grid falls back to when sort_field is absent — so
+      // mounting the grid never writes history.
+      const liveParams = getLiveSearchParams();
+      const matchesUrl = sortField
+        ? sortField === (liveParams.get("sort_field") ?? DEFAULT_SORT_FIELD) &&
+          sortOrder === (liveParams.get("sort_order") ?? DEFAULT_SORT_ORDER)
+        : !liveParams.has("sort_field") && !liveParams.has("sort_order");
+
+      if (matchesUrl) return;
+
+      const params = new URLSearchParams(searchParams);
 
       if (sortField) {
         // Set the sort field and order in the URL
         params.set("sort_field", sortField);
-        params.set(
-          "sort_order",
-          newSortModel[0].sort === "asc" ? "asc" : "desc",
-        );
+        params.set("sort_order", sortOrder);
       } else {
         params.delete("sort_field");
         params.delete("sort_order");
       }
 
-      setSortModel(newSortModel);
-
-      // Update the URL with the new sort field and order
-      // replace(`${pathname}?${params.toString()}`);
-      // Shallow routing is not avilalble in nextjs app router so using window.history.replaceState
-      window.history.replaceState({}, "", `${pathName}?${params.toString()}`);
+      replaceUrlParams(params);
     },
-    [searchParams],
+    [searchParams, disabled],
   );
 
   const handlePaginationModelChange = useMemo(
     () => (newPaginationModel: { page: number; pageSize: number }) => {
       if (disabled) return;
-      // window.location.pathname includes `/registration` unlike usePathname
-      const pathName = window.location.pathname;
-      const params = new URLSearchParams(searchParams);
+
       const newPageNumber = newPaginationModel.page + 1;
+
+      // As above: the grid reports its initial page while setting itself up
+      const liveParams = getLiveSearchParams();
+      if (newPageNumber === Number(liveParams.get("page") ?? 1)) return;
+
+      const params = new URLSearchParams(searchParams);
 
       // Set the page and page size in the URL
       params.set("page", newPageNumber.toString());
 
-      // Update the URL with the new page number
-      // Shallow routing is not avilalble in nextjs app router so using window.history.replaceState
-      window.history.replaceState({}, "", `${pathName}?${params.toString()}`);
+      replaceUrlParams(params);
     },
-    [searchParams],
+    [searchParams, disabled],
   );
 
   // Memoize initialState
@@ -199,9 +211,10 @@ const DataGrid: React.FC<Props> = ({
       sorting: {
         sortModel: [
           {
-            field: searchParams.get("sort_field") ?? "created_at",
+            field: searchParams.get("sort_field") ?? DEFAULT_SORT_FIELD,
             sort:
-              (searchParams.get("sort_order") as GridSortDirection) ?? "desc",
+              (searchParams.get("sort_order") as GridSortDirection) ??
+              DEFAULT_SORT_ORDER,
           },
         ],
       },
