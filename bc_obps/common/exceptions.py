@@ -7,9 +7,9 @@ class UserError(Exception):
     pass
 
 
-class SystemError(Exception):
+class InternalSystemError(Exception):
     """
-    Base class for system-related errors.
+    Base class for obps system-related errors.
     These errors are typically used for unexpected conditions that indicate a problem in either
     unforeseen manipulation of the system, or a bug in the code.
     """

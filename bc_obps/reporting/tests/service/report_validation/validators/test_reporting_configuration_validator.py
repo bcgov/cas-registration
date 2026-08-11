@@ -1,3 +1,4 @@
+from common.exceptions import InternalSystemError
 from model_bakery.baker import make, make_recipe, prepare_recipe
 import pytest
 from reporting.models.configuration_element import ConfigurationElement
@@ -53,7 +54,7 @@ class TestReportingConfigurationValidator:
         )
 
         with pytest.raises(
-            SystemError,
+            InternalSystemError,
             match=f"Missing configuration elements for report methodology IDs: {report_methodology.id}",
         ):
             self.validator_under_test.validate(self.report_version)
@@ -76,7 +77,7 @@ class TestReportingConfigurationValidator:
         )
 
         with pytest.raises(
-            SystemError,
+            InternalSystemError,
             match=f"Missing configuration elements for report methodology IDs: {report_methodology.id}",
         ):
             self.validator_under_test.validate(self.report_version)
@@ -100,7 +101,7 @@ class TestReportingConfigurationValidator:
         )
 
         with pytest.raises(
-            SystemError,
+            InternalSystemError,
             match=f"ReportMethodology ID {report_methodology.id} has reporting fields"
             " {'unexpectedField'} which are not in the allowed fields {'allowedField'} of its matching configuration element.",
         ):

@@ -1,3 +1,4 @@
+from common.exceptions import InternalSystemError
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import OuterRef, QuerySet
 from reporting.models.configuration_element import ConfigurationElement
@@ -33,7 +34,7 @@ def validate_configuration_elements_present(report_version: ReportVersion) -> di
     )
 
     if missing_config.exists():
-        raise SystemError(
+        raise InternalSystemError(
             f"Missing configuration elements for report methodology IDs: {str.join(', ', [str(m['id']) for m in missing_config])}"
         )
 
@@ -71,7 +72,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     Validator ensuring that all the activity data reported has a matching configuration
     defined for the reporting year of the report.
 
-    For each ReportMethodlogy record:
+    For each ReportMethodology record:
     - Collect ReportMethodology -> ReportEmission (Gas Type) -> ReportSourceType -> ReportActivity -> Report (Reporting Year)
     - Validate that there is a ConfigurationElement record matching that combination
     - Validate that the extra reporting fields reported are in that configuration element
