@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     if: inputs.backend_has_changes == 'true'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: |
             bc_obps/

@@ -25,7 +25,7 @@ jobs:
       nx_affected_e2e: ${{ steps.check-nx-affected.outputs.NX_AFFECTED_E2E }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           sparse-checkout: |

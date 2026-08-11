@@ -32,7 +32,7 @@ jobs:
         working-directory: ./bciers
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           sparse-checkout: |
@@ -51,7 +51,7 @@ jobs:
   yarn-audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: |
             bciers/
@@ -66,7 +66,7 @@ jobs:
   prek:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: dev env setup frontend
         uses: ./.github/actions/dev-env-setup-frontend
       - name: dev env setup backend
@@ -84,7 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     if: inputs.backend_has_changes == 'true'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: |
             bc_obps/
@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     if: inputs.backend_has_changes == 'true'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           sparse-checkout: |
@@ -116,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     if: inputs.backend_has_changes == 'true'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: |
             bc_obps/
