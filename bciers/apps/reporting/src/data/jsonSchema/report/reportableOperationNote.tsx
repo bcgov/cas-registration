@@ -5,7 +5,8 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 export const infoNote = (
   <>
     Only operations missing a report for the selected reporting year are shown.
-    If an operation is not showing, it must be{" "}
+    If you don't see an operation you expected, then it hasn't been registered
+    yet.{" "}
     <Tooltip title="Link opens in a new tab" placement="top" arrow>
       <Link
         href="/administration/operations?isNewTab=true"
@@ -18,10 +19,9 @@ export const infoNote = (
           alignItems: "center",
         }}
       >
-        registered
+        Register a missing operation.
         <OpenInNewIcon fontSize="inherit" sx={{ ml: 0.25 }} />
       </Link>
     </Tooltip>{" "}
-    first.
   </>
 );
