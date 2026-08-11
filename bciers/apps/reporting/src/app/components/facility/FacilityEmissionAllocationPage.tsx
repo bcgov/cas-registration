@@ -3,6 +3,7 @@ import FacilityEmissionAllocationForm from "@reporting/src/app/components/facili
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
+import getRegulatedProducts from "@bciers/actions/api/getRegulatedProducts";
 
 export default async function FacilityEmissionAllocationPage({
   version_id,
@@ -38,6 +39,8 @@ export default async function FacilityEmissionAllocationPage({
     },
   );
 
+  const regulatedProducts = await getRegulatedProducts();
+
   return (
     <FacilityEmissionAllocationForm
       version_id={version_id}
@@ -51,6 +54,8 @@ export default async function FacilityEmissionAllocationPage({
       }
       facilityType={page_data.facility_data.facility_type}
       operationType={page_data.operation_data.operation_type}
+      reportingYear={page_data.report_data.reporting_year}
+      regulatedProducts={regulatedProducts}
     />
   );
 }

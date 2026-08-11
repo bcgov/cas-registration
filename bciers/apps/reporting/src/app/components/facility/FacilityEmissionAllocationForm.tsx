@@ -23,6 +23,7 @@ import { validatePulpAndPaper } from "./facilityEmissionAllocation/validatePulpA
 import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
 import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
 import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import { RegulatedProduct } from "../operations/types";
 
 // Interface for props passed to the component
 interface Props {
@@ -35,6 +36,8 @@ interface Props {
   overlappingIndustrialProcessEmissions: number;
   facilityType: string;
   operationType?: string;
+  reportingYear: number;
+  regulatedProducts: RegulatedProduct[];
 }
 
 export interface FormData {
@@ -69,6 +72,8 @@ const validateFormData = (
   formData: FormData,
   isPulpAndPaper: boolean,
   overlappingIndustrialProcessEmissions: number,
+  reportingYear: number,
+  regulatedProducts: RegulatedProduct[],
 ) => {
   const newErrors: string[] = [];
 
@@ -78,7 +83,12 @@ const validateFormData = (
 
   if (isPulpAndPaper && overlappingIndustrialProcessEmissions > 0) {
     newErrors.push(
-      ...validatePulpAndPaper(formData, overlappingIndustrialProcessEmissions),
+      ...validatePulpAndPaper(
+        formData,
+        overlappingIndustrialProcessEmissions,
+        reportingYear,
+        regulatedProducts,
+      ),
     );
   }
 
@@ -128,6 +138,8 @@ export default function FacilityEmissionAllocationForm({
   isPulpAndPaper,
   overlappingIndustrialProcessEmissions,
   operationType,
+  reportingYear,
+  regulatedProducts,
 }: Props) {
   // filter allocation_methodology enum
   const getFilteredSchema = () => {
@@ -223,6 +235,8 @@ export default function FacilityEmissionAllocationForm({
       formData,
       isPulpAndPaper,
       overlappingIndustrialProcessEmissions,
+      reportingYear,
+      regulatedProducts,
     );
     setErrors(newErrors);
     setSubmitButtonDisabled(newErrors.length > 0);
@@ -267,6 +281,8 @@ export default function FacilityEmissionAllocationForm({
         updatedFormData,
         isPulpAndPaper,
         overlappingIndustrialProcessEmissions,
+        reportingYear,
+        regulatedProducts,
       );
       setErrors(newErrors);
       setSubmitButtonDisabled(newErrors.length > 0);

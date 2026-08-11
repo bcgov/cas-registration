@@ -1,9 +1,12 @@
+import { RegulatedProduct } from "../../operations/types";
 import { FormData } from "../FacilityEmissionAllocationForm";
 import { EmissionAllocationData } from "../types";
 
 const validatePulpAndPaper = (
   formData: FormData,
   overlappingIndustrialProcessEmissions: number,
+  reportingYear: number,
+  regulatedProducts: RegulatedProduct[],
 ): string[] => {
   const errors: string[] = [];
 
@@ -27,17 +30,30 @@ const validatePulpAndPaper = (
     errors.push(
       "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page and report production amounts.",
     );
-  else if (!limeRecoveredByKilnAllocation)
-    errors.push(
-      "Missing Product: 'Pulp and paper: lime recovered by kiln'. Please add the product on the operation review page and report production amounts.",
+  else if (!limeRecoveredByKilnAllocation) {
+    // Check if reporting year is valid for this product before pushing error message
+    const limeRegulatedProduct = regulatedProducts.find(
+      (p) => p.name === "Pulp and paper: lime recovered by kiln",
     );
-  else if (
+    if (limeRegulatedProduct) {
+      const fromYear = new Date(
+        limeRegulatedProduct.valid_from,
+      ).getUTCFullYear();
+      const toYear = new Date(limeRegulatedProduct.valid_to).getUTCFullYear();
+      if (reportingYear >= fromYear && reportingYear <= toYear) {
+        errors.push(
+          "Missing Product: 'Pulp and paper: lime recovered by kiln'. Please add the product on the operation review page and report production amounts.",
+        );
+      }
+    }
+  } else if (
     // overlapping industrial process emissions are necessarily allocated to either of these products,
     // we can give the user an early warning if they didn't allocate enough at this stage
+    limeRecoveredByKilnAllocation &&
     chemicalPulpAllocation.allocated_quantity +
       limeRecoveredByKilnAllocation.allocated_quantity -
       overlappingIndustrialProcessEmissions <
-    0
+      0
   )
     errors.push(
       `Invalid allocation: Industrial Process quantity allocated betwen 'Pulp and paper:
