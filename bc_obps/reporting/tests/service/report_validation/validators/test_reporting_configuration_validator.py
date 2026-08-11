@@ -29,7 +29,7 @@ class TestReportingConfigurationValidator:
         )
 
         with pytest.raises(
-            SystemError,
+            InternalSystemError,
             match=f"Missing configuration elements for report methodology IDs: {report_methodology.id}",
         ):
             self.validator_under_test.validate(self.report_version)

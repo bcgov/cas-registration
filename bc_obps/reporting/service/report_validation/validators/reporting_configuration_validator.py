@@ -60,7 +60,7 @@ def validate_reporting_fields(report_version: ReportVersion) -> dict[str, Report
         allowed_slugs = set(record.allowed_slugs)
 
         if not reported_slugs.issubset(allowed_slugs):
-            raise SystemError(
+            raise InternalSystemError(
                 f"ReportMethodology ID {record.id} has reporting fields {reported_slugs - allowed_slugs} which are not in the allowed fields {allowed_slugs} of its matching configuration element."
             )
 
