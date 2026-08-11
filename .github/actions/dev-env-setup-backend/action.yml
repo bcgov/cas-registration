@@ -28,9 +28,10 @@ runs:
       with:
         python-version: ${{ steps.versions.outputs.python-version }}
     - name: Set up Poetry
-      uses: Gr1N/setup-poetry@v9
+      uses: snok/install-poetry@v1
       with:
-        poetry-version: ${{ steps.versions.outputs.poetry-version }}
+        version: ${{ steps.versions.outputs.poetry-version }}
+        virtualenvs-in-project: true
     - name: Set up PostgreSQL
       shell: bash
       run: |
@@ -51,7 +52,7 @@ runs:
       uses: actions/cache@v6
       with:
         path: bc_obps/.venv
-        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('bc_obps/poetry.lock') }}
     #----------------------------------------------
     # install dependencies if cache does not exist
     #----------------------------------------------
