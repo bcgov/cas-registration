@@ -40,7 +40,7 @@ class ReportAttachmentConfirmationRlsTest(BaseTestCase):
 
     def test_report_attachment_confirmation_rls_industry_user(self):
         # Common Test Setup
-        t = ReportRlsTestSetup(parent_object='facility_report')
+        t = ReportRlsTestSetup()
 
         # ReportAttachmentConfirmation Setup
         # Inside access bounds
