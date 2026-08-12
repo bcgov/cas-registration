@@ -68,7 +68,8 @@ class ReportActivitySaveService:
 
         # Only one ReportActivity record per report_version/facility/activity should ever exist
         report_activity, _ = ReportActivity.objects.update_or_create(
-            id=data.get("id"),
+            # A None id is the intentional "create" path; django-stubs 6.0 rejects None in lookups.
+            id=data.get("id"),  # type: ignore[misc]
             report_version=self.report_version,
             facility_report=self.facility_report,
             activity=self.activity,
@@ -121,7 +122,8 @@ class ReportActivitySaveService:
             raise UserError(f"Source type {source_type_slug} is expecting emission data")
 
         report_source_type, _ = ReportSourceType.objects.update_or_create(
-            id=source_type_data.get("id"),
+            # A None id is the intentional "create" path; django-stubs 6.0 rejects None in lookups.
+            id=source_type_data.get("id"),  # type: ignore[misc]
             report_version=self.facility_report.report_version,
             report_activity=report_activity,
             source_type=source_type,
@@ -171,7 +173,7 @@ class ReportActivitySaveService:
 
         # Update record if id was provided, create otherwise
         report_unit, _ = ReportUnit.objects.update_or_create(
-            id=report_unit_id,
+            id=report_unit_id,  # type: ignore[misc]
             create_defaults={
                 "json_data": json_data,
                 "report_source_type": report_source_type,
@@ -227,7 +229,7 @@ class ReportActivitySaveService:
         fuel_type = FuelType.objects.get(name=fuel_name)
 
         report_fuel, _ = ReportFuel.objects.update_or_create(
-            id=report_fuel_id,
+            id=report_fuel_id,  # type: ignore[misc]
             create_defaults={
                 "json_data": json_data,
                 "report_source_type": report_source_type,
@@ -272,7 +274,7 @@ class ReportActivitySaveService:
             raise UserError("Emission is expecting methodology data")
 
         report_emission, _ = ReportEmission.objects.update_or_create(
-            id=report_emission_id,
+            id=report_emission_id,  # type: ignore[misc]
             create_defaults={
                 "json_data": json_data,
                 "report_source_type": report_source_type,
@@ -301,7 +303,7 @@ class ReportActivitySaveService:
 
         report_methodology_id = methodology_data.get("id")
         report_methodology, _ = ReportMethodology.objects.update_or_create(
-            id=report_methodology_id,
+            id=report_methodology_id,  # type: ignore[misc]
             create_defaults={
                 "methodology": methodology,
                 "json_data": json_data,

@@ -372,7 +372,8 @@ class ComplianceService:
             compliance_summary_record_id = ReportComplianceSummary.objects.get(report_version_id=report_version_id).id
 
         compliance_summary_record, _ = ReportComplianceSummary.objects.update_or_create(
-            id=compliance_summary_record_id,
+            # A None id is the intentional "create" path; django-stubs 6.0 rejects None in lookups.
+            id=compliance_summary_record_id,  # type: ignore[misc]
             report_version=report_version_record,
             defaults=compliance_data_to_save.as_record_defaults(),
         )
@@ -387,7 +388,8 @@ class ComplianceService:
                     product_id=product_data_to_save.product_id,
                 ).id
             ReportComplianceSummaryProduct.objects.update_or_create(
-                id=product_data_id,
+                # A None id is the intentional "create" path; django-stubs 6.0 rejects None in lookups.
+                id=product_data_id,  # type: ignore[misc]
                 report_version=report_version_record,
                 report_compliance_summary=compliance_summary_record,
                 product=RegulatedProduct.objects.get(id=product_data_to_save.product_id),

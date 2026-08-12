@@ -39,7 +39,8 @@ class ReportNonAttributableService:
 
             # Using the object attributes instead of .get()
             report_non_attributable, _ = ReportNonAttributableEmissions.objects.update_or_create(
-                id=activity_data.id,
+                # A None id is the intentional "create" path; django-stubs 6.0 rejects None in lookups.
+                id=activity_data.id,  # type: ignore[misc]
                 defaults={
                     "report_version": report_version,
                     "facility_report": facility_report,
