@@ -64,7 +64,7 @@ class ReportComplianceSummaryRlsTest(BaseTestCase):
 
     def test_report_compliance_summary_rls_industry_user(self):
         # Common Test Setup
-        t = ReportRlsTestSetup(parent_object='facility_report')
+        t = ReportRlsTestSetup()
 
         # ReportComplianceSummary Setup
         # Inside access bounds
