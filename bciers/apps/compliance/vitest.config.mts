@@ -5,7 +5,7 @@ import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
 import path from "node:path";
 
 export default defineConfig({
-  root: __dirname,
+  root: import.meta.dirname,
   cacheDir: "../../node_modules/.vite/apps/compliance",
   plugins: [react(), nxViteTsPaths()],
   test: {
@@ -14,11 +14,11 @@ export default defineConfig({
     include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     exclude: ["node_modules", "dist", "e2e"],
     alias: {
-      "apps/compliance/src": path.resolve(__dirname, "./src"),
-      "apps/administration/app": path.resolve(__dirname, "../administration/app"),
-      "apps/dashboard/app": path.resolve(__dirname, "../dashboard/app"),
-      "apps/registration/app": path.resolve(__dirname, "../registration/app"),
-      "apps/reporting/src": path.resolve(__dirname, "../reporting/src"),
+      "apps/compliance/src": path.resolve(import.meta.dirname, "./src"),
+      "apps/administration/app": path.resolve(import.meta.dirname, "../administration/app"),
+      "apps/dashboard/app": path.resolve(import.meta.dirname, "../dashboard/app"),
+      "apps/registration/app": path.resolve(import.meta.dirname, "../registration/app"),
+      "apps/reporting/src": path.resolve(import.meta.dirname, "../reporting/src"),
     },
     reporters: ["default"],
     coverage: {
