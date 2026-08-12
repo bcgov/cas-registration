@@ -1,35 +1,18 @@
-/// <reference types='vitest' />
-import { defineConfig } from "vitest/config";
-import react from "@vitejs/plugin-react";
-import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
-import path from "node:path";
+import { createVitestConfig } from "../../libs/testConfig/src/vitest/createVitestConfig.mts";
 
-export default defineConfig({
-  root: import.meta.dirname,
-  cacheDir: "../../node_modules/.vite/apps/administration",
-  plugins: [react(), nxViteTsPaths()],
-  test: {
-    globals: true,
-    environment: "jsdom",
-    include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-    exclude: ["node_modules", "dist", "e2e"],
-    alias: {
-      "apps/administration/app": path.resolve(import.meta.dirname, "./app"),
-      "apps/administration/tests": path.resolve(import.meta.dirname, "./tests"),
-      "apps/dashboard/app": path.resolve(import.meta.dirname, "../dashboard/app"),
-      "apps/registration/app": path.resolve(import.meta.dirname, "../registration/app"),
-      "apps/reporting/src": path.resolve(import.meta.dirname, "../reporting/src"),
-      "apps/compliance/src": path.resolve(import.meta.dirname, "../compliance/src"),
-    },
-    reporters: ["default"],
-    coverage: {
-      reportsDirectory: "../../coverage/apps/administration",
-      provider: "v8",
-    },
-    setupFiles: [
-      "../../libs/testConfig/src/global.tsx",
-      "./tests/components/operators/mocks.ts",
-      "./tests/components/contacts/mocks.ts",
-    ],
+export default createVitestConfig({
+  rootDir: import.meta.dirname,
+  appName: "administration",
+  aliases: {
+    "apps/administration/app": "./app",
+    "apps/administration/tests": "./tests",
+    "apps/dashboard/app": "../dashboard/app",
+    "apps/registration/app": "../registration/app",
+    "apps/reporting/src": "../reporting/src",
+    "apps/compliance/src": "../compliance/src",
   },
+  setupFiles: [
+    "./tests/components/operators/mocks.ts",
+    "./tests/components/contacts/mocks.ts",
+  ],
 });
