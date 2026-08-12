@@ -1,4 +1,4 @@
-import { createVitestConfig } from "../../libs/testConfig/src/vitest/createVitestConfig.mts";
+import { createVitestConfig } from "../../libs/testConfig/src/vitest/createVitestConfig";
 
 export default createVitestConfig({
   rootDir: import.meta.dirname,
