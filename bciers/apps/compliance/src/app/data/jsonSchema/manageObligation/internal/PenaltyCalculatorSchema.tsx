@@ -1,10 +1,8 @@
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import FieldTemplateFullWidth from "@bciers/components/form/fields/FieldTemplateFullWidth";
-import {
-  readOnlyObjectField,
-  readOnlyStringField,
-} from "@/compliance/src/app/data/jsonSchema/helpers";
+import { readOnlyStringField } from "@/compliance/src/app/data/jsonSchema/helpers";
+import TableWidget from "@/compliance/src/app/widgets/TableWidget";
 import { PenaltyTypeButtonGroupWidget } from "../../../../components/compliance-summary/manage-obligation/internal/review-penalty-summary/PenaltyTypeButtonGroupWidget";
 import { PenaltySummaryField } from "../../../../components/compliance-summary/manage-obligation/internal/review-penalty-summary/PenaltySummaryWidget";
 
@@ -15,7 +13,7 @@ export const createPenaltyCalculatorSchema = (): RJSFSchema => ({
     automatic_overdue_penalty: readOnlyStringField(
       "Automatic overdue penalty:",
     ),
-    ggeapar_penalty: readOnlyStringField("GGEAPAR Penalty:"),
+    ggeapar_penalty: readOnlyStringField("GGEAPAR penalty:"),
     penalty_type: {
       type: "string",
       title: "1. Select penalty type",
@@ -40,7 +38,7 @@ export const createPenaltyCalculatorSchema = (): RJSFSchema => ({
       },
       additionalProperties: false,
     },
-    accrual_data: readOnlyObjectField("Accrual data"),
+    accrual_data: readOnlyStringField("Accrual data"),
   },
 });
 
@@ -48,8 +46,12 @@ export const penaltyCalculatorUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
 
-  automatic_overdue_penalty: {},
-  ggeapar_penalty: {},
+  automatic_overdue_penalty: {
+    "ui:classNames": "[&>div:first-child>label]:font-normal",
+  },
+  ggeapar_penalty: {
+    "ui:classNames": "[&>div:first-child>label]:font-normal",
+  },
   penalty_type: {
     "ui:widget": PenaltyTypeButtonGroupWidget,
     "ui:options": {
@@ -59,11 +61,12 @@ export const penaltyCalculatorUiSchema: UiSchema = {
   },
   final_day_of_penalty_accrual: {
     "ui:widget": "DateWidget",
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:classNames": "text-bc-bg-blue",
     "ui:options": {
-      classNames: "text-bc-bg-blue",
+      labelOverrideStyle: "font-normal text-bc-bg-blue",
     },
   },
-
   penalty_summary: {
     "ui:field": PenaltySummaryField,
     "ui:FieldTemplate": FieldTemplateFullWidth,
@@ -72,5 +75,21 @@ export const penaltyCalculatorUiSchema: UiSchema = {
       inline: true,
     },
     "ui:classNames": "!block [&>div]:!w-full [&>div]:!max-w-none",
+  },
+  accrual_data: {
+    "ui:widget": TableWidget,
+    "ui:FieldTemplate": FieldTemplateFullWidth,
+    "ui:options": {
+      label: false,
+      rowsPerPage: 5,
+      columnHeaders: [
+        "Date",
+        "Daily Penalty",
+        "Daily compounded",
+        "Accumulated penalty",
+        "Accumulated compounded",
+        "Interest rate %",
+      ],
+    },
   },
 };
