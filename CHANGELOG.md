@@ -1,5 +1,22 @@
 # Changelog
 
+# [5.19.0](https://github.com/bcgov/cas-registration/compare/v5.18.1...v5.19.0) (2026-08-12)
+
+### Bug Fixes
+
+- allow all authed internal users to view manual handling page ([4f970c1](https://github.com/bcgov/cas-registration/commit/4f970c11b02a0e7e41ee62855cfcde177f30f972))
+- dags should have static start dates ([ed8390a](https://github.com/bcgov/cas-registration/commit/ed8390a071b75266ee8548bab816a53653730703))
+- **deps:** update dependency eslint-config-next to v16.2.12 ([59864f0](https://github.com/bcgov/cas-registration/commit/59864f024d93d14316d293dae1f795425abdb574))
+- **deps:** update dependency next-auth to ^5.0.0-beta.32 [security] ([9cf2bef](https://github.com/bcgov/cas-registration/commit/9cf2bef8a813d686ceff25a8d75a4e0bad310ed4))
+- **deps:** update dependency postcss to v8.5.23 [security] ([cafacbc](https://github.com/bcgov/cas-registration/commit/cafacbc0dc2985ffce7283e2ce845f6ffba1c199))
+- **deps:** update node dependencies ([1f08676](https://github.com/bcgov/cas-registration/commit/1f08676a613e40ac58e3838c5650c0ce56eb1853))
+- display broken errors on responsible, review, and additional pages ([3951d89](https://github.com/bcgov/cas-registration/commit/3951d89ae6b57647a705db41dc00d88b11cbb2fd))
+- manage obligation layout crash ([b4ac22e](https://github.com/bcgov/cas-registration/commit/b4ac22e68305a53d21a44480e10bf2a695d293f3))
+
+### Features
+
+- external user can see penalty amount if obligation is not yet paid ([31724a6](https://github.com/bcgov/cas-registration/commit/31724a66e3e7ae2e72004cf97d3b7f0de2047ad2))
+
 ## [5.18.1](https://github.com/bcgov/cas-registration/compare/v5.18.0...v5.18.1) (2026-07-30)
 
 ### Bug Fixes
