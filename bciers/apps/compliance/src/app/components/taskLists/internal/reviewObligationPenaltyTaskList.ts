@@ -6,6 +6,7 @@ export enum ActivePage {
   ReviewComplianceObligationReport = "ReviewComplianceObligationReport",
   ReviewInterestSummary = "ReviewInterestSummary",
   ReviewPenaltySummary = "ReviewPenaltySummary",
+  PenaltyCalculator = "PenaltyCalculator",
 }
 
 export const generateReviewObligationPenaltyTaskList: (
@@ -31,6 +32,12 @@ export const generateReviewObligationPenaltyTaskList: (
       title: `Review ${reportingYear} Compliance Obligation Report`,
       link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`,
       isActive: activePage === ActivePage.ReviewComplianceObligationReport,
+    },
+    {
+      type: "Page" as const,
+      title: "Penalty calculator",
+      link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/penalty-calculator`,
+      isActive: activePage === ActivePage.PenaltyCalculator,
     },
   ];
 
