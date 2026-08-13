@@ -5,7 +5,6 @@ import {
   setupTestEnvironment,
   getStorageStateForRole,
 } from "@bciers/e2e/utils/helpers";
-import { E2E_FIXED_CLOCK } from "@bciers/e2e/utils/constants";
 
 // Only merge Happo if explicitly enabled (disabled during nightly builds)
 const isHappoEnabled = process.env.HAPPO_ENABLED === "true";
@@ -23,22 +22,7 @@ const test = isHappoEnabled
       },
     });
 
-export interface SetupTestOptions {
-  /**
-   * Pin the browser clock to {@link E2E_FIXED_CLOCK}.
-   *
-   * For suites taking Happo screenshots of client-side dates, which would
-   * otherwise report a visual diff every day. Off by default: it changes what
-   * every page in the suite sees as "now", so only opt in where it's needed.
-   */
-  fixedClock?: boolean;
-}
-
-export function setupTest(
-  role: string,
-  hookType: "beforeEach" | "beforeAll",
-  { fixedClock = false }: SetupTestOptions = {},
-) {
+export function setupTest(role: string, hookType: "beforeEach" | "beforeAll") {
   const storageState = getStorageStateForRole(role);
 
   const testWithRole: typeof baseTest = test.extend({
@@ -53,9 +37,6 @@ export function setupTest(
         storageState,
         baseURL,
       });
-      if (fixedClock) {
-        await newContext.clock.setFixedTime(E2E_FIXED_CLOCK);
-      }
       // eslint-disable-next-line react-hooks/rules-of-hooks
       await use(newContext);
     },
