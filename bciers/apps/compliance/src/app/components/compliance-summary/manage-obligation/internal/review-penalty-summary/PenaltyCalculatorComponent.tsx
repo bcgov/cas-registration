@@ -5,12 +5,10 @@ import { FormBase } from "@bciers/components/form";
 import { IChangeEvent } from "@rjsf/core";
 import { useMemo, useRef, useState } from "react";
 import {
-  createPenaltyCalculatorSchema,
+  penaltyCalculatorSchema,
   penaltyCalculatorUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/internal/PenaltyCalculatorSchema";
 import { getPenaltyAccrualCalculationData } from "@/compliance/src/app/utils/getPenaltyAccrualCalculationData";
-
-const penaltyCalculatorSchema = createPenaltyCalculatorSchema();
 
 type PenaltyAccrualRow = {
   date?: string;

@@ -146,7 +146,7 @@ const TableRenderer = ({
           onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
           disabled={safeCurrentPage === 1}
         >
-          Previous
+          &lt;
         </button>
         <span className="text-sm text-bc-bg-blue">
           Page {safeCurrentPage} of {totalPages}
@@ -159,7 +159,7 @@ const TableRenderer = ({
           }
           disabled={safeCurrentPage === totalPages}
         >
-          Next
+          &gt;
         </button>
       </div>
     </div>

@@ -61,7 +61,7 @@ export const PenaltySummaryField = ({
           className="rounded-md bg-red-50 p-4 text-bc-error-red"
         >
           <p className="text-sm font-medium">Total penalty amount</p>
-          <p className="mt-1 text-2xl font-bold">{totalPenaltyAmount}</p>
+          <p className="mt-1 text-2xl font-bold">${totalPenaltyAmount}</p>
         </div>
         <div
           style={{
