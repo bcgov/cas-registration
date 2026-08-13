@@ -222,6 +222,17 @@ export const ProductionDataChangeView: React.FC<
       }
     });
 
+    // The API returns field changes in an unstable order, so sort by the labels to
+    // keep the section reading the same way every time
+    const fieldOrder = Object.keys(fieldLabels);
+    Object.values(productGroups).forEach((group) => {
+      group.changes.sort(
+        (a, b) =>
+          fieldOrder.indexOf(getFieldKey(a.field) ?? "") -
+          fieldOrder.indexOf(getFieldKey(b.field) ?? ""),
+      );
+    });
+
     return Object.values(productGroups);
   };
 
