@@ -26,11 +26,11 @@ const validatePulpAndPaper = (
     industrialEmissionAllocations?.products?.find(
       (p) => p.product_name === "Pulp and paper: lime recovered by kiln",
     );
-  if (!chemicalPulpAllocation)
+  if (!chemicalPulpAllocation && limeRecoveredByKilnAllocation)
     errors.push(
       "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page and report production amounts.",
     );
-  else if (!limeRecoveredByKilnAllocation) {
+  if (!limeRecoveredByKilnAllocation && chemicalPulpAllocation) {
     // Check if reporting year is valid for this product before pushing error message
     const limeRegulatedProduct = regulatedProducts.find(
       (p) => p.name === "Pulp and paper: lime recovered by kiln",
@@ -46,10 +46,12 @@ const validatePulpAndPaper = (
         );
       }
     }
-  } else if (
+  }
+  if (
     // overlapping industrial process emissions are necessarily allocated to either of these products,
     // we can give the user an early warning if they didn't allocate enough at this stage
     limeRecoveredByKilnAllocation &&
+    chemicalPulpAllocation &&
     chemicalPulpAllocation.allocated_quantity +
       limeRecoveredByKilnAllocation.allocated_quantity -
       overlappingIndustrialProcessEmissions <
