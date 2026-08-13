@@ -1,5 +1,5 @@
-import { setupTest } from "./setupTest";
+import { setupTest, SetupTestOptions } from "./setupTest";
 
-export function setupBeforeEachTest(role: string) {
-  return setupTest(role, "beforeEach");
+export function setupBeforeEachTest(role: string, options?: SetupTestOptions) {
+  return setupTest(role, "beforeEach", options);
 }

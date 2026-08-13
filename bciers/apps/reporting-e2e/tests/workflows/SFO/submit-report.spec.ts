@@ -6,7 +6,11 @@ import {
   sfoSupplementaryScenarios,
 } from "@/reporting-e2e/tests/workflows/supplementary/sfo";
 
-const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
+// fixedClock: the sign-off page renders today's date client-side, which would
+// otherwise churn its Happo baseline daily
+const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN, {
+  fixedClock: true,
+});
 
 test.describe.configure({ mode: "serial" });
 

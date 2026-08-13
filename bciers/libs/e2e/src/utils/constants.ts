@@ -100,3 +100,4 @@ export const COMPLIANCE_E2E_INTEGRATION_STUB_PATH =
   "compliance/e2e-integration-stub";
 
 export const GRID_ROOT = '[role="grid"]';
+export const E2E_FIXED_CLOCK = new Date("2026-01-15T12:00:00Z");
