@@ -372,11 +372,19 @@ export async function runLfoSupplementaryScenario({
 
   // ── 24. Sign-off ──
   await grid.verifySupplementarySignOffFields(isRegulated);
+  await grid.completeSignOffAcknowledgements({
+    isSupplementary: true,
+    isRegulated,
+  });
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Sign-off",
     variant: "LFO - supplementary",
   });
-  await grid.submitReportById(request, versionId, false, true, isRegulated);
+  await grid.fillSignature();
+  await grid.submitSignedReport(request, versionId, {
+    isSupplementary: true,
+    isRegulated,
+  });
 
   // ── 25. Submission page ──
   await grid.verifySubmissionPage(true);

@@ -323,11 +323,19 @@ export async function runSfoSupplementaryScenario({
 
   // ── 19. Sign-off ──
   await grid.verifySupplementarySignOffFields(isRegulated);
+  await grid.completeSignOffAcknowledgements({
+    isSupplementary: true,
+    isRegulated,
+  });
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Sign-off",
     variant: "SFO - supplementary",
   });
-  await grid.submitReportById(request, versionId, false, true, isRegulated);
+  await grid.fillSignature();
+  await grid.submitSignedReport(request, versionId, {
+    isSupplementary: true,
+    isRegulated,
+  });
 
   // ── 20. Submission page ──
   await grid.verifySubmissionPage(true);

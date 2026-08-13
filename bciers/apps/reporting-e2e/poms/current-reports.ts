@@ -423,8 +423,7 @@ export class CurrentReportsPOM {
   }
 
   /**
-   * Completes all sign-off fields required for the Submit button to become enabled,
-   * based on the sign-off schema variant.
+   * Ticks the sign-off acknowledgements for the schema variant in play.
    *
    * Flow-specific rules:
    *
@@ -447,7 +446,7 @@ export class CurrentReportsPOM {
    * @param isSupplementary - Whether this is a supplementary submission
    * @param isRegulated - Whether the operation is regulated (affects supplementary corrections)
    */
-  async completeSignOffRequiredFields({
+  async completeSignOffAcknowledgements({
     isEioFlow = false,
     isSupplementary = false,
     isRegulated = false,
@@ -486,8 +485,9 @@ export class CurrentReportsPOM {
         await checkCheckboxByLabel(this.page, SignOffCheckboxLabel.CORRECTIONS);
       }
     }
+  }
 
-    // Signature
+  async fillSignature(): Promise<void> {
     const signatureInput = this.page.getByLabel(
       new RegExp(SIGN_OFF_SIGNATURE_LABEL, "i"),
     );
@@ -521,11 +521,41 @@ export class CurrentReportsPOM {
 
     await this.gotoSignOff(reportVersionId);
 
-    await this.completeSignOffRequiredFields({
+    await this.completeSignOffAcknowledgements({
       isEioFlow,
       isSupplementary,
       isRegulated,
     });
+    await this.fillSignature();
+
+    await this.submitSignedReport(apiContext, reportVersionId, {
+      isEioFlow,
+      isSupplementary,
+      isRegulated,
+    });
+  }
+
+  /**
+   * Submits a sign-off form the test has already filled in.
+   *
+   * Neither navigates nor fills anything, so the report is submitted in exactly
+   * the state the test left it — for workflows that walked the form themselves.
+   * Use {@link submitReportById} to submit a report without preparing it first.
+   */
+  async submitSignedReport(
+    apiContext: APIRequestContext,
+    reportId: string | number,
+    {
+      isEioFlow = false,
+      isSupplementary = false,
+      isRegulated = false,
+    }: {
+      isEioFlow?: boolean;
+      isSupplementary?: boolean;
+      isRegulated?: boolean;
+    } = {},
+  ) {
+    const reportVersionId = Number(reportId);
 
     // Submit should now be enabled
     await expect(this.submitButton).toBeEnabled();
