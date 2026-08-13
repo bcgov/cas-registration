@@ -121,6 +121,8 @@ const OperationInformationForm = ({
       }
       setError(response.error);
       return { error: response.error };
+    } else {
+      setConfirmedFormData(response);
     }
 
     if (!data.formData?.opted_in_operation) return;

@@ -48,7 +48,7 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
 
 @router.post(
     "/operations/{uuid:operation_id}",
-    response={200: OperationOut, custom_codes_4xx: Message},
+    response={200: OperationOutWithDocuments, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="Updates the details of a specific operation by its ID, with files being passed as multipart form data.",
     auth=authorize("approved_industry_user"),
