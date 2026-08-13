@@ -2,7 +2,7 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import FieldTemplateFullWidth from "@bciers/components/form/fields/FieldTemplateFullWidth";
 import { readOnlyStringField } from "@/compliance/src/app/data/jsonSchema/helpers";
-import TableWidget from "@/compliance/src/app/widgets/TableWidget";
+import { TableField } from "@/compliance/src/app/widgets/TableWidget";
 import { PenaltyTypeButtonGroupWidget } from "../../../../components/compliance-summary/manage-obligation/internal/review-penalty-summary/PenaltyTypeButtonGroupWidget";
 import { PenaltySummaryField } from "../../../../components/compliance-summary/manage-obligation/internal/review-penalty-summary/PenaltySummaryWidget";
 
@@ -38,7 +38,22 @@ export const createPenaltyCalculatorSchema = (): RJSFSchema => ({
       },
       additionalProperties: false,
     },
-    accrual_data: readOnlyStringField("Accrual data"),
+    accrual_data: {
+      type: "object",
+      title: "Accrual data",
+      properties: {
+        tableData: {
+          type: "array",
+          items: {
+            type: "array",
+            items: {
+              type: ["string", "number", "null"],
+            },
+          },
+        },
+      },
+      additionalProperties: false,
+    },
   },
 });
 
@@ -64,6 +79,7 @@ export const penaltyCalculatorUiSchema: UiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "text-bc-bg-blue",
     "ui:options": {
+      simpleDateFormat: true,
       labelOverrideStyle: "font-normal text-bc-bg-blue",
     },
   },
@@ -77,11 +93,11 @@ export const penaltyCalculatorUiSchema: UiSchema = {
     "ui:classNames": "!block [&>div]:!w-full [&>div]:!max-w-none",
   },
   accrual_data: {
-    "ui:widget": TableWidget,
+    "ui:field": TableField,
     "ui:FieldTemplate": FieldTemplateFullWidth,
     "ui:options": {
       label: false,
-      rowsPerPage: 5,
+      rowsPerPage: 10,
       columnHeaders: [
         "Date",
         "Daily Penalty",

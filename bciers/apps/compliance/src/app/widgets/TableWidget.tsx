@@ -17,6 +17,12 @@ type TableWidgetValue = {
   tableData?: TableRow[];
 };
 
+type TableRendererProps = {
+  label?: string;
+  tableOptions: TableWidgetOptions;
+  valueData: TableWidgetValue;
+};
+
 const getDisplayValue = (value: CellValue): string => {
   if (value === null || value === undefined || value === "") {
     return "-";
@@ -55,10 +61,11 @@ const getHeaders = (
   return [];
 };
 
-const TableWidget = ({ label, options, value }: WidgetProps) => {
-  const tableOptions = (options ?? {}) as TableWidgetOptions;
-  const valueData = (value ?? {}) as TableWidgetValue;
-
+const TableRenderer = ({
+  label,
+  tableOptions,
+  valueData,
+}: TableRendererProps) => {
   const sourceRows = (tableOptions.tableData ??
     valueData.tableData ??
     []) as TableRow[];
@@ -156,6 +163,42 @@ const TableWidget = ({ label, options, value }: WidgetProps) => {
         </button>
       </div>
     </div>
+  );
+};
+
+const TableWidget = ({ label, options, value }: WidgetProps) => {
+  const tableOptions = (options ?? {}) as TableWidgetOptions;
+  const valueData = (value ?? {}) as TableWidgetValue;
+
+  return (
+    <TableRenderer
+      label={label}
+      tableOptions={tableOptions}
+      valueData={valueData}
+    />
+  );
+};
+
+type TableFieldProps = {
+  formData?: TableWidgetValue;
+  schema?: {
+    title?: string;
+  };
+  uiSchema?: {
+    [key: string]: any;
+  };
+};
+
+export const TableField = ({ formData, schema, uiSchema }: TableFieldProps) => {
+  const tableOptions = (uiSchema?.["ui:options"] ?? {}) as TableWidgetOptions;
+  const showLabel = uiSchema?.["ui:options"]?.label !== false;
+
+  return (
+    <TableRenderer
+      label={showLabel ? schema?.title : undefined}
+      tableOptions={tableOptions}
+      valueData={(formData ?? {}) as TableWidgetValue}
+    />
   );
 };
 
