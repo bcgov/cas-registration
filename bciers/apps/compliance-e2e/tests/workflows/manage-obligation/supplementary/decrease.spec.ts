@@ -259,6 +259,11 @@ async function runScenario(opts: {
 test.describe("Test supplementary report decreases obligation", () => {
   for (const scenario of scenarios) {
     test(`${scenario.title}`, async ({ page, request, happoScreenshot }) => {
+      // Each scenario submits a report and generates two invoices. The default
+      // 60s budget is shared across all of that, leaving invoice generation only
+      // the remainder — enough on a fast machine, not on a loaded CI runner.
+      test.slow();
+
       await runScenario({ page, request, scenario, happoScreenshot });
     });
   }
