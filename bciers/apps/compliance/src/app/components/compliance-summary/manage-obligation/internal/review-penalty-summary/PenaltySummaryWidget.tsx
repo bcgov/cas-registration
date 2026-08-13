@@ -12,6 +12,24 @@ const getDisplayValue = (value: string | number | null | undefined): string => {
   return String(value);
 };
 
+const getFormattedPenaltyAmount = (
+  value: string | number | null | undefined,
+): string => {
+  if (value === null || value === undefined || value === "") {
+    return "-";
+  }
+
+  const numericValue = Number(String(value).replace(/,/g, ""));
+  if (Number.isNaN(numericValue)) {
+    return String(value);
+  }
+
+  return numericValue.toLocaleString("en-CA", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
 type PenaltySummaryFieldProps = {
   formData?: PenaltySummaryValue;
   label?: string;
@@ -22,7 +40,9 @@ export const PenaltySummaryField = ({
   label,
 }: PenaltySummaryFieldProps) => {
   const summary = (formData ?? {}) as PenaltySummaryValue;
-  const totalPenaltyAmount = getDisplayValue(summary.total_penalty_amount);
+  const totalPenaltyAmount = getFormattedPenaltyAmount(
+    summary.total_penalty_amount,
+  );
   const daysLate = getDisplayValue(summary.days_late);
 
   return (

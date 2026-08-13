@@ -33,13 +33,16 @@ export const generateReviewObligationPenaltyTaskList: (
       link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`,
       isActive: activePage === ActivePage.ReviewComplianceObligationReport,
     },
-    {
+  ];
+
+  if (penaltyStatus == PenaltyStatus.ACCRUING) {
+    elements.push({
       type: "Page" as const,
       title: "Penalty calculator",
       link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/penalty-calculator`,
       isActive: activePage === ActivePage.PenaltyCalculator,
-    },
-  ];
+    });
+  }
 
   if (isObligationFullyPaid && hasLateSubmissionPenalty) {
     elements.push({
