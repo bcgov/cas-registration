@@ -6,7 +6,7 @@ import { TableField } from "@/compliance/src/app/widgets/TableWidget";
 import { PenaltyTypeButtonGroupWidget } from "../../../../components/compliance-summary/manage-obligation/internal/review-penalty-summary/PenaltyTypeButtonGroupWidget";
 import { PenaltySummaryField } from "../../../../components/compliance-summary/manage-obligation/internal/review-penalty-summary/PenaltySummaryWidget";
 
-export const createPenaltyCalculatorSchema = (): RJSFSchema => ({
+export const penaltyCalculatorSchema: RJSFSchema = {
   type: "object",
   title: "Penalty Calculator",
   properties: {
@@ -55,7 +55,7 @@ export const createPenaltyCalculatorSchema = (): RJSFSchema => ({
       additionalProperties: false,
     },
   },
-});
+};
 
 export const penaltyCalculatorUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -96,7 +96,6 @@ export const penaltyCalculatorUiSchema: UiSchema = {
     "ui:field": TableField,
     "ui:FieldTemplate": FieldTemplateFullWidth,
     "ui:options": {
-      label: false,
       rowsPerPage: 10,
       columnHeaders: [
         "Date",
