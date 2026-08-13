@@ -119,3 +119,12 @@ export const AMOUNT_DUE_AFTER_DECREASE_OBLIGATION_MET = new RegExp(
   `${AMOUNT_DUE_LABEL.source}\\$0\\.00`,
   "i",
 );
+
+/**
+ * How long to wait for the invoice PDF response.
+ *
+ * Generation is slow enough to outlast the default per-test budget, so tests that
+ * call it must opt into a longer one with `test.slow()` — otherwise the test is
+ * killed before this can elapse and the timeout has no effect.
+ */
+export const INVOICE_GENERATION_TIMEOUT_MS = 120_000;

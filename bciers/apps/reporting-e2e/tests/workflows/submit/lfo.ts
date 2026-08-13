@@ -233,12 +233,13 @@ export async function runLfoSubmitReport({
   );
 
   // ── 21. Sign-off and submit ──
-  await grid.completeSignOffRequiredFields();
+  await grid.completeSignOffAcknowledgements();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Sign-off",
     variant: "LFO - non-supplementary",
   });
-  await grid.submitReportById(request, versionId, false, false, true);
+  await grid.fillSignature();
+  await grid.submitSignedReport(request, versionId, { isRegulated: true });
 
   // ── 22. Submission page — verify success content ──
   await grid.verifySubmissionPage();

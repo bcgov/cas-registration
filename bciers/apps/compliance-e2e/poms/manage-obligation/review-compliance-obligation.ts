@@ -3,6 +3,7 @@ import {
   COMPLIANCE_INVOICE_API_BASE,
   ComplianceInvoiceType,
   GENERATE_INVOICE_BUTTON_TEXT,
+  INVOICE_GENERATION_TIMEOUT_MS,
 } from "@/compliance-e2e/utils/constants";
 
 export class ReviewComplianceObligationPOM {
@@ -32,7 +33,7 @@ export class ReviewComplianceObligationPOM {
     );
     const [response] = await Promise.all([
       this.page.waitForResponse((r) => invoiceUrl.test(r.url()), {
-        timeout: 120_000,
+        timeout: INVOICE_GENERATION_TIMEOUT_MS,
       }),
       this.clickGenerateInvoice(),
     ]);

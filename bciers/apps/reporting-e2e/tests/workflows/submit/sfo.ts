@@ -183,12 +183,13 @@ export async function runSfoSubmitReport({
   );
 
   // ── 16. Sign-off and submit ──
-  await grid.completeSignOffRequiredFields();
+  await grid.completeSignOffAcknowledgements();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Sign-off",
     variant: "SFO - non-supplementary",
   });
-  await grid.submitReportById(request, versionId, false, false, true);
+  await grid.fillSignature();
+  await grid.submitSignedReport(request, versionId, { isRegulated: true });
 
   // ── 17. Submission page — verify success content ──
   await grid.verifySubmissionPage();
