@@ -8,7 +8,7 @@ from registration.schema import (
     OperationTimelineFilterSchema,
     OperationTimelineListOut,
 )
-from registration.schema.operation import OperationOutWithDocuments
+from registration.schema.operation import OperationUpdateOut
 from service.data_types.operation_service import OperationData, MultipleOperatorData
 from service.operation_service import OperationService
 from common.permissions import authorize
@@ -68,7 +68,7 @@ def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[
 ##### POST #####
 @router.post(
     "/operations",
-    response={201: OperationOutWithDocuments, custom_codes_4xx: Message},
+    response={201: OperationUpdateOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Creates a new operation for the current user and starts the registration process.
     It associates the new operation with the current user's approved user-operator.""",

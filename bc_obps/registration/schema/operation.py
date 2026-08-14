@@ -219,6 +219,12 @@ class OperationOutWithDocuments(OperationOut):
         return serialize_document(obj.get_new_entrant_application())
 
 
+class OperationUpdateOut(ModelSchema):
+    class Meta:
+        model = Operation
+        fields = ['id', 'name']
+
+
 class OperationCurrentOut(ModelSchema):
     class Meta:
         model = Operation

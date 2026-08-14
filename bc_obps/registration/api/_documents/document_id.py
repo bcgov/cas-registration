@@ -7,7 +7,7 @@ from registration.api.router import router
 from registration.constants import DOCUMENT_TAGS
 from registration.schema import Message
 from service.document_service import DocumentService
-from service.error_service import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(

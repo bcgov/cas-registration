@@ -4,6 +4,7 @@ from common.exceptions import UserError
 from django.http import HttpRequest
 from ninja import File, UploadedFile
 from registration.constants import OPERATION_TAGS
+from registration.schema.operation import OperationUpdateOut
 from service.document_service import DocumentService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema import (
@@ -34,7 +35,7 @@ def get_operation_new_entrant_application(request: HttpRequest, operation_id: UU
 
 @router.post(
     "/operations/{uuid:operation_id}/registration/new-entrant-application",
-    response={200: OperationNewEntrantApplicationOut, custom_codes_4xx: Message},
+    response={200: OperationUpdateOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="Creates or replaces a new entrant application document for an Operation",
     auth=authorize("approved_industry_user"),
