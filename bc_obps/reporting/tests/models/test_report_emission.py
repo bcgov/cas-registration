@@ -176,7 +176,7 @@ class ReportEmissionRlsTest(BaseTestCase):
             forbidden_delete_function=forbidden_delete_function,
         )
 
-    def test_report_compliance_summary_rls_cas_user(self):
+    def test_report_emission_rls_cas_user(self):
         test_quantity = 5
         make_recipe(
             "reporting.tests.utils.report_emission",
