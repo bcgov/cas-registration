@@ -190,3 +190,13 @@ This `can_handle()` function will return true if the credited_emission values an
 #### What does it do
 
 This `handle()` function will create a compliance report version with the No Obligation or Earned Credits status. No related obligation or earned credit record will be created in this case.
+
+![Supplementary Report Engine](./images/bciers-supplementary-report-engine.png)
+
+#### Image Generation details
+
+- **Tool:** ChatGPT (OpenAI), including AI image generation
+- **Input:** Technical information contained in this document
+
+> [!NOTE]
+> AI-generated diagrams are for explanatory purposes only. If a diagram conflicts with the application code, technical documentation, or applicable regulations, those sources take precedence.
