@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { WidgetProps } from "@rjsf/utils";
 
 const DEFAULT_VALUE = "automatic_overdue";
@@ -23,12 +22,6 @@ export const PenaltyTypeButtonGroupWidget = ({
   disabled,
   readonly,
 }: WidgetProps) => {
-  useEffect(() => {
-    if (!value) {
-      onChange(DEFAULT_VALUE);
-    }
-  }, [value, onChange]);
-
   const selectedValue = (value as string) || DEFAULT_VALUE;
 
   return (

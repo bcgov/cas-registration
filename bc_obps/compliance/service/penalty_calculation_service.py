@@ -379,6 +379,7 @@ class PenaltyCalculationService:
         obligation: ComplianceObligation,
         accrual_start_date: date,
         final_accrual_date: date | None = None,
+        penalty_type: CompliancePenalty.PenaltyType = CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
     ) -> CalculatedPenaltyData:
         """
         Calculate penalty for an obligation by retrieving data from eLicensing.
@@ -387,10 +388,12 @@ class PenaltyCalculationService:
             obligation: The compliance obligation
             accrual_start_date: The first day that the penalty begins accruing
             final_accrual_date: The last day that the penalty accrued, default None which means today
+            penalty_type: The type of penalty, default Automatic Overdue
 
         Returns:
             CalculatedPenaltyData Dataclass
         """
+        # TODO: incorporate penalty_types AUTOMATIC_OVERDUE and LATE_SUBMISSION (ggeapar)
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
