@@ -48,7 +48,7 @@ class OperationDesignatedOperatorTimelineDataAccessService:
                 operation_id=OuterRef('operation'),
                 operation_id__type=Operation.Types.SFO,
             )
-            .only('facility__pk', 'facility__name')
+            .only('facility__id', 'facility__name')
             .order_by('start_date')
         )
         if exclude_previously_owned:

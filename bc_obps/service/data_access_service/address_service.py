@@ -21,7 +21,8 @@ class AddressDataAccessService:
         address_id: Optional[int],
     ) -> Address:
         address, _ = Address.objects.update_or_create(
-            id=address_id,
+            # A None id is the intentional "create" path; django-stubs 6.0 rejects None in lookups.
+            id=address_id,  # type: ignore[misc]
             defaults={**address_data},
         )
         return address

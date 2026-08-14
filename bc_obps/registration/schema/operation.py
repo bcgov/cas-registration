@@ -17,7 +17,8 @@ def serialize_document(doc: Document | None) -> Optional[str]:
     # Something similar to dataURL to allow passing metadata along with the filename.
     # Required because RJSF expects a string for a file field.
     if doc:
-        name = doc.file.name.split('/')[-1]
+        # Document.file is non-nullable, so name is always set; django-stubs 6.0 types it as str | None.
+        name = doc.file.name.split('/')[-1]  # type: ignore[union-attr]
         return json.dumps({"name": name, "id": doc.id, "status": doc.status})
     return None
 
