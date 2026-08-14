@@ -57,7 +57,7 @@ class OperationRegistrationOut(ModelSchema):
 
     class Meta:
         model = Operation
-        fields = ["name", 'type', 'registration_purpose', 'regulated_products', 'activities']
+        fields = ["id", "name", 'type', 'registration_purpose', 'regulated_products', 'activities']
 
 
 class OperationRepresentativeIn(ModelSchema):

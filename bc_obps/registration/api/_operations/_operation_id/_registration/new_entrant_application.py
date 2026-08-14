@@ -1,8 +1,10 @@
 from typing import Literal, Tuple
 from uuid import UUID
+from common.exceptions import UserError
 from django.http import HttpRequest
 from ninja import File, UploadedFile
 from registration.constants import OPERATION_TAGS
+from service.document_service import DocumentService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema import (
     OperationNewEntrantApplicationOut,
@@ -40,8 +42,18 @@ def get_operation_new_entrant_application(request: HttpRequest, operation_id: UU
 def create_or_replace_new_entrant_application(
     request: HttpRequest,
     operation_id: UUID,
-    new_entrant_application: File[UploadedFile],
+    new_entrant_application: File[UploadedFile] = None,  # type: ignore
 ) -> Tuple[Literal[200], Operation]:
+    user_guid = get_current_user_guid(request)
+
+    if not DocumentService.get_operation_document_by_type_if_authorized(
+        user_guid, operation_id, "new_entrant_application"
+    ):
+        """
+        A valid scenario is if a file is already uploaded, a new submission of the form will have the file set to None.
+        """
+        raise UserError("Missing attached new entrant application, please provide one with the form.")
+
     return 200, OperationService.create_or_replace_new_entrant_application(
-        get_current_user_guid(request), operation_id, new_entrant_application
+        user_guid, operation_id, new_entrant_application
     )

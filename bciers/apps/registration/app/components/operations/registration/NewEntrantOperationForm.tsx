@@ -8,7 +8,6 @@ import {
   OperationRegistrationFormProps,
 } from "apps/registration/app/components/operations/registration/types";
 import { useFileUploadWidget } from "@bciers/components/form/widgets/FileWidget";
-import { useState } from "react";
 
 interface NewEntrantOperationFormProps extends OperationRegistrationFormProps {
   formData: Partial<NewEntrantOperationFormData>;
@@ -23,8 +22,6 @@ const NewEntrantOperationForm = ({
 }: NewEntrantOperationFormProps) => {
   const baseUrl = `/register-an-operation/${operation}`;
 
-  const [internalFormData, setInternalFormData] =
-    useState<NewEntrantOperationFormData>(formData);
   const [fileWidgetContext, submitWithFiles] = useFileUploadWidget();
 
   const handleSubmit = async (e: IChangeEvent) => {
@@ -39,7 +36,6 @@ const NewEntrantOperationForm = ({
       `${baseUrl}`,
     );
 
-    setInternalFormData(response);
     return response;
   };
 
@@ -48,7 +44,7 @@ const NewEntrantOperationForm = ({
       allowBackNavigation
       baseUrl={baseUrl}
       cancelUrl="/"
-      formData={internalFormData}
+      formData={formData}
       onSubmit={handleSubmit}
       schema={schema}
       step={step}
