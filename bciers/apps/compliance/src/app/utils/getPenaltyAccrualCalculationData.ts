@@ -4,6 +4,21 @@ import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 const penaltyTypeMap: Record<string, string> = {
   automatic_overdue: "Automatic Overdue",
   ggeapar: "Late Submission",
+  late_submission: "Late Submission",
+  "late-submission": "Late Submission",
+  latesubmission: "Late Submission",
+  automaticoverdue: "Automatic Overdue",
+  "automatic overdue": "Automatic Overdue",
+  "late submission": "Late Submission",
+};
+
+const mapPenaltyTypeForApi = (value?: string): string | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  return penaltyTypeMap[normalized] ?? value;
 };
 
 const normalizeEndDate = (value?: string): string | undefined => {
@@ -31,15 +46,19 @@ export const getPenaltyAccrualCalculationData = async (
 ): Promise<any> => {
   const { final_day_of_penalty_accrual, penalty_type, ...restParams } = params;
 
-  const mappedPenaltyType = penalty_type
-    ? (penaltyTypeMap[penalty_type] ?? penalty_type)
-    : undefined;
+  console.log(
+    `penalty type: ${penalty_type}, final_day_of_penalty_accrual: ${final_day_of_penalty_accrual}`,
+  );
+
+  const mappedPenaltyType = mapPenaltyTypeForApi(penalty_type);
 
   const mappedEndDate = normalizeEndDate(final_day_of_penalty_accrual);
 
   const mappedParams = {
     ...restParams,
-    ...(mappedPenaltyType ? { penalty_type: mappedPenaltyType } : {}),
+    ...(mappedPenaltyType
+      ? { penalty_type: encodeURIComponent(mappedPenaltyType) }
+      : {}),
     ...(mappedEndDate ? { end_date: mappedEndDate } : {}),
   };
 
