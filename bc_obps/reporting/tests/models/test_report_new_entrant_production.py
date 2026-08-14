@@ -134,7 +134,7 @@ class ReportNewEntrantProductRlsTest(BaseTestCase):
             forbidden_delete_function=forbidden_delete_function,
         )
 
-    def test_report_compliance_summary_rls_cas_user(self):
+    def test_report_new_entrant_production_rls_cas_user(self):
         test_quantity = 5
         make_recipe(
             "reporting.tests.utils.report_new_entrant_production",
