@@ -38,12 +38,18 @@ type PenaltyCalculatorFormData = {
   };
 };
 
-const mapPenaltyTypeToFrontend = (penaltyType?: string): string => {
-  if (penaltyType === "Late Submission") {
+const normalizePenaltyTypeForForm = (value?: string): string => {
+  const normalized = value?.trim().toLowerCase();
+
+  if (normalized === "ggeapar" || normalized === "late submission") {
     return "ggeapar";
   }
 
   return "automatic_overdue";
+};
+
+const mapPenaltyTypeToFrontend = (penaltyType?: string): string => {
+  return normalizePenaltyTypeForForm(penaltyType);
 };
 
 interface Props {
@@ -127,11 +133,22 @@ export default function PenaltyCalculatorComponent({
       return;
     }
 
-    setFormData(nextFormData);
-
-    const selectedPenaltyType = nextFormData?.penalty_type;
-    const selectedFinalDay = nextFormData?.final_day_of_penalty_accrual ?? "";
+    const selectedPenaltyType = normalizePenaltyTypeForForm(
+      nextFormData?.penalty_type ??
+        formData?.penalty_type ??
+        initialPenaltyType,
+    );
+    const selectedFinalDay =
+      nextFormData?.final_day_of_penalty_accrual ??
+      formData?.final_day_of_penalty_accrual ??
+      initialFinalDayOfPenaltyAccrual;
     const normalizedFinalDay = normalizeDateString(selectedFinalDay);
+
+    setFormData({
+      ...nextFormData,
+      penalty_type: selectedPenaltyType,
+      final_day_of_penalty_accrual: selectedFinalDay,
+    });
 
     if (!selectedPenaltyType || !normalizedFinalDay) {
       return;

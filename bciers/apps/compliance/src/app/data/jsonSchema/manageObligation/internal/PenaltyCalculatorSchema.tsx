@@ -13,7 +13,7 @@ export const penaltyCalculatorSchema: RJSFSchema = {
     automatic_overdue_penalty: readOnlyStringField(
       "Automatic overdue penalty:",
     ),
-    ggeapar_penalty: readOnlyStringField("GGEAPAR penalty:"),
+    ggeapar_interest: readOnlyStringField("GGEAPAR interest:"),
     penalty_type: {
       type: "string",
       title: "1. Select penalty type",
@@ -64,7 +64,7 @@ export const penaltyCalculatorUiSchema: UiSchema = {
   automatic_overdue_penalty: {
     "ui:classNames": "[&>div:first-child>label]:font-normal",
   },
-  ggeapar_penalty: {
+  ggeapar_interest: {
     "ui:classNames": "[&>div:first-child>label]:font-normal",
   },
   penalty_type: {
