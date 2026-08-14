@@ -30,7 +30,7 @@ describe("NewTabBanner component", () => {
 
     expect(
       screen.getByText(
-        "This link has opened in a new tab. To go back to the report, close this tab. Then click sync latest changes.",
+        "This link has opened in a new tab. To go back, close this tab.",
       ),
     ).toBeVisible();
   });
@@ -44,7 +44,7 @@ describe("NewTabBanner component", () => {
 
     expect(
       screen.queryByText(
-        "This link has opened in a new tab. To go back to the report, close this tab. Then click sync latest changes.",
+        "This link has opened in a new tab. To go back, close this tab.",
       ),
     ).not.toBeInTheDocument();
     expect(
