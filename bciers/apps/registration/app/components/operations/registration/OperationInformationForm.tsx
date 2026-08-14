@@ -166,6 +166,8 @@ const OperationInformationForm = ({
       if (resolve?.error) {
         return { error: resolve.error };
       } else if (resolve?.id) {
+        // In case user presses "back"
+        setConfirmedFormState(createNestedFormData(resolve, schema));
         // this form step needs a custom push (can't use the push in MultiStepBase) because the resolve.id is in the url
         const nextStepUrl = `/register-an-operation/${resolve.id}/${
           step + 1

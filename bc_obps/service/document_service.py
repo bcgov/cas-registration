@@ -22,8 +22,14 @@ class DocumentService:
 
         document = Document.objects.get(id=document_id)
 
-        OperationService.get_if_authorized(user_guid, document.operation_id, ['id', 'operator_id'])
-        return document.get_file_url()
+        if document.operation_id:
+            OperationService.get_if_authorized(user_guid, document.operation_id, ['id', 'operator_id'])
+        else:
+            raise ValueError(f"Document id {document_id} is not associated with any operation")
+
+        document_url: str = document.get_file_url()
+
+        return document_url
 
     @classmethod
     def create_or_replace_operation_document(
