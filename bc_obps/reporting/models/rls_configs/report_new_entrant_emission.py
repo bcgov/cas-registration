@@ -20,23 +20,10 @@ class Rls:
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    using_statement = """
-        report_new_entrant_id IN (
-            SELECT rne.id
-            FROM erc.report_new_entrant rne
-            JOIN erc.report_version rv ON rne.report_version_id = rv.id
-            JOIN erc.report r ON rv.report_id = r.id
-            WHERE r.operator_id IN (
-                SELECT uo.operator_id
-                FROM erc.user_operator uo
-                WHERE uo.user_id = current_setting('my.guid', true)::uuid
-                AND uo.status = 'Approved'
-            )
-        )
-        """
-    delete_using_statement = RlsPolicy.add_draft_check_to_report_using_statement(using_statement)
     grants = generate_rls_grants(role_grants_mapping, table)
     role_policy_mapping = generate_report_policy_mapping_from_grants(
-        role_grants_mapping, using_statement, delete_using_statement    
+        role_grants_mapping,
+        RlsPolicy.REPORT_USING_STATEMENT,
+        RlsPolicy.REPORT_DELETE_USING_STATEMENT,
     )
     policies = generate_rls_policies(role_policy_mapping, table)
