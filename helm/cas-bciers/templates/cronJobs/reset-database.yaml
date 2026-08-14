@@ -63,11 +63,21 @@ spec:
                 - bash
                 - -c
                 - |
-                  psql -c "drop schema if exists public cascade;";
+                  psql -c "
+                  DO \$\$
+                  begin
+                      for record in (
+                          select schema_name
+                          from information_schema.schemata
+                          where schema_name not in ('pg_catalog', 'information_schema', 'pg_toast')
+                      ) loop
+                          execute 'drop schema if exists ' || quote_ident(record.schema_name) || ' cascade';
+                      end loop;
+                  END \$\$;
+                  ";
+
                   psql -c "create schema public;";
-                  psql -c "grant all privileges on schema public to $(APP_USER) with grant option;";
-                  psql -c "drop schema if exists erc cascade;";
-                  psql -c "drop schema if exists erc_history cascade;";
-                  psql -c "drop schema if exists common cascade;";
+                  psql -c "alter schema public owner to $(APP_USER);";
+                  psql -c "grant all on schema public to $(APP_USER);";
           restartPolicy: Never
 {{ end }}
