@@ -1,5 +1,5 @@
 import type { ElicensingLastRefreshData } from "@/compliance/src/app/types";
-import { safeFetchApi } from "@bciers/actions/safeFetchApi";
+import { safeFetchApi } from "@bciers/actions/api/safeFetchApi";
 
 export async function getElicensingLastRefreshedMetaData(
   complianceReportVersionId: number,

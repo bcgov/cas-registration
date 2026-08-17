@@ -5,83 +5,85 @@ import {
   NextResponse,
 } from "next/server";
 
-import { ProxyFactory } from "@bciers/proxies";
+import { DashboardRoutes, ProxyFactory } from "@bciers/proxies";
 import { getToken } from "@bciers/actions";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
 import isInAllowedPath from "@bciers/utils/src/isInAllowedList";
-/*
-Access control logic is managed using Next.js proxy and NextAuth.js authentication JWT session.
-The proxy intercepts requests, and for restricted areas...
-Checks for a valid user session, and extracts user information from the JWT session.
-Based on JWT properties of identity_provider and role, the proxy dynamically rewrites the request URL
-to the appropriate folder structure.
- */
-const paths = {
-  auth: "auth",
-  unauth: "unauth",
-  onboarding: "onboarding",
-  dashboard: "dashboard",
-  profile: "profile",
-  declined: "declined",
-};
-export const authAllowedPaths = [paths.dashboard, paths.profile];
-const unauthAllowedPaths = [paths.auth, paths.unauth, paths.declined];
+import { isUserArchived } from "@bciers/actions/api";
+
+export const authAllowedPaths = [
+  DashboardRoutes.DASHBOARD,
+  DashboardRoutes.PROFILE,
+];
+
+const unauthAllowedPaths = [
+  DashboardRoutes.AUTH,
+  DashboardRoutes.UNAUTH,
+  DashboardRoutes.DECLINED,
+  DashboardRoutes.ERROR,
+];
 
 // Proxy for authorization
 export const withAuthorizationDashboard: ProxyFactory = (next: NextProxy) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
+
     // Check if the path is in the unauthenticated allow list
     if (isInAllowedPath(pathname, unauthAllowedPaths)) {
-      // 🛸 Route to next proxy
       return next(request, _next);
     }
 
-    // Check if the user is authenticated via the jwt encoded in server side cookie
-    const token = await getToken();
-    if (!token) {
-      if (pathname.endsWith(`/${paths.onboarding}`)) {
-        // 🛸 Route to next proxy
-        return next(request, _next);
-      } else {
-        // 🛸 Redirect to onboarding
-        return NextResponse.redirect(
-          new URL(`/${paths.onboarding}`, request.url),
-        );
-      }
-    }
+    try {
+      const token = await getToken();
 
-    // Handle user without token.user.app_role
-    if (!token.app_role || token.app_role === "") {
-      if (pathname.endsWith(`/${paths.profile}`)) {
-        // 🛸 Route to next proxy
-        return next(request, _next);
-      } else {
-        // 🛸 Redirect to profile
+      // Handle unauthenticated users
+      if (!token) {
+        if (pathname.endsWith(DashboardRoutes.ONBOARDING)) {
+          return next(request, _next);
+        }
         return NextResponse.redirect(
-          new URL(`/administration/${paths.profile}`, request.url),
+          new URL(DashboardRoutes.ONBOARDING, request.url),
         );
       }
-    }
-    // Handle user with token.user.app_role = cas_pending
-    if (token.app_role === FrontEndRoles.CAS_PENDING) {
-      if (isInAllowedPath(pathname, authAllowedPaths)) {
-        // 🛸 Route to next proxy
-        return next(request, _next);
-      } else {
-        // 🛸 Redirect to dashboard
-        return NextResponse.redirect(
-          new URL(`/${paths.dashboard}`, request.url),
-        );
-      }
-    }
 
-    if (pathname === "/" || pathname === `/${paths.onboarding}`) {
-      // 🛸 Redirect to dashboard
-      return NextResponse.redirect(new URL(`/${paths.dashboard}`, request.url));
-    } else {
-      // 🛸 Route to next proxy
+      //  Handle user is archived
+      const archived = await isUserArchived();
+      if (archived) {
+        return NextResponse.redirect(
+          new URL(DashboardRoutes.DECLINED, request.url),
+        );
+      }
+
+      // Handle user without token.app_role
+      if (!token.app_role) {
+        if (pathname.endsWith(DashboardRoutes.PROFILE)) {
+          return next(request, _next);
+        }
+        return NextResponse.redirect(
+          new URL(DashboardRoutes.PROFILE, request.url),
+        );
+      }
+
+      // Handle user with token.app_role = cas_pending
+      if (token.app_role === FrontEndRoles.CAS_PENDING) {
+        if (isInAllowedPath(pathname, authAllowedPaths)) {
+          return next(request, _next);
+        }
+        return NextResponse.redirect(
+          new URL(DashboardRoutes.DASHBOARD, request.url),
+        );
+      }
+
+      // Handle root and onboarding routes for authenticated users
+      if (pathname === "/" || pathname === DashboardRoutes.ONBOARDING) {
+        return NextResponse.redirect(
+          new URL(DashboardRoutes.DASHBOARD, request.url),
+        );
+      }
+
       return next(request, _next);
+    } catch (_error) {
+      return NextResponse.redirect(new URL(DashboardRoutes.ERROR, request.url));
     }
   };
 };

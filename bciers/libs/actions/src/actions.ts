@@ -169,7 +169,11 @@ export async function actionHandler(
           const errorMessage =
             res?.message || `HTTP error! Status: ${response.status}`;
 
-          const error = new Error(errorMessage);
+          // Attach the numeric HTTP status directly to the Error object
+          const error = Object.assign(new Error(errorMessage), {
+            status: response.status,
+            response: res,
+          });
 
           if (shouldReturnError(method, response.status, res)) {
             captureException(error, userGuid);

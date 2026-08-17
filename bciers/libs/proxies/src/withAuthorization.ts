@@ -4,8 +4,9 @@ import {
   NextRequest,
   NextResponse,
 } from "next/server";
-import { ProxyFactory } from "@bciers/proxies";
-import { actionHandler, getToken } from "@bciers/actions";
+import { DashboardRoutes, ProxyFactory } from "@bciers/proxies";
+import { getToken } from "@bciers/actions";
+import { isUserArchived } from "@bciers/actions/api";
 
 /*
 Access control logic is managed using Next.js proxy and NextAuth.js authentication JWT token.
@@ -20,20 +21,19 @@ export const withAuthorization: ProxyFactory = (next: NextProxy) => {
     const token = await getToken();
 
     if (token) {
-      const response = await actionHandler(
-        `registration/user/user-is-archived`,
-        "GET",
-      );
-      if (response === true) {
+      const isArchived = await isUserArchived();
+      if (isArchived === true) {
         return NextResponse.redirect(
-          new URL(`/dashboard/declined`, request.url),
+          new URL(DashboardRoutes.DECLINED, request.url),
         );
       }
       // 🛸 Route to next proxy
       return next(request, _next);
     } else {
       // 🛸 Redirect unauthenticated requests
-      return NextResponse.redirect(new URL(`/onboarding`, request.url));
+      return NextResponse.redirect(
+        new URL(DashboardRoutes.ONBOARDING, request.url),
+      );
     }
   };
 };

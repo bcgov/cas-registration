@@ -2,11 +2,16 @@ import { NextURL } from "next/dist/server/web/next-url";
 import { NextFetchEvent, NextResponse } from "next/server";
 import { domain, mockRequest } from "@bciers/testConfig/helpers/mockRequest";
 import proxy from "../proxy";
-import { fetch, getToken } from "@bciers/testConfig/mocks";
+import { getToken } from "@bciers/testConfig/mocks";
 import {
   mockCasUserToken,
   mockIndustryUserToken,
 } from "@bciers/testConfig/data/tokens";
+import getCurrentUserOperator from "@/administration/app/components/userOperators/getCurrentUserOperator";
+import getCurrentUserOperatorWithRequiredFields from "@/registration/app/utils/getCurrentUserOperatorWithRequiredFields";
+
+vi.mock("@/administration/app/components/userOperators/getCurrentUserOperator");
+vi.mock("@/registration/app/utils/getCurrentUserOperatorWithRequiredFields");
 
 vi.spyOn(NextResponse, "redirect");
 vi.spyOn(NextResponse, "rewrite");
@@ -15,23 +20,20 @@ describe("withResponse proxy", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
+
   it("builds the correct URL for industry users", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
 
-    // Mocking the fetch response for access to an operator
-    fetch.mockResponseOnce(
-      JSON.stringify({
-        operator_id: mockIndustryUserToken.user_guid,
-        status: "Approved",
-      }),
-    );
+    // Mock access to an operator exists
+    vi.mocked(getCurrentUserOperator).mockResolvedValueOnce({
+      operator_id: mockIndustryUserToken.user_guid,
+      status: "Approved",
+    } as any);
 
-    // Mock the fetch response for operator has required fields
-    fetch.mockResponseOnce(
-      JSON.stringify({
-        has_required_fields: true,
-      }),
-    );
+    // Mock required fields check returning true
+    vi.mocked(getCurrentUserOperatorWithRequiredFields).mockResolvedValueOnce({
+      has_required_fields: true,
+    } as any);
 
     const result = await proxy(
       mockRequest("/registration/register-an-operation"),

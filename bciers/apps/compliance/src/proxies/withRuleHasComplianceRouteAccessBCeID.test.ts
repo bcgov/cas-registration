@@ -9,7 +9,7 @@ import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/ut
 import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
 
 import { getToken } from "@bciers/actions";
-import { getUserRole } from "@bciers/proxies";
+import { getUserRole, DashboardRoutes } from "@bciers/proxies";
 import { IDP } from "@bciers/utils/src/enums";
 import {
   IssuanceStatus,
@@ -105,6 +105,7 @@ const moPenaltyPaths = constants.routesObligationPenalty;
 const moNonPenaltyPaths = moPaths.filter(
   (path) => !moPenaltyPaths.includes(path),
 );
+
 // --------------------
 // Mock Helpers
 // --------------------
@@ -132,6 +133,7 @@ const mockComplianceSummary = (summary: {
 }) => {
   (getComplianceSummary as unknown as Mock).mockResolvedValue(summary);
 };
+
 // --------------------
 // Setup
 // --------------------
@@ -163,7 +165,7 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
       mockComplianceStatus("Invalid" as ComplianceSummaryStatus);
       const { res } = await runProxy(reviewSummariesPath);
       expect(res!.status).toBe(307);
-      expect(getPathname(res)).toBe(`/${constants.AppRoutes.ONBOARDING}`);
+      expect(getPathname(res)).toBe(`${DashboardRoutes.ONBOARDING}`);
     });
 
     it("allows when compliance access status is defined and not Invalid", async () => {
@@ -226,6 +228,7 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
       expect(res!.status).toBe(307);
       expect(getPathname(res)).toBe(reviewSummariesPath);
     });
+
     it.each(moNonPenaltyPaths)(
       "allows when status === OBLIGATION_NOT_MET and route is /%s",
       async (path) => {
@@ -283,6 +286,7 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
       expect(next).toHaveBeenCalledOnce();
       expect(res!.status).toBe(200);
     });
+
     it.each(moPenaltyPaths)(
       "redirects penalty routes to summaries when penalty_status is something else (%s)",
       async (path) => {
@@ -296,6 +300,7 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
         expect(getPathname(res)).toBe(reviewSummariesPath);
       },
     );
+
     it.each(moNonPenaltyPaths)(
       "allows non penalty routes when status is something else (%s)",
       async (path) => {
@@ -443,23 +448,57 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
     });
   });
 
+  describe("API failure / exception handling", () => {
+    it("redirects to error route when getUserComplianceAccessStatus throws an error", async () => {
+      (getUserComplianceAccessStatus as Mock).mockRejectedValueOnce(
+        new Error("Database connection error"),
+      );
+
+      const { res } = await runProxy(applyUnitsPath);
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(`${DashboardRoutes.ERROR}`);
+    });
+
+    it("redirects to error route when getComplianceSummary throws an error", async () => {
+      mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);
+      (getComplianceSummary as unknown as Mock).mockRejectedValueOnce(
+        new Error("API service unavailable"),
+      );
+
+      const { res } = await runProxy(pathForSeg(moPenaltyPaths[0]));
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(`${DashboardRoutes.ERROR}`);
+    });
+
+    it("redirects to error route when getComplianceAppliedUnits throws an error", async () => {
+      mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);
+      (getComplianceAppliedUnits as Mock).mockRejectedValueOnce(
+        new Error("Failed to fetch units"),
+      );
+
+      const { res } = await runProxy(applyUnitsPath);
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(`${DashboardRoutes.ERROR}`);
+    });
+
+    it("redirects to error route when getRequestIssuanceComplianceSummaryData throws an error", async () => {
+      mockComplianceStatus(ComplianceSummaryStatus.EARNED_CREDITS);
+      (getRequestIssuanceComplianceSummaryData as Mock).mockRejectedValueOnce(
+        new Error("Issuance summary retrieval error"),
+      );
+
+      const { res } = await runProxy(`${requestIssuanceReviewPath}/`);
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(`${DashboardRoutes.ERROR}`);
+    });
+  });
+
   describe("bypass & edge flows", () => {
     it("bypasses for IDIR users", async () => {
       (getUserRole as Mock).mockReturnValue(IDP.IDIR);
       const { next, res } = await runProxy(applyUnitsPath);
       expect(next).toHaveBeenCalledOnce();
       expect(res!.status).toBe(200);
-    });
-
-    it("redirects to onboarding on error", async () => {
-      (getUserComplianceAccessStatus as Mock).mockRejectedValue(
-        new Error("boom"),
-      );
-      const { res } = await runProxy(applyUnitsPath);
-      expect(res!.status).toBe(307);
-      expect(
-        getPathname(res)!.endsWith(`/${constants.AppRoutes.ONBOARDING}`),
-      ).toBe(true);
     });
   });
 });

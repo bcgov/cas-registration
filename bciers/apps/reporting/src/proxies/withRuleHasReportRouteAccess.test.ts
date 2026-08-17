@@ -6,6 +6,7 @@ import {
   mockCasUserToken,
   mockIndustryUserToken,
 } from "@bciers/testConfig/data/tokens";
+import { DashboardRoutes } from "@bciers/proxies";
 import * as constants from "./constants";
 import {
   ELECTRICITY_IMPORT_OPERATION,
@@ -49,128 +50,71 @@ async function runProxy(path: string) {
   return { next, res };
 }
 
-describe("withRuleHasReportRouteAccess - permissionRules", () => {
-  it("redirects to onboarding when getReportingOperation throws", async () => {
-    vi.spyOn(opUtil, "getReportingOperation").mockRejectedValueOnce(
-      new Error("API Error"),
-    );
-
-    const { res } = await runProxy(
-      `${BASE_PATH}/${constants.reportRoutesLFO[0]}`,
-    );
-
-    expect(NextResponse.redirect).toHaveBeenCalledOnce();
-    expect(res!.status).toBe(307);
-  });
-
-  it("redirects to onboarding when getRegistrationPurpose throws", async () => {
-    vi.spyOn(regPurpUtil, "getRegistrationPurpose").mockRejectedValueOnce(
-      new Error("API Error"),
-    );
-
-    const { res } = await runProxy(
-      `${BASE_PATH}/${constants.restrictedRoutesNewEntrant[0]}`,
-    );
-
-    expect(NextResponse.redirect).toHaveBeenCalledOnce();
-    expect(res!.status).toBe(307);
-  });
-
-  it("redirects to onboarding when getReportVerificationStatus throws", async () => {
-    vi.spyOn(verifyUtil, "getReportVerificationStatus").mockRejectedValueOnce(
-      new Error("API Error"),
-    );
-
-    const { res } = await runProxy(
-      `/reporting/reports/${defaultVersionId}/verification`,
-    );
-
-    expect(NextResponse.redirect).toHaveBeenCalledOnce();
-    expect(res!.status).toBe(307);
-  });
-
-  it("redirects to onboarding when getIsSupplementaryReport throws", async () => {
-    vi.spyOn(suppUtil, "getIsSupplementaryReport").mockRejectedValueOnce(
-      new Error("API Error"),
-    );
-
-    const { res } = await runProxy(
-      `${BASE_PATH}/${constants.restrictedSupplementaryReport[0]}`,
-    );
-
-    expect(NextResponse.redirect).toHaveBeenCalledOnce();
-    expect(res!.status).toBe(307);
-  });
-});
-
 // Restricted routes tests
 const restrictedTests: Array<{
   listName: keyof typeof constants;
-  invalidResp: any;
   description: string;
   matchUrl: (seg: string) => string;
   mockHelpers: () => void;
 }> = [
   {
     listName: "restrictedRoutesEIO",
-    invalidResp: { registration_purpose: "NOT_EIO" },
     description: "EIO",
     matchUrl: (seg) => `${BASE_PATH}/${seg}`,
     mockHelpers: () =>
       vi
         .spyOn(regPurpUtil, "getRegistrationPurpose")
-        .mockResolvedValue({ registration_purpose: "NOT_EIO" }),
+        .mockResolvedValue({ registration_purpose: "NOT_EIO" } as any),
   },
   {
     listName: "reportRoutesLFO",
-    invalidResp: { operation_type: "NOT_LFO" },
     description: "LFO",
     matchUrl: (seg) => `${BASE_PATH}/${seg}`,
     mockHelpers: () =>
       vi
         .spyOn(opUtil, "getReportingOperation")
-        .mockResolvedValue({ operation_type: "NOT_LFO" }),
+        .mockResolvedValue({ operation_type: "NOT_LFO" } as any),
   },
   {
     listName: "restrictedRoutesNewEntrant",
-    invalidResp: { registration_purpose: "NOT_NEW_ENTRANT" },
     description: "New Entrant",
     matchUrl: (seg) => `${BASE_PATH}/${seg}`,
     mockHelpers: () =>
       vi
         .spyOn(regPurpUtil, "getRegistrationPurpose")
-        .mockResolvedValue({ registration_purpose: "NOT_NEW_ENTRANT" }),
+        .mockResolvedValue({ registration_purpose: "NOT_NEW_ENTRANT" } as any),
   },
   {
     listName: "restrictedRoutesSubmitted",
-    invalidResp: { operation_report_status: "NOT_SUBMITTED" },
     description: "Submitted",
     matchUrl: (seg) => `${BASE_PATH}/${seg}`,
     mockHelpers: () =>
       vi
         .spyOn(opUtil, "getReportingOperation")
-        .mockResolvedValue({ operation_report_status: "NOT_SUBMITTED" }),
+        .mockResolvedValue({ operation_report_status: "NOT_SUBMITTED" } as any),
   },
   {
     listName: "restrictedSupplementaryReport",
-    invalidResp: false,
     description: "Supplementary",
     matchUrl: (seg) => `${BASE_PATH}/${seg}`,
     mockHelpers: () =>
-      vi.spyOn(suppUtil, "getIsSupplementaryReport").mockResolvedValue(false),
+      vi
+        .spyOn(suppUtil, "getIsSupplementaryReport")
+        .mockResolvedValue(false as any),
   },
 ];
+
 // Turn each entry into a [description, testCase] tuple
 const restrictedRows = restrictedTests.map((t) => [t.description, t] as const);
+
 // Loop the restricted routes
 describe.each(restrictedRows)(
   "restricted %s",
-  (description, { listName, invalidResp, matchUrl, mockHelpers }) => {
+  (description, { listName, matchUrl, mockHelpers }) => {
     it.each(constants[listName] as string[])(
       `redirects industry user for ${description} route '%s'`,
       async (segment) => {
         mockHelpers();
-        vi.spyOn(constants, "fetchResponse").mockResolvedValueOnce(invalidResp);
 
         const { res } = await runProxy(matchUrl(segment));
 
@@ -184,10 +128,10 @@ describe.each(restrictedRows)(
 // Verification restricted route
 describe("restricted Verification > redirects industry user for Verification route'", () => {
   it("redirects when verification check fails", async () => {
-    vi.spyOn(verifyUtil, "getReportVerificationStatus").mockResolvedValue(
-      false,
-    );
-    vi.spyOn(constants, "fetchResponse").mockResolvedValueOnce(false);
+    vi.spyOn(verifyUtil, "getReportVerificationStatus").mockResolvedValue({
+      show_verification_page: false,
+    } as any);
+
     const { res } = await runProxy(
       `/reporting/reports/${defaultVersionId}/verification`,
     );
@@ -207,7 +151,7 @@ describe("allowing flows", () => {
   it("allows industry user for accessLFO when operation_type is LFO", async () => {
     vi.spyOn(opUtil, "getReportingOperation").mockResolvedValue({
       operation_type: OperationTypes.LFO,
-    });
+    } as any);
     const path = `${BASE_PATH}/${constants.reportRoutesLFO[0]}`;
     const { next, res } = await runProxy(path);
     expect(next).toHaveBeenCalledOnce();
@@ -217,7 +161,7 @@ describe("allowing flows", () => {
   it("allows industry user for accessNewEntrant when registration purpose is NEW_ENTRANT_REGISTRATION_PURPOSE", async () => {
     vi.spyOn(regPurpUtil, "getRegistrationPurpose").mockResolvedValue({
       registration_purpose: NEW_ENTRANT_REGISTRATION_PURPOSE,
-    });
+    } as any);
     const path = `${BASE_PATH}/${constants.restrictedRoutesNewEntrant[0]}`;
     const { next, res } = await runProxy(path);
     expect(next).toHaveBeenCalledOnce();
@@ -227,7 +171,7 @@ describe("allowing flows", () => {
   it("allows industry user for accessSubmitted when operation_report_status is SUBMITTED", async () => {
     vi.spyOn(opUtil, "getReportingOperation").mockResolvedValue({
       operation_report_status: ReportOperationStatus.SUBMITTED,
-    });
+    } as any);
     const path = `${BASE_PATH}/${constants.restrictedRoutesSubmitted[0]}`;
     const { next, res } = await runProxy(path);
     expect(next).toHaveBeenCalledOnce();
@@ -237,10 +181,10 @@ describe("allowing flows", () => {
   it("allows industry user for accessVerification when show_verification_page is true", async () => {
     vi.spyOn(opUtil, "getReportingOperation").mockResolvedValue({
       operation_report_status: ReportOperationStatus.DRAFT,
-    });
+    } as any);
     vi.spyOn(verifyUtil, "getReportVerificationStatus").mockResolvedValue({
       show_verification_page: true,
-    });
+    } as any);
     const path = `/reporting/reports/${defaultVersionId}/verification`;
     const { next, res } = await runProxy(path);
     expect(next).toHaveBeenCalledOnce();
@@ -248,7 +192,9 @@ describe("allowing flows", () => {
   });
 
   it("allows industry user for accessSupplementaryReport when isSupplementaryReport is true", async () => {
-    vi.spyOn(suppUtil, "getIsSupplementaryReport").mockResolvedValue(true);
+    vi.spyOn(suppUtil, "getIsSupplementaryReport").mockResolvedValue(
+      true as any,
+    );
     const path = `${BASE_PATH}/${constants.restrictedSupplementaryReport[0]}`;
     const { next, res } = await runProxy(path);
     expect(next).toHaveBeenCalledOnce();
@@ -258,7 +204,7 @@ describe("allowing flows", () => {
   it("allows industry user for routeSubmittedReport when report is actually SUBMITTED and path matches routeRoutesSubmitted", async () => {
     vi.spyOn(opUtil, "getReportingOperation").mockResolvedValue({
       operation_report_status: ReportOperationStatus.SUBMITTED,
-    });
+    } as any);
     const segment = constants.reportRoutesSubmitted[0];
     const path = `${BASE_PATH}/${segment}`;
     const { next, res } = await runProxy(path);
@@ -269,10 +215,10 @@ describe("allowing flows", () => {
   it("allows routeReportingOperation when registration purpose matches REPORTING_OPERATION and path matches reportRoutesReportingOperation", async () => {
     vi.spyOn(opUtil, "getReportingOperation").mockResolvedValue({
       operation_report_status: ReportOperationStatus.DRAFT,
-    });
+    } as any);
     vi.spyOn(regPurpUtil, "getRegistrationPurpose").mockResolvedValue({
       registration_purpose: REPORTING_OPERATION,
-    });
+    } as any);
     const { next, res } = await runProxy(
       `/reporting/reports/${defaultVersionId}/${constants.reportRoutesReportingOperation[0]}`,
     );
@@ -283,10 +229,10 @@ describe("allowing flows", () => {
   it("allows routeEIOReport when registration purpose matches ELECTRICITY_IMPORT_OPERATION and path matches reportRoutesEIO", async () => {
     vi.spyOn(opUtil, "getReportingOperation").mockResolvedValue({
       operation_report_status: ReportOperationStatus.DRAFT,
-    });
+    } as any);
     vi.spyOn(regPurpUtil, "getRegistrationPurpose").mockResolvedValue({
       registration_purpose: ELECTRICITY_IMPORT_OPERATION,
-    });
+    } as any);
     const { next, res } = await runProxy(
       `/reporting/reports/${defaultVersionId}/${constants.reportRoutesEIO[0]}`,
     );
@@ -299,5 +245,71 @@ describe("allowing flows", () => {
     const { next, res } = await runProxy(`${BASE_PATH}/restricted/new-entrant`);
     expect(next).toHaveBeenCalledOnce();
     expect(res!.status).toBe(200);
+  });
+
+  describe("API failure / exception handling", () => {
+    it("redirects to error route when getReportingOperation throws", async () => {
+      vi.spyOn(opUtil, "getReportingOperation").mockRejectedValueOnce(
+        new Error("API Error"),
+      );
+
+      const { res } = await runProxy(
+        `${BASE_PATH}/${constants.reportRoutesLFO[0]}`,
+      );
+
+      expect(NextResponse.redirect).toHaveBeenCalledOnce();
+      expect(NextResponse.redirect).toHaveBeenCalledWith(
+        new URL(DashboardRoutes.ERROR, DOMAIN),
+      );
+      expect(res!.status).toBe(307);
+    });
+
+    it("redirects to error route when getRegistrationPurpose throws", async () => {
+      vi.spyOn(regPurpUtil, "getRegistrationPurpose").mockRejectedValueOnce(
+        new Error("API Error"),
+      );
+
+      const { res } = await runProxy(
+        `${BASE_PATH}/${constants.restrictedRoutesNewEntrant[0]}`,
+      );
+
+      expect(NextResponse.redirect).toHaveBeenCalledOnce();
+      expect(NextResponse.redirect).toHaveBeenCalledWith(
+        new URL(DashboardRoutes.ERROR, DOMAIN),
+      );
+      expect(res!.status).toBe(307);
+    });
+
+    it("redirects to error route when getReportVerificationStatus throws", async () => {
+      vi.spyOn(verifyUtil, "getReportVerificationStatus").mockRejectedValueOnce(
+        new Error("API Error"),
+      );
+
+      const { res } = await runProxy(
+        `/reporting/reports/${defaultVersionId}/verification`,
+      );
+
+      expect(NextResponse.redirect).toHaveBeenCalledOnce();
+      expect(NextResponse.redirect).toHaveBeenCalledWith(
+        new URL(DashboardRoutes.ERROR, DOMAIN),
+      );
+      expect(res!.status).toBe(307);
+    });
+
+    it("redirects to error route when getIsSupplementaryReport throws", async () => {
+      vi.spyOn(suppUtil, "getIsSupplementaryReport").mockRejectedValueOnce(
+        new Error("API Error"),
+      );
+
+      const { res } = await runProxy(
+        `${BASE_PATH}/${constants.restrictedSupplementaryReport[0]}`,
+      );
+
+      expect(NextResponse.redirect).toHaveBeenCalledOnce();
+      expect(NextResponse.redirect).toHaveBeenCalledWith(
+        new URL(DashboardRoutes.ERROR, DOMAIN),
+      );
+      expect(res!.status).toBe(307);
+    });
   });
 });

@@ -4,48 +4,46 @@ import {
   NextRequest,
   NextResponse,
 } from "next/server";
-import { ProxyFactory } from "@bciers/proxies";
+import { ProxyFactory, DashboardRoutes } from "@bciers/proxies";
 import { getToken } from "@bciers/actions";
 import { IDP } from "@bciers/utils/src/enums";
-import { fetchApi } from "@bciers/actions/api/fetchApi";
+import getCurrentUserOperator from "@/administration/app/components/userOperators/getCurrentUserOperator";
+import getCurrentUserOperatorWithRequiredFields from "@/registration/app/utils/getCurrentUserOperatorWithRequiredFields";
+
 /**
  * 📏 Handles routing for industry users based:
  * if user has operator access
  * if the operator has all required fields filled
  *
  * @param request - The incoming request object.
- * @param token - The user's authentication token.
  * @returns A response if a redirect is required, otherwise null.
  */
-const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
+const handleIndustryUserRoutes = async (request: NextRequest) => {
   try {
     // 📏 Rule: Industry users can only proceed to registration if they have operator access
-    const userOperator = await fetchApi("registration/user-operators/current", {
-      user_guid: token.user_guid,
-    });
+    const userOperator = await getCurrentUserOperator();
 
     // If user does not have an operator, redirect to the onboarding page
     if (!userOperator) {
       // 🛸 Redirect to BCIERS dashboard
-      return NextResponse.redirect(new URL(`/onboarding`, request.url));
+      return NextResponse.redirect(
+        new URL(DashboardRoutes.ONBOARDING, request.url),
+      );
     }
 
     // 📏 Rule: Check if the operator has all required fields filled
-    const operatorFields = await fetchApi(
-      "registration/user-operators/current/has-required-fields",
-      {
-        user_guid: token.user_guid,
-      },
-    );
+    const operatorFields = await getCurrentUserOperatorWithRequiredFields();
 
     // If required fields are missing, redirect to the onboarding page
     if (operatorFields.has_required_fields !== true) {
       // 🛸 Redirect to BCIERS dashboard
-      return NextResponse.redirect(new URL(`/onboarding`, request.url));
+      return NextResponse.redirect(
+        new URL(DashboardRoutes.ONBOARDING, request.url),
+      );
     }
   } catch (_error) {
-    // 🛸 Redirect to BCIERS dashboard
-    return NextResponse.redirect(new URL(`/onboarding`, request.url));
+    // 🛸 Redirect to BCIERS error page
+    return NextResponse.redirect(new URL(DashboardRoutes.ERROR, request.url));
   }
 
   // 🛸 No redirect required, proceed to the next proxy
@@ -62,7 +60,7 @@ export const withRulesAppliedReg: ProxyFactory = (next: NextProxy) => {
     // 📏 Apply industry user-specific routing rules
     if (token?.identity_provider === IDP.BCEIDBUSINESS) {
       try {
-        const response = await handleIndustryUserRoutes(request, token);
+        const response = await handleIndustryUserRoutes(request);
 
         // If a response is returned from the route handler, redirect
         if (response) {
@@ -70,7 +68,9 @@ export const withRulesAppliedReg: ProxyFactory = (next: NextProxy) => {
         }
       } catch (_error) {
         // 🛸 Redirect to BCIERS dashboard
-        return NextResponse.redirect(new URL(`/onboarding`, request.url));
+        return NextResponse.redirect(
+          new URL(DashboardRoutes.ONBOARDING, request.url),
+        );
       }
     }
 
