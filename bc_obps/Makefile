@@ -71,6 +71,25 @@ drop_db:
 		grep -q 0 || \
 		$(PSQL) -d postgres -c "DROP DATABASE $(DB_NAME)";
 
+.PHONY: clean_db
+clean_db: ## wipe user schemas from the database (matches remote cronjob reset-database.yaml)
+clean_db:
+	@$(PSQL) -d $(DB_NAME) -c "\
+		DO \$\$ \
+		begin \
+			for record in ( \
+			select schema_name \
+				from information_schema.schemata
+				where schema_name not in ('pg_catalog', 'information_schema', 'pg_toast') \
+			) loop \
+			execute 'drop schema if exists ' || quote_ident(record.schema_name) || ' cascade'; \
+			end loop; \
+			END \$\$; \
+			create schema public; \
+			alter schema public owner to $(DB_USER); \
+			grant all on schema public to $(DB_USER); \
+		";
+
 .PHONY: run
 run: ## run the server
 run:
@@ -101,6 +120,10 @@ loadfixtures:
 	$(POETRY_RUN) python $(MANAGE_PY) load_fixtures $(ARGS)
 	$(POETRY_RUN) python $(MANAGE_PY) load_reporting_fixtures $(ARGS)
 	$(POETRY_RUN) python $(MANAGE_PY) load_compliance_fixtures $(ARGS)
+
+.PHONY: soft_reset_db
+soft_reset_db: ## drop user schemas and recreate the db, mimicking remote deployment to dev, test
+soft_reset_db:  clean_db migrate
 
 .PHONY: reset_db
 reset_db: ## drop and recreate the db
