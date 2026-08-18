@@ -3,8 +3,8 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import FieldTemplateFullWidth from "@bciers/components/form/fields/FieldTemplateFullWidth";
 import { readOnlyStringField } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { TableField } from "@/compliance/src/app/widgets/TableWidget";
-import { PenaltyTypeButtonGroupWidget } from "../../../../components/compliance-summary/manage-obligation/internal/review-penalty-summary/PenaltyTypeButtonGroupWidget";
-import { PenaltySummaryField } from "../../../../components/compliance-summary/manage-obligation/internal/review-penalty-summary/PenaltySummaryWidget";
+import { PenaltyTypeButtonGroupWidget } from "../../../../components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltyTypeButtonGroupWidget";
+import { PenaltySummaryField } from "../../../../components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltySummaryWidget";
 
 export const penaltyCalculatorSchema: RJSFSchema = {
   type: "object",
