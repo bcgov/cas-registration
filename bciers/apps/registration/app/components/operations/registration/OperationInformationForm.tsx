@@ -19,6 +19,10 @@ import ConfirmChangeOfFieldModal from "@/registration/app/components/operations/
 import useKey from "@bciers/utils/src/useKey";
 import { Dict } from "@bciers/types/dictionary";
 import { useFileUploadWidget } from "@bciers/components/form/widgets/FileWidget";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface OperationInformationFormProps {
   rawFormData: Dict;
@@ -40,7 +44,10 @@ const OperationInformationForm = ({
     rawFormData?.operation,
   );
 
-  const [error, setError] = useState<string | undefined>(undefined);
+  const { setErrors, renderedErrors } = useValidationErrors({
+    config: {},
+  });
+
   const [schema, setSchema] = useState(initialSchema);
   const nestedFormData = rawFormData
     ? createNestedFormData(rawFormData, schema)
@@ -150,6 +157,7 @@ const OperationInformationForm = ({
     continueRegistration || !selectedOperation;
 
   const handleSubmit = async (e: IChangeEvent) => {
+    setErrors(undefined);
     const formData = e.formData;
     const isCreating = !formData?.section1?.operation;
     const creatingEndpoint = `registration/operations`;
@@ -162,32 +170,37 @@ const OperationInformationForm = ({
       isCreating
         ? ""
         : `/register-an-operation/${formData?.section1?.operation}/${step}`,
-    ).then((resolve) => {
-      if (resolve?.error) {
-        return { error: resolve.error };
-      } else if (resolve?.id) {
-        // this form step needs a custom push (can't use the push in MultiStepBase) because the resolve.id is in the url
-        const nextStepUrl = `/register-an-operation/${resolve.id}/${
-          step + 1
-        }?operations_title=${encodeURIComponent(resolve.name)}`;
-        router.push(nextStepUrl);
-        return resolve;
-      }
-    });
+    );
+
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
+      return { error: response?.error };
+    }
+
+    if (response?.id) {
+      const nextStepUrl = `/register-an-operation/${response.id}/${
+        step + 1
+      }?operations_title=${encodeURIComponent(response.name)}`;
+      router.push(nextStepUrl);
+    }
+
     return response;
   };
 
   const handleSelectOperationChange = async (data: any) => {
     const operationId = data.section1.operation;
     setSelectedOperation(operationId);
-    try {
-      const operationData = await getOperationRegistration(operationId);
-      updateConfirmedFormState(createNestedFormData(operationData, schema));
-    } catch {
-      setError("Failed to fetch operation data!" as any);
-    }
+    setErrors(undefined);
+
+    const operationData = await getOperationRegistration(operationId);
+
+    const isSuccess = handleApiResponse(operationData, setErrors);
+    if (!isSuccess) return;
+
+    updateConfirmedFormState(createNestedFormData(operationData, schema));
     resetKey();
   };
+
   // purpose change
   const handleSelectedPurposeChange = (data: any) => {
     const newSelectedPurpose: RegistrationPurposes =
@@ -243,6 +256,7 @@ const OperationInformationForm = ({
     setPendingFormState({});
     setIsConfirmPurposeChangeModalOpen(false);
   };
+
   // type change
   const handleSelectedTypeChange = (data: any) => {
     const newSelectedType = data.section2?.type;
@@ -331,7 +345,7 @@ const OperationInformationForm = ({
         schema={schema}
         step={step}
         steps={steps}
-        error={error}
+        error={renderedErrors}
         onChange={(e: IChangeEvent) => {
           const newSelectedOperation = e.formData?.section1?.operation;
           const newSelectedPurpose = e.formData?.section1?.registration_purpose;
