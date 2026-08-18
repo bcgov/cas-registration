@@ -109,9 +109,15 @@ export default function PenaltyCalculatorComponent({
   initialPenaltyType,
   initialFinalDayOfPenaltyAccrual,
 }: Readonly<Props>) {
-  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`;
+  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`;
   const derivedPenaltyType =
     initialPenaltyType ?? mapPenaltyTypeToFrontend(penaltyData?.penalty_type);
+
+  console.log(
+    derivedPenaltyType,
+    penaltyData?.penalty_type,
+    initialPenaltyType,
+  );
 
   const initialFormData = useMemo(
     () =>
