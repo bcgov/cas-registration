@@ -1,11 +1,15 @@
 "use client";
 
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import type { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
-import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import { CheckCircleRounded } from "@mui/icons-material";
+import { ValidationErrorSummary } from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type {
+  ReportValidationErrors,
+  ValidationMessageKey,
+} from "@reporting/src/app/components/validationErrors/types";
 
 interface Props {
   navigationInformation: NavigationInformation;
@@ -33,7 +37,10 @@ const ValidationForm: React.FC<Props> = ({
       </div>
 
       {hasErrors ? (
-        <ReportValidationSummary errors={validationErrors} />
+        <ValidationErrorSummary<ValidationMessageKey>
+          errors={validationErrors}
+          config={validationUIConfig}
+        />
       ) : (
         <AlertNote
           alertType="INFO"

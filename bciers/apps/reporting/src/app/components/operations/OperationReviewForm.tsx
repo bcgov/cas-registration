@@ -24,10 +24,14 @@ import {
   RegulatedProduct,
   ReportOperationRepresentative,
 } from "./types";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
-import { ReportValidationItem } from "@reporting/src/app/components/shared/validation/types";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  createGenericValidationError,
+  ValidationItem,
+} from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface Props {
   formData: any;
@@ -55,29 +59,34 @@ export default function OperationReviewForm({
   allRepresentatives,
   facilityId,
   isSyncAllowed,
-}: Props) {
+}: Readonly<Props>) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [pageSchema, setPageSchema] = useState(schema);
   const [hasReps, setHasReps] = useState(allRepresentatives.length > 0);
 
-  const missingOperationRepresentativeError: ReportValidationItem = {
-    key: "missing_operation_representative",
-    error: {
-      severity: "Error",
-      message:
-        "Before you can continue, you must add an operation representative for this operation then return to this report.",
-      context: {
-        operation_id: formData.operation_id,
-        operation_name: formData.operation_name,
+  const missingOperationRepresentativeError: ValidationItem<ValidationMessageKey> =
+    {
+      key: "missing_operation_representative",
+      error: {
+        severity: "Error",
+        message:
+          "Before you can continue, you must add an operation representative for this operation then return to this report.",
+        context: {
+          operation_id: formData.operation_id,
+          operation_name: formData.operation_name,
+        },
       },
-    },
-  };
+    };
 
-  const { setErrors, renderedErrors } = useFormErrors(
-    hasReps ? undefined : [missingOperationRepresentativeError],
-  );
+  const { setErrors, renderedErrors } =
+    useValidationErrors<ValidationMessageKey>({
+      config: validationUIConfig,
+      initialErrors: hasReps
+        ? undefined
+        : [missingOperationRepresentativeError],
+    });
 
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
@@ -112,7 +121,9 @@ export default function OperationReviewForm({
   const handleSync = async () => {
     const newData = await getUpdatedReportOperationDetails(version_id);
     if (newData.error) {
-      setErrors([createGenericReportValidationError(newData.error)]);
+      setErrors([
+        createGenericValidationError<ValidationMessageKey>(newData.error),
+      ]);
       return;
     }
     setPageSchema(
@@ -222,7 +233,7 @@ export default function OperationReviewForm({
         backUrl={navigationInfo.backUrl}
         continueUrl={navigationInfo.continueUrl}
         errors={renderedErrors}
-        backButtonText={"Back to All Reports"}
+        backButtonText="Back to All Reports"
       />
       <SnackBar
         isSnackbarOpen={isSnackbarOpen}

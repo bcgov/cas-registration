@@ -5,50 +5,40 @@ import { useRouter } from "next/navigation";
 import { UUID } from "crypto";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import cancelAccessRequest from "@/administration/app/components/userOperators/cancelAccessRequest";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
-import { ReportValidationItem } from "@reporting/src/app/components/shared/validation/types";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface CancelAccessRequestProps {
   userOperatorId: UUID;
 }
 
-const createErrorItem = (message: string): ReportValidationItem => ({
-  key: "generic_error",
-  error: {
-    message,
-    severity: "Error",
-  },
-});
-
 export default function CancelAccessRequest({
   userOperatorId,
 }: Readonly<CancelAccessRequestProps>) {
   const router = useRouter();
-  const { setErrors, renderedErrors } = useFormErrors();
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { setErrors, renderedErrors } = useValidationErrors({
+    config: {},
+  });
+
   const handleCancelAccessRequest = async () => {
     setIsSubmitting(true);
+    setErrors(undefined);
 
-    try {
-      const response = await cancelAccessRequest(userOperatorId);
+    const response = await cancelAccessRequest(userOperatorId);
+    setIsSubmitting(false);
 
-      if (typeof response !== "boolean" && response?.error) {
-        setErrors([createErrorItem(response.error)]);
-      } else {
-        router.push("/select-operator");
-      }
-    } catch (err: any) {
-      setErrors([
-        createErrorItem(
-          err?.message || "An unexpected error occurred. Please try again.",
-        ),
-      ]);
-    } finally {
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
       setModalOpen(false);
-      setIsSubmitting(false);
+      return;
     }
+
+    router.push("/select-operator");
   };
 
   return (
@@ -64,6 +54,7 @@ export default function CancelAccessRequest({
       >
         Are you sure you want to cancel this request?
       </SimpleModal>
+
       <button
         className="button-link mt-8 text-[#D8292F]"
         aria-label="Cancel Access Request"

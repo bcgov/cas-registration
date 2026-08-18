@@ -10,9 +10,13 @@ import ReasonForChangeForm from "@reporting/src/app/components/changeReview/temp
 import { getChangeReviewData } from "../../utils/getReviewChangesData";
 import Loading from "@bciers/components/loading/SkeletonForm";
 import AlertNote from "@bciers/components/form/components/AlertNote";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  createGenericValidationError,
+} from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface ChangeReviewProps {
   versionId: number;
@@ -31,7 +35,10 @@ export default function ChangeReviewForm({
 }: ChangeReviewProps) {
   const router = useRouter();
   const [formData, setFormData] = useState(initialFormData);
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } =
+    useValidationErrors<ValidationMessageKey>({
+      config: validationUIConfig,
+    });
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
   const [reasonForChange, setReasonForChange] = useState(
     initialFormData.reason_for_change || "",
@@ -58,7 +65,7 @@ export default function ChangeReviewForm({
   const handleSubmit = async (canContinue: boolean) => {
     if (!reasonForChange) {
       setErrors([
-        createGenericReportValidationError("Reason for change is required."),
+        createGenericValidationError("Reason for change is required."),
       ]);
       return false;
     }

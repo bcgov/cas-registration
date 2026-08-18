@@ -1,26 +1,31 @@
 import { render, screen } from "@testing-library/react";
 import ValidationForm from "@reporting/src/app/components/validation/ValidationForm";
-import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
+import { ValidationErrorSummary } from "@bciers/components/validationErrors";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
-import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
+import { ValidationErrors } from "@reporting/src/app/components/validationErrors/types";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
 
 // Mocks
 vi.mock("@bciers/components/form/MultiStepWrapperWithTaskList", () => ({
   default: vi.fn(({ children }) => <div>{children}</div>),
 }));
 
-vi.mock(
-  "@reporting/src/app/components/shared/validation/ReportValidationSummary",
-  () => ({
-    default: vi.fn(() => <div>Mock Validation Summary</div>),
-  }),
-);
+// Mock both named and default exports for the validationErrors module
+vi.mock("@bciers/components/validationErrors", async (importOriginal) => {
+  const actual =
+    await importOriginal<
+      typeof import("@bciers/components/validationErrors")
+    >();
+  return {
+    ...actual,
+    ValidationErrorSummary: vi.fn(() => <div>Mock Validation Summary</div>),
+  };
+});
 
-const mockReportValidationSummary = ReportValidationSummary as ReturnType<
-  typeof vi.fn
->;
-const mockMultiStepWrapperWithTaskList =
-  MultiStepWrapperWithTaskList as ReturnType<typeof vi.fn>;
+const mockValidationErrorSummary = vi.mocked(ValidationErrorSummary);
+const mockMultiStepWrapperWithTaskList = vi.mocked(
+  MultiStepWrapperWithTaskList,
+);
 
 const mockNavigationInformation = {
   headerSteps: [],
@@ -36,7 +41,7 @@ describe("ValidationForm component", () => {
   });
 
   it("renders the validation summary when validation errors exist", () => {
-    const validationErrors: ReportValidationErrors = [
+    const validationErrors: ValidationErrors = [
       {
         key: "missing_report_verification", // gitleaks:allow
         error: {
@@ -59,8 +64,11 @@ describe("ValidationForm component", () => {
     expect(screen.getByText("Report validation")).toBeVisible();
     expect(screen.getByText("Mock Validation Summary")).toBeVisible();
 
-    expect(mockReportValidationSummary).toHaveBeenCalledWith(
-      { errors: validationErrors },
+    expect(mockValidationErrorSummary).toHaveBeenCalledWith(
+      expect.objectContaining({
+        errors: validationErrors,
+        config: validationUIConfig,
+      }),
       undefined,
     );
 
@@ -91,6 +99,6 @@ describe("ValidationForm component", () => {
       screen.getByText(/No issues were detected by the automated validation/i),
     ).toBeVisible();
 
-    expect(mockReportValidationSummary).not.toHaveBeenCalled();
+    expect(mockValidationErrorSummary).not.toHaveBeenCalled();
   });
 });
