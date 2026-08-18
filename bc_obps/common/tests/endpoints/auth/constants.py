@@ -516,6 +516,11 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_document_url",
+            "kwargs": {"document_id": MOCK_INT},
+        },
+        {
+            "method": "get",
             "endpoint_name": "get_report_operation_by_version_id",
             "kwargs": {"version_id": MOCK_INT},
         },
