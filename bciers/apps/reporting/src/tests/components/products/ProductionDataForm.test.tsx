@@ -1,25 +1,28 @@
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bciers/testConfig/mocks";
 import { postProductionData } from "@reporting/src/app/utils/productDataForm/postProductionData";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import ProductionDataForm from "@reporting/src/app/components/products/ProductionDataForm";
 import { act, render, waitFor } from "@testing-library/react";
 import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
-import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import {
+  ValidationErrorSummary,
+  createGenericValidationError,
+} from "@bciers/components/validationErrors";
 
-vi.mock(
-  "@reporting/src/app/components/shared/validation/ReportValidationSummary",
-  () => ({
-    default: vi.fn(() => null),
-  }),
-);
+vi.mock("@bciers/components/validationErrors", async (importOriginal) => {
+  const actual =
+    await importOriginal<
+      typeof import("@bciers/components/validationErrors")
+    >();
 
-const mockReportValidationSummary = ReportValidationSummary as ReturnType<
-  typeof vi.fn
->;
-vi.mock("next/navigation", () => ({
-  useRouter: vi.fn(),
-}));
+  return {
+    ...actual,
+    ValidationErrorSummary: vi.fn(() => null),
+  };
+});
+
+const mockValidationErrorSummary = vi.mocked(ValidationErrorSummary);
+
 vi.mock("@bciers/components/form/MultiStepFormWithTaskList", () => ({
   default: vi.fn(({ children }) => <div>{children}</div>),
 }));
@@ -433,7 +436,7 @@ describe("The ProductionDataForm component", () => {
         ][0];
 
       expect(latestCall.errors[0].props.errors).toStrictEqual([
-        createGenericReportValidationError(
+        createGenericValidationError(
           "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
         ),
       ]);
@@ -483,7 +486,7 @@ describe("The ProductionDataForm component", () => {
     });
 
     expect(result).toBe(true);
-    expect(mockReportValidationSummary).not.toHaveBeenCalled();
+    expect(mockValidationErrorSummary).not.toHaveBeenCalled();
   });
 
   it("does not show missing product error when overlappingIndustrialProcessEmissions is 0", async () => {
@@ -531,7 +534,7 @@ describe("The ProductionDataForm component", () => {
     });
 
     expect(result).toBe(true);
-    expect(mockReportValidationSummary).not.toHaveBeenCalled();
+    expect(mockValidationErrorSummary).not.toHaveBeenCalled();
   });
 
   it("does not show missing product error when chemical pulp is selected", async () => {
@@ -581,7 +584,7 @@ describe("The ProductionDataForm component", () => {
     });
 
     expect(result).toBe(true);
-    expect(mockReportValidationSummary).not.toHaveBeenCalled();
+    expect(mockValidationErrorSummary).not.toHaveBeenCalled();
   });
   it("does not show no-product-selected error for SFO because products are preselected", async () => {
     render(

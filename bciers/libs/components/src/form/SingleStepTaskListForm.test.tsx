@@ -337,7 +337,9 @@ describe("the SingleStepTaskListForm component", () => {
   //   expect(inputBorderElement).toHaveStyle(defaultStyle);
   // });
 
-  it("should render an api error if an error is passed", () => {
+  it("should render an api error if errors are passed", () => {
+    const errorMessage = "Name: Facility with this Name already exists";
+
     render(
       <SingleStepTaskListForm
         schema={schema}
@@ -351,13 +353,41 @@ describe("the SingleStepTaskListForm component", () => {
           // eslint-disable-next-line no-console
           console.log("submit", e);
         }}
-        error={"Name: Facility with this Name already exists"}
+        errors={[errorMessage]}
       />,
     );
-    expect(screen.getByTestId("ErrorOutlineIcon")).toBeVisible();
-    expect(
-      screen.getByText("Name: Facility with this Name already exists"),
-    ).toBeVisible();
+
+    // MUI Alert renders with role="alert"
+    expect(screen.getByRole("alert")).toBeVisible();
+    expect(screen.getByText(errorMessage)).toBeVisible();
+  });
+
+  it("should render multiple errors when passed", () => {
+    const errorList = [
+      "First error: Invalid entry",
+      "Second error: Field is required",
+    ];
+
+    render(
+      <SingleStepTaskListForm
+        schema={schema}
+        uiSchema={uiSchema}
+        formData={{}}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
+        errors={errorList}
+      />,
+    );
+
+    errorList.forEach((msg) => {
+      expect(screen.getByText(msg)).toBeVisible();
+    });
   });
 
   it("should not render Edit/Submit button when allowEdit is false", () => {
