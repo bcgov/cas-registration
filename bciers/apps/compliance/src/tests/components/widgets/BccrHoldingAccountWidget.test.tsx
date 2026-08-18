@@ -149,6 +149,31 @@ describe("BccrHoldingAccountWidget", () => {
     });
   });
 
+  it("shows error message for remote BCCR API errors", async () => {
+    render(<BccrHoldingAccountWidget {...defaultProps} />);
+    mockValidateBccrAccount.mockResolvedValueOnce({
+      bccr_trading_name: null,
+      has_remote_bccr_errors: true,
+    });
+    const input = screen.getByRole("textbox");
+
+    fireEvent.change(input, { target: { value: "123456789012345" } });
+
+    await waitFor(() => {
+      expect(input).toHaveAttribute("aria-invalid", "true");
+      expect(
+        screen.getByText(
+          /Remote BC Carbon Registry system issues, please try again later or contact/i,
+        ),
+      ).toBeVisible();
+      expect(
+        screen.getByRole("link", {
+          name: /ghgregulator@gov\.bc\.ca/i,
+        }),
+      ).toHaveAttribute("href", "mailto:GHGRegulator@gov.bc.ca");
+    });
+  });
+
   it("renders input with correct help text", () => {
     render(<BccrHoldingAccountWidget {...defaultProps} />);
     expect(screen.getByText(/no account\? in bccr\./i)).toBeVisible();

@@ -46,7 +46,7 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         # Assert
         mock_service.assert_called_once_with(account_id=VALID_ACCOUNT_ID)
         assert response.status_code == 200
-        assert response.json() == {"bccr_trading_name": "Test Account Inc."}
+        assert response.json() == {"bccr_trading_name": "Test Account Inc.", "has_remote_bccr_errors": False}
 
     @patch(VALIDATE_PERMISSION_PATH)
     def test_invalid_account_id_format(self, mock_permission):
@@ -68,7 +68,7 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
         # Assert
         assert response.status_code == 200
-        assert response.json() == {"bccr_trading_name": None}
+        assert response.json() == {"bccr_trading_name": None, "has_remote_bccr_errors": False}
 
     @patch(BCCR_SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
@@ -79,12 +79,12 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         # Act
         response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
         # Assert
-        message = "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help."
-        assert_error_response(
-            response,
-            status_code=400,
-            message=message,
-        )
+        assert response.status_code == 200
+
+        response_json = response.json()
+
+        assert response_json["bccr_trading_name"] is None
+        assert response_json["has_remote_bccr_errors"] is True
 
     @patch(BCCR_SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
@@ -104,7 +104,8 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         mock_service.assert_called_once_with(account_id=VALID_ACCOUNT_ID)
         assert response.status_code == 200
         assert response.json() == {
-            "bccr_trading_name": "Test Account Inc."
+            "bccr_trading_name": "Test Account Inc.",
+            "has_remote_bccr_errors": False,
         }  # Should still work with null type_of_account_holder
 
     @patch(BCCR_SERVICE_PATH)
