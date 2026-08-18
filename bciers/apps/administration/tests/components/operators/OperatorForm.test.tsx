@@ -746,6 +746,35 @@ describe("OperatorForm component", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("displays generic error fallback when the server returns an unexpected error", async () => {
+    const errorMessage =
+      "Unexpected database error occurred while saving operator.";
+
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    render(
+      <OperatorForm
+        schema={await createOperatorSchema()}
+        formData={operatorFormData}
+        isInternalUser={false}
+      />,
+    );
+
+    const editButton = screen.getByRole("button", { name: /edit/i });
+    act(() => {
+      editButton.click();
+    });
+
+    const saveButton = screen.getByRole("button", { name: /save/i });
+    await userEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeVisible();
+    });
+  });
+
   it("calls the router.back function if back button is clicked on same base path", async () => {
     render(
       <OperatorForm

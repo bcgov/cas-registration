@@ -10,8 +10,12 @@ import {
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { actionHandler } from "@bciers/actions";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface AdditionalReportingDataProps {
   versionId: number;
@@ -41,7 +45,10 @@ export default function AdditionalReportingDataForm({
   navigationInformation,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } =
+    useValidationErrors<ValidationMessageKey>({
+      config: validationUIConfig,
+    });
 
   const schema: RJSFSchema = includeElectricityGenerated
     ? additionalReportingDataWithElectricityGeneratedSchema
