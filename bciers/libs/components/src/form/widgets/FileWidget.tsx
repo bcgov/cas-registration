@@ -3,7 +3,6 @@ import { AlertIcon } from "@bciers/components/icons";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { TranslatableString, WidgetProps } from "@rjsf/utils";
 import { useRef, useState } from "react";
-import { getDocumentFileUrl } from "@/registration/app/utils/getDocumentFileUrl";
 
 const MAX_FILE_SIZE = 20000000;
 type FileScanStatus = "Unscanned" | "Clean" | "Quarantined";
@@ -12,6 +11,17 @@ interface FileInfo {
   status?: FileScanStatus;
   id?: number;
   file?: File;
+}
+
+/**
+ * For now this only works for registration endpoint, but a future update would be to
+ * make this configurable.
+ */
+async function getDocumentFileUrl(documentId: number): Promise<string> {
+  const endpoint = `registration/documents/${documentId}`;
+  const response = await actionHandler(endpoint, "GET");
+
+  return response as string;
 }
 
 // Show a different message depending on the fileScanStatus
