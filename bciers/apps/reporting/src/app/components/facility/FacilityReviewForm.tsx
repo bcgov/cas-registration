@@ -10,9 +10,13 @@ import { RJSFSchema } from "@rjsf/utils";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { getUpdatedFacilityReportDetails } from "@reporting/src/app/utils/getUpdatedFacilityReportDetails";
 import SnackBar from "@bciers/components/form/components/SnackBar";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  createGenericValidationError,
+} from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface Props {
   version_id: number;
@@ -48,7 +52,10 @@ export const FacilityReview: React.FC<Props> = ({
   isSyncAllowed = true,
 }) => {
   const [formData, setFormData] = useState<FacilityReviewFormData>(formsData);
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } =
+    useValidationErrors<ValidationMessageKey>({
+      config: validationUIConfig,
+    });
   const uiSchema = buildFacilityReviewUiSchema(operationId, facility_id);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const handleSubmit = async () => {
@@ -61,9 +68,7 @@ export const FacilityReview: React.FC<Props> = ({
     ];
     if (selectedActivityNames.length === 0) {
       setErrors([
-        createGenericReportValidationError(
-          "You must select at least one activity.",
-        ),
+        createGenericValidationError("You must select at least one activity."),
       ]);
       return false;
     }
@@ -93,9 +98,7 @@ export const FacilityReview: React.FC<Props> = ({
     );
 
     if (getUpdatedFacilityData.error) {
-      setErrors([
-        createGenericReportValidationError(getUpdatedFacilityData.error),
-      ]);
+      setErrors([createGenericValidationError(getUpdatedFacilityData.error)]);
       return;
     }
 

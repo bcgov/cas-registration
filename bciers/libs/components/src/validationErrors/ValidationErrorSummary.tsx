@@ -2,26 +2,13 @@ import Link from "next/link";
 import AlertNote, {
   AlertType,
 } from "@bciers/components/form/components/AlertNote";
-
-import type {
-  ReportValidationError,
-  ReportValidationErrors,
-  ReportValidationMessageKey,
+import {
+  ValidationErrors,
+  ValidationItemError,
   ValidationSeverity,
+  ValidationUIConfig,
 } from "./types";
-import { validationUIConfig } from "./config";
 
-type ValidationLinkProps = {
-  href: string;
-  label: string;
-  openInNewTab?: boolean;
-};
-
-type ReportValidationSummaryProps = {
-  errors?: ReportValidationErrors;
-};
-
-// Maps backend severity to AlertNote type
 function toAlertType(severity: ValidationSeverity): AlertType {
   switch (severity) {
     case "Error":
@@ -37,7 +24,11 @@ function ValidationLink({
   href,
   label,
   openInNewTab,
-}: Readonly<ValidationLinkProps>) {
+}: {
+  href: string;
+  label: string;
+  openInNewTab?: boolean;
+}) {
   if (openInNewTab) {
     return (
       <a
@@ -50,7 +41,6 @@ function ValidationLink({
       </a>
     );
   }
-
   return (
     <Link href={href} className="underline">
       {label}
@@ -58,29 +48,30 @@ function ValidationLink({
   );
 }
 
-// Replaces label text in message with a clickable link (inline)
-// Else fall back to label as link
 function renderMessageWithInlineLink(
   text: string,
   label?: string,
   href?: string,
   openInNewTab?: boolean,
 ) {
-  if (!label || !href) {
-    return <span>{text}</span>;
-  }
-
-  if (!text.includes(label)) {
+  if (!label || !href || !text.includes(label)) {
     return (
       <span>
         {text}{" "}
-        <ValidationLink href={href} label={label} openInNewTab={openInNewTab} />
+        {label && href && (
+          <ValidationLink
+            href={href}
+            label={label}
+            openInNewTab={openInNewTab}
+          />
+        )}
       </span>
     );
   }
 
-  const [before, ...rest] = text.split(label);
-  const after = rest.join(label);
+  const index = text.indexOf(label);
+  const before = text.slice(0, index);
+  const after = text.slice(index + label.length);
 
   return (
     <span>
@@ -91,18 +82,18 @@ function renderMessageWithInlineLink(
   );
 }
 
-// Renders message based on config-defined render mode
-function renderValidationMessage(
-  key: ReportValidationMessageKey,
-  error: ReportValidationError,
+function renderMessage<TKey extends string>(
+  key: TKey,
+  error: ValidationItemError,
+  configMap?: Partial<Record<TKey, ValidationUIConfig<TKey>>>, // <-- Optional
 ) {
-  const config = validationUIConfig[key];
+  const config = configMap?.[key];
   const label = config?.resolveLabel(error);
   const href = config?.resolveHref(error);
   // Keys without a UI config (e.g. generic API errors like user_error) still
   // carry a backend message, so fall back to it before showing the raw key
   const message =
-    config?.resolveFormattedMessage(error, key) || error.message || key;
+    config?.resolveFormattedMessage?.(error, key) || error.message || key;
 
   switch (config?.renderMode) {
     case "inline_link":
@@ -112,12 +103,8 @@ function renderValidationMessage(
         href,
         config?.openInNewTab,
       );
-
     case "label_then_message":
-      if (!label || !href) {
-        return <span>{message}</span>;
-      }
-
+      if (!label || !href) return <span>{message}</span>;
       return (
         <span>
           <ValidationLink
@@ -128,34 +115,39 @@ function renderValidationMessage(
           : {message}
         </span>
       );
-
     case "message_only":
     default:
       return <span>{message}</span>;
   }
 }
 
-export default function ReportValidationSummary({
+export interface ValidationSummaryProps<TKey extends string = string> {
+  errors?: ValidationErrors<TKey>;
+  config?: Partial<Record<TKey, ValidationUIConfig<TKey>>>; // <-- Make optional with '?'
+}
+
+export function ValidationErrorSummary<TKey extends string = string>({
   errors,
-}: Readonly<ReportValidationSummaryProps>) {
+  config = {}, // <-- Provide default empty object fallback
+}: Readonly<ValidationSummaryProps<TKey>>) {
   if (!errors?.length) return null;
 
   const severityOrder: Record<ValidationSeverity, number> = {
     Error: 0,
     Warning: 1,
+    Info: 2,
   };
 
-  const sortedEntries = errors
+  const sorted = errors
     .map((entry, index) => ({ ...entry, originalIndex: index }))
     .sort((a, b) => {
-      const severityDiff =
+      const diff =
         severityOrder[a.error.severity] - severityOrder[b.error.severity];
+      if (diff !== 0) return diff;
 
-      if (severityDiff !== 0) return severityDiff;
-
-      const priorityA = validationUIConfig[a.key]?.priority ?? 999;
-      const priorityB = validationUIConfig[b.key]?.priority ?? 999;
-
+      // Safe access with fallback object
+      const priorityA = config?.[a.key]?.priority ?? 999;
+      const priorityB = config?.[b.key]?.priority ?? 999;
       if (priorityA !== priorityB) return priorityA - priorityB;
 
       return a.originalIndex - b.originalIndex;
@@ -163,13 +155,13 @@ export default function ReportValidationSummary({
 
   return (
     <div className="space-y-3 mt-4">
-      {sortedEntries.map(({ key, error }, index) => (
+      {sorted.map(({ key, error }, index) => (
         <AlertNote
           key={`${key}-${index}`}
-          id={`report-validation-${key}-${index}`}
+          id={`validation-${key}-${index}`}
           alertType={toAlertType(error.severity)}
         >
-          {renderValidationMessage(key, error)}
+          {renderMessage(key, error, config)}
         </AlertNote>
       ))}
     </div>
