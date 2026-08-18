@@ -14,10 +14,6 @@ import { createContactSchema } from "apps/administration/app/components/contacts
 import { FrontendMessages } from "@bciers/utils/src/enums";
 import { ContactFormData } from "@/administration/app/components/contacts/types";
 
-vi.mock("@reporting/src/app/utils/handleApiResponse", () => ({
-  handleApiResponse: vi.fn().mockReturnValue(false),
-}));
-
 const mockReplace = vi.fn();
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
@@ -75,6 +71,7 @@ export const checkEmptyContactForm = () => {
   expect(screen.getByLabelText(/Province/i)).toHaveValue("");
   expect(screen.getByLabelText(/Postal Code/i)).toHaveValue("");
 };
+
 export const fillContactForm = async () => {
   // Personal Information
   await userEvent.type(screen.getByLabelText(/First Name/i), "John");
@@ -256,6 +253,7 @@ describe("ContactForm component", () => {
       screen.queryByRole("button", { name: /delete contact/i }),
     ).toBeVisible();
   });
+
   it("renders the form for an internal user", async () => {
     useSessionRole.mockReturnValue("cas_admin");
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
@@ -294,6 +292,37 @@ describe("ContactForm component", () => {
   });
 
   it(
+    "displays server error message when creating a contact fails",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      const errorMessage = "A contact with this email already exists.";
+
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+
+      render(
+        <ContactForm
+          schema={createContactSchema(contactsSchema, true)}
+          formData={{}}
+          isCreating
+          allowEdit
+        />,
+      );
+
+      await fillContactForm();
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(errorMessage)).toBeVisible();
+      });
+      expect(mockReplace).not.toHaveBeenCalled();
+    },
+  );
+
+  it(
     "fills the mandatory form fields, creates new contact, and redirects on success",
     {
       timeout: 10000,
@@ -312,8 +341,9 @@ describe("ContactForm component", () => {
         id: 123,
         first_name: "John",
         last_name: "Doe",
+        error: null,
       };
-      actionHandler.mockReturnValueOnce(response);
+      actionHandler.mockResolvedValueOnce(response);
 
       await fillContactForm();
       // Submit
@@ -341,6 +371,7 @@ describe("ContactForm component", () => {
       });
     },
   );
+
   it(
     "creates a new contact, edits it, and submits the updated contact",
     {
@@ -359,8 +390,9 @@ describe("ContactForm component", () => {
         id: 123,
         first_name: "John",
         last_name: "Doe",
+        error: null,
       };
-      actionHandler.mockReturnValueOnce(response);
+      actionHandler.mockResolvedValueOnce(response);
 
       await fillContactForm();
 
@@ -413,8 +445,9 @@ describe("ContactForm component", () => {
         id: 123,
         first_name: "John updated",
         last_name: "Doe updated",
+        error: null,
       };
-      actionHandler.mockReturnValueOnce(response);
+      actionHandler.mockResolvedValueOnce(response);
 
       // Submit
       await userEvent.click(screen.getByRole("button", { name: /save/i }));
@@ -444,6 +477,42 @@ describe("ContactForm component", () => {
       });
     },
   );
+
+  it(
+    "displays server error message when updating an existing contact fails",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      const errorMessage = "Failed to update contact details.";
+
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+
+      const readOnlyContactSchema = createContactSchema(contactsSchema, false);
+      render(
+        <ContactForm
+          schema={readOnlyContactSchema}
+          formData={contactFormData}
+          allowEdit
+        />,
+      );
+
+      await userEvent.click(screen.getByRole("button", { name: /edit/i }));
+      await editNameFields({
+        firstName: "John updated",
+        lastName: "Doe updated",
+      });
+
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(errorMessage)).toBeVisible();
+      });
+    },
+  );
+
   it("updates existing contact form data and hits the correct endpoint", async () => {
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     render(
@@ -466,8 +535,9 @@ describe("ContactForm component", () => {
       id: 123,
       first_name: "John updated",
       last_name: "Doe updated",
+      error: null,
     };
-    actionHandler.mockReturnValueOnce(response);
+    actionHandler.mockResolvedValueOnce(response);
 
     // Submit
     await userEvent.click(screen.getByRole("button", { name: /save/i }));
@@ -499,6 +569,7 @@ describe("ContactForm component", () => {
       },
     );
   });
+
   it("renders the places assigned field in read-only mode when editing", async () => {
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     render(
@@ -519,6 +590,7 @@ describe("ContactForm component", () => {
       screen.queryByRole("button", { name: /remove item/i }),
     ).not.toBeInTheDocument();
   });
+
   it("does not allow deletion of contact if the contact is asssigned to places", async () => {
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     render(
@@ -541,6 +613,40 @@ describe("ContactForm component", () => {
       ).toBeVisible();
     });
     expect(screen.getByRole("button", { name: /back/i })).toBeVisible();
+  });
+
+  it("displays error message when deleting a contact fails", async () => {
+    const errorMessage = "Unable to delete contact at this time.";
+
+    archiveContact.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    const readOnlyContactSchema = createContactSchema(contactsSchema, false);
+    render(
+      <ContactForm
+        schema={readOnlyContactSchema}
+        formData={{ ...contactFormData, places_assigned: [] }}
+        allowEdit
+      />,
+    );
+
+    const deleteButton = screen.getByRole("button", {
+      name: /delete contact/i,
+    });
+    await userEvent.click(deleteButton);
+
+    const modal = screen.getByRole("dialog");
+    const modalDeleteButton = within(modal).getByRole("button", {
+      name: /delete contact/i,
+    });
+
+    await userEvent.click(modalDeleteButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeVisible();
+    });
+    expect(mockRouterPush).not.toHaveBeenCalled();
   });
 
   it("allows deletion of contact if they are not assigned anywhere", async () => {
@@ -587,4 +693,37 @@ describe("ContactForm component", () => {
     });
     expect(deleteButton).not.toBeInTheDocument();
   });
+
+  it(
+    "displays generic error fallback when the server returns an unexpected error",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      const serverErrorMessage =
+        "Internal server error occurred while processing request.";
+
+      actionHandler.mockResolvedValueOnce({
+        error: serverErrorMessage,
+      });
+
+      render(
+        <ContactForm
+          schema={createContactSchema(contactsSchema, true)}
+          formData={{}}
+          isCreating
+          allowEdit
+        />,
+      );
+
+      await fillContactForm();
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(serverErrorMessage)).toBeVisible();
+      });
+
+      expect(mockReplace).not.toHaveBeenCalled();
+    },
+  );
 });

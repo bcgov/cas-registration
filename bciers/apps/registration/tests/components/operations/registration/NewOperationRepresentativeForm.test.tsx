@@ -1,6 +1,10 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import { useSessionRole, getContact } from "@bciers/testConfig/mocks";
+import {
+  useSessionRole,
+  getContact,
+  actionHandler,
+} from "@bciers/testConfig/mocks";
 import userEvent from "@testing-library/user-event";
 import NewOperationRepresentativeForm from "@/registration/app/components/operations/registration/NewOperationRepresentativeForm";
 
@@ -355,5 +359,52 @@ describe("the NewOperationRepresentativeForm component", () => {
         screen.getByText(/Operation Representative removed successfully/i),
       ).toBeVisible();
     });
+  });
+
+  it("displays generic error fallback when the server returns an unexpected error on submit", async () => {
+    const errorMessage =
+      "Unexpected database error occurred while saving representative.";
+
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    render(
+      <NewOperationRepresentativeForm
+        formData={{
+          operation_representatives: [],
+          new_operation_representative: [
+            {
+              first_name: "Isaac",
+              last_name: "Newton",
+              position_title: "Scientist",
+              email: "isaac.newton@email.com",
+              phone_number: "+16044014321",
+              street_address: "123 Under the Apple Tree",
+              municipality: "Gravityville",
+              province: "AB",
+              postal_code: "A1B 2C3",
+            },
+          ],
+        }}
+        operation={operationId}
+        step={5}
+        existingOperationRepresentatives={[]}
+        contacts={contactsMock}
+      />,
+    );
+
+    const saveButton = screen.getByRole("button", {
+      name: /save operation representative/i,
+    });
+    await userEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeVisible();
+    });
+
+    expect(
+      screen.queryByText("Operation Representative saved successfully"),
+    ).not.toBeInTheDocument();
   });
 });

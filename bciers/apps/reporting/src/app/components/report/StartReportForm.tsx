@@ -7,8 +7,12 @@ import { actionHandler } from "@bciers/actions";
 import FormBase from "@bciers/components/form/FormBase";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { useRouter } from "next/navigation";
-import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
-import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface StartReportFormProps {
   schema: RJSFSchema;
@@ -21,13 +25,6 @@ interface StartReportFormData {
   registration_purpose: string;
 }
 
-interface CreateReportErrorResponse {
-  error?: string;
-  validation?: {
-    errors?: ReportValidationErrors;
-  };
-}
-
 export default function StartReportForm({
   schema,
   uiSchema,
@@ -35,42 +32,31 @@ export default function StartReportForm({
   const router = useRouter();
 
   const [formData, setFormData] = useState<Partial<StartReportFormData>>({});
-  const [errorList, setErrorList] = useState<ReportValidationErrors>([]);
+  const { setErrors, renderedErrors } =
+    useValidationErrors<ValidationMessageKey>({
+      config: validationUIConfig,
+    });
 
   const handleSubmit = async (
     data: IChangeEvent<StartReportFormData>,
   ): Promise<void> => {
-    setErrorList([]);
-
     const payload = {
       operation_id: data.formData?.operation_id,
       reporting_year: data.formData?.reporting_year,
       registration_purpose: data.formData?.registration_purpose,
     };
 
-    const response = (await actionHandler(
+    const response = await actionHandler(
       "reporting/create-report-for-reporting-year",
       "POST",
       "/reports/previous-years",
       {
         body: JSON.stringify(payload),
       },
-    )) as CreateReportErrorResponse | number;
+    );
 
-    if (typeof response === "object" && response.error) {
-      setErrorList(
-        response.validation?.errors ?? [
-          {
-            key: "generic_error",
-            error: {
-              severity: "Error",
-              message: response.error,
-            },
-          },
-        ],
-      );
-      return;
-    }
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) return;
 
     router.push(`/reports/${response}/review-operation-information`);
   };
@@ -85,7 +71,7 @@ export default function StartReportForm({
       }
       onSubmit={handleSubmit}
     >
-      <ReportValidationSummary errors={errorList} />
+      {renderedErrors}
 
       <div className="flex justify-start gap-3 pt-6">
         <Button

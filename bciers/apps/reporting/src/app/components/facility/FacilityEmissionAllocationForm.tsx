@@ -9,21 +9,25 @@ import {
   emissionAllocationUiSchema,
 } from "@reporting/src/data/jsonSchema/facility/facilityEmissionAllocation";
 import { IChangeEvent } from "@rjsf/core";
-import { EmissionAllocationData, Product } from "./types";
-import { calculateEmissionData } from "./calculateEmissionsData";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
 import { EmissionAllocationResponse } from "@reporting/src/app/utils/getEmissionAllocations";
+import { RegulatedProduct } from "@reporting/src/app/components/operations/types";
+import { EmissionAllocationData, Product } from "./types";
+import { calculateEmissionData } from "./calculateEmissionsData";
 import { validateEmissions } from "./facilityEmissionAllocation/validateEmissions";
 import {
   validateMethodology,
   validateMethodologyOther,
 } from "./facilityEmissionAllocation/validateMethodology";
 import { validatePulpAndPaper } from "./facilityEmissionAllocation/validatePulpAndPaper";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
-import { RegulatedProduct } from "../operations/types";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  createGenericValidationError,
+} from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 // Interface for props passed to the component
 interface Props {
@@ -92,7 +96,7 @@ const validateFormData = (
     );
   }
 
-  return newErrors.map((errMsg) => createGenericReportValidationError(errMsg));
+  return newErrors.map((errMsg) => createGenericValidationError(errMsg));
 };
 
 // Helper function
@@ -181,7 +185,10 @@ export default function FacilityEmissionAllocationForm({
         ) || [],
     },
   }));
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } =
+    useValidationErrors<ValidationMessageKey>({
+      config: validationUIConfig,
+    });
   const [shouldReset, setShouldReset] = useState(false);
   // State for submit button disable
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);

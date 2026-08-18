@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import {
   actionHandler,
@@ -401,6 +401,55 @@ describe("The TransferDetailForm component", () => {
       ).toBeVisible();
     },
   );
+
+  it("displays generic error fallback when the server returns an unexpected error", async () => {
+    const errorMessage =
+      "Unexpected database error occurred while updating transfer.";
+
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    await renderOperationEntityTransferDetailForm();
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /edit details/i }),
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: /transfer entity/i }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeVisible();
+    });
+  });
+
+  it("displays generic error fallback when canceling a transfer returns an unexpected error", async () => {
+    const errorMessage =
+      "Unexpected server error occurred while canceling transfer.";
+
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    await renderOperationEntityTransferDetailForm();
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /cancel transfer/i }),
+    );
+
+    const modal = screen.getByRole("dialog");
+    const confirmButton = within(modal).getByRole("button", {
+      name: /yes, cancel this transfer/i,
+    });
+
+    await userEvent.click(confirmButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeVisible();
+    });
+    expect(mockRouterPush).not.toHaveBeenCalled();
+  });
 
   it("should not render the edit details and cancel transfer buttons for a user with a role other than CAS_ANALYST", async () => {
     const userAppRole = FrontEndRoles.CAS_ADMIN;
