@@ -1,11 +1,20 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
-import type { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
+import { ValidationErrorSummary } from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type {
+  ReportValidationErrors,
+  ValidationMessageKey,
+} from "@reporting/src/app/components/validationErrors/types";
 
-describe("ReportValidationSummary", () => {
+describe("ValidationErrorSummary", () => {
   it("renders nothing when there are no errors", () => {
-    const { container } = render(<ReportValidationSummary errors={[]} />);
+    const { container } = render(
+      <ValidationErrorSummary<ValidationMessageKey>
+        errors={[]}
+        config={validationUIConfig}
+      />,
+    );
 
     expect(container).toBeEmptyDOMElement();
   });
@@ -50,7 +59,12 @@ describe("ReportValidationSummary", () => {
       },
     ];
 
-    render(<ReportValidationSummary errors={errors} />);
+    render(
+      <ValidationErrorSummary<ValidationMessageKey>
+        errors={errors}
+        config={validationUIConfig}
+      />,
+    );
 
     const alerts = screen.getAllByRole("alert");
 
@@ -83,7 +97,12 @@ describe("ReportValidationSummary", () => {
       },
     ];
 
-    render(<ReportValidationSummary errors={errors} />);
+    render(
+      <ValidationErrorSummary<ValidationMessageKey>
+        errors={errors}
+        config={validationUIConfig}
+      />,
+    );
 
     const alerts = screen.getAllByRole("alert");
 
@@ -113,7 +132,12 @@ describe("ReportValidationSummary", () => {
       },
     ];
 
-    render(<ReportValidationSummary errors={errors} />);
+    render(
+      <ValidationErrorSummary<ValidationMessageKey>
+        errors={errors}
+        config={validationUIConfig}
+      />,
+    );
 
     const alerts = screen.getAllByRole("alert");
 
@@ -136,7 +160,12 @@ describe("ReportValidationSummary", () => {
       },
     ];
 
-    render(<ReportValidationSummary errors={errors} />);
+    render(
+      <ValidationErrorSummary<ValidationMessageKey>
+        errors={errors}
+        config={validationUIConfig}
+      />,
+    );
 
     const verificationLink = screen.getByRole("link", {
       name: "Verification page",
@@ -162,7 +191,12 @@ describe("ReportValidationSummary", () => {
       },
     ];
 
-    render(<ReportValidationSummary errors={errors} />);
+    render(
+      <ValidationErrorSummary<ValidationMessageKey>
+        errors={errors}
+        config={validationUIConfig}
+      />,
+    );
 
     expect(screen.getByText("Something went wrong. Very wrong.")).toBeVisible();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();

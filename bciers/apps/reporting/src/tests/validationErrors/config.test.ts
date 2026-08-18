@@ -1,11 +1,11 @@
-import { validationUIConfig } from "@reporting/src/app/components/shared/validation/config";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
 import { resolveValidationHref } from "@reporting/src/app/utils/routes";
-import type { ReportValidationMessageKey } from "@reporting/src/app/components/shared/validation/types";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 const sortAlphabetically = (a: string, b: string) => a.localeCompare(b);
 
 describe("validationUIConfig", () => {
-  const expectedKeys: ReportValidationMessageKey[] = [
+  const expectedKeys: ValidationMessageKey[] = [
     "error_required_fields",
     "operation_boro_id",
     "report_activity_json_validation",

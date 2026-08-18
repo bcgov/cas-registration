@@ -4,8 +4,12 @@ import { NavigationInformation } from "@reporting/src/app/components/taskList/ty
 import { eioSchema, eioUiSchema } from "@reporting/src/data/jsonSchema/eio";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { actionHandler } from "@bciers/actions";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface Props {
   versionId: number;
@@ -19,7 +23,10 @@ const ElectricityInformationForm: React.FC<Props> = ({
   navigationInformation,
 }) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } =
+    useValidationErrors<ValidationMessageKey>({
+      config: validationUIConfig,
+    });
   const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${versionId}/electricity-import-data`;
     const method = "POST";

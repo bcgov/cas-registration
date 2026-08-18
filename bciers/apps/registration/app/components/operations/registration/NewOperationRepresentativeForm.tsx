@@ -8,7 +8,7 @@ import { OperationRepresentative } from "apps/registration/app/components/operat
 import { IChangeEvent } from "@rjsf/core";
 import { useState } from "react";
 import type { FC } from "react";
-import { Button, Alert } from "@mui/material";
+import { Button } from "@mui/material";
 import { getContact } from "@bciers/actions/api";
 import {
   ContactFormData,
@@ -19,6 +19,10 @@ import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import useKey from "@bciers/utils/src/useKey";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface NewOperationRepresentativeFormProps extends Omit<
   FormPropsWithTheme<any>,
@@ -41,11 +45,15 @@ const NewOperationRepresentativeForm: FC<
     step,
   } = props;
 
-  const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData);
   const [key, resetKey] = useKey();
   const [existingContactId, setExistingContactId] = useState("");
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+
+  const { setErrors, renderedErrors } = useValidationErrors({
+    config: {},
+  });
+
   const isSubmitButton = formState?.new_operation_representative?.length > 0;
   const isExistingContactSelected =
     Boolean(existingContactId) &&
@@ -55,6 +63,8 @@ const NewOperationRepresentativeForm: FC<
     newSelectedContactId: string,
   ): Promise<void> => {
     setExistingContactId(newSelectedContactId);
+    setErrors(undefined);
+
     try {
       const contactData: ContactFormData =
         await getContact(newSelectedContactId);
@@ -70,13 +80,13 @@ const NewOperationRepresentativeForm: FC<
       });
       resetKey(); // force re-render to handle blank fields in the new selected contact data
     } catch (_err) {
-      setError("Failed to fetch contact data!" as any);
+      handleApiResponse({ error: "Failed to fetch contact data!" }, setErrors);
     }
   };
 
   const handleClearingExistingContact = () => {
     setExistingContactId("");
-    setError(undefined);
+    setErrors(undefined);
     setFormState({
       operation_representatives: formState.operation_representatives,
       new_operation_representative: [{}],
@@ -108,13 +118,13 @@ const NewOperationRepresentativeForm: FC<
   };
 
   const handleAfterSubmit = (response: { id: number }) => {
-    setError(undefined);
+    setErrors(undefined);
     setExistingContactId(""); // Clear the existing contact id to enable disabled fields
     // Add the new operation representative to the list of operation representatives and clear the form
     setFormState({
       operation_representatives: [
         ...formState.operation_representatives,
-        response.id, //Contact ID
+        response.id, // Contact ID
       ],
       new_operation_representative: [{}],
     });
@@ -123,6 +133,8 @@ const NewOperationRepresentativeForm: FC<
   };
 
   const submitHandler = async ({ formData: newFormData }: IChangeEvent) => {
+    setErrors(undefined);
+
     const endpoint = `registration/operations/${operation}/registration/operation-representative`;
     const response = await actionHandler(
       endpoint,
@@ -135,10 +147,11 @@ const NewOperationRepresentativeForm: FC<
       },
     );
 
-    if (!response || response?.error) {
-      setError(response.error);
-      return { error: response.error };
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
+      return { error: response?.error };
     }
+
     handleAfterSubmit(response);
   };
 
@@ -166,9 +179,7 @@ const NewOperationRepresentativeForm: FC<
               Save Operation Representative
             </Button>
           )}
-          <div className="min-h-[48px] box-border">
-            {error && <Alert severity="error">{error}</Alert>}
-          </div>
+          <div className="min-h-[48px] box-border">{renderedErrors}</div>
         </div>
       </FormBase>
       <SnackBar

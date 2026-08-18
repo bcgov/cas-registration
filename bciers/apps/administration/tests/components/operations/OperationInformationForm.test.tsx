@@ -1,4 +1,11 @@
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import OperationInformationForm from "@/administration/app/components/operations/OperationInformationForm";
 import {
@@ -1115,5 +1122,84 @@ describe("the OperationInformationForm component", () => {
     expect(
       screen.getByText(/Please select an operation representative/i),
     ).toBeVisible();
+  });
+
+  it("displays an inline link to Contacts within the error message when saving operation fails", async () => {
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
+    const errorMessage =
+      "Please return to Contacts to assign a representative.";
+
+    actionHandler.mockResolvedValueOnce({
+      validation: {
+        errors: [
+          {
+            key: "operation_rep_required",
+            error: {
+              severity: "Error",
+              message: errorMessage,
+            },
+          },
+        ],
+      },
+    });
+
+    render(
+      <OperationInformationForm
+        formData={formData}
+        schema={testSchema}
+        operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={testSchema}
+        uiSchema={uiSchema}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    await waitFor(() => {
+      // 1. Verify the inline link is rendered with correct destination
+      const link = screen.getByRole("link", { name: "Contacts" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/contacts");
+
+      // 2. Verify the surrounding text exists around the link
+      expect(
+        screen.getByText((_, element) => {
+          return (
+            element?.tagName.toLowerCase() === "span" &&
+            element.textContent === errorMessage
+          );
+        }),
+      ).toBeVisible();
+    });
+  });
+
+  it("displays generic error fallback when the server returns an unexpected error", async () => {
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
+    const serverErrorMessage =
+      "Unexpected database error occurred while saving operation.";
+
+    actionHandler.mockResolvedValueOnce({
+      error: serverErrorMessage,
+    });
+
+    render(
+      <OperationInformationForm
+        formData={formData}
+        schema={testSchema}
+        operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={testSchema}
+        uiSchema={uiSchema}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(serverErrorMessage)).toBeVisible();
+    });
   });
 });

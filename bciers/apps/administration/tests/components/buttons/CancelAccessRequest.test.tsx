@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import CancelAccessRequest from "@/administration/app/components/buttons/CancelAccessRequest";
 import { UserOperatorJSON } from "@/administration/tests/components/userOperators/constants";
@@ -60,8 +60,19 @@ describe("Cancel Access Requests component", () => {
     // make sure the user is redirected to the select operator page
     expect(mockRouterPush).toHaveBeenCalledWith("/select-operator");
   });
+
   it("shows an error message if the request fails", async () => {
-    actionHandler.mockResolvedValueOnce({ error: "Failed to cancel request" });
+    actionHandler.mockResolvedValueOnce({
+      validation: {
+        errors: [
+          {
+            key: "Failed to cancel request",
+            error: { severity: "Error" },
+          },
+        ],
+      },
+    });
+
     render(
       <CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID} />,
     );
@@ -71,6 +82,10 @@ describe("Cancel Access Requests component", () => {
     await userEvent.click(
       screen.getByRole("button", { name: /yes, cancel this request/i }),
     );
-    expect(screen.getByText(/Failed to cancel request/i)).toBeVisible();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to cancel request/i)).toBeVisible();
+    });
+    expect(mockRouterPush).not.toHaveBeenCalled();
   });
 });
