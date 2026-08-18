@@ -24,9 +24,14 @@ import {
 } from "@bciers/utils/src/enums";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
-import Link from "next/link";
 import ConfirmChangeOfFieldModal from "@/registration/app/components/operations/registration/ConfirmChangeOfFieldModal";
 import { useFileUploadWidget } from "@bciers/components/form/widgets/FileWidget";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@/administration/app/components/validationErrors/config";
+import type { ValidationKey } from "@/administration/app/components/validationErrors/types";
 
 const OperationInformationForm = ({
   formData,
@@ -43,7 +48,6 @@ const OperationInformationForm = ({
   generalSchema: RJSFSchema;
   uiSchema: UiSchema;
 }) => {
-  const [error, setError] = useState(undefined);
   const [schema, setSchema] = useState(initialSchema);
   const [confirmedFormData, setConfirmedFormData] = useState(formData);
   // Switching the purpose to EIO overwrites the type in the form,
@@ -59,6 +63,9 @@ const OperationInformationForm = ({
   const [key, resetKey] = useKey();
   const [formMode, setFormMode] = useState(FormMode.READ_ONLY);
 
+  const { setErrors, renderedErrors } = useValidationErrors<ValidationKey>({
+    config: validationUIConfig,
+  });
   const router = useRouter();
   // To get the user's role from the session
   const role = useSessionRole();
@@ -103,7 +110,7 @@ const OperationInformationForm = ({
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
   }) => {
-    setError(undefined);
+    setErrors(undefined);
     const pathToRevalidate = `/operations/${operationId}`;
 
     const response = await submitWithFiles(
@@ -113,18 +120,8 @@ const OperationInformationForm = ({
       pathToRevalidate,
     );
 
-    if (response?.error) {
-      // Users get this error when they select a contact that's missing address information. We include a link to the Contacts page because the user has to fix the error from there, not here in the operation form.
-      if (response.error.includes("Please return to Contacts")) {
-        const splitError = response.error.split("Contacts");
-        response.error = (
-          <>
-            {splitError[0]} <Link href={"/contacts"}>Contacts</Link>
-            {splitError[1]}
-          </>
-        );
-      }
-      setError(response.error);
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
       return { error: response.error };
     } else {
       setConfirmedFormData(response);
@@ -132,6 +129,7 @@ const OperationInformationForm = ({
     }
 
     if (!data.formData?.opted_in_operation) return;
+
     const response2 = await actionHandler(
       `registration/operations/${operationId}/registration/opted-in-operation-detail`,
       "PUT",
@@ -141,8 +139,8 @@ const OperationInformationForm = ({
       },
     );
 
-    if (response2?.error) {
-      setError(response2.error);
+    const isSuccess2 = handleApiResponse(response2, setErrors);
+    if (!isSuccess2) {
       return { error: response2.error };
     }
   };
@@ -208,7 +206,7 @@ const OperationInformationForm = ({
         key={key}
         allowEdit={!role.includes("cas_")}
         mode={formMode}
-        error={error}
+        errors={renderedErrors}
         schema={schema}
         uiSchema={uiSchema}
         formData={confirmedFormData ?? {}}
