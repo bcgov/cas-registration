@@ -839,6 +839,102 @@ describe("FacilityForm component", () => {
       await assertFormPut();
     },
   );
+  it(
+    "displays server validation error message when creating a facility fails",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      const errorMessage = "A facility with this name already exists.";
+
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+
+      render(
+        <FacilityForm
+          isCreating
+          schema={facilitiesSfoSchema}
+          uiSchema={facilitiesSfoUiSchema}
+          formData={{
+            name: "test facility name",
+            type: "Single Facility",
+          }}
+        />,
+      );
+
+      await fillMandatoryFields(facilitiesSfoSchema);
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(errorMessage)).toBeVisible();
+      });
+      expect(mockReplace).not.toHaveBeenCalled();
+    },
+  );
+  it(
+    "displays server validation error message when updating an existing facility fails",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      const errorMessage = "Failed to update facility details.";
+
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+
+      render(
+        <FacilityForm
+          schema={facilitiesSfoSchema}
+          uiSchema={facilitiesSfoUiSchema}
+          formData={sfoFormData}
+        />,
+      );
+
+      await userEvent.click(screen.getByRole("button", { name: /edit/i }));
+      await editFormFields(facilitiesSfoSchema);
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(errorMessage)).toBeVisible();
+      });
+    },
+  );
+  it(
+    "displays generic error fallback when the server returns an unexpected error",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      const errorMessage =
+        "Unexpected database error occurred while saving facility.";
+
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+
+      render(
+        <FacilityForm
+          isCreating
+          schema={facilitiesSfoSchema}
+          uiSchema={facilitiesSfoUiSchema}
+          formData={{
+            name: "test facility name",
+            type: "Single Facility",
+          }}
+        />,
+      );
+
+      await fillMandatoryFields(facilitiesSfoSchema);
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(errorMessage)).toBeVisible();
+      });
+      expect(mockReplace).not.toHaveBeenCalled();
+    },
+  );
   it("redirects to the operation's facilities grid on back", async () => {
     render(
       <FacilityForm

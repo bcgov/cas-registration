@@ -11,9 +11,13 @@ import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperatio
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../../taskList/types";
 import SnackBar from "@bciers/components/form/components/SnackBar";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  createGenericValidationError,
+} from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface Props {
   initialData: any;
@@ -47,7 +51,10 @@ export default function LFOFacilitiesForm({
   const [facilitiesData, setFacilitiesData] = useState(() => ({
     ...initialData,
   }));
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } =
+    useValidationErrors<ValidationMessageKey>({
+      config: validationUIConfig,
+    });
   const [modalOpen, setModalOpen] = useState(false);
   const [submittingDisabled, setSubmittingDisabled] = useState(false);
   const [deselectedFacilities, setDeselectedFacilities] = useState<string[]>(
@@ -132,9 +139,7 @@ export default function LFOFacilitiesForm({
     const anyFacilitySelected = isAnyFacilitySelected(e.formData);
 
     if (!anyFacilitySelected) {
-      setErrors([
-        createGenericReportValidationError("No facilities selected."),
-      ]);
+      setErrors([createGenericValidationError("No facilities selected.")]);
       setSubmittingDisabled(true);
       return;
     }
