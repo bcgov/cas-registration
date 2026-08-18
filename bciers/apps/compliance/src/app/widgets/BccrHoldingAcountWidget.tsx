@@ -35,6 +35,16 @@ const WRONG_ACCOUNT_TYPE_MESSAGE = (
   </span>
 );
 
+const REMOTE_BCCR_ISSUE_MESSAGE = (
+  <span className="text-bc-error-red">
+    Remote BC Carbon Registry system issues, please try again later or contact{" "}
+    <a href={ghgRegulatorEmail} className="text-bc-link-blue hover:underline">
+      GHGRegulator@gov.bc.ca
+    </a>{" "}
+    if you have any questions.
+  </span>
+);
+
 const BccrHoldingAccountWidget = (props: WidgetProps) => {
   const { id, value, disabled, readonly, onChange, registry } = props;
   const { formContext } = registry;
@@ -66,7 +76,12 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
         complianceReportVersionId,
       );
 
-      if (response?.bccr_trading_name === null) {
+      if (response?.has_remote_bccr_errors) {
+        setIsValid(false);
+        setShowError(true);
+        setErrorMessage(REMOTE_BCCR_ISSUE_MESSAGE);
+        onValidAccountResolved?.(undefined);
+      } else if (response?.bccr_trading_name === null) {
         setIsValid(false);
         setShowError(true);
         setErrorMessage(INVALID_ACCOUNT_MESSAGE);

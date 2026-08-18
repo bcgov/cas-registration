@@ -6,6 +6,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.constants import BCCR
 from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
+from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
 
 bccr_service = BCCarbonRegistryAccountService()
@@ -20,7 +21,12 @@ bccr_service = BCCarbonRegistryAccountService()
 )
 def get_bccr_account_details(
     request: HttpRequest, account_id: FifteenDigitString, compliance_report_version_id: int
-) -> Tuple[Literal[200], Dict[str, Optional[str]]]:
-    account_details = bccr_service.get_account_details(account_id=account_id)
-    trading_name = getattr(account_details, "trading_name", None) if account_details else None
-    return 200, {"bccr_trading_name": trading_name}
+) -> Tuple[Literal[200], Dict[str, Optional[str | bool]]]:
+    try:
+        account_details = bccr_service.get_account_details(account_id=account_id)
+        trading_name = getattr(account_details, "trading_name", None) if account_details else None
+        return 200, {"bccr_trading_name": trading_name, "has_remote_bccr_errors": False}
+
+    except BCCarbonRegistryError:
+        # Handle exceptions that come from BCCR API
+        return 200, {"bccr_trading_name": None, "has_remote_bccr_errors": True}
