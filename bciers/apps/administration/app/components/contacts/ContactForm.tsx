@@ -12,8 +12,10 @@ import { useParams, useRouter } from "next/navigation";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { actionHandler } from "@bciers/actions";
 import useKey from "@bciers/utils/src/useKey";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   schema: any;
@@ -37,35 +39,77 @@ export default function ContactForm({
   allowEdit,
 }: Readonly<Props>) {
   const router = useRouter();
-  const { setErrors, renderedErrors } = useFormErrors();
-  const [formState, setFormState] = useState<ContactFormData>(formData ?? {});
-  const [isCreatingState, setIsCreatingState] = useState(isCreating);
-  const [key, resetKey] = useKey();
+  const params = useParams();
   const role = useSessionRole();
+  const [key, resetKey] = useKey();
+
+  const [formState, setFormState] = useState<ContactFormData>(
+    formData ?? ({} as ContactFormData),
+  );
+  const [isCreatingState, setIsCreatingState] = useState(Boolean(isCreating));
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const params = useParams();
 
-  const handleClickDelete = () => {
-    setModalOpen(true);
-  };
+  const { setErrors, renderedErrors } = useValidationErrors({
+    config: {},
+  });
+
+  const hasPlacesAssigned = Boolean(
+    formData.places_assigned && formData.places_assigned.length > 0,
+  );
 
   const handleArchiveContact = async () => {
     setIsSubmitting(true);
     setErrors(undefined);
+
     const response = await archiveContact(params.contactId as string);
-    if (response?.error) {
-      handleApiResponse(response, setErrors);
+    setIsSubmitting(false);
+
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
       setModalOpen(false);
-      setIsSubmitting(false);
       return;
     }
+
     router.push("/contacts?from_deletion=true");
-    return;
   };
 
-  const hasPlacesAssigned =
-    formData.places_assigned && formData.places_assigned.length > 0;
+  const handleSubmit = async (data: { formData?: any }) => {
+    setErrors(undefined);
+    const updatedFormData = { ...formState, ...data.formData };
+    setFormState(updatedFormData);
+
+    const method = isCreatingState ? "POST" : "PUT";
+    const contactId = formState.id ?? params.contactId;
+    const endpoint = isCreatingState
+      ? "registration/contacts"
+      : `registration/contacts/${contactId}`;
+    const pathToRevalidate = isCreatingState
+      ? "/contacts"
+      : `/contacts/${contactId}`;
+
+    const response = await actionHandler(endpoint, method, pathToRevalidate, {
+      body: JSON.stringify(data.formData),
+    });
+
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
+      return { error: response.error };
+    }
+
+    const activeId = response.id ?? contactId;
+
+    if (isCreatingState) {
+      setIsCreatingState(false);
+      setFormState((prev) => ({ ...prev, id: activeId }));
+    } else {
+      resetKey();
+    }
+
+    const titleQuery =
+      `${response.first_name ?? ""} ${response.last_name ?? ""}`.trim();
+    router.replace(`/contacts/${activeId}?contacts_title=${titleQuery}`);
+  };
 
   return (
     <>
@@ -83,6 +127,7 @@ export default function ContactForm({
           ? "Before you can delete this contact, please remove them from the places they are assigned. If they are the only one assigned, you must replace them with another contact in the assigned place."
           : "Please confirm that you would like to delete this contact."}
       </SimpleModal>
+
       <SingleStepTaskListForm
         key={key}
         errors={renderedErrors}
@@ -98,52 +143,9 @@ export default function ContactForm({
         showDeleteButton={
           !isCreatingState && role === FrontEndRoles.INDUSTRY_USER_ADMIN
         }
-        handleDelete={handleClickDelete}
+        handleDelete={() => setModalOpen(true)}
         deleteButtonText="Delete Contact"
-        onSubmit={async (data: { formData?: any }) => {
-          setErrors(undefined);
-          const updatedFormData = { ...formState, ...data.formData };
-          setFormState(updatedFormData);
-
-          const method = isCreatingState ? "POST" : "PUT";
-          const endpoint = isCreatingState
-            ? "registration/contacts"
-            : `registration/contacts/${formState.id}`;
-          const pathToRevalidate = isCreatingState
-            ? "/contacts"
-            : `/contacts/${formState.id}`;
-          const body = {
-            ...data.formData,
-          };
-
-          const response = await actionHandler(
-            endpoint,
-            method,
-            pathToRevalidate,
-            {
-              body: JSON.stringify(body),
-            },
-          );
-
-          const hasErrors = handleApiResponse(response, setErrors);
-          if (hasErrors || response.error) {
-            return { error: response.error || "Validation error" };
-          }
-
-          if (isCreatingState) {
-            setIsCreatingState(false);
-            setFormState((prevState) => ({
-              ...prevState,
-              id: response.id,
-            }));
-          } else {
-            resetKey();
-          }
-          const replaceUrl = `/contacts/${
-            method === "POST" ? response.id : formState.id
-          }?contacts_title=${response.first_name} ${response.last_name}`;
-          router.replace(replaceUrl);
-        }}
+        onSubmit={handleSubmit}
         onCancel={() => router.replace("/contacts")}
       />
     </>

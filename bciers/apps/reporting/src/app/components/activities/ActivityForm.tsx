@@ -24,8 +24,12 @@ import { NavigationInformation } from "@reporting/src/app/components/taskList/ty
 import { Dict } from "@bciers/types/dictionary";
 import useKey from "@bciers/utils/src/useKey";
 import { getActivitySchema } from "@reporting/src/app/utils/getActivitySchema";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import {
+  useValidationErrors,
+  createGenericValidationError,
+} from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -67,7 +71,10 @@ export default function ActivityForm({
   reportingYear,
   activityIndex,
 }: Readonly<Props>) {
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } =
+    useValidationErrors<ValidationMessageKey>({
+      config: validationUIConfig,
+    });
   const [formState, setFormState] = useState(activityFormData);
   const [key, resetKey] = useKey();
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
@@ -133,7 +140,7 @@ export default function ActivityForm({
     if (!arrayEquals(selectedSourceTypes, selectedSourceTypeIds)) {
       const schemaData = await fetchSchemaData(selectedSourceTypes);
       if (schemaData.error) {
-        setErrors([createGenericReportValidationError(schemaData.error)]);
+        setErrors([createGenericValidationError(schemaData.error)]);
         return;
       }
       setJsonSchema(safeJsonParse(schemaData).schema);
@@ -183,7 +190,7 @@ export default function ActivityForm({
     // Validate that at least one source type is selected
     if (selectedSourceTypeDataFiltered.length === 0) {
       setErrors([
-        createGenericReportValidationError(
+        createGenericValidationError(
           "At least one source type must be selected to report for that activity.",
         ),
       ]);
@@ -212,7 +219,7 @@ export default function ActivityForm({
     });
 
     if (response.error) {
-      setErrors([createGenericReportValidationError(response.error)]);
+      setErrors([createGenericValidationError(response.error)]);
       return false;
     }
     if (response) {

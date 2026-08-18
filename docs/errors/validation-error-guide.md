@@ -25,7 +25,7 @@ This ensures:
 2. Returns ReportValidationError(s)
 3. API serializes errors
 4. Frontend stores errors
-5. ReportValidationSummary renders them
+5. ValidationErrorSummary renders them
 6. validationUIConfig controls display + links
 ```
 
@@ -174,74 +174,6 @@ Returned as:
 
 ---
 
-## 🎨 Frontend
-
-### 1. State
-
-```ts
-const [validationErrors, setValidationErrors] =
-  useState<ReportValidationErrors>([]);
-```
-
----
-
-### 2. Rendering
-
-```tsx
-<ReportValidationSummary errors={validationErrors} />
-```
-
----
-
-### 3. Config-driven UI
-
-All behavior is defined in:
-
-```ts
-validationUIConfig;
-```
-
----
-
-### Example
-
-```ts
-activity_data_coverage: createValidationUIConfig({
-  label: (error) =>
-    String(error.context?.section_title ?? "Activity data"),
-
-  priority: 2,
-  renderMode: "inline_link",
-
-  getHref: (ctx) =>
-    ctx?.report_version_id && ctx?.facility_id
-      ? `/reporting/reports/${ctx.report_version_id}/facilities/${ctx.facility_id}/activities`
-      : undefined,
-
-  formatMessage: ({ error }) => {
-    const ctx = error.context;
-
-    return `Missing activity data for ${String(
-      ctx?.facility_name ?? "facility",
-    )}. Not all required activities have been reported. Please review and complete the activity data section.`;
-  },
-}),
-```
-
----
-
-## 🎯 Rendering Behavior
-
-| Property        | Purpose         |
-| --------------- | --------------- |
-| `label`         | Section name    |
-| `priority`      | Sorting         |
-| `renderMode`    | display style   |
-| `getHref`       | navigation link |
-| `formatMessage` | dynamic message |
-
----
-
 ## ➕ Adding a New Validation
 
 ### Backend
@@ -273,6 +205,7 @@ activity_data_coverage: createValidationUIConfig({
 
 1. Add key to `validationUIConfig`
 2. Define:
+
    - label
    - getHref
    - formatMessage
@@ -289,8 +222,8 @@ activity_data_coverage: createValidationUIConfig({
 [ ] Context populated
 [ ] SECTION key added to SECTION_APPLICABLE_FLOWS
 [ ] Validator registered in `bc_obps/reporting/service/report_validation/validators/__init__.py`
-[ ] SECTION key added to `bciers/apps/reporting/src/app/components/shared/validation/types.ts`
-[ ] SECTION key added to `bciers/apps/reporting/src/app/components/shared/validation/config.ts`
+[ ] SECTION key added to `bciers/apps/reporting/src/app/components/validationErrors/types.ts`
+[ ] SECTION key added to `bciers/apps/reporting/src/app/components/validationErrors/config.ts`
 [ ] Tests added\updated
 [ ] Everything wired end-to-end
 ```

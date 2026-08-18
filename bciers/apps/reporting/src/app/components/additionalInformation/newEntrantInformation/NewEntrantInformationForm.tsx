@@ -7,8 +7,12 @@ import { newEntrantUiSchema } from "@reporting/src/data/jsonSchema/newEntrantInf
 import { newEntrantSchema } from "@reporting/src/data/jsonSchema/newEntrantInformation/newEntrantInformationSchema";
 import { IChangeEvent } from "@rjsf/core";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface NewEntrantInfornationProps {
   version_id: number;
@@ -22,7 +26,10 @@ export default function NewEntrantInformationForm({
   navigationInformation,
 }: NewEntrantInfornationProps) {
   const [formData, setFormData] = useState(initialFormData || {});
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } =
+    useValidationErrors<ValidationMessageKey>({
+      config: validationUIConfig,
+    });
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
     !initialFormData.assertion_statement,
   );

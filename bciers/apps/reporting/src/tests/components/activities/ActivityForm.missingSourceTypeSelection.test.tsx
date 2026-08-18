@@ -6,7 +6,7 @@ import { useRouter } from "@bciers/testConfig/mocks";
 import { RJSFSchema } from "@rjsf/utils";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { getActivitySchema } from "@reporting/src/app/utils/getActivitySchema";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import { createGenericValidationError } from "@bciers/components/validationErrors";
 
 vi.mock("@bciers/components/form/MultiStepFormWithTaskList", () => ({
   default: vi.fn(() => null),
@@ -99,7 +99,7 @@ describe("ActivityForm missing source type selection", () => {
 
     expect(afterSubmitProps.errors).toHaveLength(1);
     expect(afterSubmitProps.errors[0].props.errors).toEqual([
-      createGenericReportValidationError(
+      createGenericValidationError(
         "At least one source type must be selected to report for that activity.",
       ),
     ]);
