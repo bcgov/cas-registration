@@ -1,5 +1,8 @@
 import pytest
-
+from unittest.mock import MagicMock
+from registration.api._operations._operation_id._registration.new_entrant_application import (
+    create_or_replace_new_entrant_application,
+)
 from registration.models.operation import Operation
 from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -7,6 +10,7 @@ from registration.utils import custom_reverse_lazy
 from model_bakery import baker
 from service.document_service import DocumentService
 from common.tests.utils.test_files import create_test_file
+from common.exceptions import UserError
 
 
 class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
@@ -50,6 +54,21 @@ class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
 
 
 class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
+
+    def test_throws_user_error_with_none_file_and_nonexisting_document_in_the_system(self):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+        )
+
+        mock_request = MagicMock()
+        mock_request.current_user.user_guid = approved_user_operator.user_id
+
+        with pytest.raises(UserError) as e:
+            create_or_replace_new_entrant_application(mock_request, operation.id)
+
+        assert str(e.value) == "Missing attached new entrant application, please provide one with the form."
 
     # # Uncomment this skip to test file uploads locally
     @pytest.mark.skip(

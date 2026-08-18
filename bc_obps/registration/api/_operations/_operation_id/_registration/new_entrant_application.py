@@ -47,7 +47,7 @@ def create_or_replace_new_entrant_application(
 ) -> Tuple[Literal[200], Operation]:
     user_guid = get_current_user_guid(request)
 
-    if not DocumentService.get_operation_document_by_type_if_authorized(
+    if new_entrant_application is None and not DocumentService.get_operation_document_by_type_if_authorized(
         user_guid, operation_id, "new_entrant_application"
     ):
         """
