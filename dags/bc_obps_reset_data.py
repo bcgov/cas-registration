@@ -74,7 +74,8 @@ def reset_data(cycle_backend: bool = True):
 
 
 ROLLOUT_DAG_DOC = """
-DAG to wait for the backend rollout to complete. Intended to be triggered after the DB reset.
+DAG to wait for the backend rollout to complete, then recreate the django superuser that was
+dropped along with the database. Intended to be triggered after the DB reset.
 """
 
 
@@ -99,7 +100,12 @@ def wait_for_backend_rollout():
         wait_until_job_complete=True,
     )
 
-    wait_for_backend_rollout_task  # NOSONAR
+    # Must run after the rollout completes, since it hits the backend over its route
+    @task
+    def add_django_admin_task():
+        trigger_k8s_cronjob("add-django-admin", BCIERS_NAMESPACE)
+
+    wait_for_backend_rollout_task >> add_django_admin_task()
 
 
 reset_data()  # NOSONAR

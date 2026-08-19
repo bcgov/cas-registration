@@ -1,0 +1,44 @@
+{{- if or (hasSuffix "-dev" .Release.Namespace) (hasSuffix "-test" .Release.Namespace) }}
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels: {{- include "cas-bciers.labels" . | nindent 4 }}
+    component: job-with-database-access
+  name: add-django-admin
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-weight": "-10"
+spec:
+  suspend: true # This cron job is intended to be triggered manually by Airflow
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: {{ template "cas-bciers.fullname" . }}-add-django-admin
+        spec:
+          activeDeadlineSeconds: 300
+          containers:
+            - name: {{ template "cas-bciers.fullname" . }}-add-django-admin
+              image: curlimages/curl
+              env:
+                - name: BACKEND_HOST
+                  value: {{ .Values.backend.route.host }}
+                - name: DJANGO_SUPERUSER_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: django-superuser
+                - name: DJANGO_SUPERUSER_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: django-superuser
+              command:
+                - /bin/sh
+                - -ec
+                - "curl --fail-with-body https://$(BACKEND_HOST)/api/common/create-superuser"
+          restartPolicy: Never
+{{ end }}
