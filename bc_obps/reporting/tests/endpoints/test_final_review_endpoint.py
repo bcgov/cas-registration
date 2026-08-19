@@ -28,6 +28,9 @@ class TestReportFinalReview(CommonTestSetup):
             status="Draft",
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report.operator, operations=[self.report_version.report.operation]
+        )
         self.report_operation = baker.make_recipe(
             "reporting.tests.utils.report_operation",
             report_version=self.report_version,

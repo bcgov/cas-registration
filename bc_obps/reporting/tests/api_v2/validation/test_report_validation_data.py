@@ -36,6 +36,9 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
             self,
             operator=self.report_version.report.operator,
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report.operator, operations=[self.report_version.report.operation]
+        )
 
         with patch(VALIDATION_SERVICE_PATH) as mock_validate:
             mock_validate.return_value = {}
@@ -53,6 +56,9 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(
             self,
             operator=self.report_version.report.operator,
+        )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report.operator, operations=[self.report_version.report.operation]
         )
 
         facility_id = "f486f2fb-62ed-438d-bb3e-0819b51e3aeb"

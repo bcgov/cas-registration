@@ -10,6 +10,9 @@ class TestReportAttachmentsIntegration(CommonTestSetup):
         self.endpoint_under_test = f"/api/reporting/report-version/{self.report_version.id}/attachments"
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
 
     def test_save_attachments_endpoint_end_to_end(self):
 

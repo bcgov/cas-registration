@@ -20,6 +20,9 @@ class TestReportFinalReviewApi(CommonTestSetup):
         )
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
 
     @patch("service.report_version_service.ReportVersionService.fetch_full_report_version")
     @patch("reporting.schema.report_final_review.ComplianceService.get_calculated_compliance_data")

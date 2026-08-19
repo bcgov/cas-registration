@@ -125,10 +125,16 @@ class ReportRlsTest(BaseTestCase):
         )
 
     def test_report_rls_cas_user(self):
-        report_baker(_quantity=5)
+        test_quantity = 2
+        make_recipe(
+            "reporting.tests.utils.report",
+        )
+        make_recipe(
+            "reporting.tests.utils.report",
+        )
 
-        def select_function(cursor, i):
-            assert Report.objects.count() == 5
+        def select_function(cursor):
+            assert Report.objects.count() == test_quantity
 
         assert_policies_for_cas_roles(
             Report,

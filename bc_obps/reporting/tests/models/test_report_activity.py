@@ -146,10 +146,12 @@ class ReportActivityRlsTest(BaseTestCase):
         )
 
     def test_report_activity_rls_cas_user(self):
-        test_quantity = 5
+        test_quantity = 2
         make_recipe(
             "reporting.tests.utils.report_activity",
-            _quantity=test_quantity,
+        )
+        make_recipe(
+            "reporting.tests.utils.report_activity",
         )
 
         def select_function(cursor):

@@ -25,6 +25,7 @@ class TestReportsEndpoint(CommonTestSetup):
     ) -> HttpResponse:
         operator = operation.operator if operation else operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(operator=operation.operator, operations=[operation])
 
         # Use self.endpoint_under_test if no URL is provided
         if url is None:
@@ -120,6 +121,9 @@ class TestReportsEndpoint(CommonTestSetup):
         expected_data = {"registration_purpose": "Annual Emissions Report"}
         mock_get_registration_purpose.return_value = expected_data
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_version.report.operator, operations=[report_version.report.operation]
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
@@ -164,6 +168,9 @@ class TestReportsEndpoint(CommonTestSetup):
 
         # Act: Make DELETE request to the endpoint
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_version.report.operator, operations=[report_version.report.operation]
+        )
         response = TestUtils.mock_delete_with_auth_role(
             self,
             "industry_user",
