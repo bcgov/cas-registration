@@ -18,6 +18,9 @@ class TestReportNonAttributableApi(CommonTestSetup):
             self,
             operator=self.report_version.report.operator,
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
 
     @patch(
         "reporting.service.report_non_attributable_service.ReportNonAttributableService.save_report_non_attributable_emissions"

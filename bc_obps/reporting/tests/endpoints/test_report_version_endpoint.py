@@ -12,6 +12,9 @@ class TestReportVersionEndpoint(CommonTestSetup):
     def test_authorized_users_can_get_report_version(self):
         report_version = report_version_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_version.report.operator, operations=[report_version.report.operation]
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
@@ -37,6 +40,9 @@ class TestReportVersionEndpoint(CommonTestSetup):
         )
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_version.report.operator, operations=[report_version.report.operation]
+        )
 
         response = TestUtils.mock_post_with_auth_role(
             self,
@@ -64,6 +70,9 @@ class TestReportVersionEndpoint(CommonTestSetup):
         )
         baker.make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_version.report.operator, operations=[report_version.report.operation]
+        )
 
         mock_save_report_version_change.return_value = report_version
 

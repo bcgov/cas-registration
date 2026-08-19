@@ -57,6 +57,9 @@ class TestReportOperationDataApi(CommonTestSetup):
 
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
 
     @patch.object(ReportOperationService, "get_report_operation_data_by_version_id")
     def test_returns_report_operation_data(self, mock_get_report_operation_data):
@@ -144,6 +147,9 @@ class TestReportOperationDataApi(CommonTestSetup):
         }
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_version.report.operator, operations=[report_version.report.operation]
+        )
         response = TestUtils.mock_patch_with_auth_role(
             self,
             "industry_user",
@@ -164,6 +170,9 @@ class TestReportOperationDataApi(CommonTestSetup):
         report_version = report_version_baker(report_type="Simple Report")
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_version.report.operator, operations=[report_version.report.operation]
+        )
 
         endpoint_under_test = f"/api/reporting/report-version/{report_version.id}/report-operation"
         data = {
@@ -210,6 +219,9 @@ class TestReportOperationDataApi(CommonTestSetup):
         mock_is_sync_allowed.return_value = False
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_version.report.operator, operations=[report_version.report.operation]
+        )
 
         response = TestUtils.mock_patch_with_auth_role(
             self,

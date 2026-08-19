@@ -442,6 +442,9 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
 
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_version.report.operator, operations=[report_version.report.operation]
+        )
 
     @patch(
         "reporting.service.report_emission_allocation_service.ReportEmissionAllocationService.get_emission_allocation_data",

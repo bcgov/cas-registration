@@ -80,12 +80,13 @@ def json_seq(
 
 
 reporting_year = Recipe(ReportingYear)
+reporting_year_2025 = ReportingYear.objects.get(reporting_year=2025)
 
 report = Recipe(
     Report,
     operator=foreign_key(operator),
     operation=foreign_key(operation),
-    reporting_year=foreign_key(reporting_year),
+    reporting_year=reporting_year_2025,
 )
 
 report_version = Recipe(ReportVersion, report=foreign_key(report))
