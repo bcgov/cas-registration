@@ -22,6 +22,9 @@ class TestSubmitEndpoint(CommonTestSetup):
         report_version = make_recipe("reporting.tests.utils.report_version")
         mock_submit_report.return_value = report_version
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_version.report.operator, operations=[report_version.report.operation]
+        )
 
         payload = ReportSignOffIn(
             acknowledgement_of_review=True,
