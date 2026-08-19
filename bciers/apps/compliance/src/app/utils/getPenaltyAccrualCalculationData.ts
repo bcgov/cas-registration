@@ -46,10 +46,6 @@ export const getPenaltyAccrualCalculationData = async (
 ): Promise<any> => {
   const { final_day_of_penalty_accrual, penalty_type, ...restParams } = params;
 
-  console.log(
-    `penalty type: ${penalty_type}, final_day_of_penalty_accrual: ${final_day_of_penalty_accrual}`,
-  );
-
   const mappedPenaltyType = mapPenaltyTypeForApi(penalty_type);
 
   const mappedEndDate = normalizeEndDate(final_day_of_penalty_accrual);

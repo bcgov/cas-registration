@@ -393,7 +393,6 @@ class PenaltyCalculationService:
         Returns:
             CalculatedPenaltyData Dataclass
         """
-        # TODO: incorporate penalty_types AUTOMATIC_OVERDUE and LATE_SUBMISSION (ggeapar)
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
