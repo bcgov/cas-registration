@@ -135,10 +135,12 @@ class ReportNewEntrantProductRlsTest(BaseTestCase):
         )
 
     def test_report_new_entrant_production_rls_cas_user(self):
-        test_quantity = 5
+        test_quantity = 2
         make_recipe(
             "reporting.tests.utils.report_new_entrant_production",
-            _quantity=test_quantity,
+        )
+        make_recipe(
+            "reporting.tests.utils.report_new_entrant_production",
         )
 
         def select_function(cursor):

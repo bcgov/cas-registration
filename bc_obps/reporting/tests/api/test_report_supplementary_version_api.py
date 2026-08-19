@@ -16,6 +16,10 @@ class TestReportSupplementaryApi(CommonTestSetup):
         )
         self.new_report_version = baker.make_recipe("reporting.tests.utils.report_version")
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.old_report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator,
+            operations=[self.new_report_version.report.operation, self.old_report_version.report.operation],
+        )
 
     @patch(
         "reporting.service.report_supplementary_version_service.ReportSupplementaryVersionService"

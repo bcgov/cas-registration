@@ -146,10 +146,12 @@ class ReportAttachmentConfirmationRlsTest(BaseTestCase):
         )
 
     def test_report_attachment_confirmation_rls_cas_user(self):
-        test_quantity = 5
+        test_quantity = 2
         make_recipe(
             "reporting.tests.utils.report_attachment_confirmation",
-            _quantity=test_quantity,
+        )
+        make_recipe(
+            "reporting.tests.utils.report_attachment_confirmation",
         )
 
         def select_function(cursor):

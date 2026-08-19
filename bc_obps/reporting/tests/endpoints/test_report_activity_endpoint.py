@@ -42,6 +42,9 @@ class TestReportActivityEndpoint(CommonTestSetup):
         """Helper method to make a request with given role"""
         if authorize_operator:
             TestUtils.authorize_current_user_as_operator_user(self, operator=self.operator)
+            TestUtils.generate_operation_operator_timeline(
+                operator=self.operator, operations=[self.facility_report.report_version.report.operation]
+            )
 
         return TestUtils.mock_post_with_auth_role(
             self,
@@ -86,6 +89,10 @@ class TestReportActivityEndpoint(CommonTestSetup):
         )
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=facility_report.report_version.report.operator,
+            operations=[facility_report.report_version.report.operation],
+        )
 
         mock_service.return_value = {"serialized!": True}
 
@@ -133,6 +140,13 @@ class TestReportActivityEndpoint(CommonTestSetup):
             self,
             operator=report_emission.report_fuel.report_unit.report_source_type.report_activity.facility_report.report_version.report.operator,
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_emission.report_fuel.report_unit.report_source_type.report_activity.facility_report.report_version.report.operator,
+            operations=[
+                report_emission.report_fuel.report_unit.report_source_type.report_activity.facility_report.report_version.report.operation
+            ],
+        )
+
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint_under_test)
 
         assert response.json() == {

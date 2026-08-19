@@ -8,6 +8,8 @@ from registration.models import (
     User,
     UserOperator,
     WellAuthorizationNumber,
+    Operation,
+    Operator,
 )
 from model_bakery import baker
 from django.test import Client
@@ -47,6 +49,16 @@ class TestUtils:
         return TestUtils.client.patch(
             endpoint or self.endpoint, content_type=content_type, data=data, HTTP_AUTHORIZATION=self.auth_header_dumps
         )
+
+    def generate_operation_operator_timeline(operator: Operator, operations: list[Operation]) -> None:
+        for op in operations:
+            baker.make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operator=operator,
+                operation=op,
+                start_date='1899-01-01',
+                end_date='2099-12-31',
+            )
 
     def authorize_current_user_as_operator_user(self, operator):
         return baker.make(

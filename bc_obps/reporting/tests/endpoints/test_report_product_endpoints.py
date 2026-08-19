@@ -18,6 +18,9 @@ class TestReportProductEndpoints(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
 
         payload = [
             {
@@ -56,6 +59,9 @@ class TestReportProductEndpoints(CommonTestSetup):
     def test_post_calls_the_save_service_with_the_right_data_for_jan_mar_production_period(self, mock_save: MagicMock):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
+        )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
         )
 
         payload = [
