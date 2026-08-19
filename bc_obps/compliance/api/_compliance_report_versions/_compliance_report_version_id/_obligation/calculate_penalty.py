@@ -39,11 +39,7 @@ def get_calculated_penalty_for_obligation(
     compliance_deadline = obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
     start_date = compliance_deadline + timedelta(days=1)
 
-    print(f"\n\nReceived penalty type {penalty_type}\n\n")
     penalty_type = _normalize_penalty_type(penalty_type)
-    print(
-        f"\n\nCalculating penalty for obligation {obligation.id} with penalty_type {penalty_type}, start_date {start_date}, and formatted_end_date {formatted_end_date}\n\n"
-    )
 
     if penalty_type == CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE:
         # Automatic Overdue Penalty begins accruing 1 day after the compliance deadline unless it is a supplementary report that came in after the deadline.
@@ -63,13 +59,10 @@ def get_calculated_penalty_for_obligation(
         )
     elif penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION:
         start_date = compliance_deadline + timedelta(days=1)
-        print(
-            f"\n\nCalculating Late Submission Penalty with start_date {start_date} and formatted_end_date {formatted_end_date}\n\n"
-        )
+
         calculated_penalty = PenaltyCalculationService.calculate_late_submission_penalty(
             obligation=obligation, accrual_start_date=start_date, final_accrual_date=formatted_end_date
         )
-        print(f"\n\nCalculated Late Submission Penalty: {calculated_penalty}\n\n")
     else:
         raise HttpError(
             400,
@@ -92,7 +85,5 @@ def get_calculated_penalty_for_obligation(
             for accrual in calculated_penalty.daily_accumulated_list
         ],
     )
-
-    print(f"\n\nCalculated penalty response: {response}\n\n")
 
     return 200, response
