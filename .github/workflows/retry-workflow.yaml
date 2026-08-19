@@ -8,6 +8,7 @@ on:
 jobs:
   retry-on-failure:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: rerun ${{ inputs.run_id }}
         env:
