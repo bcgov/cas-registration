@@ -46,10 +46,12 @@ This `can_handle()` function will return true if the ComplianceObligation's invo
 This `handle()` function does the following:
 
 1. Check if the ComplianceObligation's invoice has FAA interest owing
+
    - if it does, it sets the ComplianceReportVersion's status to `Obligation Met, Interest Not Paid`
    - otherwise, it sets the status to `Obligation Met`
 
 2. Determines whether the ComplianceObligation should be charged GGEAPAR Interest (Was the obligation the result of a supplementary report submitted beyond the compliance deadline)
+
    - if it does, it will call the PenaltyCalculationService with the appropriate parameters to create a GGEAPAR Interest penalty & invoice in eLicensing
 
 3. Determines whether the ComplianceObligation should be charged an Automatic Overdue Penalty (Original obligation paid past the deadline, or supplementary obligation paid after custom due date)
@@ -64,3 +66,13 @@ This `can_handle()` function will return true if the ComplianceObligation's invo
 #### What does it do
 
 This `handle()` function will flip the status of the ComplianceReportVersion from `Obligation Met, Interest Not Paid` to `Obligation Met`.
+
+![4 AM Compliance Cycle](./images/bciers-compliance-cycle.png)
+
+#### Image Generation details
+
+- **Tool:** ChatGPT (OpenAI), including AI image generation
+- **Input:** Technical information contained in this document
+
+> [!NOTE]
+> AI-generated diagrams are for explanatory purposes only. If a diagram conflicts with the application code, technical documentation, or applicable regulations, those sources take precedence.

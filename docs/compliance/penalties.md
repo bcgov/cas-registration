@@ -5,8 +5,8 @@ This document describes penalties as defined in the [Greenhouse Gas Emission Adm
 ## Accruing vs Existing
 
 Penalties begin _ACCRUING_ as soon as an obligation owes a balance beyond the due date.
-However, a penalty data object in the BCIERS system and a related invoice in eLicensing will not be created until the obligation triggering the penalty has been paid in full (elicensinginvoice.fee_amount_balance == $0.00).
-As far as BCIERS is concerned, A penalty does not _EXIST_ while it is _ACCRUING_. It only becomes data in the system and has an invoice once the triggering obligation is paid in full.
+However, a penalty data object in the BCIERS system and a related invoice in eLicensing will not be created until the obligation triggering the penalty has been paid in full (elicensinginvoice.fee*amount_balance == $0.00).
+As far as BCIERS is concerned, A penalty does not \_EXIST* while it is _ACCRUING_. It only becomes data in the system and has an invoice once the triggering obligation is paid in full.
 
 ## Types of Penalties
 
@@ -101,3 +101,13 @@ The penalty will be calculated with a base of:
 $800,000.00 from Dec 1 - Dec 20
 $300,000.00 from Dec 21 - Jan 25
 ```
+
+![Understanding Compliance Penalties](./images/bciers-penalties-overview.png)
+
+#### Image Generation details
+
+- **Tool:** ChatGPT (OpenAI), including AI image generation
+- **Input:** Technical information contained in this document
+
+> [!NOTE]
+> AI-generated diagrams are for explanatory purposes only. If a diagram conflicts with the application code, technical documentation, or applicable regulations, those sources take precedence.
