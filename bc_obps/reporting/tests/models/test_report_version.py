@@ -8,7 +8,6 @@ from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_version import ReportVersion
 from reporting.tests.utils.bakers import report_version_baker
-from reporting.tests.utils.bakers import report_baker
 from model_bakery.baker import make_recipe
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 
@@ -354,10 +353,16 @@ class ReportVersionRlsTest(BaseTestCase):
         )
 
     def test_report_version_rls_cas_user(self):
-        report_baker(_quantity=5)
+        test_quantity = 2
+        make_recipe(
+            "reporting.tests.utils.report_version",
+        )
+        make_recipe(
+            "reporting.tests.utils.report_version",
+        )
 
-        def select_function(cursor, i):
-            assert ReportVersion.objects.count() == 5
+        def select_function(cursor):
+            assert ReportVersion.objects.count() == test_quantity
 
         assert_policies_for_cas_roles(
             ReportVersion,

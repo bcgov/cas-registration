@@ -25,6 +25,7 @@ class TestBuildFormSchema(CommonTestSetup):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
 
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -39,6 +40,7 @@ class TestBuildFormSchema(CommonTestSetup):
         facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
 
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -54,6 +56,7 @@ class TestBuildFormSchema(CommonTestSetup):
         facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
 
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -68,6 +71,7 @@ class TestBuildFormSchema(CommonTestSetup):
         facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
 
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -82,6 +86,7 @@ class TestBuildFormSchema(CommonTestSetup):
         facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
 
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -102,6 +107,7 @@ class TestBuildFormSchema(CommonTestSetup):
         facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
 
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -159,6 +165,7 @@ class TestBuildFormSchema(CommonTestSetup):
         facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
 
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -174,6 +181,7 @@ class TestBuildFormSchema(CommonTestSetup):
         facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
 
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -189,6 +197,7 @@ class TestBuildFormSchema(CommonTestSetup):
         facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
 
         response = TestUtils.mock_get_with_auth_role(
             self,
