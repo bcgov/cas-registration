@@ -396,6 +396,8 @@ describe("the OperationInformationForm component", () => {
       fireEvent.change(nameInput, { target: { value: "Operation 4" } });
     });
 
+    actionHandler.mockResolvedValueOnce(formData);
+
     // Click the Save button
     await act(async () => {
       screen.getByRole("button", { name: /save/i }).click();
@@ -438,6 +440,9 @@ describe("the OperationInformationForm component", () => {
       // Click the Edit button
       screen.getByRole("button", { name: "Edit" }).click();
     });
+
+    actionHandler.mockResolvedValueOnce(optInFormData);
+
     await act(async () => {
       // Grab all radio buttons
       const allNoRadioButtons: HTMLInputElement[] = screen.getAllByRole(
@@ -886,6 +891,9 @@ describe("the OperationInformationForm component", () => {
     const saveButton = screen.getByRole("button", {
       name: /save/i,
     });
+
+    actionHandler.mockResolvedValueOnce(newEntrantFormData);
+
     await userEvent.click(saveButton);
     expect(actionHandler).toHaveBeenCalledTimes(1);
     expect(actionHandler).toHaveBeenCalledWith(
@@ -998,6 +1006,8 @@ describe("the OperationInformationForm component", () => {
       await userEvent.click(operationRepresentativesComboBoxInput);
       const representativeOption = await screen.getByText(/Jack King/i);
       await userEvent.click(representativeOption);
+
+      actionHandler.mockResolvedValueOnce(testFormData);
 
       const saveButton = screen.getByRole("button", {
         name: /save/i,
