@@ -101,7 +101,7 @@ class TestDocumentService:
                 b_map.refresh_from_db()  # this should raise an exception because it no longer exists in the db
 
     @patch("service.document_service.Document.get_file_url")
-    def test_get_document_url(self, mock_get_file_url: MagicMock):
+    def test_get_document_url_returns_the_url_if_authorized(self, mock_get_file_url: MagicMock):
         mock_get_file_url.return_value = "expected_url"
 
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
@@ -113,3 +113,21 @@ class TestDocumentService:
             DocumentService.get_document_url_if_authorized(approved_user_operator.user_id, document.id)
             == "expected_url"
         )
+
+    def test_get_document_url_raises_if_not_authorized(self):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation')
+
+        document = baker.make_recipe('registration.tests.utils.document', operation=operation)
+
+        with pytest.raises(Exception, match='Unauthorized.'):
+            DocumentService.get_document_url_if_authorized(approved_user_operator.user_id, document.id)
+
+    def test_get_document_url_raises_if_document_not_associated_with_operation(self):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        document = baker.make_recipe('registration.tests.utils.document', operation=None)
+
+        with pytest.raises(ValueError) as exc:
+            DocumentService.get_document_url_if_authorized(approved_user_operator.user_id, document.id)
+
+        assert str(exc.value) == f"Document id {document.id} is not associated with any operation"
