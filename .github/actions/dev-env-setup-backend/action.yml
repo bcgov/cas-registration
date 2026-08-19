@@ -36,7 +36,10 @@ runs:
       shell: bash
       run: |
         sudo apt-get update
-        sudo apt-get install linux-headers-$(uname -r) build-essential bison flex libssl-dev libreadline-dev zlib1g-dev libcurl4-openssl-dev uuid-dev icu-devtools libicu-dev
+        sudo apt-get install -y \
+          linux-headers-$(uname -r) \
+          build-essential bison flex libssl-dev libreadline-dev zlib1g-dev \
+          libcurl4-openssl-dev uuid-dev icu-devtools libicu-dev
         asdf plugin add postgres https://github.com/smashedtoatoms/asdf-postgres.git || true
         asdf plugin update postgres
         MAKELEVEL=0 POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' asdf install postgres ${{ steps.versions.outputs.postgres-version }}
