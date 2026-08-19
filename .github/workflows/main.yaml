@@ -21,6 +21,7 @@ env:
 jobs:
   check-nx-affected:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     outputs:
       nx_affected_e2e: ${{ steps.check-nx-affected.outputs.NX_AFFECTED_E2E }}
     steps:
