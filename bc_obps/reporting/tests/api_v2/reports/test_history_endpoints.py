@@ -10,6 +10,9 @@ class TestHistoryV2Endpoints(CommonTestSetup):
 
     def test_get_returns_the_right_data_when_empty(self):
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report.operator, operations=[self.report.operation]
+        )
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
         assert response.json() == {
             'payload': {'items': [], 'count': 0},
@@ -34,6 +37,9 @@ class TestHistoryV2Endpoints(CommonTestSetup):
             status="Draft",
             report_type="Annual Report",
             created_at="2024-02-01T12:00:00Z",
+        )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report.operator, operations=[rv1.report.operation, rv1.report.operation]
         )
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
         assert response.json() == {
@@ -81,6 +87,9 @@ class TestHistoryV2Endpoints(CommonTestSetup):
             status="Draft",
             report_type="Annual Report",
             created_at="2024-02-01T12:00:00Z",
+        )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report.operator, operations=[rv1.report.operation, rv1.report.operation]
         )
         response = TestUtils.mock_get_with_auth_role(self, "cas_analyst", self.endpoint_under_test)
         assert response.json() == {

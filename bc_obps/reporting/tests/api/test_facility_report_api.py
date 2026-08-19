@@ -18,6 +18,10 @@ class TestFacilityReportEndpoints(CommonTestSetup):
     def test_error_if_no_facility_report_exists(self):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=facility_report.report_version.report.operator,
+            operations=[facility_report.report_version.report.operation],
+        )
 
         endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version.id}/facility-report/00000000-0000-0000-0000-000000000000'
         response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', endpoint_under_test)
@@ -27,6 +31,10 @@ class TestFacilityReportEndpoints(CommonTestSetup):
     def test_error_if_no_invalid_facility_id(self):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=facility_report.report_version.report.operator,
+            operations=[facility_report.report_version.report.operation],
+        )
 
         endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version.id}/facility-report/1'
         response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', endpoint_under_test)
@@ -36,6 +44,10 @@ class TestFacilityReportEndpoints(CommonTestSetup):
     def test_returns_correct_data(self):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=facility_report.report_version.report.operator,
+            operations=[facility_report.report_version.report.operation],
+        )
 
         endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}'
         response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', endpoint_under_test)
@@ -46,10 +58,18 @@ class TestFacilityReportEndpoints(CommonTestSetup):
     def test_returns_ordered_activity_list_for_facility_report(self):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=facility_report.report_version.report.operator,
+            operations=[facility_report.report_version.report.operation],
+        )
         a1 = Activity.objects.get(pk=1)
         a2 = Activity.objects.get(pk=14)
         a3 = Activity.objects.get(pk=28)
         facility_report.activities.add(a1, a2, a3)
+        print('FACILITY ID: ', facility_report.facility_id)
+        print('REPORT VERSION ID: ', facility_report.report_version_id)
+        print('REPORT VERSION ID ACTUAL: ', facility_report.report_version.id)
+        print('REPORTING YEAR: ', facility_report.report_version.report.reporting_year.reporting_year)
         endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/activity-list'
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', endpoint_under_test)
         ordered_activities = [a1, a3, a2]
@@ -63,6 +83,10 @@ class TestFacilityReportEndpoints(CommonTestSetup):
     def test_saves_facility_data(self):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=facility_report.report_version.report.operator,
+            operations=[facility_report.report_version.report.operation],
+        )
 
         endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}'
         request_data = {
@@ -87,6 +111,9 @@ class TestFacilityReportEndpoints(CommonTestSetup):
     def test_patch_calls_the_save_service_with_correct_data(self, mock_save: MagicMock):
         self.report_version = baker.make_recipe('reporting.tests.utils.report_version')
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
 
         facility_id_1 = uuid4()
         facility_id_2 = uuid4()
@@ -122,6 +149,10 @@ class TestFacilityReportEndpoints(CommonTestSetup):
     def test_update_facility_report_api(self, mock_update: MagicMock, mock_is_sync_allowed: MagicMock):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=facility_report.report_version.report.operator,
+            operations=[facility_report.report_version.report.operation],
+        )
 
         updated_facility_report = baker.prepare(
             'reporting.FacilityReport', id=facility_report.id, facility_name="UPDATED"
@@ -158,6 +189,10 @@ class TestFacilityReportEndpoints(CommonTestSetup):
 
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=facility_report.report_version.report.operator,
+            operations=[facility_report.report_version.report.operation],
+        )
 
         endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/update'
 

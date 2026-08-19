@@ -36,6 +36,7 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         operations = operation_baker(operator_id=operator.id, _quantity=5)
+        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[operations])
 
         # The return value needs empty query sets of the right type for the annotations
         mock_get_operations.return_value = Operation.objects.annotate(
@@ -78,6 +79,7 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         operations = operation_baker(operator_id=operator.id, _quantity=3)
+        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[operations])
         current_year = reporting_year_baker(reporting_year=1234)
         last_year = reporting_year_baker(reporting_year=1233)
         laster_year = reporting_year_baker(reporting_year=1232)
@@ -133,6 +135,9 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
 
         operations = make_recipe(
             'registration.tests.utils.operation', _quantity=6, operator=approved_user_operator.operator
+        )
+        TestUtils.generate_operation_operator_timeline(
+            operator=approved_user_operator.operator, operations=[operations]
         )
         for operation in operations:
             _id_counter = 0

@@ -42,6 +42,9 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
         )
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[test_data1.operation, test_data2.operation]
+        )
         resp = TestUtils.mock_get_with_auth_role(self, "industry_user", self._url(paginate_result=False))
         assert resp.status_code == 200
         data = resp.json()

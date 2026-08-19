@@ -18,6 +18,9 @@ class TestProductionDataApi(CommonTestSetup):
             self,
             operator=self.report_version.report.operator,
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
 
     @patch("reporting.api.production_data.ReportProductService.save_production_data")
     def test_save_production_data_returns_200(

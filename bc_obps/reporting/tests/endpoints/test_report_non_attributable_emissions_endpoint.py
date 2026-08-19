@@ -17,6 +17,9 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
 
         emission_category = make(EmissionCategory)
         gas_type = make(GasType)
@@ -51,6 +54,9 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
         payload = {
             "emissions_exceeded": False,
             "activities": [{"gas_type": []}],  # incomplete item — should be cleared by schema
@@ -65,6 +71,9 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
         payload = {"emissions_exceeded": True, "activities": []}
         response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", "application/json", payload, self.endpoint_under_test
@@ -74,6 +83,9 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
     def test_post_with_empty_gas_type_returns_422(self):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
+        )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
         )
         payload = {
             "emissions_exceeded": True,

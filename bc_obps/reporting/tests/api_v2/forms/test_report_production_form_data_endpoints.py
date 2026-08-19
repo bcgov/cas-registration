@@ -27,6 +27,10 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.facility_report.report_version.report.operator,
+            operations=[self.facility_report.report_version.report.operation],
+        )
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
 
         assert response.json() == {
@@ -50,6 +54,10 @@ class TestReportProductV2Endpoints(CommonTestSetup):
     def test_get_returns_the_right_data_with_data(self):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
+        )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.facility_report.report_version.report.operator,
+            operations=[self.facility_report.report_version.report.operation],
         )
         self.report_operation.regulated_products.set(RegulatedProduct.objects.filter(id__in=[1, 2, 3]))
         rp1 = make_recipe(
