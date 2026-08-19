@@ -113,12 +113,6 @@ export default function PenaltyCalculatorComponent({
   const derivedPenaltyType =
     initialPenaltyType ?? mapPenaltyTypeToFrontend(penaltyData?.penalty_type);
 
-  console.log(
-    derivedPenaltyType,
-    penaltyData?.penalty_type,
-    initialPenaltyType,
-  );
-
   const initialFormData = useMemo(
     () =>
       mapApiDataToFormData(
