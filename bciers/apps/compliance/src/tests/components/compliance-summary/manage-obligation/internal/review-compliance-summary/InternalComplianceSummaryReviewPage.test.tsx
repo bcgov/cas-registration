@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import type { Mock } from "vitest";
 import InternalComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/InternalComplianceSummaryReviewPage";
 
 // Mocks
@@ -57,7 +58,7 @@ describe("InternalComplianceSummaryReviewPage (Manage Obligation)", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (getComplianceSummary as vi.Mock).mockResolvedValue(mockData);
+    (getComplianceSummary as Mock).mockResolvedValue(mockData);
   });
 
   it("fetches data, generates internal task list (2 pages), and renders layout with internal review component", async () => {

@@ -45,6 +45,7 @@ const mockData = {
   analyst_submitted_by: "Test Analyst",
   director_submitted_date: "2024-01-01",
   director_submitted_by: "Test Director",
+  supplementary_declined: false,
 };
 
 describe("ComplianceSummaryReviewComponent", () => {

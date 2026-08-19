@@ -147,6 +147,7 @@ export interface ComplianceSummary {
   reporting_year: number;
   excess_emissions: number;
   status?: ComplianceSummaryStatus;
+  display_status?: string;
   penalty_status?: string;
   obligation_id?: string;
   issuance_status?: IssuanceStatus;

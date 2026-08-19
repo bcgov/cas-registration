@@ -8,13 +8,11 @@ import {
   useSearchParams,
   useParams,
 } from "@bciers/testConfig/mocks";
-import {
-  contactsSchema,
-  contactsUiSchema,
-} from "apps/administration/app/data/jsonSchema/contact";
+import { contactsSchema } from "apps/administration/app/data/jsonSchema/contact";
 import ContactForm from "apps/administration/app/components/contacts/ContactForm";
 import { createContactSchema } from "apps/administration/app/components/contacts/createContactSchema";
 import { FrontendMessages } from "@bciers/utils/src/enums";
+import { ContactFormData } from "@/administration/app/components/contacts/types";
 
 const mockReplace = vi.fn();
 const mockRouterPush = vi.fn();
@@ -28,7 +26,7 @@ useParams.mockReturnValue({
   contactId: "123",
 });
 
-const contactFormData = {
+const contactFormData: ContactFormData = {
   id: 123,
   first_name: "John",
   last_name: "Doe",
@@ -178,7 +176,6 @@ describe("ContactForm component", () => {
     render(
       <ContactForm
         schema={createContactSchema(contactsSchema, true)}
-        uiSchema={contactsUiSchema}
         formData={{}}
         isCreating
       />,

@@ -1,4 +1,9 @@
-import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+import {
+  NextFetchEvent,
+  NextProxy,
+  NextRequest,
+  NextResponse,
+} from "next/server";
 import { NextURL } from "next/dist/server/web/next-url";
 import { withRuleHasComplianceRouteAccessBCeID } from "./withRuleHasComplianceRouteAccessBCeID";
 import * as constants from "./constants";
@@ -71,8 +76,8 @@ async function runProxy(path: string) {
   return { req, res, next };
 }
 
-const getPathname = (res?: NextResponse | null) => {
-  const loc = res?.headers.get("location");
+const getPathname = (res: Awaited<ReturnType<NextProxy>>) => {
+  const loc = res instanceof Response ? res.headers.get("location") : null;
   return loc ? new URL(loc).pathname : undefined;
 };
 

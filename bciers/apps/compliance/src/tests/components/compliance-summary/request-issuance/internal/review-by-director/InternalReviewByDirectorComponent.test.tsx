@@ -36,6 +36,7 @@ describe("InternalReviewByDirectorComponent", () => {
     analyst_submitted_date: "2024-01-15",
     analyst_submitted_by: "Test Analyst",
     analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
+    supplementary_declined: false,
   };
 
   const mockComplianceReportVersionId = 123;

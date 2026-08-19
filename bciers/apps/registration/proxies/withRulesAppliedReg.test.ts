@@ -5,6 +5,7 @@ import { getToken } from "@bciers/testConfig/mocks";
 import { mockIndustryUserToken } from "@bciers/testConfig/data/tokens";
 import { DashboardRoutes } from "@bciers/proxies";
 import getCurrentUserOperator from "@/administration/app/components/userOperators/getCurrentUserOperator";
+import { UserOperator } from "@/administration/app/components/userOperators/types";
 import getCurrentUserOperatorWithRequiredFields from "@/registration/app/utils/getCurrentUserOperatorWithRequiredFields";
 
 vi.mock("@/administration/app/components/userOperators/getCurrentUserOperator");
@@ -20,7 +21,9 @@ describe("withRulesAppliedReg proxy", () => {
 
   it("redirects industry users if their userOperator is not found", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
-    vi.mocked(getCurrentUserOperator).mockResolvedValueOnce(undefined);
+    vi.mocked(getCurrentUserOperator).mockResolvedValueOnce(
+      undefined as unknown as UserOperator,
+    );
 
     const result = await proxy(
       mockRequest("/registration"),

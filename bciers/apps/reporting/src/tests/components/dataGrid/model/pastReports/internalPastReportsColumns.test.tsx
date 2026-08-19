@@ -1,4 +1,5 @@
 import { describe, vi } from "vitest";
+import renderGridCell from "@bciers/testConfig/helpers/renderGridCell";
 import { GridColDef } from "@mui/x-data-grid";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -57,7 +58,7 @@ describe("internalPastReportsColumns function", () => {
       value: "2024-03-01T12:00:00Z",
     };
 
-    expect(columns[3].renderCell(params)).toBe(
+    expect(renderGridCell(columns[3], params)).toBe(
       formatTimestamp("2024-03-01T12:00:00Z"),
     );
   });
@@ -70,7 +71,8 @@ describe("internalPastReportsColumns function", () => {
     const params = { row, value: row.report_version_id };
 
     function WrapperComponent() {
-      const cell = columns[4].renderCell;
+      const cell = (p: Parameters<typeof renderGridCell>[1]) =>
+        renderGridCell(columns[4], p);
 
       return <div>{cell(params)}</div>;
     }
@@ -91,7 +93,8 @@ describe("internalPastReportsColumns function", () => {
     const params = { row, value: row.report_id };
 
     function WrapperComponent() {
-      const cell = columns[5].renderCell;
+      const cell = (p: Parameters<typeof renderGridCell>[1]) =>
+        renderGridCell(columns[5], p);
 
       return <div>{cell(params)}</div>;
     }

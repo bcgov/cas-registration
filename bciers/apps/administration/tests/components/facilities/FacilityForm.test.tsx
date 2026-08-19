@@ -52,8 +52,8 @@ useRouter.mockReturnValue({
 const sfoFormData = {
   name: "Monkeyfuzz",
   type: "Single Facility",
-  latitude_of_largest_emissions: "3.000000",
-  longitude_of_largest_emissions: "4.000000",
+  latitude_of_largest_emissions: 3,
+  longitude_of_largest_emissions: 4,
   street_address: "adf",
   municipality: "ad",
   postal_code: "h0h0h0",
@@ -66,8 +66,8 @@ const lfoFormData = {
   name: "Monkeyfuzz",
   type: "Large Facility",
   well_authorization_numbers: ["24546", "54321"],
-  latitude_of_largest_emissions: "3.000000",
-  longitude_of_largest_emissions: "4.000000",
+  latitude_of_largest_emissions: 3,
+  longitude_of_largest_emissions: 4,
   street_address: "adf",
   municipality: "ad",
   postal_code: "h0h0h0",
@@ -480,10 +480,10 @@ describe("FacilityForm component", () => {
     ).toHaveTextContent("h0h0h0");
     expect(
       container.querySelector("#root_section2_latitude_of_largest_emissions"),
-    ).toHaveTextContent("3.000000");
+    ).toHaveTextContent("3");
     expect(
       container.querySelector("#root_section2_longitude_of_largest_emissions"),
-    ).toHaveTextContent(".000000");
+    ).toHaveTextContent("4");
   });
   it("loads existing readonly LFO (Large Facility) form data", async () => {
     const { container } = render(
@@ -530,10 +530,10 @@ describe("FacilityForm component", () => {
     ).toHaveTextContent("h0h0h0");
     expect(
       container.querySelector("#root_section1_latitude_of_largest_emissions"),
-    ).toHaveTextContent("3.000000");
+    ).toHaveTextContent("3");
     expect(
       container.querySelector("#root_section1_longitude_of_largest_emissions"),
-    ).toHaveTextContent(".000000");
+    ).toHaveTextContent("4");
   });
   it("loads existing readonly LFO (Small Aggregate) form data", async () => {
     const { container } = render(

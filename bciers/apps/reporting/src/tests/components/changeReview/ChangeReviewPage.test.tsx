@@ -1,3 +1,7 @@
+import {
+  HeaderStep,
+  NavigationInformation,
+} from "@reporting/src/app/components/taskList/types";
 import { render, screen, waitFor } from "@testing-library/react";
 import ChangeReviewPage from "@reporting/src/app/components/changeReview/ChangeReviewPage";
 import { getReportVersionDetails } from "@reporting/src/app/utils/getReportVersionDetails";
@@ -75,14 +79,14 @@ describe("The ChangeReviewPage component", () => {
 
   const mockFormData = { reportId: 123, status: "draft", operatorId: 1 };
 
-  const mockNavigationInfo = {
+  const mockNavigationInfo: NavigationInformation = {
     headerStepIndex: 4,
     headerSteps: [
-      "Operation Info",
-      "Facility Reports",
-      "Summary",
-      "Review",
-      "Sign Off",
+      HeaderStep.OperationInformation,
+      HeaderStep.ReportInformation,
+      HeaderStep.EmissionsData,
+      HeaderStep.AdditionalInformation,
+      HeaderStep.ComplianceSummary,
     ],
     taskList: [
       {
@@ -225,13 +229,13 @@ describe("The ChangeReviewPage component", () => {
   });
 
   it("passes custom navigation information correctly to ChangeReviewForm", async () => {
-    const customNavigationInfo = {
+    const customNavigationInfo: NavigationInformation = {
       headerStepIndex: 3,
       headerSteps: [
-        "Custom Step 1",
-        "Custom Step 2",
-        "Custom Step 3",
-        "Custom Step 4",
+        HeaderStep.OperationInformation,
+        HeaderStep.ReportInformation,
+        HeaderStep.EmissionsData,
+        HeaderStep.AdditionalInformation,
       ],
       taskList: [{ type: "Page", title: "Custom Task" }],
       backUrl: "/custom-back",

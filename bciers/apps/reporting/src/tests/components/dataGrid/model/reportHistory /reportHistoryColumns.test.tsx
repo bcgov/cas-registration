@@ -1,4 +1,5 @@
 import { describe, vi } from "vitest";
+import renderGridCell from "@bciers/testConfig/helpers/renderGridCell";
 import reportHistoryColumns from "@reporting/src/app/components/datagrid/models/reportHistory/reportHistoryColumns";
 import { GridColDef } from "@mui/x-data-grid";
 import { render, screen } from "@testing-library/react";
@@ -44,19 +45,19 @@ describe("reportHistoryColumns function", () => {
   it("renders an empty string if updated_at is null", () => {
     const columns = reportHistoryColumns();
     const params = { row: { status: "Submitted", submitted_by: null } };
-    expect(columns[1].renderCell(params)).toBe("—");
+    expect(renderGridCell(columns[1], params)).toBe("—");
   });
 
   it("renders 'Not yet submitted' if status is DRAFT", () => {
     const columns = reportHistoryColumns();
     const params = { row: { status: "Draft", submitted_by: null } };
-    expect(columns[1].renderCell(params)).toBe("Not yet submitted");
+    expect(renderGridCell(columns[1], params)).toBe("Not yet submitted");
   });
 
   it("renders 'N/A' if status is DRAFT in SubmittedByCell", () => {
     const columns = reportHistoryColumns();
     const params = { row: { status: "Draft", submitted_by: null } };
-    expect(columns[2].renderCell(params)).toBe("N/A");
+    expect(renderGridCell(columns[2], params)).toBe("N/A");
   });
 
   it("renders the Actions column correctly", () => {
@@ -77,7 +78,8 @@ describe("reportHistoryColumns function", () => {
     };
 
     function WrapperComponent() {
-      const cell = columns[3].renderCell;
+      const cell = (p: Parameters<typeof renderGridCell>[1]) =>
+        renderGridCell(columns[3], p);
       return <div>{cell(params)}</div>;
     }
 
@@ -106,7 +108,8 @@ describe("reportHistoryColumns function", () => {
     };
 
     function WrapperComponent() {
-      const cell = columns[3].renderCell;
+      const cell = (p: Parameters<typeof renderGridCell>[1]) =>
+        renderGridCell(columns[3], p);
 
       return <div>{cell(params)}</div>;
     }
@@ -139,7 +142,8 @@ describe("reportHistoryColumns function", () => {
     };
 
     function WrapperComponent() {
-      const cell = columns[3].renderCell;
+      const cell = (p: Parameters<typeof renderGridCell>[1]) =>
+        renderGridCell(columns[3], p);
 
       return <div>{cell(params)}</div>;
     }

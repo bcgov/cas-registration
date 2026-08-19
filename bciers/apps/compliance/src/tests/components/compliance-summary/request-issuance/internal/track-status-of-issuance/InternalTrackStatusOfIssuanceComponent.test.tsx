@@ -50,6 +50,7 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     analyst_submitted_by: "Test Analyst",
     analyst_submitted_date: "2023-01-01",
     analyst_suggestion: "ready_to_approve" as any,
+    supplementary_declined: false,
   };
 
   beforeEach(() => {

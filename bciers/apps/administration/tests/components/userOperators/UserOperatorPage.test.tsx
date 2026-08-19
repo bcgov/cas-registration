@@ -53,7 +53,7 @@ describe("UserOperator component", () => {
     });
     render(
       await UserOperator({
-        params: { userOperatorId: "1b06e328-715d-4642-b403-3392256d7344" },
+        userOperatorId: "1b06e328-715d-4642-b403-3392256d7344",
       }),
     );
     expect(screen.getByText(/Test Operator Name/i)).toBeVisible();

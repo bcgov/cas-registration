@@ -24,6 +24,9 @@ vi.mock("@bciers/components", async () => {
 const mockData = {
   reporting_year: 2024,
   id: 123,
+  emissions_attributable_for_compliance: "0",
+  emissions_limit: "0",
+  excess_emissions: 0,
 };
 
 describe("ComplianceSummaryReviewComponent", () => {

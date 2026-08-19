@@ -28,6 +28,7 @@ const defaultProps = {
     meets_producing_gger_schedule_a1_regulated_product: null,
     meets_reporting_and_regulated_obligations: null,
     meets_notification_to_director_on_criteria_change: null,
+    final_reporting_year: null,
   },
   operation: "002d5a9e-32a6-4191-938c-2c02bfec592d" as UUID,
   step: 3,

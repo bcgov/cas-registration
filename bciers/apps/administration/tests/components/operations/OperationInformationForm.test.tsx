@@ -188,6 +188,7 @@ const optInFormData = {
     meets_producing_gger_schedule_a1_regulated_product: true,
     meets_reporting_and_regulated_obligations: true,
     meets_notification_to_director_on_criteria_change: true,
+    final_reporting_year: null,
   },
 };
 

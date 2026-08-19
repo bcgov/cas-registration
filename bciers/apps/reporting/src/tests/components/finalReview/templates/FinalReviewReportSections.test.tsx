@@ -64,6 +64,7 @@ describe("The ReportSections component", () => {
       operation_bcghgid: "123456",
       bc_obps_regulated_operation_id: "REG123",
       registration_purpose: RegistrationPurposes.OBPS_REGULATED_OPERATION,
+      naics_code: null,
     },
     report_person_responsible: {
       first_name: "John",
@@ -169,6 +170,7 @@ describe("The ReportSections component", () => {
     is_supplementary_report: false,
     report_new_entrant: [],
     report_electricity_import_data: [],
+    reporting_year: 2024,
   };
 
   it("renders operation information section", () => {

@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import type { Mock } from "vitest";
 import { useRouter, useSessionRole } from "@bciers/testConfig/mocks";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
 import InternalManualHandlingComponent from "@/compliance/src/app/components/compliance-summary/manual-handling/internal/InternalManualHandlingComponent";
@@ -21,7 +22,6 @@ const CRV_ID = 123;
 
 const baseFormData: ManualHandlingData = {
   handling_type: "earned_credits",
-  context: "Some context for manual handling",
   analyst_comment: "Initial analyst comment",
   analyst_submitted_date: null,
   analyst_submitted_by: null,
@@ -35,7 +35,7 @@ describe("InternalManualHandlingComponent", () => {
     vi.clearAllMocks();
     useSessionRole.mockReturnValue(FrontEndRoles.CAS_ANALYST);
     mockRouterPush.mockClear();
-    (actionHandler as unknown as vi.Mock).mockResolvedValue({ error: null });
+    (actionHandler as unknown as Mock).mockResolvedValue({ error: null });
   });
 
   it("renders the internal manual handling form with title and section header", () => {

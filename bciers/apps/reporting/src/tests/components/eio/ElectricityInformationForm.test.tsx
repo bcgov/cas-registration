@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import type { MockedFunction } from "vitest";
 import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { beforeEach, vi } from "vitest";
@@ -15,15 +16,21 @@ vi.mock("next/navigation", () => ({
 }));
 
 const mockPush = vi.fn();
-const mockUseRouter = useRouter as vi.MockedFunction<typeof useRouter>;
-const mockActionHandler = actionHandler as vi.MockedFunction<
-  typeof actionHandler
->;
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>;
+const mockActionHandler = actionHandler as MockedFunction<typeof actionHandler>;
 const mockVersionId = 1;
 
 describe("ElectricityInformationForm Component", () => {
   beforeEach(() => {
-    mockUseRouter.mockReturnValue({ push: mockPush, refresh: vi.fn() });
+    mockUseRouter.mockReturnValue({
+      push: mockPush,
+      refresh: vi.fn(),
+      back: vi.fn(),
+      forward: vi.fn(),
+      replace: vi.fn(),
+      prefetch: vi.fn(),
+      bfcacheId: "",
+    });
     mockActionHandler.mockResolvedValue({ success: true }); // Mock successful action handler
   });
 

@@ -63,27 +63,41 @@ describe("FacilityEmissionSummaryForm", () => {
       />,
     );
 
-    expect(screen.getByLabelText("Flaring emissions").value).toBe("500");
-    expect(screen.getByLabelText("Fugitive emissions").value).toBe("1,000");
-    expect(screen.getByLabelText("Industrial process emissions").value).toBe(
-      "1,500",
-    );
     expect(
-      screen.getByLabelText("On-site transportation emissions").value,
+      screen.getByLabelText<HTMLInputElement>("Flaring emissions").value,
+    ).toBe("500");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Fugitive emissions").value,
+    ).toBe("1,000");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Industrial process emissions")
+        .value,
+    ).toBe("1,500");
+    expect(
+      screen.getByLabelText<HTMLInputElement>(
+        "On-site transportation emissions",
+      ).value,
     ).toBe("2,000");
     expect(
-      screen.getByLabelText("Stationary fuel combustion emissions").value,
+      screen.getByLabelText<HTMLInputElement>(
+        "Stationary fuel combustion emissions",
+      ).value,
     ).toBe("2,500");
-    expect(screen.getByLabelText("Venting emissions - useful").value).toBe(
-      "3,000",
-    );
-    expect(screen.getByLabelText("Venting emissions - non-useful").value).toBe(
-      "3,500",
-    );
-    expect(screen.getByLabelText("Emissions from waste").value).toBe("4,000");
-    expect(screen.getByLabelText("Emissions from wastewater").value).toBe(
-      "4,500",
-    );
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Venting emissions - useful")
+        .value,
+    ).toBe("3,000");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Venting emissions - non-useful")
+        .value,
+    ).toBe("3,500");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Emissions from waste").value,
+    ).toBe("4,000");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Emissions from wastewater")
+        .value,
+    ).toBe("4,500");
   });
 
   it("should render the fuel excluded category summary data", async () => {
@@ -95,13 +109,19 @@ describe("FacilityEmissionSummaryForm", () => {
     );
 
     expect(
-      screen.getByLabelText("CO2 emissions from excluded woody biomass").value,
+      screen.getByLabelText<HTMLInputElement>(
+        "CO2 emissions from excluded woody biomass",
+      ).value,
     ).toBe("100");
     expect(
-      screen.getByLabelText("Other emissions from excluded biomass").value,
+      screen.getByLabelText<HTMLInputElement>(
+        "Other emissions from excluded biomass",
+      ).value,
     ).toBe("200");
     expect(
-      screen.getByLabelText("Emissions from excluded non-biomass").value,
+      screen.getByLabelText<HTMLInputElement>(
+        "Emissions from excluded non-biomass",
+      ).value,
     ).toBe("300");
   });
 
@@ -114,7 +134,7 @@ describe("FacilityEmissionSummaryForm", () => {
     );
 
     expect(
-      screen.getByLabelText(
+      screen.getByLabelText<HTMLInputElement>(
         "Emissions from line tracing and non-processing and non-compression activities",
       ).value,
     ).toBe("400");
@@ -129,11 +149,14 @@ describe("FacilityEmissionSummaryForm", () => {
     );
 
     expect(
-      screen.getByLabelText("Emissions attributable for reporting").value,
+      screen.getByLabelText<HTMLInputElement>(
+        "Emissions attributable for reporting",
+      ).value,
     ).toBe("777");
     expect(
-      screen.getByLabelText("Emissions attributable for reporting threshold")
-        .value,
+      screen.getByLabelText<HTMLInputElement>(
+        "Emissions attributable for reporting threshold",
+      ).value,
     ).toBe("888");
   });
 });

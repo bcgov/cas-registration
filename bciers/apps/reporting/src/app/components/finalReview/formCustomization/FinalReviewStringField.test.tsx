@@ -1,13 +1,14 @@
 import { render, screen } from "@testing-library/react";
 import FinalReviewStringField from "./FinalReviewStringField";
 import { describe, it, expect } from "vitest";
+import { FieldProps } from "@rjsf/utils";
 
 describe("FinalReviewStringField", () => {
   it("renders a number with decimals and thousand separators when schema type is number", () => {
     const numberProps = {
       schema: { type: "number" },
       formData: "123123.4567",
-    };
+    } as FieldProps;
     render(<FinalReviewStringField {...numberProps} />);
     expect(screen.getByDisplayValue("123,123.4567")).toBeVisible();
   });
@@ -16,7 +17,7 @@ describe("FinalReviewStringField", () => {
     const textProps = {
       schema: { type: "string" },
       formData: "Test String",
-    };
+    } as FieldProps;
     render(<FinalReviewStringField {...textProps} />);
     expect(screen.getByText("Test String")).toBeVisible();
   });
@@ -24,7 +25,7 @@ describe("FinalReviewStringField", () => {
   it("renders nothing (instead of NaN) when type is number but there is no value", () => {
     const textProps = {
       schema: { type: "number" },
-    };
+    } as FieldProps;
     render(<FinalReviewStringField {...textProps} />);
     expect(screen.getByRole("textbox")).toHaveValue("");
     expect(screen.queryByText("NaN")).not.toBeInTheDocument();
