@@ -39,6 +39,9 @@ def get_calculated_penalty_for_obligation(
     compliance_deadline = obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
     start_date = compliance_deadline + timedelta(days=1)
 
+    penalty_accrual_context = PenaltyCalculationService.get_penalty_accrual_context(obligation=obligation)
+    print(f"\n\nPenalty accrual context: {penalty_accrual_context}\n\n")
+
     penalty_type = _normalize_penalty_type(penalty_type)
 
     if penalty_type == CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE:
