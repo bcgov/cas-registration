@@ -101,7 +101,7 @@
     "@babel/preset-env": "^8.0.0",
     "@babel/preset-typescript": "^8.0.0",
     "@eslint/eslintrc": "^3.3.3",
-    "@eslint/js": "^9.39.2",
+    "@eslint/js": "^10.0.0",
     "@mui/material-nextjs": "^5.15.11",
     "@nx-tools/nx-container": "^7.2.0",
     "@nx/devkit": "22.7.8",
