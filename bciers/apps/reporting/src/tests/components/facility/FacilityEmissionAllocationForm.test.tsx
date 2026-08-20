@@ -4,6 +4,7 @@ import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import { dummyNavigationInformation } from "../taskList/utils";
 import userEvent from "@testing-library/user-event";
 import { EmissionAllocationResponse } from "@reporting/src/app/utils/getEmissionAllocations";
+import { RegulatedProduct } from "@reporting/src/app/components/operations/types";
 
 // ✨ Mocks
 const mockRouterPush = vi.fn();
@@ -12,6 +13,27 @@ useRouter.mockReturnValue({
   push: mockRouterPush,
   refresh: mockRouterRefresh,
 });
+
+const mockRegulatedProducts: RegulatedProduct[] = [
+  {
+    id: 1,
+    name: "Product 1",
+    unit: "t",
+    is_regulated: true,
+    valid_from: "2023-01-01",
+    valid_to: "2099-01-01",
+  },
+  {
+    id: 2,
+    name: "Product 2",
+    unit: "t",
+    is_regulated: true,
+    valid_from: "2023-01-01",
+    valid_to: "2099-01-01",
+  },
+];
+
+const mockReportingYear = 2024;
 
 // 🏷 Constants
 const config = {
@@ -115,6 +137,8 @@ describe("FacilityEmissionAllocationForm component", () => {
         facilityType=""
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
+        reportingYear={mockReportingYear}
+        regulatedProducts={mockRegulatedProducts}
       />,
     );
 
@@ -158,6 +182,8 @@ describe("FacilityEmissionAllocationForm component", () => {
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
         facilityType={""}
+        reportingYear={mockReportingYear}
+        regulatedProducts={mockRegulatedProducts}
       />,
     );
     expect(
@@ -177,6 +203,8 @@ describe("FacilityEmissionAllocationForm component", () => {
         facilityType="Large Facility"
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
+        reportingYear={mockReportingYear}
+        regulatedProducts={mockRegulatedProducts}
       />,
     );
 
@@ -204,6 +232,8 @@ describe("FacilityEmissionAllocationForm component", () => {
           facilityType="Large Facility"
           isPulpAndPaper={false}
           overlappingIndustrialProcessEmissions={0}
+          reportingYear={mockReportingYear}
+          regulatedProducts={mockRegulatedProducts}
         />,
       );
       // POST submit and assert the result
@@ -221,6 +251,8 @@ describe("FacilityEmissionAllocationForm component", () => {
         facilityType="Large Facility"
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
+        reportingYear={mockReportingYear}
+        regulatedProducts={mockRegulatedProducts}
       />,
     );
 
@@ -252,6 +284,8 @@ describe("FacilityEmissionAllocationForm component", () => {
         }}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
+        reportingYear={mockReportingYear}
+        regulatedProducts={mockRegulatedProducts}
       />,
     );
 
@@ -292,6 +326,8 @@ describe("FacilityEmissionAllocationForm component", () => {
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
         operationType="Single Facility Operation"
+        reportingYear={mockReportingYear}
+        regulatedProducts={mockRegulatedProducts}
       />,
     );
 
@@ -336,6 +372,8 @@ describe("FacilityEmissionAllocationForm component", () => {
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
         operationType="Single Facility Operation"
+        reportingYear={mockReportingYear}
+        regulatedProducts={mockRegulatedProducts}
       />,
     );
 
@@ -363,6 +401,8 @@ describe("FacilityEmissionAllocationForm component", () => {
         }}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
+        reportingYear={mockReportingYear}
+        regulatedProducts={mockRegulatedProducts}
       />,
     );
 
