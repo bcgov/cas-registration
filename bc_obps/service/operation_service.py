@@ -165,21 +165,23 @@ class OperationService:
 
     @classmethod
     def create_or_replace_new_entrant_application(
-        cls, user_guid: UUID, operation_id: UUID, new_entrant_application: UploadedFile
+        cls, user_guid: UUID, operation_id: UUID, new_entrant_application: UploadedFile | None
     ) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
 
-        (
-            new_entrant_application_document,
-            new_entrant_application_document_created,
-        ) = DocumentService.create_or_replace_operation_document(
-            user_guid,
-            operation_id,
-            new_entrant_application,
-            "new_entrant_application",
-        )
-        if new_entrant_application_document_created:
-            operation.documents.add(new_entrant_application_document)
+        if new_entrant_application is not None:
+            (
+                new_entrant_application_document,
+                new_entrant_application_document_created,
+            ) = DocumentService.create_or_replace_operation_document(
+                user_guid,
+                operation_id,
+                new_entrant_application,
+                "new_entrant_application",
+            )
+            if new_entrant_application_document_created:
+                operation.documents.add(new_entrant_application_document)
+
         return operation
 
     @classmethod

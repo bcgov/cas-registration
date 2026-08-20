@@ -16,7 +16,7 @@ def add_filename_suffix(filename: str, suffix: str | None = None) -> str:
     Example:
       the/path/the_file.txt -> the/path/the_file_20250522245133.txt
     """
-    (name, extension) = os.path.splitext(filename)
+    name, extension = os.path.splitext(filename)
     file_suffix = suffix if suffix is not None else f'_{datetime.now().strftime("%Y%m%d%H%M%S")}'
 
     # Remove the last 15 characters if we match a timestamp we inserted previously

@@ -2,7 +2,8 @@ from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from ninja import File, UploadedFile
-from registration.schema import OperationInformationIn, OperationUpdateOut, OperationRegistrationOut, Message
+from registration.schema import OperationInformationIn, OperationRegistrationOut, Message
+from registration.schema.operation import OperationUpdateOut
 from service.operation_service import OperationData, OperationService, MultipleOperatorData
 from registration.constants import OPERATION_TAGS
 from common.permissions import authorize

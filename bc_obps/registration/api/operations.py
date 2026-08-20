@@ -3,12 +3,12 @@ from registration.constants import OPERATION_TAGS
 from registration.models.operation import Operation
 from typing import Tuple
 from registration.schema import (
-    OperationCreateOut,
     OperationInformationIn,
     Message,
     OperationTimelineFilterSchema,
     OperationTimelineListOut,
 )
+from registration.schema.operation import OperationUpdateOut
 from service.data_types.operation_service import OperationData, MultipleOperatorData
 from service.operation_service import OperationService
 from common.permissions import authorize
@@ -68,7 +68,7 @@ def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[
 ##### POST #####
 @router.post(
     "/operations",
-    response={201: OperationCreateOut, custom_codes_4xx: Message},
+    response={201: OperationUpdateOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Creates a new operation for the current user and starts the registration process.
     It associates the new operation with the current user's approved user-operator.""",
@@ -97,4 +97,8 @@ def register_create_operation_information(
         new_entrant_application=new_entrant_application,
     )
 
-    return 201, OperationService.register_operation_information(get_current_user_guid(request), None, operation_data)
+    new_operation = OperationService.register_operation_information(
+        get_current_user_guid(request), None, operation_data
+    )
+
+    return 201, new_operation

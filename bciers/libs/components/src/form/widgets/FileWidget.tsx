@@ -13,6 +13,17 @@ interface FileInfo {
   file?: File;
 }
 
+/**
+ * For now this only works for registration endpoint, but a future update would be to
+ * make this configurable.
+ */
+async function getDocumentFileUrl(documentId: number): Promise<string> {
+  const endpoint = `registration/documents/${documentId}`;
+  const response = await actionHandler(endpoint, "GET");
+
+  return response as string;
+}
+
 // Show a different message depending on the fileScanStatus
 const showScanStatus = (
   status: FileScanStatus | undefined | null,
@@ -100,27 +111,30 @@ export function FileElement({
   readonly fileInfo: FileInfo;
   readonly preview?: boolean;
 }) {
-  const handlePreview = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handlePreview = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (fileInfo.file) {
-      const anchorTag = document.createElement("a");
-      const urlObject = URL.createObjectURL(fileInfo.file);
-      Object.assign(anchorTag, {
-        target: "_blank",
-        rel: "noopener noreferrer",
-        href: urlObject,
-        download: fileInfo.name,
-      });
-      anchorTag.click();
-      anchorTag.remove();
-      URL.revokeObjectURL(urlObject);
-      return;
+    let fileUrl: string;
+
+    if (fileInfo.file) fileUrl = URL.createObjectURL(fileInfo.file);
+    else if (fileInfo.id) {
+      fileUrl = await getDocumentFileUrl(fileInfo.id);
+    } else {
+      throw new Error(
+        `file preview not available, missing file content or file ID. ${JSON.stringify(fileInfo, null, 2)}`,
+      );
     }
 
-    alert("file preview not available");
-    // Similarly to the report attachments, we'll call the backend
-    // to fetch a temporary URL for the file in GCS, and open it in a new tab.
+    const anchorTag = document.createElement("a");
+    Object.assign(anchorTag, {
+      target: "_blank",
+      rel: "noopener noreferrer",
+      href: fileUrl,
+      download: fileInfo.name,
+    });
+    anchorTag.click();
+    anchorTag.remove();
+    URL.revokeObjectURL(fileUrl);
   };
 
   return (

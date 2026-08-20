@@ -35,6 +35,7 @@ const NewEntrantOperationForm = ({
       "POST",
       `${baseUrl}`,
     );
+
     return response;
   };
 

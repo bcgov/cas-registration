@@ -120,6 +120,7 @@ class TestGetOperationRegistrationInformationEndpoint(CommonTestSetup):
         assert response.status_code == 200
         # keys don't include optional values (exclude_none=True is set in the endpoint) or attachments (GCS isn't set up in CI for testing)
         assert set(response.json().keys()) == {
+            'id',
             'registration_purpose',
             'operation',
             'naics_code_id',

@@ -12,6 +12,7 @@ from . import (
     user_operators,
     users,
 )
+from ._documents import document_id
 from ._operations import current as operations_current
 from ._operations._operation_id import boro_id, bcghg_id as operation_bcghg_id, operation_representatives
 from ._operations._operation_id.facilities import list_facilities_by_operation_id

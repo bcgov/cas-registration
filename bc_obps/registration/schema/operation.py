@@ -8,7 +8,6 @@ from registration.schema import OperatorForOperationOut, MultipleOperatorIn, Mul
 from ninja import Field, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from pydantic import ConfigDict
 from registration.models import Operator, User
 from ninja.types import DictStrAny
 
@@ -58,7 +57,7 @@ class OperationRegistrationOut(ModelSchema):
 
     class Meta:
         model = Operation
-        fields = ["name", 'type', 'registration_purpose', 'regulated_products', 'activities']
+        fields = ["id", "name", 'type', 'registration_purpose', 'regulated_products', 'activities']
 
 
 class OperationRepresentativeIn(ModelSchema):
@@ -218,16 +217,6 @@ class OperationOutWithDocuments(OperationOut):
     @staticmethod
     def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
         return serialize_document(obj.get_new_entrant_application())
-
-
-class OperationCreateOut(ModelSchema):
-    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
-
-    model_config = ConfigDict(populate_by_name=True)
-
-    class Meta:
-        model = Operation
-        fields = ['id', 'name', 'type', 'naics_code', 'regulated_products']
 
 
 class OperationUpdateOut(ModelSchema):
