@@ -35,7 +35,7 @@ runs:
     - name: Set up PostgreSQL
       shell: bash
       run: |
-        sudo apt-get update
+        sudo apt-get -o Acquire::ForceIPv4=true update
         sudo apt-get install -y \
           linux-headers-$(uname -r) \
           build-essential bison flex libssl-dev libreadline-dev zlib1g-dev \
