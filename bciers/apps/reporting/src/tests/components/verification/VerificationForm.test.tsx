@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { useRouter } from "@bciers/testConfig/mocks";
 import {
-  sfoUiSchema,
-  lfoUiSchema,
+  sfoSchema,
+  lfoSchema,
 } from "@reporting/src/data/jsonSchema/verification/verification";
 import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
@@ -33,8 +33,7 @@ const config = {
 // Mock operationType
 let mockOperationType = OperationTypes.SFO;
 const getUiSchema = (operationType: string) => {
-  const schema =
-    operationType === OperationTypes.SFO ? sfoUiSchema : lfoUiSchema;
+  const schema = operationType === OperationTypes.SFO ? sfoSchema : lfoSchema;
   if (operationType === OperationTypes.EIO) {
     schema.properties = schema.properties || {};
     schema.properties.info_note = { type: "object", readOnly: true };

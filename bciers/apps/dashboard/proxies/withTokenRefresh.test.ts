@@ -52,8 +52,8 @@ describe("The withTokenRefresh proxy", () => {
 
     const response = await proxyUnderTest(request as any, {} as any);
 
-    expect(response.status).toEqual(307);
-    expect(response.headers.get("Location")).toEqual(
+    expect(response?.status).toEqual(307);
+    expect(response?.headers.get("Location")).toEqual(
       "http://example.com/auth/logout",
     );
   });

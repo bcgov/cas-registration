@@ -10,8 +10,12 @@ import userEvent from "@testing-library/user-event";
 import InternalAccessRequestDataGrid from "@/administration/app/components/users/InternalAccessRequestDataGrid";
 import { FrontEndRoles, InternalFrontEndRoles } from "@bciers/utils/src/enums";
 import { TestErrorBoundary } from "@bciers/testConfig/helpers/TestErrorBoundary";
+import { InternalAccessRequestDataGridRow } from "@/administration/app/components/users/types";
 
-const mockInitialData = {
+const mockInitialData: {
+  rows: InternalAccessRequestDataGridRow[];
+  row_count: number;
+} = {
   rows: [
     {
       role: InternalFrontEndRoles.CAS_ADMIN,

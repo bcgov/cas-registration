@@ -64,7 +64,7 @@ describe("ActionCell", () => {
 
     // Mock window.location for full-page redirection checks
     delete (window as unknown as Record<string, unknown>).location;
-    window.location = { href: "" } as unknown as Location;
+    window.location = { href: "" } as unknown as string & Location;
   });
 
   describe("Restricted / Closed Reporting Flow", () => {

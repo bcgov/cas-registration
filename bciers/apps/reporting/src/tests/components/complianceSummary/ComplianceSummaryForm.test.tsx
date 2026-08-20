@@ -29,7 +29,7 @@ const mockSummaryData = {
   products: [
     {
       name: "Pucks",
-      customUnit: "Goals",
+      unit: "Goals",
       reduction_factor: "7000.1",
       tightening_rate: "8000.2",
       annual_production: "11000.5",
@@ -40,6 +40,7 @@ const mockSummaryData = {
     },
   ],
   reporting_year: 2024,
+  isOptedOut: false,
 };
 
 const mock2025Data = {
@@ -82,14 +83,22 @@ describe("ComplianceSummaryForm", () => {
     );
 
     expect(
-      screen.getByLabelText("Emissions attributable for reporting").value,
+      screen.getByLabelText<HTMLInputElement>(
+        "Emissions attributable for reporting",
+      ).value,
     ).toBe("1,000.5");
-    expect(screen.getByLabelText("Reporting-only emissions").value).toBe(
-      "2,000.75",
-    );
-    expect(screen.getByLabelText("Emissions limit").value).toBe("4,000");
-    expect(screen.getByLabelText("Excess emissions").value).toBe("5,000.5");
-    expect(screen.getByLabelText("Credited emissions").value).toBe("6,000.75");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Reporting-only emissions").value,
+    ).toBe("2,000.75");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Emissions limit").value,
+    ).toBe("4,000");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Excess emissions").value,
+    ).toBe("5,000.5");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Credited emissions").value,
+    ).toBe("6,000.75");
   });
 
   it("should render the regulatory values summary data", async () => {
@@ -100,10 +109,13 @@ describe("ComplianceSummaryForm", () => {
       />,
     );
 
-    expect(screen.getByLabelText("Initial compliance period").value).toBe(
-      "2024",
-    );
-    expect(screen.getByLabelText("Compliance period").value).toBe("2024");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Initial compliance period")
+        .value,
+    ).toBe("2024");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Compliance period").value,
+    ).toBe("2024");
   });
 
   it("should render the production summary data", async () => {
@@ -114,19 +126,29 @@ describe("ComplianceSummaryForm", () => {
       />,
     );
 
-    expect(screen.getByLabelText("Reduction factor").value).toBe("7,000.1");
-    expect(screen.getByLabelText("Tightening rate").value).toBe("8,000.2");
-    expect(screen.getByLabelText("Annual production").value).toBe("11,000.5");
     expect(
-      screen.getByLabelText("Production-weighted average emission intensity")
-        .value,
+      screen.getByLabelText<HTMLInputElement>("Reduction factor").value,
+    ).toBe("7,000.1");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Tightening rate").value,
+    ).toBe("8,000.2");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Annual production").value,
+    ).toBe("11,000.5");
+    expect(
+      screen.getByLabelText<HTMLInputElement>(
+        "Production-weighted average emission intensity",
+      ).value,
     ).toBe("13,000.7");
     expect(
-      screen.getByLabelText("Allocated industrial process emissions").value,
+      screen.getByLabelText<HTMLInputElement>(
+        "Allocated industrial process emissions",
+      ).value,
     ).toBe("14,000.8");
     expect(
-      screen.getByLabelText("Allocated Emissions attributable to compliance")
-        .value,
+      screen.getByLabelText<HTMLInputElement>(
+        "Allocated Emissions attributable to compliance",
+      ).value,
     ).toBe("15,000.9");
   });
 
@@ -174,7 +196,9 @@ describe("ComplianceSummaryForm", () => {
       />,
     );
 
-    expect(screen.getByLabelText("apr_dec_production")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText<HTMLInputElement>("apr_dec_production"),
+    ).toBeInTheDocument();
   });
 
   it("should not show apr_dec_production field for years other than 2024", async () => {

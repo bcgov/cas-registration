@@ -38,11 +38,14 @@ const mockData = {
   reporting_year: 2024,
   outstanding_balance: 0.0,
   equivalent_value: 0.0,
+  obligation_id: "24-0001-1",
+  payment_data: { rows: [], row_count: 0 },
   payments: [
     {
       id: 1,
       amount: 8000,
       received_date: "Dec 6, 2025",
+      formatted_received_date: "Dec 6, 2025",
       payment_method: "Credit Card",
       payment_object_id: "RCP-001",
       payment_header: "Payment 1",

@@ -35,7 +35,7 @@ describe("The No Regulated Products Alert", () => {
       />,
     );
 
-    const links = screen.getAllByRole("link", {
+    const links = screen.getAllByRole<HTMLAnchorElement>("link", {
       name: "Review Operation Information",
     });
 

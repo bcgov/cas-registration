@@ -81,10 +81,10 @@
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
     "mui-tel-input": "^6.0.1",
-    "next": "16.2.12",
+    "next": "16.3.0",
     "next-auth": "^5.0.0-beta.32",
     "pg": "^8.11.3",
-    "postcss": "8.5.25",
+    "postcss": "8.5.26",
     "react": "^19.2.3",
     "react-cookie": "^8.0.1",
     "react-dom": "^19.2.3",
@@ -134,7 +134,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "^16.5.0",
-    "happo": "6.13.0",
+    "happo": "6.13.1",
     "jiti": "2.7.0",
     "jsdom": "~26.1.0",
     "jsonc-eslint-parser": "^2.1.0",
@@ -159,6 +159,6 @@
     "minimatch@npm:^9.0.5": "9.0.9",
     "picomatch": "^4.0.4",
     "yaml": "^2.8.3",
-    "serialize-javascript": "7.0.7"
+    "serialize-javascript": "7.1.0"
   }
 }

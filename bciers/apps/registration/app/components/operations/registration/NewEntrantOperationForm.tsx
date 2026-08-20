@@ -10,7 +10,7 @@ import {
 import { useFileUploadWidget } from "@bciers/components/form/widgets/FileWidget";
 
 interface NewEntrantOperationFormProps extends OperationRegistrationFormProps {
-  formData: NewEntrantOperationFormData;
+  formData: Partial<NewEntrantOperationFormData>;
 }
 
 const NewEntrantOperationForm = ({

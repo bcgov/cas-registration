@@ -1,4 +1,5 @@
 import { describe, vi } from "vitest";
+import renderGridCell from "@bciers/testConfig/helpers/renderGridCell";
 import operationColumns from "@reporting/src/app/components/datagrid/models/operations/operationColumns";
 import { GridColDef } from "@mui/x-data-grid";
 import { render, screen } from "@testing-library/react";
@@ -62,7 +63,7 @@ describe("operationColumns function", () => {
       value: "2024-03-01T12:00:00Z",
     };
 
-    expect(columns[2].renderCell(params)).toBe("");
+    expect(renderGridCell(columns[2], params)).toBe("");
   });
 
   it("renders a formatted timestamp in UpdatedAtCell if report_status is not DRAFT", () => {
@@ -72,7 +73,7 @@ describe("operationColumns function", () => {
       value: "2024-03-01T12:00:00Z",
     };
 
-    expect(columns[2].renderCell(params)).toBe(
+    expect(renderGridCell(columns[2], params)).toBe(
       formatTimestamp("2024-03-01T12:00:00Z"),
     );
   });
@@ -86,7 +87,7 @@ describe("operationColumns function", () => {
       },
     };
 
-    expect(columns[3].renderCell(params)).toBe("");
+    expect(renderGridCell(columns[3], params)).toBe("");
   });
 
   it("renders the submitted_by value in SubmittedByCell if report_status is not DRAFT", () => {
@@ -95,7 +96,7 @@ describe("operationColumns function", () => {
       row: { report_status: "Submitted", report_submitted_by: "User A" },
     };
 
-    expect(columns[3].renderCell(params)).toBe("User A");
+    expect(renderGridCell(columns[3], params)).toBe("User A");
   });
 
   it("has a 'start' button in the 'Actions' column when report_version_id is null", () => {
@@ -116,7 +117,8 @@ describe("operationColumns function", () => {
     };
 
     function WrapperComponent() {
-      const cell = columns[5].renderCell;
+      const cell = (p: Parameters<typeof renderGridCell>[1]) =>
+        renderGridCell(columns[5], p);
 
       return <div>{cell(params)}</div>;
     }
@@ -143,7 +145,8 @@ describe("operationColumns function", () => {
     };
 
     function WrapperComponent() {
-      const cell = columns[5].renderCell;
+      const cell = (p: Parameters<typeof renderGridCell>[1]) =>
+        renderGridCell(columns[5], p);
 
       return <div>{cell(params)}</div>;
     }
@@ -176,7 +179,8 @@ describe("operationColumns function", () => {
     };
 
     function WrapperComponent() {
-      const cell = columns[5].renderCell;
+      const cell = (p: Parameters<typeof renderGridCell>[1]) =>
+        renderGridCell(columns[5], p);
 
       return <div>{cell(params)}</div>;
     }
@@ -206,7 +210,8 @@ describe("operationColumns function", () => {
     };
 
     function WrapperComponent() {
-      const cell = columns[5].renderCell;
+      const cell = (p: Parameters<typeof renderGridCell>[1]) =>
+        renderGridCell(columns[5], p);
 
       return <div>{cell(params)}</div>;
     }
@@ -235,7 +240,8 @@ describe("operationColumns function", () => {
     };
 
     function WrapperComponent() {
-      const cell = columns[5].renderCell;
+      const cell = (p: Parameters<typeof renderGridCell>[1]) =>
+        renderGridCell(columns[5], p);
 
       return <div>{cell(params)}</div>;
     }

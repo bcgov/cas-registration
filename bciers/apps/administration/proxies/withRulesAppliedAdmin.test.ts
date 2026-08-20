@@ -5,6 +5,7 @@ import { getToken } from "@bciers/testConfig/mocks";
 import { mockIndustryUserToken } from "@bciers/testConfig/data/tokens";
 import { DashboardRoutes } from "@bciers/proxies";
 import getCurrentUserOperator from "@/administration/app/components/userOperators/getCurrentUserOperator";
+import { UserOperator } from "@/administration/app/components/userOperators/types";
 
 vi.mock("@/administration/app/components/userOperators/getCurrentUserOperator");
 
@@ -18,7 +19,9 @@ describe("withRulesAppliedAdmin proxy", () => {
 
   it("redirects /operations for industry users if their userOperator is not found", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
-    vi.mocked(getCurrentUserOperator).mockResolvedValueOnce(undefined);
+    vi.mocked(getCurrentUserOperator).mockResolvedValueOnce(
+      undefined as unknown as UserOperator,
+    );
 
     const result = await proxy(
       mockRequest("/administration/operations"),
@@ -106,7 +109,9 @@ describe("withRulesAppliedAdmin proxy", () => {
 
   it("proceeds /select-operator when userOperator resolves to undefined", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
-    vi.mocked(getCurrentUserOperator).mockResolvedValueOnce(undefined);
+    vi.mocked(getCurrentUserOperator).mockResolvedValueOnce(
+      undefined as unknown as UserOperator,
+    );
 
     const result = await proxy(
       mockRequest("/administration/select-operator"),
@@ -138,7 +143,9 @@ describe("withRulesAppliedAdmin proxy", () => {
 
   it("redirects /contacts for industry users if their userOperator is not found", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
-    vi.mocked(getCurrentUserOperator).mockResolvedValueOnce(undefined);
+    vi.mocked(getCurrentUserOperator).mockResolvedValueOnce(
+      undefined as unknown as UserOperator,
+    );
 
     const result = await proxy(
       mockRequest("/administration/contacts"),

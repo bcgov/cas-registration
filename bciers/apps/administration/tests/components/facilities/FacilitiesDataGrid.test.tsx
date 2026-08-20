@@ -9,6 +9,7 @@ import {
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import FacilityDataGrid from "apps/administration/app/components/facilities/FacilitiesDataGrid";
 import { QueryParams } from "@bciers/testConfig/types";
+import { FacilityInitialData } from "@/administration/app/components/facilities/types";
 import extractParams from "@bciers/testConfig/helpers/extractParams";
 import userEvent from "@testing-library/user-event";
 
@@ -18,21 +19,27 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 } as QueryParams);
 
-const mockResponse = {
+const mockResponse: FacilityInitialData = {
   rows: [
     {
-      id: 1,
+      id: "3b5b95ea-2a1a-450d-8e2e-2e15feed96c1",
       facility__name: "Facility 1",
       facility__type: "Single Facility",
       facility__bcghg_id__id: "12111130001",
-      facility__id: 1,
+      facility__id: "3b5b95ea-2a1a-450d-8e2e-2e15feed96c1",
+      status: "Active",
+      facility__latitude_of_largest_emissions: "48.4",
+      facility__longitude_of_largest_emissions: "-123.4",
     },
     {
-      id: 2,
+      id: "d99725a7-1c3a-47cb-a59b-e2388ce0fa18",
       facility__name: "Facility 2",
       facility__type: "Large Facility",
       facility__bcghg_id__id: "1-211113-0002",
-      facility__id: 2,
+      facility__id: "d99725a7-1c3a-47cb-a59b-e2388ce0fa18",
+      status: "Active",
+      facility__latitude_of_largest_emissions: "49.2",
+      facility__longitude_of_largest_emissions: "-123.1",
     },
   ],
   row_count: 2,
@@ -78,11 +85,11 @@ describe("FacilitiesDataGrid component", () => {
     // we don't care about the exact href, just that it contains the facilityId
     expect(viewDetailsLinks[0]).toHaveAttribute(
       "href",
-      "/administration/operations/randomOperationUUID/facilities/1?operations_title=undefined&facilities_title=Facility 1",
+      "/administration/operations/randomOperationUUID/facilities/3b5b95ea-2a1a-450d-8e2e-2e15feed96c1?operations_title=undefined&facilities_title=Facility 1",
     );
     expect(viewDetailsLinks[1]).toHaveAttribute(
       "href",
-      "/administration/operations/randomOperationUUID/facilities/2?operations_title=undefined&facilities_title=Facility 2",
+      "/administration/operations/randomOperationUUID/facilities/d99725a7-1c3a-47cb-a59b-e2388ce0fa18?operations_title=undefined&facilities_title=Facility 2",
     );
   });
   it("makes API call with correct params when sorting", async () => {

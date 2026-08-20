@@ -36,7 +36,9 @@ describe("The Missing Product Alert", () => {
       />,
     );
 
-    const links = screen.getAllByRole("link", { name: "production data page" });
+    const links = screen.getAllByRole<HTMLAnchorElement>("link", {
+      name: "production data page",
+    });
 
     for (const link of links) {
       expect(link.href).toMatch("/reports/123/facilities/abcd/production-data");

@@ -1,3 +1,7 @@
+import {
+  HeaderStep,
+  NavigationInformation,
+} from "@reporting/src/app/components/taskList/types";
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { useRouter } from "@bciers/testConfig/mocks";
@@ -7,7 +11,7 @@ useRouter.mockReturnValue({
   refresh: vi.fn(),
 });
 
-const mockNavigationInformation = {
+const mockNavigationInformation: NavigationInformation = {
   taskList: [
     {
       type: "Page",
@@ -25,11 +29,11 @@ const mockNavigationInformation = {
   backUrl: "/reports/7/additional-reporting-data",
   continueUrl: "/reports/7/compliance-summary",
   headerSteps: [
-    "Operation Information",
-    "Report Information",
-    "Additional Information",
-    "Compliance Summary",
-    "Sign-off & Submit",
+    HeaderStep.OperationInformation,
+    HeaderStep.ReportInformation,
+    HeaderStep.AdditionalInformation,
+    HeaderStep.ComplianceSummary,
+    HeaderStep.SignOffSubmit,
   ],
   headerStepIndex: 2,
 };

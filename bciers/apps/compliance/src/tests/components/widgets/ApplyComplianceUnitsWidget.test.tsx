@@ -120,7 +120,7 @@ describe("ApplyComplianceUnitsWidget", () => {
           isSubmitted: false,
         },
       },
-    };
+    } as unknown as WidgetProps;
 
     render(<ApplyComplianceUnitsWidget {...props} />);
 
@@ -141,7 +141,7 @@ describe("ApplyComplianceUnitsWidget", () => {
           isSubmitted: false,
         },
       },
-    };
+    } as unknown as WidgetProps;
 
     render(<ApplyComplianceUnitsWidget {...props} />);
 
@@ -206,7 +206,7 @@ describe("ApplyComplianceUnitsWidget", () => {
           chargeRate: 50,
         },
       },
-    };
+    } as unknown as WidgetProps;
 
     render(<ApplyComplianceUnitsWidget {...props} />);
 

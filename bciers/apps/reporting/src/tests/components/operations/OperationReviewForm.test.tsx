@@ -6,6 +6,7 @@ import {
   act,
 } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
+import type { MockedFunction } from "vitest";
 import { describe, expect, it, beforeEach, vi } from "vitest";
 import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
@@ -32,18 +33,15 @@ vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
   getNavigationInformation: vi.fn(),
 }));
 
-const mockUseRouter = useRouter as vi.MockedFunction<typeof useRouter>;
-const mockActionHandler = actionHandler as vi.MockedFunction<
-  typeof actionHandler
->;
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>;
+const mockActionHandler = actionHandler as MockedFunction<typeof actionHandler>;
 const mockGetUpdatedReportOperationDetails =
-  getUpdatedReportOperationDetails as vi.MockedFunction<
+  getUpdatedReportOperationDetails as MockedFunction<
     typeof getUpdatedReportOperationDetails
   >;
-const mockGetNavigationInformation =
-  getNavigationInformation as vi.MockedFunction<
-    typeof getNavigationInformation
-  >;
+const mockGetNavigationInformation = getNavigationInformation as MockedFunction<
+  typeof getNavigationInformation
+>;
 
 const formData = {
   operator_legal_name: "Bravo Technologies - has partner operator",
@@ -106,7 +104,15 @@ const schema = buildOperationReviewSchema(
 
 describe("OperationReviewForm Component", () => {
   beforeEach(() => {
-    mockUseRouter.mockReturnValue({ push: vi.fn(), refresh: vi.fn() });
+    mockUseRouter.mockReturnValue({
+      push: vi.fn(),
+      refresh: vi.fn(),
+      back: vi.fn(),
+      forward: vi.fn(),
+      replace: vi.fn(),
+      prefetch: vi.fn(),
+      bfcacheId: "",
+    });
     mockActionHandler.mockResolvedValue(true); // Mock successful action handler
   });
 

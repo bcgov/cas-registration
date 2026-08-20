@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import { render, screen, within } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import TransfersDataGrid from "@/registration/app/components/transfers/TransfersDataGrid";
+import { TransferRow } from "@/registration/app/components/transfers/types";
 
 useRouter.mockReturnValue({
   query: {},
@@ -12,10 +13,9 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-const mockResponse = {
+const mockResponse: { rows: TransferRow[]; row_count: number } = {
   rows: [
     {
-      id: "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
       transfer_id: "3b5b95ea-2a1a-450d-8e2e-2e15feed96c1",
       operation__name: "Operation 1",
       facilities__name: "N/A",
@@ -24,7 +24,6 @@ const mockResponse = {
       effective_date: "Feb 1, 2025\n1:00:00 a.m. PST",
     },
     {
-      id: "d99725a7-1c3a-47cb-a59b-e2388ce0fa18",
       transfer_id: "3b5b95ea-2a1a-450d-8e2e-2e15feed96c2",
       operation__name: "Operation 2",
       facilities__name: "N/A",
@@ -33,7 +32,6 @@ const mockResponse = {
       effective_date: "Aug 21, 2024\n2:00:00 a.m. PDT",
     },
     {
-      id: "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
       transfer_id: "3b5b95ea-2a1a-450d-8e2e-2e15feed96c3",
       operation__name: "N/A",
       facilities__name: "Facility 1",
@@ -42,7 +40,6 @@ const mockResponse = {
       effective_date: "Dec 25, 2024\n1:00:00 a.m. PST",
     },
     {
-      id: "459b80f9-b5f3-48aa-9727-90c30eaf3a58",
       transfer_id: "3b5b95ea-2a1a-450d-8e2e-2e15feed96c4",
       operation__name: "N/A",
       facilities__name: "Facility 2",

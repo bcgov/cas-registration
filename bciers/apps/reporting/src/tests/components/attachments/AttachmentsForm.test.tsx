@@ -108,7 +108,7 @@ describe("The attachments form", () => {
 
     const onChangeWci = mockAttachmentElement.mock.calls.find(
       (call) => call[0].title === "WCI.352 and WCI.362",
-    )[0].onFileChange;
+    )![0].onFileChange;
 
     const file = new File(["test content"], "wci.pdf", {
       type: "application/pdf",

@@ -112,7 +112,7 @@ describe("SignOffForm Component (with actual schema)", () => {
     });
 
     // Ensure core and non-EIO-specific fields are present
-    Object.values(schema.properties).forEach((field: any) => {
+    Object.values(schema.properties ?? {}).forEach((field: any) => {
       if (field.title) {
         expect(screen.getByText(field.title)).toBeInTheDocument();
       }

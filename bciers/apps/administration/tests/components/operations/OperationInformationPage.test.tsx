@@ -85,7 +85,7 @@ describe("the OperationInformationPage component", () => {
     });
   });
   it("renders the OperationInformationPage component without Registration Information", async () => {
-    getOperationWithDocuments.mockResolvedValueOnce(formData);
+    vi.mocked(getOperationWithDocuments).mockResolvedValueOnce(formData);
     render(await OperationInformationPage({ operationId }));
 
     expect(
@@ -112,7 +112,7 @@ describe("the OperationInformationPage component", () => {
   });
 
   it("should render the form without Registration Information", async () => {
-    getOperationWithDocuments.mockResolvedValueOnce(formData);
+    vi.mocked(getOperationWithDocuments).mockResolvedValueOnce(formData);
 
     render(await OperationInformationPage({ operationId }));
 
@@ -121,7 +121,7 @@ describe("the OperationInformationPage component", () => {
     expect(screen.getByText(/212114 - Bituminous coal mining/i)).toBeVisible();
   });
   it("should render the form with Registration Information", async () => {
-    getOperationWithDocuments.mockResolvedValueOnce({
+    vi.mocked(getOperationWithDocuments).mockResolvedValueOnce({
       status: OperationStatus.REGISTERED,
     });
 
