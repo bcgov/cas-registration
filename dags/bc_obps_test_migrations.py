@@ -1,6 +1,7 @@
 from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 from airflow.providers.cncf.kubernetes.operators.job import KubernetesJobOperator
+from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.providers.standard.sensors.time_delta import TimeDeltaSensor
 from airflow.sdk import dag, task
 from datetime import datetime, timedelta, timezone
@@ -51,7 +52,7 @@ The following parameters are available:
     catchup=False,
     is_paused_upon_creation=False,
     doc_md=DAG_DOC,
-    tags=['bciers'],
+    tags=["bciers"],
 )
 def test_migrations(
     destination_namespace: str = BCIERS_NAMESPACE,
@@ -140,6 +141,46 @@ def test_migrations(
         "be-migration-test-job"
     )
 
+    cleanup = TriggerDagRunOperator(
+        task_id="trigger_cleanup_dag",
+        trigger_dag_id=f"{TEST_MIGRATIONS_DAG_NAME}_cleanup",
+        dag=test_migrations,
+    )
+
+    (
+        postgres_helm_install
+        >> time_delay_postgres
+        >> wait_for_postgres_restore
+        >> [postgres_check_backup_age, postgres_migration_test]
+        >> backend_helm_install
+        >> time_delay_backend
+        >> wait_for_backend
+        >> backend_migration_test
+        >> cleanup
+    )
+
+
+CLEANUP_DAG_DOC = """
+Uninstalls the helm charts and cluster resources installed by the test migrations DAG.
+
+This will be called automatically by the test migrations DAG on success, but can be triggered manually
+after investigation of a failed `test_migrations` DAG run.
+"""
+
+
+@dag(
+    dag_id=f"{TEST_MIGRATIONS_DAG_NAME}_cleanup",
+    default_args=default_args,
+    schedule=None,
+    catchup=False,
+    is_paused_upon_creation=False,
+    doc_md=DAG_DOC,
+    tags=["bciers"],
+)
+def test_migrations_cleanup(
+    destination_namespace: str = BCIERS_NAMESPACE,
+    backend_chart_tag: str = "latest",
+):
     uninstall_postgres_helm_charts = KubernetesJobOperator(
         task_id="uninstall-postgres-helm-charts",
         name="uninstall-postgres-helm-charts",
@@ -170,17 +211,8 @@ def test_migrations(
         is_delete_operator_pod=True,
     )
 
-    (
-        postgres_helm_install
-        >> time_delay_postgres
-        >> wait_for_postgres_restore
-        >> [postgres_check_backup_age, postgres_migration_test]
-        >> backend_helm_install
-        >> time_delay_backend
-        >> wait_for_backend
-        >> backend_migration_test
-        >> [uninstall_postgres_helm_charts, uninstall_backend_helm_charts]
-    )
+    [uninstall_postgres_helm_charts, uninstall_backend_helm_charts]
 
 
 test_migrations()
+test_migrations_cleanup()
