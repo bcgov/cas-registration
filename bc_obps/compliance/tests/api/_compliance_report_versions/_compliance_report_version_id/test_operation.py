@@ -28,6 +28,10 @@ class TestReportOperationByComplianceReportVersionEndpoint(CommonTestSetup):
         # Act
         # Mock the authorization and perform the request
         TestUtils.authorize_current_user_as_operator_user(self, operator=approved_user_operator.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=test_data.compliance_report_version.compliance_report.report.operator,
+            operations=[test_data.compliance_report_version.compliance_report.report.operation],
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
