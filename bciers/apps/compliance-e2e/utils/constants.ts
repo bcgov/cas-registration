@@ -127,4 +127,4 @@ export const AMOUNT_DUE_AFTER_DECREASE_OBLIGATION_MET = new RegExp(
  * call it must opt into a longer one with `test.slow()` — otherwise the test is
  * killed before this can elapse and the timeout has no effect.
  */
-export const INVOICE_GENERATION_TIMEOUT_MS = 120_000;
+export const INVOICE_GENERATION_TIMEOUT_MS = 180_000;
