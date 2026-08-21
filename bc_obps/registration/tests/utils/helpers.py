@@ -57,7 +57,7 @@ class TestUtils:
                 operator=operator,
                 operation=op,
                 start_date='1899-01-01',
-                end_date='2099-12-31',
+                end_date='9999-12-31',
             )
 
     def authorize_current_user_as_operator_user(self, operator):
