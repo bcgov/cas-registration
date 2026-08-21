@@ -41,7 +41,7 @@ class TestReportFinalReview(CommonTestSetup):
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
         )
         self.report_operation = baker.make_recipe(
             "reporting.tests.utils.report_operation",
@@ -166,6 +166,10 @@ class TestReportFinalReview(CommonTestSetup):
                 kwargs={"version_id": self.report_version.id},
             ),
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
+        )
 
         assert response.status_code == 200
         response_data = response.json()
@@ -238,6 +242,10 @@ class TestReportFinalReview(CommonTestSetup):
                 "version_id": self.report_version.id,
                 "facility_id": str(self.facility_report.facility_id),
             },
+        )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
 
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint)

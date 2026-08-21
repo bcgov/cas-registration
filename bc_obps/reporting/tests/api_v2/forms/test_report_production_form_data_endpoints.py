@@ -7,7 +7,7 @@ from reporting.tests.utils.report_access_validation import assert_report_version
 class TestReportProductV2Endpoints(CommonTestSetup):
     def setup_method(self):
         self.report_version = make_recipe(
-            "reporting.tests.utils.report_version", report__reporting_year__reporting_year=1222
+            "reporting.tests.utils.report_version", report__reporting_year__reporting_year=1922
         )
         self.facility_report = make_recipe(
             "reporting.tests.utils.facility_report",
@@ -46,7 +46,7 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             },
             "report_data": {
                 "report_version_id": self.report_version.id,
-                "reporting_year": 1222,
+                "reporting_year": 1922,
             },
             "payload": {"report_products": [], "allowed_products": []},
         }
@@ -109,7 +109,7 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             },
             "report_data": {
                 "report_version_id": self.report_version.id,
-                "reporting_year": 1222,
+                "reporting_year": 1922,
             },
             "payload": {
                 "report_products": [
