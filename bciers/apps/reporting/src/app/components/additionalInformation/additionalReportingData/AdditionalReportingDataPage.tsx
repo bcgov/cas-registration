@@ -11,7 +11,7 @@ import {
 } from "@reporting/src/app/components/taskList/types";
 import { OperationTypes } from "@bciers/utils/src/enums";
 
-export function transformReportAdditionalData(reportAdditionalData: any) {
+function transformReportAdditionalData(reportAdditionalData: any) {
   const captureType = [];
   if (reportAdditionalData.emissions_on_site_use !== null) {
     captureType.push("On-site use");
@@ -26,11 +26,11 @@ export function transformReportAdditionalData(reportAdditionalData: any) {
     captured_emissions_section: {
       capture_type: captureType,
       capture_emissions: reportAdditionalData.capture_emissions ?? null,
-      emissions_on_site_use: reportAdditionalData.emissions_on_site_use || null,
+      emissions_on_site_use: reportAdditionalData.emissions_on_site_use ?? null,
       emissions_on_site_sequestration:
-        reportAdditionalData.emissions_on_site_sequestration || null,
+        reportAdditionalData.emissions_on_site_sequestration ?? null,
       emissions_off_site_transfer:
-        reportAdditionalData.emissions_off_site_transfer || null,
+        reportAdditionalData.emissions_off_site_transfer ?? null,
     },
     additional_data_section: {
       electricity_generated:
