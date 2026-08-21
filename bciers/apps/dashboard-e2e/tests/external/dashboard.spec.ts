@@ -39,10 +39,8 @@ userRoles.forEach((role) => {
       const dashboardPage = new DashboardPOM(page);
       await dashboardPage.route();
       await urlIsCorrect(page, dashboardPage.url);
-      let component = "";
-
       // Say cheese!
-      component = `Main Dashboard for ${role}`;
+      const component = `Main Dashboard for ${role}`;
       await takeStabilizedScreenshot(happoScreenshot, page, {
         component: component,
         variant: "default",

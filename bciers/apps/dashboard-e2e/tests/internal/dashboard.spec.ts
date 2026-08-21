@@ -46,9 +46,7 @@ userRoles.forEach((role) => {
       const dashboardPage = new DashboardPOM(page);
       await dashboardPage.route();
       await urlIsCorrect(page, dashboardPage.url);
-      let component = "";
-
-      component = `Main Dashboard for ${role.toUpperCase()}`;
+      const component = `Main Dashboard for ${role.toUpperCase()}`;
       // Say cheese!
       await takeStabilizedScreenshot(happoScreenshot, page, {
         component: component,

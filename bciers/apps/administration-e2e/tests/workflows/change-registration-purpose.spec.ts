@@ -81,9 +81,8 @@ test.describe("Test changing registration purpose", () => {
       page.getByRole("button", { name: changeRegistrationPurposeButton }),
     ).toBeVisible();
 
-    let component = "";
     // Say cheese!
-    component = "Confirmation to change registration purpose";
+    let component = "Confirmation to change registration purpose";
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: component,
       variant: "default",

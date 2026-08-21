@@ -18,7 +18,7 @@ export const generateRequestIssuanceTaskList: (
   issuanceStatus,
   activePage = ActivePage.ReviewComplianceSummary,
 ) => {
-  let taskItems: TaskListElement[] = [];
+  let taskItems: TaskListElement[];
   if (
     issuanceStatus === IssuanceStatus.ISSUANCE_REQUESTED ||
     issuanceStatus === IssuanceStatus.APPROVED ||

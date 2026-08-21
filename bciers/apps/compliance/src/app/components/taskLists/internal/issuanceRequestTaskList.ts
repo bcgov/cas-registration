@@ -19,7 +19,7 @@ export const generateIssuanceRequestTaskList: (
   issurance_status,
   activePage = ActivePage.ReviewComplianceSummary,
 ) => {
-  let taskItems: TaskListElement[] = [];
+  let taskItems: TaskListElement[];
   const reviewSummary = {
     type: "Page" as const,
     title: `Review ${reporting_year} Compliance Summary`,
