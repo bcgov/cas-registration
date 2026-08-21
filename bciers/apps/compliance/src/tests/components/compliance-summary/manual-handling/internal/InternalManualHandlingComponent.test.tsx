@@ -5,6 +5,7 @@ import { FrontEndRoles } from "@bciers/utils/src/enums";
 import InternalManualHandlingComponent from "@/compliance/src/app/components/compliance-summary/manual-handling/internal/InternalManualHandlingComponent";
 import { ManualHandlingData } from "@/compliance/src/app/types";
 import { actionHandler } from "@bciers/actions";
+import expectRadio from "@bciers/testConfig/helpers/expectRadio";
 
 // Mock actionHandler so submit doesn't actually call the API
 vi.mock("@bciers/actions", () => ({
@@ -101,7 +102,7 @@ describe("InternalManualHandlingComponent", () => {
     expect(screen.getByText("The issue has been resolved.")).toBeVisible();
   });
 
-  it("navigates back to the earned credits review page when Back is clicked", () => {
+  it("navigates back to the compliance summaries grid when Back is clicked", () => {
     render(
       <InternalManualHandlingComponent
         initialFormData={baseFormData}
@@ -115,8 +116,36 @@ describe("InternalManualHandlingComponent", () => {
     fireEvent.click(backButton);
 
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-administration/compliance-summaries/${CRV_ID}/review-compliance-earned-credits-report`,
+      "/compliance-administration/compliance-summaries",
     );
+  });
+
+  it("shows the director's decision as read-only text for CAS analysts", () => {
+    render(
+      <InternalManualHandlingComponent
+        initialFormData={baseFormData}
+        complianceReportVersionId={CRV_ID}
+      />,
+    );
+
+    expect(screen.getByText("Pending manual handling")).toBeVisible();
+    expect(screen.queryByRole("radio")).toBeNull();
+  });
+
+  it("shows the director's decision as radio options for CAS directors", () => {
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
+
+    render(
+      <InternalManualHandlingComponent
+        initialFormData={baseFormData}
+        complianceReportVersionId={CRV_ID}
+      />,
+    );
+
+    expect(screen.getByText("Pending manual handling")).toBeVisible();
+    expect(screen.getByText("Issue has been resolved")).toBeVisible();
+    expectRadio(/Pending manual handling/i);
+    expectRadio(/Issue has been resolved/i);
   });
 
   it("submits updated analyst_comment and director_decision when Submit is clicked", async () => {
