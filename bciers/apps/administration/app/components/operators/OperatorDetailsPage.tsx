@@ -9,13 +9,12 @@ import updateDashboardDataHref from "@bciers/utils/src/updateDashboardDataHref";
 
 const OperatorDetailsPage = async ({ operatorId }: { operatorId: UUID }) => {
   let operator: OperatorRow;
-  let operatorDashboardData: ContentItem[] = [];
 
   if (operatorId && isValidUUID(operatorId)) {
     operator = await getOperator(operatorId);
   } else throw new Error(`Invalid operator id: ${operatorId}`);
 
-  operatorDashboardData = (await fetchDashboardData(
+  let operatorDashboardData = (await fetchDashboardData(
     "common/dashboard-data?dashboard=operators",
   )) as ContentItem[];
   if (!operatorDashboardData || "error" in operatorDashboardData)
