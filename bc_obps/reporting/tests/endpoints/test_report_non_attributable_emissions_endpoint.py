@@ -18,7 +18,8 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
             self, operator=self.facility_report.report_version.report.operator
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.facility_report.report_version.report.operator,
+            operations=[self.facility_report.report_version.report.operation],
         )
 
         emission_category = make(EmissionCategory)
@@ -55,7 +56,8 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
             self, operator=self.facility_report.report_version.report.operator
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.facility_report.report_version.report.operator,
+            operations=[self.facility_report.report_version.report.operation],
         )
         payload = {
             "emissions_exceeded": False,
@@ -72,7 +74,8 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
             self, operator=self.facility_report.report_version.report.operator
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.facility_report.report_version.report.operator,
+            operations=[self.facility_report.report_version.report.operation],
         )
         payload = {"emissions_exceeded": True, "activities": []}
         response = TestUtils.mock_post_with_auth_role(
@@ -85,7 +88,8 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
             self, operator=self.facility_report.report_version.report.operator
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.facility_report.report_version.report.operator,
+            operations=[self.facility_report.report_version.report.operation],
         )
         payload = {
             "emissions_exceeded": True,
