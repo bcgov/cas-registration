@@ -17,6 +17,7 @@ class Command(BaseCommand):
             # reporting program configuration tables
             "configuration",
             "configuration_element",
+            "configuration_element_reporting_fields",
             "activity_json_schema",
             "activity_source_type_json_schema",
             "custom_methodology_schema",
