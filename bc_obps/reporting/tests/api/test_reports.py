@@ -44,7 +44,13 @@ class TestReportsEndpoint(CommonTestSetup):
             "operation_id": "00000000-0000-0000-0000-000000000000",
             "reporting_year": 2024,
         }
-        response = self.send_authorized_post_request(request_data)
+        response = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            json.dumps(request_data),
+            self.endpoint_under_test,
+        )
 
         assert response.status_code == 401
 
