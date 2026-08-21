@@ -79,14 +79,22 @@ def json_seq(
         yield {json_key: f"{json_value} {next(generator)}"}
 
 
-reporting_year = Recipe(ReportingYear)
-reporting_year_2025 = ReportingYear.objects.get(reporting_year=2025)
+def reporting_year_seq(
+    seq_value: Any = 2050,
+    **seq_args,
+):
+    generator = seq(seq_value, **seq_args)
+    while True:
+        yield next(generator)
+
+
+reporting_year = Recipe(ReportingYear, reporting_year=reporting_year_seq())
 
 report = Recipe(
     Report,
     operator=foreign_key(operator),
     operation=foreign_key(operation),
-    reporting_year=reporting_year_2025,
+    reporting_year=foreign_key(reporting_year),
 )
 
 report_version = Recipe(ReportVersion, report=foreign_key(report))
