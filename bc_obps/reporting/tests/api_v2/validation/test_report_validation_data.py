@@ -22,7 +22,7 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
     def setup_method(self):
         self.report_version = make_recipe(
             "reporting.tests.utils.report_version",
-            report__reporting_year__reporting_year=1222,
+            report__reporting_year__reporting_year=1922,
         )
 
         self.endpoint_under_test = (
@@ -37,7 +37,7 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
             operator=self.report_version.report.operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
         )
 
         with patch(VALIDATION_SERVICE_PATH) as mock_validate:
@@ -58,7 +58,7 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
             operator=self.report_version.report.operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
         )
 
         facility_id = "f486f2fb-62ed-438d-bb3e-0819b51e3aeb"

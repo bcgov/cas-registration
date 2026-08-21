@@ -19,7 +19,8 @@ class TestReportProductEndpoints(CommonTestSetup):
             self, operator=self.facility_report.report_version.report.operator
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.facility_report.report_version.report.operator,
+            operations=[self.facility_report.report_version.report.operation],
         )
 
         payload = [
@@ -61,7 +62,8 @@ class TestReportProductEndpoints(CommonTestSetup):
             self, operator=self.facility_report.report_version.report.operator
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.facility_report.report_version.report.operator,
+            operations=[self.facility_report.report_version.report.operation],
         )
 
         payload = [
