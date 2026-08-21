@@ -215,6 +215,8 @@ const getAnalystSubmissionInfoElement = (
 export const internalManualHandlingUiSchema = (
   analystSubmittedDate?: string,
   analystSubmittedBy?: string,
+  isDirectorDecisionEditable: boolean = false,
+  directorDecision?: ManualHandlingDecison,
 ): UiSchema => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
@@ -258,9 +260,19 @@ export const internalManualHandlingUiSchema = (
     ),
   },
 
-  director_decision: {
-    "ui:widget": "RadioWidget",
-    "ui:classNames": "md:gap-16 [&>div:nth-child(2)]:w-full",
-    "ui:options": { inline: false },
-  },
+  director_decision: isDirectorDecisionEditable
+    ? {
+        "ui:widget": "RadioWidget",
+        "ui:classNames": "md:gap-16 [&>div:nth-child(2)]:w-full",
+        "ui:options": { inline: false },
+      }
+    : {
+        "ui:widget": "ReadOnlyRadioWidget",
+        "ui:classNames": "md:gap-16 [&>div:nth-child(2)]:w-full",
+        "ui:options": {
+          customizedValue: directorDecision
+            ? MANUAL_HANDLING_DECISION_LABELS[directorDecision]
+            : "",
+        },
+      },
 });

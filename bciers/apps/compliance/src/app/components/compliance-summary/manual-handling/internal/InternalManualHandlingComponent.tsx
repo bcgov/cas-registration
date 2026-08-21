@@ -10,7 +10,7 @@ import {
 import { ManualHandlingData } from "@/compliance/src/app/types";
 import { IChangeEvent } from "@rjsf/core";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
-import { FrontEndRoles } from "@bciers/utils/src/enums";
+import { FrontEndRoles, ManualHandlingDecison } from "@bciers/utils/src/enums";
 import { actionHandler } from "@bciers/actions";
 import FormAlerts from "@bciers/components/form/FormAlerts";
 import SubmitButton from "@bciers/components/button/SubmitButton";
@@ -47,7 +47,7 @@ const InternalManualHandlingComponent = ({
   // Success state for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`;
+  const backUrl = `/compliance-administration/compliance-summaries`;
 
   const isAnalystLockedByDirector =
     isCasAnalyst && formData._initial_director_decision === "issue_resolved";
@@ -106,6 +106,8 @@ const InternalManualHandlingComponent = ({
       uiSchema={internalManualHandlingUiSchema(
         initialFormData.analyst_submitted_date || "",
         initialFormData.analyst_submitted_by || "",
+        isCasDirector,
+        formData.director_decision as ManualHandlingDecison | undefined,
       )}
       formData={formData}
       onSubmit={handleSubmit}
