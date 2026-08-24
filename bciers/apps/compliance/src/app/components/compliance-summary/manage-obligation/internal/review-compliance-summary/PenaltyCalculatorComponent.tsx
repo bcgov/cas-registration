@@ -21,12 +21,16 @@ type PenaltyAccrualRow = {
 
 type CalculatedPenaltyResponse = {
   requested_penalty_type?: string;
+  automatic_overdue_penalty_status?: string;
+  ggeapar_interest_status?: string;
   days_late?: number;
   total_penalty?: string | number | null;
   daily_accumulated_list?: PenaltyAccrualRow[];
 };
 
 type PenaltyCalculatorFormData = {
+  automatic_overdue_penalty_status?: string;
+  ggeapar_interest_status?: string;
   requested_penalty_type: string;
   final_day_of_penalty_accrual?: string;
   penalty_summary: {
@@ -91,6 +95,9 @@ const mapApiDataToFormData = (
   ]);
 
   return {
+    automatic_overdue_penalty_status:
+      data?.automatic_overdue_penalty_status ?? "",
+    ggeapar_interest_status: data?.ggeapar_interest_status ?? "",
     requested_penalty_type: penaltyType,
     final_day_of_penalty_accrual: finalDay,
     penalty_summary: {
