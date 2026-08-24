@@ -145,6 +145,10 @@ def test_migrations(
         task_id="trigger_cleanup_dag",
         trigger_dag_id=f"{TEST_MIGRATIONS_DAG_NAME}_cleanup",
         dag=test_migrations,
+        conf={
+            "destination_namespace": "{{ params.destination_namespace }}",
+            "backend_chart_tag": "{{ params.backend_chart_tag }}",
+        },
     )
 
     (
@@ -174,7 +178,7 @@ after investigation of a failed `test_migrations` DAG run.
     schedule=None,
     catchup=False,
     is_paused_upon_creation=False,
-    doc_md=DAG_DOC,
+    doc_md=CLEANUP_DAG_DOC,
     tags=["bciers"],
 )
 def test_migrations_cleanup(
