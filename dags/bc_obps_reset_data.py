@@ -32,7 +32,7 @@ DAG to reset the data in the BCIERS database to a freshly deployed state.
     catchup=False,
     is_paused_upon_creation=False,
     doc_md=RESET_DAG_DOC,
-    tags=['bciers'],
+    tags=["bciers"],
 )
 def reset_data(cycle_backend: bool = True):
 
@@ -85,7 +85,7 @@ dropped along with the database. Intended to be triggered after the DB reset.
     default_args=default_args,
     is_paused_upon_creation=False,
     doc_md=ROLLOUT_DAG_DOC,
-    tags=['bciers'],
+    tags=["bciers"],
 )
 def wait_for_backend_rollout():
     wait_for_backend_rollout_task = KubernetesJobOperator(
