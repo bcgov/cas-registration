@@ -1,12 +1,12 @@
 from typing import Literal, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 from django.http import HttpRequest
 from ninja.errors import HttpError
 from compliance.constants import COMPLIANCE
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.api.router import router
-from compliance.schema.calculated_penalty import CalculatedPenaltyOut, PenaltyAccrual
+from compliance.schema.calculated_penalty import CalculatedPenaltyOut, PenaltyAccrual, PenaltyTypeStatusEnum
 from compliance.models import CompliancePenalty, ComplianceObligation
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.api.permissions import approved_authorized_roles_compliance_report_version_composite_auth
@@ -31,7 +31,7 @@ def _normalize_penalty_type(penalty_type: str) -> str:
     auth=approved_authorized_roles_compliance_report_version_composite_auth,
 )
 def get_calculated_penalty_for_obligation(
-    request: HttpRequest, compliance_report_version_id: int, penalty_type: str, end_date: str
+    request: HttpRequest, compliance_report_version_id: int, requested_penalty_type: str, end_date: str
 ) -> Tuple[Literal[200], CalculatedPenaltyOut]:
     date_format_string = "%Y-%m-%d"
     formatted_end_date = datetime.strptime(end_date, date_format_string).date()
@@ -39,12 +39,20 @@ def get_calculated_penalty_for_obligation(
     compliance_deadline = obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
     start_date = compliance_deadline + timedelta(days=1)
 
+    # determine penalty type statuses
     penalty_accrual_context = PenaltyCalculationService.get_penalty_accrual_context(obligation=obligation)
     print(f"\n\nPenalty accrual context: {penalty_accrual_context}\n\n")
+    automatic_overdue_penalty_status = PenaltyTypeStatusEnum.NONE
+    ggeapar_interest_status = PenaltyTypeStatusEnum.NONE
+    if penalty_accrual_context.effective_deadline < date.today():
+        automatic_overdue_penalty_status = PenaltyTypeStatusEnum.ACCRUING
+    if obligation.compliance_report_version.is_supplementary and penalty_accrual_context.has_late_submission:
+        ggeapar_interest_status = PenaltyTypeStatusEnum.ACCRUING
 
-    penalty_type = _normalize_penalty_type(penalty_type)
+    # Note that this is what type of penalty we should be calculating, not necessarily what type of penalty is currently accruing
+    requested_penalty_type = _normalize_penalty_type(requested_penalty_type)
 
-    if penalty_type == CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE:
+    if requested_penalty_type == CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE:
         # Automatic Overdue Penalty begins accruing 1 day after the compliance deadline unless it is a supplementary report that came in after the deadline.
         # In that case, the Automatic Overdue Penalty begins accruing 1 day after the invoice due date
         created_at = obligation.created_at
@@ -60,7 +68,7 @@ def get_calculated_penalty_for_obligation(
         calculated_penalty = PenaltyCalculationService.calculate_penalty(
             obligation=obligation, accrual_start_date=start_date, final_accrual_date=formatted_end_date
         )
-    elif penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION:
+    elif requested_penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION:
         start_date = compliance_deadline + timedelta(days=1)
 
         calculated_penalty = PenaltyCalculationService.calculate_late_submission_penalty(
@@ -69,10 +77,12 @@ def get_calculated_penalty_for_obligation(
     else:
         raise HttpError(
             400,
-            f"Invalid penalty_type '{penalty_type}'. Expected '{CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE}' or '{CompliancePenalty.PenaltyType.LATE_SUBMISSION}'.",
+            f"Invalid penalty_type '{requested_penalty_type}'. Expected '{CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE}' or '{CompliancePenalty.PenaltyType.LATE_SUBMISSION}'.",
         )
 
     response = CalculatedPenaltyOut(
+        automatic_overdue_penalty_status=automatic_overdue_penalty_status,
+        ggeapar_interest_status=ggeapar_interest_status,
         penalty_type=calculated_penalty.penalty_type,
         days_late=calculated_penalty.days_late,
         total_penalty=calculated_penalty.total_penalty,
@@ -88,5 +98,7 @@ def get_calculated_penalty_for_obligation(
             for accrual in calculated_penalty.daily_accumulated_list
         ],
     )
+
+    print(f"\n\n{response}\n")
 
     return 200, response

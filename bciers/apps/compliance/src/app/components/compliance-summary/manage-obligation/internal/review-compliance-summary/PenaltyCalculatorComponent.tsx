@@ -20,14 +20,14 @@ type PenaltyAccrualRow = {
 };
 
 type CalculatedPenaltyResponse = {
-  penalty_type?: string;
+  requested_penalty_type?: string;
   days_late?: number;
   total_penalty?: string | number | null;
   daily_accumulated_list?: PenaltyAccrualRow[];
 };
 
 type PenaltyCalculatorFormData = {
-  penalty_type: string;
+  requested_penalty_type: string;
   final_day_of_penalty_accrual?: string;
   penalty_summary: {
     total_penalty_amount?: string | number | null;
@@ -91,7 +91,7 @@ const mapApiDataToFormData = (
   ]);
 
   return {
-    penalty_type: penaltyType,
+    requested_penalty_type: penaltyType,
     final_day_of_penalty_accrual: finalDay,
     penalty_summary: {
       total_penalty_amount: data?.total_penalty,
@@ -111,7 +111,8 @@ export default function PenaltyCalculatorComponent({
 }: Readonly<Props>) {
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`;
   const derivedPenaltyType =
-    initialPenaltyType ?? mapPenaltyTypeToFrontend(penaltyData?.penalty_type);
+    initialPenaltyType ??
+    mapPenaltyTypeToFrontend(penaltyData?.requested_penalty_type);
 
   const initialFormData = useMemo(
     () =>
@@ -134,8 +135,8 @@ export default function PenaltyCalculatorComponent({
     }
 
     const selectedPenaltyType = normalizePenaltyTypeForForm(
-      nextFormData?.penalty_type ??
-        formData?.penalty_type ??
+      nextFormData?.requested_penalty_type ??
+        formData?.requested_penalty_type ??
         initialPenaltyType,
     );
     const selectedFinalDay =
@@ -146,7 +147,7 @@ export default function PenaltyCalculatorComponent({
 
     setFormData({
       ...nextFormData,
-      penalty_type: selectedPenaltyType,
+      requested_penalty_type: selectedPenaltyType,
       final_day_of_penalty_accrual: selectedFinalDay,
     });
 
@@ -160,7 +161,7 @@ export default function PenaltyCalculatorComponent({
     const refreshedPenaltyData = await getPenaltyAccrualCalculationData(
       complianceReportVersionId,
       {
-        penalty_type: selectedPenaltyType,
+        requested_penalty_type: selectedPenaltyType,
         final_day_of_penalty_accrual: normalizedFinalDay,
       },
     );
