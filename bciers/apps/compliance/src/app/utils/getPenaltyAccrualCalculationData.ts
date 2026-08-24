@@ -53,7 +53,7 @@ export const getPenaltyAccrualCalculationData = async (
   const mappedParams = {
     ...restParams,
     ...(mappedPenaltyType
-      ? { penalty_type: encodeURIComponent(mappedPenaltyType) }
+      ? { requested_penalty_type: encodeURIComponent(mappedPenaltyType) }
       : {}),
     ...(mappedEndDate ? { end_date: mappedEndDate } : {}),
   };
