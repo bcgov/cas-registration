@@ -22,6 +22,19 @@ The `bc_obps_test_migrations` dag is defined in `dags/bc_obps_test_migrations.py
 
 If any of the steps fail, the dag will fail. As the charts are uninstalled in the final step, the pod logs can be inspected to determine the cause of the failure.
 
+#### Prerequisites to use an empty namespace (destination-ns) to test the migrations from (source-dev/test/prod()
+
+**Roles/RoleBindings**
+
+- [ ] Create RoleBinding in destination-ns, from SA "cas-airflow-worker" (ns: airflow-dev/test/prod) to Role "cas-provision-deployer"
+- [ ] Create ServiceAccount named "airflow-deployer" in destination-ns
+- [ ] Create RoleBinding in destination-ns, from SA "airflow-deployer" to role cas-provision-deployer
+- [ ] Add "name: "airflow-deployer", namespace: destination-ns" in the list of subjects of the "airflow-cas-provision-deployer-binding" RoleBinding in the source namespace
+
+**GCS access**
+
+- [ ] Copy the secret "gcp-<source-ns>-obps-backups-service-account-key" into <destination-ns>, the chart will look for it
+
 ### Helm charts: `/helm/migration-test`
 
 #### `cas-obps-postgres-migration-test`

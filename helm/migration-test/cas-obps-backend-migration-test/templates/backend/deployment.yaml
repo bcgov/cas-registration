@@ -27,8 +27,6 @@ spec:
           {{- toYaml .Values.backend.resources | nindent 10 }}
           env:
             {{- include "cas-obps-backend-migration-test.backendEnvVars" . | nindent 12 }}
-            - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: "/attachment-credentials/attachment-credentials.json"
           ports:
             - containerPort: {{ .Values.backend.service.port }}
               protocol: TCP
@@ -56,15 +54,4 @@ spec:
             successThreshold: 1
             timeoutSeconds: 5
           resources: {{ toYaml .Values.backend.resources | nindent 12 }}
-          volumeMounts:
-            - mountPath: "/attachment-credentials"
-              name: gcs-attachment-credentials
-              readOnly: true
-      volumes:
-        - name: gcs-attachment-credentials
-          secret:
-            secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
-            items:
-            - key: credentials.json
-              path: attachment-credentials.json
       restartPolicy: Always

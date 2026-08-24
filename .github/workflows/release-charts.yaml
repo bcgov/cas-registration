@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-
+      - chore/4964-cleanup-test-migrations-dag
 jobs:
   release:
     permissions:
