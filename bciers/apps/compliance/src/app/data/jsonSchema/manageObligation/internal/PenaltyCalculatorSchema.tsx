@@ -1,7 +1,10 @@
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import FieldTemplateFullWidth from "@bciers/components/form/fields/FieldTemplateFullWidth";
-import { readOnlyStringField } from "@/compliance/src/app/data/jsonSchema/helpers";
+import {
+  commonReadOnlyOptions,
+  readOnlyStringField,
+} from "@/compliance/src/app/data/jsonSchema/helpers";
 import { TableField } from "@/compliance/src/app/widgets/TableWidget";
 import { PenaltyTypeButtonGroupWidget } from "../../../../components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltyTypeButtonGroupWidget";
 import { PenaltySummaryField } from "../../../../components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltySummaryWidget";
@@ -14,7 +17,7 @@ export const penaltyCalculatorSchema: RJSFSchema = {
       "Automatic overdue penalty:",
     ),
     ggeapar_interest_status: readOnlyStringField("GGEAPAR interest:"),
-    penalty_type: {
+    requested_penalty_type: {
       type: "string",
       title: "1. Select penalty type",
       enum: ["automatic_overdue", "ggeapar"],
@@ -61,13 +64,9 @@ export const penaltyCalculatorUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
 
-  automatic_overdue_penalty_status: {
-    "ui:classNames": "[&>div:first-child>label]:font-normal",
-  },
-  ggeapar_interest_status: {
-    "ui:classNames": "[&>div:first-child>label]:font-normal",
-  },
-  penalty_type: {
+  automatic_overdue_penalty_status: commonReadOnlyOptions,
+  ggeapar_interest_status: commonReadOnlyOptions,
+  requested_penalty_type: {
     "ui:widget": PenaltyTypeButtonGroupWidget,
     "ui:options": {
       label: false,
