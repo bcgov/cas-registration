@@ -27,4 +27,15 @@ export const validationUIConfig: Partial<
     resolveFormattedMessage: (error) =>
       error.message ?? "Please return to Contacts to assign a representative.",
   },
+  operator_not_found: {
+    priority: 10,
+    renderMode: "inline_link",
+    resolveLabel: () => "Add Operator",
+    resolveHref: () => "/select-operator/add-operator",
+    resolveMessage: (error) =>
+      error.message ?? "No operator found matching the provided criteria.",
+    resolveFormattedMessage: (error) =>
+      error.message ??
+      "No operator found matching the provided criteria. You can Add Operator instead.",
+  },
 };
