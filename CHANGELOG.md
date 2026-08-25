@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.19.1](https://github.com/bcgov/cas-registration/compare/v5.19.0...v5.19.1) (2026-08-25)
+
+### Bug Fixes
+
+- **deps:** update dependency eslint-config-next to v16.3.0 ([fbd3188](https://github.com/bcgov/cas-registration/commit/fbd31881b90ecf7b80356145c5892560be9bdc3b))
+- **deps:** update dependency eslint-config-next to v16.3.1 ([6f5c611](https://github.com/bcgov/cas-registration/commit/6f5c611d830c30d72123dcd063e44c577492565e))
+- **deps:** update node dependencies ([5f2b958](https://github.com/bcgov/cas-registration/commit/5f2b9589ae2c163a630d7fe077555e503d330393))
+- file preview on registration uploads ([40987cf](https://github.com/bcgov/cas-registration/commit/40987cf5d7539917e36a3f90cebb6d22f80c3d99))
+- improve button layout and add tooltip for attachment names ([e7fbb7b](https://github.com/bcgov/cas-registration/commit/e7fbb7bbbdbfdc8a93665f00748201c53230086a))
+- show director's decision read-only to analysts and fix manual handling back url ([6a62810](https://github.com/bcgov/cas-registration/commit/6a62810dbe3c5bfc80c0cfc0e8393b5632e2cd09))
+- Zero values get persisted on the additional reporting data form ([741715d](https://github.com/bcgov/cas-registration/commit/741715dc040a4eeb82e8dad68690aa0f7a94ca38))
+
 # [5.19.0](https://github.com/bcgov/cas-registration/compare/v5.18.1...v5.19.0) (2026-08-12)
 
 ### Bug Fixes
