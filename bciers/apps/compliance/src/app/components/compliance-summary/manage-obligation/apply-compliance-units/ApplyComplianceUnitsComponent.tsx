@@ -325,31 +325,21 @@ export default function ApplyComplianceUnitsComponent({
             setCurrentPhase("initial");
           }
         },
-        onError: (errs?: any) => {
-          if (!errs || (Array.isArray(errs) && errs.length === 0)) {
+        onError: (err?: any) => {
+          if (!err || (Array.isArray(err) && err.length === 0)) {
             setErrors(undefined);
             return;
           }
-          const rawErrors = Array.isArray(errs) ? errs : [errs];
-          const formatted = rawErrors.map((err) => {
-            if (typeof err === "string") {
-              return {
-                key: err,
-                error: { severity: "Error", message: err },
-              };
-            }
-            if (err && !err.error) {
-              return {
-                key: err.key || "error",
-                error: {
-                  severity: "Error",
-                  message: err.message || String(err),
-                },
-              };
-            }
-            return err;
-          });
-          setErrors(formatted as any);
+
+          const raw = Array.isArray(err) ? err[0] : err;
+          const message =
+            raw instanceof Error
+              ? raw.message
+              : typeof raw === "string"
+                ? raw
+                : raw?.message || raw?.error || "An unexpected error occurred.";
+
+          handleApiResponse({ error: message }, setErrors);
         },
         complianceLimitStatus,
         isApplied: status === "applied",
