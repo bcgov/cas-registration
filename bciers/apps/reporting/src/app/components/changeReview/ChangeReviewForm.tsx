@@ -15,8 +15,6 @@ import {
   handleApiResponse,
   createGenericValidationError,
 } from "@bciers/components/validationErrors";
-import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface ChangeReviewProps {
   versionId: number;
@@ -35,10 +33,7 @@ export default function ChangeReviewForm({
 }: ChangeReviewProps) {
   const router = useRouter();
   const [formData, setFormData] = useState(initialFormData);
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-    });
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
   const [reasonForChange, setReasonForChange] = useState(
     initialFormData.reason_for_change || "",
