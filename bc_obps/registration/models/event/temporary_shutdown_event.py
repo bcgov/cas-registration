@@ -20,6 +20,7 @@ class TemporaryShutdownEvent(EventBaseModel):
         max_length=100,
         choices=Statuses.choices,
         default=Statuses.TEMPORARILY_SHUTDOWN,
+        db_comment="Status of the temporary shutdown event.",
     )
     history = HistoricalRecords(
         table_name='erc_history"."temporary_shutdown_event_history',

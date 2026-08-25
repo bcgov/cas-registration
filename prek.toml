@@ -11,6 +11,16 @@
 repo = "local"
 
 [[repos.hooks]]
+id="ensure-models-have-database-comments"
+name="ensure-models-have-database-comments"
+language="system"
+entry = """
+cd bc_obps && poetry run python manage.py ensure_models_have_database_comments
+"""
+shell="bash"
+stages=["pre-commit"]
+
+[[repos.hooks]]
 id = "prettier"
 name = "Prettier"
 language = "system"

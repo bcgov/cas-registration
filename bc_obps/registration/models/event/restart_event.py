@@ -10,7 +10,9 @@ class RestartEvent(EventBaseModel):
     class Statuses(models.TextChoices):
         RESTARTED = "Restarted"
 
-    status = models.CharField(max_length=100, choices=Statuses.choices, default=Statuses.RESTARTED)
+    status = models.CharField(
+        max_length=100, choices=Statuses.choices, default=Statuses.RESTARTED, db_comment="Status of the restart event."
+    )
     history = HistoricalRecords(
         table_name='erc_history"."restart_event_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
