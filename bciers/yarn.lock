@@ -2411,7 +2411,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.22.6, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.25.7, @babel/runtime@npm:^7.28.6, @babel/runtime@npm:^7.29.2, @babel/runtime@npm:^7.29.7, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.7":
+"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.22.6, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.25.7, @babel/runtime@npm:^7.28.6, @babel/runtime@npm:^7.29.2, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.7":
   version: 7.29.7
   resolution: "@babel/runtime@npm:7.29.7"
   checksum: 10c0/ca11572f7146b21e0bde6a9ed4bb6a89eafbee5f0944c7eb54d0d8a2dac962c33638a1d611e14faa71dfbb92b4b5f9236232208568a6b7d5c6f3f39ddb91771e
@@ -2560,7 +2560,6 @@ __metadata:
     "@eslint/js": "npm:^10.0.0"
     "@mui/icons-material": "npm:^5.18.0"
     "@mui/material": "npm:^5.18.0"
-    "@mui/material-nextjs": "npm:^9.0.0"
     "@mui/system": "npm:^5.18.0"
     "@mui/x-data-grid": "npm:^6.20.4"
     "@mui/x-date-pickers": "npm:^7.29.4"
@@ -4037,29 +4036,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/4fc61ea1b8ff276c8545b4f4f3881d9be590af24d8c2cbb076b34ec9a9230fd3147c30dd12399133c8d99c9eb748bd73014fa29b187b94229b90783023af4482
-  languageName: node
-  linkType: hard
-
-"@mui/material-nextjs@npm:^9.0.0":
-  version: 9.3.0
-  resolution: "@mui/material-nextjs@npm:9.3.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.29.7"
-  peerDependencies:
-    "@emotion/cache": ^11.11.0
-    "@emotion/react": ^11.11.4
-    "@emotion/server": ^11.11.0
-    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
-    next: ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-    react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  peerDependenciesMeta:
-    "@emotion/cache":
-      optional: true
-    "@emotion/server":
-      optional: true
-    "@types/react":
-      optional: true
-  checksum: 10c0/6949f4d0756a580d9ec4ec44304adfa874c50e655e07e14654a6f110082dbc057812f7b288ee8e53d88103ddad57b36fe103de8570472f73cfcd49c56fe47b2a
   languageName: node
   linkType: hard
 

@@ -102,7 +102,6 @@
     "@babel/preset-typescript": "^8.0.0",
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^10.0.0",
-    "@mui/material-nextjs": "^9.0.0",
     "@nx-tools/nx-container": "^7.2.0",
     "@nx/devkit": "23.1.1",
     "@nx/eslint": "22.7.8",
