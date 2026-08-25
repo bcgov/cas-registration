@@ -18,6 +18,7 @@ from .reports import create_report_version
 from .gas_type import get_gas_type
 from .report_emission_summary import get_emission_category, get_operation_emission_summary_totals
 from .production_data import save_production_data
+from .production_data import save_unregulated_products
 from .report_new_entrant_data import save_new_entrant_data
 from .report_new_entrant_data import get_new_entrant_data
 from .report_non_attributable_emissions import save_report

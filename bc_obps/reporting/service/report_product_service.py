@@ -58,10 +58,10 @@ class ReportProductService:
             )
 
         # Add a report_product record for unregulated products reported by this operation (for emission allocation only)
-        cls.add_unregulated_products(report_version_id, facility_id)
+        cls.save_unregulated_products(report_version_id, facility_id)
 
     @classmethod
-    def add_unregulated_products(cls, report_version_id: int, facility_id: UUID) -> None:
+    def save_unregulated_products(cls, report_version_id: int, facility_id: UUID) -> None:
         facility_report = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
         unregulated_product_ids = RegulatedProduct.objects.filter(is_regulated=False).values_list("id", flat=True)
 
