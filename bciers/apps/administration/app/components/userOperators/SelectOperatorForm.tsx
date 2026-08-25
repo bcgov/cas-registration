@@ -1,22 +1,28 @@
 "use client";
+
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import Link from "next/link";
 import Form from "@bciers/components/form/FormBase";
-import { useState } from "react";
-import { Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 import { SelectOperatorFormData } from "../userOperators/types";
 import { selectOperatorUiSchema } from "../../data/jsonSchema/selectOperator";
 import { selectOperatorSchema } from "../../data/jsonSchema/selectOperator";
+import { validationUIConfig } from "@/administration/app/components/validationErrors/config";
+import type { ValidationKey } from "@/administration/app/components/validationErrors/types";
 
 export default function SelectOperatorForm() {
-  const [errorList, setErrorList] = useState<{ message: string }[]>([]);
   const router = useRouter();
+  const { setErrors, renderedErrors } = useValidationErrors<ValidationKey>({
+    config: validationUIConfig,
+  });
 
   const handleSubmit = async (data: { formData?: SelectOperatorFormData }) => {
-    // Reset previous errors on new submission
-    setErrorList([]);
+    setErrors(undefined);
 
     const queryParam = `?${data.formData?.search_type}=${
       data.formData?.[
@@ -24,52 +30,35 @@ export default function SelectOperatorForm() {
       ]
     }`;
 
-    try {
-      const response = await actionHandler(
-        `registration/operators/search${queryParam}`,
-        "GET",
-        "/select-operator",
-      );
+    const response = await actionHandler(
+      `registration/operators/search${queryParam}`,
+      "GET",
+      "/select-operator",
+    );
 
-      // Updated check: handles response.error, response.message, or response.detail
-      const errorMessage =
-        response?.error || response?.message || response?.detail;
-
-      if (errorMessage) {
-        console.log("[ERROR DETECTED] Setting error message:", errorMessage);
-        setErrorList([
-          {
-            message:
-              typeof errorMessage === "string"
-                ? errorMessage
-                : JSON.stringify(errorMessage),
-          },
-        ]);
-        return;
-      }
-
-      // If the response is an array, we want the first element
-      let operatorId;
-      let operatorLegalName;
-      if (Array.isArray(response) && response.length > 0) {
-        operatorId = response[0].id;
-        operatorLegalName = response[0].legal_name;
-      } else if (response && response.id) {
-        operatorId = response.id;
-        operatorLegalName = response.legal_name;
-      } else {
-        setErrorList([{ message: "Unexpected response format from server." }]);
-        return;
-      }
-
-      router.push(
-        `/select-operator/confirm/${operatorId}?title=${operatorLegalName}`,
-      );
-    } catch (err: any) {
-      setErrorList([
-        { message: err?.message || "An unexpected error occurred." },
-      ]);
+    const isSuccess = handleApiResponse<ValidationKey>(
+      response,
+      setErrors,
+      "operator_not_found",
+    );
+    if (!isSuccess) {
+      return;
     }
+
+    const operator = Array.isArray(response) ? response[0] : response;
+
+    if (!operator?.id) {
+      handleApiResponse<ValidationKey>(
+        { error: "No operator found matching the provided criteria." },
+        setErrors,
+        "operator_not_found",
+      );
+      return;
+    }
+
+    router.push(
+      `/select-operator/confirm/${operator.id}?title=${operator.legal_name}`,
+    );
   };
 
   return (
@@ -82,16 +71,7 @@ export default function SelectOperatorForm() {
           uiSchema={selectOperatorUiSchema}
           className="mx-auto"
         >
-          {/* Needed to display errors from cra number */}
-          {errorList.length > 0 &&
-            errorList.map((e: any, index: number) => {
-              return (
-                <Alert key={index} severity="error" className="mt-2">
-                  {e.message}
-                </Alert>
-              );
-            })}
-          {/* Needed to prevent rendering of standard submit buttons by RJSF */}
+          {renderedErrors}
           <></>
         </Form>
         <p>
