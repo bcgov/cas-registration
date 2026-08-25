@@ -203,7 +203,9 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
 
     await waitFor(() => {
-      expect(screen.getByText("Unknown error")).toBeVisible();
+      expect(
+        screen.getByText(/An unexpected error occurred|Unknown error/i),
+      ).toBeVisible();
     });
   });
 

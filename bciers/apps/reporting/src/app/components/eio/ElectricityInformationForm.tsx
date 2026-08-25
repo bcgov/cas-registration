@@ -8,8 +8,6 @@ import {
   useValidationErrors,
   handleApiResponse,
 } from "@bciers/components/validationErrors";
-import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface Props {
   versionId: number;
@@ -23,10 +21,7 @@ const ElectricityInformationForm: React.FC<Props> = ({
   navigationInformation,
 }) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-    });
+  const { setErrors, renderedErrors } = useValidationErrors();
   const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${versionId}/electricity-import-data`;
     const method = "POST";

@@ -122,7 +122,7 @@ const OperationInformationForm = ({
 
     const isSuccess = handleApiResponse(response, setErrors);
     if (!isSuccess) {
-      return { error: response.error };
+      return response;
     } else {
       setConfirmedFormData(response);
       setSavedType(response.type);

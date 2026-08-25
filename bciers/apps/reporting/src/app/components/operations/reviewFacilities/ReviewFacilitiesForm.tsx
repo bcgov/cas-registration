@@ -16,8 +16,6 @@ import {
   handleApiResponse,
   createGenericValidationError,
 } from "@bciers/components/validationErrors";
-import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface Props {
   initialData: any;
@@ -51,10 +49,7 @@ export default function LFOFacilitiesForm({
   const [facilitiesData, setFacilitiesData] = useState(() => ({
     ...initialData,
   }));
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-    });
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [modalOpen, setModalOpen] = useState(false);
   const [submittingDisabled, setSubmittingDisabled] = useState(false);
   const [deselectedFacilities, setDeselectedFacilities] = useState<string[]>(

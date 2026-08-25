@@ -11,8 +11,6 @@ import {
   useValidationErrors,
   handleApiResponse,
 } from "@bciers/components/validationErrors";
-import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface StartReportFormProps {
   schema: RJSFSchema;
@@ -32,10 +30,7 @@ export default function StartReportForm({
   const router = useRouter();
 
   const [formData, setFormData] = useState<Partial<StartReportFormData>>({});
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-    });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const handleSubmit = async (
     data: IChangeEvent<StartReportFormData>,
