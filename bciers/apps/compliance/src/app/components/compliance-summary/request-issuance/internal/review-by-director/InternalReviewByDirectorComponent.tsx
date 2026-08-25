@@ -16,9 +16,13 @@ import {
   FrontEndRoles,
   IssuanceStatus,
 } from "@bciers/utils/src/enums";
-import FormAlerts from "@bciers/components/form/FormAlerts";
 import { actionHandler } from "@bciers/actions";
 import SubmitButton from "@bciers/components/button/SubmitButton";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  createGenericValidationError,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   data: RequestIssuanceComplianceSummaryData;
@@ -41,7 +45,7 @@ const InternalReviewByDirectorComponent = ({
   }
 
   const [formData, setFormState] = useState(data);
-  const [errors, setErrors] = useState<string[] | undefined>();
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const isCasDirector = userRole === FrontEndRoles.CAS_DIRECTOR;
@@ -63,13 +67,19 @@ const InternalReviewByDirectorComponent = ({
 
   const handleSubmit = async (decision: "Approved" | "Declined") => {
     if (!isCasDirector) {
-      setErrors(["You are not authorized to submit this request."]);
+      setErrors([
+        createGenericValidationError(
+          "You are not authorized to submit this request.",
+        ),
+      ]);
       return;
     }
     if (isSubmitting) {
       return;
     }
     setIsSubmitting(true);
+    setErrors(undefined);
+
     // only send the data that is needed for the update by the director
     const payload = {
       director_comment: formData?.director_comment,
@@ -80,10 +90,11 @@ const InternalReviewByDirectorComponent = ({
     const response = await actionHandler(endpoint, "PUT", pathToRevalidate, {
       body: JSON.stringify(payload),
     });
-    if (response && !response.error) {
+
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (isSuccess) {
       router.push(continueUrl);
     } else {
-      setErrors([response.error || "Failed to submit request."]);
       setIsSubmitting(false);
     }
   };
@@ -102,7 +113,7 @@ const InternalReviewByDirectorComponent = ({
       onChange={handleFormChange}
       className="w-full min-h-[62vh] flex flex-col justify-between"
     >
-      <FormAlerts errors={errors} />
+      {renderedErrors}
       <ComplianceStepButtons backUrl={backUrl} className="mt-8">
         {isActionVisible && (
           <>

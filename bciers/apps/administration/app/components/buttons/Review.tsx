@@ -62,9 +62,7 @@ const Review = ({
   const [modalState, setModalState] = useState("" as string);
   const [dismissAlert, setDismissAlert] = useState(false);
 
-  const { setErrors, renderedErrors } = useValidationErrors({
-    config: {},
-  });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const handleApprove = () => {
     setModalState("approve");
