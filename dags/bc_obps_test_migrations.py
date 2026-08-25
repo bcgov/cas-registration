@@ -148,10 +148,7 @@ def test_migrations(
     cleanup = TriggerDagRunOperator(
         task_id="trigger_cleanup_dag",
         trigger_dag_id="cas_bciers_test_migrations_cleanup",
-        conf={
-            "destination_namespace": "{{ params.destination_namespace }}",
-            "backend_chart_tag": "{{ params.backend_chart_tag }}",
-        },
+        conf={"destination_namespace": "{{ params.destination_namespace }}"},
         wait_for_completion=True,
         fail_when_dag_is_paused=True,
     )

@@ -22,7 +22,7 @@ The `bc_obps_test_migrations` dag is defined in `dags/bc_obps_test_migrations.py
 
 If any of the steps fail, the dag will fail. As the charts are uninstalled in the final step, the pod logs can be inspected to determine the cause of the failure.
 
-#### Prerequisites to use an empty namespace (destination-ns) to test the migrations from (source-dev/test/prod()
+#### Prerequisites to use an empty namespace (destination-ns) to test the migrations from source-dev/test/prod()
 
 **Roles/RoleBindings**
 
