@@ -42,6 +42,21 @@ class TestVersionOwnershipFromUrl:
 
         assert is_valid == expected_validity
 
+    @pytest.mark.parametrize("irc_user_recipe", ["cas_admin", "cas_analyst", "cas_director", "cas_view_only"])
+    def test_version_ownership_from_url_allows_internal_users_regardless_of_operator(self, irc_user_recipe):
+        compliance_report_version = make_recipe("compliance.tests.utils.compliance_report_version")
+        user = make_recipe(f"registration.tests.utils.{irc_user_recipe}")
+
+        validator_under_test = check_compliance_version_ownership_in_url("test_id")
+
+        mock_request = MagicMock()
+        mock_request.resolver_match.kwargs = {"test_id": compliance_report_version.id}
+        mock_request.current_user = user
+
+        is_valid = validator_under_test(mock_request)
+
+        assert is_valid is True
+
     def test_version_ownership_from_url_denies_access_if_report_not_owned_by_operator(self):
         compliance_report_version = make_recipe("compliance.tests.utils.compliance_report_version")
         user = make_recipe("registration.tests.utils.industry_operator_user")

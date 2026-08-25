@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from compliance.dataclass import BCCRUnit, RefreshWrapperReturn
 from django.test import SimpleTestCase, override_settings, Client
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
@@ -6,6 +6,7 @@ from registration.utils import custom_reverse_lazy
 from common.tests.utils.helpers import assert_error_response
 
 VALIDATE_PERMISSION_PATH = "common.permissions.validate_all"
+GET_CURRENT_USER_PATH = "compliance.api._bccr._compliance_report_versions._compliance_report_version_id.applied_compliance_units.get_current_user"
 SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.get_applied_compliance_units_data"
 CAN_APPLY_COMPLIANCE_UNITS_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.can_apply_compliance_units"
 ELICENSING_DATA_REFRESH_WRAPPER_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
@@ -24,12 +25,22 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
             "get_applied_compliance_units", kwargs={"compliance_report_version_id": self.compliance_report_version_id}
         )
 
+    @staticmethod
+    def _mock_user(is_irc_user: bool):
+        user = MagicMock()
+        user.is_irc_user.return_value = is_irc_user
+        return user
+
+    @patch(GET_CURRENT_USER_PATH)
     @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
     @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
     @patch(SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
-    def test_successful_applied_units_retrieval(self, mock_permission, mock_service, mock_can_apply, mock_refresh_data):
+    def test_successful_applied_units_retrieval(
+        self, mock_permission, mock_service, mock_can_apply, mock_refresh_data, mock_get_current_user
+    ):
         # Arrange
+        mock_get_current_user.return_value = self._mock_user(is_irc_user=False)
         mock_permission.return_value = True
         mock_service.return_value = [
             BCCRUnit(
@@ -63,11 +74,15 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
             "can_apply_compliance_units": True,
         }
 
+    @patch(GET_CURRENT_USER_PATH)
     @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
     @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
     @patch(SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
-    def test_empty_applied_units(self, mock_permission, mock_service, mock_can_apply, mock_refresh_data):
+    def test_empty_applied_units(
+        self, mock_permission, mock_service, mock_can_apply, mock_refresh_data, mock_get_current_user
+    ):
+        mock_get_current_user.return_value = self._mock_user(is_irc_user=False)
         mock_permission.return_value = True
         mock_service.return_value = []
         mock_can_apply.return_value = False
@@ -80,6 +95,36 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
             "applied_compliance_units": [],
             "can_apply_compliance_units": False,
         }
+
+    @patch(GET_CURRENT_USER_PATH)
+    @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
+    @patch(SERVICE_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
+    def test_internal_users_get_the_units_but_never_can_apply_them(
+        self, mock_permission, mock_service, mock_can_apply, mock_get_current_user
+    ):
+        # Arrange
+        mock_get_current_user.return_value = self._mock_user(is_irc_user=True)
+        mock_permission.return_value = True
+        mock_service.return_value = [
+            BCCRUnit(
+                id="1",
+                type="Earned Credits",
+                serial_number="SN-123",
+                vintage_year="2024 - 2025",
+                quantity_applied="50",
+                equivalent_value="4000.00",
+            )
+        ]
+
+        # Act
+        response = self.client.get(self._get_endpoint_url())
+
+        # Assert
+        assert response.status_code == 200
+        assert response.json()["can_apply_compliance_units"] is False
+        assert len(response.json()["applied_compliance_units"]) == 1
+        mock_can_apply.assert_not_called()
 
     @patch(SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
