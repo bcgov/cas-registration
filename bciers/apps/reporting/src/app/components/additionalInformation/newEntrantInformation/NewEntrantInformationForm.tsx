@@ -11,8 +11,6 @@ import {
   useValidationErrors,
   handleApiResponse,
 } from "@bciers/components/validationErrors";
-import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface NewEntrantInfornationProps {
   version_id: number;
@@ -26,10 +24,7 @@ export default function NewEntrantInformationForm({
   navigationInformation,
 }: NewEntrantInfornationProps) {
   const [formData, setFormData] = useState(initialFormData || {});
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-    });
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
     !initialFormData.assertion_statement,
   );

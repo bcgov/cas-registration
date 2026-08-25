@@ -7,7 +7,10 @@ import { useState } from "react";
 import SnackBar from "../components/SnackBar";
 import { DARK_GREY_BG_COLOR } from "@bciers/styles";
 import Link from "next/link";
-import { AlertIcon } from "@bciers/components/icons";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 export enum EntityWithBcghgType {
   OPERATION = "operation",
@@ -59,9 +62,9 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
 }) => {
   const [bcghgId, setBcghgId] = useState(value);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
   const [editBcghgId, setEditBcghgId] = useState(false);
   const [manualBcghgId, setManualBcghgId] = useState("");
+  const { setErrors, renderedErrors } = useValidationErrors();
   const { formContext } = registry;
 
   const entityId = formContext?.operationId || formContext?.facilityId;
@@ -70,21 +73,21 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
     : EntityWithBcghgType.FACILITY;
 
   const handleClearBcghgId = async () => {
+    setErrors(undefined);
     const response = await clearBcghgId(entityId, entityType);
-    if (response?.error) {
-      setError(response?.error);
+    if (!handleApiResponse(response, setErrors)) {
       return;
     }
     setBcghgId(undefined);
     setEditBcghgId(false);
-    setError(undefined);
   };
 
   const handleSetBcghgId = async (
     bcghgIdToSet: string | undefined = undefined,
   ) => {
+    setErrors(undefined);
     if (bcghgIdToSet === "") {
-      setError("BCGHG ID cannot be empty");
+      handleApiResponse({ error: "BCGHG ID cannot be empty" }, setErrors);
       return;
     }
 
@@ -94,14 +97,12 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
       editBcghgId ? bcghgIdToSet : undefined,
     );
 
-    if (response?.error) {
-      setError(response?.error);
+    if (!handleApiResponse(response, setErrors)) {
       return;
     }
     setIsSnackbarOpen(true);
     setBcghgId(response?.id);
     setEditBcghgId(false);
-    setError(undefined);
   };
 
   const editBcghgIdJsx = editBcghgId ? (
@@ -121,7 +122,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
         <Button
           onClick={() => {
             setEditBcghgId(false);
-            setError(undefined);
+            setErrors(undefined);
           }}
         >
           Cancel
@@ -137,7 +138,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          setError("");
+          setErrors(undefined);
           setEditBcghgId(true);
         }}
       >
@@ -186,17 +187,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
           setIsSnackbarOpen={setIsSnackbarOpen}
         />
       </div>
-      {error && (
-        <div
-          className="flex items-center w-full text-red-600 ml-0"
-          role="alert"
-        >
-          <div className="hidden md:block mr-3">
-            <AlertIcon />
-          </div>
-          <span>{error}</span>
-        </div>
-      )}
+      {renderedErrors}
     </div>
   );
 };

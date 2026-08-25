@@ -22,8 +22,6 @@ import {
   useValidationErrors,
   handleApiResponse,
 } from "@bciers/components/validationErrors";
-import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface PersonResponsibleFormData {
   person_responsible: number | undefined;
@@ -57,10 +55,8 @@ const PersonResponsibleForm = ({
 }: Props) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-    });
+
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const [componentState, setComponentState] = useState<ComponentState>({
     availableContacts: initialContacts,

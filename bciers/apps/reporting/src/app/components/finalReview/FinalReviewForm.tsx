@@ -13,6 +13,10 @@ import Loading from "@bciers/components/loading/SkeletonForm";
 import { ReportData } from "./reportTypes";
 import { FinalReviewReportSections } from "@reporting/src/app/components/finalReview/templates/FinalReviewReportSections";
 import { ReportDownloadPdfButton } from "./templates/ReportDownloadPdfButton";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   version_id: any;
@@ -27,30 +31,24 @@ export const FinalReviewForm: React.FC<Props> = ({
 }) => {
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
-  // Store the async error in state so it can be re-thrown during render
-  // 📍 React error boundary cannot catch errors thrown inside useEffect
-  const [error, setError] = useState<Error | null>(null);
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   useEffect(() => {
     async function fetchData() {
       try {
         const finalReviewData = await getFinalReviewData(version_id);
-        setData(finalReviewData);
+        if (handleApiResponse(finalReviewData, setErrors)) {
+          setData(finalReviewData);
+        }
       } catch (error) {
-        console.error("FinalReviewForm.fetchData() failed", error);
-        setError(error instanceof Error ? error : new Error(String(error)));
+        handleApiResponse({ error }, setErrors);
       } finally {
         setLoading(false);
       }
     }
 
     fetchData();
-  }, [version_id]);
-
-  // Re-throw the async fetch error during render so it is handled by the React/Next.js error boundary
-  if (error) {
-    throw error;
-  }
+  }, [version_id, setErrors]);
 
   return (
     <div className="p-6">
@@ -67,6 +65,7 @@ export const FinalReviewForm: React.FC<Props> = ({
         </div>
 
         <div className="w-full">
+          {renderedErrors}
           {loading || !data ? (
             <Loading />
           ) : (

@@ -30,8 +30,8 @@ import {
   createGenericValidationError,
   ValidationItem,
 } from "@bciers/components/validationErrors";
-import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
 import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
 
 interface Props {
   formData: any;
@@ -121,9 +121,7 @@ export default function OperationReviewForm({
   const handleSync = async () => {
     const newData = await getUpdatedReportOperationDetails(version_id);
     if (newData.error) {
-      setErrors([
-        createGenericValidationError<ValidationMessageKey>(newData.error),
-      ]);
+      setErrors([createGenericValidationError(newData.error)]);
       return;
     }
     setPageSchema(

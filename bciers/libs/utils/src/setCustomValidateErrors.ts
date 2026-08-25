@@ -1,7 +1,7 @@
-import { validationErrors } from "@rjsf/utils";
+import { FormValidation } from "@rjsf/utils";
 
 const setNestedErrorForCustomValidate = (
-  errors: validationErrors,
+  errors: FormValidation,
   path: string,
   errorMessage: string,
 ) => {

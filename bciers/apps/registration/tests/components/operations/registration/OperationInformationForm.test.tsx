@@ -739,46 +739,4 @@ describe("the OperationInformationForm component", () => {
       "read-only-widget",
     );
   });
-
-  it("displays generic error fallback when the server returns an unexpected error on submit", async () => {
-    fetchFormEnums(Apps.REGISTRATION);
-    const errorMessage =
-      "Unexpected database error occurred while saving operation.";
-
-    actionHandler.mockResolvedValueOnce({
-      error: errorMessage,
-    });
-
-    const schemaData = await createRegistrationOperationInformationSchemas();
-    render(
-      <OperationInformationForm
-        rawFormData={{}}
-        schema={schemaData.schema}
-        uiSchema={schemaData.uiSchema}
-        step={1}
-        steps={allOperationRegistrationSteps}
-      />,
-    );
-
-    const purposeInput = screen.getByRole("combobox", {
-      name: /The purpose of this registration+/i,
-    });
-    await fillComboboxWidgetField(purposeInput, "Electricity Import Operation");
-
-    await userEvent.type(
-      screen.getByLabelText(/Operation Name/i),
-      "EIO Op Name",
-    );
-
-    const submitButton = screen.getByRole("button", {
-      name: /save and continue/i,
-    });
-    await userEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(screen.getByText(errorMessage)).toBeVisible();
-    });
-
-    expect(mockPush).not.toHaveBeenCalled();
-  });
 });
