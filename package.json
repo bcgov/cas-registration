@@ -28,5 +28,8 @@
       "before:git:beforeRelease": "./.bin/hook-format.sh CHANGELOG.md"
     }
   },
-  "packageManager": "yarn@4.18.0"
+  "packageManager": "yarn@4.18.0",
+  "resolutions": {
+    "undici@npm:7.28.0": "^7.29.0"
+  }
 }
