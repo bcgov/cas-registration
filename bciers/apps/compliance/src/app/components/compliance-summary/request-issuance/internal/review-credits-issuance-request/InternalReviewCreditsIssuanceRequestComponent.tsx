@@ -13,8 +13,12 @@ import { useRouter } from "next/navigation";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { AnalystSuggestion, FrontEndRoles } from "@bciers/utils/src/enums";
 import { actionHandler } from "@bciers/actions";
-import FormAlerts from "@bciers/components/form/FormAlerts";
 import SubmitButton from "@bciers/components/button/SubmitButton";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
+
 interface Props {
   initialFormData: RequestIssuanceComplianceSummaryData;
   complianceReportVersionId: number;
@@ -30,7 +34,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
   const continueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-by-director`;
 
   const isCasAnalyst = userRole === FrontEndRoles.CAS_ANALYST;
-  const [errors, setErrors] = useState<string[] | undefined>();
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [formData, setFormState] = useState<
     RequestIssuanceComplianceSummaryData | undefined
   >(initialFormData);
@@ -62,6 +66,8 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
       return;
     }
     setIsSubmitting(true);
+    setErrors(undefined);
+
     // only send the data that is needed for the update by the analyst
     const payload = {
       analyst_suggestion: formData?.analyst_suggestion,
@@ -72,10 +78,11 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
     const response = await actionHandler(endpoint, "PUT", pathToRevalidate, {
       body: JSON.stringify(payload),
     });
-    if (response && !response.error) {
+
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (isSuccess) {
       router.push(continueUrl);
     } else {
-      setErrors([response.error || "Failed to submit request."]);
       setIsSubmitting(false);
     }
   };
@@ -94,7 +101,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
       onSubmit={handleSubmit}
       className="w-full min-h-[62vh] flex flex-col justify-between"
     >
-      <FormAlerts errors={errors} />
+      {renderedErrors}
       <ComplianceStepButtons
         backUrl={backUrl}
         submitButtonDisabled={isSubmitting}

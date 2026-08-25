@@ -50,9 +50,7 @@ export default function ContactForm({
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { setErrors, renderedErrors } = useValidationErrors({
-    config: {},
-  });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const hasPlacesAssigned = Boolean(
     formData.places_assigned && formData.places_assigned.length > 0,

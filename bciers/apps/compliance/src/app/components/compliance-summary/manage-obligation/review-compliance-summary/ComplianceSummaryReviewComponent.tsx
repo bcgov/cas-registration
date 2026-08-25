@@ -7,10 +7,13 @@ import {
   createComplianceSummaryReviewSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/complianceSummaryReviewSchema";
 import { FormBase } from "@bciers/components/form";
-import FormAlerts from "@bciers/components/form/FormAlerts";
 import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
 import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 import generateInvoice from "@/compliance/src/app/utils/generateInvoice";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   data: ComplianceSummaryReviewPageData;
@@ -21,7 +24,7 @@ export function ComplianceSummaryReviewComponent({
   data,
   complianceReportVersionId,
 }: Readonly<Props>) {
-  const [errors, setErrors] = useState<string[]>([]);
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
 
   const backUrl = "/compliance-administration/compliance-summaries";
@@ -36,20 +39,16 @@ export function ComplianceSummaryReviewComponent({
    *   creates an object URL, and opens it in a new tab.
    */
   const handleGenerateInvoice = async () => {
-    setErrors([]);
+    setErrors(undefined);
     setIsGeneratingInvoice(true);
 
-    try {
-      await generateInvoice(
-        complianceReportVersionId,
-        ComplianceInvoiceTypes.OBLIGATION,
-      );
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setErrors([msg]);
-    } finally {
-      setIsGeneratingInvoice(false);
-    }
+    const response = await generateInvoice(
+      complianceReportVersionId,
+      ComplianceInvoiceTypes.OBLIGATION,
+    );
+
+    handleApiResponse(response, setErrors);
+    setIsGeneratingInvoice(false);
   };
 
   return (
@@ -67,7 +66,7 @@ export function ComplianceSummaryReviewComponent({
         maxCreditUsagePercentage: data.max_credit_usage_percentage,
       }}
     >
-      <FormAlerts key="alerts" errors={errors} />
+      {renderedErrors}
       <ComplianceStepButtons
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}

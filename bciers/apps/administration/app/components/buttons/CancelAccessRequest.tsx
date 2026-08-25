@@ -21,9 +21,7 @@ export default function CancelAccessRequest({
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { setErrors, renderedErrors } = useValidationErrors({
-    config: {},
-  });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const handleCancelAccessRequest = async () => {
     setIsSubmitting(true);
