@@ -150,7 +150,7 @@ const NewOperationRepresentativeForm: FC<
 
     const isSuccess = handleApiResponse(response, setErrors);
     if (!isSuccess) {
-      return { error: response?.error };
+      return response;
     }
 
     handleAfterSubmit(response);

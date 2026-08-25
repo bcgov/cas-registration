@@ -20,6 +20,7 @@ export type ValidationTextArgs = {
   error: ValidationItemError;
 };
 
+// A collection of validation items
 export type ValidationErrors<TKey extends string = string> =
   ValidationItem<TKey>[];
 
