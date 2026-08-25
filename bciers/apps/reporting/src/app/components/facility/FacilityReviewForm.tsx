@@ -15,8 +15,6 @@ import {
   handleApiResponse,
   createGenericValidationError,
 } from "@bciers/components/validationErrors";
-import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface Props {
   version_id: number;
@@ -52,10 +50,7 @@ export const FacilityReview: React.FC<Props> = ({
   isSyncAllowed = true,
 }) => {
   const [formData, setFormData] = useState<FacilityReviewFormData>(formsData);
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-    });
+  const { setErrors, renderedErrors } = useValidationErrors();
   const uiSchema = buildFacilityReviewUiSchema(operationId, facility_id);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const handleSubmit = async () => {
