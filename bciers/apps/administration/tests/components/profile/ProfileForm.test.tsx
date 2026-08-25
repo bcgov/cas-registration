@@ -153,4 +153,29 @@ describe("ProfileForm", () => {
       await screen.findByRole("button", { name: "✅ Success" }),
     ).toBeInTheDocument();
   });
+
+  it("displays an error alert and prevents success when submission fails", async () => {
+    vi.mocked(getSession).mockResolvedValueOnce({
+      identity_provider: "bceidbusiness",
+      user: {},
+    });
+    vi.mocked(actionHandler).mockResolvedValueOnce({
+      error: "Failed to update profile.",
+    });
+
+    render(<ProfileForm isCreate={false} idp={"bceidbusiness"} />);
+
+    fillRequiredFields();
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toBeVisible();
+      expect(screen.getByText(/failed to update profile\./i)).toBeVisible();
+    });
+
+    expect(
+      screen.queryByRole("button", { name: "✅ Success" }),
+    ).not.toBeInTheDocument();
+  });
 });

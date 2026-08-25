@@ -9,6 +9,10 @@ import Modal from "@bciers/components/modal/Modal";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { Role, Status } from "@bciers/utils/src/enums";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   confirmApproveMessage: string;
@@ -36,9 +40,7 @@ const CloseButton = ({ onClose }: CloseProps) => {
       aria-label="close"
       color="inherit"
       size="small"
-      onClick={() => {
-        onClose();
-      }}
+      onClick={onClose}
     >
       <CloseIcon fontSize="inherit" />
     </IconButton>
@@ -56,10 +58,13 @@ const Review = ({
   onApprove,
   onReject,
 }: Readonly<Props>) => {
-  const [errorList, setErrorList] = useState([] as any[]);
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
   const [modalState, setModalState] = useState("" as string);
   const [dismissAlert, setDismissAlert] = useState(false);
+
+  const { setErrors, renderedErrors } = useValidationErrors({
+    config: {},
+  });
 
   const handleApprove = () => {
     setModalState("approve");
@@ -74,25 +79,29 @@ const Review = ({
   };
 
   const handleConfirmApprove = async () => {
+    setErrors(undefined);
+    setModalState("");
     const response = await onApprove();
-    if (response.error) {
-      setModalState("");
-      return setErrorList([{ message: response.error }]);
+    const isSuccess = handleApiResponse(response, setErrors);
+
+    if (!isSuccess) {
+      return;
     }
 
-    setModalState("");
-    return setSuccessMessageList([{ message: approvedMessage }]);
+    setSuccessMessageList([{ message: approvedMessage }]);
   };
 
   const handleConfirmReject = async () => {
+    setErrors(undefined);
+    setModalState("");
     const response = await onReject();
-    if (response.error) {
-      setModalState("");
-      return setErrorList([{ message: response.error }]);
+    const isSuccess = handleApiResponse(response, setErrors);
+
+    if (!isSuccess) {
+      return;
     }
 
-    setModalState("");
-    return setSuccessMessageList([{ message: declinedMessage }]);
+    setSuccessMessageList([{ message: declinedMessage }]);
   };
 
   const handleCloseAlert = () => {
@@ -102,7 +111,7 @@ const Review = ({
   const isReviewButtons =
     status !== Status.DECLINED &&
     role !== Role.ADMIN &&
-    errorList.length === 0 &&
+    !renderedErrors &&
     successMessageList.length === 0;
 
   const isApprove = modalState === "approve";
@@ -113,7 +122,6 @@ const Review = ({
   return (
     <Box
       sx={{
-        // 🛠️ to prevent leaving extra space when there is no content
         minHeight: "auto",
         width: "100%",
         marginBottom: isReviewButtons ? "16px" : "0",
@@ -191,56 +199,45 @@ const Review = ({
               <Note message={note} />
             </span>
           )}
-          {
-            <Box
+          <Box
+            sx={{
+              width: "fit-content",
+              minWidth: "fit-content",
+              height: "fit-content",
+            }}
+          >
+            <Button
+              onClick={handleApprove}
+              className="mr-2"
+              color="success"
+              variant="outlined"
+              aria-label="Approve application"
               sx={{
-                width: "fit-content",
-                minWidth: "fit-content",
-                height: "fit-content",
+                marginRight: "12px",
+                border: "1px solid",
+                fontWeight: "bold",
               }}
             >
-              <Button
-                onClick={handleApprove}
-                className="mr-2"
-                color="success"
-                variant="outlined"
-                aria-label="Approve application"
-                sx={{
-                  marginRight: "12px",
-                  border: "1px solid",
-                  fontWeight: "bold",
-                }}
-              >
-                Approve as Administrator <RecommendIcon />
-              </Button>
-              <Button
-                onClick={handleReject}
-                color="error"
-                variant="outlined"
-                aria-label="Reject application"
-                sx={{
-                  border: "1px solid",
-                  fontWeight: "bold",
-                }}
-              >
-                Decline Access <DoNotDisturbIcon />
-              </Button>
-            </Box>
-          }
+              Approve as Administrator <RecommendIcon />
+            </Button>
+            <Button
+              onClick={handleReject}
+              color="error"
+              variant="outlined"
+              aria-label="Reject application"
+              sx={{
+                border: "1px solid",
+                fontWeight: "bold",
+              }}
+            >
+              Decline Access <DoNotDisturbIcon />
+            </Button>
+          </Box>
         </Box>
       )}
-      {errorList.length > 0 &&
-        !dismissAlert &&
-        errorList.map((e: any) => (
-          <Alert
-            key={e.message}
-            action={<CloseButton onClose={handleCloseAlert} />}
-            severity="error"
-            className="mb-4"
-          >
-            {e?.stack ?? e.message}
-          </Alert>
-        ))}
+
+      {renderedErrors && <div className="mb-4">{renderedErrors}</div>}
+
       {successMessageList.length > 0 &&
         !dismissAlert &&
         successMessageList.map((e: any) => (
