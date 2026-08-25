@@ -10,7 +10,10 @@ import { AutomaticOverduePenalty } from "@/compliance/src/app/types";
 import { useState } from "react";
 import generateInvoice from "@/compliance/src/app/utils/generateInvoice";
 import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
-import FormAlerts from "@bciers/components/form/FormAlerts";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   data: AutomaticOverduePenalty;
@@ -35,7 +38,7 @@ const PenaltySummaryReviewComponent = ({
   }`;
   const saveAndContinueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`;
 
-  const [errors, setErrors] = useState<string[]>([]);
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [isGeneratingPenaltyInvoice, setIsGeneratingPenaltyInvoice] =
     useState(false);
 
@@ -45,20 +48,16 @@ const PenaltySummaryReviewComponent = ({
   const formData = { ...data, penalty_status: displayPenaltyStatus };
 
   const handleGeneratePenaltyInvoice = async () => {
-    setErrors([]);
+    setErrors(undefined);
     setIsGeneratingPenaltyInvoice(true);
 
-    try {
-      await generateInvoice(
-        complianceReportVersionId,
-        ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
-      );
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setErrors([msg]);
-    } finally {
-      setIsGeneratingPenaltyInvoice(false);
-    }
+    const response = await generateInvoice(
+      complianceReportVersionId,
+      ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
+    );
+
+    handleApiResponse(response, setErrors);
+    setIsGeneratingPenaltyInvoice(false);
   };
 
   return (
@@ -69,7 +68,7 @@ const PenaltySummaryReviewComponent = ({
         formData={formData}
         className="w-full"
       >
-        <FormAlerts key="alerts" errors={errors} />
+        {renderedErrors}
         <ComplianceStepButtons
           backUrl={backUrl}
           continueUrl={saveAndContinueUrl}
