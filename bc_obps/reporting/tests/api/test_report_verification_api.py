@@ -18,14 +18,6 @@ class TestReportVerificationApi(CommonTestSetup):
             report_version=self.report_version,
         )
 
-        # Create and attach related ReportVerificationVisit instances
-        report_verification_visits = baker.make_recipe(
-            "reporting.tests.utils.report_verification_visit",
-            report_verification=self.report_verification,
-            _quantity=2,
-        )
-        self.report_verification.report_verification_visits.set(report_verification_visits)
-
         # Call parent setup and authorize user
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
@@ -39,7 +31,7 @@ class TestReportVerificationApi(CommonTestSetup):
         self,
         mock_get_report_verification: MagicMock,
     ):
-        # Arrange: Mock report verification data with associated visits
+        # Arrange: Mock report verification data
         mock_get_report_verification.return_value = self.report_verification
 
         # Act: Authorize user and perform GET request
@@ -66,13 +58,6 @@ class TestReportVerificationApi(CommonTestSetup):
         assert response_json["threats_to_independence"] == self.report_verification.threats_to_independence
         assert response_json["verification_conclusion"] == self.report_verification.verification_conclusion
 
-        # Validate associated visits
-        assert len(response_json["report_verification_visits"]) == 2
-        for visit_data in response_json["report_verification_visits"]:
-            assert "visit_name" in visit_data
-            assert "visit_type" in visit_data
-            assert "visit_coordinates" in visit_data
-
     """Tests for the save_report_verification endpoint."""
 
     @patch("reporting.service.report_verification_service.ReportVerificationService.save_report_verification")
@@ -87,15 +72,6 @@ class TestReportVerificationApi(CommonTestSetup):
             scope_of_verification="B.C. OBPS Annual Report",
             threats_to_independence=False,
             verification_conclusion="Positive",
-            report_verification_visits=[
-                {
-                    "visit_name": visit.visit_name,
-                    "visit_type": visit.visit_type,
-                    "visit_coordinates": visit.visit_coordinates,
-                    "is_other_visit": visit.is_other_visit,
-                }
-                for visit in self.report_verification.report_verification_visits.all()
-            ],
         )
 
         report_version = baker.make_recipe("reporting.tests.utils.report_version")
@@ -110,7 +86,6 @@ class TestReportVerificationApi(CommonTestSetup):
             verification_conclusion=payload.verification_conclusion,
         )
         mock_response.save()
-        mock_response.report_verification_visits.set(self.report_verification.report_verification_visits.all())
 
         # Set the mock return value for the service
         mock_save_report_verification.return_value = mock_response
@@ -140,16 +115,6 @@ class TestReportVerificationApi(CommonTestSetup):
         assert response_json["scope_of_verification"] == payload.scope_of_verification
         assert response_json["threats_to_independence"] == payload.threats_to_independence
         assert response_json["verification_conclusion"] == payload.verification_conclusion
-
-        # Validate the saved visits in the response
-        assert len(response_json["report_verification_visits"]) == len(payload.report_verification_visits)
-        for i, visit_data in enumerate(response_json["report_verification_visits"]):
-            expected_visit = payload.report_verification_visits[i]
-
-            assert visit_data["visit_name"] == expected_visit.visit_name
-            assert visit_data["visit_type"] == expected_visit.visit_type
-            assert visit_data["visit_coordinates"] == expected_visit.visit_coordinates
-            assert visit_data["is_other_visit"] == expected_visit.is_other_visit
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_report_verification_by_version_id")

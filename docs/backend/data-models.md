@@ -69,21 +69,21 @@ A key convention in the Reporting app is that **any model storing data related t
 
 #### Example
 
-See: `ReportVerificationVisit`. Conceptually, a verification visit belongs to a `ReportVerification`. However, the model includes both:
+See: `ReportNewEntrantEmission`. Conceptually, a new entrant emission belongs to a `ReportNewEntrant`. However, the model includes both:
 
 ```python
 report_version = models.ForeignKey(
     "reporting.ReportVersion",
     on_delete=models.CASCADE,
-    related_name="report_verification_visits",
-    db_comment="The report version this verification visit belongs to",
+    related_name="report_new_entrant_emissions",
+    db_comment="The report version this new entrant emission record belongs to. Foreign key to the erc.report_version table",
 )
 
-report_verification = models.ForeignKey(
-    ReportVerification,
+report_new_entrant = models.ForeignKey(
+    ReportNewEntrant,
     on_delete=models.CASCADE,
-    related_name="report_verification_visits",
-    db_comment="The report verification associated with this visit",
+    related_name="report_new_entrant_emission",
+    db_comment="The new entrant report to which this production record belongs to. Foreign key to the erc.report_new_entrant table",
 )
 ```
 

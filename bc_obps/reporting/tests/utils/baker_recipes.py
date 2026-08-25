@@ -44,7 +44,6 @@ from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_verification import ReportVerification
-from reporting.models.report_verification_visit import ReportVerificationVisit
 
 
 from registration.tests.utils.baker_recipes import (
@@ -211,15 +210,6 @@ report_verification = Recipe(
     scope_of_verification=ReportVerification.ScopeOfVerification.BC_OBPS,
     threats_to_independence=False,
     verification_conclusion=ReportVerification.VerificationConclusion.POSITIVE,
-)
-
-report_verification_visit = Recipe(
-    ReportVerificationVisit,
-    report_verification=foreign_key(report_verification),
-    visit_name="Default Visit Name",
-    visit_type=ReportVerificationVisit.VisitType.IN_PERSON,
-    visit_coordinates="",
-    is_other_visit=False,
 )
 
 report_additional_data = Recipe(

@@ -41,7 +41,6 @@ class ReportingTableNames(Enum):
     REPORT_SIGN_OFF = 'report_sign_off'
     REPORT_SOURCE_TYPE = 'report_source_type'
     REPORT_UNIT = 'report_unit'
-    REPORT_VERIFICATION_VISIT = 'report_verification_visit'
     REPORT_VERIFICATION = 'report_verification'
     REPORT_VERSION = 'report_version'
     REPORT = 'report'

@@ -243,14 +243,6 @@ const createReportVerification = (reportVersionId) => {
     scope_of_verification: "B.C. OBPS Annual Report",
     threats_to_independence: false,
     verification_conclusion: "Positive",
-    report_verification_visits: [
-      {
-        visit_name: "None",
-        is_other_visit: false,
-        visit_coordinates: "",
-        visit_type: "",
-      },
-    ],
   });
   return makeRequest(
     "POST",

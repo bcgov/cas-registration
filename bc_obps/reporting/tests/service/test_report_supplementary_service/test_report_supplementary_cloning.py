@@ -32,7 +32,6 @@ from reporting.models import (
     ReportOperationRepresentative,
     ReportPersonResponsible,
     ReportVerification,
-    ReportVerificationVisit,
     ReportVersion,
 )
 import common.lib.pgtrigger as pgtrigger
@@ -362,10 +361,10 @@ class ReportSupplementaryCloningTests(TestCase):
 
     def test_clone_report_version_verification(self):
         """
-        Test that clone_report_version_verification clones a ReportVerification (and its visits)
+        Test that clone_report_version_verification clones a ReportVerification
         from the old report version to the new report version.
         """
-        # PRE-ACT: Create a ReportVerification and an associated Visit for the old report version.
+        # PRE-ACT: Create a ReportVerification for the old report version.
         with pgtrigger.ignore('reporting.ReportVerification:immutable_report_version'):
             verification = make_recipe(
                 'reporting.tests.utils.report_verification',
@@ -375,15 +374,6 @@ class ReportSupplementaryCloningTests(TestCase):
                 scope_of_verification=ReportVerification.ScopeOfVerification.BC_OBPS,
                 threats_to_independence=True,
                 verification_conclusion=ReportVerification.VerificationConclusion.POSITIVE,
-            )
-        with pgtrigger.ignore('reporting.ReportVerificationVisit:immutable_report_version'):
-            make_recipe(
-                'reporting.tests.utils.report_verification_visit',
-                report_verification=verification,
-                visit_name="Test Visit",
-                visit_type=ReportVerificationVisit.VisitType.IN_PERSON,
-                visit_coordinates="(10.0, 20.0)",
-                is_other_visit=False,
             )
 
         # ACT: Clone the ReportVerification from old to new report version.
@@ -397,16 +387,6 @@ class ReportSupplementaryCloningTests(TestCase):
         self.assertEqual(new_verification.scope_of_verification, verification.scope_of_verification)
         self.assertEqual(new_verification.threats_to_independence, verification.threats_to_independence)
         self.assertEqual(new_verification.verification_conclusion, verification.verification_conclusion)
-
-        # ASSERT: Verify that the associated ReportVerificationVisits were cloned.
-        old_visits = list(verification.report_verification_visits.all())
-        new_visits = list(new_verification.report_verification_visits.all())
-        self.assertEqual(len(new_visits), len(old_visits))
-        for old_visit, new_visit in zip(old_visits, new_visits):
-            self.assertEqual(new_visit.visit_name, old_visit.visit_name)
-            self.assertEqual(new_visit.visit_type, old_visit.visit_type)
-            self.assertEqual(new_visit.visit_coordinates, old_visit.visit_coordinates)
-            self.assertEqual(new_visit.is_other_visit, old_visit.is_other_visit)
 
     def test_clone_report_version_verification_no_existing(self):
         """

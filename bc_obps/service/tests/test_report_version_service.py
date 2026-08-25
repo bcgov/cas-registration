@@ -85,7 +85,6 @@ class TestReportVersionService(TestCase):
             "ReportOperationRepresentative",
             "ReportAdditionalData",
             "ReportVerification",
-            "ReportVerificationVisit",
             "ReportEmissionAllocation",
             "ReportProductEmissionAllocation",
             "ReportElectricityImportData",
