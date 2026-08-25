@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { Alert } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import FormBase from "@bciers/components/form/FormBase";
 import { Button } from "@mui/material";
@@ -13,6 +12,11 @@ import {
   UserProfilePartialFormData,
 } from "@bciers/types/form/formData";
 import { IDP } from "@bciers/utils/src/enums";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  createGenericValidationError,
+} from "@bciers/components/validationErrors";
 
 export const userSchema: RJSFSchema = {
   type: "object",
@@ -50,7 +54,9 @@ export default function ProfileForm({
   contactId,
 }: Props) {
   // 🐜 To display errors
-  const [errorList, setErrorList] = useState([] as any[]);
+  const { setErrors, renderedErrors } = useValidationErrors({
+    config: {},
+  });
 
   // 🌀 Loading state for the Submit button
   const [isLoading, setIsLoading] = useState(false);
@@ -120,8 +126,7 @@ export default function ProfileForm({
 
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (data: { formData?: UserProfileFormData }) => {
-    //Set states
-    setErrorList([]);
+    setErrors(undefined);
     setIsLoading(true);
     setIsSuccess(false);
 
@@ -142,11 +147,10 @@ export default function ProfileForm({
       },
     );
 
-    // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
 
-    if (response.error) {
-      setErrorList([{ message: response.error }]);
+    const isSuccessResponse = handleApiResponse(response, setErrors);
+    if (!isSuccessResponse) {
       return;
     }
 
@@ -162,12 +166,7 @@ export default function ProfileForm({
       uiSchema={userUiSchema}
       onSubmit={submitHandler}
     >
-      {errorList.length > 0 &&
-        errorList.map((e: any) => (
-          <Alert key={e.message} severity="error">
-            {e?.stack ?? e.message}
-          </Alert>
-        ))}
+      {renderedErrors}
       <div className="flex justify-end gap-3">
         {/* Disable the button when loading or when success state is true */}
         <Button
