@@ -74,12 +74,21 @@ const activities = [
 ];
 
 const regulatedProducts = [
-  { id: 1, name: "Product 1", unit: "BCRCT", is_regulated: true },
+  {
+    id: 1,
+    name: "Product 1",
+    unit: "BCRCT",
+    is_regulated: true,
+    valid_from: "2023-01-01",
+    valid_to: "2099-01-01",
+  },
   {
     id: 2,
     name: "Product 2",
     unit: "Tonne cement equivalent",
     is_regulated: true,
+    valid_from: "2023-01-01",
+    valid_to: "2099-01-01",
   },
 ];
 

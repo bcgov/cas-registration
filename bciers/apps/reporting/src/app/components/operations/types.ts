@@ -92,6 +92,8 @@ export interface RegulatedProduct {
   name: string;
   is_regulated: boolean;
   unit: string;
+  valid_from: string;
+  valid_to: string;
 }
 
 export interface OperationReviewPageData {
