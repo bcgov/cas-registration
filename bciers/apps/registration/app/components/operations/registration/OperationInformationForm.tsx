@@ -44,9 +44,7 @@ const OperationInformationForm = ({
     rawFormData?.operation,
   );
 
-  const { setErrors, renderedErrors } = useValidationErrors({
-    config: {},
-  });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const [schema, setSchema] = useState(initialSchema);
   const nestedFormData = rawFormData
