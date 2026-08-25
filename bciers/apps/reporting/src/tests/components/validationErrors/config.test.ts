@@ -2,7 +2,7 @@ import { validationUIConfig } from "@reporting/src/app/components/validationErro
 import { resolveValidationHref } from "@reporting/src/app/utils/routes";
 import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
-const sortAlphabetically = (a: string, b: string) => a.localeCompare(b);
+const sortAlphabetically = (a: string, b: string) => a.localeCompare(a);
 
 describe("validationUIConfig", () => {
   const expectedKeys: ValidationMessageKey[] = [

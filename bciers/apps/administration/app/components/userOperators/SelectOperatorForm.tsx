@@ -12,14 +12,11 @@ import {
 import { SelectOperatorFormData } from "../userOperators/types";
 import { selectOperatorUiSchema } from "../../data/jsonSchema/selectOperator";
 import { selectOperatorSchema } from "../../data/jsonSchema/selectOperator";
-import { validationUIConfig } from "@/administration/app/components/validationErrors/config";
 import type { ValidationKey } from "@/administration/app/components/validationErrors/types";
 
 export default function SelectOperatorForm() {
   const router = useRouter();
-  const { setErrors, renderedErrors } = useValidationErrors<ValidationKey>({
-    config: validationUIConfig,
-  });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const handleSubmit = async (data: { formData?: SelectOperatorFormData }) => {
     setErrors(undefined);

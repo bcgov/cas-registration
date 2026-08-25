@@ -85,7 +85,7 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
 
     const isSuccess = handleApiResponse(response, setErrors);
     if (!isSuccess) {
-      return { error: response?.error };
+      return response;
     }
 
     // 🔔 Notify parent via callback

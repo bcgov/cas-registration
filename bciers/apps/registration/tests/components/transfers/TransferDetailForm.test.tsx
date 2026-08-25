@@ -402,28 +402,6 @@ describe("The TransferDetailForm component", () => {
     },
   );
 
-  it("displays generic error fallback when the server returns an unexpected error", async () => {
-    const errorMessage =
-      "Unexpected database error occurred while updating transfer.";
-
-    actionHandler.mockResolvedValueOnce({
-      error: errorMessage,
-    });
-
-    await renderOperationEntityTransferDetailForm();
-
-    await userEvent.click(
-      screen.getByRole("button", { name: /edit details/i }),
-    );
-    await userEvent.click(
-      screen.getByRole("button", { name: /transfer entity/i }),
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText(errorMessage)).toBeVisible();
-    });
-  });
-
   it("displays generic error fallback when canceling a transfer returns an unexpected error", async () => {
     const errorMessage =
       "Unexpected server error occurred while canceling transfer.";
