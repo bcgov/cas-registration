@@ -1,23 +1,5 @@
-import type {
-  ValidationErrors,
-  ValidationItem,
-  ValidationItemError,
-  ValidationUIConfig as GenericValidationUIConfig,
-  ValidationUIConfigInput as GenericValidationUIConfigInput,
-} from "@bciers/components/validationErrors";
-
-// Re-export base generic types for local use across reporting components
-export type {
-  ValidationSeverity,
-  ValidationRenderMode,
-  ValidationItemError,
-  ValidationItem,
-  ValidationErrors,
-  ValidationTextArgs,
-} from "@bciers/components/validationErrors";
-
 /**
- * All error keys that can be returned by the reporting backend.
+ * All error keys that can be returned by the reporting backend
  */
 export type ValidationMessageKey =
   | "error_required_fields"
@@ -37,12 +19,3 @@ export type ValidationMessageKey =
   | "og_np_nc_allocation_mismatch"
   | "missing_operation_representative"
   | "generic_error";
-
-// Specialized reporting types bound to ValidationMessageKey
-export type ValidationError = ValidationItemError;
-export type ValidationItemType = ValidationItem<ValidationMessageKey>;
-export type ReportValidationErrors = ValidationErrors<ValidationMessageKey>;
-export type ValidationUIConfig =
-  GenericValidationUIConfig<ValidationMessageKey>;
-export type ValidationUIConfigInput =
-  GenericValidationUIConfigInput<ValidationMessageKey>;

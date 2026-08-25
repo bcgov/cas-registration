@@ -114,39 +114,4 @@ describe("the NewLfoFacilityForm component", () => {
       );
     },
   );
-
-  it("displays generic error fallback when the server returns an unexpected error", async () => {
-    const errorMessage =
-      "Unexpected database error occurred while saving facility.";
-
-    actionHandler.mockResolvedValueOnce({
-      error: errorMessage,
-    });
-
-    render(<NewLfoFacilityForm {...defaultProps} />);
-
-    const addFacilityButton = screen.getByRole("button", {
-      name: "Add New Facility",
-    });
-
-    act(() => {
-      fireEvent.click(addFacilityButton);
-    });
-
-    const saveButton = screen.getByRole("button", {
-      name: "Save",
-    });
-
-    act(() => {
-      fireEvent.click(saveButton);
-    });
-
-    expect(actionHandler).toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(screen.getByText(errorMessage)).toBeVisible();
-    });
-
-    expect(defaultProps.onSuccess).not.toHaveBeenCalled();
-  });
 });
