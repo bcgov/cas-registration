@@ -38,9 +38,7 @@ export default function OperatorForm({
   const [isCreatingState, setIsCreatingState] = useState(Boolean(isCreating));
   const router = useRouter();
 
-  const { setErrors, renderedErrors } = useValidationErrors({
-    config: {},
-  });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const handleSubmit = async (data: { formData?: any }) => {
     setErrors(undefined);
