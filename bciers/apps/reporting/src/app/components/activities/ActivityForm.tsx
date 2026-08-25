@@ -28,8 +28,6 @@ import {
   useValidationErrors,
   createGenericValidationError,
 } from "@bciers/components/validationErrors";
-import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -71,10 +69,7 @@ export default function ActivityForm({
   reportingYear,
   activityIndex,
 }: Readonly<Props>) {
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-    });
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [formState, setFormState] = useState(activityFormData);
   const [key, resetKey] = useKey();
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
