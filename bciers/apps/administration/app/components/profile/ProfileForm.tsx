@@ -54,9 +54,7 @@ export default function ProfileForm({
   contactId,
 }: Props) {
   // 🐜 To display errors
-  const { setErrors, renderedErrors } = useValidationErrors({
-    config: {},
-  });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   // 🌀 Loading state for the Submit button
   const [isLoading, setIsLoading] = useState(false);

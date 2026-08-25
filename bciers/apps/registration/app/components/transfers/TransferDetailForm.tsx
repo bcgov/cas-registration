@@ -44,9 +44,7 @@ export default function TransferDetailForm({
   const [disabled, setDisabled] = useState(true);
   const [key, resetKey] = useKey();
 
-  const { setErrors, renderedErrors } = useValidationErrors({
-    config: {},
-  });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const handleCancelTransfer = async () => {
     const endpoint = `registration/transfer-events/${transferId}`;
