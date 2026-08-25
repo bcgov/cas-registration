@@ -152,6 +152,9 @@ download-dags:
 download-migration-test-dags:
   airflowEndpoint: https://cas-airflow-prod.apps.silver.devops.gov.bc.ca
 
+download-migration-test-cleanup-dags:
+  airflowEndpoint: https://cas-airflow-prod.apps.silver.devops.gov.bc.ca
+
 download-database-reset-dag:
   enabled: false
 

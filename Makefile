@@ -65,6 +65,7 @@ install: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESP
                                --set defaultImageTag=$(IMAGE_TAG) \
                                --set download-dags.dagConfiguration="$$dagConfig" \
                                --set download-migration-test-dags.dagConfiguration="$$migrationTestDagConfig" \
+							   --set download-migration-test-cleanup-dags.dagConfiguration="$$migrationTestCleanupDagConfig" \
                                --set download-database-reset-dag.dagConfiguration="$$resetDataDagConfig" \
                                --values $(CHART_DIR)/values-$(ENVIRONMENT).yaml \
                                --set airflowNamespace="$(AIRFLOW_NAMESPACE_PREFIX)-$(ENVIRONMENT)" \
@@ -74,6 +75,7 @@ install:
 	@set -euo pipefail; \
 	dagConfig=$$(echo '{"org": "bcgov", "repo": "cas-registration", "ref": "$(GIT_SHA1)", "path": "dags/cas_bciers_dags.py"}' | base64 -w0); \
 	migrationTestDagConfig=$$(echo '{"org": "bcgov", "repo": "cas-registration", "ref": "$(GIT_SHA1)", "path": "dags/bc_obps_test_migrations.py"}' | base64 -w0); \
+	migrationTestCleanupDagConfig=$$(echo '{"org": "bcgov", "repo": "cas-registration", "ref": "$(GIT_SHA1)", "path": "dags/bc_obps_test_migrations_cleanup.py"}' | base64 -w0); \
 	resetDataDagConfig=$$(echo '{"org": "bcgov", "repo": "cas-registration", "ref": "$(GIT_SHA1)", "path": "dags/bc_obps_reset_data.py"}' | base64 -w0); \
 	helm dep up $(CHART_DIR); \
 	if ! helm status --namespace $(NAMESPACE) cas-obps-postgres; then \

@@ -17,7 +17,7 @@ When you're ready to make a release to test and/or prod, apply the following ste
 1. post in the Teams developers channel that you're doing a release and there's a merge halt on
 1. go into the github settings and turn off merging to develop so no one can merge by accident if they miss the merge halt post. (Optional, but this ensures no other changes are made to the `develop` branch while the release is in progress. Release PRs can't be rebased (see note below), so if someone does merge something in, you have to restart the release.)
 1. on `develop`, check migrations against prod data. Ideally, do this using the dag:
-   1. Before running the airflow dag, ensure that the test namespace is clear of past migration test deployments. Because failed deployments _do not_ clean up their resources (so that the logs can be checked), this causes subsequent deployments to fail. 
+   1. Before running the airflow dag, ensure that the test namespace is clear of past migration test deployments. Because failed deployments _do not_ clean up their resources (so that the logs can be checked), this causes subsequent deployments to fail.
    1. To manually clean the namespace from past migration test deployments (after investigating a failure, or before starting a new test), just run the `cas_bciers_test_migrations_cleanup` DAG.
    1. Go to the cas-airflow-test frontend and trigger the `cas_bciers_test_migrations` dag. You will need the source (where the database backup originates from, likely `abc123-prod`) and target (where to deploy the tests, (`abc123-test`)) namespaces, as well as the git hash of the commit with a backend image built that you want to test (used by `BACKEND_IMAGE_TAG`).
       > [!NOTE]

@@ -242,6 +242,13 @@ download-migration-test-dags:
   helm:
     hook: "pre-install,pre-upgrade"
 
+download-migration-test-cleanup-dags:
+  enabled: true
+  airflowEndpoint: ~
+  dagId: fetch_and_save_dag_from_github
+  helm:
+    hook: "pre-install,pre-upgrade"
+
 download-database-reset-dag:
   enabled: false
   airflowEndpoint: ~
