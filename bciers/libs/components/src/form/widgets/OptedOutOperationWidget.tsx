@@ -4,9 +4,12 @@ import { WidgetProps } from "@rjsf/utils";
 import ComboBox from "./ComboBox";
 import { actionHandler } from "@bciers/actions";
 import { useState, useLayoutEffect } from "react";
-import { AlertIcon } from "@bciers/components/icons";
 import ToggleWidget from "./ToggleWidget";
-import { BC_GOV_COMPONENTS_GREY, BC_GOV_SEMANTICS_RED } from "@bciers/styles";
+import { BC_GOV_COMPONENTS_GREY } from "@bciers/styles";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 function saveOptedOutDetail(operationId: string, val: number | undefined) {
   const endpoint = `registration/operations/${operationId}/registration/opted-in-operation-detail/final-reporting-year`;
@@ -54,7 +57,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   const [pendingFinalReportingYear, setPendingFinalReportingYear] = useState<
     number | undefined
   >(finalReportingYear);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const { errors, setErrors, renderedErrors } = useValidationErrors();
 
   // Sync status when value changes from outside (e.g., initial load)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -78,6 +81,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   // ---------- Handlers ------------------
   const handleComboChange = async (val: number | undefined) => {
     if (isDisabled) return;
+    setErrors(undefined);
     setPendingFinalReportingYear(val);
 
     // for RJSF validation - pass the number directly (simplified format)
@@ -86,15 +90,14 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
     // persist the change to the database
     const response = await saveOptedOutDetail(formContext?.operationId, val);
 
-    if (response?.error) {
-      setError(response?.error);
+    if (!handleApiResponse(response, setErrors)) {
       return;
     }
-    setError(undefined);
   };
 
   const handleToggle = async (checked: boolean) => {
     if (!isCasDirector) return;
+    setErrors(undefined);
 
     if (checked) {
       // User is toggling to opted-in (opting back in)
@@ -106,14 +109,11 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
       // clear the opted-out status by setting final_reporting_year to null
       const response = await clearOptedOutDetail(formContext?.operationId);
 
-      if (response?.error) {
-        setError(response.error);
+      if (!handleApiResponse(response, setErrors)) {
         // Revert UI state on error
         setStatus("Opted-out");
         return;
       }
-
-      setError(undefined);
     } else {
       // User is toggling to opted-out
       setStatus("Opted-out");
@@ -172,7 +172,9 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
                 disabled={isDisabled}
                 readonly={isDisabled}
                 uiSchema={uiSchema?.final_reporting_year}
-                rawErrors={error ? [error] : undefined}
+                rawErrors={
+                  errors?.length ? [errors[0]?.error?.message || ""] : undefined
+                }
                 name={`${id}-final-reporting-year`}
                 options={{}}
                 onBlur={() => {}}
@@ -181,18 +183,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
                 formContext={formContext}
               />
             </div>
-            {error && (
-              <div
-                className="flex items-center text-sm"
-                role="alert"
-                style={{ color: BC_GOV_SEMANTICS_RED }}
-              >
-                <div className="hidden md:block mr-2">
-                  <AlertIcon />
-                </div>
-                <span>{error}</span>
-              </div>
-            )}
+            {renderedErrors}
             {pendingFinalReportingYear !== undefined && (
               <div
                 className="text-sm leading-relaxed"

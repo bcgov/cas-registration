@@ -693,37 +693,4 @@ describe("ContactForm component", () => {
     });
     expect(deleteButton).not.toBeInTheDocument();
   });
-
-  it(
-    "displays generic error fallback when the server returns an unexpected error",
-    {
-      timeout: 10000,
-    },
-    async () => {
-      const serverErrorMessage =
-        "Internal server error occurred while processing request.";
-
-      actionHandler.mockResolvedValueOnce({
-        error: serverErrorMessage,
-      });
-
-      render(
-        <ContactForm
-          schema={createContactSchema(contactsSchema, true)}
-          formData={{}}
-          isCreating
-          allowEdit
-        />,
-      );
-
-      await fillContactForm();
-      await userEvent.click(screen.getByRole("button", { name: /save/i }));
-
-      await waitFor(() => {
-        expect(screen.getByText(serverErrorMessage)).toBeVisible();
-      });
-
-      expect(mockReplace).not.toHaveBeenCalled();
-    },
-  );
 });

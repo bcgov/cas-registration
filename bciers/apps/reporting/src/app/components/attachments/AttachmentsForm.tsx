@@ -18,8 +18,6 @@ import {
   useValidationErrors,
   handleApiResponse,
 } from "@bciers/components/validationErrors";
-import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface Props extends HasReportVersion {
   initialUploadedAttachments: {
@@ -73,10 +71,7 @@ const AttachmentsForm: React.FC<Props> = ({
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-    });
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [hasValidationError, setHasValidationError] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{
     [fileType: string]: string;
