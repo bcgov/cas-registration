@@ -137,9 +137,7 @@ import {
   createGenericValidationError,
 } from "@bciers/components/validationErrors";
 
-const { setErrors, renderedErrors } = useValidationErrors({
-  config: {},
-});
+const { setErrors, renderedErrors } = useValidationErrors();
 
 const handleAction = async () => {
   setErrors(undefined);

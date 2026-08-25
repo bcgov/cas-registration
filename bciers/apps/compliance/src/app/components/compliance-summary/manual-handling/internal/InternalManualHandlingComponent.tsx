@@ -12,8 +12,11 @@ import { IChangeEvent } from "@rjsf/core";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { FrontEndRoles, ManualHandlingDecison } from "@bciers/utils/src/enums";
 import { actionHandler } from "@bciers/actions";
-import FormAlerts from "@bciers/components/form/FormAlerts";
 import SubmitButton from "@bciers/components/button/SubmitButton";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   initialFormData: ManualHandlingData;
@@ -35,7 +38,7 @@ const InternalManualHandlingComponent = ({
   const isCasDirector = userRole === FrontEndRoles.CAS_DIRECTOR;
   const isRoleAllowedToSubmit = isCasAnalyst || isCasDirector;
 
-  const [errors, setErrors] = useState<string[] | undefined>();
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [formData, setFormData] = useState<ManualHandlingDataWithInitial>({
     ...initialFormData,
     _initial_director_decision: initialFormData.director_decision,
@@ -59,6 +62,7 @@ const InternalManualHandlingComponent = ({
     const submittedData = e.formData!;
     if (isSubmitting) return;
     setIsSubmitting(true);
+    setErrors(undefined);
 
     const payload = {
       analyst_comment: submittedData.analyst_comment,
@@ -72,11 +76,9 @@ const InternalManualHandlingComponent = ({
       body: JSON.stringify(payload),
     });
 
-    if (response?.error) {
-      setErrors([response.error || "Failed to submit request."]);
-    } else {
-      setErrors(undefined);
+    const isApiSuccess = handleApiResponse(response, setErrors);
 
+    if (isApiSuccess) {
       // Update form data
       setFormData((prev) => ({
         ...prev,
@@ -114,7 +116,7 @@ const InternalManualHandlingComponent = ({
       onSubmit={handleSubmit}
       className="w-full min-h-[62vh] flex flex-col justify-between"
     >
-      <FormAlerts errors={errors} />
+      {renderedErrors}
       <ComplianceStepButtons
         backUrl={backUrl}
         submitButtonDisabled={isSubmitting}

@@ -10,7 +10,10 @@ import {
 import { LateSubmissionPenalty } from "@/compliance/src/app/types";
 import generateInvoice from "@/compliance/src/app/utils/generateInvoice";
 import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
-import FormAlerts from "@bciers/components/form/FormAlerts";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   data: LateSubmissionPenalty;
@@ -24,7 +27,7 @@ const InterestSummaryReviewComponent = ({
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
   const continueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/download-interest-payment-instructions`;
 
-  const [errors, setErrors] = useState<string[]>([]);
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [isGeneratingInterestInvoice, setIsGeneratingInterestInvoice] =
     useState(false);
 
@@ -34,20 +37,16 @@ const InterestSummaryReviewComponent = ({
   const formData = { ...data, penalty_status: displayPenaltyStatus };
 
   const handleGenerateInterestInvoice = async () => {
-    setErrors([]);
+    setErrors(undefined);
     setIsGeneratingInterestInvoice(true);
 
-    try {
-      await generateInvoice(
-        complianceReportVersionId,
-        ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY,
-      );
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setErrors([msg]);
-    } finally {
-      setIsGeneratingInterestInvoice(false);
-    }
+    const response = await generateInvoice(
+      complianceReportVersionId,
+      ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY,
+    );
+
+    handleApiResponse(response, setErrors);
+    setIsGeneratingInterestInvoice(false);
   };
 
   return (
@@ -57,7 +56,7 @@ const InterestSummaryReviewComponent = ({
       formData={formData}
       className="w-full"
     >
-      <FormAlerts key="alerts" errors={errors} />
+      {renderedErrors}
       <ComplianceStepButtons
         backUrl={backUrl}
         continueUrl={continueUrl}

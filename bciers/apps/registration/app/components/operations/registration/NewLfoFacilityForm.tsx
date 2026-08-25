@@ -44,9 +44,7 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
-  const { setErrors, renderedErrors } = useValidationErrors({
-    config: {},
-  });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   // Get the list of sections in the LFO schema - used to unnest the formData
   const formSectionListLfo = Object.keys(
