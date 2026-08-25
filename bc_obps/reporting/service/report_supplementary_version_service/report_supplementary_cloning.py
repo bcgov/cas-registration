@@ -163,19 +163,10 @@ def clone_report_version_verification(old_report_version: ReportVersion, new_rep
     if not verification_to_clone:
         return
 
-    # Store the associated ReportVerificationVisit instances
-    old_visits = list(verification_to_clone.report_verification_visits.all())
-
     # Clone the ReportVerification instance by resetting the primary key and updating the report version
     verification_to_clone.pk = None
     verification_to_clone.report_version = new_report_version
     verification_to_clone.save()
-
-    # Clone each associated ReportVerificationVisit for the new verification
-    for visit in old_visits:
-        visit.pk = None
-        visit.report_verification = verification_to_clone
-        visit.save()
 
 
 def clone_report_version_attachments(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
