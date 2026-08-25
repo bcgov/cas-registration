@@ -57,7 +57,7 @@ The following parameters are available:
 def test_migrations(
     destination_namespace: str = BCIERS_NAMESPACE,
     source_namespace: str = BCIERS_NAMESPACE,
-    backend_chart_tag: str = "latest",
+    backend_image_tag: str = "latest",
     helm_options: str = "--atomic --wait-for-jobs --timeout 2400s",
 ):
     @task
@@ -80,13 +80,13 @@ def test_migrations(
             "helm install {{ params.helm_options }} "
             "--namespace {{ params.destination_namespace }} "
             "--set sourceNamespace={{ params.source_namespace }} "
-            "{{ params.postgres_chart_instance | default('postgres-migration-test') }} "
+            "postgres-migration-test "
             "cas-registration/cas-obps-postgres-migration-test"
         ],
         get_logs=True,
         is_delete_operator_pod=True,
         wait_until_job_complete=True,
-        backoff_limit=2,
+        backoff_limit=1,
     )
 
     time_delay_postgres = TimeDeltaSensor(
@@ -121,14 +121,14 @@ def test_migrations(
             "helm install {{ params.helm_options }} "
             "--namespace {{ params.destination_namespace }} "
             "--set sourceNamespace={{ params.source_namespace }} "
-            "{{ params.backend_chart_instance | default('backend-migration-test') }} "
+            "backend-migration-test "
             "cas-registration/cas-obps-backend-migration-test "
-            "--set defaultImageTag={{ params.backend_chart_tag }}"
+            "--set defaultImageTag={{ params.backend_image_tag }}"
         ],
         get_logs=True,
         is_delete_operator_pod=True,
         wait_until_job_complete=True,
-        backoff_limit=2,
+        backoff_limit=1,
     )
 
     time_delay_backend = TimeDeltaSensor(
@@ -152,6 +152,8 @@ def test_migrations(
             "destination_namespace": "{{ params.destination_namespace }}",
             "backend_chart_tag": "{{ params.backend_chart_tag }}",
         },
+        wait_for_completion=True,
+        fail_when_dag_is_paused=True,
     )
 
     (

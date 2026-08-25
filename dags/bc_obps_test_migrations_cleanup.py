@@ -34,7 +34,6 @@ after investigation of a failed `test_migrations` DAG run.
 )
 def test_migrations_cleanup(
     destination_namespace: str = BCIERS_NAMESPACE,
-    backend_chart_tag: str = "latest",
 ):
     uninstall_postgres_helm_charts = KubernetesJobOperator(
         task_id="uninstall-postgres-helm-charts",
@@ -44,13 +43,14 @@ def test_migrations_cleanup(
         image=K8S_IMAGE,
         cmds=["bash", "-c"],
         arguments=[
-            "helm uninstall {{ params.postgres_chart_instance | default('postgres-migration-test') }} ",
+            "helm uninstall postgres-migration-test ",
+            "--ignore-not-found ",
             "--namespace {{ params.destination_namespace }}",
         ],
         get_logs=True,
         is_delete_operator_pod=True,
         wait_until_job_complete=True,
-        backoff_limit=2,
+        backoff_limit=1,
     )
 
     uninstall_backend_helm_charts = KubernetesJobOperator(
@@ -61,13 +61,14 @@ def test_migrations_cleanup(
         image=K8S_IMAGE,
         cmds=["bash", "-c"],
         arguments=[
-            "helm uninstall {{ params.backend_chart_instance | default('backend-migration-test') }} ",
+            "helm uninstall backend-migration-test ",
+            "--ignore-not-found ",
             "--namespace {{ params.destination_namespace }}",
         ],
         get_logs=True,
         is_delete_operator_pod=True,
         wait_until_job_complete=True,
-        backoff_limit=2,
+        backoff_limit=1,
     )
 
     [uninstall_postgres_helm_charts, uninstall_backend_helm_charts]
