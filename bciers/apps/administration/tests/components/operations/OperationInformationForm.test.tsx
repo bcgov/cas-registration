@@ -1174,32 +1174,4 @@ describe("the OperationInformationForm component", () => {
       ).toBeVisible();
     });
   });
-
-  it("displays generic error fallback when the server returns an unexpected error", async () => {
-    const uiSchema = await createAdministrationOperationInformationUiSchema();
-    const serverErrorMessage =
-      "Unexpected database error occurred while saving operation.";
-
-    actionHandler.mockResolvedValueOnce({
-      error: serverErrorMessage,
-    });
-
-    render(
-      <OperationInformationForm
-        formData={formData}
-        schema={testSchema}
-        operationId={operationId}
-        eioSchema={testSchema}
-        generalSchema={testSchema}
-        uiSchema={uiSchema}
-      />,
-    );
-
-    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
-    await userEvent.click(screen.getByRole("button", { name: /save/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(serverErrorMessage)).toBeVisible();
-    });
-  });
 });

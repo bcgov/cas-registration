@@ -34,7 +34,7 @@ export default function FacilityForm({
 }: Readonly<Props>) {
   const role = useSessionRole();
   const [formState, setFormState] = useState(formData);
-  const [isCreatingState, setIsCreatingState] = useState(Boolean(isCreating));
+  const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -69,7 +69,7 @@ export default function FacilityForm({
 
     const isSuccess = handleApiResponse(response, setErrors);
     if (!isSuccess) {
-      return { error: response.error };
+      return response;
     }
 
     if (isCreatingState) {

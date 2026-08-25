@@ -12,8 +12,6 @@ import {
   useValidationErrors,
   handleApiResponse,
 } from "@bciers/components/validationErrors";
-import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 export interface GasType {
   id: number;
@@ -66,10 +64,7 @@ export default function NonAttributableEmissionsForm({
   emissionCategories,
   navigationInformation,
 }: NonAttributableEmissionsFormProps) {
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-    });
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [formData, setFormData] = useState<NonAttributableFormData>({
     emissions_exceeded: emissionFormData.emissions_exceeded,
     // Seed one empty row so the form renders a first entry when the user switches to "Yes",

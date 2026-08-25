@@ -4,16 +4,16 @@ import { NavigationInformation } from "@reporting/src/app/components/taskList/ty
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import { CheckCircleRounded } from "@mui/icons-material";
-import { ValidationErrorSummary } from "@bciers/components/validationErrors";
+import {
+  ValidationErrorSummary,
+  ValidationErrors,
+} from "@bciers/components/validationErrors";
 import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type {
-  ReportValidationErrors,
-  ValidationMessageKey,
-} from "@reporting/src/app/components/validationErrors/types";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface Props {
   navigationInformation: NavigationInformation;
-  validationErrors?: ReportValidationErrors;
+  validationErrors?: ValidationErrors<ValidationMessageKey>;
 }
 
 const ValidationForm: React.FC<Props> = ({

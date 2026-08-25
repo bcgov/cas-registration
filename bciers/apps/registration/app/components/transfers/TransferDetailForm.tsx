@@ -81,7 +81,7 @@ export default function TransferDetailForm({
     const isSuccess = handleApiResponse(response, setErrors);
     if (!isSuccess) {
       setDisabled(false);
-      return { error: response.error };
+      return response;
     }
 
     setDisabled(true);

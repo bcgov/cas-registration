@@ -4,10 +4,10 @@ import {
   reportRoutes,
   resolveValidationHref,
 } from "@reporting/src/app/utils/routes";
-import type { ReportValidationUIConfig, ValidationMessageKey } from "./types";
+import type { ValidationUIConfig, ValidationMessageKey } from "./types";
 
 export const validationUIConfig: Partial<
-  Record<ValidationMessageKey, ReportValidationUIConfig>
+  Record<ValidationMessageKey, ValidationUIConfig>
 > = {
   error_required_fields: createValidationUIConfig<ValidationMessageKey>({
     label: (error) => String(error.context?.section_title ?? "review section"),
@@ -77,7 +77,7 @@ export const validationUIConfig: Partial<
           : undefined,
       formatMessage: ({ label, error }) => {
         const ctx = error.context;
-        return `Unusual value detected for ${String(ctx?.facility_name ?? "facility")} ${label}.
+        return `Unusual value detected for ${String(ctx?.facility_name ?? "facility")} ${label ?? "activity data"}.
 Expected ${String(ctx?.fuel_type_name ?? "fuel")} ${String(ctx?.reporting_field ?? "field")} value to be between ${String(ctx?.expected_range ?? "the allowed range")} but input was ${String(ctx?.user_input ?? "the provided value")}.
 Please ensure you have selected the correct fuel name and the value is accurate.
 If the value is accurate, you may save & continue.`;
@@ -99,7 +99,7 @@ If the value is accurate, you may save & continue.`;
           : undefined,
       formatMessage: ({ label, error }) => {
         const ctx = error.context;
-        return `Unusual value detected for ${String(ctx?.facility_name ?? "facility")} ${label}.
+        return `Unusual value detected for ${String(ctx?.facility_name ?? "facility")} ${label ?? "activity"}.
 Expected ${String(ctx?.gas_type_name ?? "gas")} ${String(ctx?.reporting_field ?? "field")} value to be between ${String(ctx?.expected_range ?? "the allowed range")} but input was ${String(ctx?.user_input ?? "the provided value")}.
 Please ensure the value entered is accurate.
 If the value is accurate, you may save & continue.`;
@@ -107,7 +107,7 @@ If the value is accurate, you may save & continue.`;
     }),
 
   allocation_mismatch: createValidationUIConfig<ValidationMessageKey>({
-    label: () => "Allocation of Emissions page",
+    label: "Allocation of Emissions page",
     priority: 3,
     renderMode: "inline_link",
     getHref: (ctx) =>
@@ -200,14 +200,17 @@ If the value is accurate, you may save & continue.`;
 
   og_np_nc_allocation_mismatch: createValidationUIConfig<ValidationMessageKey>({
     label: "allocation of emissions",
+    priority: 3,
     renderMode: "inline_link",
     getHref: (ctx) =>
-      facilityRoutes.allocationOfEmissions(
-        Number(ctx?.report_version_id),
-        String(ctx?.facility_id),
-      ),
+      ctx?.report_version_id && ctx?.facility_id
+        ? facilityRoutes.allocationOfEmissions(
+            Number(ctx.report_version_id),
+            String(ctx.facility_id),
+          )
+        : undefined,
     formatMessage: ({ label, error: { context } }) =>
-      `Facility ${context?.facility_name}: Please review the ${label} and ensure that only excluded emissions are allocated to unregulated products. If they are allocated, you may save and continue.`,
+      `Facility ${String(context?.facility_name ?? "facility")}: Please review the ${label} and ensure that only excluded emissions are allocated to unregulated products. If they are allocated, you may save and continue.`,
   }),
 
   missing_operation_representative:
@@ -225,7 +228,6 @@ If the value is accurate, you may save & continue.`;
       getMessage: () =>
         "Before you can continue, you must add an operation representative for this operation then return to this report.",
     }),
-
   generic_error: createValidationUIConfig<ValidationMessageKey>({
     renderMode: "message_only",
     getMessage: (error) =>

@@ -1,9 +1,9 @@
-import { validationErrors } from "@rjsf/utils";
+import { FormValidation } from "@rjsf/utils";
 import { sumWithPrecision } from "@reporting/src/app/utils/numberUtils";
 
 export const validateBiogenicTotalAllocated = (
   formData: any,
-  errors: validationErrors,
+  errors: FormValidation,
 ): void => {
   const biogenic = formData?.biogenicIndustrialProcessEmissions;
   if (
@@ -29,7 +29,7 @@ export const validateBiogenicTotalAllocated = (
   }
 };
 
-const addBiogenicTotalAllocatedError = (errors: validationErrors): void => {
+const addBiogenicTotalAllocatedError = (errors: FormValidation): void => {
   const e = errors as any;
 
   e.biogenicIndustrialProcessEmissions ??= {};
@@ -43,7 +43,7 @@ const addBiogenicTotalAllocatedError = (errors: validationErrors): void => {
 };
 export const validateEmissionsMethodology = (
   sourceTypes: Record<string, any>,
-  errors: validationErrors,
+  errors: FormValidation,
 ): void => {
   const ensureErrorStructure = (errorPath: any): void => {
     if (!errorPath.methodology) {
@@ -129,7 +129,7 @@ export const validateEmissionsMethodology = (
 
 export const validateFuelName = (
   sourceTypes: Record<string, any>,
-  errors: validationErrors,
+  errors: FormValidation,
 ): void => {
   const addFuelNameError = (fuelErrorPath: any): void => {
     if (!fuelErrorPath) return;

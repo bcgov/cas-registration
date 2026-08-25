@@ -92,7 +92,7 @@ export default function ContactForm({
 
     const isSuccess = handleApiResponse(response, setErrors);
     if (!isSuccess) {
-      return { error: response.error };
+      return response;
     }
 
     const activeId = response.id ?? contactId;

@@ -62,6 +62,8 @@ Configuration can define:
 Provides the standard interface forms use to manage validation errors.
 
 ```ts
+const { setErrors, renderedErrors } = useValidationErrors();
+
 const { setErrors, renderedErrors } = useValidationErrors<ValidationMessageKey>(
   {
     config: validationUIConfig,

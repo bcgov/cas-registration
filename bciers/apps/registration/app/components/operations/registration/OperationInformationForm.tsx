@@ -172,7 +172,7 @@ const OperationInformationForm = ({
 
     const isSuccess = handleApiResponse(response, setErrors);
     if (!isSuccess) {
-      return { error: response?.error };
+      return response;
     }
 
     if (response?.id) {

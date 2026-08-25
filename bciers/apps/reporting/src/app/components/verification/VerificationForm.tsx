@@ -15,8 +15,6 @@ import {
   useValidationErrors,
   handleApiResponse,
 } from "@bciers/components/validationErrors";
-import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface Props {
   version_id: number;
@@ -38,10 +36,7 @@ export default function VerificationForm({
   isEIO,
 }: Readonly<Props>) {
   const [formData, setFormData] = useState(initialData);
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-    });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const handleChange = (e: IChangeEvent) => {
     setFormData({ ...e.formData });

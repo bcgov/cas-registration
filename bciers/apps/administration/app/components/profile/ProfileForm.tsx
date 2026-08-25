@@ -15,7 +15,6 @@ import { IDP } from "@bciers/utils/src/enums";
 import {
   useValidationErrors,
   handleApiResponse,
-  createGenericValidationError,
 } from "@bciers/components/validationErrors";
 
 export const userSchema: RJSFSchema = {
