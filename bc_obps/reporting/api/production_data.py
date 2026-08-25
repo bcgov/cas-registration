@@ -32,3 +32,20 @@ def save_production_data(
     )
 
     return 200
+
+
+@router.post(
+    "report-version/{version_id}/facilities/{facility_id}/unregulated-products",
+    response={200: int, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Saves unregulated products into ReportProduct rows""",
+    auth=approved_industry_user_report_version_composite_auth,
+)
+def save_unregulated_products(
+    request: HttpRequest,
+    version_id: int,
+    facility_id: UUID,
+) -> Literal[200]:
+    ReportProductService.save_unregulated_products(version_id, facility_id)
+
+    return 200

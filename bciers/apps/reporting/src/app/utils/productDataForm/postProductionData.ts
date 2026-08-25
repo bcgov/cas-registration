@@ -12,3 +12,12 @@ export async function postProductionData(
     body: JSON.stringify(data),
   });
 }
+
+export async function postUnregulatedProducts(
+  report_version_id: number,
+  facility_id: string,
+) {
+  const endpoint = `reporting/report-version/${report_version_id}/facilities/${facility_id}/unregulated-products`;
+  const pathToRevalidate = `reporting/reports/${report_version_id}/facilities/${facility_id}/unregulated-products`;
+  return actionHandler(endpoint, "POST", pathToRevalidate);
+}

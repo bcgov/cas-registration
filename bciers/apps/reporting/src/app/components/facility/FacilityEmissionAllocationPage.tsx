@@ -3,11 +3,15 @@ import FacilityEmissionAllocationForm from "@reporting/src/app/components/facili
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
+import { postUnregulatedProducts } from "../../utils/productDataForm/postProductionData";
 
 export default async function FacilityEmissionAllocationPage({
   version_id,
   facility_id,
 }: HasFacilityId) {
+  // Ensure that the unregulated products are added if they are not yet in the db
+  await postUnregulatedProducts(version_id, facility_id);
+
   const page_data = await getEmissionAllocationPageData(
     version_id,
     facility_id,

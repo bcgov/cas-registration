@@ -227,6 +227,11 @@ ENDPOINTS = {
         },
         {
             "method": "post",
+            "endpoint_name": "save_unregulated_products",
+            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
+        },
+        {
+            "method": "post",
             "endpoint_name": "save_emission_allocation_data",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
