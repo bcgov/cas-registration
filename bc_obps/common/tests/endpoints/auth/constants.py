@@ -338,13 +338,6 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_applied_compliance_units",
-            "kwargs": {
-                "compliance_report_version_id": MOCK_INT,
-            },
-        },
-        {
-            "method": "get",
             "endpoint_name": "get_obligation_by_compliance_report_version_id",
             "kwargs": {
                 "compliance_report_version_id": MOCK_INT,
@@ -443,6 +436,13 @@ ENDPOINTS = {
         },
     ],
     "approved_authorized_roles": [
+        {
+            "method": "get",
+            "endpoint_name": "get_applied_compliance_units",
+            "kwargs": {
+                "compliance_report_version_id": MOCK_INT,
+            },
+        },
         {"method": "get", "endpoint_name": "get_user_compliance_access_status"},
         {"method": "get", "endpoint_name": "get_compliance_report_versions_list"},
         {"method": "get", "endpoint_name": "get_elicensing_invoice_list"},

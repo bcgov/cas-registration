@@ -187,6 +187,10 @@ export interface ComplianceSummaryReviewPageData
   applied_units_summary: ComplianceAppliedUnitsSummary;
 }
 
+export interface InternalComplianceSummaryReviewPageData extends ComplianceSummary {
+  applied_units_summary: ComplianceAppliedUnitsSummary;
+}
+
 export interface Invoice {
   invoice_number: string;
 }
