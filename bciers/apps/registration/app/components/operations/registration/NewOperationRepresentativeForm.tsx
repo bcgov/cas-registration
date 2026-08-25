@@ -50,9 +50,7 @@ const NewOperationRepresentativeForm: FC<
   const [existingContactId, setExistingContactId] = useState("");
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
-  const { setErrors, renderedErrors } = useValidationErrors({
-    config: {},
-  });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const isSubmitButton = formState?.new_operation_representative?.length > 0;
   const isExistingContactSelected =

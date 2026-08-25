@@ -44,22 +44,20 @@ const generateInvoice = async (
         // ignore invalid JSON
       }
 
-      if (typeof payload.message === "string") {
-        throw new Error(
+      return {
+        error:
           payload.message ||
-            `Failed to generate penalty invoice (status ${res.status})`,
-        );
-      }
-
-      return;
+          payload.error ||
+          `Failed to generate penalty invoice (status ${res.status})`,
+      };
     }
 
     // Handle non-JSON response errors
     if (!res.ok) {
       previewTab?.close();
-      throw new Error(
-        `Failed to generate penalty invoice (status ${res.status})`,
-      );
+      return {
+        error: `Failed to generate penalty invoice (status ${res.status})`,
+      };
     }
 
     // Navigate the tab directly to the route URL so the browser previews the
@@ -71,9 +69,16 @@ const generateInvoice = async (
       // Popup was blocked; fall back to navigating the current window.
       window.location.href = url;
     }
+
+    return { success: true };
   } catch (err) {
     previewTab?.close();
-    throw err;
+    return {
+      error:
+        err instanceof Error
+          ? err.message
+          : "An unexpected error occurred while generating the invoice.",
+    };
   }
 };
 

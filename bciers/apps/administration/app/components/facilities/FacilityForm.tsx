@@ -40,9 +40,7 @@ export default function FacilityForm({
   const searchParams = useSearchParams();
   const queryString = serializeSearchParams(searchParams);
 
-  const { setErrors, renderedErrors } = useValidationErrors({
-    config: {},
-  });
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const isSfo = formState.type === FacilityTypes.SFO;
   const isCasDirector = role === FrontEndRoles.CAS_DIRECTOR;
