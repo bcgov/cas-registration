@@ -9,7 +9,7 @@ from compliance.api.router import router
 from compliance.schema.calculated_penalty import CalculatedPenaltyOut, PenaltyAccrual, PenaltyTypeStatusEnum
 from compliance.models import CompliancePenalty, ComplianceObligation
 from compliance.service.penalty_calculation_service import PenaltyCalculationService, CalculatedPenaltyData
-from compliance.api.permissions import approved_authorized_roles_compliance_report_version_composite_auth
+from common.permissions import authorize
 
 
 def _normalize_penalty_type(penalty_type: str) -> str:
@@ -121,7 +121,7 @@ def _build_calculated_penalty_response(
     response={200: CalculatedPenaltyOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Calculate the potential penalty for an obligation that is accruing a penalty",
-    auth=approved_authorized_roles_compliance_report_version_composite_auth,
+    auth=authorize("authorized_irc_user"),
 )
 def get_calculated_penalty_for_obligation(
     request: HttpRequest, compliance_report_version_id: int, requested_penalty_type: str, end_date: str
