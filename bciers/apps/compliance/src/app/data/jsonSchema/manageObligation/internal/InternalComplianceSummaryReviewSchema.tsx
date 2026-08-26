@@ -7,6 +7,7 @@ import {
   tco2eUiConfig,
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
+import { ComplianceUnitsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsGrid";
 
 export const createInternalComplianceSummaryReviewSchema = (
   reportingYear: number,
@@ -23,6 +24,8 @@ export const createInternalComplianceSummaryReviewSchema = (
       `${reportingYear} Compliance Charge Rate:`,
     ),
     equivalent_value: readOnlyStringField("Equivalent Value:"),
+    // Compliance Units Section
+    applied_units_summary: readOnlyStringField(),
     // Outstanding Compliance Obligation Section
     outstanding_obligation_header: readOnlyObjectField(
       "Outstanding Compliance Obligation",
@@ -56,6 +59,15 @@ export const internalComplianceSummaryReviewUiSchema: UiSchema = {
   equivalent_value: {
     ...commonReadOnlyOptions,
     "ui:widget": "ReadOnlyCurrencyWidget",
+  },
+  applied_units_summary: {
+    "ui:widget": ComplianceUnitsGrid,
+    "ui:classNames": "text-bc-bg-blue mt-8 [&>label]:mb-2",
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:options": {
+      label: false,
+      inline: true,
+    },
   },
   // Outstanding Compliance Obligation Section
   outstanding_obligation_header: headerUiConfig,

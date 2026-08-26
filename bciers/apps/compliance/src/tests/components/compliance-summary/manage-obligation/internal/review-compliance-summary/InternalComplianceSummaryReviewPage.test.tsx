@@ -7,6 +7,10 @@ vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
   getComplianceSummary: vi.fn(),
 }));
 
+vi.mock("@/compliance/src/app/utils/getComplianceAppliedUnits", () => ({
+  default: vi.fn(),
+}));
+
 vi.mock(
   "@/compliance/src/app/components/taskLists/internal/reviewObligationPenaltyTaskList",
   () => ({
@@ -22,7 +26,6 @@ vi.mock(
 );
 
 vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
-  __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => (
     <div>Mock Layout {children}</div>
   ),
@@ -31,14 +34,20 @@ vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
 vi.mock(
   "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/InternalComplianceSummaryReviewComponent",
   () => ({
-    __esModule: true,
     InternalComplianceSummaryReviewComponent: ({ data }: any) => (
-      <div>Mock Internal Review Component - {data.reporting_year}</div>
+      <div>
+        <div>Mock Internal Review Component - {data.reporting_year}</div>
+        <div>
+          Applied units rows -{" "}
+          {data.applied_units_summary.applied_compliance_units.row_count}
+        </div>
+      </div>
     ),
   }),
 );
 
 import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
+import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
 import {
   generateReviewObligationPenaltyTaskList,
   ActivePage,
@@ -55,10 +64,16 @@ describe("InternalComplianceSummaryReviewPage (Manage Obligation)", () => {
     penalty_status: "NOT PAID",
     outstanding_balance_tco2e: 0,
   } as any;
+  const mockAppliedUnits = {
+    rows: [{ id: "1" }],
+    row_count: 1,
+    can_apply_compliance_units: false,
+  } as any;
 
   beforeEach(() => {
     vi.clearAllMocks();
     (getComplianceSummary as Mock).mockResolvedValue(mockData);
+    (getComplianceAppliedUnits as Mock).mockResolvedValue(mockAppliedUnits);
   });
 
   it("fetches data, generates internal task list (2 pages), and renders layout with internal review component", async () => {
@@ -73,9 +88,13 @@ describe("InternalComplianceSummaryReviewPage (Manage Obligation)", () => {
       expect(
         screen.getByText("Mock Internal Review Component - 2026"),
       ).toBeVisible();
+      expect(screen.getByText("Applied units rows - 1")).toBeVisible();
     });
 
     expect(getComplianceSummary).toHaveBeenCalledWith(
+      mockComplianceReportVersionId,
+    );
+    expect(getComplianceAppliedUnits).toHaveBeenCalledWith(
       mockComplianceReportVersionId,
     );
     expect(generateReviewObligationPenaltyTaskList).toHaveBeenCalledWith(

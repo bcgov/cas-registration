@@ -6,11 +6,11 @@ import {
   createInternalComplianceSummaryReviewSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/internal/InternalComplianceSummaryReviewSchema";
 import { FormBase } from "@bciers/components/form";
-import { ComplianceSummary } from "@/compliance/src/app/types";
+import { InternalComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
 import { PenaltyStatus } from "@bciers/utils/src/enums";
 
 interface Props {
-  data: ComplianceSummary;
+  data: InternalComplianceSummaryReviewPageData;
   complianceReportVersionId: number;
 }
 
@@ -45,6 +45,10 @@ export function InternalComplianceSummaryReviewComponent({
       uiSchema={internalComplianceSummaryReviewUiSchema}
       formData={data}
       className="w-full"
+      formContext={{
+        reportingYear,
+        isInternalUser: true,
+      }}
     >
       <ComplianceStepButtons backUrl={backUrl} continueUrl={continueUrl} />
     </FormBase>

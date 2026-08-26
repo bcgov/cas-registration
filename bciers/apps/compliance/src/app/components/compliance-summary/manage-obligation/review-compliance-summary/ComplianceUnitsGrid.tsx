@@ -15,7 +15,11 @@ export const ComplianceUnitsGrid = ({
 }: {
   value: ComplianceAppliedUnitsSummary;
   registry: {
-    formContext: { reportingYear: number; maxCreditUsagePercentage: number };
+    formContext: {
+      reportingYear: number;
+      maxCreditUsagePercentage?: number;
+      isInternalUser?: boolean;
+    };
   };
 }) => {
   // Destructure to camelCase variable names
@@ -24,8 +28,11 @@ export const ComplianceUnitsGrid = ({
     applied_compliance_units: appliedComplianceUnits,
   } = value;
   const { formContext } = registry;
+  const isInternalUser = formContext.isInternalUser ?? false;
   const { can_apply_compliance_units: canApplyUnits } = appliedComplianceUnits;
-  const limitPercent = Math.round(formContext.maxCreditUsagePercentage * 100);
+  const limitPercent = Math.round(
+    (formContext.maxCreditUsagePercentage ?? 0) * 100,
+  );
 
   const router = useRouter();
 
@@ -38,19 +45,21 @@ export const ComplianceUnitsGrid = ({
 
   return (
     <SimpleAccordion title="Compliance Units Applied">
-      <AlertNote>
-        You may use compliance units (earned credits, offset units) you hold in
-        the{" "}
-        <Link
-          href={bcCarbonRegistryLink}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          B.C. Carbon Registry (BCCR)
-        </Link>{" "}
-        to meet up to {limitPercent}% of the compliance obligation below. The
-        remaining balance must be met with monetary payment(s).
-      </AlertNote>
+      {!isInternalUser && (
+        <AlertNote>
+          You may use compliance units (earned credits, offset units) you hold
+          in the{" "}
+          <Link
+            href={bcCarbonRegistryLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            B.C. Carbon Registry (BCCR)
+          </Link>{" "}
+          to meet up to {limitPercent}% of the compliance obligation below. The
+          remaining balance must be met with monetary payment(s).
+        </AlertNote>
+      )}
       <p>
         All compliance units transferred to the compliance sub-account to meet
         this operation's obligation for the {formContext.reportingYear}{" "}

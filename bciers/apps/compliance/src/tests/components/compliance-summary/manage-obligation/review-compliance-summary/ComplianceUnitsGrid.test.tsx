@@ -189,6 +189,28 @@ describe("ComplianceUnitsGrid", () => {
     expect(paragraphElement).toBeInTheDocument();
   });
 
+  it("does not render the BCCR guidance banner for internal users but still renders the grid", () => {
+    render(
+      <ComplianceUnitsGrid
+        registry={{
+          formContext: {
+            reportingYear: 2025,
+            isInternalUser: true,
+          },
+        }}
+        value={mockValue}
+      />,
+    );
+
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "B.C. Carbon Registry (BCCR)" }),
+    ).not.toBeInTheDocument();
+
+    expect(screen.getByText("Compliance Units Applied")).toBeVisible();
+    expect(screen.getAllByRole("row")).toHaveLength(3);
+  });
+
   it("renders the dynamic credit usage percentage in the alert note", () => {
     render(
       <ComplianceUnitsGrid
