@@ -19,6 +19,7 @@ cd bc_obps && poetry run python manage.py ensure_models_have_database_comments
 """
 shell="bash"
 stages=["pre-commit"]
+pass_filenames=false
 
 [[repos.hooks]]
 id = "prettier"

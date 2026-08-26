@@ -12,9 +12,7 @@ class Address(BaseModel):
     street_address = models.CharField(
         max_length=1000, null=True, blank=True, db_comment="Street address of relevant location)"
     )
-    municipality = models.CharField(
-        max_length=1000, null=True, blank=True, db_comment="Municipality of relevant location"
-    )
+    municipality = models.CharField(max_length=1000, null=True, blank=True)
     province = CAProvinceField(
         db_comment="Province of the relevant location, restricted to two-letter province postal abbreviations",
         null=True,
