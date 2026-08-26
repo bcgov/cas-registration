@@ -11,7 +11,9 @@ class ClosureEvent(EventBaseModel):
         CLOSED = "Closed"
 
     description = models.TextField(null=True, blank=True, db_comment="Rationale for closure or other details.")
-    status = models.CharField(max_length=100, choices=Statuses.choices, default=Statuses.CLOSED)
+    status = models.CharField(
+        max_length=100, choices=Statuses.choices, default=Statuses.CLOSED, db_comment="Status of the closure event."
+    )
     history = HistoricalRecords(
         table_name='erc_history"."closure_event_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
