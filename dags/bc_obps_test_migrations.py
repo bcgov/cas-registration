@@ -1,6 +1,7 @@
 from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 from airflow.providers.cncf.kubernetes.operators.job import KubernetesJobOperator
+from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.providers.standard.sensors.time_delta import TimeDeltaSensor
 from airflow.sdk import dag, task
 from datetime import datetime, timedelta, timezone
@@ -51,12 +52,12 @@ The following parameters are available:
     catchup=False,
     is_paused_upon_creation=False,
     doc_md=DAG_DOC,
-    tags=['bciers'],
+    tags=["bciers"],
 )
 def test_migrations(
     destination_namespace: str = BCIERS_NAMESPACE,
     source_namespace: str = BCIERS_NAMESPACE,
-    backend_chart_tag: str = "latest",
+    backend_image_tag: str = "latest",
     helm_options: str = "--atomic --wait-for-jobs --timeout 2400s",
 ):
     @task
@@ -79,11 +80,13 @@ def test_migrations(
             "helm install {{ params.helm_options }} "
             "--namespace {{ params.destination_namespace }} "
             "--set sourceNamespace={{ params.source_namespace }} "
-            "{{ params.postgres_chart_instance | default('postgres-migration-test') }} "
+            "postgres-migration-test "
             "cas-registration/cas-obps-postgres-migration-test"
         ],
         get_logs=True,
         is_delete_operator_pod=True,
+        wait_until_job_complete=True,
+        backoff_limit=1,
     )
 
     time_delay_postgres = TimeDeltaSensor(
@@ -118,12 +121,14 @@ def test_migrations(
             "helm install {{ params.helm_options }} "
             "--namespace {{ params.destination_namespace }} "
             "--set sourceNamespace={{ params.source_namespace }} "
-            "{{ params.backend_chart_instance | default('backend-migration-test') }} "
+            "backend-migration-test "
             "cas-registration/cas-obps-backend-migration-test "
-            "--set defaultImageTag={{ params.backend_chart_tag }}"
+            "--set defaultImageTag={{ params.backend_image_tag }}"
         ],
         get_logs=True,
         is_delete_operator_pod=True,
+        wait_until_job_complete=True,
+        backoff_limit=1,
     )
 
     time_delay_backend = TimeDeltaSensor(
@@ -140,34 +145,12 @@ def test_migrations(
         "be-migration-test-job"
     )
 
-    uninstall_postgres_helm_charts = KubernetesJobOperator(
-        task_id="uninstall-postgres-helm-charts",
-        name="uninstall-postgres-helm-charts",
-        namespace=DESTINATION_NAMESPACE_TEMPLATE,
-        service_account_name=SERVICE_ACCOUNT_NAME,
-        image=K8S_IMAGE,
-        cmds=["bash", "-c"],
-        arguments=[
-            "helm uninstall {{ params.postgres_chart_instance | default('postgres-migration-test') }} ",
-            "--namespace {{ params.destination_namespace }}",
-        ],
-        get_logs=True,
-        is_delete_operator_pod=True,
-    )
-
-    uninstall_backend_helm_charts = KubernetesJobOperator(
-        task_id="uninstall-backend-helm-charts",
-        name="uninstall-backend-helm-charts",
-        namespace=DESTINATION_NAMESPACE_TEMPLATE,
-        service_account_name=SERVICE_ACCOUNT_NAME,
-        image=K8S_IMAGE,
-        cmds=["bash", "-c"],
-        arguments=[
-            "helm uninstall {{ params.backend_chart_instance | default('backend-migration-test') }} ",
-            "--namespace {{ params.destination_namespace }}",
-        ],
-        get_logs=True,
-        is_delete_operator_pod=True,
+    cleanup = TriggerDagRunOperator(
+        task_id="trigger_cleanup_dag",
+        trigger_dag_id="cas_bciers_test_migrations_cleanup",
+        conf={"destination_namespace": "{{ params.destination_namespace }}"},
+        wait_for_completion=True,
+        fail_when_dag_is_paused=True,
     )
 
     (
@@ -179,7 +162,7 @@ def test_migrations(
         >> time_delay_backend
         >> wait_for_backend
         >> backend_migration_test
-        >> [uninstall_postgres_helm_charts, uninstall_backend_helm_charts]
+        >> cleanup
     )
 
 

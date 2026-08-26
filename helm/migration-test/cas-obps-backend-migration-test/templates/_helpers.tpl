@@ -119,12 +119,6 @@ Define environment variables for the application.
       name: {{ .Values.dbShortName }}-pguser-registration
 - name: ALLOWED_HOSTS
   value: '*'
-- name: GS_UNSCANNED_BUCKET_NAME
-  value: {{ .Release.Namespace }}-bciers-attach-unscanned
-- name: GS_CLEAN_BUCKET_NAME
-  value: {{ .Release.Namespace }}-bciers-attach-clean
-- name: GS_QUARANTINED_BUCKET_NAME
-  value: {{ .Release.Namespace }}-bciers-attach-quarantined
 - name: ENVIRONMENT
   value: {{ .Values.backend.environment }}
 {{- end }}
