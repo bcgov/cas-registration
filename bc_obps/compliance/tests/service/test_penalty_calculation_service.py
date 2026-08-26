@@ -278,6 +278,28 @@ class TestPenaltyCalculationService:
         last_transaction_date = PenaltyCalculationService.determine_last_transaction_date(obligation=self.obligation)
         assert last_transaction_date == later_adjustment.adjustment_date
 
+    def test_get_penalty_accrual_context_for_late_supplementary_submission(self):
+        clean_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2025, 12, 15),
+            outstanding_balance=Decimal("1000000.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        self.obligation.elicensing_invoice = clean_invoice
+        self.obligation.compliance_report_version.is_supplementary = True
+        self.obligation.compliance_report_version.save(update_fields=["is_supplementary"])
+        compliance_period = self.obligation.compliance_report_version.compliance_report.compliance_period
+        self.obligation.created_at = timezone.make_aware(
+            datetime.combine(compliance_period.compliance_deadline + timedelta(days=1), time.min)
+        )
+        self.obligation.save(update_fields=["created_at", "elicensing_invoice"])
+
+        context = PenaltyCalculationService.get_penalty_accrual_context(self.obligation)
+
+        assert context.compliance_deadline == compliance_period.compliance_deadline
+        assert context.effective_deadline == clean_invoice.due_date
+        assert context.has_late_submission is True
+
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
     )
