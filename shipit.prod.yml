@@ -1,6 +1,11 @@
 dependencies:
   override: []
 
+review:
+  checklist:
+    - Today is not Friday
+
+
 deploy:
   override:
     - ./deploy.sh:
