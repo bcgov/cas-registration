@@ -55,7 +55,8 @@ describe("InternalComplianceSummaryReviewComponent", () => {
             equivalent_value: 4000,
           },
         ],
-        can_apply_compliance_units: true,
+        // The API returns false for internal users
+        can_apply_compliance_units: false,
       },
     },
   } as any;

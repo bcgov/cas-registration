@@ -67,7 +67,7 @@ describe("InternalComplianceSummaryReviewPage (Manage Obligation)", () => {
   const mockAppliedUnits = {
     rows: [{ id: "1" }],
     row_count: 1,
-    can_apply_compliance_units: true,
+    can_apply_compliance_units: false,
   } as any;
 
   beforeEach(() => {

@@ -189,24 +189,6 @@ describe("ComplianceUnitsGrid", () => {
     expect(paragraphElement).toBeInTheDocument();
   });
 
-  it("does not render the Apply Compliance Units button for internal users even when can_apply_compliance_units is true", () => {
-    render(
-      <ComplianceUnitsGrid
-        registry={{
-          formContext: {
-            reportingYear: 2025,
-            isInternalUser: true,
-          },
-        }}
-        value={mockValue}
-      />,
-    );
-
-    expect(
-      screen.queryByRole("button", { name: "Apply Compliance Units" }),
-    ).not.toBeInTheDocument();
-  });
-
   it("does not render the BCCR guidance banner for internal users but still renders the grid", () => {
     render(
       <ComplianceUnitsGrid
