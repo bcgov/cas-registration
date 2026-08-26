@@ -48,7 +48,7 @@ class Command(BaseCommand):
 
     def report_errors(self, errors):
         if errors:
-            self.stdout.write(self.style.ERROR(f"⛔️ Found {len(errors)} models without comments:"))
+            self.stdout.write(self.style.ERROR(f"⛔️ Found {len(errors)} tables or columns without comments:"))
             self.stdout.write("\n")
             for index, error in enumerate(errors, start=1):
                 self.stdout.write(f"{index}. {error}")
