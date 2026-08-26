@@ -434,6 +434,17 @@ ENDPOINTS = {
             "endpoint_name": "get_compliance_report_version_manual_handling",
             "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
+        {
+            "method": "get",
+            "endpoint_name": "get_calculated_penalty_for_obligation",
+            "kwargs": {
+                "compliance_report_version_id": MOCK_INT,
+            },
+            "query_params": {
+                "requested_penalty_type": "automatic-overdue",
+                "end_date": "2025-01-10",
+            },
+        },
     ],
     "approved_authorized_roles": [
         {
