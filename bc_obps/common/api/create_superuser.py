@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
     "/create-superuser",
     tags=MISC_TAGS,
     description="""Create a superuser with username and password. This endpoint is only available in the development environment.""",
+    include_in_schema=False,
 )
 def setup(request: HttpRequest) -> HttpResponse:
     if settings.ENVIRONMENT in ["dev", "test"]:

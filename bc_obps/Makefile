@@ -157,3 +157,13 @@ mypy: ## We can use --show-traceback to show the full traceback in case of an er
 .PHONY: prepare_backend
 prepare_backend: ## Install dependencies, reset the database, and run the server
 prepare_backend: install_poetry_deps reset_db run
+
+.PHONY: export_openapi_schema
+export_openapi_schema: ## export the OpenAPI schema consumed by the frontend type generator
+export_openapi_schema:
+	$(POETRY_RUN) python $(MANAGE_PY) export_openapi_schema --output openapi/schema.json
+
+.PHONY: check_openapi_schema
+check_openapi_schema: ## fail if the committed OpenAPI schema is out of date with the routers
+check_openapi_schema:
+	$(POETRY_RUN) python $(MANAGE_PY) export_openapi_schema --output openapi/schema.json --check

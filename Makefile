@@ -679,3 +679,17 @@ dr_full:
 	echo "  - Check backend: make dr_check_backend OBPS_NAMESPACE_PREFIX=$(OBPS_NAMESPACE_PREFIX) ENVIRONMENT=$(ENVIRONMENT)"; \
 	echo "  - View status: make dr_status OBPS_NAMESPACE_PREFIX=$(OBPS_NAMESPACE_PREFIX) ENVIRONMENT=$(ENVIRONMENT)"; \
 	echo "  - Access your application and verify data"
+
+.PHONY: generate_api_types
+generate_api_types: ## export the OpenAPI schema and regenerate the frontend API types
+generate_api_types:
+	@$(MAKE) -C bc_obps export_openapi_schema
+	@cd bciers && yarn generate:api-types
+
+.PHONY: check_api_types
+check_api_types: ## fail if the OpenAPI schema or the generated API types are out of date
+# Two independent checks: that the schema still matches the Django routers, and
+# that the frontend types still match the schema.
+check_api_types:
+	@$(MAKE) -C bc_obps check_openapi_schema
+	@cd bciers && yarn check:api-types

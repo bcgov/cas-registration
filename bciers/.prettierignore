@@ -14,3 +14,7 @@ vitest.config.**s.timestamp-*
 
 # Helm charts (YAML files, not formatted by prettier)
 ../helm/
+
+# Generated from the backend's OpenAPI document; formatting is irrelevant and
+# reformatting would break `yarn check:api-types`.
+/libs/api/src/generated

@@ -45,7 +45,9 @@
     "report:e2e:report": "nx run reporting:e2e:report",
     "report:test": "nx run reporting:test",
     "dev-reporting": "nx run-many -t dev -p dashboard,reporting --maxParallel=5",
-    "happo": "happo"
+    "happo": "happo",
+    "generate:api-types": "openapi-typescript ../bc_obps/openapi/schema.json -o libs/api/src/generated/schema.ts",
+    "check:api-types": "openapi-typescript ../bc_obps/openapi/schema.json -o libs/api/src/generated/schema.ts --check"
   },
   "private": true,
   "dependencies": {
@@ -138,6 +140,7 @@
     "jsdom": "~26.1.0",
     "jsonc-eslint-parser": "^2.1.0",
     "nx": "22.7.8",
+    "openapi-typescript": "^7.13.0",
     "pdf-parse": "^2.4.5",
     "playwright-core": "1.62.1",
     "prettier": "~3.9.0",

@@ -14,6 +14,7 @@ from rls.utils.manager import RlsManager
     tags=MISC_TAGS,
     description="""Sets up the test environment by either truncating data tables or loading fixtures based on the specified workflow.
     This endpoint is only available in the local/CI environments.""",
+    include_in_schema=False,
 )
 def setup(
     request: HttpRequest, workflow: Optional[str] = None, truncate_only: bool = False, load_only: bool = False

@@ -33,6 +33,8 @@ module.exports = [
       "vitest.config.**s.timestamp-*",
       "**/tests/performance/**",
       "**/next-env.d.ts",
+      // Generated from the backend's OpenAPI document
+      "libs/api/src/generated/**",
     ],
   },
   // Base recommended configs

@@ -12,6 +12,7 @@ from .schemas import ScenarioPayload
         "Run a test integration scenario to mutate DB state for E2E tests, while blocking/mocking "
         "outbound HTTP to external systems (eLicensing/BCCR). Only available in local/CI environments."
     ),
+    include_in_schema=False,
 )
 def run_e2e_integration_stub(request: HttpRequest, data: ScenarioPayload) -> HttpResponse:
     if settings.CI != "true" and settings.ENVIRONMENT != "local":

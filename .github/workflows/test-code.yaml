@@ -99,6 +99,18 @@ jobs:
       - run: poetry run python manage.py makemigrations --check --dry-run
         working-directory: ./bc_obps
 
+  check-api-types:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - name: dev env setup frontend
+        uses: ./.github/actions/dev-env-setup-frontend
+      - name: dev env setup backend
+        uses: ./.github/actions/dev-env-setup-backend
+      - name: Regenerate and fail if the committed output is stale
+        run: make check_api_types
+
   check-immutable-migrations:
     runs-on: ubuntu-latest
     timeout-minutes: 30
