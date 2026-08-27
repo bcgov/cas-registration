@@ -1,14 +1,20 @@
-import { createValidationUIConfig } from "@bciers/components/validationErrors";
 import {
   facilityRoutes,
   reportRoutes,
   resolveValidationHref,
 } from "@reporting/src/app/utils/routes";
-import type { ValidationUIConfig, ValidationMessageKey } from "./types";
+import {
+  createValidationUIConfig,
+  ValidationUIConfig,
+  sharedValidationUIConfig,
+} from "@bciers/components/validationErrors";
+import { ValidationMessageKey } from "./types";
 
 export const validationUIConfig: Partial<
-  Record<ValidationMessageKey, ValidationUIConfig>
+  Record<ValidationMessageKey, ValidationUIConfig<ValidationMessageKey>>
 > = {
+  ...sharedValidationUIConfig,
+
   error_required_fields: createValidationUIConfig<ValidationMessageKey>({
     label: (error) => String(error.context?.section_title ?? "review section"),
     priority: 1,
@@ -228,10 +234,4 @@ If the value is accurate, you may save & continue.`;
       getMessage: () =>
         "Before you can continue, you must add an operation representative for this operation then return to this report.",
     }),
-  generic_error: createValidationUIConfig<ValidationMessageKey>({
-    renderMode: "message_only",
-    getMessage: (error) =>
-      error.message ??
-      "An internal server error has occurred. Please contact ghgregulator@gov.bc.ca for help.",
-  }),
 };

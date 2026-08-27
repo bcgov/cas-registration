@@ -35,12 +35,27 @@ export function createValidationUIConfig<TKey extends string = string>(
 }
 
 /**
- * Default fallback configuration usable across any domain or application.
+ * Default fallback configuration usable across any domains
  */
 export const defaultGenericErrorConfig = createValidationUIConfig({
   renderMode: "message_only",
   priority: 999,
   getMessage: (error) =>
     error.message ??
-    "An unexpected error has occurred. Please try again or contact support for help.",
+    "An internal server error has occurred. Please contact ghgregulator@gov.bc.ca for help.",
 });
+
+/**
+ * Shared configuration map containing system-level fallbacks
+ */
+export const sharedValidationUIConfig: Record<
+  "generic_error" | "user_error",
+  ValidationUIConfig<any>
+> = {
+  generic_error: defaultGenericErrorConfig,
+  user_error: createValidationUIConfig({
+    renderMode: "message_only",
+    priority: 990,
+    getMessage: (error) => error.message ?? "An unexpected error occurred.",
+  }),
+};

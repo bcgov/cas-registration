@@ -1,11 +1,3 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import OperationInformationForm from "@/administration/app/components/operations/OperationInformationForm";
 import {
@@ -14,7 +6,6 @@ import {
   useSearchParams,
   useSessionRole,
 } from "@bciers/testConfig/mocks";
-
 import {
   createAdministrationOperationInformationSchema,
   createAdministrationOperationInformationUiSchema,
@@ -41,6 +32,7 @@ import {
   getReportingActivities,
   getReportingYears,
 } from "@bciers/actions/api";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 
 useSessionRole.mockReturnValue("industry_user_admin");
 
@@ -1124,16 +1116,16 @@ describe("the OperationInformationForm component", () => {
     ).toBeVisible();
   });
 
-  it("displays an inline link to Contacts within the error message when saving operation fails", async () => {
-    const uiSchema = await createAdministrationOperationInformationUiSchema();
+  it("displays the operation representative error with a link to Contacts", async () => {
     const errorMessage =
-      "Please return to Contacts to assign a representative.";
-
+      "The contact Bart Banker - incomplete address is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.";
     actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
       validation: {
+        message: errorMessage,
         errors: [
           {
-            key: "operation_rep_required",
+            key: "user_error",
             error: {
               severity: "Error",
               message: errorMessage,
@@ -1142,7 +1134,7 @@ describe("the OperationInformationForm component", () => {
         ],
       },
     });
-
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
         formData={formData}
@@ -1153,25 +1145,83 @@ describe("the OperationInformationForm component", () => {
         uiSchema={uiSchema}
       />,
     );
-
     await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+    const nameInput = screen.getByLabelText(/Operation Name/i);
+    fireEvent.change(nameInput, { target: { value: "Operation 4" } });
     await userEvent.click(screen.getByRole("button", { name: /save/i }));
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operations/${operationId}`,
+      "POST",
+      `/operations/${operationId}`,
+      expect.anything(),
+    );
+    expect(await screen.findByText(/The contact Bart Banker/i)).toBeVisible();
+    const contactsLink = screen.getByRole("link", { name: "Contacts" });
+    expect(contactsLink).toBeVisible();
+    expect(contactsLink).toHaveAttribute("href", "/contacts");
+  });
 
-    await waitFor(() => {
-      // 1. Verify the inline link is rendered with correct destination
-      const link = screen.getByRole("link", { name: "Contacts" });
-      expect(link).toBeVisible();
-      expect(link).toHaveAttribute("href", "/contacts");
-
-      // 2. Verify the surrounding text exists around the link
-      expect(
-        screen.getByText((_, element) => {
-          return (
-            element?.tagName.toLowerCase() === "span" &&
-            element.textContent === errorMessage
-          );
-        }),
-      ).toBeVisible();
+  it("displays an error message when the update request fails", async () => {
+    const errorMessage = "Unable to update operation information.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
     });
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
+    render(
+      <OperationInformationForm
+        formData={formData}
+        schema={testSchema}
+        operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={testSchema}
+        uiSchema={uiSchema}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+    const nameInput = screen.getByLabelText(/Operation Name/i);
+    fireEvent.change(nameInput, { target: { value: "Operation 4" } });
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operations/${operationId}`,
+      "POST",
+      `/operations/${operationId}`,
+      expect.anything(),
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+  });
+
+  it("displays an error message when updating opted-in operation details fails", async () => {
+    const errorMessage = "Unable to update opted-in operation details.";
+    actionHandler.mockResolvedValueOnce(optInFormData).mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
+    render(
+      <OperationInformationForm
+        formData={optInFormData}
+        schema={testSchemaWithOpt}
+        operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={testSchemaWithOpt}
+        uiSchema={uiSchema}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: /save/i,
+      }),
+    );
+    expect(actionHandler).toHaveBeenCalledTimes(2);
+    expect(actionHandler).toHaveBeenNthCalledWith(
+      2,
+      `registration/operations/${operationId}/registration/opted-in-operation-detail`,
+      "PUT",
+      `/operations/${operationId}`,
+      expect.anything(),
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
   });
 });

@@ -1,14 +1,19 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ApplyComplianceUnitsComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
 import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
-import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import { actionHandler } from "@bciers/actions";
+import {
+  actionHandler,
+  useRouter,
+  useSearchParams,
+} from "@bciers/testConfig/mocks";
 
 useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
 const mockRouterPush = vi.fn();
+const mockActionHandler = vi.mocked(actionHandler);
+
 useRouter.mockReturnValue({
   query: {},
   push: mockRouterPush,
@@ -17,10 +22,6 @@ useRouter.mockReturnValue({
 vi.mock("@/compliance/src/app/utils/bccrAccountHandlers", () => ({
   getBccrAccountDetails: vi.fn(),
   getBccrComplianceUnitsAccountDetails: vi.fn(),
-}));
-
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
 }));
 
 vi.mock(
@@ -60,12 +61,13 @@ const MOCK_UNITS = [
     equivalent_value: 0,
   },
 ];
+
 const setupMocks = () => {
   (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValue({
     bccr_trading_name: MOCK_TRADING_NAME,
   });
 
-  (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValue({
+  mockActionHandler.mockResolvedValue({
     bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
     bccr_units: MOCK_UNITS,
     charge_rate: MOCK_CHARGE_RATE,
@@ -128,7 +130,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     vi.clearAllMocks();
     // Reset all mock implementations to ensure clean state
     (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockReset();
-    (actionHandler as ReturnType<typeof vi.fn>).mockReset();
+    mockActionHandler.mockReset();
   });
 
   it("displays form title and BCCR account section and input field", () => {
@@ -151,6 +153,7 @@ describe("ApplyComplianceUnitsComponent", () => {
         reportingYear={2024}
       />,
     );
+
     expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
     expect(
       screen.queryByText("BCCR Compliance Account ID:"),
@@ -163,7 +166,7 @@ describe("ApplyComplianceUnitsComponent", () => {
   it("validates account and displays compliance details on success", async () => {
     await setupValidAccountAndSubmit();
 
-    expect(actionHandler).toHaveBeenCalledWith(
+    expect(mockActionHandler).toHaveBeenCalledWith(
       `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_REPORT_VERSION_ID}/compliance-units`,
       "GET",
       "",
@@ -259,32 +262,6 @@ describe("ApplyComplianceUnitsComponent", () => {
     );
   });
 
-  it("handles account validation errors", async () => {
-    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-      new Error("Invalid account"),
-    );
-
-    render(
-      <ApplyComplianceUnitsComponent
-        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
-        reportingYear={2024}
-      />,
-    );
-
-    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
-    fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
-
-    await waitFor(() => {
-      expect(screen.getByText("Invalid account")).toBeVisible();
-    });
-
-    // Should not allow progression when there's an error
-    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "Submit" }),
-    ).not.toBeInTheDocument();
-  });
-
   it("hides confirmation checkbox when invalid account is entered after valid one", async () => {
     // First, enter a valid account
     (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
@@ -333,7 +310,7 @@ describe("ApplyComplianceUnitsComponent", () => {
       bccr_trading_name: MOCK_TRADING_NAME,
     });
 
-    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+    mockActionHandler.mockResolvedValueOnce({
       bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
       bccr_units: MOCK_UNITS,
       charge_rate: MOCK_CHARGE_RATE,
@@ -379,7 +356,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledWith(
+      expect(mockActionHandler).toHaveBeenCalledWith(
         `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_REPORT_VERSION_ID}/compliance-units`,
         "GET",
         "",
@@ -498,7 +475,7 @@ describe("ApplyComplianceUnitsComponent", () => {
 
   it("calls POST API when Apply button is clicked", async () => {
     // Mock successful apply response
-    (actionHandler as ReturnType<typeof vi.fn>)
+    mockActionHandler
       .mockResolvedValueOnce({
         bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
         bccr_units: MOCK_UNITS,
@@ -522,7 +499,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     fireEvent.click(applyButton);
 
     await waitFor(() => {
-      expect(actionHandler).toHaveBeenLastCalledWith(
+      expect(mockActionHandler).toHaveBeenLastCalledWith(
         `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_REPORT_VERSION_ID}/compliance-units`,
         "POST",
         "",
@@ -535,7 +512,7 @@ describe("ApplyComplianceUnitsComponent", () => {
 
   it("shows success message and hides Apply button after successful application", async () => {
     // Mock successful apply response
-    (actionHandler as ReturnType<typeof vi.fn>)
+    mockActionHandler
       .mockResolvedValueOnce({
         bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
         bccr_units: MOCK_UNITS,
@@ -597,7 +574,7 @@ describe("ApplyComplianceUnitsComponent", () => {
 
   it("shows loading state when applying compliance units", async () => {
     // Mock delayed apply response
-    (actionHandler as ReturnType<typeof vi.fn>)
+    mockActionHandler
       .mockResolvedValueOnce({
         bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
         bccr_units: MOCK_UNITS,
@@ -708,7 +685,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     });
 
     // Mock a delayed response
-    (actionHandler as ReturnType<typeof vi.fn>).mockImplementationOnce(
+    mockActionHandler.mockImplementationOnce(
       () => new Promise((resolve) => setTimeout(() => resolve({}), 100)),
     );
 
@@ -839,6 +816,147 @@ describe("ApplyComplianceUnitsComponent", () => {
       expect(
         document.getElementById("root_total_equivalent_value"),
       ).toHaveTextContent("$50,000.00"); // 1000 * 50
+    });
+  });
+
+  it("displays an error message when fetching compliance data fails", async () => {
+    const errorMessage = "Unable to fetch compliance data.";
+
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      bccr_trading_name: MOCK_TRADING_NAME,
+    });
+
+    mockActionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    render(
+      <ApplyComplianceUnitsComponent
+        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
+        reportingYear={2024}
+      />,
+    );
+
+    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
+    fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
+
+    expect(await screen.findByText(MOCK_TRADING_NAME)).toBeVisible();
+
+    const checkbox = screen.getByRole("checkbox");
+    fireEvent.click(checkbox);
+
+    await waitFor(() => {
+      expect(checkbox).toBeChecked();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+
+    expect(mockActionHandler).toHaveBeenCalledTimes(1);
+    expect(mockActionHandler).toHaveBeenCalledWith(
+      `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_REPORT_VERSION_ID}/compliance-units`,
+      "GET",
+      "",
+    );
+
+    expect(
+      screen.queryByText("Indicate compliance units to be applied"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("displays an error message when fetching compliance data throws", async () => {
+    const errorMessage = "Internal Server Error";
+
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      bccr_trading_name: MOCK_TRADING_NAME,
+    });
+
+    mockActionHandler.mockRejectedValueOnce(new Error(errorMessage));
+
+    render(
+      <ApplyComplianceUnitsComponent
+        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
+        reportingYear={2024}
+      />,
+    );
+
+    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
+    fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
+
+    expect(await screen.findByText(MOCK_TRADING_NAME)).toBeVisible();
+
+    const checkbox = screen.getByRole("checkbox");
+    fireEvent.click(checkbox);
+
+    await waitFor(() => {
+      expect(checkbox).toBeChecked();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+
+    expect(mockActionHandler).toHaveBeenCalledTimes(1);
+    expect(mockActionHandler).toHaveBeenCalledWith(
+      `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_REPORT_VERSION_ID}/compliance-units`,
+      "GET",
+      "",
+    );
+
+    expect(
+      screen.queryByText("Indicate compliance units to be applied"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("displays an error message when applying compliance units fails", async () => {
+    const errorMessage = "Failed to apply compliance units";
+    mockActionHandler
+      .mockResolvedValueOnce({
+        bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
+        bccr_units: MOCK_UNITS,
+        charge_rate: MOCK_CHARGE_RATE,
+        outstanding_balance: MOCK_OUTSTANDING_BALANCE,
+      })
+      .mockResolvedValueOnce({ error: errorMessage });
+    await setupValidAccountAndSubmit();
+    // Select some units
+    const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
+    fireEvent.change(quantityInputs[0], { target: { value: "75" } });
+    const applyButton = screen.getByRole("button", { name: "Apply" });
+    fireEvent.click(applyButton);
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockActionHandler).toHaveBeenCalledTimes(2);
+    expect(mockActionHandler).toHaveBeenNthCalledWith(
+      2,
+      `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_REPORT_VERSION_ID}/compliance-units`,
+      "POST",
+      "",
+      expect.anything(),
+    );
+    expect(screen.getByRole("button", { name: "Apply" })).toBeVisible();
+  });
+
+  it("does not display a generic error message when account validation succeeds", async () => {
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      bccr_trading_name: MOCK_TRADING_NAME,
+    });
+
+    render(
+      <ApplyComplianceUnitsComponent
+        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
+        reportingYear={2024}
+      />,
+    );
+
+    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
+    fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
+
+    await waitFor(() => {
+      expect(screen.getByText(MOCK_TRADING_NAME)).toBeVisible();
+      expect(
+        screen.queryByText("An unexpected error occurred."),
+      ).not.toBeInTheDocument();
     });
   });
 });

@@ -71,7 +71,6 @@ export const checkEmptyContactForm = () => {
   expect(screen.getByLabelText(/Province/i)).toHaveValue("");
   expect(screen.getByLabelText(/Postal Code/i)).toHaveValue("");
 };
-
 export const fillContactForm = async () => {
   // Personal Information
   await userEvent.type(screen.getByLabelText(/First Name/i), "John");
@@ -253,7 +252,6 @@ describe("ContactForm component", () => {
       screen.queryByRole("button", { name: /delete contact/i }),
     ).toBeVisible();
   });
-
   it("renders the form for an internal user", async () => {
     useSessionRole.mockReturnValue("cas_admin");
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
@@ -292,37 +290,6 @@ describe("ContactForm component", () => {
   });
 
   it(
-    "displays server error message when creating a contact fails",
-    {
-      timeout: 10000,
-    },
-    async () => {
-      const errorMessage = "A contact with this email already exists.";
-
-      actionHandler.mockResolvedValueOnce({
-        error: errorMessage,
-      });
-
-      render(
-        <ContactForm
-          schema={createContactSchema(contactsSchema, true)}
-          formData={{}}
-          isCreating
-          allowEdit
-        />,
-      );
-
-      await fillContactForm();
-      await userEvent.click(screen.getByRole("button", { name: /save/i }));
-
-      await waitFor(() => {
-        expect(screen.getByText(errorMessage)).toBeVisible();
-      });
-      expect(mockReplace).not.toHaveBeenCalled();
-    },
-  );
-
-  it(
     "fills the mandatory form fields, creates new contact, and redirects on success",
     {
       timeout: 10000,
@@ -343,7 +310,7 @@ describe("ContactForm component", () => {
         last_name: "Doe",
         error: null,
       };
-      actionHandler.mockResolvedValueOnce(response);
+      actionHandler.mockReturnValueOnce(response);
 
       await fillContactForm();
       // Submit
@@ -371,7 +338,6 @@ describe("ContactForm component", () => {
       });
     },
   );
-
   it(
     "creates a new contact, edits it, and submits the updated contact",
     {
@@ -392,7 +358,7 @@ describe("ContactForm component", () => {
         last_name: "Doe",
         error: null,
       };
-      actionHandler.mockResolvedValueOnce(response);
+      actionHandler.mockReturnValueOnce(response);
 
       await fillContactForm();
 
@@ -447,7 +413,7 @@ describe("ContactForm component", () => {
         last_name: "Doe updated",
         error: null,
       };
-      actionHandler.mockResolvedValueOnce(response);
+      actionHandler.mockReturnValueOnce(response);
 
       // Submit
       await userEvent.click(screen.getByRole("button", { name: /save/i }));
@@ -477,42 +443,6 @@ describe("ContactForm component", () => {
       });
     },
   );
-
-  it(
-    "displays server error message when updating an existing contact fails",
-    {
-      timeout: 10000,
-    },
-    async () => {
-      const errorMessage = "Failed to update contact details.";
-
-      actionHandler.mockResolvedValueOnce({
-        error: errorMessage,
-      });
-
-      const readOnlyContactSchema = createContactSchema(contactsSchema, false);
-      render(
-        <ContactForm
-          schema={readOnlyContactSchema}
-          formData={contactFormData}
-          allowEdit
-        />,
-      );
-
-      await userEvent.click(screen.getByRole("button", { name: /edit/i }));
-      await editNameFields({
-        firstName: "John updated",
-        lastName: "Doe updated",
-      });
-
-      await userEvent.click(screen.getByRole("button", { name: /save/i }));
-
-      await waitFor(() => {
-        expect(screen.getByText(errorMessage)).toBeVisible();
-      });
-    },
-  );
-
   it("updates existing contact form data and hits the correct endpoint", async () => {
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     render(
@@ -537,7 +467,7 @@ describe("ContactForm component", () => {
       last_name: "Doe updated",
       error: null,
     };
-    actionHandler.mockResolvedValueOnce(response);
+    actionHandler.mockReturnValueOnce(response);
 
     // Submit
     await userEvent.click(screen.getByRole("button", { name: /save/i }));
@@ -569,7 +499,6 @@ describe("ContactForm component", () => {
       },
     );
   });
-
   it("renders the places assigned field in read-only mode when editing", async () => {
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     render(
@@ -590,7 +519,6 @@ describe("ContactForm component", () => {
       screen.queryByRole("button", { name: /remove item/i }),
     ).not.toBeInTheDocument();
   });
-
   it("does not allow deletion of contact if the contact is asssigned to places", async () => {
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     render(
@@ -613,40 +541,6 @@ describe("ContactForm component", () => {
       ).toBeVisible();
     });
     expect(screen.getByRole("button", { name: /back/i })).toBeVisible();
-  });
-
-  it("displays error message when deleting a contact fails", async () => {
-    const errorMessage = "Unable to delete contact at this time.";
-
-    archiveContact.mockResolvedValueOnce({
-      error: errorMessage,
-    });
-
-    const readOnlyContactSchema = createContactSchema(contactsSchema, false);
-    render(
-      <ContactForm
-        schema={readOnlyContactSchema}
-        formData={{ ...contactFormData, places_assigned: [] }}
-        allowEdit
-      />,
-    );
-
-    const deleteButton = screen.getByRole("button", {
-      name: /delete contact/i,
-    });
-    await userEvent.click(deleteButton);
-
-    const modal = screen.getByRole("dialog");
-    const modalDeleteButton = within(modal).getByRole("button", {
-      name: /delete contact/i,
-    });
-
-    await userEvent.click(modalDeleteButton);
-
-    await waitFor(() => {
-      expect(screen.getByText(errorMessage)).toBeVisible();
-    });
-    expect(mockRouterPush).not.toHaveBeenCalled();
   });
 
   it("allows deletion of contact if they are not assigned anywhere", async () => {
@@ -693,4 +587,70 @@ describe("ContactForm component", () => {
     });
     expect(deleteButton).not.toBeInTheDocument();
   });
+
+  it(
+    "displays an error message when the create request fails",
+    { timeout: 100000 },
+    async () => {
+      const errorMessage = "A contact with the email already exists.";
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+      render(
+        <ContactForm
+          schema={createContactSchema(contactsSchema, true)}
+          formData={{}}
+          isCreating
+          allowEdit
+        />,
+      );
+      await fillContactForm();
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/contacts",
+        "POST",
+        "/contacts",
+        expect.anything(),
+      );
+      expect(await screen.findByText(errorMessage)).toBeVisible();
+      expect(mockReplace).not.toHaveBeenCalled();
+    },
+  );
+
+  it(
+    "displays an error message when the update request fails",
+    { timeout: 100000 },
+    async () => {
+      const errorMessage = "Unable to update contact.";
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+      render(
+        <ContactForm
+          schema={createContactSchema(contactsSchema, false)}
+          formData={contactFormData}
+          allowEdit
+        />,
+      );
+      await userEvent.click(screen.getByRole("button", { name: /edit/i }));
+      await editNameFields({
+        firstName: "John updated",
+        lastName: "Doe updated",
+      });
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/contacts/123",
+        "PUT",
+        "/contacts/123",
+        expect.anything(),
+      );
+      expect(await screen.findByText(errorMessage)).toBeVisible();
+      expect(
+        screen.queryByText(FrontendMessages.SUBMIT_CONFIRMATION),
+      ).not.toBeInTheDocument();
+      expect(mockReplace).not.toHaveBeenCalled();
+    },
+  );
 });

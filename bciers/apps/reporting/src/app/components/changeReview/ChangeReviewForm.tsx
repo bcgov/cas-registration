@@ -13,7 +13,7 @@ import AlertNote from "@bciers/components/form/components/AlertNote";
 import {
   useValidationErrors,
   handleApiResponse,
-  createGenericValidationError,
+  setClientError,
 } from "@bciers/components/validationErrors";
 
 interface ChangeReviewProps {
@@ -58,10 +58,10 @@ export default function ChangeReviewForm({
   }, [versionId, displayChanges]);
 
   const handleSubmit = async (canContinue: boolean) => {
+    setErrors(undefined);
     if (!reasonForChange) {
-      setErrors([
-        createGenericValidationError("Reason for change is required."),
-      ]);
+      const message = "Reason for change is required.";
+      setClientError(message, setErrors);
       return false;
     }
     const payload = {
@@ -80,15 +80,15 @@ export default function ChangeReviewForm({
       },
     );
 
-    const isValid = handleApiResponse(response, setErrors);
+    const isSuccess = handleApiResponse(response, setErrors);
 
-    if (isValid && canContinue) {
+    if (isSuccess && canContinue) {
       setIsRedirecting(true);
       router.push(navigationInformation.continueUrl);
     }
 
     setIsSaving(false);
-    return isValid;
+    return isSuccess;
   };
 
   return (

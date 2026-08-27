@@ -1,13 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Alert } from "@mui/material";
+import { Button } from "@mui/material";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "./FormBase";
 import MultiStepHeader from "./components/MultiStepHeader";
 import MultiStepButtons from "./components/MultiStepButtons";
 import { IChangeEvent } from "@rjsf/core";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  ValidationErrors,
+  createGenericValidationError,
+} from "@bciers/components/validationErrors";
 
 interface MultiStepBaseProps {
   allowBackNavigation?: boolean;
@@ -17,7 +23,7 @@ interface MultiStepBaseProps {
   cancelUrl: string;
   beforeForm?: React.ReactNode;
   children?: React.ReactNode;
-  error?: any;
+  errors?: ValidationErrors | string;
   disabled?: boolean;
   formData?: any;
   formContext?: { [key: string]: any };
@@ -45,7 +51,7 @@ const MultiStepBase = ({
   beforeForm,
   children,
   disabled,
-  error: parentError,
+  errors: parentErrors,
   onChange,
   formData,
   onSubmit,
@@ -61,7 +67,17 @@ const MultiStepBase = ({
 }: MultiStepBaseProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [error, setError] = useState(parentError);
+  const initialErrors =
+    typeof parentErrors === "string"
+      ? [createGenericValidationError(parentErrors)]
+      : parentErrors;
+  const { setErrors, renderedErrors } = useValidationErrors({
+    initialErrors,
+  });
+  // Sync parentError prop changes to internal validation error state
+  useEffect(() => {
+    setErrors(initialErrors);
+  }, [parentErrors]);
   const router = useRouter();
   const isNotFinalStep = step !== steps?.length;
 
@@ -70,11 +86,11 @@ const MultiStepBase = ({
   const submitHandler = async (data: any) => {
     setIsSubmitting(true);
     // Clear any old errors
-    setError(undefined);
+    setErrors(undefined);
 
     const response = await onSubmit(data);
-    if (response?.error) {
-      setError(response?.error);
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
       setIsSubmitting(false);
       return;
     }
@@ -125,10 +141,7 @@ const MultiStepBase = ({
       >
         {children}
         <div className="flex flex-col flex-grow justify-end">
-          <div className="min-h-[48px] box-border">
-            {error && <Alert severity="error">{error}</Alert>}
-          </div>
-
+          <div className="min-h-[48px] box-border">{renderedErrors}</div>
           <MultiStepButtons
             disabled={isDisabled}
             isSubmitting={isSubmitting}

@@ -1,41 +1,32 @@
-import { ValidationUIConfig } from "@bciers/components/validationErrors";
-import { ValidationKey } from "./types";
+import {
+  createValidationUIConfig,
+  ValidationUIConfig,
+} from "@bciers/components/validationErrors";
+import { ValidationMessageKey } from "./types";
 import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
 
 export const validationUIConfig: Partial<
-  Record<ValidationKey, ValidationUIConfig<ValidationKey>>
+  Record<ValidationMessageKey, ValidationUIConfig<ValidationMessageKey>>
 > = {
-  no_bceid_access: {
-    priority: 10,
+  no_bceid_access: createValidationUIConfig<ValidationMessageKey>({
+    priority: 1,
     renderMode: "inline_link",
-    resolveLabel: () => "ghgregulator@gov.bc.ca",
-    resolveHref: () => ghgRegulatorEmail,
-    resolveMessage: (error) =>
-      error.message ??
-      "Your business BCeID does not have access to this operator. Please contact ghgregulator@gov.bc.ca",
-    resolveFormattedMessage: (error) =>
-      error.message ??
-      "Your business BCeID does not have access to this operator. Please contact ghgregulator@gov.bc.ca",
-  },
-  operation_rep_required: {
-    priority: 10,
+    label: "ghgregulator@gov.bc.ca",
+    getHref: () =>
+      ghgRegulatorEmail.startsWith("mailto:")
+        ? ghgRegulatorEmail
+        : `mailto:${ghgRegulatorEmail}`,
+    formatMessage: ({ label }) =>
+      `Your business BCeID does not have access to this operator. Please contact your operator's administrator to request the correct business BCeID. If this issue persists, please contact ${label}.`,
+  }),
+
+  operation_rep_required: createValidationUIConfig<ValidationMessageKey>({
+    priority: 1,
     renderMode: "inline_link",
-    resolveLabel: () => "Contacts",
-    resolveHref: () => "/contacts",
-    resolveMessage: (error) =>
-      error.message ?? "Please return to Contacts to assign a representative.",
-    resolveFormattedMessage: (error) =>
-      error.message ?? "Please return to Contacts to assign a representative.",
-  },
-  operator_not_found: {
-    priority: 10,
-    renderMode: "inline_link",
-    resolveLabel: () => "Add Operator",
-    resolveHref: () => "/select-operator/add-operator",
-    resolveMessage: (error) =>
-      error.message ?? "No operator found matching the provided criteria.",
-    resolveFormattedMessage: (error) =>
-      error.message ??
-      "No operator found matching the provided criteria. You can Add Operator instead.",
-  },
+    label: "Contacts",
+    getHref: () => "/contacts",
+    formatMessage: ({ message, label }) =>
+      message ??
+      `The contact is missing address information. Please return to ${label} and fill in their address information before assigning them as an Operation Representative here.`,
+  }),
 };

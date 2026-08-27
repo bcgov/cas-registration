@@ -1,9 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import ValidationForm from "@reporting/src/app/components/validation/ValidationForm";
-import { ValidationErrorSummary } from "@bciers/components/validationErrors";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
-import { ValidationErrors } from "@reporting/src/app/components/validationErrors/types";
+import {
+  ValidationErrorSummary,
+  ValidationItem,
+} from "@bciers/components/validationErrors";
 import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 // Mocks
 vi.mock("@bciers/components/form/MultiStepWrapperWithTaskList", () => ({
@@ -41,7 +44,7 @@ describe("ValidationForm component", () => {
   });
 
   it("renders the validation summary when validation errors exist", () => {
-    const validationErrors: ValidationErrors = [
+    const validationErrors: ValidationItem<ValidationMessageKey>[] = [
       {
         key: "missing_report_verification", // gitleaks:allow
         error: {
