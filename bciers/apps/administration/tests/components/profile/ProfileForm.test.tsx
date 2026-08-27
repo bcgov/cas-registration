@@ -12,6 +12,7 @@ import {
   mockCasUserToken,
   mockIndustryUserToken,
 } from "@bciers/testConfig/data/tokens";
+import userEvent from "@testing-library/user-event";
 
 // DISCLAIMER:
 // This entire test file was, for the most part, written by ChatGPT.
@@ -154,26 +155,51 @@ describe("ProfileForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("displays an error alert and prevents success when submission fails", async () => {
+  it("displays an error message when the create request fails", async () => {
+    const errorMessage = "Unable to create user profile.";
     vi.mocked(getSession).mockResolvedValueOnce({
       identity_provider: "bceidbusiness",
       user: {},
     });
     vi.mocked(actionHandler).mockResolvedValueOnce({
-      error: "Failed to update profile.",
+      error: errorMessage,
     });
-
-    render(<ProfileForm isCreate={false} idp={"bceidbusiness"} />);
-
+    render(<ProfileForm isCreate idp="bceidbusiness" />);
     fillRequiredFields();
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/users",
+      "POST",
+      "/profile",
+      expect.anything(),
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(
+      screen.queryByRole("button", { name: "✅ Success" }),
+    ).not.toBeInTheDocument();
+  });
 
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-
-    await waitFor(() => {
-      expect(screen.getByRole("alert")).toBeVisible();
-      expect(screen.getByText(/failed to update profile\./i)).toBeVisible();
+  it("displays an error message when the update request fails", async () => {
+    const errorMessage = "Unable to update user profile.";
+    vi.mocked(getSession).mockResolvedValueOnce({
+      identity_provider: "bceidbusiness",
+      user: {},
     });
-
+    vi.mocked(actionHandler).mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(<ProfileForm isCreate={false} idp="bceidbusiness" />);
+    fillRequiredFields();
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/user/user-profile",
+      "PUT",
+      "/profile",
+      expect.anything(),
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
     expect(
       screen.queryByRole("button", { name: "✅ Success" }),
     ).not.toBeInTheDocument();

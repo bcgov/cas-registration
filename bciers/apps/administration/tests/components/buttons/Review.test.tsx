@@ -1,5 +1,6 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, expect, vi, beforeEach, it } from "vitest";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import Review from "@/administration/app/components/buttons/Review";
 import { Role, Status } from "@bciers/utils/src/enums";
 
@@ -22,92 +23,70 @@ describe("Review component", () => {
 
   it("renders review buttons and note when status is pending and role is not admin", () => {
     render(<Review {...defaultProps} />);
-
-    expect(screen.getByText("Test note for review")).toBeInTheDocument();
+    expect(screen.getByText("Test note for review")).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Approve application" }),
-    ).toBeInTheDocument();
+    ).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Reject application" }),
-    ).toBeInTheDocument();
+    ).toBeVisible();
   });
 
-  it("opens confirmation modal and calls onApprove on confirmation", async () => {
+  it("approves the application after confirmation", async () => {
     const onApproveMock = vi.fn().mockResolvedValueOnce({});
     render(<Review {...defaultProps} onApprove={onApproveMock} />);
-
-    fireEvent.click(
+    await userEvent.click(
       screen.getByRole("button", { name: "Approve application" }),
     );
-
-    expect(
-      screen.getByText(defaultProps.confirmApproveMessage),
-    ).toBeInTheDocument();
-
-    const confirmButton = screen.getByRole("button", { name: "Confirm" });
-    fireEvent.click(confirmButton);
-
-    await waitFor(() => {
-      expect(onApproveMock).toHaveBeenCalledTimes(1);
-      expect(
-        screen.getByText(defaultProps.approvedMessage),
-      ).toBeInTheDocument();
-    });
+    expect(screen.getByText(defaultProps.confirmApproveMessage)).toBeVisible();
+    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    expect(onApproveMock).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText(defaultProps.approvedMessage)).toBeVisible();
   });
 
-  it("opens confirmation modal and calls onReject on confirmation", async () => {
+  it("rejects the application after confirmation", async () => {
     const onRejectMock = vi.fn().mockResolvedValueOnce({});
     render(<Review {...defaultProps} onReject={onRejectMock} />);
-
-    fireEvent.click(screen.getByRole("button", { name: "Reject application" }));
-
-    expect(
-      screen.getByText(defaultProps.confirmRejectMessage),
-    ).toBeInTheDocument();
-
-    const confirmButton = screen.getByRole("button", { name: "Confirm" });
-    fireEvent.click(confirmButton);
-
-    await waitFor(() => {
-      expect(onRejectMock).toHaveBeenCalledTimes(1);
-      expect(
-        screen.getByText(defaultProps.declinedMessage),
-      ).toBeInTheDocument();
-    });
+    await userEvent.click(
+      screen.getByRole("button", { name: "Reject application" }),
+    );
+    expect(screen.getByText(defaultProps.confirmRejectMessage)).toBeVisible();
+    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    expect(onRejectMock).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText(defaultProps.declinedMessage)).toBeVisible();
   });
 
-  it("displays an error message when onApprove returns a validation error", async () => {
+  it("displays an error message when the approve request fails", async () => {
+    const errorMessage = "Unable to approve application.";
     const onApproveMock = vi.fn().mockResolvedValueOnce({
-      validation: {
-        errors: [
-          {
-            key: "Approval failed",
-            error: {
-              severity: "Error",
-              message: "Failed to approve access request.",
-            },
-          },
-        ],
-      },
+      error: errorMessage,
     });
-
     render(<Review {...defaultProps} onApprove={onApproveMock} />);
-
-    fireEvent.click(
+    await userEvent.click(
       screen.getByRole("button", { name: "Approve application" }),
     );
-    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
-
-    await waitFor(() => {
-      expect(onApproveMock).toHaveBeenCalledTimes(1);
-      expect(screen.getByRole("alert")).toBeVisible();
-      expect(
-        screen.getByText(/Failed to approve access request\./i),
-      ).toBeVisible();
-    });
-
+    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    expect(onApproveMock).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText(errorMessage)).toBeVisible();
     expect(
       screen.queryByText(defaultProps.approvedMessage),
+    ).not.toBeInTheDocument();
+  });
+
+  it("displays an error message when the reject request fails", async () => {
+    const errorMessage = "Unable to reject application.";
+    const onRejectMock = vi.fn().mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(<Review {...defaultProps} onReject={onRejectMock} />);
+    await userEvent.click(
+      screen.getByRole("button", { name: "Reject application" }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    expect(onRejectMock).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(
+      screen.queryByText(defaultProps.declinedMessage),
     ).not.toBeInTheDocument();
   });
 });

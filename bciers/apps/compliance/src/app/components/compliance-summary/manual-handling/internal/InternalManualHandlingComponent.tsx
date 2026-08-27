@@ -76,9 +76,9 @@ const InternalManualHandlingComponent = ({
       body: JSON.stringify(payload),
     });
 
-    const isApiSuccess = handleApiResponse(response, setErrors);
+    const isSuccess = handleApiResponse(response, setErrors);
 
-    if (isApiSuccess) {
+    if (isSuccess) {
       // Update form data
       setFormData((prev) => ({
         ...prev,
