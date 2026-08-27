@@ -54,6 +54,9 @@ export const selectOperatorSchema: RJSFSchema = {
 export const selectOperatorUiSchema = {
   "ui:order": ["search_type", "legal_name", "cra_business_number"],
   "ui:FieldTemplate": FieldTemplate,
+  "ui:submitButtonOptions": {
+    norender: true,
+  },
   search_type: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": "RadioWidget",

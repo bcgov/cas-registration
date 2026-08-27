@@ -1,6 +1,3 @@
-/**
- * All error keys that can be returned by the reporting backend
- */
 export type ValidationMessageKey =
   | "error_required_fields"
   | "operation_boro_id"

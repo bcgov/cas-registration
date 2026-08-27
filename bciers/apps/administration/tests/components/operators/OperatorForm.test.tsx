@@ -617,6 +617,75 @@ describe("OperatorForm component", () => {
     });
   }, 60000);
 
+  it(
+    "displays an error message when the create request fails",
+    { timeout: 100000 },
+    async () => {
+      const errorMessage = "Unable to create operator";
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+      render(
+        <OperatorForm
+          schema={await createOperatorSchema()}
+          formData={{}}
+          isCreating={true}
+          isInternalUser={false}
+        />,
+      );
+      await fillMandatoryFields();
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
+      expect(
+        await screen.findByText((content) => content.includes(errorMessage)),
+      ).toBeVisible();
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/user-operators",
+        "POST",
+        "administration/operators",
+        {
+          body: JSON.stringify(postMandatory),
+        },
+      );
+      expect(signIn).not.toHaveBeenCalled();
+    },
+  );
+
+  it(
+    "displays an error message when the update request fails",
+    { timeout: 100000 },
+    async () => {
+      const errorMessage = "Unable to update operator";
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+      render(
+        <OperatorForm
+          schema={await createOperatorSchema()}
+          formData={operatorFormData}
+          isInternalUser={false}
+        />,
+      );
+      await userEvent.click(screen.getByRole("button", { name: /edit/i }));
+      const legalNameInput = screen.getAllByLabelText(/Legal Name+/i)[0];
+      await userEvent.type(legalNameInput, "edit");
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
+      expect(
+        await screen.findByText((content) => content.includes(errorMessage)),
+      ).toBeVisible();
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/user-operators/current/operator",
+        "PUT",
+        "administration/operators",
+        expect.objectContaining({
+          body: expect.any(String),
+        }),
+      );
+      expect(signIn).not.toHaveBeenCalled();
+    },
+  );
+
   it("loads existing readonly Operator form data for an internal user", async () => {
     const { container } = render(
       <OperatorForm

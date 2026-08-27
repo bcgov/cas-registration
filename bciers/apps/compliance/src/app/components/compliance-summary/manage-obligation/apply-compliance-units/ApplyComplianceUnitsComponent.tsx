@@ -24,6 +24,7 @@ import getReportOperationByComplianceReportVersionId from "@/compliance/src/app/
 import {
   useValidationErrors,
   handleApiResponse,
+  setClientError,
 } from "@bciers/components/validationErrors";
 
 interface ApplyComplianceUnitsComponentProps {
@@ -169,38 +170,35 @@ export default function ApplyComplianceUnitsComponent({
     setStatus("submitting");
     setErrors(undefined);
 
-    const response = await actionHandler(
-      `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
-      "GET",
-      "",
-    );
+    try {
+      const response = await actionHandler(
+        `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
+        "GET",
+        "",
+      );
 
-    const isSuccess = handleApiResponse(response, setErrors);
-    if (!isSuccess) {
+      const isSuccess = handleApiResponse(response, setErrors);
+      if (!isSuccess) {
+        setStatus("idle");
+        return;
+      }
+
+      setRemainingCap(Number(response.compliance_unit_cap_remaining));
+      setInitialOutstandingBalance(response.outstanding_balance || 0);
+      setFormData((prev: Partial<ApplyComplianceUnitsFormData>) => {
+        const cleanFormData = {
+          bccr_holding_account_id: prev.bccr_holding_account_id,
+          bccr_trading_name: prev.bccr_trading_name,
+          ...response,
+        };
+        setCurrentPhase("compliance_data");
+        return cleanFormData;
+      });
+      setStatus("submitted");
+    } catch (err) {
+      setClientError(err, setErrors);
       setStatus("idle");
-      return;
     }
-
-    // Set the remaining cap from the response (what’s left to apply)
-    setRemainingCap(Number(response.compliance_unit_cap_remaining));
-
-    // Set the outstanding balance from the response
-    setInitialOutstandingBalance(response.outstanding_balance || 0);
-
-    // Update form data with the full compliance data from the response
-    setFormData((prev: Partial<ApplyComplianceUnitsFormData>) => {
-      // Create a clean data object for the compliance phase
-      const cleanFormData = {
-        bccr_holding_account_id: prev.bccr_holding_account_id,
-        bccr_trading_name: prev.bccr_trading_name,
-        ...response,
-      };
-
-      setCurrentPhase("compliance_data");
-      return cleanFormData;
-    });
-
-    setStatus("submitted");
   };
 
   // Second submission: Apply the compliance units
@@ -331,15 +329,20 @@ export default function ApplyComplianceUnitsComponent({
             return;
           }
 
+          // Normalize the account validation error into a message for the validation error system
           const raw = Array.isArray(err) ? err[0] : err;
-          const message =
-            raw instanceof Error
-              ? raw.message
-              : typeof raw === "string"
-                ? raw
-                : raw?.message || raw?.error || "An unexpected error occurred.";
+          let message = "An unexpected error occurred.";
+          if (raw instanceof Error) {
+            message = raw.message;
+          } else if (typeof raw === "string") {
+            message = raw;
+          } else if (typeof raw?.message === "string") {
+            message = raw.message;
+          } else if (typeof raw?.error === "string") {
+            message = raw.error;
+          }
 
-          handleApiResponse({ error: message }, setErrors);
+          setClientError(message, setErrors);
         },
         complianceLimitStatus,
         isApplied: status === "applied",

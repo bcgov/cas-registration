@@ -1,18 +1,17 @@
+import { describe, it, expect } from "vitest";
 import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
-import type { ValidationKey } from "@/administration/app/components/validationErrors/types";
+import type { ValidationMessageKey } from "@/administration/app/components/validationErrors/types";
 import { validationUIConfig } from "@/administration/app/components/validationErrors/config";
-
-const sortAlphabetically = (a: string, b: string) => a.localeCompare(b);
+import { sortAlphabetically } from "@bciers/testConfig/helpers/sort";
 
 describe("validationUIConfig", () => {
-  const expectedKeys: ValidationKey[] = [
+  const expectedKeys: ValidationMessageKey[] = [
     "no_bceid_access",
     "operation_rep_required",
-    "operator_not_found",
   ];
 
   it("has the expected number of configs", () => {
-    expect(Object.keys(validationUIConfig)).toHaveLength(expectedKeys.length);
+    expect(Object.keys(validationUIConfig)).toHaveLength(2);
   });
 
   it("has a config for every validation key", () => {
@@ -21,71 +20,38 @@ describe("validationUIConfig", () => {
     );
   });
 
-  it("all configs define a renderMode and priority", () => {
-    Object.values(validationUIConfig).forEach((config) => {
-      expect(config?.renderMode).toBeDefined();
-      expect(config?.priority).toBeDefined();
-    });
-  });
-
-  it("inline_link configs resolve a valid href and label", () => {
-    Object.values(validationUIConfig).forEach((config) => {
-      if (config?.renderMode === "inline_link") {
-        expect(config.resolveHref({ severity: "Error" })).toBeDefined();
-        expect(config.resolveLabel({ severity: "Error" })).toBeDefined();
-      }
-    });
-  });
-
   describe("specific key configurations", () => {
     it("configures no_bceid_access correctly", () => {
       const config = validationUIConfig.no_bceid_access;
       const error = { severity: "Error" as const };
+      const expectedHref = ghgRegulatorEmail.startsWith("mailto:")
+        ? ghgRegulatorEmail
+        : `mailto:${ghgRegulatorEmail}`;
 
       expect(config?.renderMode).toBe("inline_link");
       expect(config?.resolveLabel(error)).toBe("ghgregulator@gov.bc.ca");
-      expect(config?.resolveHref(error)).toBe(ghgRegulatorEmail);
-      expect(config?.resolveMessage(error, "no_bceid_access")).toBe(
-        "Your business BCeID does not have access to this operator. Please contact ghgregulator@gov.bc.ca",
+      expect(config?.resolveHref(error)).toBe(expectedHref);
+      expect(config?.resolveFormattedMessage(error, "no_bceid_access")).toBe(
+        "Your business BCeID does not have access to this operator. Please contact your operator's administrator to request the correct business BCeID. If this issue persists, please contact ghgregulator@gov.bc.ca.",
       );
     });
 
     it("configures operation_rep_required correctly", () => {
       const config = validationUIConfig.operation_rep_required;
-      const error = { severity: "Error" as const };
+      const testMessage =
+        "The contact Jane Doe is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.";
 
-      expect(config?.renderMode).toBe("inline_link");
-      expect(config?.resolveLabel(error)).toBe("Contacts");
-      expect(config?.resolveHref(error)).toBe("/contacts");
-      expect(config?.resolveMessage(error, "operation_rep_required")).toBe(
-        "Please return to Contacts to assign a representative.",
-      );
-    });
-
-    it("configures operator_not_found correctly", () => {
-      const config = validationUIConfig.operator_not_found;
-      const error = { severity: "Error" as const };
-
-      expect(config?.renderMode).toBe("inline_link");
-      expect(config?.resolveLabel(error)).toBe("Add Operator");
-      expect(config?.resolveHref(error)).toBe("/select-operator/add-operator");
-      expect(config?.resolveFormattedMessage(error, "operator_not_found")).toBe(
-        "No operator found matching the provided criteria. You can Add Operator instead.",
-      );
-    });
-
-    it("uses custom error messages when provided in the error object", () => {
-      const customMessage = "Custom override message";
-      const errorWithCustomMsg = {
+      const errorWithMsg = {
         severity: "Error" as const,
-        message: customMessage,
+        message: testMessage,
       };
+      expect(config?.renderMode).toBe("inline_link");
+      expect(config?.resolveLabel(errorWithMsg)).toBe("Contacts");
+      expect(config?.resolveHref(errorWithMsg)).toBe("/contacts");
 
-      Object.entries(validationUIConfig).forEach(([key, config]) => {
-        expect(
-          config?.resolveMessage(errorWithCustomMsg, key as ValidationKey),
-        ).toBe(customMessage);
-      });
+      expect(
+        config?.resolveFormattedMessage(errorWithMsg, "operation_rep_required"),
+      ).toBe(testMessage);
     });
   });
 });

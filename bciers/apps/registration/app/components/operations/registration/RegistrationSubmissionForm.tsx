@@ -10,6 +10,7 @@ import {
 } from "apps/registration/app/components/operations/registration/types";
 import { IChangeEvent } from "@rjsf/core";
 import Success from "apps/registration/app/components/operations/registration/Success";
+import { OperationStatus } from "@bciers/utils/src/enums";
 
 // Check if all checkboxes are checked
 const allChecked = (formData: RegistrationSubmissionFormData) => {
@@ -33,6 +34,7 @@ const RegistrationSubmissionForm = ({
 
   const handleSubmit = async (e: IChangeEvent) => {
     setSubmitButtonDisabled(true);
+
     const response = await actionHandler(
       `registration/operations/${operation}/registration/submission`,
       "PATCH",
@@ -42,15 +44,16 @@ const RegistrationSubmissionForm = ({
           ...e.formData,
         }),
       },
-    ).then((resolve) => {
-      if (resolve?.error) {
-        setSubmitButtonDisabled(false);
-        return { error: resolve.error };
-      } else {
-        setIsSubmitted(true);
-        return resolve;
-      }
-    });
+    );
+
+    if (response?.error) {
+      setSubmitButtonDisabled(false);
+      return { error: response.error };
+    }
+
+    if (response?.status === OperationStatus.REGISTERED) {
+      setIsSubmitted(true);
+    }
 
     return response;
   };

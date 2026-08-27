@@ -55,9 +55,8 @@ const BoroIdWidget: React.FC<WidgetProps> = ({ id, value, registry }) => {
         onClick={async () => {
           setErrors(undefined);
           const response = await generateBoroId(formContext?.operationId);
-          if (!handleApiResponse(response, setErrors)) {
-            return;
-          }
+          const isSuccess = handleApiResponse(response, setErrors);
+          if (!isSuccess) return;
           setIsSnackbarOpen(true);
           setBoroId(response?.id);
         }}

@@ -255,4 +255,33 @@ describe("PaymentInstructionsDownloadComponent", () => {
       expect(screen.getByText(text)).toBeVisible();
     });
   });
+
+  it("displays an error message when the request fails", async () => {
+    const user = userEvent.setup();
+    const errorMessage = "Unable to complete the request.";
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        headers: new Headers({ "Content-Type": "application/json" }),
+        json: async () => ({
+          message: errorMessage,
+        }),
+      }),
+    );
+    setupComponent(999);
+    await user.click(downloadPDFButton());
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith(
+      "/compliance/api/payment-instructions/999",
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockWindowOpen).not.toHaveBeenCalled();
+    expect(downloadPDFButton()).toBeEnabled();
+  });
 });

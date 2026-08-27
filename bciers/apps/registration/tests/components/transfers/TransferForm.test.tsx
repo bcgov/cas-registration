@@ -280,4 +280,42 @@ describe("The TransferForm component", () => {
       }),
     ).toBeVisible();
   });
+
+  it(
+    "displays an error message when the request fails",
+    { timeout: 10000 },
+    async () => {
+      const errorMessage = "Unable to complete the request.";
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+      renderTransferForm();
+      selectOperator(/current operator\*/i, "Operator 1");
+      selectOperator(/select the new operator\*/i, "Operator 2");
+      await selectEntityAndAssertFields("Operation");
+      await selectOperation(/operation\*/i, "Operation 1");
+      await selectDateOfTransfer("2022-12-31");
+      expectButton("Transfer Entity");
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole("button", {
+            name: /transfer entity/i,
+          }),
+        );
+      });
+      expect(await screen.findByText(errorMessage)).toBeVisible();
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/transfer-events",
+        "POST",
+        "/transfers",
+        expect.anything(),
+      );
+      expect(
+        screen.queryByText(
+          /operation has been transferred from operator 1 to operator 2\./i,
+        ),
+      ).not.toBeInTheDocument();
+    },
+  );
 });

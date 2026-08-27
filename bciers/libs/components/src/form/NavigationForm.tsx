@@ -5,7 +5,6 @@ import FormBase, { FormPropsWithTheme } from "./FormBase";
 import Form from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import ReportingStepButtons from "./components/ReportingStepButtons";
-import FormAlerts from "@bciers/components/form/FormAlerts";
 import { useRouter } from "next/navigation";
 import { Dict } from "@bciers/types/dictionary";
 import useKey from "@bciers/utils/src/useKey";
@@ -24,7 +23,7 @@ export interface NavigationFormProps extends Omit<
   onSubmit?: (data: object, navigateAfterSubmit: boolean) => Promise<boolean>;
   buttonText?: string;
   onChange?: (data: object) => void;
-  errors?: (string | React.ReactNode)[];
+  errors?: React.ReactNode;
   saveButtonDisabled?: boolean;
   submitButtonDisabled?: boolean;
   noSaveButton?: boolean;
@@ -118,7 +117,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
         shouldNavigateRef.current = false; // Reset after submission
       }}
     >
-      <FormAlerts key="alerts" errors={errors} />
+      {errors}
       <ReportingStepButtons
         key="form-buttons"
         backUrl={backUrl}

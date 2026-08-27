@@ -34,7 +34,7 @@ const mockMultiStepFormWithTaskList = MultiStepFormWithTaskList as ReturnType<
   typeof vi.fn
 >;
 const mockPostProductionData = postProductionData as ReturnType<typeof vi.fn>;
-const mockRouter = useRouter as ReturnType<typeof vi.fn>;
+const mockRouter = useRouter;
 
 describe("The ProductionDataForm component", () => {
   beforeEach(() => {
@@ -437,7 +437,7 @@ describe("The ProductionDataForm component", () => {
 
       expect(latestCall.errors[0].props.errors).toStrictEqual([
         createGenericValidationError(
-          "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
+          "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page.",
         ),
       ]);
     });
@@ -688,5 +688,67 @@ describe("The ProductionDataForm component", () => {
       "ui:widget": "hidden",
     });
     expect(calledProps.submitButtonDisabled).toBe(false);
+  });
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+
+    mockPostProductionData.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    const productionData = {
+      product_selection: ["test"],
+      production_data: [
+        {
+          product_id: 2024,
+          product_name: "test",
+          production_methodology: "a",
+          unit: "unit",
+        },
+      ],
+    };
+
+    render(
+      <ProductionDataForm
+        allowedProducts={[{ product_id: 2024, product_name: "test" }]}
+        initialData={productionData.production_data}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={"Large Facility"}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
+      />,
+    );
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+
+    let result;
+    await act(async () => {
+      result = await calledProps.onSubmit({
+        formData: productionData,
+      });
+    });
+
+    expect(result).toBe(false);
+
+    expect(mockPostProductionData).toHaveBeenCalledTimes(1);
+    expect(mockPostProductionData).toHaveBeenCalledWith(
+      1000,
+      "abcd",
+      expect.anything(),
+    );
+
+    await waitFor(() => {
+      const latestProps = mockMultiStepFormWithTaskList.mock.lastCall![0];
+
+      expect(latestProps.errors[0].props.errors).toStrictEqual([
+        createGenericValidationError(errorMessage),
+      ]);
+    });
   });
 });

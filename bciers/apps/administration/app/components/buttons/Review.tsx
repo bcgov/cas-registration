@@ -40,7 +40,9 @@ const CloseButton = ({ onClose }: CloseProps) => {
       aria-label="close"
       color="inherit"
       size="small"
-      onClick={onClose}
+      onClick={() => {
+        onClose();
+      }}
     >
       <CloseIcon fontSize="inherit" />
     </IconButton>
@@ -86,7 +88,7 @@ const Review = ({
       return;
     }
 
-    setSuccessMessageList([{ message: approvedMessage }]);
+    return setSuccessMessageList([{ message: approvedMessage }]);
   };
 
   const handleConfirmReject = async () => {
@@ -120,6 +122,7 @@ const Review = ({
   return (
     <Box
       sx={{
+        // 🛠️ to prevent leaving extra space when there is no content
         minHeight: "auto",
         width: "100%",
         marginBottom: isReviewButtons ? "16px" : "0",
@@ -197,40 +200,42 @@ const Review = ({
               <Note message={note} />
             </span>
           )}
-          <Box
-            sx={{
-              width: "fit-content",
-              minWidth: "fit-content",
-              height: "fit-content",
-            }}
-          >
-            <Button
-              onClick={handleApprove}
-              className="mr-2"
-              color="success"
-              variant="outlined"
-              aria-label="Approve application"
+          {
+            <Box
               sx={{
-                marginRight: "12px",
-                border: "1px solid",
-                fontWeight: "bold",
+                width: "fit-content",
+                minWidth: "fit-content",
+                height: "fit-content",
               }}
             >
-              Approve as Administrator <RecommendIcon />
-            </Button>
-            <Button
-              onClick={handleReject}
-              color="error"
-              variant="outlined"
-              aria-label="Reject application"
-              sx={{
-                border: "1px solid",
-                fontWeight: "bold",
-              }}
-            >
-              Decline Access <DoNotDisturbIcon />
-            </Button>
-          </Box>
+              <Button
+                onClick={handleApprove}
+                className="mr-2"
+                color="success"
+                variant="outlined"
+                aria-label="Approve application"
+                sx={{
+                  marginRight: "12px",
+                  border: "1px solid",
+                  fontWeight: "bold",
+                }}
+              >
+                Approve as Administrator <RecommendIcon />
+              </Button>
+              <Button
+                onClick={handleReject}
+                color="error"
+                variant="outlined"
+                aria-label="Reject application"
+                sx={{
+                  border: "1px solid",
+                  fontWeight: "bold",
+                }}
+              >
+                Decline Access <DoNotDisturbIcon />
+              </Button>
+            </Box>
+          }
         </Box>
       )}
 

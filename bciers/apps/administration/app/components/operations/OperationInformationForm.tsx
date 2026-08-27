@@ -31,7 +31,6 @@ import {
   handleApiResponse,
 } from "@bciers/components/validationErrors";
 import { validationUIConfig } from "@/administration/app/components/validationErrors/config";
-import type { ValidationKey } from "@/administration/app/components/validationErrors/types";
 
 const OperationInformationForm = ({
   formData,
@@ -48,6 +47,9 @@ const OperationInformationForm = ({
   generalSchema: RJSFSchema;
   uiSchema: UiSchema;
 }) => {
+  const { setErrors, renderedErrors } = useValidationErrors({
+    config: validationUIConfig,
+  });
   const [schema, setSchema] = useState(initialSchema);
   const [confirmedFormData, setConfirmedFormData] = useState(formData);
   const [
@@ -59,9 +61,6 @@ const OperationInformationForm = ({
   const [key, resetKey] = useKey();
   const [formMode, setFormMode] = useState(FormMode.READ_ONLY);
 
-  const { setErrors, renderedErrors } = useValidationErrors<ValidationKey>({
-    config: validationUIConfig,
-  });
   const router = useRouter();
   // To get the user's role from the session
   const role = useSessionRole();
@@ -115,15 +114,17 @@ const OperationInformationForm = ({
       pathToRevalidate,
     );
 
-    const isSuccess = handleApiResponse(response, setErrors);
-    if (!isSuccess) {
-      return response;
-    } else {
-      setConfirmedFormData(response);
-    }
+    // Users get this error when they select a contact that's missing address information. We include a link to the Contacts page because the user has to fix the error from there, not here in the operation form.
+    const fallbackKey = response?.error?.includes("Please return to Contacts")
+      ? "operation_rep_required"
+      : undefined;
+
+    const isSuccess = handleApiResponse(response, setErrors, fallbackKey);
+    if (!isSuccess) return { error: response?.error };
+
+    setConfirmedFormData(response);
 
     if (!data.formData?.opted_in_operation) return;
-
     const response2 = await actionHandler(
       `registration/operations/${operationId}/registration/opted-in-operation-detail`,
       "PUT",
@@ -134,9 +135,7 @@ const OperationInformationForm = ({
     );
 
     const isSuccess2 = handleApiResponse(response2, setErrors);
-    if (!isSuccess2) {
-      return { error: response2.error };
-    }
+    if (!isSuccess2) return { error: response2?.error };
   };
 
   const cancelRegistrationPurposeChange = () => {
@@ -205,6 +204,7 @@ const OperationInformationForm = ({
         formData={confirmedFormData ?? {}}
         onSubmit={handleSubmit}
         onChange={(e: IChangeEvent) => {
+          setErrors(undefined);
           const newSelectedPurpose = e.formData?.section3?.registration_purpose;
           if (newSelectedPurpose !== confirmedFormData.registration_purpose) {
             handleSelectedPurposeChange(newSelectedPurpose);
