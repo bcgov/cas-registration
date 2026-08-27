@@ -13,7 +13,7 @@ import SnackBar from "@bciers/components/form/components/SnackBar";
 import {
   useValidationErrors,
   handleApiResponse,
-  createGenericValidationError,
+  setClientError,
 } from "@bciers/components/validationErrors";
 
 interface Props {
@@ -62,9 +62,8 @@ export const FacilityReview: React.FC<Props> = ({
       ...(formData.other_activities ?? []),
     ];
     if (selectedActivityNames.length === 0) {
-      setErrors([
-        createGenericValidationError("You must select at least one activity."),
-      ]);
+      const message = "You must select at least one activity.";
+      setClientError(message, setErrors);
       return false;
     }
 
@@ -93,7 +92,8 @@ export const FacilityReview: React.FC<Props> = ({
     );
 
     if (getUpdatedFacilityData.error) {
-      setErrors([createGenericValidationError(getUpdatedFacilityData.error)]);
+      const message = getUpdatedFacilityData.error;
+      setClientError(message, setErrors);
       return;
     }
 

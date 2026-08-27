@@ -1,13 +1,9 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { vi, Mock, it, expect } from "vitest";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
-import LFOFacilitiesForm from "@reporting/src/app/components/operations/reviewFacilities/ReviewFacilitiesForm";
+import ReviewFacilitiesForm from "@reporting/src/app/components/operations/reviewFacilities/ReviewFacilitiesForm";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
-import { dummyNavigationInformation } from "../../taskList/utils";
-
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
-}));
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
 
 const mockRouterPush = vi.fn();
 const mockRouterRefresh = vi.fn();
@@ -75,14 +71,15 @@ const mockFacilitiesInitialDataWithoutPastFacility = {
   is_sync_allowed: true,
 };
 
-describe("LFOFacilitiesForm", () => {
+describe("ReviewFacilitiesForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    (actionHandler as Mock).mockReset();
   });
 
   it("renders the form correctly after loading", async () => {
     render(
-      <LFOFacilitiesForm
+      <ReviewFacilitiesForm
         initialData={mockFacilitiesInitialData}
         version_id={1}
         navigationInformation={dummyNavigationInformation}
@@ -118,7 +115,7 @@ describe("LFOFacilitiesForm", () => {
     (actionHandler as Mock).mockResolvedValueOnce(mockFacilitiesInitialData);
 
     render(
-      <LFOFacilitiesForm
+      <ReviewFacilitiesForm
         initialData={mockFacilitiesInitialData}
         version_id={1}
         navigationInformation={dummyNavigationInformation}
@@ -148,7 +145,7 @@ describe("LFOFacilitiesForm", () => {
       (actionHandler as Mock).mockResolvedValueOnce(mockFacilitiesInitialData);
 
       render(
-        <LFOFacilitiesForm
+        <ReviewFacilitiesForm
           initialData={mockFacilitiesInitialData}
           version_id={1}
           navigationInformation={dummyNavigationInformation}
@@ -212,7 +209,7 @@ describe("LFOFacilitiesForm", () => {
     (actionHandler as Mock).mockResolvedValueOnce(mockFacilitiesInitialData);
 
     render(
-      <LFOFacilitiesForm
+      <ReviewFacilitiesForm
         initialData={mockFacilitiesInitialData}
         version_id={1}
         navigationInformation={dummyNavigationInformation}
@@ -232,7 +229,7 @@ describe("LFOFacilitiesForm", () => {
     (actionHandler as Mock).mockResolvedValueOnce(mockFacilitiesInitialData);
 
     render(
-      <LFOFacilitiesForm
+      <ReviewFacilitiesForm
         initialData={mockFacilitiesInitialData}
         version_id={1}
         navigationInformation={dummyNavigationInformation}
@@ -274,7 +271,7 @@ describe("LFOFacilitiesForm", () => {
     );
 
     render(
-      <LFOFacilitiesForm
+      <ReviewFacilitiesForm
         initialData={mockFacilitiesInitialDataWithoutPastFacility}
         version_id={1}
         navigationInformation={dummyNavigationInformation}
@@ -299,7 +296,7 @@ describe("LFOFacilitiesForm", () => {
     };
 
     render(
-      <LFOFacilitiesForm
+      <ReviewFacilitiesForm
         initialData={mockDataWithSyncDisabled}
         version_id={1}
         navigationInformation={dummyNavigationInformation}
@@ -315,5 +312,43 @@ describe("LFOFacilitiesForm", () => {
     expect(
       screen.queryByText("Sync latest data from Administration"),
     ).not.toBeInTheDocument();
+  });
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+
+    (actionHandler as Mock).mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    render(
+      <ReviewFacilitiesForm
+        initialData={mockFacilitiesInitialData}
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+      />,
+    );
+
+    const checkbox2 = screen.getByRole("checkbox", {
+      name: "Facility 2 Facility 2",
+    });
+    fireEvent.click(checkbox2);
+
+    const saveButton = screen.getByRole("button", {
+      name: config.buttons.save,
+    });
+    fireEvent.click(saveButton);
+
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      "reporting/report-version/1/review-facilities",
+      "POST",
+      "reporting/reports/1/review-facilities",
+      expect.anything(),
+    );
+
+    expect(mockRouterPush).not.toHaveBeenCalled();
   });
 });

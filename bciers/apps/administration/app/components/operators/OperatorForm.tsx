@@ -35,7 +35,7 @@ export default function OperatorForm({
   showCancelOrBackButton = true,
 }: Readonly<Props>) {
   const [formState, setFormState] = useState(formData ?? {});
-  const [isCreatingState, setIsCreatingState] = useState(Boolean(isCreating));
+  const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const router = useRouter();
 
   const { setErrors, renderedErrors } = useValidationErrors();

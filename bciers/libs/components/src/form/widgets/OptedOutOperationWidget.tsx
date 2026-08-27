@@ -108,8 +108,8 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
       onChange(undefined);
       // clear the opted-out status by setting final_reporting_year to null
       const response = await clearOptedOutDetail(formContext?.operationId);
-
-      if (!handleApiResponse(response, setErrors)) {
+      const isSuccess = handleApiResponse(response, setErrors);
+      if (!isSuccess) {
         // Revert UI state on error
         setStatus("Opted-out");
         return;

@@ -1,7 +1,9 @@
+import { ValidationMessageKey as SharedKey } from "@bciers/components/validationErrors";
+
 /**
- * All error keys that can be returned by the reporting backend
+ * Application specific validation message keys, combined wit shared system keys
  */
-export type ValidationMessageKey =
+export type ValidationMessageKey = SharedKey<
   | "error_required_fields"
   | "operation_boro_id"
   | "report_data_out_of_bounds_by_fuel_type"
@@ -18,4 +20,4 @@ export type ValidationMessageKey =
   | "missing_regulated_product"
   | "og_np_nc_allocation_mismatch"
   | "missing_operation_representative"
-  | "generic_error";
+>;

@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import RequestAccessButton from "apps/administration/app/components/buttons/RequestAccessButton";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
+import userEvent from "@testing-library/user-event";
 
 // Mock the dependencies
 const mockPush = vi.fn();
@@ -49,66 +50,61 @@ describe("RequestAccessButton", () => {
     });
   });
 
-  it("displays an error message when the access request fails", async () => {
+  it("displays the operator access error with a mailto link to the regulator", async () => {
+    const errorMessage =
+      "Your business BCeID does not have access to this operator. Please contact your operator's administrator to request the correct business BCeID. If this issue persists, please contact";
     actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
       validation: {
+        message: errorMessage,
         errors: [
           {
-            key: "Access request failed",
-            error: { severity: "Error" },
-          },
-        ],
-      },
-    });
-
-    render(<RequestAccessButton operatorId={1} operatorName="Test Operator" />);
-    fireEvent.click(screen.getByRole("button", { name: "Request access" }));
-
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledWith(
-        "registration/operators/1/request-access",
-        "POST",
-        "",
-      );
-      expect(screen.getByText("Access request failed")).toBeInTheDocument();
-    });
-  });
-  it("displays mailto link when user business BCeID lacks operator access", async () => {
-    actionHandler.mockResolvedValueOnce({
-      validation: {
-        errors: [
-          {
-            key: "no_bceid_access",
+            key: "user_error",
             error: {
               severity: "Error",
-              message:
-                "Your business BCeID does not have access to this operator. Please contact ghgregulator@gov.bc.ca",
+              message: errorMessage,
             },
           },
         ],
       },
     });
-
     render(<RequestAccessButton operatorId={1} operatorName="Test Operator" />);
     fireEvent.click(screen.getByRole("button", { name: "Request access" }));
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          /Your business BCeID does not have access to this operator/i,
-        ),
-      ).toBeVisible();
-
-      const mailtoLink = screen.getByRole("link", {
-        name: "ghgregulator@gov.bc.ca",
-      });
-      expect(mailtoLink).toBeVisible();
-      expect(mailtoLink).toHaveAttribute(
-        "href",
-        expect.stringMatching(/^mailto:/),
-      );
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/operators/1/request-access",
+      "POST",
+      "",
+    );
+    expect(
+      await screen.findByText(
+        /Your business BCeID does not have access to this operator/i,
+      ),
+    ).toBeVisible();
+    const mailtoLink = screen.getByRole("link", {
+      name: /ghgregulator@gov\.bc\.ca/i,
     });
+    expect(mailtoLink).toHaveAttribute(
+      "href",
+      expect.stringMatching(/^mailto:ghgregulator@gov\.bc\.ca$/i),
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to request access.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(<RequestAccessButton operatorId={1} operatorName="Test Operator" />);
+    await userEvent.click(
+      screen.getByRole("button", { name: "Request access" }),
+    );
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/operators/1/request-access",
+      "POST",
+      "",
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
     expect(mockPush).not.toHaveBeenCalled();
   });
 });

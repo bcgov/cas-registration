@@ -1,10 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import {
   actionHandler,
@@ -114,4 +108,45 @@ describe("the NewLfoFacilityForm component", () => {
       );
     },
   );
+
+  it("displays an error message when the create request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(<NewLfoFacilityForm {...defaultProps} />);
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Add New Facility",
+      }),
+    );
+    fillNameAndTypeFields(0);
+    await toggleAndFillStartDate(0, `${currentYear}0101`);
+    fillAddressFields(0);
+    fillLatitudeLongitudeFields(0);
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Save",
+      }),
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/facilities",
+      "POST",
+      `/registration/register-an-operation/${defaultProps.operationId}/${defaultProps.step}`,
+      expect.anything(),
+    );
+    expect(defaultProps.onSuccess).not.toHaveBeenCalled();
+    expect(defaultProps.setFacilityFormIsSubmitting).toHaveBeenCalledWith(true);
+    expect(defaultProps.setFacilityFormIsSubmitting).toHaveBeenCalledWith(
+      false,
+    );
+    expect(
+      screen.getByRole("button", {
+        name: "Save",
+      }),
+    ).toBeVisible();
+    expect(screen.queryByText("Facility added")).not.toBeInTheDocument();
+  });
 });

@@ -1,20 +1,11 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import StartReportForm from "@reporting/src/app/components/report/StartReportForm";
-import { actionHandler } from "@bciers/actions";
-import { useRouter } from "next/navigation";
+import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import expectComboBox from "@bciers/testConfig/helpers/expectComboBox";
 import { selectComboboxOption } from "@bciers/testConfig/helpers/selectComboboxOption";
 import { createStartReportSchemas } from "@reporting/src/data/jsonSchema/report/startReport";
 import getPreviousReportableOperations from "@reporting/src/app/utils/getPreviousReportableOperations";
-
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
-}));
-
-vi.mock("next/navigation", () => ({
-  useRouter: vi.fn(),
-}));
 
 vi.mock("@reporting/src/app/utils/getPreviousReportableOperations", () => ({
   default: vi.fn(),
@@ -56,6 +47,7 @@ const fillForm = async () => {
 describe("StartReportForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockActionHandler.mockReset();
 
     mockUseRouter.mockReturnValue({
       push: mockPush,
@@ -105,45 +97,6 @@ describe("StartReportForm", () => {
     );
   });
 
-  it("renders validation errors when report creation fails", async () => {
-    mockActionHandler.mockResolvedValue({
-      error: "Unable to create report.",
-      validation: {
-        errors: [
-          {
-            key: "generic_error",
-            error: {
-              severity: "Error",
-              message: "Unable to create report.",
-            },
-          },
-        ],
-      },
-    });
-
-    await renderForm();
-    await fillForm();
-
-    await userEvent.click(screen.getByRole("button", { name: /start/i }));
-
-    expect(await screen.findByText("Unable to create report.")).toBeVisible();
-    expect(mockPush).not.toHaveBeenCalled();
-  });
-
-  it("falls back to the generic error message when validation errors are not returned", async () => {
-    mockActionHandler.mockResolvedValue({
-      error: "Unable to create report.",
-    });
-
-    await renderForm();
-    await fillForm();
-
-    await userEvent.click(screen.getByRole("button", { name: /start/i }));
-
-    expect(await screen.findByText("Unable to create report.")).toBeVisible();
-    expect(mockPush).not.toHaveBeenCalled();
-  });
-
   it("returns to the previous reports page when Cancel is clicked", async () => {
     await renderForm();
 
@@ -151,5 +104,24 @@ describe("StartReportForm", () => {
 
     expect(mockPush).toHaveBeenCalledWith("/reports/previous-years");
     expect(mockBack).not.toHaveBeenCalled();
+  });
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to create report.";
+    mockActionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    await renderForm();
+    await fillForm();
+    await userEvent.click(screen.getByRole("button", { name: /start/i }));
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockActionHandler).toHaveBeenCalledTimes(1);
+    expect(mockActionHandler).toHaveBeenCalledWith(
+      "reporting/create-report-for-reporting-year",
+      "POST",
+      "/reports/previous-years",
+      expect.anything(),
+    );
+    expect(mockPush).not.toHaveBeenCalled();
   });
 });
