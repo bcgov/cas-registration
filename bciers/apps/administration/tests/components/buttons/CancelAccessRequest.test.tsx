@@ -1,11 +1,20 @@
 import { UUID } from "crypto";
-import { render, screen, waitFor } from "@testing-library/react";
-import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
+import { render, screen } from "@testing-library/react";
+import { useRouter } from "@bciers/testConfig/mocks";
 import CancelAccessRequest from "@/administration/app/components/buttons/CancelAccessRequest";
+import cancelAccessRequest from "@/administration/app/components/userOperators/cancelAccessRequest";
 import { UserOperatorJSON } from "@/administration/tests/components/userOperators/constants";
 import userEvent from "@testing-library/user-event";
 
+vi.mock(
+  "@/administration/app/components/userOperators/cancelAccessRequest",
+  () => ({
+    default: vi.fn(),
+  }),
+);
+
 const mockRouterPush = vi.fn();
+
 useRouter.mockReturnValue({
   query: {},
   push: mockRouterPush,
@@ -26,10 +35,12 @@ describe("Cancel Access Requests component", () => {
   });
 
   it("should allow the user to cancel the request", async () => {
-    actionHandler.mockResolvedValueOnce(true);
+    vi.mocked(cancelAccessRequest).mockResolvedValueOnce(true);
+
     render(
       <CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID} />,
     );
+
     await userEvent.click(
       screen.getByRole("button", { name: "Cancel Access Request" }),
     );
@@ -51,28 +62,44 @@ describe("Cancel Access Requests component", () => {
     await userEvent.click(
       screen.getByRole("button", { name: /yes, cancel this request/i }),
     );
-    // make sure the action is called
-    expect(actionHandler).toHaveBeenCalledWith(
-      `registration/user-operators/${UserOperatorJSON.id}`,
-      "DELETE",
-      "",
-    );
+    // make sure the server action is called
+    expect(cancelAccessRequest).toHaveBeenCalledWith(UserOperatorJSON.id);
     // make sure the user is redirected to the select operator page
     expect(mockRouterPush).toHaveBeenCalledWith("/select-operator");
   });
 
-  it("shows an error message if the request fails", async () => {
-    actionHandler.mockResolvedValueOnce({
-      validation: {
-        errors: [
-          {
-            key: "Failed to cancel request",
-            error: { severity: "Error" },
-          },
-        ],
-      },
+  it("displays an error message when the cancel request fails", async () => {
+    const errorMessage = "Unable to cancel access request.";
+
+    vi.mocked(cancelAccessRequest).mockResolvedValueOnce({
+      error: errorMessage,
     });
 
+    render(
+      <CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID} />,
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", { name: "Cancel Access Request" }),
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /yes, cancel this request/i }),
+    );
+
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+
+    expect(cancelAccessRequest).toHaveBeenCalledTimes(1);
+    expect(cancelAccessRequest).toHaveBeenCalledWith(UserOperatorJSON.id);
+    expect(mockRouterPush).not.toHaveBeenCalled();
+  });
+
+  it("displays an error message when the cancel request throws", async () => {
+    const errorMessage = "Internal Server Error";
+    // actionHandler DELETE throws
+    vi.mocked(cancelAccessRequest).mockRejectedValueOnce(
+      new Error(errorMessage),
+    );
     render(
       <CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID} />,
     );
@@ -82,10 +109,9 @@ describe("Cancel Access Requests component", () => {
     await userEvent.click(
       screen.getByRole("button", { name: /yes, cancel this request/i }),
     );
-
-    await waitFor(() => {
-      expect(screen.getByText(/Failed to cancel request/i)).toBeVisible();
-    });
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(cancelAccessRequest).toHaveBeenCalledTimes(1);
+    expect(cancelAccessRequest).toHaveBeenCalledWith(UserOperatorJSON.id);
     expect(mockRouterPush).not.toHaveBeenCalled();
   });
 });
