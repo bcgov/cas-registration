@@ -20,6 +20,7 @@ import useKey from "@bciers/utils/src/useKey";
 import {
   useValidationErrors,
   handleApiResponse,
+  setClientError,
 } from "@bciers/components/validationErrors";
 import { UiSchema } from "@rjsf/utils";
 
@@ -265,10 +266,8 @@ export default function TransferForm({
       updatedFormData.transfer_entity === "Facility" &&
       updatedFormData.from_operation === updatedFormData.to_operation
     ) {
-      handleApiResponse(
-        { error: "Cannot transfer facilities to the same operation!" },
-        setErrors,
-      );
+      const message = "Cannot transfer facilities to the same operation!";
+      setClientError(message, setErrors);
       return;
     }
 

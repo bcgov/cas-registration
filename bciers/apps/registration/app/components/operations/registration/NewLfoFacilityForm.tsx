@@ -85,7 +85,7 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
 
     const isSuccess = handleApiResponse(response, setErrors);
     if (!isSuccess) {
-      return response;
+      return;
     }
 
     // 🔔 Notify parent via callback
@@ -94,7 +94,6 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
     setIsSnackbarOpen(true);
     setShowForm(false);
     setFormState({}); // reset form state
-    return response;
   };
 
   return (

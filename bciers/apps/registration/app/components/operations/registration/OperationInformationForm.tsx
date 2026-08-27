@@ -20,8 +20,8 @@ import useKey from "@bciers/utils/src/useKey";
 import { Dict } from "@bciers/types/dictionary";
 import { useFileUploadWidget } from "@bciers/components/form/widgets/FileWidget";
 import {
-  useValidationErrors,
   handleApiResponse,
+  ValidationErrors,
 } from "@bciers/components/validationErrors";
 
 interface OperationInformationFormProps {
@@ -43,8 +43,6 @@ const OperationInformationForm = ({
   const [selectedOperation, setSelectedOperation] = useState(
     rawFormData?.operation,
   );
-
-  const { setErrors, renderedErrors } = useValidationErrors();
 
   const [schema, setSchema] = useState(initialSchema);
   const nestedFormData = rawFormData
@@ -76,6 +74,9 @@ const OperationInformationForm = ({
       },
     },
   });
+  const [externalError, setExternalError] = useState<
+    string | ValidationErrors | undefined
+  >();
 
   const updateUiSchemaWithHelpText = (
     registrationPurpose: RegistrationPurposes,
@@ -155,7 +156,6 @@ const OperationInformationForm = ({
     continueRegistration || !selectedOperation;
 
   const handleSubmit = async (e: IChangeEvent) => {
-    setErrors(undefined);
     const formData = e.formData;
     const isCreating = !formData?.section1?.operation;
     const creatingEndpoint = `registration/operations`;
@@ -170,11 +170,13 @@ const OperationInformationForm = ({
         : `/register-an-operation/${formData?.section1?.operation}/${step}`,
     );
 
-    const isSuccess = handleApiResponse(response, setErrors);
-    if (!isSuccess) {
+    // If the request had an error, return response directly.
+    // MultiStepBase will call handleApiResponse(response, setErrors) and display the error.
+    if (response?.error || response?.errors) {
       return response;
     }
 
+    // Handle dynamic routing for step progression
     if (response?.id) {
       const nextStepUrl = `/register-an-operation/${response.id}/${
         step + 1
@@ -188,11 +190,12 @@ const OperationInformationForm = ({
   const handleSelectOperationChange = async (data: any) => {
     const operationId = data.section1.operation;
     setSelectedOperation(operationId);
-    setErrors(undefined);
+    setExternalError(undefined);
 
     const operationData = await getOperationRegistration(operationId);
 
-    const isSuccess = handleApiResponse(operationData, setErrors);
+    // Pass setExternalError so MultiStepBase receives it via props
+    const isSuccess = handleApiResponse(operationData, setExternalError);
     if (!isSuccess) return;
 
     updateConfirmedFormState(createNestedFormData(operationData, schema));
@@ -340,10 +343,10 @@ const OperationInformationForm = ({
         }
         formData={confirmedFormState}
         onSubmit={handleSubmit}
+        errors={externalError}
         schema={schema}
         step={step}
         steps={steps}
-        error={renderedErrors}
         onChange={(e: IChangeEvent) => {
           const newSelectedOperation = e.formData?.section1?.operation;
           const newSelectedPurpose = e.formData?.section1?.registration_purpose;

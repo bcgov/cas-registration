@@ -13,6 +13,7 @@ import {
 import {
   useValidationErrors,
   handleApiResponse,
+  setClientError,
 } from "@bciers/components/validationErrors";
 
 const OperatorSearchWidget: React.FC<WidgetProps> = ({
@@ -51,8 +52,8 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       try {
         setErrors(undefined);
         const response = await actionHandler(url, "GET");
-
-        if (!handleApiResponse(response, setErrors)) {
+        const isSuccess = handleApiResponse(response, setErrors);
+        if (!isSuccess) {
           setOptions([]);
           setIsSearchAttempted(true);
           return;
@@ -64,8 +65,8 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
 
         setOptions(results);
         setIsSearchAttempted(true);
-      } catch (error) {
-        handleApiResponse({ error }, setErrors);
+      } catch (error: any) {
+        setClientError(error, setErrors);
         setOptions([]);
         setIsSearchAttempted(true);
       }

@@ -15,7 +15,6 @@ import {
   handleApiResponse,
 } from "@bciers/components/validationErrors";
 import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
@@ -34,10 +33,9 @@ export default function SignOffForm({
     date: "",
     supplementary: {},
   });
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-    });
+  const { setErrors, renderedErrors } = useValidationErrors({
+    config: validationUIConfig,
+  });
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
   const allChecked = (formData: SignOffFormItems) => {
@@ -69,9 +67,9 @@ export default function SignOffForm({
 
     setSubmitButtonDisabled(false);
 
-    const isValid = handleApiResponse(response, setErrors);
+    const isSuccess = handleApiResponse(response, setErrors);
 
-    if (!isValid) {
+    if (!isSuccess) {
       return false;
     }
 

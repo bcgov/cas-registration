@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { ValidationErrorSummary } from "@bciers/components/validationErrors";
+import {
+  ValidationErrorSummary,
+  ValidationErrors,
+} from "@bciers/components/validationErrors";
 import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type {
-  ReportValidationErrors,
-  ValidationMessageKey,
-} from "@reporting/src/app/components/validationErrors/types";
+import { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 describe("ValidationErrorSummary", () => {
   it("renders nothing when there are no errors", () => {
@@ -20,10 +20,10 @@ describe("ValidationErrorSummary", () => {
   });
 
   it("renders the backend message for keys without a UI config", () => {
-    const errors: ReportValidationErrors = [
+    const errors: ValidationErrors = [
       {
         // Generic API error keys (e.g. user_error) have no reporting UI config
-        key: "user_error" as ReportValidationErrors[number]["key"],
+        key: "user_error" as ValidationErrors[number]["key"],
         error: {
           severity: "Error",
           message: "Your business BCeID does not have access to this operator.",
@@ -31,7 +31,7 @@ describe("ValidationErrorSummary", () => {
       },
     ];
 
-    render(<ReportValidationSummary errors={errors} />);
+    render(<ValidationErrorSummary errors={errors} />);
 
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Your business BCeID does not have access to this operator.",
@@ -40,7 +40,7 @@ describe("ValidationErrorSummary", () => {
   });
 
   it("sorts validation entries by severity with errors before warnings", () => {
-    const errors: ReportValidationErrors = [
+    const errors: ValidationErrors = [
       {
         key: "missing_report_verification", // gitleaks:allow
         error: {
@@ -76,7 +76,7 @@ describe("ValidationErrorSummary", () => {
   });
 
   it("sorts by priority within the same severity", () => {
-    const errors: ReportValidationErrors = [
+    const errors: ValidationErrors = [
       {
         // priority 4
         key: "missing_report_verification", // gitleaks:allow
@@ -111,7 +111,7 @@ describe("ValidationErrorSummary", () => {
   });
 
   it("keeps original order when severity and priority are equal", () => {
-    const errors: ReportValidationErrors = [
+    const errors: ValidationErrors = [
       {
         // priority 4
         key: "missing_report_verification", // gitleaks:allow
@@ -146,7 +146,7 @@ describe("ValidationErrorSummary", () => {
   });
 
   it("renders inline link messages with expected destination", () => {
-    const errors: ReportValidationErrors = [
+    const errors: ValidationErrors = [
       {
         key: "missing_report_verification", // gitleaks:allow
         error: {
@@ -175,13 +175,14 @@ describe("ValidationErrorSummary", () => {
       "href",
       "/reports/42/verification",
     );
+
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Verification information must be completed on the Verification page.",
     );
   });
 
   it("renders message-only entries without links", () => {
-    const errors: ReportValidationErrors = [
+    const errors: ValidationErrors = [
       {
         key: "generic_error",
         error: {
@@ -198,7 +199,9 @@ describe("ValidationErrorSummary", () => {
       />,
     );
 
-    expect(screen.getByText("Something went wrong. Very wrong.")).toBeVisible();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Something went wrong. Very wrong.",
+    );
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 });

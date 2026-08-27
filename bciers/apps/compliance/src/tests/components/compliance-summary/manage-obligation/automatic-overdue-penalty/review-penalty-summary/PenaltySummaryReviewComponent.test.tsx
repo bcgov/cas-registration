@@ -240,4 +240,41 @@ describe("PenaltySummaryReviewComponent", () => {
     expect(hasErrorText).toBe(true);
     expect(getGeneratePenaltyInvoiceButton()).toBeEnabled();
   });
+
+  it("displays an error message when the request fails", async () => {
+    const user = userEvent.setup();
+    const errorMessage = "Unable to complete the request.";
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        headers: new Headers({ "Content-Type": "application/json" }),
+        json: async () => ({
+          message: errorMessage,
+        }),
+      }),
+    );
+    render(
+      <PenaltySummaryReviewComponent
+        data={mockData}
+        reportingYear={2024}
+        complianceReportVersionId={999}
+      />,
+    );
+    await user.click(getGeneratePenaltyInvoiceButton());
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith(
+      "/compliance/api/invoice/999/automatic-overdue-penalty",
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockWindowOpen).toHaveBeenCalledWith("", "_blank");
+    expect(fakeTab.close).toHaveBeenCalled();
+    expect(fakeTab.location.href).toBe("");
+    expect(getGeneratePenaltyInvoiceButton()).toBeEnabled();
+  });
 });

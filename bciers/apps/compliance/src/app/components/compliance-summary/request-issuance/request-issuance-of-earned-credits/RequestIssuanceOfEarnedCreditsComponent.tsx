@@ -20,6 +20,7 @@ import { IssuanceStatus } from "@bciers/utils/src/enums";
 import {
   useValidationErrors,
   handleApiResponse,
+  setClientError,
 } from "@bciers/components/validationErrors";
 
 interface Props {
@@ -122,20 +123,9 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
               ...response,
             }),
           ),
-        onError: (err: any) =>
-          handleApiResponse(
-            {
-              error:
-                err instanceof Error
-                  ? err.message
-                  : typeof err === "string"
-                    ? err
-                    : err?.message ||
-                      err?.error ||
-                      "An unexpected error occurred.",
-            },
-            setErrors,
-          ),
+        onError: (err: any) => {
+          setClientError(err, setErrors);
+        },
       }}
       className="w-full min-h-[62vh] flex flex-col justify-between"
     >

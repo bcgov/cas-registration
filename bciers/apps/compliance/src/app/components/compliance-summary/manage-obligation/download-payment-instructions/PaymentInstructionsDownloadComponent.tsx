@@ -10,8 +10,8 @@ import {
 import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 import {
+  setClientError,
   useValidationErrors,
-  createGenericValidationError,
 } from "@bciers/components/validationErrors";
 
 interface Props {
@@ -51,7 +51,7 @@ export default function PaymentInstructionsDownloadComponent({
   };
 
   const setError = (message: string) => {
-    setErrors([createGenericValidationError(message)]);
+    setClientError(message, setErrors);
   };
 
   // Borrowed logic from complianceSummaryReviewComponent

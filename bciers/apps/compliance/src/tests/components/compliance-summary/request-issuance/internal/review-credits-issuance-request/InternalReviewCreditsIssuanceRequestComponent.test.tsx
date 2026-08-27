@@ -1,26 +1,23 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import InternalReviewCreditsIssuanceRequestComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/review-credits-issuance-request/InternalReviewCreditsIssuanceRequestComponent";
-import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
-import { useSessionRole } from "@bciers/utils/src/sessionUtils";
-import { actionHandler } from "@bciers/actions";
-
-// Mock useSessionRole
-vi.mock("@bciers/utils/src/sessionUtils", () => ({
-  useSessionRole: vi.fn(),
-}));
+import {
+  actionHandler,
+  useRouter,
+  useSessionRole,
+} from "@bciers/testConfig/mocks";
+import {
+  AnalystSuggestion,
+  FrontEndRoles,
+  IssuanceStatus,
+} from "@bciers/utils/src/enums";
 
 // Mock the router
 const mockPush = vi.fn();
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
+const mockActionHandler = vi.mocked(actionHandler);
 
-// Mock actionHandler
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
-}));
+useRouter.mockReturnValue({
+  push: mockPush,
+});
 
 describe("InternalReviewCreditsIssuanceRequestComponent", () => {
   const mockFormData = {
@@ -39,12 +36,20 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
     supplementary_declined: false,
   };
+
   const mockComplianceReportVersionId = 123;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useSessionRole as any).mockReturnValue("cas_analyst");
-    (actionHandler as any).mockResolvedValue({ error: null });
+    mockActionHandler.mockReset();
+
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_ANALYST);
+
+    useRouter.mockReturnValue({
+      push: mockPush,
+    });
+
+    mockActionHandler.mockResolvedValue({ error: null });
   });
 
   it("renders form with correct title, section headers, and field labels for CAS Analyst", () => {
@@ -89,7 +94,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
   });
 
   it("check non cas analyst can't edit the analyst suggestion and comment", () => {
-    (useSessionRole as any).mockReturnValue("cas_director");
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
 
     render(
       <InternalReviewCreditsIssuanceRequestComponent
@@ -124,7 +129,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledWith(
+      expect(mockActionHandler).toHaveBeenCalledWith(
         "compliance/compliance-report-versions/123/earned-credits",
         "PUT",
         "/compliance-administration/compliance-summaries/123/review-by-director",
@@ -143,7 +148,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
   });
 
   it("redirects non-CAS Analyst without submitting", async () => {
-    (useSessionRole as any).mockReturnValue("cas_director");
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
 
     const formDataWithoutPriorSubmission = {
       ...mockFormData,
@@ -163,7 +168,8 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     expect(mockPush).toHaveBeenCalledWith(
       `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
     );
-    expect(actionHandler).not.toHaveBeenCalled();
+
+    expect(mockActionHandler).not.toHaveBeenCalled();
   });
 
   it("disables submit button when analyst suggestion is missing", () => {
@@ -181,32 +187,6 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
 
     const submitButton = screen.getByRole("button", { name: "Continue" });
     expect(submitButton).toBeDisabled();
-  });
-
-  it("handles submission errors", async () => {
-    (actionHandler as any).mockResolvedValue({ error: "Submission failed" });
-
-    const formDataWithoutPriorSubmission = {
-      ...mockFormData,
-      analyst_submitted_date: undefined as any,
-      analyst_submitted_by: undefined as any,
-    };
-    render(
-      <InternalReviewCreditsIssuanceRequestComponent
-        initialFormData={formDataWithoutPriorSubmission}
-        complianceReportVersionId={mockComplianceReportVersionId}
-      />,
-    );
-
-    const submitButton = screen.getByRole("button", { name: "Continue" });
-    fireEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(screen.getByText("Submission failed")).toBeVisible();
-    });
-
-    expect(mockPush).not.toHaveBeenCalled();
-    expect(submitButton).not.toBeDisabled();
   });
 
   it("handles back button navigation", () => {
@@ -283,7 +263,8 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
 
     // Further click on either button should be ignored
     fireEvent.click(continueButton);
-    expect(actionHandler).toHaveBeenCalledTimes(1);
+
+    expect(mockActionHandler).toHaveBeenCalledTimes(1);
   });
 
   it("keeps form editable and resubmits when analyst returns after prior READY_TO_APPROVE submission", async () => {
@@ -315,7 +296,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
 
     fireEvent.click(continueButton);
     await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledWith(
+      expect(mockActionHandler).toHaveBeenCalledWith(
         "compliance/compliance-report-versions/123/earned-credits",
         "PUT",
         "/compliance-administration/compliance-summaries/123/review-by-director",
@@ -326,6 +307,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
           }),
         },
       );
+
       expect(mockPush).toHaveBeenCalledWith(
         `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
       );
@@ -352,7 +334,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
 
     fireEvent.click(continueButton);
     await waitFor(() => {
-      expect(actionHandler).not.toHaveBeenCalled();
+      expect(mockActionHandler).not.toHaveBeenCalled();
       expect(mockPush).toHaveBeenCalledWith(
         `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
       );
@@ -404,5 +386,34 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
 
     const analystComment = screen.getByRole("textbox");
     expect(analystComment).not.toBeDisabled();
+  });
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    mockActionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    const formDataWithoutPriorSubmission = {
+      ...mockFormData,
+      analyst_submitted_date: undefined as any,
+      analyst_submitted_by: undefined as any,
+    };
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={formDataWithoutPriorSubmission}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockActionHandler).toHaveBeenCalledTimes(1);
+    expect(mockActionHandler).toHaveBeenCalledWith(
+      `compliance/compliance-report-versions/${mockComplianceReportVersionId}/earned-credits`,
+      "PUT",
+      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
+      expect.anything(),
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Continue" })).toBeEnabled();
   });
 });

@@ -10,6 +10,7 @@ import Link from "next/link";
 import {
   useValidationErrors,
   handleApiResponse,
+  setClientError,
 } from "@bciers/components/validationErrors";
 
 export enum EntityWithBcghgType {
@@ -62,9 +63,9 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
 }) => {
   const [bcghgId, setBcghgId] = useState(value);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [editBcghgId, setEditBcghgId] = useState(false);
   const [manualBcghgId, setManualBcghgId] = useState("");
-  const { setErrors, renderedErrors } = useValidationErrors();
   const { formContext } = registry;
 
   const entityId = formContext?.operationId || formContext?.facilityId;
@@ -75,9 +76,8 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
   const handleClearBcghgId = async () => {
     setErrors(undefined);
     const response = await clearBcghgId(entityId, entityType);
-    if (!handleApiResponse(response, setErrors)) {
-      return;
-    }
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) return;
     setBcghgId(undefined);
     setEditBcghgId(false);
   };
@@ -87,7 +87,8 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
   ) => {
     setErrors(undefined);
     if (bcghgIdToSet === "") {
-      handleApiResponse({ error: "BCGHG ID cannot be empty" }, setErrors);
+      const message = "BCGHG ID cannot be empty";
+      setClientError(message, setErrors);
       return;
     }
 
@@ -96,10 +97,8 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
       entityType,
       editBcghgId ? bcghgIdToSet : undefined,
     );
-
-    if (!handleApiResponse(response, setErrors)) {
-      return;
-    }
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) return;
     setIsSnackbarOpen(true);
     setBcghgId(response?.id);
     setEditBcghgId(false);
@@ -187,7 +186,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
           setIsSnackbarOpen={setIsSnackbarOpen}
         />
       </div>
-      {renderedErrors}
+      {renderedErrors && <div className="mt-2 w-full">{renderedErrors}</div>}
     </div>
   );
 };

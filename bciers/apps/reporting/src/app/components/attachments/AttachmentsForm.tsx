@@ -111,6 +111,7 @@ const AttachmentsForm: React.FC<Props> = ({
   };
 
   const handleSubmit = async (canContinue: boolean) => {
+    setErrors(undefined);
     if (!validateAttachments()) return;
 
     if (
@@ -140,9 +141,9 @@ const AttachmentsForm: React.FC<Props> = ({
       );
     }
     const response = await postAttachments(version_id, formData);
-    const isValid = handleApiResponse(response, setErrors);
+    const isSuccess = handleApiResponse(response, setErrors);
 
-    if (!isValid) {
+    if (!isSuccess) {
       setIsSaving(false);
       return false;
     }

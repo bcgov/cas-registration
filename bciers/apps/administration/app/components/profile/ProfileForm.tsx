@@ -52,12 +52,8 @@ export default function ProfileForm({
   idp,
   contactId,
 }: Props) {
-  // 🐜 To display errors
   const { setErrors, renderedErrors } = useValidationErrors();
-
-  // 🌀 Loading state for the Submit button
   const [isLoading, setIsLoading] = useState(false);
-  // ✅ Success state for for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
 
   const emailHelpTextFirstClause = (
@@ -90,23 +86,15 @@ export default function ProfileForm({
     }
   }
 
-  // 👤 Use NextAuth.js hook to get information about the user's session
-  //  Destructuring assignment from data property of the object returned by useSession()
-  //
   // 🛠️ Function to update the session, without reloading the page
   const handleUpdate = async () => {
     // With NextAuth strategy: "jwt" , update() method will trigger a jwt callback where app_role will be augmented to the jwt and session objects
     await getSession();
-    // const { update } = useSession();
-    // await update({ trigger: "update" });
-    // ✅ Set success state to true
     setIsSuccess(true);
-    // 🕐 Wait for 3 second and then reset success state
     setTimeout(() => {
       setIsSuccess(false);
     }, 3000);
     if (isCreate) {
-      // 🛸 Redirect: after the update is complete, navigate to the dashboard
       window.location.href = "/dashboard";
     }
   };
@@ -128,8 +116,6 @@ export default function ProfileForm({
     setIsSuccess(false);
 
     const session = await getSession();
-
-    // 🚀 API call: POST/PUT user form data
     const response = await actionHandler(
       isCreate ? `registration/users` : `registration/user/user-profile`,
       isCreate ? "POST" : "PUT",
@@ -146,8 +132,8 @@ export default function ProfileForm({
 
     setIsLoading(false);
 
-    const isSuccessResponse = handleApiResponse(response, setErrors);
-    if (!isSuccessResponse) {
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
       return;
     }
 
@@ -165,7 +151,6 @@ export default function ProfileForm({
     >
       {renderedErrors}
       <div className="flex justify-end gap-3">
-        {/* Disable the button when loading or when success state is true */}
         <Button
           variant="contained"
           type="submit"

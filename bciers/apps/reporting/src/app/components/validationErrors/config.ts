@@ -1,13 +1,16 @@
-import { createValidationUIConfig } from "@bciers/components/validationErrors";
 import {
   facilityRoutes,
   reportRoutes,
   resolveValidationHref,
 } from "@reporting/src/app/utils/routes";
-import type { ValidationUIConfig, ValidationMessageKey } from "./types";
+import {
+  createValidationUIConfig,
+  ValidationUIConfig,
+} from "@bciers/components/validationErrors";
+import { ValidationMessageKey } from "./types";
 
 export const validationUIConfig: Partial<
-  Record<ValidationMessageKey, ValidationUIConfig>
+  Record<ValidationMessageKey, ValidationUIConfig<ValidationMessageKey>>
 > = {
   error_required_fields: createValidationUIConfig<ValidationMessageKey>({
     label: (error) => String(error.context?.section_title ?? "review section"),

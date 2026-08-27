@@ -39,37 +39,30 @@ export default function ContactForm({
   allowEdit,
 }: Readonly<Props>) {
   const router = useRouter();
-  const params = useParams();
-  const role = useSessionRole();
+  const { setErrors, renderedErrors } = useValidationErrors();
+  const [formState, setFormState] = useState(formData ?? {});
+  const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const [key, resetKey] = useKey();
-
-  const [formState, setFormState] = useState<ContactFormData>(
-    formData ?? ({} as ContactFormData),
-  );
-  const [isCreatingState, setIsCreatingState] = useState(Boolean(isCreating));
+  const role = useSessionRole();
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const params = useParams();
 
-  const { setErrors, renderedErrors } = useValidationErrors();
-
-  const hasPlacesAssigned = Boolean(
-    formData.places_assigned && formData.places_assigned.length > 0,
-  );
+  const handleClickDelete = () => {
+    setModalOpen(true);
+  };
 
   const handleArchiveContact = async () => {
     setIsSubmitting(true);
-    setErrors(undefined);
-
     const response = await archiveContact(params.contactId as string);
-    setIsSubmitting(false);
-
     const isSuccess = handleApiResponse(response, setErrors);
     if (!isSuccess) {
       setModalOpen(false);
+      setIsSubmitting(false);
       return;
     }
-
     router.push("/contacts?from_deletion=true");
+    return;
   };
 
   const handleSubmit = async (data: { formData?: any }) => {
@@ -78,16 +71,18 @@ export default function ContactForm({
     setFormState(updatedFormData);
 
     const method = isCreatingState ? "POST" : "PUT";
-    const contactId = formState.id ?? params.contactId;
     const endpoint = isCreatingState
       ? "registration/contacts"
-      : `registration/contacts/${contactId}`;
+      : `registration/contacts/${formState.id}`;
     const pathToRevalidate = isCreatingState
       ? "/contacts"
-      : `/contacts/${contactId}`;
+      : `/contacts/${formState.id}`;
+    const body = {
+      ...data.formData,
+    };
 
     const response = await actionHandler(endpoint, method, pathToRevalidate, {
-      body: JSON.stringify(data.formData),
+      body: JSON.stringify(body),
     });
 
     const isSuccess = handleApiResponse(response, setErrors);
@@ -95,19 +90,23 @@ export default function ContactForm({
       return response;
     }
 
-    const activeId = response.id ?? contactId;
-
     if (isCreatingState) {
       setIsCreatingState(false);
-      setFormState((prev) => ({ ...prev, id: activeId }));
+      setFormState((prevState) => ({
+        ...prevState,
+        id: response.id,
+      }));
     } else {
       resetKey();
     }
-
-    const titleQuery =
-      `${response.first_name ?? ""} ${response.last_name ?? ""}`.trim();
-    router.replace(`/contacts/${activeId}?contacts_title=${titleQuery}`);
+    const replaceUrl = `/contacts/${
+      method === "POST" ? response.id : formState.id
+    }?contacts_title=${response.first_name} ${response.last_name}`;
+    router.replace(replaceUrl);
   };
+
+  const hasPlacesAssigned =
+    formData.places_assigned && formData.places_assigned.length > 0;
 
   return (
     <>
@@ -125,7 +124,6 @@ export default function ContactForm({
           ? "Before you can delete this contact, please remove them from the places they are assigned. If they are the only one assigned, you must replace them with another contact in the assigned place."
           : "Please confirm that you would like to delete this contact."}
       </SimpleModal>
-
       <SingleStepTaskListForm
         key={key}
         errors={renderedErrors}
@@ -141,7 +139,7 @@ export default function ContactForm({
         showDeleteButton={
           !isCreatingState && role === FrontEndRoles.INDUSTRY_USER_ADMIN
         }
-        handleDelete={() => setModalOpen(true)}
+        handleDelete={handleClickDelete}
         deleteButtonText="Delete Contact"
         onSubmit={handleSubmit}
         onCancel={() => router.replace("/contacts")}

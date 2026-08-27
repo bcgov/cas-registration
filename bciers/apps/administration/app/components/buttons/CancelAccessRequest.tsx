@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { UUID } from "crypto";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
@@ -8,6 +8,7 @@ import cancelAccessRequest from "@/administration/app/components/userOperators/c
 import {
   useValidationErrors,
   handleApiResponse,
+  setClientError,
 } from "@bciers/components/validationErrors";
 
 interface CancelAccessRequestProps {
@@ -19,24 +20,27 @@ export default function CancelAccessRequest({
 }: Readonly<CancelAccessRequestProps>) {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [isPending, startTransition] = useTransition();
   const { setErrors, renderedErrors } = useValidationErrors();
 
-  const handleCancelAccessRequest = async () => {
-    setIsSubmitting(true);
-    setErrors(undefined);
+  const handleCancelAccessRequest = () => {
+    startTransition(async () => {
+      setErrors(undefined);
+      try {
+        const response = await cancelAccessRequest(userOperatorId);
 
-    const response = await cancelAccessRequest(userOperatorId);
-    setIsSubmitting(false);
+        const isSuccess = handleApiResponse(response, setErrors);
+        if (!isSuccess) {
+          setModalOpen(false);
+          return;
+        }
 
-    const isSuccess = handleApiResponse(response, setErrors);
-    if (!isSuccess) {
-      setModalOpen(false);
-      return;
-    }
-
-    router.push("/select-operator");
+        router.push("/select-operator");
+      } catch (err) {
+        setClientError(err, setErrors);
+        setModalOpen(false);
+      }
+    });
   };
 
   return (
@@ -48,7 +52,7 @@ export default function CancelAccessRequest({
         onConfirm={handleCancelAccessRequest}
         confirmText="Yes, cancel this request"
         cancelText="No, don't cancel"
-        isSubmitting={isSubmitting}
+        isSubmitting={isPending}
       >
         Are you sure you want to cancel this request?
       </SimpleModal>

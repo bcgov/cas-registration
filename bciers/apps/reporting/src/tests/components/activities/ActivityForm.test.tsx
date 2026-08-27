@@ -1,14 +1,9 @@
 import { act, render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, vi, it, beforeEach } from "vitest";
 import ActivityForm from "@reporting/src/app/components/activities/ActivityForm";
-import { dummyNavigationInformation } from "../taskList/utils";
-import { useRouter } from "@bciers/testConfig/mocks";
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
+import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import { RJSFSchema } from "@rjsf/utils";
-
-// Mock actionHandler
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
-}));
 
 // Mock data
 const mockActivityData = {
@@ -47,6 +42,29 @@ const activitySchema = {
       secondTestSourceType: {
         type: "boolean",
         title: "Second Title",
+      },
+    },
+  },
+};
+
+const submitSchema: RJSFSchema = {
+  type: "object",
+  properties: {
+    firstTestSourceType: {
+      type: "boolean",
+      title: "First Test Source Type Title",
+    },
+    secondTestSourceType: {
+      type: "boolean",
+      title: "Second Title",
+    },
+    sourceTypes: {
+      type: "object",
+      properties: {
+        firstTestSourceType: {
+          type: "object",
+          properties: {},
+        },
       },
     },
   },
@@ -186,4 +204,57 @@ describe("ActivityForm component", () => {
 
     expect(mockSubmitHandler).not.toHaveBeenCalled();
   });
+
+  it(
+    "displays an error message when the request fails",
+    { timeout: 10000 },
+    async () => {
+      const errorMessage = "Unable to complete the request.";
+
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+
+      render(
+        <ActivityForm
+          activityData={mockActivityData}
+          currentActivity={{
+            id: 1,
+            name: "General stationary combustion excluding line tracing (at SFO)",
+            slug: "gsc_excluding_line_tracing",
+          }}
+          navigationInformation={dummyNavigationInformation}
+          activityFormData={{
+            firstTestSourceType: true,
+            sourceTypes: {
+              firstTestSourceType: {},
+            },
+          }}
+          initialJsonSchema={submitSchema}
+          reportVersionId={1}
+          facilityId={mockUUID}
+          initialSelectedSourceTypeIds={["1"]}
+          gasTypes={mockGasTypes}
+          reportingYear={2024}
+          activityIndex={0}
+        />,
+      );
+
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: /save & continue/i,
+        }),
+      );
+
+      expect(await screen.findByText(errorMessage)).toBeVisible();
+
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+      expect(actionHandler).toHaveBeenCalledWith(
+        `reporting/report-version/1/facilities/${mockUUID}/activity/1/report-activity`,
+        "POST",
+        `/reporting/reports/1/facilities/${mockUUID}/activities?activity_id=1&step=0`,
+        expect.anything(),
+      );
+    },
+  );
 });

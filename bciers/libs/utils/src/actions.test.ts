@@ -226,6 +226,79 @@ describe("actionHandler function", () => {
     );
   });
 
+  it("should return validation errors gracefully for GET 400 responses with non-generic keys", async () => {
+    const userErrorResponse = {
+      message: "not authorized",
+      errors: [
+        {
+          key: "user_error",
+          error: {
+            severity: "Error",
+            message: "not authorized",
+          },
+        },
+      ],
+    };
+
+    fetch.mockResponses(
+      [JSON.stringify(responseToken), { status: 200 }],
+      [JSON.stringify(userErrorResponse), { status: 400 }],
+    );
+
+    const result = await actionHandler("/endpoint", "GET");
+
+    expect(result).toEqual({
+      error: "not authorized",
+      validation: userErrorResponse,
+    });
+  });
+
+  it("should throw for GET 400 responses when the error key is generic_error", async () => {
+    const genericErrorResponse = {
+      message: "Bad request",
+      errors: [
+        {
+          key: "generic_error",
+          error: {
+            severity: "Error",
+            message: "Bad request",
+          },
+        },
+      ],
+    };
+
+    fetch.mockResponses(
+      [JSON.stringify(responseToken), { status: 200 }],
+      [JSON.stringify(genericErrorResponse), { status: 400 }],
+      [JSON.stringify(responseToken), { status: 200 }],
+    );
+
+    await expect(actionHandler("/endpoint", "GET")).rejects.toThrow(
+      "Bad request",
+    );
+  });
+
+  it("should not throw for handled GET 401 responses", async () => {
+    fetch.mockResponses(
+      // getToken fetch
+      [JSON.stringify(responseToken), { status: 200 }],
+      // actionHandler fetch
+      [JSON.stringify({ message: "Unauthorized" }), { status: 401 }],
+    );
+
+    const result = await actionHandler("/endpoint", "GET");
+
+    expect(result).toEqual({
+      error: "Unauthorized",
+    });
+
+    expect(captureExceptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "Unauthorized",
+      }),
+    );
+  });
+
   it("should call Sentry.captureException if an error occurs", async () => {
     fetch.mockResponses(
       // getToken fetch
