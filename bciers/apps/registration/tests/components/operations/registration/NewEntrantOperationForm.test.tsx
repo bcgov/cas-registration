@@ -196,4 +196,45 @@ describe("the NewEntrantOperationForm component", () => {
       );
     });
   });
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(
+      <NewEntrantOperationForm
+        formData={{}}
+        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
+        schema={newEntrantOperationSchema}
+        step={4}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+    const input = screen.getByTestId("root_new_entrant_application");
+    await userEvent.upload(input, mockFile);
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Uploading. You may continue to the next page while the file is being scanned for security.",
+        ),
+      ).toBeVisible();
+    });
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: "Save and Continue",
+      }),
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    const callArgs = actionHandler.mock.calls[0];
+    expect(callArgs[0]).toBe(
+      "registration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/new-entrant-application",
+    );
+    expect(callArgs[1]).toBe("POST");
+    expect(callArgs[2]).toBe(
+      "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d",
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 });

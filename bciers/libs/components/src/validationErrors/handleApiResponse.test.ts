@@ -118,11 +118,21 @@ describe("handleApiResponse", () => {
       ]);
     });
 
-    it("uses custom fallbackKey when provided", () => {
-      type CustomKeys = "custom_fallback_key" | "other_key";
+    it("uses custom fallbackKey for generic validation errors when provided", () => {
+      type CustomKeys = "custom_fallback_key" | "generic_error";
 
       const response = {
-        error: "Custom error message",
+        validation: {
+          errors: [
+            {
+              key: "generic_error",
+              error: {
+                severity: "Error",
+                message: "Custom error message",
+              },
+            },
+          ],
+        },
       };
 
       const result = handleApiResponse<CustomKeys>(
